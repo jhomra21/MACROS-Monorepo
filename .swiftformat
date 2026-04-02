@@ -1,0 +1,17 @@
+--swiftversion 5.0
+--indent 4
+--linebreaks lf
+--maxwidth 140
+--stripunusedargs closure-only
+--wraparguments preserve
+--wrapcollections preserve
+--wrapparameters preserve
+--wrapreturntype preserve
+--commas inline
+--trimwhitespace always
+--allman false
+--ifdef no-indent
+--self remove
+--extensionacl on-extension
+--header ignore
+--exclude cal-macro-tracker.xcodeproj,tools,skills

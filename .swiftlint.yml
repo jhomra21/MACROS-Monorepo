@@ -1,0 +1,55 @@
+included:
+  - cal-macro-tracker
+
+excluded:
+  - cal-macro-tracker.xcodeproj
+  - tools
+  - skills
+
+reporter: "xcode"
+
+opt_in_rules:
+  - empty_count
+  - first_where
+  - modifier_order
+  - sorted_imports
+
+analyzer_rules: []
+
+disabled_rules:
+  - trailing_whitespace
+
+line_length:
+  warning: 140
+  error: 180
+  ignores_comments: true
+  ignores_urls: true
+
+file_length:
+  warning: 300
+  error: 400
+
+function_body_length:
+  warning: 80
+  error: 120
+
+type_body_length:
+  warning: 300
+  error: 400
+
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - x
+    - y
+    - z
+
+nesting:
+  type_level:
+    warning: 2
+
+large_tuple:
+  warning: 3
+  error: 4
