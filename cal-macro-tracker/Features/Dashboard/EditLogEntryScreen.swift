@@ -58,15 +58,16 @@ struct EditLogEntryScreen: View {
     }
 
     var body: some View {
-        Form {
-            FoodDraftFormSections(
-                draft: $draft,
-                numericText: $numericText,
-                brandPrompt: "Brand",
-                gramsPrompt: "Grams per serving",
-                focusedField: $focusedField
-            )
-
+        FoodDraftEditorForm(
+            draft: $draft,
+            numericText: $numericText,
+            errorMessage: $errorMessage,
+            brandPrompt: "Brand",
+            gramsPrompt: "Grams per serving",
+            focusedField: $focusedField,
+            keyboardFields: FoodDraftField.formOrder + [.quantityAmount],
+            previewTotals: previewTotals
+        ) {
             Section("Quantity") {
                 Picker("Mode", selection: $quantityMode) {
                     Text("Servings").tag(QuantityMode.servings)
@@ -81,16 +82,10 @@ struct EditLogEntryScreen: View {
                 }
 
                 TextField(quantityMode == .servings ? "Servings eaten" : "Grams eaten", text: $quantityAmountText)
+                    .focused($focusedField, equals: .quantityAmount)
                     .numericKeyboard()
             }
-
-            Section("Preview") {
-                previewRow(label: "Calories", value: previewTotals.calories, suffix: "kcal")
-                previewRow(label: "Protein", value: previewTotals.protein, suffix: "g")
-                previewRow(label: "Fat", value: previewTotals.fat, suffix: "g")
-                previewRow(label: "Carbs", value: previewTotals.carbs, suffix: "g")
-            }
-
+        } footerSections: {
             Section {
                 Button("Save Changes") {
                     saveChanges()
@@ -115,16 +110,6 @@ struct EditLogEntryScreen: View {
             if !canLogByGrams && quantityMode == .grams {
                 quantityMode = .servings
             }
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .dismissKeyboardOnTap(focusedField: $focusedField)
-        .errorBanner(message: $errorMessage)
-    }
-
-    private func previewRow(label: String, value: Double, suffix: String) -> some View {
-        LabeledContent(label) {
-            Text("\(value.roundedForDisplay) \(suffix)")
-                .monospacedDigit()
         }
     }
 

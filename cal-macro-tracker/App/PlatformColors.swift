@@ -16,4 +16,14 @@ enum PlatformColors {
         Color(.systemBackground)
         #endif
     }
+
+    static var cardBackground: Color {
+        #if os(iOS)
+        Color(uiColor: .secondarySystemGroupedBackground)
+        #elseif os(macOS)
+        Color(nsColor: .controlBackgroundColor)
+        #else
+        Color(.secondarySystemBackground)
+        #endif
+    }
 }

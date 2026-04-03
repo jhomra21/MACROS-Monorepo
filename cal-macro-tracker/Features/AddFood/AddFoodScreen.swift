@@ -153,7 +153,7 @@ private struct ManualFoodEntryScreen: View {
             }
         }
         .scrollDismissesKeyboard(.interactively)
-        .dismissKeyboardOnTap(focusedField: $focusedField)
+        .keyboardNavigationToolbar(focusedField: $focusedField, fields: FoodDraftField.formOrder)
     }
 
     private var canContinue: Bool {

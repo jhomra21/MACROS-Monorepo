@@ -28,15 +28,18 @@ struct CustomFoodEditorScreen: View {
     }
 
     var body: some View {
-        Form {
-            FoodDraftFormSections(
-                draft: $draft,
-                numericText: $numericText,
-                brandPrompt: "Brand (optional)",
-                gramsPrompt: "Grams per serving (optional)",
-                focusedField: $focusedField
-            )
-
+        FoodDraftEditorForm(
+            draft: $draft,
+            numericText: $numericText,
+            errorMessage: $errorMessage,
+            brandPrompt: "Brand (optional)",
+            gramsPrompt: "Grams per serving (optional)",
+            focusedField: $focusedField,
+            keyboardFields: FoodDraftField.formOrder,
+            previewTotals: nil
+        ) {
+            EmptyView()
+        } footerSections: {
             Section {
                 Button("Save") {
                     saveFood()
@@ -58,9 +61,6 @@ struct CustomFoodEditorScreen: View {
         }
         .navigationTitle("Custom Food")
         .inlineNavigationTitle()
-        .scrollDismissesKeyboard(.interactively)
-        .dismissKeyboardOnTap(focusedField: $focusedField)
-        .errorBanner(message: $errorMessage)
     }
 
     private func saveFood() {

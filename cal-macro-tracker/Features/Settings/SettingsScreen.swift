@@ -96,6 +96,13 @@ private struct GoalsSection: View {
         case protein
         case fat
         case carbs
+
+        static let formOrder: [Field] = [
+            .calories,
+            .protein,
+            .fat,
+            .carbs,
+        ]
     }
 
     @Environment(\.modelContext) private var modelContext
@@ -149,7 +156,7 @@ private struct GoalsSection: View {
             .disabled(!canSave)
         }
         .scrollDismissesKeyboard(.interactively)
-        .dismissKeyboardOnTap(focusedField: $focusedField)
+        .keyboardNavigationToolbar(focusedField: $focusedField, fields: Field.formOrder)
         .errorBanner(message: $errorMessage)
     }
 

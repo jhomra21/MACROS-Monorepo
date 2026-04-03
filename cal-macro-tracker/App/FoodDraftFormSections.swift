@@ -9,6 +9,18 @@ enum FoodDraftField: Hashable {
     case protein
     case fat
     case carbs
+    case quantityAmount
+
+    static let formOrder: [FoodDraftField] = [
+        .name,
+        .brand,
+        .servingDescription,
+        .gramsPerServing,
+        .calories,
+        .protein,
+        .fat,
+        .carbs,
+    ]
 }
 
 @MainActor

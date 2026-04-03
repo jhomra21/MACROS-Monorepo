@@ -82,9 +82,20 @@ extension Double {
     }
 }
 
+struct DayInterval: Hashable {
+    let start: Date
+    let end: Date
+}
+
 extension Date {
     var startOfDayValue: Date {
         Calendar.current.startOfDay(for: self)
+    }
+
+    var dayInterval: DayInterval {
+        let start = startOfDayValue
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: start) ?? start
+        return DayInterval(start: start, end: end)
     }
 
     var dayTitle: String {

@@ -27,7 +27,7 @@ struct LogEntryListSection: View {
                 )
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, emptyVerticalPadding)
-                .background(Color.white)
+                .background(PlatformColors.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
             } else {
                 LazyVStack(spacing: 12) {

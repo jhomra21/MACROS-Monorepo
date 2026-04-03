@@ -14,13 +14,20 @@ struct cal_macro_trackerApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if let modelContainer = launchState.modelContainer {
-                ContentView()
-                    .modelContainer(modelContainer)
-            } else {
-                AppLaunchErrorView(
-                    message: launchState.launchErrorMessage ?? "The app could not initialize its local data store."
-                )
+            Group {
+                switch launchState.phase {
+                case .launching:
+                    ProgressView("Starting app…")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                case let .ready(modelContainer):
+                    ContentView()
+                        .modelContainer(modelContainer)
+                case let .failed(message):
+                    AppLaunchErrorView(message: message)
+                }
+            }
+            .task {
+                await launchState.start()
             }
         }
     }

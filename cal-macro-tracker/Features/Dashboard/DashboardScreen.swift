@@ -2,91 +2,63 @@ import SwiftData
 import SwiftUI
 
 struct DashboardScreen: View {
-    @Query(sort: \LogEntry.dateLogged, order: .reverse) private var entries: [LogEntry]
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query private var goals: [DailyGoals]
 
     @State private var showingAddFood = false
 
-    private var todaysEntries: [LogEntry] {
-        let today = Date().startOfDayValue
-        return entries.filter { Calendar.current.isDate($0.dateLogged, inSameDayAs: today) }
-    }
-
     private var currentGoals: DailyGoals {
         goals.first ?? DailyGoals()
     }
 
-    private var totals: NutritionSnapshot {
-        NutritionMath.totals(for: todaysEntries)
-    }
-
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                MacroRingView(totals: totals, goals: currentGoals)
+        LogEntryDaySnapshotReader(date: .now) { snapshot in
+            ScrollView {
+                VStack(spacing: 24) {
+                    MacroRingView(totals: snapshot.totals, goals: currentGoals)
 
-                MacroLegendView(totals: totals, goals: currentGoals)
+                    MacroLegendView(totals: snapshot.totals, goals: currentGoals)
 
-                LogEntryListSection(
-                    title: "Today",
-                    emptyTitle: "No food logged yet",
-                    emptySystemImage: "fork.knife.circle",
-                    emptyDescription: "Tap the add button to log your first food today.",
-                    entries: todaysEntries,
-                    emptyVerticalPadding: 24
-                )
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 120)
-        }
-        .background(PlatformColors.groupedBackground)
-        .safeAreaInset(edge: .bottom) {
-            Button {
-                showingAddFood = true
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "plus")
-                        .font(.headline)
-                    Text("Add Food")
-                        .font(.headline.weight(.semibold))
+                    LogEntryListSection(
+                        title: "Today",
+                        emptyTitle: "No food logged yet",
+                        emptySystemImage: "fork.knife.circle",
+                        emptyDescription: "Tap the add button to log your first food today.",
+                        entries: snapshot.entries,
+                        emptyVerticalPadding: 24
+                    )
                 }
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(Color.black)
-                .clipShape(Capsule())
                 .padding(.horizontal, 20)
-                .padding(.top, 10)
-                .padding(.bottom, 8)
-                .background(.ultraThinMaterial)
+                .padding(.top, 12)
+                .padding(.bottom, 120)
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .appTopBarLeading) {
-                Text("Calories")
-                    .font(.largeTitle.weight(.bold))
-            }
-
-            ToolbarItemGroup(placement: .appTopBarTrailing) {
-                NavigationLink {
-                    HistoryScreen()
-                } label: {
-                    Image(systemName: "calendar")
-                }
-
-                NavigationLink {
-                    SettingsScreen()
-                } label: {
-                    Image(systemName: "gearshape")
+            .background(PlatformColors.groupedBackground)
+            .safeAreaInset(edge: .bottom) {
+                BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false) {
+                    showingAddFood = true
                 }
             }
-        }
-        .toolbarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showingAddFood) {
-            NavigationStack {
-                AddFoodScreen(logDate: .now, foods: foods)
+            .navigationTitle("Calories")
+            .toolbar {
+                ToolbarItemGroup(placement: .appTopBarTrailing) {
+                    NavigationLink {
+                        HistoryScreen()
+                    } label: {
+                        Image(systemName: "calendar")
+                    }
+
+                    NavigationLink {
+                        SettingsScreen()
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
+            .largeNavigationTitle()
+            .sheet(isPresented: $showingAddFood) {
+                NavigationStack {
+                    AddFoodScreen(logDate: .now, foods: foods)
+                }
             }
         }
     }
@@ -124,7 +96,7 @@ private struct MacroLegendView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(Color.white)
+        .background(PlatformColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
@@ -156,7 +128,7 @@ struct LogEntryRow: View {
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(PlatformColors.cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }

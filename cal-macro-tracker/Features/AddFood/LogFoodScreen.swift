@@ -31,14 +31,6 @@ struct LogFoodScreen: View {
         quantityMode == .servings ? servingsAmount : gramsAmount
     }
 
-    private var previewDraft: FoodDraft {
-        numericText.finalizedDraft(from: draft) ?? draft
-    }
-
-    private var previewTotals: NutritionSnapshot {
-        NutritionMath.consumedNutrition(for: previewDraft, mode: quantityMode, amount: activeAmount)
-    }
-
     private var shouldSaveCustomFood: Bool {
         draft.saveAsCustomFood || (initialDraft.source == .common && hasMeaningfulChangesFromInitial)
     }
@@ -60,15 +52,16 @@ struct LogFoodScreen: View {
     }
 
     var body: some View {
-        Form {
-            FoodDraftFormSections(
-                draft: $draft,
-                numericText: $numericText,
-                brandPrompt: "Brand (optional)",
-                gramsPrompt: "Grams per serving (optional)",
-                focusedField: $focusedField
-            )
-
+        FoodDraftEditorForm(
+            draft: $draft,
+            numericText: $numericText,
+            errorMessage: $errorMessage,
+            brandPrompt: "Brand (optional)",
+            gramsPrompt: "Grams per serving (optional)",
+            focusedField: $focusedField,
+            keyboardFields: FoodDraftField.formOrder,
+            previewTotals: nil
+        ) {
             Section("Quantity") {
                 Picker("Mode", selection: $quantityMode) {
                     Text("Servings").tag(QuantityMode.servings)
@@ -98,14 +91,7 @@ struct LogFoodScreen: View {
                         .foregroundStyle(.secondary)
                 }
             }
-
-            Section("Preview") {
-                previewRow(label: "Calories", value: previewTotals.calories, suffix: "kcal")
-                previewRow(label: "Protein", value: previewTotals.protein, suffix: "g")
-                previewRow(label: "Fat", value: previewTotals.fat, suffix: "g")
-                previewRow(label: "Carbs", value: previewTotals.carbs, suffix: "g")
-            }
-
+        } footerSections: {
             Section {
                 Toggle("Save as reusable custom food", isOn: $draft.saveAsCustomFood)
                 if hasMeaningfulChangesFromInitial && initialDraft.source == .common {
@@ -114,12 +100,10 @@ struct LogFoodScreen: View {
                         .foregroundStyle(.secondary)
                 }
             }
-
-            Section {
-                Button("Log Food") {
-                    saveEntry()
-                }
-                .disabled(!canSave)
+        }
+        .safeAreaInset(edge: .bottom) {
+            BottomPinnedActionBar(title: "Log Food", systemImage: nil, isDisabled: !canSave) {
+                saveEntry()
             }
         }
         .navigationTitle("Log Food")
@@ -133,16 +117,6 @@ struct LogFoodScreen: View {
             if !canLogByGrams && quantityMode == .grams {
                 quantityMode = .servings
             }
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .dismissKeyboardOnTap(focusedField: $focusedField)
-        .errorBanner(message: $errorMessage)
-    }
-
-    private func previewRow(label: String, value: Double, suffix: String) -> some View {
-        LabeledContent(label) {
-            Text("\(value.roundedForDisplay) \(suffix)")
-                .monospacedDigit()
         }
     }
 
