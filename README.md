@@ -1,6 +1,6 @@
 # Cal Macro Tracker
 
-A native SwiftUI calorie and macro tracking app for iPhone. No account required — all data stays on-device.
+A native and minimal SwiftUI calorie and macro tracking app for iPhone. No account required, all data stays on-device.
 
 ## Screenshots
 
