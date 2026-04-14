@@ -20,6 +20,7 @@ final class AppLaunchState {
         do {
             let container = try AppModelContainerFactory.makePersistentContainer()
             try await AppBootstrap.bootstrapIfNeeded(in: container)
+            WidgetTimelineReloader.reloadDailyMacroWidget()
             phase = .ready(container)
         } catch {
             phase = .failed(error.localizedDescription)

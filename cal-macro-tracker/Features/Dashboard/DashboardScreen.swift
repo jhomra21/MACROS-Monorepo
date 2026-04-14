@@ -5,14 +5,13 @@ struct DashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(\.modelContext) private var modelContext
 
+    let onOpenAddFood: () -> Void
+    let onEditEntry: (LogEntry) -> Void
     let onOpenHistory: () -> Void
     let onOpenSettings: () -> Void
 
-    @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query private var goals: [DailyGoals]
 
-    @State private var showingAddFood = false
-    @State private var editingEntry: LogEntry?
     @State private var errorMessage: String?
     @State private var showsCompactSummary = false
 
@@ -48,7 +47,7 @@ struct DashboardScreen: View {
                         emptyVerticalPadding: 24,
                         layout: .list,
                         onDeleteEntry: deleteEntry,
-                        onEditEntry: beginEditingEntry,
+                        onEditEntry: onEditEntry,
                         onLogAgain: logEntryAgain
                     )
                 }
@@ -90,17 +89,7 @@ struct DashboardScreen: View {
             }
             .safeAreaInset(edge: .bottom) {
                 BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false) {
-                    showingAddFood = true
-                }
-            }
-            .sheet(isPresented: $showingAddFood) {
-                NavigationStack {
-                    AddFoodScreen(foods: foods)
-                }
-            }
-            .sheet(item: $editingEntry) { entry in
-                NavigationStack {
-                    EditLogEntryScreen(entry: entry)
+                    onOpenAddFood()
                 }
             }
             .errorBanner(message: $errorMessage)
@@ -109,10 +98,6 @@ struct DashboardScreen: View {
 
     private var logEntryRepository: LogEntryRepository {
         LogEntryRepository(modelContext: modelContext)
-    }
-
-    private func beginEditingEntry(_ entry: LogEntry) {
-        editingEntry = entry
     }
 
     private func deleteEntry(_ entry: LogEntry) {

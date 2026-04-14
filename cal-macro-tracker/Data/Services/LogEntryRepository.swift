@@ -26,6 +26,8 @@ struct LogEntryRepository {
                 to: isolatedEntry
             )
         }
+
+        WidgetTimelineReloader.reloadDailyMacroWidget()
     }
 
     func delete(entry: LogEntry, operation: String) throws {
@@ -39,6 +41,8 @@ struct LogEntryRepository {
 
             isolatedContext.delete(isolatedEntry)
         }
+
+        WidgetTimelineReloader.reloadDailyMacroWidget()
     }
 
     func logAgain(entry: LogEntry, loggedAt: Date = .now, operation: String) throws {
@@ -85,6 +89,8 @@ struct LogEntryRepository {
 
             isolatedContext.insert(entry)
         }
+
+        WidgetTimelineReloader.reloadDailyMacroWidget()
     }
 
     private func apply(draft: FoodDraft, quantityMode: QuantityMode, quantityAmount: Double, to entry: LogEntry) {

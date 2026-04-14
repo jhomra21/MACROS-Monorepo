@@ -3,7 +3,9 @@ import SwiftUI
 
 struct AddFoodScreen: View {
     @Environment(\.dismiss) private var dismiss
+
     let foods: [FoodItem]
+
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
     @State private var errorMessage: String?
@@ -33,8 +35,9 @@ struct AddFoodScreen: View {
     private let remotePageSize = 12
     private let packagedFoodSearchClient = PackagedFoodSearchClient()
 
-    init(foods: [FoodItem]) {
+    init(foods: [FoodItem], initialMode: AddFoodMode = .search) {
         self.foods = foods
+        _selectedMode = State(initialValue: initialMode)
     }
 
     private func closeSheet() { dismiss() }

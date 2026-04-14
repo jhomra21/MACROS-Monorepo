@@ -8,12 +8,20 @@
 import Foundation
 import SwiftData
 import SwiftUI
+#if os(iOS)
+import Combine
+import UIKit
+#endif
 
 @main
 struct cal_macro_trackerApp: App {
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
+    @State private var pendingOpenRequest: AppOpenRequest?
     @Environment(\.scenePhase) private var scenePhase
+    #if os(iOS)
+    @UIApplicationDelegateAdaptor(HomeScreenQuickActionAppDelegate.self) private var appDelegate
+    #endif
 
     var body: some Scene {
         WindowGroup {
@@ -23,7 +31,7 @@ struct cal_macro_trackerApp: App {
                     ProgressView("Starting app…")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case let .ready(modelContainer):
-                    ContentView()
+                    ContentView(pendingOpenRequest: $pendingOpenRequest)
                         .modelContainer(modelContainer)
                 case let .failed(message):
                     AppLaunchErrorView(message: message)
@@ -31,6 +39,9 @@ struct cal_macro_trackerApp: App {
             }
             .environment(dayContext)
             .task {
+                #if os(iOS)
+                consumePendingQuickActionIfNeeded()
+                #endif
                 await launchState.start()
             }
             .onChange(of: scenePhase) { _, newPhase in
@@ -46,6 +57,22 @@ struct cal_macro_trackerApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
                 dayContext.refresh()
             }
+            .onOpenURL { url in
+                pendingOpenRequest = AppOpenRequest(url: url)
+            }
+            #if os(iOS)
+            .onReceive(appDelegate.$requestToken.dropFirst()) { _ in
+                consumePendingQuickActionIfNeeded()
+            }
+            #endif
         }
     }
+
+    #if os(iOS)
+    private func consumePendingQuickActionIfNeeded() {
+        if let request = appDelegate.consumePendingRequest() {
+            pendingOpenRequest = request
+        }
+    }
+    #endif
 }

@@ -9,8 +9,14 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Binding private var pendingOpenRequest: AppOpenRequest?
+
+    init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
+        _pendingOpenRequest = pendingOpenRequest
+    }
+
     var body: some View {
-        AppRootView()
+        AppRootView(pendingOpenRequest: $pendingOpenRequest)
     }
 }
 

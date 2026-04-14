@@ -3,7 +3,7 @@ import SwiftData
 
 enum AppModelContainerFactory {
     static func makePersistentContainer() throws -> ModelContainer {
-        try ModelContainer(for: DailyGoals.self, FoodItem.self, LogEntry.self)
+        try SharedModelContainerFactory.makePersistentContainer()
     }
 
     // periphery:ignore - preview-only container used by SwiftUI previews

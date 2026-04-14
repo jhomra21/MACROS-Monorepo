@@ -25,7 +25,7 @@ enum LogEntryDaySummary {
     }
 
     static func snapshot(for entries: [LogEntry]) -> LogEntryDaySnapshot {
-        LogEntryDaySnapshot(entries: entries, totals: NutritionMath.totals(for: entries))
+        LogEntryDaySnapshot(entries: entries, totals: NutritionSnapshot.totals(for: entries))
     }
 
     static func snapshotsByDay(for entries: [LogEntry], matching days: [CalendarDay]) -> [CalendarDay: LogEntryDaySnapshot] {

@@ -21,5 +21,7 @@ struct DailyGoalsRepository {
 
             draft.apply(to: isolatedGoals)
         }
+
+        WidgetTimelineReloader.reloadDailyMacroWidget()
     }
 }
