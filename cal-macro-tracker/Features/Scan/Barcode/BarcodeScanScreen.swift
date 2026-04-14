@@ -37,7 +37,7 @@ struct BarcodeScanScreen: View {
     }
 
     @State private var selectedPhoto: PhotosPickerItem?
-    @State private var draft: FoodDraft?
+    @State private var logFoodDraft: FoodDraft?
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var showingLiveScanner = false
@@ -51,9 +51,7 @@ struct BarcodeScanScreen: View {
 
     var body: some View {
         Group {
-            if let draft {
-                LogFoodScreen(initialDraft: draft, onFoodLogged: onFoodLogged)
-            } else if shouldShowOptions {
+            if shouldShowOptions {
                 BarcodeScanOptionsList(
                     canScanLive: canScanLive,
                     canUseCamera: canUseCamera,
@@ -103,6 +101,11 @@ struct BarcodeScanScreen: View {
                 await loadSelectedPhoto(item)
             }
         }
+        .navigationDestination(isPresented: isShowingLogFood) {
+            if let logFoodDraft {
+                LogFoodScreen(initialDraft: logFoodDraft, onFoodLogged: onFoodLogged)
+            }
+        }
         .onChange(of: errorMessage) { oldValue, newValue in
             guard oldValue != nil, newValue == nil else { return }
             reopenScannerIfNeeded()
@@ -130,8 +133,19 @@ struct BarcodeScanScreen: View {
         entryMode == .immediateCamera
     }
 
+    private var isShowingLogFood: Binding<Bool> {
+        Binding(
+            get: { logFoodDraft != nil },
+            set: { isPresented in
+                if !isPresented {
+                    logFoodDraft = nil
+                }
+            }
+        )
+    }
+
     private func presentImmediateScannerIfNeeded() {
-        guard entryMode == .immediateCamera, hasPresentedImmediateScanner == false, draft == nil else { return }
+        guard entryMode == .immediateCamera, hasPresentedImmediateScanner == false, logFoodDraft == nil else { return }
 
         hasPresentedImmediateScanner = true
 
@@ -185,12 +199,14 @@ struct BarcodeScanScreen: View {
             pendingRecoveryCaptureSource = nil
 
             if let cachedDraft = try cachedDraft(for: barcode) {
-                draft = cachedDraft
+                showManualOptions = true
+                logFoodDraft = cachedDraft
                 isLoading = false
                 return
             }
 
-            draft = try await resolveRemoteDraft(barcode: barcode)
+            showManualOptions = true
+            logFoodDraft = try await resolveRemoteDraft(barcode: barcode)
             isLoading = false
         } catch {
             isLoading = false
