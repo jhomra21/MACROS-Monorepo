@@ -396,3 +396,43 @@ The following planning documents have been fully consolidated into this file and
 
 - `make quality-format-check` passes.
 - iOS simulator build passes.
+
+## Apple Project Folder Reorganization
+
+### Delivered
+
+- Moved the Apple shared/widget source folders under `cal-macro-tracker/` so the native app area now reads more clearly in the repo:
+  - `cal-macro-tracker/Shared/`
+  - `cal-macro-tracker/CalMacroWidget/`
+- Updated `cal-macro-tracker.xcodeproj/project.pbxproj` so the synchronized root groups point at the new folder locations.
+- Updated the widget entitlements path to `cal-macro-tracker/CalMacroWidget/CalMacroWidget.entitlements`.
+- Added a short `AGENTS.md` note to prefer primary docs or public repo examples when Xcode project behavior is unclear.
+
+### Main implementation steps
+
+- Moved the root-level `Shared/` and `CalMacroWidget/` directories into `cal-macro-tracker/`.
+- Updated the Xcode synchronized-group paths from `Shared` / `CalMacroWidget` to `cal-macro-tracker/Shared` / `cal-macro-tracker/CalMacroWidget`.
+- Added a `PBXFileSystemSynchronizedBuildFileExceptionSet` on the app target's `cal-macro-tracker/` synchronized root group so widget files are excluded from the app target and shared files are not double-included through both the app root group and the dedicated shared group.
+- Narrowed those membership exceptions to explicit relative file paths after validating that folder-level exclusions were not sufficient for this Xcode 16 synchronized-group setup.
+
+### Bugs and implementation findings
+
+- The first naive move was structurally correct on disk but not yet correct in Xcode target membership: once `Shared/` and `CalMacroWidget/` lived under `cal-macro-tracker/`, the app target's synchronized root group started implicitly seeing those files too.
+- That produced two concrete symptoms:
+  - widget files were pulled into the app target, causing the duplicate `@main` error from `CalMacroWidgetBundle.swift` and `cal_macro_trackerApp.swift`
+  - shared files were seen through both the app root group and the dedicated shared group, causing duplicate build-file warnings
+- Public examples of Xcode 16 synchronized groups showed that the safe pattern is an explicit `PBXFileSystemSynchronizedBuildFileExceptionSet` with relative file-path entries in `membershipExceptions`, attached through the root group's `exceptions = (...)` list.
+
+### External references used during debugging
+
+- `insidegui/WWDC`:
+  - public repo used to inspect a real `project.pbxproj` with `PBXFileSystemSynchronizedBuildFileExceptionSet`
+  - https://github.com/insidegui/WWDC
+- `tuist/XcodeProj` issue `#838`:
+  - useful for confirming the Xcode 16 synchronized-group exception object names and shape
+  - https://github.com/tuist/XcodeProj/issues/838
+
+### Validation recorded during this reorganization
+
+- `make quality-format-check` passes.
+- iOS simulator build passes.

@@ -39,20 +39,44 @@
 		1A1111111111111111111111 /* CalMacroWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CalMacroWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1A1111111111111111111121 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				CalMacroWidget/CalMacroWidget.entitlements,
+				CalMacroWidget/CalMacroWidgetBundle.swift,
+				CalMacroWidget/DailyMacroWidget.swift,
+				Shared/AppOpenRequest.swift,
+				Shared/DailyMacroSnapshotLoader.swift,
+				Shared/LogEntryQuery.swift,
+				Shared/MacroGoalsSnapshot.swift,
+				Shared/MacroMetric.swift,
+				Shared/MacroRingSetView.swift,
+				Shared/NutritionSnapshot.swift,
+				Shared/SharedAppConfiguration.swift,
+				Shared/SharedModelContainerFactory.swift,
+			);
+			target = 0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		0D8B87CF2F7D86E700453C64 /* cal-macro-tracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1A1111111111111111111121 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
 			path = "cal-macro-tracker";
 			sourceTree = "<group>";
 		};
 		1A1111111111111111111115 /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Shared;
+			path = "cal-macro-tracker/Shared";
 			sourceTree = "<group>";
 		};
 		1A1111111111111111111116 /* CalMacroWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = CalMacroWidget;
+			path = "cal-macro-tracker/CalMacroWidget";
 			sourceTree = "<group>";
 		};
 		1A1111111111111111111117 /* cal-macro-tracker/Data/Models */ = {
@@ -445,7 +469,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = CalMacroWidget/CalMacroWidget.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "cal-macro-tracker/CalMacroWidget/CalMacroWidget.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -487,7 +511,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = CalMacroWidget/CalMacroWidget.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "cal-macro-tracker/CalMacroWidget/CalMacroWidget.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
