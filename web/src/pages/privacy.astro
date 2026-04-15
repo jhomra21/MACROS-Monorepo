@@ -1,0 +1,57 @@
+---
+export const prerender = true;
+
+import { site } from '../data/site';
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout title={`${site.name} | Privacy Policy`} description="Privacy policy for the Cal Macro Tracker app and support website.">
+	<section class="page-header">
+		<div class="container">
+			<span class="eyebrow">Privacy policy</span>
+			<h1>Privacy is part of the product, not an afterthought.</h1>
+			<p>
+				This page describes the information used by the Cal Macro Tracker app website
+				and the support form.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container stack">
+			<article class="page-panel">
+				<h2>App data</h2>
+				<ul class="policy-list">
+					<li>The app is designed around local-first storage on your device.</li>
+					<li>No account is required to start using the app.</li>
+					<li>Food logs, macro totals, and related entries are intended to stay on-device unless you choose to export or share them.</li>
+				</ul>
+			</article>
+
+			<article class="page-panel">
+				<h2>Website analytics and browsing</h2>
+				<ul class="policy-list">
+					<li>This site is primarily informational and is used to describe the app, provide support access, and publish this privacy policy.</li>
+					<li>Standard request data such as IP address, browser details, and basic server logs may be processed by Cloudflare to deliver and secure the site.</li>
+				</ul>
+			</article>
+
+			<article class="page-panel">
+				<h2>Support requests</h2>
+				<ul class="policy-list">
+					<li>When you use the support form, the site stores the name, email address, and message you submit.</li>
+					<li>This information is used only to review and respond to your support request.</li>
+					<li>Support form submissions are stored in Cloudflare D1 for website support operations.</li>
+				</ul>
+			</article>
+
+			<article class="page-panel">
+				<h2>Your choices</h2>
+				<ul class="policy-list">
+					<li>You can choose not to submit the support form.</li>
+					<li>If you need privacy-related help, use the support page and describe your request.</li>
+				</ul>
+			</article>
+		</div>
+	</section>
+</SiteLayout>

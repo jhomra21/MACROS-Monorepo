@@ -1,0 +1,59 @@
+---
+export const prerender = true;
+
+import { site } from '../data/site';
+import SiteLayout from '../layouts/SiteLayout.astro';
+---
+
+<SiteLayout title={`${site.name} | About`} description="Learn what Cal Macro Tracker is building and how the app is designed to work.">
+	<section class="page-header">
+		<div class="container">
+			<span class="eyebrow">About the app</span>
+			<h1>Designed for simple, accurate daily tracking.</h1>
+			<p>
+				Cal Macro Tracker is an iPhone-first calorie and macro tracker built around
+				clear daily totals, flexible input methods, and local-first behavior.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container detail-grid">
+			<article class="detail-card">
+				<h2>Why it exists</h2>
+				<p>
+					Tracking should feel fast and trustworthy. The app is focused on removing
+					friction without forcing sign-up or hiding the numbers that matter.
+				</p>
+			</article>
+
+			<article class="detail-card">
+				<h2>Core inputs</h2>
+				<p>
+					Barcode scan, nutrition label photo, and manual entry are all part of the
+					main workflow so logging still works when one path fails.
+				</p>
+			</article>
+
+			<article class="detail-card">
+				<h2>What you review</h2>
+				<p>
+					Each entry is built to surface serving size, quantity, calories, protein,
+					carbs, and fat before it becomes part of your day.
+				</p>
+			</article>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container page-panel">
+			<h2>Product direction</h2>
+			<ul class="support-list">
+				<li>No required login to start tracking.</li>
+				<li>Local-first storage for day-to-day use.</li>
+				<li>Editable nutrition data when source information is incomplete.</li>
+				<li>Daily summaries derived from what you actually logged.</li>
+			</ul>
+		</div>
+	</section>
+</SiteLayout>

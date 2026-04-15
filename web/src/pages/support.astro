@@ -1,0 +1,274 @@
+---
+export const prerender = false;
+
+import { site } from '../data/site';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import {
+	getSupportPageStatus,
+	getSupportStatusMessage,
+	supportFieldAttributes,
+	supportStatusMessages,
+} from '../lib/support';
+
+const status = getSupportPageStatus(Astro.url.searchParams);
+const renderedErrorMessage =
+	status === 'error' || status === 'invalid'
+		? getSupportStatusMessage(status)
+		: supportStatusMessages.error;
+---
+
+<SiteLayout title={`${site.name} | Support`} description="Get support for Cal Macro Tracker.">
+	<section class="page-header">
+		<div class="container">
+			<span class="eyebrow">Support</span>
+			<h1>Need help with the app?</h1>
+			<p>
+				Send a support request with your name, email, and a short description of the
+				problem. The request is stored so it can be reviewed and answered.
+			</p>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container support-layout">
+			<aside class="support-card">
+				<h2>What to include</h2>
+				<ul class="support-list">
+					{site.supportChecklist.map((item) => <li>{item}</li>)}
+				</ul>
+			</aside>
+
+			<div class="support-card">
+				<h2>Contact support</h2>
+				<p
+					class="status status--success"
+					data-support-success
+					data-default-message={supportStatusMessages.submitted}
+					hidden={status !== 'submitted'}
+				>
+					{supportStatusMessages.submitted}
+				</p>
+				<p
+					class="status status--error"
+					data-support-error
+					data-default-message={supportStatusMessages.error}
+					hidden={status !== 'error' && status !== 'invalid'}
+				>
+					{renderedErrorMessage}
+				</p>
+
+				<form class="field-list" method="POST" action="/api/support" data-support-form>
+					<div class="field">
+						<label for="name">Name</label>
+						<input
+							id="name"
+							name="name"
+							type="text"
+							autocomplete="name"
+							minlength={supportFieldAttributes.name.minLength}
+							maxlength={supportFieldAttributes.name.maxLength}
+							required
+						/>
+					</div>
+
+					<div class="field">
+						<label for="email">Email</label>
+						<input
+							id="email"
+							name="email"
+							type="email"
+							autocomplete="email"
+							maxlength={supportFieldAttributes.email.maxLength}
+							required
+						/>
+					</div>
+
+					<div class="field">
+						<label for="message">Describe the problem</label>
+						<textarea
+							id="message"
+							name="message"
+							minlength={supportFieldAttributes.message.minLength}
+							maxlength={supportFieldAttributes.message.maxLength}
+							aria-describedby="message-hint"
+							required
+						></textarea>
+						<p class="field-hint" id="message-hint">
+							Please share at least {supportFieldAttributes.message.minLength}
+							characters so support has enough detail to help.
+						</p>
+					</div>
+
+					<button class="button" type="submit">Send request</button>
+				</form>
+			</div>
+		</div>
+	</section>
+
+	<script>
+		type SupportFormResponse = {
+			message?: string;
+			fieldErrors?: Record<string, unknown>;
+		} | null;
+
+		const form = document.querySelector('[data-support-form]');
+		const success = document.querySelector('[data-support-success]');
+		const error = document.querySelector('[data-support-error]');
+		const defaultSuccessMessage =
+			success instanceof HTMLElement ? success.dataset.defaultMessage ?? success.textContent ?? '' : '';
+		const defaultErrorMessage =
+			error instanceof HTMLElement ? error.dataset.defaultMessage ?? error.textContent ?? '' : '';
+
+		function showStatusSuccess(message = defaultSuccessMessage) {
+			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
+				return;
+			}
+
+			success.textContent = message;
+			success.hidden = false;
+			error.hidden = true;
+		}
+
+		function showStatusError(message = defaultErrorMessage) {
+			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
+				return;
+			}
+
+			error.textContent = message;
+			success.hidden = true;
+			error.hidden = false;
+		}
+
+		function clearStatus() {
+			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
+				return;
+			}
+
+			success.textContent = defaultSuccessMessage;
+			error.textContent = defaultErrorMessage;
+			success.hidden = true;
+			error.hidden = true;
+		}
+
+		function getFormControl(fieldName: string) {
+			if (!(form instanceof HTMLFormElement)) {
+				return null;
+			}
+
+			const control = form.elements.namedItem(fieldName);
+
+			if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+				return control;
+			}
+
+			return null;
+		}
+
+		function clearFieldValidation() {
+			if (!(form instanceof HTMLFormElement)) {
+				return;
+			}
+
+			for (const element of Array.from(form.elements)) {
+				if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+					element.setCustomValidity('');
+				}
+			}
+		}
+
+		function applyFieldErrors(fieldErrors: Record<string, unknown> | undefined) {
+			if (!fieldErrors || typeof fieldErrors !== 'object') {
+				return false;
+			}
+
+			let hasFieldErrors = false;
+			let firstInvalidControl = null;
+
+			for (const [fieldName, message] of Object.entries(fieldErrors)) {
+				if (typeof message !== 'string' || message.length === 0) {
+					continue;
+				}
+
+				const control = getFormControl(fieldName);
+
+				if (!control) {
+					continue;
+				}
+
+				control.setCustomValidity(message);
+				hasFieldErrors = true;
+				firstInvalidControl ??= control;
+			}
+
+			firstInvalidControl?.reportValidity();
+
+			return hasFieldErrors;
+		}
+
+		async function parseSupportResponse(response: Response): Promise<SupportFormResponse> {
+			const result = await response.json().catch(() => null);
+
+			if (!result || typeof result !== 'object') {
+				return null;
+			}
+
+			return result as SupportFormResponse;
+		}
+
+		if (form instanceof HTMLFormElement) {
+			form.addEventListener('input', (event) => {
+				const target = event.target;
+
+				if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+					target.setCustomValidity('');
+				}
+			});
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+
+				clearFieldValidation();
+				clearStatus();
+
+				if (!form.reportValidity()) {
+					return;
+				}
+
+				const formData = new FormData(form);
+				const payload = Object.fromEntries(formData.entries());
+
+				try {
+					const response = await fetch('/api/support', {
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							accept: 'application/json',
+						},
+						body: JSON.stringify(payload),
+					});
+					const result = await parseSupportResponse(response);
+
+					if (response.ok) {
+						form.reset();
+						showStatusSuccess(
+							typeof result?.message === 'string' ? result.message : defaultSuccessMessage,
+						);
+						return;
+					}
+
+					const message =
+						typeof result?.message === 'string' ? result.message : defaultErrorMessage;
+					const hasFieldErrors = applyFieldErrors(result?.fieldErrors);
+
+					showStatusError(message);
+
+					if (!hasFieldErrors) {
+						form.reportValidity();
+					}
+				} catch {
+					showStatusError(defaultErrorMessage);
+				}
+			});
+		}
+	</script>
+</SiteLayout>

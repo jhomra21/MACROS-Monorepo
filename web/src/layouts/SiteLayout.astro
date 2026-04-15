@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+
+import { site } from '../data/site';
+
+interface Props {
+	title: string;
+	description: string;
+}
+
+const { title, description } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<title>{title}</title>
+	</head>
+	<body>
+		<div class="page-shell">
+			<header class="site-header">
+				<div class="container site-header__inner">
+					<a class="brand" href="/">{site.name}</a>
+					<nav aria-label="Primary navigation">
+						<ul class="nav-list">
+							{
+								site.navItems.map((item) => (
+									<li>
+										<a
+											class:list={[
+												'nav-link',
+												currentPath === item.href && 'nav-link--active',
+											]}
+											href={item.href}
+										>
+											{item.label}
+										</a>
+									</li>
+								))
+							}
+						</ul>
+					</nav>
+				</div>
+			</header>
+
+			<main>
+				<slot />
+			</main>
+
+			<footer class="site-footer">
+				<div class="container site-footer__inner">
+					<div>
+						<p class="site-footer__title">{site.name}</p>
+						<p class="site-footer__copy">{site.description}</p>
+					</div>
+					<div class="site-footer__links">
+						<a href="/privacy">Privacy policy</a>
+						<a href="/support">Support</a>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</body>
+</html>

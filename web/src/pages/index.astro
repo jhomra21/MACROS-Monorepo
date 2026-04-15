@@ -1,0 +1,71 @@
+---
+export const prerender = true;
+
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { site } from '../data/site';
+
+---
+<SiteLayout title={`${site.name} | Home`} description={site.description}>
+	<section class="section section--hero">
+		<div class="container hero">
+			<div>
+				<span class="eyebrow">Local-first iPhone calorie tracking</span>
+				<h1>{site.tagline}</h1>
+				<p>{site.description}</p>
+				<div class="hero-actions">
+					<a class="button" href="/support">Get support</a>
+					<a class="button-secondary" href="/privacy">Read the privacy policy</a>
+				</div>
+			</div>
+
+			<div class="detail-card">
+				<h2>Built around high-confidence logging</h2>
+				<p>
+					Cal Macro Tracker focuses on reliable nutrition capture with barcode scan,
+					nutrition label photo, and manual entry when you need it.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container stack">
+			<div class="card-grid">
+				{
+					site.features.map((feature) => (
+						<article class="card">
+							<h2>{feature.title}</h2>
+							<p>{feature.body}</p>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container stack">
+			<div class="page-panel">
+				<h2>How logging works</h2>
+				<ul class="support-list">
+					{site.flows.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+
+			<div class="screenshot-grid">
+				{
+					site.screenshots.map((screenshot) => (
+						<article class="screenshot-card">
+							<img src={screenshot.src} alt={screenshot.alt} loading="lazy" />
+							<div class="screenshot-card__body">
+								<h2>{screenshot.title}</h2>
+								<p>{screenshot.body}</p>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
+	</section>
+</SiteLayout>
+</html>

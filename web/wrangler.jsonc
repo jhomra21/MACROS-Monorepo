@@ -1,0 +1,19 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "cal-macro-tracker-web",
+	"compatibility_date": "2026-04-15",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "SUPPORT_DB",
+			"database_name": "cal-macro-tracker-support",
+			"database_id": "fde5c0b8-dda4-4c92-b068-baf7e19e3b0e",
+			"migrations_dir": "./migrations"
+		}
+	]
+}
