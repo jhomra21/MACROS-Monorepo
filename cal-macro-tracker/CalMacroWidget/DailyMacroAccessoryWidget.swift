@@ -9,6 +9,9 @@ struct DailyMacroAccessoryWidget: Widget {
             provider: DailyMacroWidgetProvider()
         ) { entry in
             DailyMacroAccessoryWidgetContentView(entry: entry)
+                .containerBackground(for: .widget) {
+                    AccessoryWidgetBackground()
+                }
                 .widgetURL(AppOpenRequest.dashboard.url)
         }
         .configurationDisplayName("Daily Macros")
