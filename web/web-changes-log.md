@@ -14,7 +14,8 @@
   - `src/pages/about.astro`
   - `src/pages/privacy.astro`
   - `src/pages/support.astro`
-- Added public app screenshots and favicon assets under `public/`.
+- Added favicon assets under `public/`.
+- Added shared app screenshots for the site and README, now stored under `src/assets/app-images/`.
 
 ### Main implementation steps
 
@@ -22,6 +23,38 @@
 - Reused one layout and one CSS file instead of page-local structure/styling duplication.
 - Kept static informational pages prerendered and left the support flow dynamic.
 - Configured Astro to deploy through the Cloudflare adapter in `astro.config.mjs`.
+- Moved site screenshots onto importable local assets so Astro can optimize them at build time.
+
+## Screenshot Asset Pipeline and README Alignment
+
+### Delivered
+
+- Moved website screenshots from `public/app-images/` to `src/assets/app-images/`.
+- Added light-mode screenshots:
+  - `src/assets/app-images/home1-light.jpeg`
+  - `src/assets/app-images/calendar-closed-light.jpeg`
+- Updated `src/data/site.ts` to import screenshots as local Astro assets instead of string paths.
+- Updated `src/pages/index.astro` to render screenshots through `astro:assets` `<Image />`.
+- Updated the root `README.md` to reuse the shared web screenshot assets, including the new light-mode images.
+
+### What went wrong
+
+- The first web setup kept screenshots in `public/app-images/`.
+- That worked for plain `<img>` tags, but Astro did not optimize those files for the marketing page.
+- The root README had also drifted into its own screenshot set, which recreated duplicate asset maintenance.
+
+### Root cause
+
+- In this codebase, the Cloudflare adapter is configured with `imageService: 'compile'`.
+- With that setup, Astro image optimization happens at build time for importable local assets, not for files referenced directly from `public/`.
+- Keeping screenshots in `public/` preserved direct serving but skipped the build-time optimization path the app was already configured to use.
+
+### What actually fixed it
+
+- Moved the reusable screenshots into `src/assets/app-images/` so they can be imported.
+- Switched the home page screenshot grid to `<Image />` with generated responsive widths and WebP output.
+- Kept the README pointed at the same shared asset files so the repo no longer carries a second screenshot set.
+- Added the new light-mode screenshots to the README instead of creating another image directory.
 
 ## Support Flow and Persistence
 
@@ -109,6 +142,7 @@
 - Static marketing pages stay prerendered.
 - The support page and support API remain dynamic because they depend on request handling and D1 persistence.
 - Wrangler config is the source of truth for the support database binding and migration directory.
+- Screenshot optimization currently relies on Astro's build-time pipeline via imported `src/assets` images and the Cloudflare adapter's `imageService: 'compile'` setting.
 
 ## Validation Recorded
 
@@ -118,12 +152,14 @@
 - `bun run db:migrations:apply:local`
 - `bun run db:migrations:apply:remote`
 - `bun run deploy:dry-run`
+- `bun run build`
 
 ### Runtime verification completed
 
 - Local malformed JSON POST to `/api/support` returns `400`.
 - Local valid JSON POST to `/api/support` returns `200`.
 - Remote D1 migration flow now resolves the configured support database successfully.
+- Astro build output generates optimized `/_astro/*.webp` screenshot assets from the imported app images.
 
 ## Current Operational State
 

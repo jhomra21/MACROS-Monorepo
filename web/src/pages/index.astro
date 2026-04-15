@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import { Image } from 'astro:assets';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { site } from '../data/site';
 
@@ -8,7 +9,7 @@ import { site } from '../data/site';
 <SiteLayout title={`${site.name} | Home`} description={site.description}>
 	<section class="section section--hero">
 		<div class="container hero">
-			<div>
+			<div class="hero-copy">
 				<span class="eyebrow">Local-first iPhone calorie tracking</span>
 				<h1>{site.tagline}</h1>
 				<p>{site.description}</p>
@@ -16,14 +17,54 @@ import { site } from '../data/site';
 					<a class="button" href="/support">Get support</a>
 					<a class="button-secondary" href="/privacy">Read the privacy policy</a>
 				</div>
+				<ul class="macro-highlight-list" aria-label="Daily macro snapshot example">
+					{
+						site.macroHighlights.map((item) => (
+							<li class:list={['macro-highlight', `macro-highlight--${item.tone}`]}>
+								<span class="macro-highlight__label">{item.label}</span>
+								<strong class="macro-highlight__value">{item.value}</strong>
+							</li>
+						))
+					}
+				</ul>
 			</div>
 
-			<div class="detail-card">
-				<h2>Built around high-confidence logging</h2>
-				<p>
-					Cal Macro Tracker focuses on reliable nutrition capture with barcode scan,
-					nutrition label photo, and manual entry when you need it.
-				</p>
+			<div class="hero-visual-panel">
+				<div class="hero-device-stack">
+					{
+						site.heroShowcase.map((shot, index) => (
+							<article
+								class:list={[
+									'hero-device',
+									index === 0 && 'hero-device--front',
+									index === 1 && 'hero-device--back',
+								]}
+							>
+								<span class="theme-badge">{shot.label}</span>
+								<Image
+									src={shot.src}
+									alt={shot.alt}
+									format="webp"
+									widths={[360, 720]}
+									sizes="(max-width: 960px) 44vw, 22vw"
+								/>
+							</article>
+						))
+					}
+				</div>
+
+				<div class="detail-card hero-summary-card">
+					<h2>Built around high-confidence logging</h2>
+					<p>
+						Cal Macro Tracker focuses on reliable nutrition capture with barcode scan,
+						nutrition label photo, and manual entry when you need it.
+					</p>
+					<ul class="hero-summary-list">
+						<li><span class="macro-dot macro-dot--protein"></span>Protein stays blue across cards and rings.</li>
+						<li><span class="macro-dot macro-dot--carbs"></span>Carbs stay orange for fast scanning.</li>
+						<li><span class="macro-dot macro-dot--fat"></span>Fat stays pink for quick comparison.</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -56,7 +97,17 @@ import { site } from '../data/site';
 				{
 					site.screenshots.map((screenshot) => (
 						<article class="screenshot-card">
-							<img src={screenshot.src} alt={screenshot.alt} loading="lazy" />
+							<div class="screenshot-card__media">
+								<span class="theme-badge">{screenshot.theme}</span>
+							<Image
+								src={screenshot.src}
+								alt={screenshot.alt}
+								loading="lazy"
+								format="webp"
+								widths={[320, 640]}
+								sizes="(max-width: 960px) 100vw, 25vw"
+							/>
+							</div>
 							<div class="screenshot-card__body">
 								<h2>{screenshot.title}</h2>
 								<p>{screenshot.body}</p>

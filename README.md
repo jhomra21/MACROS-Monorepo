@@ -7,21 +7,25 @@ A native and minimal SwiftUI calorie and macro tracking app for iPhone. No accou
 ### Home
 
 <p align="center">
-  <img src="web/public/app-images/home1.jpeg" alt="Home screen overview" width="220" />
+  <img src="web/src/assets/app-images/home1-light.jpeg" alt="Home screen overview in light mode" width="220" />
   &nbsp;&nbsp;
-  <img src="web/public/app-images/home2.jpeg" alt="Home screen scrolled" width="220" />
+  <img src="web/src/assets/app-images/home1.jpeg" alt="Home screen overview" width="220" />
+  &nbsp;&nbsp;
+  <img src="web/src/assets/app-images/home2.jpeg" alt="Home screen scrolled" width="220" />
 </p>
 
 ### Logging
 
 <p align="center">
-  <img src="web/public/app-images/add-search.jpeg" alt="Food search" width="220" />
+  <img src="web/src/assets/app-images/add-search.jpeg" alt="Food search" width="220" />
 </p>
 
 ### History
 
 <p align="center">
-  <img src="web/public/app-images/calendar-open.jpeg" alt="Calendar expanded" width="220" />
+  <img src="web/src/assets/app-images/calendar-closed-light.jpeg" alt="Calendar collapsed in light mode" width="220" />
+  &nbsp;&nbsp;
+  <img src="web/src/assets/app-images/calendar-open.jpeg" alt="Calendar expanded" width="220" />
 </p>
 
 ## Features
