@@ -1,5 +1,8 @@
 import SwiftData
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct EditLogEntryScreen: View {
     @Environment(\.dismiss) private var dismiss
@@ -12,6 +15,8 @@ struct EditLogEntryScreen: View {
     @State private var quantityMode: QuantityMode
     @State private var quantityAmountText: String
     @State private var errorMessage: String?
+    @State private var saveFeedbackToken = 0
+    @State private var deleteFeedbackToken = 0
     @FocusState private var focusedField: FoodDraftField?
 
     init(entry: LogEntry) {
@@ -86,6 +91,8 @@ struct EditLogEntryScreen: View {
         }
         .navigationTitle("Edit Entry")
         .inlineNavigationTitle()
+        .sensoryFeedback(.success, trigger: saveFeedbackToken)
+        .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
     }
 
     private var logEntryRepository: LogEntryRepository {
@@ -93,12 +100,35 @@ struct EditLogEntryScreen: View {
     }
 
     private func saveChanges() {
-        do {
-            guard let finalizedDraft else {
-                errorMessage = "Please fix invalid numeric values before saving changes."
-                return
-            }
+        guard let finalizedDraft else {
+            errorMessage = "Please fix invalid numeric values before saving changes."
+            return
+        }
 
+        dismissEditing()
+
+        DispatchQueue.main.async {
+            persistChanges(finalizedDraft)
+        }
+    }
+
+    private func deleteEntry() {
+        do {
+            try logEntryRepository.delete(entry: entry, operation: "Delete entry")
+            errorMessage = nil
+            deleteFeedbackToken += 1
+
+            DispatchQueue.main.async {
+                dismiss()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            assertionFailure(error.localizedDescription)
+        }
+    }
+
+    private func persistChanges(_ finalizedDraft: FoodDraft) {
+        do {
             try logEntryRepository.saveEdits(
                 entry: entry,
                 draft: finalizedDraft,
@@ -106,20 +136,22 @@ struct EditLogEntryScreen: View {
                 quantityAmount: quantityAmountValue,
                 operation: "Save entry changes"
             )
-            dismiss()
+            errorMessage = nil
+            saveFeedbackToken += 1
+
+            DispatchQueue.main.async {
+                dismiss()
+            }
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
     }
 
-    private func deleteEntry() {
-        do {
-            try logEntryRepository.delete(entry: entry, operation: "Delete entry")
-            dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
-            assertionFailure(error.localizedDescription)
-        }
+    private func dismissEditing() {
+        focusedField = nil
+        #if os(iOS)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
     }
 }

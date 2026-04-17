@@ -13,6 +13,8 @@ struct DashboardScreen: View {
     @Query private var goals: [DailyGoals]
 
     @State private var errorMessage: String?
+    @State private var logAgainFeedbackToken = 0
+    @State private var deleteFeedbackToken = 0
     @State private var showsCompactSummary = false
 
     private var currentGoals: DailyGoals {
@@ -92,6 +94,8 @@ struct DashboardScreen: View {
                     onOpenAddFood()
                 }
             }
+            .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
+            .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
             .errorBanner(message: $errorMessage)
         }
     }
@@ -103,6 +107,8 @@ struct DashboardScreen: View {
     private func deleteEntry(_ entry: LogEntry) {
         do {
             try logEntryRepository.delete(entry: entry, operation: "Delete today entry")
+            errorMessage = nil
+            deleteFeedbackToken += 1
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
@@ -112,6 +118,8 @@ struct DashboardScreen: View {
     private func logEntryAgain(_ entry: LogEntry) {
         do {
             try logEntryRepository.logAgain(entry: entry, operation: "Log food again")
+            errorMessage = nil
+            logAgainFeedbackToken += 1
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)

@@ -18,6 +18,7 @@ struct LogFoodScreen: View {
     @State private var gramsAmount: Double
     @State private var numericText: FoodDraftNumericText
     @State private var errorMessage: String?
+    @State private var logFeedbackToken = 0
     #if os(iOS)
     @State private var showingPreviewImage = false
     #endif
@@ -162,6 +163,7 @@ struct LogFoodScreen: View {
                 saveEntry()
             }
         }
+        .sensoryFeedback(.success, trigger: logFeedbackToken)
         .navigationTitle("Log Food")
         .inlineNavigationTitle()
         #if os(iOS)
@@ -194,12 +196,20 @@ struct LogFoodScreen: View {
     }
 
     private func saveEntry() {
-        do {
-            guard let finalizedDraft = numericText.finalizedDraft(from: draft) else {
-                errorMessage = "Please fix invalid numeric values before logging food."
-                return
-            }
+        guard let finalizedDraft = numericText.finalizedDraft(from: draft) else {
+            errorMessage = "Please fix invalid numeric values before logging food."
+            return
+        }
 
+        dismissEditing()
+
+        DispatchQueue.main.async {
+            persistEntry(finalizedDraft)
+        }
+    }
+
+    private func persistEntry(_ finalizedDraft: FoodDraft) {
+        do {
             try logEntryRepository.logFood(
                 draft: finalizedDraft,
                 reusableFoodPersistenceMode: reusableFoodPersistenceMode,
@@ -207,10 +217,22 @@ struct LogFoodScreen: View {
                 quantityAmount: activeAmount,
                 operation: "Log food"
             )
-            onFoodLogged()
+            errorMessage = nil
+            logFeedbackToken += 1
+
+            DispatchQueue.main.async {
+                onFoodLogged()
+            }
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
+    }
+
+    private func dismissEditing() {
+        focusedField = nil
+        #if os(iOS)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
     }
 }

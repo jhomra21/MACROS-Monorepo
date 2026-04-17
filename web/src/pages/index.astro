@@ -4,94 +4,324 @@ export const prerender = true;
 import { Image } from 'astro:assets';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { site } from '../data/site';
+import {
+	waitlistFieldAttributes,
+	waitlistStatusMessages,
+} from '../lib/waitlist';
 ---
 <SiteLayout title={`${site.name} | Home`} description={site.description}>
-	<section class="section section--hero">
-		<div class="container stack">
-			<div class="hero-copy">
-				<span class="eyebrow">Local-first iPhone calorie tracking</span>
-				<h1>{site.tagline}</h1>
-				<p>{site.description}</p>
-				<div class="hero-actions">
-					<a class="button" href="/support">Get support</a>
-					<a class="button-secondary" href="/privacy">Read the privacy policy</a>
+	<!-- Section 1: Hero -->
+	<section class="section section--macros">
+		<div class="container container--hero">
+			<div class="macros-hero-copy">
+				<h1 class="huge-title">MACROS</h1>
+				<div class="down-arrow">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
 				</div>
-				<ul class="macro-highlight-list" aria-label="Daily macro snapshot example">
+				<div class="subtitle">Simplest Calorie - Macro tracker</div>
+			</div>
+			<div class="macros-hero-visual">
+				<Image
+					class="hero-device-img"
+					src={site.heroShowcase[0].src}
+					alt={site.heroShowcase[0].alt}
+					format="webp"
+					widths={[360, 720]}
+					sizes="(max-width: 960px) 44vw, 22vw"
+				/>
+			</div>
+		</div>
+	</section>
+
+	<!-- Section 3: App Photos Carousel -->
+	<section class="section section--carousel">
+		<div class="container">
+			<h2 class="carousel-title">APP Photos</h2>
+			<div class="carousel-container">
+				<button
+					type="button"
+					class="carousel-nav carousel-nav--prev"
+					aria-label="Previous"
+					aria-controls="app-photos-carousel"
+					data-carousel-prev
+				>
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+				</button>
+
+				<div id="app-photos-carousel" class="carousel-track" data-carousel-track>
 					{
-						site.macroHighlights.map((item) => (
-							<li class:list={['macro-highlight', `macro-highlight--${item.tone}`]}>
-								<strong class="macro-highlight__value">{item.value}</strong>
-								<span class="macro-highlight__label">{item.label}</span>
-							</li>
+						site.screenshots.map((screenshot) => (
+							<article class="carousel-card">
+								<div class="carousel-card__media">
+									<Image
+										src={screenshot.src}
+										alt={screenshot.alt}
+										loading="lazy"
+										format="webp"
+										widths={[320, 640]}
+										sizes="(max-width: 960px) 50vw, 25vw"
+									/>
+								</div>
+								<div class="carousel-card__title">
+									{screenshot.title}
+								</div>
+							</article>
 						))
 					}
-				</ul>
-			</div>
+				</div>
 
-			<div class="hero-visual-panel">
-				{
-					site.heroShowcase.map((shot) => (
-						<Image
-							class="hero-device-img"
-							src={shot.src}
-							alt={shot.alt}
-							format="webp"
-							widths={[360, 720]}
-							sizes="(max-width: 960px) 44vw, 22vw"
-						/>
-					))
-				}
+				<button
+					type="button"
+					class="carousel-nav carousel-nav--next"
+					aria-label="Next"
+					aria-controls="app-photos-carousel"
+					data-carousel-next
+				>
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+				</button>
 			</div>
 		</div>
 	</section>
 
-	<section class="section">
-		<div class="container stack">
-			<div class="card-grid">
-				{
-					site.features.map((feature) => (
-						<article class="card">
-							<h2>{feature.title}</h2>
-							<p>{feature.body}</p>
-						</article>
-					))
-				}
+	<!-- Section 4: Waitlist -->
+	<section class="section section--waitlist">
+		<div class="container container--waitlist">
+			<div class="waitlist-visual">
+				<Image
+					class="hero-device-img waitlist-device-img"
+					src={site.screenshots[2].src}
+					alt="Logged meals UI"
+					loading="lazy"
+					format="webp"
+					widths={[360, 720]}
+					sizes="(max-width: 960px) 44vw, 22vw"
+				/>
+			</div>
+
+			<div class="waitlist-form-container">
+				<h2>Join waitlist</h2>
+				<p
+					class="status waitlist-status"
+					data-waitlist-status
+					data-default-message={waitlistStatusMessages.submitted}
+					data-default-error-message={waitlistStatusMessages.error}
+				>
+					{waitlistStatusMessages.submitted}
+				</p>
+				<form class="waitlist-form" action="/api/waitlist" method="POST" data-waitlist-form>
+					<input
+						type="email"
+						name="email"
+						placeholder="Email address"
+						required
+						maxlength={waitlistFieldAttributes.email.maxLength}
+						class="waitlist-input"
+					/>
+					<button type="submit" class="waitlist-submit" aria-label="Join Waitlist">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+					</button>
+				</form>
 			</div>
 		</div>
 	</section>
 
-	<section class="section">
-		<div class="container stack">
-			<div class="page-panel">
-				<h2>How logging works</h2>
-				<p>Cal Macro Tracker focuses on reliable nutrition capture with barcode scan, nutrition label photo, and manual entry when you need it.</p>
-				<ul class="support-list">
-					{site.flows.map((item) => <li>{item}</li>)}
-				</ul>
-			</div>
+	<script>
+		type WaitlistFormResponse = {
+			message?: string;
+			fieldErrors?: Record<string, unknown>;
+		} | null;
 
-			<div class="screenshot-grid">
-				{
-					site.screenshots.map((screenshot) => (
-						<article class="screenshot-card">
-							<div class="screenshot-card__media">
-								<Image
-									src={screenshot.src}
-									alt={screenshot.alt}
-									loading="lazy"
-									format="webp"
-									widths={[320, 640]}
-									sizes="(max-width: 960px) 100vw, 25vw"
-								/>
-							</div>
-							<div class="screenshot-card__body">
-								<h2>{screenshot.title}</h2>
-								<p>{screenshot.body}</p>
-							</div>
-						</article>
-					))
+		const carouselTrack = document.querySelector('[data-carousel-track]');
+		const previousCarouselButton = document.querySelector('[data-carousel-prev]');
+		const nextCarouselButton = document.querySelector('[data-carousel-next]');
+		const form = document.querySelector('[data-waitlist-form]');
+		const status = document.querySelector('[data-waitlist-status]');
+		const defaultSuccessMessage =
+			status instanceof HTMLElement ? status.dataset.defaultMessage ?? status.textContent ?? '' : '';
+		const defaultErrorMessage =
+			status instanceof HTMLElement ? status.dataset.defaultErrorMessage ?? '' : '';
+		let waitlistStatusTimeout: number | null = null;
+
+		function hideStatusElement(element: Element | null) {
+			if (!(element instanceof HTMLElement)) {
+				return;
+			}
+
+			element.classList.remove('waitlist-status--visible');
+		}
+
+		function showStatusElement(element: Element | null, message: string, tone: 'success' | 'error') {
+			if (!(element instanceof HTMLElement)) {
+				return;
+			}
+
+			if (waitlistStatusTimeout !== null) {
+				window.clearTimeout(waitlistStatusTimeout);
+				waitlistStatusTimeout = null;
+			}
+
+			element.textContent = message;
+			element.classList.remove('status--success', 'status--error');
+			element.classList.add(tone === 'success' ? 'status--success' : 'status--error');
+			element.classList.remove('waitlist-status--visible');
+			void element.offsetWidth;
+			element.classList.add('waitlist-status--visible');
+
+			waitlistStatusTimeout = window.setTimeout(() => {
+				hideStatusElement(element);
+				waitlistStatusTimeout = null;
+			}, 5000);
+		}
+
+		function showStatusSuccess(message = defaultSuccessMessage) {
+			if (!(status instanceof HTMLElement)) {
+				return;
+			}
+
+			showStatusElement(status, message, 'success');
+		}
+
+		function showStatusError(message = defaultErrorMessage) {
+			if (!(status instanceof HTMLElement)) {
+				return;
+			}
+
+			showStatusElement(status, message, 'error');
+		}
+
+		function clearStatus() {
+			if (!(status instanceof HTMLElement)) {
+				return;
+			}
+
+			status.textContent = defaultSuccessMessage;
+			status.classList.remove('status--success', 'status--error');
+			hideStatusElement(status);
+		}
+
+		function getEmailControl() {
+			if (!(form instanceof HTMLFormElement)) {
+				return null;
+			}
+
+			const control = form.elements.namedItem('email');
+
+			return control instanceof HTMLInputElement ? control : null;
+		}
+
+		async function parseWaitlistResponse(response: Response): Promise<WaitlistFormResponse> {
+			const result = await response.json().catch(() => null);
+
+			if (!result || typeof result !== 'object') {
+				return null;
+			}
+
+			return result as WaitlistFormResponse;
+		}
+
+		function carouselScrollAmount() {
+			if (!(carouselTrack instanceof HTMLElement)) {
+				return 0;
+			}
+
+			const cards = carouselTrack.querySelectorAll('.carousel-card');
+			const firstCard = cards.item(0);
+			const secondCard = cards.item(1);
+
+			if (!(firstCard instanceof HTMLElement)) {
+				return 0;
+			}
+
+			if (secondCard instanceof HTMLElement) {
+				return secondCard.offsetLeft - firstCard.offsetLeft;
+			}
+
+			return firstCard.offsetWidth;
+		}
+
+		function scrollCarousel(direction: 1 | -1) {
+			if (!(carouselTrack instanceof HTMLElement)) {
+				return;
+			}
+
+			const amount = carouselScrollAmount();
+
+			if (amount <= 0) {
+				return;
+			}
+
+			carouselTrack.scrollBy({
+				left: amount * direction,
+				behavior: 'smooth',
+			});
+		}
+
+		if (previousCarouselButton instanceof HTMLButtonElement) {
+			previousCarouselButton.addEventListener('click', () => {
+				scrollCarousel(-1);
+			});
+		}
+
+		if (nextCarouselButton instanceof HTMLButtonElement) {
+			nextCarouselButton.addEventListener('click', () => {
+				scrollCarousel(1);
+			});
+		}
+
+		if (form instanceof HTMLFormElement) {
+			form.addEventListener('input', () => {
+				getEmailControl()?.setCustomValidity('');
+			});
+
+			form.addEventListener('submit', async (event) => {
+				event.preventDefault();
+
+				const emailControl = getEmailControl();
+				emailControl?.setCustomValidity('');
+				clearStatus();
+
+				if (!form.reportValidity()) {
+					return;
 				}
-			</div>
-		</div>
-	</section>
+
+				try {
+					const response = await fetch('/api/waitlist', {
+						method: 'POST',
+						headers: {
+							'content-type': 'application/json',
+							accept: 'application/json',
+						},
+						body: JSON.stringify({
+							email: emailControl?.value ?? '',
+						}),
+					});
+					const result = await parseWaitlistResponse(response);
+
+					if (response.ok) {
+						form.reset();
+						showStatusSuccess(
+							typeof result?.message === 'string' ? result.message : defaultSuccessMessage,
+						);
+						return;
+					}
+
+					const fieldError =
+						result?.fieldErrors && typeof result.fieldErrors.email === 'string'
+							? result.fieldErrors.email
+							: null;
+					const message =
+						typeof result?.message === 'string' ? result.message : defaultErrorMessage;
+
+					if (emailControl && fieldError) {
+						emailControl.setCustomValidity(fieldError);
+						emailControl.reportValidity();
+					}
+
+					showStatusError(message);
+				} catch {
+					showStatusError(defaultErrorMessage);
+				}
+			});
+		}
+	</script>
 </SiteLayout>

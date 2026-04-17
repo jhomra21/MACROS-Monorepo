@@ -45,6 +45,7 @@ struct BarcodeScanScreen: View {
     @State private var hasPresentedImmediateScanner = false
     @State private var showManualOptions = false
     @State private var pendingRecoveryCaptureSource: BarcodeCaptureSource?
+    @State private var scanFeedbackToken = 0
 
     private let barcodeScanner = BarcodeImageScanner()
     private let client = OpenFoodFactsClient()
@@ -110,6 +111,7 @@ struct BarcodeScanScreen: View {
             guard oldValue != nil, newValue == nil else { return }
             reopenScannerIfNeeded()
         }
+        .sensoryFeedback(.success, trigger: scanFeedbackToken)
         .errorBanner(message: $errorMessage)
     }
 
@@ -198,13 +200,11 @@ struct BarcodeScanScreen: View {
             pendingRecoveryCaptureSource = nil
 
             if let cachedDraft = try cachedDraft(for: barcode) {
-                showManualOptions = true
-                logFoodDraft = cachedDraft
+                presentLogFood(cachedDraft)
                 return
             }
 
-            showManualOptions = true
-            logFoodDraft = try await resolveRemoteDraft(barcode: barcode)
+            presentLogFood(try await resolveRemoteDraft(barcode: barcode))
         } catch {
             pendingRecoveryCaptureSource = shouldAutoRecoverCaptureFlow ? captureSource : nil
             errorMessage = "\(error.localizedDescription) \(captureSource.rescanPrompt)"
@@ -222,6 +222,12 @@ struct BarcodeScanScreen: View {
     private func resolveRemoteDraft(barcode: String) async throws -> FoodDraft {
         let product = try await fetchRemoteProduct(barcode: barcode)
         return try BarcodeLookupMapper.makeDraft(from: product, barcode: barcode)
+    }
+
+    private func presentLogFood(_ draft: FoodDraft) {
+        showManualOptions = true
+        logFoodDraft = draft
+        scanFeedbackToken += 1
     }
 
     private func fetchRemoteProduct(barcode: String) async throws -> OpenFoodFactsProduct {

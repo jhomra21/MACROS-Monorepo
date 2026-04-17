@@ -1,5 +1,8 @@
 import SwiftData
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct ReusableFoodEditorScreen: View {
     @Environment(\.dismiss) private var dismiss
@@ -9,6 +12,8 @@ struct ReusableFoodEditorScreen: View {
     @State private var draft: FoodDraft
     @State private var numericText: FoodDraftNumericText
     @State private var errorMessage: String?
+    @State private var saveFeedbackToken = 0
+    @State private var deleteFeedbackToken = 0
     @FocusState private var focusedField: FoodDraftField?
 
     init(food: FoodItem) {
@@ -110,33 +115,64 @@ struct ReusableFoodEditorScreen: View {
 
             Section {
                 Button("Delete Food", role: .destructive) {
-                    do {
-                        try foodRepository.deleteReusableFood(food, operation: deleteOperationName)
-                        dismiss()
-                    } catch {
-                        errorMessage = error.localizedDescription
-                        assertionFailure(error.localizedDescription)
-                    }
+                    deleteFood()
                 }
             }
         }
         .navigationTitle(navigationTitle)
         .inlineNavigationTitle()
+        .sensoryFeedback(.success, trigger: saveFeedbackToken)
+        .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
     }
 
     private func saveFood() {
-        do {
-            guard let finalizedDraft = numericText.finalizedDraft(from: draft) else {
-                errorMessage = "Please fix invalid numeric values before saving this food."
-                return
-            }
+        guard let finalizedDraft = numericText.finalizedDraft(from: draft) else {
+            errorMessage = "Please fix invalid numeric values before saving this food."
+            return
+        }
 
-            let persistedFood = try foodRepository.saveReusableFood(from: finalizedDraft, operation: saveOperationName)
-            draft = FoodDraft(foodItem: persistedFood, saveAsCustomFood: true)
-            dismiss()
+        dismissEditing()
+
+        DispatchQueue.main.async {
+            persistFood(finalizedDraft)
+        }
+    }
+
+    private func deleteFood() {
+        do {
+            try foodRepository.deleteReusableFood(food, operation: deleteOperationName)
+            errorMessage = nil
+            deleteFeedbackToken += 1
+
+            DispatchQueue.main.async {
+                dismiss()
+            }
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
+    }
+
+    private func persistFood(_ finalizedDraft: FoodDraft) {
+        do {
+            let persistedFood = try foodRepository.saveReusableFood(from: finalizedDraft, operation: saveOperationName)
+            draft = FoodDraft(foodItem: persistedFood, saveAsCustomFood: true)
+            errorMessage = nil
+            saveFeedbackToken += 1
+
+            DispatchQueue.main.async {
+                dismiss()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            assertionFailure(error.localizedDescription)
+        }
+    }
+
+    private func dismissEditing() {
+        focusedField = nil
+        #if os(iOS)
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        #endif
     }
 }

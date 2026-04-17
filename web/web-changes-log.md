@@ -183,3 +183,77 @@
 - Streamlined CSS footprint avoiding multi-layered abstractions per `code-simplifier.md`.
 - Rewrote `index.astro` to render simple flex/grid combinations directly mapping to the new bento styles, instead of nested device shells.
 - Left Astro layout components, asset optimization pipelines, and backend routing untouched.
+
+## Home Page Visual Redesign
+
+### Delivered
+
+- Rebuilt the `index.astro` homepage to feature 3 main sections matching updated design sketches.
+- Built a massive "MACROS" typographical Hero Section with bouncing arrow and "Simplest Calorie - Macro tracker" subtitle.
+- Implemented an "APP Photos" horizontal native-feeling carousel with `scroll-snap`.
+- Designed a sleek "Join Waitlist" inline form for a dedicated waitlist flow instead of reusing the support endpoint.
+
+### Main implementation steps
+
+- Added new grids to `global.css` while maintaining the Apple Native variables schema (`--shadow-bento`, etc).
+- Replaced the old "features" cards layout with the App Photos carousel, directly iterating on `site.screenshots`.
+- Removed the "Sandwich Breakdown" section HTML and CSS to maintain visual simplicity.
+- Standardized execution tools on native `bun` rather than fallback Node runtimes for subsequent modifications.
+- Verified build pipeline comprehensively using `bun run build`.
+
+## Home Page Visual Polishes
+
+### Delivered
+
+- Perfected the Apple-native presentation across the new homepage sections based on visual review.
+- Refined typography with proper center alignment and a subtle silver/gradient clip-mask for the "MACROS" text.
+- Removed padding from carousel image containers so screenshot assets bleed to the top edges of the bento cards organically.
+- Converted the Waitlist section's raw device screenshot into a pure-CSS hardware render (simulating an inner screen-glass reflection, an outer titanium bezel ring, and an elevated drop shadow).
+
+### Main implementation steps
+
+- Updated SVG icons in `index.astro` to slightly thicker `stroke-width` matching proper structural balance.
+- Re-architected `.waitlist-device-img` CSS with nested box gaps to mock explicit device hardware framing dynamically for light/dark mode preference curves.
+- Restructured flex/grid parameters in `global.css` hero and waitlist segments to shrink unneeded vertical space and ensure true vertical-alignment with structural offsets.
+
+## Waitlist Flow and Homepage Interaction Follow-up
+
+### Delivered
+
+- Added a dedicated `POST /api/waitlist` endpoint backed by the existing Worker/D1 setup.
+- Added an email-only waitlist contract and local D1 migration `0001_create_waitlist_entries.sql`.
+- Made repeat email submissions idempotent with a friendly “already on the waitlist” response instead of duplicate rows.
+- Fixed the homepage waitlist CTA so it actually submits through the Worker contract instead of the unrelated support flow.
+- Made the gallery arrow controls work.
+- Adjusted the hero screenshot so the full image is visible instead of being cropped.
+- Refined the waitlist section presentation: centered the screenshot above the form, collapsed the status area to one banner, and tuned the status reveal/hide motion with faster easing.
+
+### Main implementation steps
+
+- Extracted shared request parsing helpers into `src/lib/request.ts` and reused them from both support and waitlist APIs.
+- Added `src/lib/waitlist.ts` to validate and normalize email input and keep waitlist-specific messages separate from support.
+- Implemented `src/pages/api/waitlist.ts` with `INSERT OR IGNORE` semantics on a unique waitlist email index.
+- Updated `src/pages/index.astro` so the waitlist form posts to `/api/waitlist`, handles JSON responses inline, and drives one reusable status banner instead of separate hidden success/error nodes.
+- Added client-side carousel previous/next handlers that scroll by one card at a time.
+- Tuned the waitlist status transition to use separate enter/exit easing with a `200ms` reveal and `150ms` hide, while keeping the auto-dismiss behavior.
+- Raised the visible waitlist status height cap so wrapped mobile error/success copy can expand without clipping.
+
+### Bugs and implementation findings
+
+- The first homepage waitlist version was a real contract bug: it posted to `/support` and only supplied `email`, while the support flow required `name`, `email`, and `message`.
+- The duplicate hidden status paragraphs kept reserving layout space because shared `.status` rules still applied; collapsing the waitlist to one status node and overriding the shared spacing rules fixed the phantom gap.
+- The first banner-height cap was too small for wrapped mobile feedback, so multi-line waitlist messages could clip inside the animated container until the visible max-height was increased.
+- Build-only validation was not enough for the spacing issue; the final verification required browser screenshots of the live local page.
+- The waitlist migration has only been applied locally so far; remote D1 rollout remains a separate operational step.
+
+### Validation recorded during this follow-up
+
+- `bun run db:migrations:apply:local`
+- Local D1 uniqueness check confirmed duplicate waitlist inserts stay at one row.
+- `bun run build`
+- `git diff --check -- web/src/pages/index.astro web/src/styles/global.css web/src/lib/request.ts web/src/lib/waitlist.ts web/src/pages/api/support.ts web/src/pages/api/waitlist.ts web/migrations/0001_create_waitlist_entries.sql`
+- Local browser verification with `agent-browser` screenshots confirmed:
+  - no hidden waitlist-status gap when idle
+  - the success banner appears in the right place above the input
+  - the carousel arrows work from the homepage UI
+  - wrapped mobile waitlist status text is fully visible instead of clipping

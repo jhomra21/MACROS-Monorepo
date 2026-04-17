@@ -10,6 +10,7 @@ struct LabelScanScreen: View {
     @State private var errorMessage: String?
     @State private var isLoading = false
     @State private var showingCamera = false
+    @State private var scanFeedbackToken = 0
 
     private let recognizer = NutritionLabelTextRecognizer()
 
@@ -58,6 +59,7 @@ struct LabelScanScreen: View {
                 )
             }
         }
+        .sensoryFeedback(.success, trigger: scanFeedbackToken)
         .errorBanner(message: $errorMessage)
     }
 
@@ -92,14 +94,21 @@ struct LabelScanScreen: View {
 
             let recognizedText = try await recognizer.recognizeText(in: image)
             let result = NutritionLabelParser.parse(recognizedText: recognizedText)
-            logFoodDestination = LogFoodDestination(
-                draft: result.draft,
-                reviewNotes: result.notes,
-                previewImageData: image.jpegData(compressionQuality: 0.9)
+            presentLogFood(
+                LogFoodDestination(
+                    draft: result.draft,
+                    reviewNotes: result.notes,
+                    previewImageData: image.jpegData(compressionQuality: 0.9)
+                )
             )
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private func presentLogFood(_ destination: LogFoodDestination) {
+        logFoodDestination = destination
+        scanFeedbackToken += 1
     }
 }
 

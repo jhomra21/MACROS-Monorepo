@@ -567,3 +567,33 @@ The following planning documents have been fully consolidated into this file and
 - `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
 - `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
 - `git diff --check`
+
+## Haptics and Food Entry Save Interaction
+
+### Delivered
+
+- Added haptic feedback for successful food logging, entry updates, reusable-food saves, reusable-food deletes, dashboard entry deletes, and successful scan-to-review transitions.
+- Added a matching success haptic for the dashboard `Log Again` action.
+- Fixed the bottom `Log Food` action so it no longer competes as directly with active keyboard focus dismissal.
+- Kept the haptics implementation local to the relevant SwiftUI screens instead of introducing a new global feedback service.
+
+### Main implementation steps
+
+- Updated `LogFoodScreen.swift` so the primary save action clears focus, resigns the iOS first responder, and persists on the next main-loop turn before dismissing.
+- Added local `.sensoryFeedback(..., trigger: ...)` state to `LogFoodScreen.swift`, `EditLogEntryScreen.swift`, `CustomFoodEditorScreen.swift`, `DashboardScreen.swift`, `BarcodeScanScreen.swift`, and `LabelScanScreen.swift`.
+- Kept scan success feedback tied to the point where a usable `FoodDraft` / log-food destination becomes available, instead of firing on intermediate camera or OCR events.
+- Reused SwiftUI sensory feedback directly at the screen boundary so the behavior stays close to the user action that owns it.
+
+### Bugs and implementation findings
+
+- The existing Settings goals save flow remained the best local precedent for the food-entry fix: clear focus first, then defer persistence one run-loop turn.
+- `FoodDraftEditorForm.swift` had become a more shared editing surface after the recent secondary-nutrient work, so the safer change was to keep the save-interaction fix inside `LogFoodScreen.swift` rather than changing shared form behavior globally.
+- A global haptics manager was not necessary for this scope; screen-local triggers kept the diff smaller and reduced tracing complexity.
+- Scan feedback is best attached to destination readiness, because those scan flows already rely on destination-state navigation for stability.
+- A follow-up review of Apple's public haptics guidance kept the completed-action semantics on `.success`; `Log Food`, edit saves, reusable-food saves, scan-to-review, and `Log Again` all stay on the same success pattern instead of switching those flows to a generic impact.
+
+### Validation recorded during this work
+
+- `make quality-format-check`
+- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
+- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
