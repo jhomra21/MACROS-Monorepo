@@ -137,14 +137,14 @@ private struct DailyMacroWidgetContentView: View {
         case 0...2:
             return 22
         case 3:
-            return 18
+            return 16
         default:
             return 14
         }
     }
 
     private var smallMetricsRow: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             ForEach(MacroMetric.allCases) { metric in
                 smallMetric(metric: metric, value: smallMetricValue(for: metric), fontSize: smallMetricValueFontSize)
             }
@@ -171,6 +171,7 @@ private struct DailyMacroWidgetContentView: View {
             .font(.system(size: fontSize, weight: .semibold, design: .rounded))
             .monospacedDigit()
             .lineLimit(1)
+            .minimumScaleFactor(0.75)
             .allowsTightening(true)
     }
 

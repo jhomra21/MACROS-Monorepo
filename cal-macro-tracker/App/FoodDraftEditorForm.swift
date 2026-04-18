@@ -73,6 +73,11 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: focusedField, fields: keyboardFields)
         .errorBanner(message: $errorMessage)
+        .onChange(of: draft.isMissingAllSecondaryNutrients) { _, isMissingAllSecondaryNutrients in
+            if isMissingAllSecondaryNutrients == false {
+                showsAdditionalNutrition = true
+            }
+        }
     }
 }
 

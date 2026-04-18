@@ -389,6 +389,44 @@ struct FoodDraft: Identifiable, Hashable {
         return draft
     }
 
+    func backfillingSourceIdentity(from other: FoodDraft) -> FoodDraft {
+        var draft = self
+
+        guard draft.source == other.source else {
+            return draft
+        }
+
+        if draft.barcodeOrNil == nil {
+            draft.barcode = other.barcodeOrNil ?? ""
+        }
+
+        if draft.externalProductIDOrNil == nil {
+            draft.externalProductID = other.externalProductIDOrNil ?? ""
+        }
+
+        if draft.sourceNameOrNil == nil {
+            draft.sourceName = other.sourceNameOrNil ?? ""
+        }
+
+        if draft.sourceURLOrNil == nil {
+            draft.sourceURL = other.sourceURLOrNil ?? ""
+        }
+
+        if let canonicalOpenFoodFactsExternalProductID = OpenFoodFactsIdentity.qualifiedExternalProductID(for: other.barcodeOrNil),
+            other.externalProductIDOrNil == canonicalOpenFoodFactsExternalProductID
+        {
+            draft.externalProductID = canonicalOpenFoodFactsExternalProductID
+        }
+
+        if let canonicalOpenFoodFactsSourceURL = OpenFoodFactsIdentity.productURL(for: other.barcodeOrNil)?.absoluteString,
+            other.sourceURLOrNil == canonicalOpenFoodFactsSourceURL
+        {
+            draft.sourceURL = canonicalOpenFoodFactsSourceURL
+        }
+
+        return draft
+    }
+
     private static func trimmedText(from value: String) -> String? {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedValue.isEmpty ? nil : trimmedValue

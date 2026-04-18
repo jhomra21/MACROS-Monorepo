@@ -1,28 +1,37 @@
 import { z } from 'astro/zod';
+import {
+	getWaitlistEmailValidationMessage,
+	normalizeWaitlistEmail,
+	waitlistEntryLimits,
+	waitlistStatusMessages,
+} from './waitlist-validation';
 
-export const waitlistEntryLimits = {
-	emailMaxLength: 320,
-} as const;
-
-export const waitlistFieldAttributes = {
-	email: {
-		maxLength: waitlistEntryLimits.emailMaxLength,
-	},
-} as const;
-
-export const waitlistStatusMessages = {
-	submitted: 'Thanks — you’re on the waitlist.',
-	alreadyJoined: 'You’re already on the waitlist.',
-	error: 'Something went wrong while joining the waitlist. Please try again.',
-	invalid: 'Please enter a valid email address.',
-} as const;
+export {
+	getWaitlistEmailValidationMessage,
+	normalizeWaitlistEmail,
+	waitlistEntryLimits,
+	waitlistFieldAttributes,
+	waitlistStatusMessages,
+} from './waitlist-validation';
 
 export const waitlistRequestInput = z.object({
 	email: z.preprocess(
-		(value) => (typeof value === 'string' ? value.trim().toLowerCase() : value),
-		z.string().max(waitlistEntryLimits.emailMaxLength, 'Email is too long.').pipe(
-			z.email(waitlistStatusMessages.invalid),
-		),
+		(value) => (typeof value === 'string' ? normalizeWaitlistEmail(value) : value),
+		z
+			.string()
+			.max(waitlistEntryLimits.emailMaxLength, 'Email is too long.')
+			.superRefine((value, ctx) => {
+				const message = getWaitlistEmailValidationMessage(value);
+
+				if (!message) {
+					return;
+				}
+
+				ctx.addIssue({
+					code: 'custom',
+					message,
+				});
+			}),
 	),
 });
 

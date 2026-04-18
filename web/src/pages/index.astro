@@ -108,7 +108,12 @@ import {
 				>
 					{waitlistStatusMessages.submitted}
 				</p>
-				<form class="waitlist-form" action="/api/waitlist" method="POST" data-waitlist-form>
+				<form
+					class="waitlist-form"
+					action="/api/waitlist"
+					method="POST"
+					data-waitlist-form
+				>
 					<input
 						type="email"
 						name="email"
@@ -126,6 +131,11 @@ import {
 	</section>
 
 	<script>
+		import {
+			getWaitlistEmailValidationMessage,
+			normalizeWaitlistEmail,
+		} from '../lib/waitlist-validation';
+
 		type WaitlistFormResponse = {
 			message?: string;
 			fieldErrors?: Record<string, unknown>;
@@ -209,6 +219,72 @@ import {
 			return control instanceof HTMLInputElement ? control : null;
 		}
 
+		function getSubmitControl() {
+			if (!(form instanceof HTMLFormElement)) {
+				return null;
+			}
+
+			const control = form.querySelector('.waitlist-submit');
+
+			return control instanceof HTMLButtonElement ? control : null;
+		}
+
+		function getNormalizedWaitlistEmailValue() {
+			const emailControl = getEmailControl();
+
+			return normalizeWaitlistEmail(emailControl?.value ?? '');
+		}
+
+		function setWaitlistSubmitEnabled(isEnabled: boolean) {
+			const submitControl = getSubmitControl();
+
+			if (!submitControl) {
+				return;
+			}
+
+			submitControl.disabled = !isEnabled;
+			submitControl.setAttribute('aria-disabled', String(!isEnabled));
+		}
+
+		function syncWaitlistEmailValidity() {
+			const emailControl = getEmailControl();
+
+			if (!emailControl) {
+				return false;
+			}
+
+			const normalizedValue = getNormalizedWaitlistEmailValue();
+			const message =
+				normalizedValue.length === 0
+					? ''
+					: getWaitlistEmailValidationMessage(normalizedValue) ?? '';
+			const isValid = normalizedValue.length > 0 && message.length === 0;
+
+			emailControl.setCustomValidity(message);
+
+			return isValid;
+		}
+
+		function syncWaitlistSubmitState() {
+			const emailControl = getEmailControl();
+
+			if (!emailControl) {
+				return false;
+			}
+
+			const normalizedValue = getNormalizedWaitlistEmailValue();
+
+			if (normalizedValue.length === 0) {
+				emailControl.setCustomValidity('');
+				setWaitlistSubmitEnabled(false);
+				return false;
+			}
+
+			const isValid = syncWaitlistEmailValidity();
+			setWaitlistSubmitEnabled(isValid);
+			return isValid;
+		}
+
 		async function parseWaitlistResponse(response: Response): Promise<WaitlistFormResponse> {
 			const result = await response.json().catch(() => null);
 
@@ -269,16 +345,28 @@ import {
 		}
 
 		if (form instanceof HTMLFormElement) {
+			syncWaitlistSubmitState();
+
 			form.addEventListener('input', () => {
-				getEmailControl()?.setCustomValidity('');
+				syncWaitlistSubmitState();
 			});
 
 			form.addEventListener('submit', async (event) => {
 				event.preventDefault();
 
 				const emailControl = getEmailControl();
-				emailControl?.setCustomValidity('');
 				clearStatus();
+
+				const isReadyToSubmit = syncWaitlistSubmitState();
+
+				if (!isReadyToSubmit) {
+					if (emailControl?.validationMessage) {
+						emailControl.reportValidity();
+					} else {
+						showStatusError(defaultErrorMessage);
+					}
+					return;
+				}
 
 				if (!form.reportValidity()) {
 					return;
@@ -299,6 +387,8 @@ import {
 
 					if (response.ok) {
 						form.reset();
+						emailControl?.setCustomValidity('');
+						syncWaitlistSubmitState();
 						showStatusSuccess(
 							typeof result?.message === 'string' ? result.message : defaultSuccessMessage,
 						);
@@ -314,6 +404,7 @@ import {
 
 					if (emailControl && fieldError) {
 						emailControl.setCustomValidity(fieldError);
+						setWaitlistSubmitEnabled(false);
 						emailControl.reportValidity();
 					}
 

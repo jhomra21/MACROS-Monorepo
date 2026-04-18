@@ -28,8 +28,6 @@ export const supportStatusMessages = {
 	invalid: 'Please review your form and try again.',
 } as const;
 
-export const supportStatusQueryKey = 'status';
-
 export const supportRequestInput = z.object({
 	name: z
 		.string()
@@ -50,6 +48,11 @@ export type SupportRequestInput = z.infer<typeof supportRequestInput>;
 export type SupportRequestFieldName = keyof SupportRequestInput;
 export type SupportRequestFieldErrors = Partial<Record<SupportRequestFieldName, string>>;
 export type SupportPageStatus = keyof typeof supportStatusMessages;
+export const supportStatusElementIDs: Record<SupportPageStatus, string> = {
+	submitted: 'support-status-submitted',
+	invalid: 'support-status-invalid',
+	error: 'support-status-error',
+};
 
 function collectSupportRequestFieldErrors(
 	issues: Array<{ path: PropertyKey[]; message: string }>,
@@ -94,24 +97,6 @@ export function validateSupportRequest(input: unknown):
 	};
 }
 
-export function getSupportPageStatus(searchParams: URLSearchParams): SupportPageStatus | null {
-	const status = searchParams.get(supportStatusQueryKey);
-
-	if (status === 'submitted' || status === 'error' || status === 'invalid') {
-		return status;
-	}
-
-	return null;
-}
-
-export function getSupportStatusMessage(status: SupportPageStatus): string {
-	return supportStatusMessages[status];
-}
-
 export function getSupportRedirectPath(status: SupportPageStatus): string {
-	const searchParams = new URLSearchParams({
-		[supportStatusQueryKey]: status,
-	});
-
-	return `/support?${searchParams.toString()}`;
+	return `/support#${supportStatusElementIDs[status]}`;
 }

@@ -17,6 +17,8 @@ struct EditLogEntryScreen: View {
     @State private var errorMessage: String?
     @State private var saveFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
+    @State private var isRefreshingNutrients = false
+    @State private var canRefreshNutrients = false
     @FocusState private var focusedField: FoodDraftField?
 
     init(entry: LogEntry) {
@@ -52,6 +54,32 @@ struct EditLogEntryScreen: View {
         return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: quantityAmountValue)
     }
 
+    private var sourceURL: URL? {
+        guard let sourceURL = draft.sourceURLOrNil else { return nil }
+        return URL(string: sourceURL)
+    }
+
+    private var shouldShowSourceSection: Bool {
+        draft.sourceNameOrNil != nil || sourceURL != nil || shouldShowNutrientRefreshButton
+    }
+
+    private var shouldShowNutrientRefreshButton: Bool {
+        draft.shouldOfferManualSecondaryNutrientRefresh && canRefreshNutrients
+    }
+
+    private var nutrientRefreshMessage: String {
+        return "Extra nutrients are missing for this entry. Refresh from the source, then save to keep the new values."
+    }
+
+    private var nutrientRefreshAvailabilityID: Int {
+        var hasher = Hasher()
+        hasher.combine(draft.secondaryNutrientRepairKey)
+        hasher.combine(draft.secondaryNutrientRepairTarget)
+        hasher.combine(draft.shouldOfferManualSecondaryNutrientRefresh)
+        hasher.combine(entry.foodItemID)
+        return hasher.finalize()
+    }
+
     var body: some View {
         FoodDraftEditorForm(
             draft: $draft,
@@ -63,6 +91,34 @@ struct EditLogEntryScreen: View {
             trailingKeyboardFields: [.quantityAmount],
             previewTotals: previewTotals
         ) {
+            if shouldShowSourceSection {
+                Section("Source") {
+                    if let sourceName = draft.sourceNameOrNil {
+                        LabeledContent("Provider") {
+                            Text(sourceName)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if let sourceURL {
+                        Link(destination: sourceURL) {
+                            Label("View Source", systemImage: "link")
+                        }
+                    }
+
+                    if shouldShowNutrientRefreshButton {
+                        Text(nutrientRefreshMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+
+                        Button(isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients") {
+                            refreshNutrients()
+                        }
+                        .disabled(isRefreshingNutrients)
+                    }
+                }
+            }
+
             FoodQuantitySection(
                 quantityMode: $quantityMode,
                 canLogByGrams: previewDraft.canLogByGrams,
@@ -80,19 +136,24 @@ struct EditLogEntryScreen: View {
                 Button("Save Changes") {
                     saveChanges()
                 }
-                .disabled(!canSave)
+                .disabled(!canSave || isRefreshingNutrients)
             }
 
             Section {
                 Button("Delete Entry", role: .destructive) {
                     deleteEntry()
                 }
+                .disabled(isRefreshingNutrients)
             }
         }
         .navigationTitle("Edit Entry")
         .inlineNavigationTitle()
+        .disabled(isRefreshingNutrients)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
         .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+        .task(id: nutrientRefreshAvailabilityID) {
+            updateNutrientRefreshAvailability()
+        }
     }
 
     private var logEntryRepository: LogEntryRepository {
@@ -145,6 +206,52 @@ struct EditLogEntryScreen: View {
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
+        }
+    }
+
+    private func refreshNutrients() {
+        dismissEditing()
+        isRefreshingNutrients = true
+
+        Task { @MainActor in
+            do {
+                guard
+                    let refreshedDraft = try await SecondaryNutrientRepairService.manuallyRefreshedDraft(
+                        for: entry,
+                        currentDraft: draft,
+                        modelContext: modelContext
+                    )
+                else {
+                    errorMessage = "Unable to refresh nutrients for this entry."
+                    isRefreshingNutrients = false
+                    return
+                }
+
+                draft = refreshedDraft
+                numericText = FoodDraftNumericText(draft: refreshedDraft)
+                errorMessage = nil
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+
+            isRefreshingNutrients = false
+        }
+    }
+
+    private func updateNutrientRefreshAvailability() {
+        guard draft.shouldOfferManualSecondaryNutrientRefresh else {
+            canRefreshNutrients = false
+            return
+        }
+
+        do {
+            canRefreshNutrients = try SecondaryNutrientRepairService.canManuallyRefreshSecondaryNutrients(
+                for: entry,
+                currentDraft: draft,
+                modelContext: modelContext
+            )
+        } catch {
+            canRefreshNutrients = false
         }
     }
 

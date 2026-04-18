@@ -1,20 +1,13 @@
 ---
-export const prerender = false;
+export const prerender = true;
 
 import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import {
-	getSupportPageStatus,
-	getSupportStatusMessage,
 	supportFieldAttributes,
+	supportStatusElementIDs,
 	supportStatusMessages,
 } from '../lib/support';
-
-const status = getSupportPageStatus(Astro.url.searchParams);
-const renderedErrorMessage =
-	status === 'error' || status === 'invalid'
-		? getSupportStatusMessage(status)
-		: supportStatusMessages.error;
 ---
 
 <SiteLayout title={`${site.name} | Support`} description="Get support for Cal Macro Tracker.">
@@ -41,20 +34,28 @@ const renderedErrorMessage =
 			<div class="support-card">
 				<h2>Contact support</h2>
 				<p
-					class="status status--success"
+					id={supportStatusElementIDs.submitted}
+					class="status status--success support-status-banner"
 					data-support-success
 					data-default-message={supportStatusMessages.submitted}
-					hidden={status !== 'submitted'}
 				>
 					{supportStatusMessages.submitted}
 				</p>
 				<p
-					class="status status--error"
+					id={supportStatusElementIDs.invalid}
+					class="status status--error support-status-banner"
+					data-support-invalid
+					data-default-message={supportStatusMessages.invalid}
+				>
+					{supportStatusMessages.invalid}
+				</p>
+				<p
+					id={supportStatusElementIDs.error}
+					class="status status--error support-status-banner"
 					data-support-error
 					data-default-message={supportStatusMessages.error}
-					hidden={status !== 'error' && status !== 'invalid'}
 				>
-					{renderedErrorMessage}
+					{supportStatusMessages.error}
 				</p>
 
 				<form class="field-list" method="POST" action="/api/support" data-support-form>
@@ -113,41 +114,84 @@ const renderedErrorMessage =
 
 		const form = document.querySelector('[data-support-form]');
 		const success = document.querySelector('[data-support-success]');
+		const invalid = document.querySelector('[data-support-invalid]');
 		const error = document.querySelector('[data-support-error]');
 		const defaultSuccessMessage =
 			success instanceof HTMLElement ? success.dataset.defaultMessage ?? success.textContent ?? '' : '';
+		const defaultInvalidMessage =
+			invalid instanceof HTMLElement ? invalid.dataset.defaultMessage ?? invalid.textContent ?? '' : '';
 		const defaultErrorMessage =
 			error instanceof HTMLElement ? error.dataset.defaultMessage ?? error.textContent ?? '' : '';
+		const statusElements = {
+			submitted: success,
+			invalid,
+			error,
+		} as const;
 
-		function showStatusSuccess(message = defaultSuccessMessage) {
-			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
+		function setVisibleStatus(nextStatus: keyof typeof statusElements | null) {
+			for (const [status, element] of Object.entries(statusElements)) {
+				if (!(element instanceof HTMLElement)) {
+					continue;
+				}
+
+				element.classList.toggle('is-visible', status === nextStatus);
+			}
+		}
+
+		function showStatusSubmitted(message = defaultSuccessMessage) {
+			if (!(success instanceof HTMLElement)) {
 				return;
 			}
 
 			success.textContent = message;
-			success.hidden = false;
-			error.hidden = true;
+			setVisibleStatus('submitted');
+		}
+
+		function showStatusInvalid(message = defaultInvalidMessage) {
+			if (!(invalid instanceof HTMLElement)) {
+				return;
+			}
+
+			invalid.textContent = message;
+			setVisibleStatus('invalid');
 		}
 
 		function showStatusError(message = defaultErrorMessage) {
-			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
+			if (!(error instanceof HTMLElement)) {
 				return;
 			}
 
 			error.textContent = message;
-			success.hidden = true;
-			error.hidden = false;
+			setVisibleStatus('error');
 		}
 
 		function clearStatus() {
-			if (!(success instanceof HTMLElement) || !(error instanceof HTMLElement)) {
-				return;
+			if (success instanceof HTMLElement) {
+				success.textContent = defaultSuccessMessage;
 			}
 
-			success.textContent = defaultSuccessMessage;
-			error.textContent = defaultErrorMessage;
-			success.hidden = true;
-			error.hidden = true;
+			if (invalid instanceof HTMLElement) {
+				invalid.textContent = defaultInvalidMessage;
+			}
+
+			if (error instanceof HTMLElement) {
+				error.textContent = defaultErrorMessage;
+			}
+
+			setVisibleStatus(null);
+		}
+
+		const supportPageHash = window.location.hash;
+
+		if (success instanceof HTMLElement && supportPageHash === `#${success.id}`) {
+			showStatusSubmitted();
+			window.history.replaceState({}, '', window.location.pathname);
+		} else if (invalid instanceof HTMLElement && supportPageHash === `#${invalid.id}`) {
+			showStatusInvalid();
+			window.history.replaceState({}, '', window.location.pathname);
+		} else if (error instanceof HTMLElement && supportPageHash === `#${error.id}`) {
+			showStatusError();
+			window.history.replaceState({}, '', window.location.pathname);
 		}
 
 		function getFormControl(fieldName: string) {
@@ -250,17 +294,25 @@ const renderedErrorMessage =
 
 					if (response.ok) {
 						form.reset();
-						showStatusSuccess(
+						showStatusSubmitted(
 							typeof result?.message === 'string' ? result.message : defaultSuccessMessage,
 						);
 						return;
 					}
 
-					const message =
-						typeof result?.message === 'string' ? result.message : defaultErrorMessage;
+					const isValidationFailure = response.status >= 400 && response.status < 500;
+					const message = typeof result?.message === 'string'
+						? result.message
+						: isValidationFailure
+							? defaultInvalidMessage
+							: defaultErrorMessage;
 					const hasFieldErrors = applyFieldErrors(result?.fieldErrors);
 
-					showStatusError(message);
+					if (isValidationFailure) {
+						showStatusInvalid(message);
+					} else {
+						showStatusError(message);
+					}
 
 					if (!hasFieldErrors) {
 						form.reportValidity();

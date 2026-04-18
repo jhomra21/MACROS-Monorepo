@@ -304,6 +304,8 @@ h1, h2, h3 {
 	letter-spacing: -0.06em;
 	line-height: 1;
 	margin: 0;
+	display: inline-block;
+	padding-right: 0.08em;
 	background: -webkit-linear-gradient(135deg, var(--text) 0%, rgba(134, 134, 139, 0.8) 100%);
 	background-clip: text;
 	-webkit-background-clip: text;
@@ -383,35 +385,30 @@ h1, h2, h3 {
 	scroll-snap-align: center;
 	flex: 0 0 calc(33.333% - 1rem);
 	min-width: 260px;
-	background: var(--background-elevated);
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-bento);
-	border: 1px solid var(--border);
-	overflow: hidden;
 	display: flex;
 	flex-direction: column;
+	align-items: center;
+	gap: 1.1rem;
 }
 
 .carousel-card__media {
-	background: var(--background);
 	display: flex;
 	justify-content: center;
-	border-bottom: 1px solid var(--border);
+	width: 100%;
 }
 
 .carousel-card__media img {
-	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+	border-radius: 2rem;
 	width: 100%;
-	aspect-ratio: 10 / 20;
-	object-fit: cover;
-	object-position: top;
+	height: auto;
+	box-shadow: none;
 }
 
 .carousel-card__title {
-	padding: 1.25rem;
 	text-align: center;
 	font-weight: 600;
 	font-size: 1.1rem;
+	letter-spacing: -0.03em;
 }
 
 .carousel-nav {
@@ -556,6 +553,12 @@ h1, h2, h3 {
 	transition: transform 150ms ease, opacity 150ms ease;
 }
 
+.waitlist-submit:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+	transform: none;
+}
+
 .waitlist-submit:active {
 	transform: scale(0.95);
 }
@@ -620,6 +623,13 @@ h1, h2, h3 {
 	font-size: 0.95rem;
 	margin-bottom: 1.5rem;
 	font-weight: 500;
+}
+.support-status-banner {
+	display: none;
+}
+.support-status-banner.is-visible,
+.support-status-banner:target {
+	display: block;
 }
 .status--success {
 	background: #e8f5e9;

@@ -624,3 +624,113 @@ The following planning documents have been fully consolidated into this file and
 
 - `make quality-format-check`
 - `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' build`
+
+## Small Daily Macro Widget 3-Digit Value Fit Fix
+
+### Delivered
+
+- Fixed the small Home Screen daily macro widget so 3-digit macro totals like `102` render fully instead of truncating to `1…`.
+- Kept the existing three-column `P / C / F` layout and solved the issue with a minimal sizing adjustment rather than changing the widget structure.
+
+### Main implementation steps
+
+- Updated `cal-macro-tracker/CalMacroWidget/DailyMacroWidget.swift` so 3-character macro values use a slightly smaller shared font size in the small widget.
+- Tightened the small metric row spacing from `6` to `4` to preserve a bit more room for each equal-width column.
+- Added a `minimumScaleFactor(0.75)` to the small metric value text so compact layouts can shrink before falling back to ellipsis.
+
+### Bugs and implementation findings
+
+- The previous small-widget row could still truncate integer values even after the earlier shared sizing work because the text was allowed to ellipsize but not scale down.
+- The underlying snapshot data was correct; this was a widget layout constraint issue in the compact equal-width row.
+- The final implementation stayed clean and focused: no duplicate logic, no structure changes, and no broader widget refactor was needed.
+
+### Validation recorded during this work
+
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "CalMacroWidget" -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath /tmp/cal-macro-tracker-derived-data CODE_SIGNING_ALLOWED=NO build`
+
+## Legacy Open Food Facts Identity Recovery and Manual Nutrient Refresh
+
+### Delivered
+
+- Expanded legacy secondary-nutrient repair so older Open Food Facts-backed barcode/search records can recover a repair target from any surviving OFF identity, including canonical product-page `sourceURL`.
+- Normalized newly mapped OFF scan results onto canonical barcode-based OFF identity so future cache reuse and repair targeting stay consistent.
+- Backfilled recovered OFF identity onto repaired reusable foods and historical log-entry snapshots instead of only overlaying nutrient fields.
+- Added a manual `Refresh Nutrients` action for old external log entries and reusable external foods when secondary nutrients are still missing and the record is still refreshable.
+- Kept the manual refresh path on the existing edit screens instead of creating a separate repair flow or settings surface.
+
+### Main implementation steps
+
+- Extended `OpenFoodFactsIdentity.swift` so OFF barcode recovery now supports:
+  - direct barcode aliases
+  - qualified OFF external IDs
+  - canonical OFF product-page URLs
+- Tightened OFF identity recovery so only digit-shaped identifiers can become barcode repair targets; non-barcode OFF `_id` values no longer flow into the barcode refresh path.
+- Updated `SecondaryNutrientRepairTarget.resolve(...)` so `.barcodeLookup` and OFF-backed `.searchLookup` records can derive repair targets from `sourceURL` as well as barcode/external ID.
+- Updated `BarcodeLookupMapper.swift` so OFF-backed saved foods persist a canonical OFF product URL derived from the normalized barcode instead of depending on nullable API `product.url`.
+- Extended `BarcodeLookupMapper.swift` again so code-less OFF search results also recover and persist the normalized barcode from qualified OFF identity or product URL, which keeps later barcode-scan cache reuse working for those saved foods.
+- Updated `OpenFoodFactsClient.swift` so OFF search results now expose recovered barcode-based lookup aliases alongside the original raw external ID, keeping saved-result reuse aligned with the newer canonical OFF identity written during import.
+- Refined `OpenFoodFactsIdentity.swift` again so shared OFF barcode recovery now prefers the canonical product-page URL over raw qualified external IDs and only accepts external-ID fallback values when they match supported barcode lengths.
+- Updated repair-time backfill in `FoodDraft.swift` and `SecondaryNutrientRepairService.swift` so successful external-food and historical-entry repair persists recovered barcode, external ID, source name, and source URL alongside refreshed secondary nutrients.
+- Added manual refresh helpers to `SecondaryNutrientRepairService.swift` that reuse the existing remote refresh contracts while preserving the current draft as the editable source of truth.
+- Added `Refresh Nutrients` affordances to:
+  - `EditLogEntryScreen.swift`
+  - `ReusableFoodEditorScreen.swift`
+- Kept the button gated to records that:
+  - are external barcode/search items
+  - still have missing secondary nutrients
+  - still match the original repair key
+  - are not already known `.notRepairable`
+- Updated `FoodDraftEditorForm.swift` so a successful refresh automatically reveals the additional-nutrition section when new secondary values arrive.
+- Disabled the edit forms while a refresh is in flight so fetched nutrient values cannot race with manual edits or be lost behind an immediate save/delete.
+
+### Bugs and implementation findings
+
+- Some historical OFF search results persisted only a product-page URL even when barcode/external ID fields were absent; without URL-based recovery, those records stayed outside the repairable set.
+- Open Food Facts `product.url` is nullable in real API responses, so canonical URL generation from the normalized barcode is more reliable than persisting the raw response field.
+- Worker-side OFF search results can persist `openfoodfacts:<_id>` when no OFF `code` exists; those `_id` values are not valid barcode refresh targets in this codebase and must not be treated as such.
+- Canonical OFF identity needs to be written back during successful repair, otherwise repaired legacy records can keep stale OFF IDs and drift away from later cache reuse and lookup behavior.
+- Preserving only `sourceURL` was not enough for code-less OFF search imports: if the recovered barcode was not also persisted onto the saved food, a later live barcode scan could miss the local cache and fall back to a remote fetch.
+- Canonicalizing saved OFF search results without also widening the search-result lookup aliases created a second reuse regression: reopening the same code-less OFF search hit could miss the saved reusable food because the UI still searched only by the original raw `_id`-based alias.
+- The first shared OFF identity fallback order still let a digit-shaped `openfoodfacts:<_id>` override the real barcode embedded in a canonical OFF product URL, and the initial fallback guard was still too loose for arbitrary numeric IDs; the final helper now prefers URL recovery and restricts external-ID fallback to supported barcode lengths.
+- A manual refresh button must be stricter than “target exists”: it also has to respect the same repair-key contract as automatic repair so edited records do not advertise a refresh that can only fail.
+- The refresh flow initially allowed save/delete while the async request was in flight; the final implementation disables the whole edit surface during refresh so fetched values cannot overwrite in-progress edits or be dropped after dismissal.
+
+### Validation recorded during this work
+
+- `make quality-format-check`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
+
+### Final review result
+
+- Follow-up review after implementation and validation returned `LGTM — no issues found.`
+
+## Web Waitlist Client Bundle Split
+
+### Delivered
+
+- Kept the shared waitlist validation rules intact while removing the Zod-backed submit contract from the homepage client bundle.
+- Preserved the Worker as the authoritative waitlist submit boundary.
+- Reduced the built landing-page waitlist script from roughly `71 KB` to `13.5 KB`.
+
+### Main implementation steps
+
+- Added `web/src/lib/waitlist-validation.ts` to hold the pure waitlist normalization, syntax, domain-label, TLD, and status-message helpers used by the homepage.
+- Reduced `web/src/lib/waitlist.ts` to the Worker/shared submit contract layer that wraps the existing Zod schema around the shared pure helpers.
+- Updated `web/src/pages/index.astro` so the inline homepage script imports only the lightweight waitlist validation helpers instead of the mixed Zod contract module.
+
+### Bugs and implementation findings
+
+- The homepage had started importing its live waitlist helpers from a mixed-use module that also defined the Worker submit schema, so Astro bundled Zod internals into the landing-page script.
+- The right fix was to split module responsibilities, not to duplicate a second browser-only regex or weaken the shared validation contract.
+- The bundled IANA TLD snapshot intentionally remains in the client path because local-first waitlist validation still depends on it; only the accidental Zod/server-contract shipment was removed.
+
+### Validation recorded during this work
+
+- `cd "/Users/juan/Documents/xcode/cal-macro-tracker/web" && bun run check`
+- `cd "/Users/juan/Documents/xcode/cal-macro-tracker/web" && bun run build`
+- Built asset inspection confirmed the landing-page client chunk dropped to `13,500` bytes and no longer contains Zod internals.
+
+### Final review result
+
+- Follow-up review after implementation and validation returned `LGTM — no issues found.`

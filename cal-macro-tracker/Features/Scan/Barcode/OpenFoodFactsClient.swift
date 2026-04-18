@@ -21,7 +21,7 @@ struct OpenFoodFactsProduct: Decodable, Identifiable, Hashable {
 
     var cacheLookupExternalProductIDs: [String] {
         var seen = Set<String>()
-        return ([externalProductIDOrNil] + OpenFoodFactsIdentity.qualifiedExternalProductIDAliases(for: code))
+        return ([externalProductIDOrNil] + OpenFoodFactsIdentity.qualifiedExternalProductIDAliases(for: normalizedBarcode))
             .compactMap { $0 }
             .filter { seen.insert($0).inserted }
     }
@@ -31,7 +31,11 @@ struct OpenFoodFactsProduct: Decodable, Identifiable, Hashable {
     }
 
     var normalizedBarcode: String? {
-        OpenFoodFactsIdentity.barcodeAliases(for: code).first
+        OpenFoodFactsIdentity.normalizedBarcode(
+            barcode: code,
+            externalProductID: externalProductID,
+            sourceURL: url
+        )
     }
 
     struct Nutriments: Decodable, Hashable {

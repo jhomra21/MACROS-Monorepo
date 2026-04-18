@@ -14,6 +14,7 @@ struct ReusableFoodEditorScreen: View {
     @State private var errorMessage: String?
     @State private var saveFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
+    @State private var isRefreshingNutrients = false
     @FocusState private var focusedField: FoodDraftField?
 
     init(food: FoodItem) {
@@ -25,6 +26,10 @@ struct ReusableFoodEditorScreen: View {
 
     private var foodRepository: FoodItemRepository {
         FoodItemRepository(modelContext: modelContext)
+    }
+
+    private var initialDraft: FoodDraft {
+        FoodDraft(foodItem: food, saveAsCustomFood: true)
     }
 
     private var canSave: Bool {
@@ -78,6 +83,18 @@ struct ReusableFoodEditorScreen: View {
         }
     }
 
+    private var canRefreshNutrients: Bool {
+        draft.shouldOfferManualSecondaryNutrientRefresh
+            && SecondaryNutrientRepairService.canManuallyRefreshSecondaryNutrients(
+                for: draft,
+                initialDraft: initialDraft
+            )
+    }
+
+    private var nutrientRefreshMessage: String {
+        return "Extra nutrients are missing for this saved food. Refresh from the source, then save to keep the new values."
+    }
+
     var body: some View {
         FoodDraftEditorForm(
             draft: $draft,
@@ -89,7 +106,7 @@ struct ReusableFoodEditorScreen: View {
             trailingKeyboardFields: [],
             previewTotals: nil
         ) {
-            if draft.sourceNameOrNil != nil || sourceURL != nil {
+            if draft.sourceNameOrNil != nil || sourceURL != nil || canRefreshNutrients {
                 Section("Source") {
                     if let sourceName = draft.sourceNameOrNil {
                         LabeledContent("Provider") {
@@ -103,6 +120,17 @@ struct ReusableFoodEditorScreen: View {
                             Label("View Source", systemImage: "link")
                         }
                     }
+
+                    if canRefreshNutrients {
+                        Text(nutrientRefreshMessage)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+
+                        Button(isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients") {
+                            refreshNutrients()
+                        }
+                        .disabled(isRefreshingNutrients)
+                    }
                 }
             }
         } footerSections: {
@@ -110,17 +138,19 @@ struct ReusableFoodEditorScreen: View {
                 Button("Save") {
                     saveFood()
                 }
-                .disabled(!canSave)
+                .disabled(!canSave || isRefreshingNutrients)
             }
 
             Section {
                 Button("Delete Food", role: .destructive) {
                     deleteFood()
                 }
+                .disabled(isRefreshingNutrients)
             }
         }
         .navigationTitle(navigationTitle)
         .inlineNavigationTitle()
+        .disabled(isRefreshingNutrients)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
         .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
     }
@@ -166,6 +196,34 @@ struct ReusableFoodEditorScreen: View {
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
+        }
+    }
+
+    private func refreshNutrients() {
+        dismissEditing()
+        isRefreshingNutrients = true
+
+        Task { @MainActor in
+            do {
+                guard
+                    let refreshedDraft = try await SecondaryNutrientRepairService.manuallyRefreshedDraft(
+                        for: draft,
+                        initialDraft: initialDraft
+                    )
+                else {
+                    errorMessage = "Unable to refresh nutrients for this saved food."
+                    isRefreshingNutrients = false
+                    return
+                }
+
+                draft = refreshedDraft
+                numericText = FoodDraftNumericText(draft: refreshedDraft)
+                errorMessage = nil
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+
+            isRefreshingNutrients = false
         }
     }
 

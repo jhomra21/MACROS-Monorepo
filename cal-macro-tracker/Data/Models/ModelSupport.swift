@@ -69,26 +69,47 @@ enum SecondaryNutrientRepairTarget: Hashable {
     static func resolve(
         source: FoodSource,
         externalProductID: String?,
-        barcode: String?
+        barcode: String?,
+        sourceURL: String?
     ) -> SecondaryNutrientRepairTarget? {
         switch source {
         case .barcodeLookup:
-            guard let barcode = normalizedBarcode(from: barcode) else { return nil }
+            guard
+                let barcode = normalizedBarcode(
+                    barcode: barcode,
+                    externalProductID: externalProductID,
+                    sourceURL: sourceURL
+                )
+            else { return nil }
             return .openFoodFactsBarcode(barcode)
         case .searchLookup:
             if let usdaFoodID = usdaFoodID(from: externalProductID) {
                 return .usdaFood(usdaFoodID)
             }
 
-            guard let barcode = normalizedBarcode(from: barcode) else { return nil }
+            guard
+                let barcode = normalizedBarcode(
+                    barcode: barcode,
+                    externalProductID: externalProductID,
+                    sourceURL: sourceURL
+                )
+            else { return nil }
             return .openFoodFactsBarcode(barcode)
         case .common, .custom, .labelScan:
             return nil
         }
     }
 
-    private static func normalizedBarcode(from value: String?) -> String? {
-        OpenFoodFactsIdentity.barcodeAliases(for: value).first
+    private static func normalizedBarcode(
+        barcode: String?,
+        externalProductID: String?,
+        sourceURL: String?
+    ) -> String? {
+        OpenFoodFactsIdentity.normalizedBarcode(
+            barcode: barcode,
+            externalProductID: externalProductID,
+            sourceURL: sourceURL
+        )
     }
 
     private static func usdaFoodID(from externalProductID: String?) -> Int? {
@@ -203,6 +224,15 @@ extension FoodDraft {
             && cholesterolPerServing == nil
     }
 
+    var shouldOfferManualSecondaryNutrientRefresh: Bool {
+        switch source {
+        case .barcodeLookup, .searchLookup:
+            return isMissingAllSecondaryNutrients && secondaryNutrientBackfillState != .notRepairable
+        case .common, .custom, .labelScan:
+            return false
+        }
+    }
+
     var secondaryNutrientRepairKey: SecondaryNutrientRepairKey {
         SecondaryNutrientRepairKey(
             source: source,
@@ -221,7 +251,8 @@ extension FoodDraft {
         SecondaryNutrientRepairTarget.resolve(
             source: source,
             externalProductID: externalProductIDOrNil,
-            barcode: barcodeOrNil
+            barcode: barcodeOrNil,
+            sourceURL: sourceURLOrNil
         )
     }
 }
@@ -245,7 +276,8 @@ extension FoodItem {
         SecondaryNutrientRepairTarget.resolve(
             source: sourceKind,
             externalProductID: externalProductID,
-            barcode: barcode
+            barcode: barcode,
+            sourceURL: sourceURL
         )
     }
 }
@@ -269,7 +301,8 @@ extension LogEntry {
         SecondaryNutrientRepairTarget.resolve(
             source: sourceKind,
             externalProductID: externalProductIDOrNil,
-            barcode: barcodeOrNil
+            barcode: barcodeOrNil,
+            sourceURL: sourceURLOrNil
         )
     }
 }

@@ -140,7 +140,7 @@
 - Astro + `@astrojs/cloudflare` is the current web stack.
 - Sessions are intentionally disabled through `src/lib/disabled-session-driver.ts`.
 - Static marketing pages stay prerendered.
-- The support page and support API remain dynamic because they depend on request handling and D1 persistence.
+- The support page is prerendered static again, while only the support API remains dynamic for request handling and D1 persistence.
 - Wrangler config is the source of truth for the support database binding and migration directory.
 - Screenshot optimization currently relies on Astro's build-time pipeline via imported `src/assets` images and the Cloudflare adapter's `imageService: 'compile'` setting.
 
@@ -257,3 +257,173 @@
   - the success banner appears in the right place above the input
   - the carousel arrows work from the homepage UI
   - wrapped mobile waitlist status text is fully visible instead of clipping
+
+## Waitlist Validation Client-side Finalization
+
+### Delivered
+
+- Moved waitlist email validation fully onto the client so live validation no longer calls the Worker.
+- Added a bundled IANA TLD snapshot in `src/lib/waitlist-tlds.ts` for instant top-level-domain checks like `.com`, `.io`, and country-code TLDs.
+- Refactored `src/lib/waitlist.ts` so syntax, domain-label, and TLD validation live in one shared local module the homepage can use directly.
+- Simplified `src/pages/index.astro` so the waitlist button enable/disable state is computed locally on each keystroke with no network request.
+- Reduced `src/pages/api/waitlist.ts` to insert-only behavior for submitted emails, keeping it out of the validation path.
+
+### Main implementation steps
+
+- Added a local regex-based syntax gate plus domain-label checks before the final TLD lookup.
+- Switched the homepage form to use the shared validation helper directly inside the inline script rather than calling `/api/waitlist` while typing.
+- Removed the experimental live Worker/domain validation path so there is no per-keystroke request traffic for email validation.
+- Kept only lightweight request parsing and email normalization in the Worker submit handler before the D1 insert.
+
+### Architecture outcome
+
+- Waitlist validation is now client-side only.
+- The Worker is no longer involved in live validation and no longer re-validates email/TLD rules on submit.
+- The Worker only receives the final waitlist submission payload and persists it.
+
+### Validation recorded
+
+- `bun run astro check`
+- Manual local browser verification on `http://localhost:4321/` confirmed:
+  - invalid partial emails keep the submit button disabled
+  - fake TLDs such as `.3` and non-IANA suffixes stay invalid
+  - no live waitlist validation request is sent to the Worker while typing
+
+## Waitlist Contract Enforcement Repair
+
+### Delivered
+
+- Restored the Worker submit boundary as the authoritative waitlist contract check instead of trusting client-only validation.
+- Kept live waitlist validation local in the homepage script while removing the duplicate HTML `pattern` contract from the form input.
+- Fixed the shared waitlist validator so valid punycode TLDs such as `xn--p1ai` pass, while malformed local parts such as `.foo@`, `foo.@`, and `a..b@` stay invalid.
+- Preserved idempotent waitlist inserts through the existing `INSERT OR IGNORE` Worker path.
+
+### Main implementation steps
+
+- Reused `validateWaitlistRequest()` in `src/pages/api/waitlist.ts` so the same shared waitlist contract now runs on both the client and the Worker submit path.
+- Refined `src/lib/waitlist.ts` so one shared validator owns normalization, email syntax, domain-label checks, and IANA-backed TLD validation without splitting those rules across multiple layers.
+- Removed the homepage input `pattern` attribute from `src/pages/index.astro` so browser-native constraints no longer compete with the shared waitlist contract.
+- Kept the homepage's per-keystroke enable/disable UX local, but left final persistence guarded by the Worker before D1 insertion.
+
+### Bugs and implementation findings
+
+- The client-only finalization was a contract regression: direct POSTs could persist any non-empty string because the Worker submit path no longer called the shared waitlist validator.
+- The first local syntax gate also contradicted the bundled IANA snapshot by rejecting punycode TLDs before the shared TLD lookup ran.
+- Replacing the server contract with a looser local parser was not a safe simplification for this codebase because the Worker is the persistence boundary for waitlist submissions.
+
+### Architecture outcome
+
+- Live waitlist validation is still local-first in the browser; the Worker is not called on each keystroke.
+- The Worker is still involved on final submit: `src/pages/index.astro` posts to `/api/waitlist`, the Worker route parses the request, runs `validateWaitlistRequest()`, returns structured validation errors when needed, and only then inserts the normalized email into D1.
+- The browser and Worker now share one waitlist contract instead of maintaining separate submit-time rules.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`
+- Direct validator verification confirmed:
+  - `hello` is rejected
+  - `.foo@example.com`, `foo.@example.com`, and `a..b@example.com` are rejected
+  - `user@example.com` is accepted
+  - `user@example.xn--p1ai` is accepted
+  - fake non-IANA TLDs are rejected
+- Final review pass result: `LGTM — no issues found.`
+
+## Observability Configuration Follow-up
+
+### Delivered
+
+- Enabled Workers logs explicitly in `web/wrangler.jsonc`.
+- Enabled Workers traces explicitly in `web/wrangler.jsonc`.
+- Kept observability managed in source control instead of relying on dashboard-only config drift.
+
+### Main implementation steps
+
+- Expanded the Wrangler `observability` block to keep `enabled: true` at the top level.
+- Added `observability.logs.invocation_logs = true` so logs are grouped by invocation in Cloudflare's Workers Logs UI.
+- Added `observability.logs.head_sampling_rate = 1` and `observability.traces.head_sampling_rate = 1` so both logs and traces are fully sampled for now.
+- Added `observability.traces.enabled = true` because current Cloudflare tracing still requires the explicit traces switch; `observability.enabled` alone only guarantees logs.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run deploy:dry-run`
+
+## Support Page Static Rendering Correction
+
+### Delivered
+
+- Switched `src/pages/support.astro` back to a prerendered static page.
+- Kept `POST /api/support` as the only dynamic support route that invokes the Worker and writes to D1.
+- Moved support status query-param handling fully into the client script so redirect-based fallback UX still works without server-rendering the page.
+
+### What went wrong
+
+- The support page had drifted back to `export const prerender = false`.
+- That made every `GET /support` request invoke the Worker, even though viewing the support form itself does not need server work.
+- In production, that meant ordinary support-page visits would show up in Worker traffic and observability alongside the actual submission API traffic.
+
+### Root cause
+
+- The redirect/status UX for support form fallbacks was being handled in Astro frontmatter.
+- That implementation detail accidentally forced the page itself to stay on-demand rendered instead of keeping only the submit endpoint dynamic.
+
+### What actually fixed it
+
+- Restored `export const prerender = true` in `src/pages/support.astro`.
+- Removed the server-side query-param status rendering from the page frontmatter.
+- Recreated the same `submitted`, `invalid`, and `error` banner behavior in the client-side support script using `window.location.search`.
+- Left `src/pages/api/support.ts` as `prerender = false`, so only support submissions hit the Worker.
+
+### Architecture outcome
+
+- `GET /support` is now served as a static asset again.
+- `POST /api/support` remains the dynamic Worker path for validation and persistence.
+- Support-page traffic no longer needs Worker execution just to render the form.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`
+- `bun run deploy:dry-run`
+- Build output confirmed `/support/index.html` is prerendered again.
+
+## Support Static Fallback Status Repair
+
+### Delivered
+
+- Kept `src/pages/support.astro` fully prerendered/static.
+- Restored visible fallback status feedback for non-JS `POST /api/support` submissions.
+- Kept the JS-enhanced support form flow and the Worker-backed `POST /api/support` contract unchanged.
+
+### What went wrong
+
+- After moving support status handling out of Astro frontmatter, the page still relied on `/support?status=...` redirects for non-JSON form posts.
+- The prerendered HTML hid all status banners by default, and only the client script read `window.location.search` to reveal one.
+- That meant the redirect fallback no longer showed any status if JavaScript was unavailable or failed.
+
+### Root cause
+
+- The page architecture was correctly changed to keep `GET /support` static, but the old redirect contract still depended on JS to interpret query params.
+- The real fix belonged in the redirect target and static page behavior, not in making `/support` dynamic again.
+
+### What actually fixed it
+
+- Replaced support redirect targets from `/support?status=...` to `/support#...` in `src/lib/support.ts`.
+- Added shared support status element IDs in `src/lib/support.ts` so the API and page still use one redirect mapping layer.
+- Updated `src/pages/support.astro` to render dedicated static `submitted`, `invalid`, and `error` banners with stable IDs.
+- Added `.support-status-banner:target` handling in `src/styles/global.css` so redirected fallback requests show the right banner without Worker rendering or client JavaScript.
+- Kept the enhanced JS submit flow reusing the same status elements through `.is-visible`, while also separating validation failures from generic server failures.
+
+### Architecture outcome
+
+- `GET /support` remains a static asset and does not invoke the Worker on ordinary page visits.
+- `POST /api/support` remains the only dynamic support path for validation and D1 persistence.
+- Redirect-based fallback status now works on the static page without requiring JavaScript.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`
+- `bun run deploy:dry-run`
+- Build output confirmed `/support/index.html` remains prerendered.

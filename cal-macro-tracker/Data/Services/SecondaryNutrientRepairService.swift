@@ -19,6 +19,10 @@ enum SecondaryNutrientRepairService {
 
     private struct LogEntrySecondaryNutrientRepair {
         let entryID: PersistentIdentifier
+        let barcode: String?
+        let externalProductID: String?
+        let sourceName: String?
+        let sourceURL: String?
         let perServing: SecondaryNutrientValues
         let consumed: SecondaryNutrientValues
     }
@@ -62,6 +66,56 @@ enum SecondaryNutrientRepairService {
         )
     }
 
+    static func canManuallyRefreshSecondaryNutrients(
+        for entry: LogEntry,
+        currentDraft: FoodDraft,
+        modelContext: ModelContext
+    ) throws -> Bool {
+        let initialDraft = FoodDraft(logEntry: entry, saveAsCustomFood: false)
+        guard currentDraft.secondaryNutrientRepairKey == initialDraft.secondaryNutrientRepairKey else {
+            return false
+        }
+
+        if currentDraft.secondaryNutrientRepairTarget != nil {
+            return true
+        }
+
+        return try manualRefreshTarget(for: entry, modelContext: modelContext) != nil
+    }
+
+    static func canManuallyRefreshSecondaryNutrients(for currentDraft: FoodDraft, initialDraft: FoodDraft) -> Bool {
+        currentDraft.secondaryNutrientRepairKey == initialDraft.secondaryNutrientRepairKey
+            && currentDraft.secondaryNutrientRepairTarget != nil
+    }
+
+    static func manuallyRefreshedDraft(for currentDraft: FoodDraft, initialDraft: FoodDraft) async throws -> FoodDraft? {
+        guard canManuallyRefreshSecondaryNutrients(for: currentDraft, initialDraft: initialDraft),
+            let target = currentDraft.secondaryNutrientRepairTarget
+        else {
+            return nil
+        }
+
+        return try await manuallyRefreshedDraft(for: currentDraft, target: target)
+    }
+
+    static func manuallyRefreshedDraft(
+        for entry: LogEntry,
+        currentDraft: FoodDraft,
+        modelContext: ModelContext
+    ) async throws -> FoodDraft? {
+        let initialDraft = FoodDraft(logEntry: entry, saveAsCustomFood: false)
+        guard currentDraft.secondaryNutrientRepairKey == initialDraft.secondaryNutrientRepairKey else {
+            return nil
+        }
+
+        let fallbackTarget = try manualRefreshTarget(for: entry, modelContext: modelContext)
+        guard let target = currentDraft.secondaryNutrientRepairTarget ?? fallbackTarget else {
+            return nil
+        }
+
+        return try await manuallyRefreshedDraft(for: currentDraft, target: target)
+    }
+
     private static func repairExternalFoodsIfNeeded(modelContext: ModelContext) async throws {
         let targets = try externalFoodRepairTargets(modelContext: modelContext)
         guard targets.isEmpty == false else { return }
@@ -85,7 +139,8 @@ enum SecondaryNutrientRepairService {
                     continue
                 }
 
-                let repairedDraft = existingDraft.withSecondaryNutrients(from: refreshedDraft)
+                let repairedDraft = existingDraft.backfillingSourceIdentity(from: refreshedDraft)
+                    .withSecondaryNutrients(from: refreshedDraft)
                 try repository.saveReusableFood(
                     from: repairedDraft,
                     operation: "Repair reusable food secondary nutrients",
@@ -142,6 +197,7 @@ enum SecondaryNutrientRepairService {
             switch repairDraftResolution {
             case let .draft(sourceDraft):
                 let repairedDraft = FoodDraft(logEntry: entry)
+                    .backfillingSourceIdentity(from: sourceDraft)
                     .withSecondaryNutrients(from: sourceDraft)
 
                 let quantityAmount =
@@ -157,6 +213,10 @@ enum SecondaryNutrientRepairService {
                 repairs.append(
                     LogEntrySecondaryNutrientRepair(
                         entryID: entry.persistentModelID,
+                        barcode: repairedDraft.barcodeOrNil,
+                        externalProductID: repairedDraft.externalProductIDOrNil,
+                        sourceName: repairedDraft.sourceNameOrNil,
+                        sourceURL: repairedDraft.sourceURLOrNil,
                         perServing: SecondaryNutrientValues(
                             saturatedFat: repairedDraft.saturatedFatPerServing,
                             fiber: repairedDraft.fiberPerServing,
@@ -188,6 +248,10 @@ enum SecondaryNutrientRepairService {
                     continue
                 }
 
+                entry.barcode = repair.barcode
+                entry.externalProductID = repair.externalProductID
+                entry.sourceName = repair.sourceName
+                entry.sourceURL = repair.sourceURL
                 entry.saturatedFatPerServing = repair.perServing.saturatedFat
                 entry.fiberPerServing = repair.perServing.fiber
                 entry.sugarsPerServing = repair.perServing.sugars
@@ -386,6 +450,24 @@ enum SecondaryNutrientRepairService {
         }
     }
 
+    private static func manuallyRefreshedDraft(
+        for draft: FoodDraft,
+        target: SecondaryNutrientRepairTarget
+    ) async throws -> FoodDraft? {
+        guard let sourceDraft = try await refreshedDraft(source: draft.source, target: target) else {
+            return nil
+        }
+
+        guard sourceDraft.secondaryNutrientRepairKey == draft.secondaryNutrientRepairKey else {
+            return nil
+        }
+
+        var refreshedDraft = draft.backfillingSourceIdentity(from: sourceDraft)
+            .withSecondaryNutrients(from: sourceDraft)
+        refreshedDraft.secondaryNutrientBackfillState = .current
+        return refreshedDraft
+    }
+
     private static func historicalRepairDraftResolution(
         for entry: LogEntry,
         foodsByID: [UUID: FoodItem],
@@ -488,6 +570,21 @@ enum SecondaryNutrientRepairService {
         }
 
         return externalTargetsByKey[entry.secondaryNutrientRepairKey]
+    }
+
+    private static func manualRefreshTarget(
+        for entry: LogEntry,
+        modelContext: ModelContext
+    ) throws -> SecondaryNutrientRepairTarget? {
+        let foodsByID = try Dictionary(
+            uniqueKeysWithValues: fetchAllFoods(modelContext: modelContext).map { ($0.id, $0) }
+        )
+        let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
+        return historicalRepairTarget(
+            for: entry,
+            foodsByID: foodsByID,
+            externalTargetsByKey: externalTargetsByKey
+        )
     }
 
     private static func repairableExternalTargetsByKey(

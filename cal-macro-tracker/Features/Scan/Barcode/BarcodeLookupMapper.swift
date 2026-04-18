@@ -47,10 +47,19 @@ struct BarcodeLookupMapper {
         try makeDraft(from: product, source: .barcodeLookup, barcode: barcode)
     }
 
-    static func makeDraft(from product: OpenFoodFactsProduct, source: FoodSource, barcode: String? = nil) throws -> FoodDraft {
+    static func makeDraft(
+        from product: OpenFoodFactsProduct,
+        source: FoodSource,
+        barcode: String? = nil
+    ) throws -> FoodDraft {
         let name = product.productName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let nutritionBasis = try nutritionBasis(for: product)
-        let resolvedBarcode = OpenFoodFactsIdentity.barcodeAliases(for: barcode ?? product.code).first ?? ""
+        let resolvedBarcode =
+            OpenFoodFactsIdentity.normalizedBarcode(
+                barcode: barcode ?? product.code,
+                externalProductID: product.externalProductID,
+                sourceURL: product.url
+            ) ?? ""
         return FoodDraft(
             importedData: FoodDraftImportedData(
                 name: name,
@@ -59,7 +68,10 @@ struct BarcodeLookupMapper {
                 barcode: resolvedBarcode,
                 externalProductID: product.resolvedExternalProductID(preferredBarcode: resolvedBarcode),
                 sourceName: "Open Food Facts",
-                sourceURL: product.url?.trimmingCharacters(in: .whitespacesAndNewlines),
+                sourceURL: OpenFoodFactsIdentity.persistedProductURL(
+                    barcode: resolvedBarcode,
+                    sourceURL: product.url
+                ),
                 servingDescription: nutritionBasis.servingDescription,
                 gramsPerServing: nutritionBasis.gramsPerServing,
                 caloriesPerServing: nutritionBasis.calories,
