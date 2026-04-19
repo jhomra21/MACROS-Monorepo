@@ -566,3 +566,39 @@
 - `bun run check`
 - `bun run build`
 - `git diff --check -- web/src/layouts/SiteLayout.astro web/src/pages/index.astro web/src/pages/support.astro`
+
+## MACROS Web Branding Update
+
+### Delivered
+
+- Updated the Astro web app branding from `Cal Macro Tracker` to `MACROS`.
+- Kept page titles, metadata, body copy, and screenshot alt text aligned with the app’s actual product name.
+
+### What went wrong
+
+- The website content still used the older `Cal Macro Tracker` name across rendered app metadata and page copy even though the app name is now `MACROS`.
+- That left the public marketing/support surface out of sync with the product’s current branding.
+
+### Root cause
+
+- The web app’s shared branding source in `src/data/site.ts` still defined the older name and description.
+- Several page-level metadata/body strings in `src/pages/about.astro`, `src/pages/privacy.astro`, and `src/pages/support.astro` still embedded the legacy name directly instead of reflecting the current product brand.
+
+### What actually fixed it
+
+- Updated `src/data/site.ts` so the shared site name and description now use `MACROS`.
+- Replaced legacy `Cal Macro Tracker` references in screenshot alt text with `MACROS`.
+- Updated the rendered metadata/body copy in:
+  - `src/pages/about.astro`
+  - `src/pages/privacy.astro`
+  - `src/pages/support.astro`
+
+### Architecture outcome
+
+- Shared site branding and page-specific metadata now consistently use `MACROS`.
+- User-facing web copy is aligned with the actual app name across the Astro site.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`

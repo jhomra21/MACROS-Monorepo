@@ -6,10 +6,10 @@ import home1LightImage from '../assets/app-images/home1-light.jpeg';
 import home2Image from '../assets/app-images/home2.jpeg';
 
 export const site = {
-	name: 'Cal Macro Tracker',
+	name: 'MACROS',
 	tagline: 'Track calories and macros without creating an account.',
 	description:
-		'Cal Macro Tracker is a local-first iPhone app for logging calories, protein, carbs, and fat with barcode scans, nutrition label photos, and fast manual entry.',
+		'MACROS is a local-first iPhone app for logging calories, protein, carbs, and fat with barcode scans, nutrition label photos, and fast manual entry.',
 	navItems: [
 		{ href: '/', label: 'Home' },
 		{ href: '/about', label: 'About' },
@@ -33,12 +33,12 @@ export const site = {
 	heroShowcase: [
 		{
 			src: home1LightImage,
-			alt: 'Cal Macro Tracker dashboard in light mode',
+			alt: 'MACROS dashboard in light mode',
 			label: 'Light mode',
 		},
 		{
 			src: home1Image,
-			alt: 'Cal Macro Tracker dashboard in dark mode',
+			alt: 'MACROS dashboard in dark mode',
 			label: 'Dark mode',
 		},
 	],
@@ -73,42 +73,42 @@ export const site = {
 	screenshots: [
 		{
 			src: home1LightImage,
-			alt: 'Cal Macro Tracker daily summary screen in light mode',
+			alt: 'MACROS daily summary screen in light mode',
 			title: 'Daily summary in light mode',
 			body: 'The same dashboard stays clean and readable in bright conditions.',
 			theme: 'Light',
 		},
 		{
 			src: home1Image,
-			alt: 'Cal Macro Tracker daily summary screen',
+			alt: 'MACROS daily summary screen',
 			title: 'Daily macro summary',
 			body: 'See calories and macro progress at a glance from the main dashboard.',
 			theme: 'Dark',
 		},
 		{
 			src: home2Image,
-			alt: 'Cal Macro Tracker home screen showing logged meals',
+			alt: 'MACROS home screen showing logged meals',
 			title: 'Logged meals',
 			body: 'Review the meals you have already added for the day without extra clutter.',
 			theme: 'Dark',
 		},
 		{
 			src: addSearchImage,
-			alt: 'Cal Macro Tracker add food search screen',
+			alt: 'MACROS add food search screen',
 			title: 'Add food quickly',
 			body: 'Jump into search and logging from a focused entry point built for speed.',
 			theme: 'Light',
 		},
 		{
 			src: calendarClosedLightImage,
-			alt: 'Cal Macro Tracker calendar view in light mode',
+			alt: 'MACROS calendar view in light mode',
 			title: 'Calendar overview',
 			body: 'History keeps the current week visible without burying the rest of the day.',
 			theme: 'Light',
 		},
 		{
 			src: calendarOpenImage,
-			alt: 'Cal Macro Tracker calendar view',
+			alt: 'MACROS calendar view',
 			title: 'Review history',
 			body: 'Look back across days to understand consistency and trends.',
 			theme: 'Dark',
