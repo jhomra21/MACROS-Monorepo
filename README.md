@@ -1,10 +1,11 @@
-# Cal Macro Tracker
+# MACROS
 
-Cal Macro Tracker is a monorepo with three shipped surfaces:
+MACROS-Monorepo has three shipped surfaces:
 
 - `cal-macro-tracker/` — the native SwiftUI iPhone app with SwiftData persistence and WidgetKit widgets
 - `worker/usda-proxy/` — a Cloudflare Worker API for USDA and Open Food Facts search
-- `web/` — an Astro site for the product page, privacy/support pages, and support form handling
+- `web/` — an Astro site for the product page, privacy/support pages, and support form handling 
+  - `https://macros-web.jhonra121.workers.dev/`
 
 The app stays local-first: no required account, on-device data by default, and optional network-backed search layered on top.
 
