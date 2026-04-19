@@ -1,15 +1,16 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-	session: {
-		driver: {
-			entrypoint: new URL('./src/lib/disabled-session-driver.ts', import.meta.url),
+	vite: {
+		server: {
+			proxy: {
+				'/api': {
+					target: 'http://127.0.0.1:8787',
+					changeOrigin: true,
+				},
+			},
 		},
 	},
-	adapter: cloudflare({
-		imageService: 'compile',
-	}),
 });

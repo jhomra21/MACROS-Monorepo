@@ -427,3 +427,142 @@
 - `bun run build`
 - `bun run deploy:dry-run`
 - Build output confirmed `/support/index.html` remains prerendered.
+
+## Web Waitlist Client Bundle Split
+
+### Delivered
+
+- Kept the shared waitlist validation rules intact while removing the Zod-backed submit contract from the homepage client bundle.
+- Preserved the Worker as the authoritative waitlist submit boundary.
+- Reduced the built landing-page waitlist script from roughly `71 KB` to `13.5 KB`.
+
+### Main implementation steps
+
+- Added `src/lib/waitlist-validation.ts` to hold the pure waitlist normalization, syntax, domain-label, TLD, and status-message helpers used by the homepage.
+- Reduced `src/lib/waitlist.ts` to the Worker/shared submit contract layer that wraps the existing Zod schema around the shared pure helpers.
+- Updated `src/pages/index.astro` so the inline homepage script imports only the lightweight waitlist validation helpers instead of the mixed Zod contract module.
+
+### Bugs and implementation findings
+
+- The homepage had started importing its live waitlist helpers from a mixed-use module that also defined the Worker submit schema, so Astro bundled Zod internals into the landing-page script.
+- The right fix was to split module responsibilities, not to duplicate a second browser-only regex or weaken the shared validation contract.
+- The bundled IANA TLD snapshot intentionally remains in the client path because local-first waitlist validation still depends on it; only the accidental Zod/server-contract shipment was removed.
+
+### Validation recorded during this work
+
+- `bun run check`
+- `bun run build`
+- Built asset inspection confirmed the landing-page client chunk dropped to `13,500` bytes and no longer contains Zod internals.
+
+### Final review result
+
+- Follow-up review after implementation and validation returned `LGTM — no issues found.`
+
+## Workers Static Assets Migration and API-Only Worker Routing
+
+### Delivered
+
+- Migrated the web app away from Astro's Cloudflare adapter/runtime and onto an explicit Cloudflare Worker plus Workers Static Assets.
+- Replaced Astro API routes with one hand-written Worker entrypoint in `src/worker.ts` for:
+  - `POST /api/support`
+  - `POST /api/waitlist`
+- Kept the marketing pages and built assets static, served from `dist/` through Workers Static Assets.
+- Added explicit selective routing in `wrangler.jsonc` so only `/api/*` runs the Worker first:
+  - `"run_worker_first": ["/api/*"]`
+- Clarified local workflows into:
+  - `bun run dev` for Astro live frontend development
+  - `bun run dev:worker` for production-like full Worker preview against built static assets
+
+### What went wrong
+
+- The previous setup kept prerendered pages coupled to Astro's adapter-generated Cloudflare runtime solely to host the support and waitlist API routes.
+- That made the deployment/runtime shape feel more dynamic than intended, even though the site pages themselves were static.
+- Local development also became confusing after the migration because `astro dev` by itself does not run the explicit Worker API, so `/api/*` returned `404` until the Worker process was started separately.
+- One validation pass was further confused by a stale local `wrangler dev` process still holding port `8787`.
+
+### Root cause
+
+- Astro's adapter/server model and the explicit Workers Static Assets model are different runtime shapes.
+- The requirement for this codebase is stricter than “prerendered pages”: page, image, icon, and built asset requests should remain asset-first/static, while only support and waitlist submissions should execute Worker code.
+- Cloudflare's Workers Static Assets docs support that directly through `assets.directory`, `assets.binding`, and selective `assets.run_worker_first`, while Astro's docs still treat `astro dev` as its own separate live source dev server.
+
+### What actually fixed it
+
+- Removed `@astrojs/cloudflare` from `package.json` and removed the adapter/session-driver wiring from `astro.config.mjs`.
+- Deleted:
+  - `src/pages/api/support.ts`
+  - `src/pages/api/waitlist.ts`
+  - `src/lib/disabled-session-driver.ts`
+- Added `src/worker.ts` as the single Worker entrypoint owning support/waitlist request parsing, validation, response contracts, and D1 persistence.
+- Switched shared server-side validation imports from `astro/zod` to direct `zod` in:
+  - `src/lib/support.ts`
+  - `src/lib/waitlist.ts`
+- Updated `wrangler.jsonc` to use the explicit Worker + static assets contract:
+  - `"main": "./src/worker.ts"`
+  - `"dev.port": 8787`
+  - `"assets.directory": "./dist"`
+  - `"assets.binding": "ASSETS"`
+  - `"assets.run_worker_first": ["/api/*"]`
+- Added an Astro dev proxy in `astro.config.mjs` so local `astro dev` requests to `/api/*` forward to `127.0.0.1:8787`.
+- Kept `bun run dev:worker` as the full built preview path used whenever the single Worker runtime needs to be exercised locally.
+
+### Architecture outcome
+
+- In deployed/runtime behavior, static routes and built assets stay asset-first:
+  - `/`
+  - `/about`
+  - `/privacy`
+  - `/support`
+  - `/_astro/*`
+  - `/favicon.*`
+- Only `/api/*` runs the Worker first, with `POST /api/support` and `POST /api/waitlist` currently handled explicitly in `src/worker.ts`.
+- The deployment target is still one Cloudflare Worker plus Workers Static Assets, not two production services.
+- Local live development remains a two-process workflow because there is no Astro equivalent of the Cloudflare Vite plugin for this explicit Astro + Worker split architecture.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`
+- `bun run deploy:dry-run`
+- Local verification confirmed:
+  - `POST /api/support` returns structured JSON validation errors through the explicit Worker path
+  - `POST /api/waitlist` returns structured JSON validation errors through the explicit Worker path
+  - `GET /support` is served from the static asset layer in the Worker-backed preview flow
+
+## Astro ClientRouter Navigation Compatibility
+
+### Delivered
+
+- Enabled Astro client-side page transitions site-wide with `ClientRouter` in the shared layout.
+- Kept the homepage and support page interactive after client-side navigation instead of relying on full-page reload semantics.
+- Preserved full reload handling for support and waitlist form submissions so the existing non-JS / fallback submit behavior stays intact.
+
+### What went wrong
+
+- The site navigation still used normal multi-page reloads even after the rest of the web stack had been clarified around static assets plus an explicit Worker.
+- The homepage carousel/waitlist script and support form script both initialized directly at page execution time, which is not sufficient once Astro intercepts navigation with `ClientRouter`.
+
+### Root cause
+
+- `src/layouts/SiteLayout.astro` had no `ClientRouter`, so page-to-page navigation still performed a full document refresh.
+- `src/pages/index.astro` and `src/pages/support.astro` were written around reload-based script setup instead of Astro transition lifecycle events like `astro:page-load`.
+
+### What actually fixed it
+
+- Added `ClientRouter` from `astro:transitions` to `src/layouts/SiteLayout.astro`.
+- Refactored the homepage script in `src/pages/index.astro` into an idempotent `initHomePage()` setup path and ran it on `astro:page-load`.
+- Refactored the support-page script in `src/pages/support.astro` into an idempotent `initSupportPage()` setup path and ran it on `astro:page-load`.
+- Added `data-astro-reload` to the support and waitlist forms so submit handling keeps the existing fallback/full-reload contract instead of being intercepted by the router.
+
+### Architecture outcome
+
+- Header/footer navigation now uses Astro client-side routing and view transitions instead of a full page refresh.
+- Homepage carousel controls and waitlist validation/submit behavior survive client-side page transitions.
+- Support-page status handling and AJAX submit behavior survive client-side page transitions.
+- Support and waitlist forms still preserve their existing fallback submission behavior when JavaScript enhancement is not used.
+
+### Validation recorded
+
+- `bun run check`
+- `bun run build`
+- `git diff --check -- web/src/layouts/SiteLayout.astro web/src/pages/index.astro web/src/pages/support.astro`

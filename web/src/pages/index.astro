@@ -101,7 +101,7 @@ import {
 			<div class="waitlist-form-container">
 				<h2>Join waitlist</h2>
 				<p
-					class="status waitlist-status"
+					class="status status-banner waitlist-status"
 					data-waitlist-status
 					data-default-message={waitlistStatusMessages.submitted}
 					data-default-error-message={waitlistStatusMessages.error}
@@ -113,6 +113,7 @@ import {
 					action="/api/waitlist"
 					method="POST"
 					data-waitlist-form
+					data-astro-reload
 				>
 					<input
 						type="email"
@@ -141,211 +142,229 @@ import {
 			fieldErrors?: Record<string, unknown>;
 		} | null;
 
-		const carouselTrack = document.querySelector('[data-carousel-track]');
-		const previousCarouselButton = document.querySelector('[data-carousel-prev]');
-		const nextCarouselButton = document.querySelector('[data-carousel-next]');
-		const form = document.querySelector('[data-waitlist-form]');
-		const status = document.querySelector('[data-waitlist-status]');
-		const defaultSuccessMessage =
-			status instanceof HTMLElement ? status.dataset.defaultMessage ?? status.textContent ?? '' : '';
-		const defaultErrorMessage =
-			status instanceof HTMLElement ? status.dataset.defaultErrorMessage ?? '' : '';
-		let waitlistStatusTimeout: number | null = null;
+		function initHomePage() {
+			const carouselTrack = document.querySelector('[data-carousel-track]');
+			const previousCarouselButton = document.querySelector('[data-carousel-prev]');
+			const nextCarouselButton = document.querySelector('[data-carousel-next]');
+			const form = document.querySelector('[data-waitlist-form]');
+			const status = document.querySelector('[data-waitlist-status]');
+			const defaultSuccessMessage =
+				status instanceof HTMLElement ? status.dataset.defaultMessage ?? status.textContent ?? '' : '';
+			const defaultErrorMessage =
+				status instanceof HTMLElement ? status.dataset.defaultErrorMessage ?? '' : '';
+			let waitlistStatusTimeout: number | null = null;
 
-		function hideStatusElement(element: Element | null) {
-			if (!(element instanceof HTMLElement)) {
-				return;
+			function hideStatusElement(element: Element | null) {
+				if (!(element instanceof HTMLElement)) {
+					return;
+				}
+
+				element.classList.remove('status-banner--visible');
 			}
 
-			element.classList.remove('waitlist-status--visible');
-		}
+			function showStatusElement(element: Element | null, message: string, tone: 'success' | 'error') {
+				if (!(element instanceof HTMLElement)) {
+					return;
+				}
 
-		function showStatusElement(element: Element | null, message: string, tone: 'success' | 'error') {
-			if (!(element instanceof HTMLElement)) {
-				return;
+				if (waitlistStatusTimeout !== null) {
+					window.clearTimeout(waitlistStatusTimeout);
+					waitlistStatusTimeout = null;
+				}
+
+				element.textContent = message;
+				element.classList.remove('status--success', 'status--error');
+				element.classList.add(tone === 'success' ? 'status--success' : 'status--error');
+				element.classList.remove('status-banner--visible');
+				void element.offsetWidth;
+				element.classList.add('status-banner--visible');
+
+				waitlistStatusTimeout = window.setTimeout(() => {
+					hideStatusElement(element);
+					waitlistStatusTimeout = null;
+				}, 5000);
 			}
 
-			if (waitlistStatusTimeout !== null) {
-				window.clearTimeout(waitlistStatusTimeout);
-				waitlistStatusTimeout = null;
+			function showStatusSuccess(message = defaultSuccessMessage) {
+				if (!(status instanceof HTMLElement)) {
+					return;
+				}
+
+				showStatusElement(status, message, 'success');
 			}
 
-			element.textContent = message;
-			element.classList.remove('status--success', 'status--error');
-			element.classList.add(tone === 'success' ? 'status--success' : 'status--error');
-			element.classList.remove('waitlist-status--visible');
-			void element.offsetWidth;
-			element.classList.add('waitlist-status--visible');
+			function showStatusError(message = defaultErrorMessage) {
+				if (!(status instanceof HTMLElement)) {
+					return;
+				}
 
-			waitlistStatusTimeout = window.setTimeout(() => {
-				hideStatusElement(element);
-				waitlistStatusTimeout = null;
-			}, 5000);
-		}
-
-		function showStatusSuccess(message = defaultSuccessMessage) {
-			if (!(status instanceof HTMLElement)) {
-				return;
+				showStatusElement(status, message, 'error');
 			}
 
-			showStatusElement(status, message, 'success');
-		}
+			function clearStatus() {
+				if (!(status instanceof HTMLElement)) {
+					return;
+				}
 
-		function showStatusError(message = defaultErrorMessage) {
-			if (!(status instanceof HTMLElement)) {
-				return;
+				status.textContent = defaultSuccessMessage;
+				status.classList.remove('status--success', 'status--error');
+				hideStatusElement(status);
 			}
 
-			showStatusElement(status, message, 'error');
-		}
+			function getEmailControl() {
+				if (!(form instanceof HTMLFormElement)) {
+					return null;
+				}
 
-		function clearStatus() {
-			if (!(status instanceof HTMLElement)) {
-				return;
+				const control = form.elements.namedItem('email');
+
+				return control instanceof HTMLInputElement ? control : null;
 			}
 
-			status.textContent = defaultSuccessMessage;
-			status.classList.remove('status--success', 'status--error');
-			hideStatusElement(status);
-		}
+			function getSubmitControl() {
+				if (!(form instanceof HTMLFormElement)) {
+					return null;
+				}
 
-		function getEmailControl() {
+				const control = form.querySelector('.waitlist-submit');
+
+				return control instanceof HTMLButtonElement ? control : null;
+			}
+
+			function getNormalizedWaitlistEmailValue() {
+				const emailControl = getEmailControl();
+
+				return normalizeWaitlistEmail(emailControl?.value ?? '');
+			}
+
+			function setWaitlistSubmitEnabled(isEnabled: boolean) {
+				const submitControl = getSubmitControl();
+
+				if (!submitControl) {
+					return;
+				}
+
+				submitControl.disabled = !isEnabled;
+				submitControl.setAttribute('aria-disabled', String(!isEnabled));
+			}
+
+			function syncWaitlistEmailValidity() {
+				const emailControl = getEmailControl();
+
+				if (!emailControl) {
+					return false;
+				}
+
+				const normalizedValue = getNormalizedWaitlistEmailValue();
+				const message =
+					normalizedValue.length === 0
+						? ''
+						: getWaitlistEmailValidationMessage(normalizedValue) ?? '';
+				const isValid = normalizedValue.length > 0 && message.length === 0;
+
+				emailControl.setCustomValidity(message);
+
+				return isValid;
+			}
+
+			function syncWaitlistSubmitState() {
+				const emailControl = getEmailControl();
+
+				if (!emailControl) {
+					return false;
+				}
+
+				const normalizedValue = getNormalizedWaitlistEmailValue();
+
+				if (normalizedValue.length === 0) {
+					emailControl.setCustomValidity('');
+					setWaitlistSubmitEnabled(false);
+					return false;
+				}
+
+				const isValid = syncWaitlistEmailValidity();
+				setWaitlistSubmitEnabled(isValid);
+				return isValid;
+			}
+
+			async function parseWaitlistResponse(response: Response): Promise<WaitlistFormResponse> {
+				const result = await response.json().catch(() => null);
+
+				if (!result || typeof result !== 'object') {
+					return null;
+				}
+
+				return result as WaitlistFormResponse;
+			}
+
+			function carouselScrollAmount() {
+				if (!(carouselTrack instanceof HTMLElement)) {
+					return 0;
+				}
+
+				const cards = carouselTrack.querySelectorAll('.carousel-card');
+				const firstCard = cards.item(0);
+				const secondCard = cards.item(1);
+
+				if (!(firstCard instanceof HTMLElement)) {
+					return 0;
+				}
+
+				if (secondCard instanceof HTMLElement) {
+					return secondCard.offsetLeft - firstCard.offsetLeft;
+				}
+
+				return firstCard.offsetWidth;
+			}
+
+			function scrollCarousel(direction: 1 | -1) {
+				if (!(carouselTrack instanceof HTMLElement)) {
+					return;
+				}
+
+				const amount = carouselScrollAmount();
+
+				if (amount <= 0) {
+					return;
+				}
+
+				carouselTrack.scrollBy({
+					left: amount * direction,
+					behavior: 'smooth',
+				});
+			}
+
+			if (
+				previousCarouselButton instanceof HTMLButtonElement &&
+				previousCarouselButton.dataset.carouselBound !== 'true'
+			) {
+				previousCarouselButton.dataset.carouselBound = 'true';
+				previousCarouselButton.addEventListener('click', () => {
+					scrollCarousel(-1);
+				});
+			}
+
+			if (
+				nextCarouselButton instanceof HTMLButtonElement &&
+				nextCarouselButton.dataset.carouselBound !== 'true'
+			) {
+				nextCarouselButton.dataset.carouselBound = 'true';
+				nextCarouselButton.addEventListener('click', () => {
+					scrollCarousel(1);
+				});
+			}
+
 			if (!(form instanceof HTMLFormElement)) {
-				return null;
-			}
-
-			const control = form.elements.namedItem('email');
-
-			return control instanceof HTMLInputElement ? control : null;
-		}
-
-		function getSubmitControl() {
-			if (!(form instanceof HTMLFormElement)) {
-				return null;
-			}
-
-			const control = form.querySelector('.waitlist-submit');
-
-			return control instanceof HTMLButtonElement ? control : null;
-		}
-
-		function getNormalizedWaitlistEmailValue() {
-			const emailControl = getEmailControl();
-
-			return normalizeWaitlistEmail(emailControl?.value ?? '');
-		}
-
-		function setWaitlistSubmitEnabled(isEnabled: boolean) {
-			const submitControl = getSubmitControl();
-
-			if (!submitControl) {
 				return;
 			}
 
-			submitControl.disabled = !isEnabled;
-			submitControl.setAttribute('aria-disabled', String(!isEnabled));
-		}
-
-		function syncWaitlistEmailValidity() {
-			const emailControl = getEmailControl();
-
-			if (!emailControl) {
-				return false;
-			}
-
-			const normalizedValue = getNormalizedWaitlistEmailValue();
-			const message =
-				normalizedValue.length === 0
-					? ''
-					: getWaitlistEmailValidationMessage(normalizedValue) ?? '';
-			const isValid = normalizedValue.length > 0 && message.length === 0;
-
-			emailControl.setCustomValidity(message);
-
-			return isValid;
-		}
-
-		function syncWaitlistSubmitState() {
-			const emailControl = getEmailControl();
-
-			if (!emailControl) {
-				return false;
-			}
-
-			const normalizedValue = getNormalizedWaitlistEmailValue();
-
-			if (normalizedValue.length === 0) {
-				emailControl.setCustomValidity('');
-				setWaitlistSubmitEnabled(false);
-				return false;
-			}
-
-			const isValid = syncWaitlistEmailValidity();
-			setWaitlistSubmitEnabled(isValid);
-			return isValid;
-		}
-
-		async function parseWaitlistResponse(response: Response): Promise<WaitlistFormResponse> {
-			const result = await response.json().catch(() => null);
-
-			if (!result || typeof result !== 'object') {
-				return null;
-			}
-
-			return result as WaitlistFormResponse;
-		}
-
-		function carouselScrollAmount() {
-			if (!(carouselTrack instanceof HTMLElement)) {
-				return 0;
-			}
-
-			const cards = carouselTrack.querySelectorAll('.carousel-card');
-			const firstCard = cards.item(0);
-			const secondCard = cards.item(1);
-
-			if (!(firstCard instanceof HTMLElement)) {
-				return 0;
-			}
-
-			if (secondCard instanceof HTMLElement) {
-				return secondCard.offsetLeft - firstCard.offsetLeft;
-			}
-
-			return firstCard.offsetWidth;
-		}
-
-		function scrollCarousel(direction: 1 | -1) {
-			if (!(carouselTrack instanceof HTMLElement)) {
-				return;
-			}
-
-			const amount = carouselScrollAmount();
-
-			if (amount <= 0) {
-				return;
-			}
-
-			carouselTrack.scrollBy({
-				left: amount * direction,
-				behavior: 'smooth',
-			});
-		}
-
-		if (previousCarouselButton instanceof HTMLButtonElement) {
-			previousCarouselButton.addEventListener('click', () => {
-				scrollCarousel(-1);
-			});
-		}
-
-		if (nextCarouselButton instanceof HTMLButtonElement) {
-			nextCarouselButton.addEventListener('click', () => {
-				scrollCarousel(1);
-			});
-		}
-
-		if (form instanceof HTMLFormElement) {
 			syncWaitlistSubmitState();
+
+			if (form.dataset.waitlistInitialized === 'true') {
+				return;
+			}
+
+			form.dataset.waitlistInitialized = 'true';
 
 			form.addEventListener('input', () => {
 				syncWaitlistSubmitState();
@@ -414,5 +433,8 @@ import {
 				}
 			});
 		}
+
+		document.addEventListener('astro:page-load', initHomePage);
+		initHomePage();
 	</script>
 </SiteLayout>

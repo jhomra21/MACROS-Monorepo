@@ -8,20 +8,21 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "wrangler types && astro dev",
-    "build": "wrangler types && astro check && astro build",
-    "preview": "wrangler types && astro build && astro preview",
+    "dev": "astro dev",
+    "dev:worker": "bun run build && wrangler dev",
+    "build": "wrangler types && astro check && tsc --noEmit && astro build",
+    "preview": "bun run dev:worker",
     "deploy": "bun run build && bun run db:migrations:apply:remote && wrangler deploy",
     "deploy:dry-run": "bun run build && wrangler deploy --dry-run",
-    "check": "wrangler types && astro check",
+    "check": "wrangler types && astro check && tsc --noEmit",
     "types": "wrangler types",
     "db:migrations:apply:local": "wrangler d1 migrations apply SUPPORT_DB --local",
     "db:migrations:apply:remote": "wrangler d1 migrations apply SUPPORT_DB --remote",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^13.1.9",
-    "astro": "^6.1.6"
+    "astro": "^6.1.6",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
