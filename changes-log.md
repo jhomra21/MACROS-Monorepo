@@ -704,3 +704,29 @@ The following planning documents have been fully consolidated into this file and
 ### Final review result
 
 - Follow-up review after implementation and validation returned `LGTM — no issues found.`
+
+## Macro Ring Overlap Geometry and Anti-Aliasing Fix
+
+### Delivered
+
+- Fixed a visible dark vertical artifact at the 12 o'clock coordinate when macro rings exceeded 100% completion (`progress > 1.0`).
+- Fixed a 1-pixel anti-aliasing seam separation glitch on structurally overlapping geometry ring edges.
+- Dropped reliance on SwiftUI's `.round` line caps and artificial gradient padding (`safeStartAngle: -15.0`) resolving a math discontinuity within `AngularGradient` coordinate wrapper boundaries.
+
+### Main implementation steps
+
+- Realigned `dynamicSingleLapGradient` mapping to accurately traverse from `0` to `span` without structural offset logic.
+- Retrofitted all underlying stroke layers from `lineCap: .round` to exact precision `lineCap: .butt`.
+- Recreated natively rounded endpoints utilizing independently composed `Circle` components rendered precisely onto the edge vertices for `progress < 1.0` sweeps.
+- Occluded a subtle CoreGraphics hardware rasterization anti-aliasing seam natively generated between Lap 1 ending and Lap 2 beginning at 12 o'clock by overlaying an explicit `gradientEndColor` geometric `Circle` right at the transition nexus.
+
+### Bugs and implementation findings
+
+- Utilizing `safeStartAngle: -15.0` to originally mask a `.round` backward bleed actually collided against the `AngularGradient` cycle bounds, converting Lap 1's final ~15 horizontal degrees strictly into the dark `gradientStartColor`.
+- When the solid Lap 2 `.butt` edge pressed against these glitchy dark background structures, it highlighted a severe vertical division interface.
+- Mathematical pixel matching alone produced semi-transparent line-drawing glitches on straight geometric vectors. Dropping Lap 2's `.butt` edge alongside 0.0 directly over identical layers visually generated transparency pixel bleeding exposing underlying states. Shielding the coordinate entirely inside an independent opaque painted circle easily resolved this hardware limit without complex blending tricks.
+
+### Validation
+
+- Visual rendering reviewed successfully showing seamless contiguous gradients bridging across Lap 1 -> Lap 2 cycles natively.
+- Simulator `xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator'` compiled without compilation decay or dependency errors.

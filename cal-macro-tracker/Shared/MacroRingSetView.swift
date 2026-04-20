@@ -161,21 +161,11 @@ private struct GoalProgressRing: View {
 
     private func dynamicSingleLapGradient(fraction: Double) -> AngularGradient {
         let span = max(fraction, 0.001) * 360.0
-        let safeStartAngle: CGFloat = -15.0
-        let totalSpan = span + 30.0
-        let zeroLocation = abs(safeStartAngle) / totalSpan
-        let tipLocation = (span + abs(safeStartAngle)) / totalSpan
-
         return AngularGradient(
-            gradient: Gradient(stops: [
-                .init(color: gradientStartColor, location: 0.0),
-                .init(color: gradientStartColor, location: zeroLocation),
-                .init(color: gradientEndColor, location: tipLocation),
-                .init(color: gradientEndColor, location: 1.0)
-            ]),
+            gradient: Gradient(colors: [gradientStartColor, gradientEndColor]),
             center: .center,
-            startAngle: .degrees(safeStartAngle),
-            endAngle: .degrees(span + 15)
+            startAngle: .degrees(0),
+            endAngle: .degrees(span)
         )
     }
 
@@ -188,17 +178,21 @@ private struct GoalProgressRing: View {
                 let remainder = progress.truncatingRemainder(dividingBy: 1.0)
                 let overlap = (remainder == 0 && progress >= 1.0) ? 1.0 : remainder
                 let hasFullLap = progress > 1.0
-                let startTrim: CGFloat = 0.0001
-                let safeOverlap = max(startTrim, overlap == 1.0 ? 0.999 : overlap)
+                let safeOverlap = max(0.0001, overlap == 1.0 ? 0.999 : overlap)
 
                 if hasFullLap {
                     Circle()
-                        .trim(from: startTrim, to: 0.999)
+                        .trim(from: 0.0, to: 1.0)
                         .stroke(
                             dynamicSingleLapGradient(fraction: 1.0),
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
                         )
                         .rotationEffect(.degrees(-90))
+
+                    Circle()
+                        .fill(gradientEndColor)
+                        .frame(width: lineWidth, height: lineWidth)
+                        .offset(y: -diameter / 2)
 
                     Circle()
                         .fill(Color.black)
@@ -213,7 +207,7 @@ private struct GoalProgressRing: View {
                         .rotationEffect(.degrees(overlap * 360))
 
                     Circle()
-                        .trim(from: startTrim, to: safeOverlap)
+                        .trim(from: 0.0, to: safeOverlap)
                         .stroke(
                             gradientEndColor,
                             style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
@@ -226,14 +220,26 @@ private struct GoalProgressRing: View {
                         .offset(y: -diameter / 2)
                         .rotationEffect(.degrees(overlap * 360))
                 } else {
-                    let safeProgress = max(startTrim, progress == 1.0 ? 0.999 : progress)
+                    let safeProgress = max(0.0001, progress == 1.0 ? 0.999 : progress)
+
                     Circle()
-                        .trim(from: startTrim, to: safeProgress)
+                        .trim(from: 0.0, to: safeProgress)
                         .stroke(
                             dynamicSingleLapGradient(fraction: progress),
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
                         )
                         .rotationEffect(.degrees(-90))
+
+                    Circle()
+                        .fill(gradientStartColor)
+                        .frame(width: lineWidth, height: lineWidth)
+                        .offset(y: -diameter / 2)
+
+                    Circle()
+                        .fill(gradientEndColor)
+                        .frame(width: lineWidth, height: lineWidth)
+                        .offset(y: -diameter / 2)
+                        .rotationEffect(.degrees(safeProgress * 360))
                 }
             }
         }
