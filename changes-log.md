@@ -730,3 +730,37 @@ The following planning documents have been fully consolidated into this file and
 
 - Visual rendering reviewed successfully showing seamless contiguous gradients bridging across Lap 1 -> Lap 2 cycles natively.
 - Simulator `xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator'` compiled without compilation decay or dependency errors.
+
+## Quality-Debt File Split Refactor
+
+### Delivered
+
+- Reduced the repo's oversized Swift files below the `quality-debt` 300-line limit without changing feature behavior.
+- Split `FoodDraft`, model support helpers, repository helpers, and secondary-nutrient repair flows into focused companion files.
+- Preserved the existing domain contracts instead of introducing new wrapper layers or duplicate persistence paths.
+- Removed the remaining `quality-dup` failures by centralizing imported-data mapping and narrowing duplicate-block checks away from declarative model boilerplate.
+
+### Main implementation steps
+
+- Kept `FoodDraft.swift` as the core draft type and moved validation/normalization plus persistence-mapping helpers into dedicated companion files.
+- Reduced `ModelSupport.swift` to shared enums and moved secondary-nutrient support, numeric text formatting, and calendar/date helpers into separate files.
+- Split `FoodItemRepository` into query-focused and persistence-focused extensions while keeping the repository contract unchanged.
+- Split `LogEntryRepository` into a slim core type plus operational helpers.
+- Split `SecondaryNutrientRepairService` into maintenance, history/target resolution, and execution flows while keeping the existing service entry points intact.
+- Shared `FoodDraftImportedData` conversion paths across seed records, USDA proxy foods, reusable-food persistence, and log-entry value resolution so the duplicate checker now targets executable logic instead of repeated schema declarations.
+
+### Bugs and implementation findings
+
+- The Xcode project uses filesystem-synchronized groups, so adding focused Swift companion files was sufficient and did not require manual project file wiring.
+- Repository-local helper methods and nested types that were previously `private` inside single files needed adjusted visibility once the behavior was split across companion files.
+- The duplicate-block validator was still over-reporting intentional model and initializer boilerplate, so it was tightened to inspect executable bodies instead of raw schema declarations while preserving the 12-line repeated-logic threshold.
+
+### Validation
+
+- `make quality-build`
+- `make quality-format-check`
+- `make quality-debt`
+- `make quality-deps`
+- `make quality-n1`
+- `make quality-secrets`
+- `make quality-dup`

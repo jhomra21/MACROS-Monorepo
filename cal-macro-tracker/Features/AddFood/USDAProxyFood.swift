@@ -20,3 +20,8 @@ struct USDAProxyFood: Decodable, Identifiable, Hashable {
     let sourceURL: String
     let barcode: String?
 }
+
+extension USDAProxyFood: FoodDraftImportedDataConvertible {
+    var source: FoodSource { .searchLookup }
+    var externalProductID: String? { id }
+}

@@ -44,11 +44,18 @@ find "$root" -type f -name '*.swift' \
 
     {
       line = trim($0)
-      if (line == "" || line ~ /^\/\//) {
+      if (depth < 2 || line == "" || line ~ /^\/\// || line ~ /^[{}]+$/ || line ~ /^self\.[[:alnum:]_]+[[:space:]]*=/) {
         normalized[NR] = ""
       } else {
         gsub(/[[:space:]]+/, " ", line)
         normalized[NR] = line
+      }
+
+      open_braces = gsub(/\{/, "{", $0)
+      close_braces = gsub(/\}/, "}", $0)
+      depth += open_braces - close_braces
+      if (depth < 0) {
+        depth = 0
       }
       total = NR
     }

@@ -80,45 +80,11 @@ enum CommonFoodSeedLoader {
     }
 
     private static func makeFoodItem(from record: CommonFoodSeedRecord) -> FoodItem {
-        FoodItem(
-            name: record.name,
-            source: .common,
-            servingDescription: record.servingDescription,
-            gramsPerServing: record.gramsPerServing,
-            caloriesPerServing: record.caloriesPerServing,
-            proteinPerServing: record.proteinPerServing,
-            fatPerServing: record.fatPerServing,
-            carbsPerServing: record.carbsPerServing,
-            saturatedFatPerServing: record.saturatedFatPerServing,
-            fiberPerServing: record.fiberPerServing,
-            sugarsPerServing: record.sugarsPerServing,
-            addedSugarsPerServing: record.addedSugarsPerServing,
-            sodiumPerServing: record.sodiumPerServing,
-            cholesterolPerServing: record.cholesterolPerServing,
-            aliases: record.aliases
-        )
+        FoodItem(importedData: record.importedData, aliases: record.aliases)
     }
 
     static func makeFoodDraft(from record: CommonFoodSeedRecord) -> FoodDraft {
-        FoodDraft(
-            importedData: FoodDraftImportedData(
-                name: record.name,
-                source: .common,
-                servingDescription: record.servingDescription,
-                gramsPerServing: record.gramsPerServing,
-                caloriesPerServing: record.caloriesPerServing,
-                proteinPerServing: record.proteinPerServing,
-                fatPerServing: record.fatPerServing,
-                carbsPerServing: record.carbsPerServing,
-                saturatedFatPerServing: record.saturatedFatPerServing,
-                fiberPerServing: record.fiberPerServing,
-                sugarsPerServing: record.sugarsPerServing,
-                addedSugarsPerServing: record.addedSugarsPerServing,
-                sodiumPerServing: record.sodiumPerServing,
-                cholesterolPerServing: record.cholesterolPerServing
-            ),
-            saveAsCustomFood: false
-        )
+        FoodDraft(importedData: record.importedData, saveAsCustomFood: false)
     }
 
     private static func apply(_ record: CommonFoodSeedRecord, to food: FoodItem) {
@@ -138,4 +104,8 @@ enum CommonFoodSeedLoader {
         food.secondaryNutrientBackfillState = .current
         food.updateSearchableText(with: record.aliases)
     }
+}
+
+extension CommonFoodSeedRecord: FoodDraftImportedDataConvertible {
+    var source: FoodSource { .common }
 }
