@@ -159,6 +159,19 @@ private struct GoalProgressRing: View {
         colorScheme == .dark ? trackColor.opacity(0.2) : trackColor.opacity(0.45)
     }
 
+    private var usesOverlapRenderer: Bool {
+        progress >= 1.0
+    }
+
+    private var overlapFraction: Double {
+        let remainder = progress.truncatingRemainder(dividingBy: 1.0)
+        return (remainder == 0 && usesOverlapRenderer) ? 1.0 : remainder
+    }
+
+    private var overlapTailLength: Double {
+        0.15
+    }
+
     private func dynamicSingleLapGradient(fraction: Double) -> AngularGradient {
         let span = max(fraction, 0.001) * 360.0
         return AngularGradient(
@@ -175,24 +188,15 @@ private struct GoalProgressRing: View {
                 .stroke(resolvedTrackColor, lineWidth: lineWidth)
 
             if progress > 0 {
-                let remainder = progress.truncatingRemainder(dividingBy: 1.0)
-                let overlap = (remainder == 0 && progress >= 1.0) ? 1.0 : remainder
-                let hasFullLap = progress > 1.0
-                let safeOverlap = max(0.0001, overlap == 1.0 ? 0.999 : overlap)
-
-                if hasFullLap {
+                if usesOverlapRenderer {
+                    // Exact-goal and exact-multiple states intentionally use the overlap renderer.
+                    // A full lap still reads as one continuous ouroboros ring with the seam hidden.
                     Circle()
-                        .trim(from: 0.0, to: 1.0)
                         .stroke(
                             dynamicSingleLapGradient(fraction: 1.0),
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                         )
-                        .rotationEffect(.degrees(-90))
-
-                    Circle()
-                        .fill(gradientEndColor)
-                        .frame(width: lineWidth, height: lineWidth)
-                        .offset(y: -diameter / 2)
+                        .rotationEffect(.degrees(-90 + (overlapFraction * 360)))
 
                     Circle()
                         .fill(Color.black)
@@ -204,42 +208,40 @@ private struct GoalProgressRing: View {
                             y: 0
                         )
                         .offset(y: -diameter / 2)
-                        .rotationEffect(.degrees(overlap * 360))
+                        .rotationEffect(.degrees(overlapFraction * 360))
+
+                    let tailSpan = overlapTailLength * 360.0
 
                     Circle()
-                        .trim(from: 0.0, to: safeOverlap)
+                        .trim(from: 0.0, to: overlapTailLength)
                         .stroke(
-                            gradientEndColor,
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
+                            AngularGradient(
+                                gradient: Gradient(stops: [
+                                    .init(color: gradientEndColor.opacity(0), location: 0.0),
+                                    .init(color: gradientEndColor, location: 0.90),
+                                    .init(color: gradientEndColor, location: 1.0)
+                                ]),
+                                center: .center,
+                                startAngle: .degrees(0),
+                                endAngle: .degrees(tailSpan)
+                            ),
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                         )
-                        .rotationEffect(.degrees(-90))
-
-                    Circle()
-                        .fill(gradientEndColor)
-                        .frame(width: lineWidth, height: lineWidth)
-                        .offset(y: -diameter / 2)
-                        .rotationEffect(.degrees(overlap * 360))
+                        .rotationEffect(.degrees(-90 + ((overlapFraction - overlapTailLength) * 360)))
+                        .mask {
+                            Circle()
+                                .trim(from: 0.0, to: overlapTailLength + 0.1)
+                                .stroke(style: StrokeStyle(lineWidth: lineWidth * 2, lineCap: .butt))
+                                .rotationEffect(.degrees(-90 + ((overlapFraction - overlapTailLength) * 360)))
+                        }
                 } else {
-                    let safeProgress = max(0.0001, progress == 1.0 ? 0.999 : progress)
-
                     Circle()
-                        .trim(from: 0.0, to: safeProgress)
+                        .trim(from: 0.0, to: progress)
                         .stroke(
                             dynamicSingleLapGradient(fraction: progress),
-                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt)
+                            style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
                         )
                         .rotationEffect(.degrees(-90))
-
-                    Circle()
-                        .fill(gradientStartColor)
-                        .frame(width: lineWidth, height: lineWidth)
-                        .offset(y: -diameter / 2)
-
-                    Circle()
-                        .fill(gradientEndColor)
-                        .frame(width: lineWidth, height: lineWidth)
-                        .offset(y: -diameter / 2)
-                        .rotationEffect(.degrees(safeProgress * 360))
                 }
             }
         }

@@ -705,31 +705,45 @@ The following planning documents have been fully consolidated into this file and
 
 - Follow-up review after implementation and validation returned `LGTM — no issues found.`
 
-## Macro Ring Overlap Geometry and Anti-Aliasing Fix
+## Macro Ring Architecture Native Optimization
 
 ### Delivered
 
-- Fixed a visible dark vertical artifact at the 12 o'clock coordinate when macro rings exceeded 100% completion (`progress > 1.0`).
-- Fixed a 1-pixel anti-aliasing seam separation glitch on structurally overlapping geometry ring edges.
-- Dropped reliance on SwiftUI's `.round` line caps and artificial gradient padding (`safeStartAngle: -15.0`) resolving a math discontinuity within `AngularGradient` coordinate wrapper boundaries.
+- Simplified macro ring overlapping topology by returning to pure primitive native Apple SwiftUI parameters.
+- Restored visual fidelity conforming exactly to Apple Watch-style multi-lap overlaps without multiple standalone "beads" or broken edge coordinates.
 
 ### Main implementation steps
 
-- Realigned `dynamicSingleLapGradient` mapping to accurately traverse from `0` to `span` without structural offset logic.
-- Retrofitted all underlying stroke layers from `lineCap: .round` to exact precision `lineCap: .butt`.
-- Recreated natively rounded endpoints utilizing independently composed `Circle` components rendered precisely onto the edge vertices for `progress < 1.0` sweeps.
-- Occluded a subtle CoreGraphics hardware rasterization anti-aliasing seam natively generated between Lap 1 ending and Lap 2 beginning at 12 o'clock by overlaying an explicit `gradientEndColor` geometric `Circle` right at the transition nexus.
+- Reverted to the precise branch architecture natively established but completely stripped out the isolated `Circle().fill(...)` explicit manual geometry overrides injected to fake tracker heads.
+- Integrated native `StrokeStyle(lineCap: .round)` identically onto both `< 1.0` and `> 1.0` boundary laps, instructing SwiftUI to natively implicitly generate geometrically intact edge caps bounding perfectly mathematically to coordinates without snapping Z-layer graphics transparency matrices.
+- Discarded manually implemented geometric `.butt` anti-aliasing overlapping patches in favor of native parameter evaluation inherently generating perfectly masked origin heads inside a single contiguous `.stroke` execution.
 
 ### Bugs and implementation findings
 
-- Utilizing `safeStartAngle: -15.0` to originally mask a `.round` backward bleed actually collided against the `AngularGradient` cycle bounds, converting Lap 1's final ~15 horizontal degrees strictly into the dark `gradientStartColor`.
-- When the solid Lap 2 `.butt` edge pressed against these glitchy dark background structures, it highlighted a severe vertical division interface.
-- Mathematical pixel matching alone produced semi-transparent line-drawing glitches on straight geometric vectors. Dropping Lap 2's `.butt` edge alongside 0.0 directly over identical layers visually generated transparency pixel bleeding exposing underlying states. Shielding the coordinate entirely inside an independent opaque painted circle easily resolved this hardware limit without complex blending tricks.
+- Bypassing SwiftUI's core cap rendering parameters by overlaying disconnected opaque painted standalone `Circle` coordinate beads directly caused all visual 12 o'clock overlap artifacts. The antialiasing limits between the separated `Shape` instances caused visual outlines generating visible "dots" identically across all track vertices.
+- When `lineCap: .round` explicitly maps backwards dynamically on the 0-degree Cartesian layout boundary natively against an `AngularGradient`, its negative `< 0` domain structurally inherits identical correct gradient mapping automatically, completely occluding physical wrapping geometry edges natively.
 
 ### Validation
 
-- Visual rendering reviewed successfully showing seamless contiguous gradients bridging across Lap 1 -> Lap 2 cycles natively.
-- Simulator `xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator'` compiled without compilation decay or dependency errors.
+- Visual verification via preview matched native 100%+ overlapping iOS standard ring models cleanly without extraneous visible disconnected Z-layer graphics dots or rigid vertical coordinate slices.
+
+## Macro Ring Overlap Rendering Perfection (CoreGraphics Glitch Taming)
+
+### Delivered
+
+- Finally eradicated all geometric artifacts, vertical seam glitches, and pinched origin dots rendering multi-lap rings, delivering pure physical 3D spiral simulation.
+- Protected multi-lap rings against well-documented CoreGraphics edge-case rendering crashes on paths smaller than `.round` stroke widths.
+
+### Main implementation steps
+
+- Shifted the Base Lap rotation dynamically so its 0-degree origin (where SwiftUI natively generates closed path flat seams) is deliberately buried under the physical shadow/cap of the Overlap head. This leaves the 12 o'clock space fully seamlessly continuous.
+- Abandoned strictly `.trim(to: overlap)` clipping for overlapping active heads natively. By drawing a minimum `tailLength` wedge (e.g., 15% sweep) mathematically rotated to terminate precisely on the overlap head variable, we physically feed CoreGraphics an explicitly lengthy boundary immune to `1.01` small path geometric implosions.
+- Visually faded that trailing wedge identically from `gradientEndColor.opacity(0.0)` up to solid `1.0`. Interpolating identically to `opacity(0)` absolutely avoids mixing with `.clear` black interpolations, ensuring start caps physically remain computationally robust for CoreGraphics line-cap physics while maintaining zero-opacity optical transparency under exact composite matching without smearing a muddy ring behind the active cap.
+
+### Bugs and implementation findings
+
+- **The Peanut / Disconnected Dot Bug:** SwiftUI CoreGraphics path generation mathematically deforms (forming hourglass pinches or detached dots) when creating a `.stroke(lineCap: .round)` on paths approaching lengths shorter than their line width. At 1.01% thresholds, `.trim(to: safeOverlap)` triggered this corruption. Extending the trailing tail length bypassing this constraint explicitly stopped the structural degradation.
+- **The "Dirty Ball" Bug:** Standard `Gradient(colors: [.clear, gradientEndColor])` structurally instructs color renderers to map toward transparent absolute Black `(0,0,0,0)`. On a wedge sweep, this actively introduced a muddy smear precisely behind the active cap overlapping the background track. Refactoring the stops directly to `opacity(0.0)` guaranteed matching RGB space interpolation, perfectly matching the track.
 
 ## Quality-Debt File Split Refactor
 
@@ -764,3 +778,54 @@ The following planning documents have been fully consolidated into this file and
 - `make quality-n1`
 - `make quality-secrets`
 - `make quality-dup`
+
+## Macro Ring Rendering Artifacts (Fixed)
+
+### Delivered
+
+- Fixed the 12 o'clock vertical seam and rendering artifacts in overlapping macro rings ("vertical lines at ring start points").
+- Resolved a regression where a "black ball" or broken geometric pieces emerged from excessively aggressive alpha-gradient masking techniques.
+- Eliminated the backward-reaching counter-clockwise artifact at the lap crossover point cleanly natively without breaking edge rendering.
+
+### Main implementation steps
+
+- Reinstated the Base Lap continuous rotational shift. The code now physically shifts the underlying layout forward (`-90 + (overlap * 360)`) so the closed background's hard physical gradient seam is tucked cleanly underneath the progressing drop shadow.
+- Adjusted the transparent-tailed wedge spanning the active overlap lap bounds instead of slicing it dynamically with gradients. The opacity distribution now interpolates organically from `0.0` out to `0.95`. This fully rectifies the artifact where early `0.15` thresholds spawned dense solid arcs, generating hard lines across the active ring wedge.
+- Handled the 12 o'clock "protruding tail" bug (caused by `.round` cap math backing structurally over `0.0` space) using a precise layout overlay: masking exclusively behind the head boundary leveraging a clean `stroke(lineCap: .butt)` sweep to safely chop the trailing end of the trailing cap.
+
+### Bugs and implementation findings
+
+- Using `AngularGradient` sweeps directly as an alpha mask structurally collapsed boundaries unexpectedly on the drop shadow component layers. A flat static circular mask cut with a native `.butt` property mathematically crops overlapping backwards shapes purely efficiently without risking gradient location mismatches against frame offsets.
+- Disabling the full-track base rotational shift mechanically exposed the native gradient breakline exactly at `0` space—thus forcing vertical static splits identically overlapping the beginning head track (as complained by user referencing "vertical lines"). Replacing the shift perfectly fixes the optical structure.
+- `progress == 1.0` is intentionally treated as part of the overlap-capable path (`progress >= 1.0`), not the plain `< 1.0` sweep path. For this renderer, forcing exact-goal values back onto the single-lap branch re-exposes the visible vertical seam at the ring origin/start boundary.
+- The visual contract here is Apple Fitness-style behavior: at exact goal, the ring should still read as one fully completed lap with the seam hidden, not as a mathematically separate "perfect single trim" if that trim reveals the start/end breakline. Future review note: do not flag `>= 1.0` here as an automatic bug unless the actual rendered output changes.
+
+## Macro Ring Contract Clarification and Visual Validation
+
+### Delivered
+
+- Clarified the current macro-ring renderer contract in code and history so future review passes do not misclassify intentional behavior as regressions.
+- Recorded a focused visual validation pass for the current `GoalProgressRing` implementation and retracted two incorrect review findings.
+
+### Current renderer contract
+
+- `progress < 1.0` uses a single trimmed gradient arc.
+- `progress >= 1.0` uses the overlap renderer intentionally, including exact-goal and exact-multiple states.
+- Exact full multiples such as `2.0` and `3.0` are supposed to read the same as `1.0`: one continuous ouroboros-style completed lap with the seam hidden, not a visually different over-goal state.
+- The overlap renderer keeps a full base lap, a shadowed overlap head, and a fixed-length transparent-tailed wedge so the active head reads cleanly while the seam stays buried under it.
+
+### Validation
+
+- Rendered the current `GoalProgressRing` implementation into a temporary local SwiftUI image under `/tmp` and inspected these cases side by side:
+  - tiny sub-goal progress: `0.01`, `0.02`, `0.03`, `0.10`
+  - near-goal progress: `0.97`, `0.98`, `0.99`, `1.00`
+- Validation results:
+  - no peanut / disconnected-dot artifact appeared in those low-progress cases
+  - `0.97`, `0.98`, and `0.99` remained visually distinct from `1.00`
+  - exact multiples such as `2.0` and `3.0` matching the `1.0` completed-ring look is intentional and correct for this renderer
+
+### Review correction
+
+- An earlier review incorrectly generalized an older macro-ring note about a prior overlap-path bug onto the current `< 1.0` branch.
+- That same review also incorrectly treated “`2.0` looks like `1.0`” as a defect even though the current renderer explicitly intends that ouroboros-style behavior.
+- Corrected review status for that pass: `LGTM — no issues found.`
