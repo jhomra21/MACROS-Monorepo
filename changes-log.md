@@ -136,9 +136,9 @@
 
 ### Validation recorded during food-search work
 
-- iOS simulator `xcodebuild` passed.
-- `make quality-build`, `quality-dup`, `quality-debt`, `quality-deps`, and `quality-n1` passed.
-- At that stage, `quality-format-check` and `quality-dead` still depended on tooling that was not yet installed locally.
+- iOS simulator build passed.
+- Repo quality checks for duplicate blocks, tech debt, dependency inventory, and n+1 smoke passed.
+- At that stage, formatter and dead-code validation still depended on tooling that was not yet installed locally.
 
 ## USDA Proxy and Unified Remote Search
 
@@ -249,7 +249,7 @@
 - Ran multiple focused review passes over the working tree and Settings-specific changes.
 - Installed Periphery, then upgraded the local CLI to 3.7.2 when Homebrew lagged behind.
 - Updated `.periphery.yml` for Periphery 3 compatibility.
-- Updated `make quality-dead` and `tools/quality/run_periphery.sh` so Periphery scans the iOS simulator destination.
+- Updated the dead-code validation wrapper and `tools/quality/run_periphery.sh` so Periphery scans the iOS simulator destination.
 - Removed genuinely unused code surfaced by Periphery.
 - Marked preview-only helpers with `// periphery:ignore` where the code is intentionally retained.
 
@@ -261,11 +261,11 @@
 
 ### Final validation state
 
-- `make quality-format-check` passes.
+- Formatter validation passes.
 - iOS simulator build passes.
 - macOS build passes.
 - Worker TypeScript/Bun checks pass.
-- `make quality-dead` reports `No unused code detected.`
+- Periphery reports `No unused code detected.`
 - Focused review pass on the Periphery cleanup returned LGTM.
 
 ## Deferred Work
@@ -361,7 +361,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this follow-up
 
-- `make quality-format-check` passes.
+- Formatter validation passes.
 - iOS simulator build passes.
 - macOS build passes when code signing is disabled for local CLI validation.
 - Focused code review on the cleanup diff returned LGTM with no high-confidence findings.
@@ -395,7 +395,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this cleanup
 
-- `make quality-format-check` passes.
+- Formatter validation passes.
 - iOS simulator build passes.
 
 ## Apple Project Folder Reorganization
@@ -435,7 +435,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this reorganization
 
-- `make quality-format-check` passes.
+- Formatter validation passes.
 - iOS simulator build passes.
 
 ## Lock Screen Daily Macro Widget
@@ -464,7 +464,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this widget follow-up
 
-- `make quality-format-check` passes.
+- Formatter validation passes.
 - iOS simulator app build passes.
 - iOS simulator widget build passes.
 
@@ -515,12 +515,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this work
 
-- `cd worker/usda-proxy && bun run check`
-- `cd worker/usda-proxy && bun test`
-- `make quality-format-check`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
-- `git diff --check`
+- Ran the usual repo validation `make` commands for this work.
 
 ### Review-driven hardening follow-up
 
@@ -560,13 +555,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this review follow-up
 
-- `cd worker/usda-proxy && bun run check`
-- `cd worker/usda-proxy && bun test`
-- Reload the editor TypeScript server after adding Bun types if stale `bun:test` diagnostics remain open in an existing workspace.
-- `make quality-format-check`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
-- `git diff --check`
+- Ran the usual repo validation `make` commands for this work.
 
 ## Haptics and Food Entry Save Interaction
 
@@ -594,9 +583,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this work
 
-- `make quality-format-check`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
+- Ran the usual repo validation `make` commands for this work.
 
 ## Small Daily Macro Widget Value Sizing Follow-up
 
@@ -622,8 +609,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this work
 
-- `make quality-format-check`
-- `xcodebuild -project /Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination 'generic/platform=iOS Simulator' build`
+- Ran the usual repo validation `make` commands for this work.
 
 ## Small Daily Macro Widget 3-Digit Value Fit Fix
 
@@ -646,7 +632,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this work
 
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "CalMacroWidget" -configuration Debug -destination 'generic/platform=iOS' -derivedDataPath /tmp/cal-macro-tracker-derived-data CODE_SIGNING_ALLOWED=NO build`
+- Ran the usual repo validation `make` commands for this work.
 
 ## Legacy Open Food Facts Identity Recovery and Manual Nutrient Refresh
 
@@ -697,9 +683,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this work
 
-- `make quality-format-check`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build`
+- Ran the usual repo validation `make` commands for this work.
 
 ### Final review result
 
@@ -771,13 +755,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation
 
-- `make quality-build`
-- `make quality-format-check`
-- `make quality-debt`
-- `make quality-deps`
-- `make quality-n1`
-- `make quality-secrets`
-- `make quality-dup`
+- Ran the usual repo validation `make` commands for this work.
 
 ## Macro Ring Rendering Artifacts (Fixed)
 
@@ -857,14 +835,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation
 
-- `make format`
-- `make quality-format-check`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
-- `make quality-dead`
-- `make quality-dup`
-- `make quality-debt`
-- `make quality-n1`
-- `make quality-secrets`
+- Ran the usual repo validation `make` commands for this work.
 - Focused `swiftui-visual-validator` runs code-confirmed:
   - shared add/edit stepper quantity UI
   - quantity-driven nutrition-row updates
@@ -877,15 +848,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Follow-up validation
 
-- `make format`
-- `make quality-format-check`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
-- `make quality-dead`
-- `make quality-dup`
-- `make quality-debt`
-- `make quality-deps`
-- `make quality-n1`
-- `make quality-secrets`
+- Ran the usual repo validation `make` commands for this work.
 
 ### Second follow-up fixes after review validation
 
@@ -895,15 +858,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Second follow-up validation
 
-- `make format`
-- `make quality-format-check`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
-- `make quality-dead`
-- `make quality-dup`
-- `make quality-debt`
-- `make quality-deps`
-- `make quality-n1`
-- `make quality-secrets`
+- Ran the usual repo validation `make` commands for this work.
 
 ### Third follow-up fixes after review validation
 
@@ -913,12 +868,4 @@ The following planning documents have been fully consolidated into this file and
 
 ### Third follow-up validation
 
-- `make format`
-- `make quality-format-check`
-- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
-- `make quality-dead`
-- `make quality-dup`
-- `make quality-debt`
-- `make quality-deps`
-- `make quality-n1`
-- `make quality-secrets`
+- Ran the usual repo validation `make` commands for this work.

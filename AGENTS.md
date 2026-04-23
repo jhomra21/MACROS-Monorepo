@@ -52,6 +52,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 - Keep diffs focused; do not mix refactors with feature behavior changes unless requested.
 - Preserve public contracts unless change is intentional and documented.
 - Validate before finishing
+- Do not append routine validation command lists to `changes-log.md` unless explicitly requested; if validation needs to be recorded, use one short summary line instead.
 
 ## Commands
 
