@@ -15,7 +15,6 @@ enum FoodDraftField: Hashable {
     case addedSugars
     case sodium
     case cholesterol
-    case quantityAmount
 
     static let baseFormOrder: [FoodDraftField] = [
         .name,
@@ -131,15 +130,18 @@ struct FoodDraftFormSections: View {
     @Binding var draft: FoodDraft
     let brandPrompt: String
     let gramsPrompt: String
+    let nutritionPresentation: FoodDraftNutritionPresentation?
     let focusedField: FocusState<FoodDraftField?>.Binding
     @Binding var showsAdditionalNutrition: Bool
     @Binding private var numericText: FoodDraftNumericText
+    @State private var nutrientEditingBridge = FoodDraftNutrientEditingBridge()
 
     init(
         draft: Binding<FoodDraft>,
         numericText: Binding<FoodDraftNumericText>,
         brandPrompt: String,
         gramsPrompt: String,
+        nutritionPresentation: FoodDraftNutritionPresentation? = nil,
         showsAdditionalNutrition: Binding<Bool>,
         focusedField: FocusState<FoodDraftField?>.Binding
     ) {
@@ -147,6 +149,7 @@ struct FoodDraftFormSections: View {
         _numericText = numericText
         self.brandPrompt = brandPrompt
         self.gramsPrompt = gramsPrompt
+        self.nutritionPresentation = nutritionPresentation
         _showsAdditionalNutrition = showsAdditionalNutrition
         self.focusedField = focusedField
     }
@@ -168,11 +171,11 @@ struct FoodDraftFormSections: View {
                 )
             }
 
-            Section("Nutrition per serving") {
-                nutrientField(title: "Calories", suffix: "kcal", field: .calories, text: numericBinding(\.calories))
-                nutrientField(title: "Protein", suffix: "g", field: .protein, text: numericBinding(\.protein))
-                nutrientField(title: "Fat", suffix: "g", field: .fat, text: numericBinding(\.fat))
-                nutrientField(title: "Carbs", suffix: "g", field: .carbs, text: numericBinding(\.carbs))
+            Section(nutritionSectionTitle) {
+                nutrientField(title: "Calories", suffix: "kcal", field: .calories, text: nutrientBinding(for: .calories))
+                nutrientField(title: "Protein", suffix: "g", field: .protein, text: nutrientBinding(for: .protein))
+                nutrientField(title: "Fat", suffix: "g", field: .fat, text: nutrientBinding(for: .fat))
+                nutrientField(title: "Carbs", suffix: "g", field: .carbs, text: nutrientBinding(for: .carbs))
                 additionalNutritionToggle
 
                 if showsVisibleAdditionalNutrition {
@@ -180,25 +183,31 @@ struct FoodDraftFormSections: View {
                         title: "Saturated Fat",
                         suffix: "g",
                         field: .saturatedFat,
-                        text: numericBinding(\.saturatedFat)
+                        text: nutrientBinding(for: .saturatedFat)
                     )
-                    nutrientField(title: "Fiber", suffix: "g", field: .fiber, text: numericBinding(\.fiber))
-                    nutrientField(title: "Sugars", suffix: "g", field: .sugars, text: numericBinding(\.sugars))
+                    nutrientField(title: "Fiber", suffix: "g", field: .fiber, text: nutrientBinding(for: .fiber))
+                    nutrientField(title: "Sugars", suffix: "g", field: .sugars, text: nutrientBinding(for: .sugars))
                     nutrientField(
                         title: "Added Sugars",
                         suffix: "g",
                         field: .addedSugars,
-                        text: numericBinding(\.addedSugars)
+                        text: nutrientBinding(for: .addedSugars)
                     )
-                    nutrientField(title: "Sodium", suffix: "mg", field: .sodium, text: numericBinding(\.sodium))
+                    nutrientField(title: "Sodium", suffix: "mg", field: .sodium, text: nutrientBinding(for: .sodium))
                     nutrientField(
                         title: "Cholesterol",
                         suffix: "mg",
                         field: .cholesterol,
-                        text: numericBinding(\.cholesterol)
+                        text: nutrientBinding(for: .cholesterol)
                     )
                 }
             }
+        }
+        .onChange(of: focusedField.wrappedValue) { _, focusedField in
+            nutrientEditingBridge.syncPresentedValues(with: focusedField)
+        }
+        .onChange(of: nutritionPresentation?.multiplier) { _, _ in
+            nutrientEditingBridge.invalidatePresentedValues()
         }
     }
 
@@ -248,9 +257,38 @@ struct FoodDraftFormSections: View {
         )
     }
 
-    private var showsVisibleAdditionalNutrition: Bool {
-        showsAdditionalNutrition || requiresAdditionalNutritionVisibility
+    private func nutrientBinding(for field: FoodDraftField) -> Binding<String> {
+        guard let configuration = field.nutrientTextConfiguration else {
+            assertionFailure("Unsupported nutrient field binding.")
+            return .constant("")
+        }
+
+        return Binding(
+            get: {
+                nutrientEditingBridge.displayedText(
+                    for: field,
+                    configuration: configuration,
+                    numericText: numericText,
+                    nutritionPresentation: nutritionPresentation,
+                    focusedField: focusedField.wrappedValue
+                )
+            },
+            set: { newValue in
+                nutrientEditingBridge.update(
+                    newValue,
+                    for: field,
+                    configuration: configuration,
+                    numericText: &numericText,
+                    draft: &draft,
+                    nutritionPresentation: nutritionPresentation
+                )
+            }
+        )
     }
+
+    private var nutritionSectionTitle: String { nutritionPresentation?.title ?? "Nutrition per serving" }
+
+    private var showsVisibleAdditionalNutrition: Bool { showsAdditionalNutrition || requiresAdditionalNutritionVisibility }
 
     private var requiresAdditionalNutritionVisibility: Bool {
         numericText.hasInvalidAdditionalNutritionValues

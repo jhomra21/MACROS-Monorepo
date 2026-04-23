@@ -25,36 +25,28 @@ struct LoggedFoodNutrients {
         cholesterol: nil
     )
 
-    var macroSnapshot: NutritionSnapshot {
-        NutritionSnapshot(
-            calories: calories,
-            protein: protein,
-            fat: fat,
-            carbs: carbs
-        )
-    }
 }
 
 struct NutritionMath {
-    static func consumedNutrients(for food: FoodDraft, mode: QuantityMode, amount: Double) -> LoggedFoodNutrients {
-        guard amount > 0 else { return .zero }
+    static func quantityMultiplier(mode: QuantityMode, amount: Double, gramsPerServing: Double?) -> Double? {
+        guard amount > 0 else { return nil }
 
         switch mode {
         case .servings:
-            return scaledNutrients(for: food, multiplier: amount)
+            return amount
         case .grams:
-            guard let gramsPerServing = food.gramsPerServing, gramsPerServing > 0 else {
-                return .zero
-            }
-
-            return scaledNutrients(for: food, multiplier: amount / gramsPerServing)
+            guard let gramsPerServing, gramsPerServing > 0 else { return nil }
+            return amount / gramsPerServing
         }
     }
 
-    static func consumedNutrition(for food: FoodDraft, mode: QuantityMode, amount: Double) -> NutritionSnapshot {
-        consumedNutrients(for: food, mode: mode, amount: amount).macroSnapshot
-    }
+    static func consumedNutrients(for food: FoodDraft, mode: QuantityMode, amount: Double) -> LoggedFoodNutrients {
+        guard let multiplier = quantityMultiplier(mode: mode, amount: amount, gramsPerServing: food.gramsPerServing) else {
+            return .zero
+        }
 
+        return scaledNutrients(for: food, multiplier: multiplier)
+    }
     private static func scaledNutrients(for food: FoodDraft, multiplier: Double) -> LoggedFoodNutrients {
         LoggedFoodNutrients(
             calories: food.caloriesPerServing * multiplier,

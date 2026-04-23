@@ -87,8 +87,7 @@ struct ManualFoodEntryScreen: View {
             brandPrompt: "Brand (optional)",
             gramsPrompt: "Grams per serving (optional)",
             focusedField: $focusedField,
-            trailingKeyboardFields: [],
-            previewTotals: nil
+            trailingKeyboardFields: []
         ) {
             EmptyView()
         } footerSections: {

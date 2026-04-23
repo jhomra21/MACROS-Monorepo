@@ -6,15 +6,6 @@ enum NumericText {
         case valid(Double)
         case invalid
 
-        var value: Double? {
-            switch self {
-            case .empty, .invalid:
-                nil
-            case let .valid(value):
-                value
-            }
-        }
-
         var isInvalid: Bool {
             if case .invalid = self {
                 return true
@@ -50,10 +41,6 @@ enum NumericText {
 
             return .invalid
         }
-    }
-
-    static func parse(_ text: String) -> Double? {
-        state(for: text).value
     }
 
     private static let numberStyle = FloatingPointFormatStyle<Double>.number

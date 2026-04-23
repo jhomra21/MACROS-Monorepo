@@ -13,7 +13,8 @@ struct EditLogEntryScreen: View {
     @State private var draft: FoodDraft
     @State private var numericText: FoodDraftNumericText
     @State private var quantityMode: QuantityMode
-    @State private var quantityAmountText: String
+    @State private var servingsAmount: Double
+    @State private var gramsAmount: Double
     @State private var errorMessage: String?
     @State private var saveFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
@@ -24,34 +25,43 @@ struct EditLogEntryScreen: View {
     init(entry: LogEntry) {
         self.entry = entry
         let initialDraft = FoodDraft(logEntry: entry, saveAsCustomFood: false)
-
-        let initialQuantityAmountText = NumericText.editingDisplay(
-            for: entry.quantityModeKind == .servings ? entry.servingsConsumed : entry.gramsConsumed)
+        let initialAmounts = FoodQuantityState.initialAmounts(for: entry)
         _draft = State(initialValue: initialDraft)
         _numericText = State(initialValue: FoodDraftNumericText(draft: initialDraft))
         _quantityMode = State(initialValue: entry.quantityModeKind)
-        _quantityAmountText = State(initialValue: initialQuantityAmountText.isEmpty ? "1" : initialQuantityAmountText)
+        _servingsAmount = State(initialValue: initialAmounts.servings)
+        _gramsAmount = State(initialValue: initialAmounts.grams)
     }
 
     private var finalizedDraft: FoodDraft? {
         numericText.finalizedDraft(from: draft)
     }
 
-    private var quantityAmountValue: Double {
-        NumericText.parse(quantityAmountText) ?? 0
+    private var activeQuantityAmount: Double {
+        quantityMode == .servings ? servingsAmount : gramsAmount
     }
 
     private var previewDraft: FoodDraft {
         finalizedDraft ?? draft
     }
 
-    private var previewTotals: NutritionSnapshot {
-        NutritionMath.consumedNutrition(for: previewDraft, mode: quantityMode, amount: quantityAmountValue)
+    private var nutritionPresentation: FoodDraftNutritionPresentation? {
+        guard
+            let multiplier = NutritionMath.quantityMultiplier(
+                mode: quantityMode,
+                amount: activeQuantityAmount,
+                gramsPerServing: previewDraft.gramsPerServing
+            )
+        else {
+            return nil
+        }
+
+        return FoodDraftNutritionPresentation(title: "Nutrition", multiplier: multiplier)
     }
 
     private var canSave: Bool {
         guard let finalizedDraft else { return false }
-        return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: quantityAmountValue)
+        return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: activeQuantityAmount)
     }
 
     private var sourceURL: URL? {
@@ -87,9 +97,9 @@ struct EditLogEntryScreen: View {
             errorMessage: $errorMessage,
             brandPrompt: "Brand",
             gramsPrompt: "Grams per serving",
+            nutritionPresentation: nutritionPresentation,
             focusedField: $focusedField,
-            trailingKeyboardFields: [.quantityAmount],
-            previewTotals: previewTotals
+            trailingKeyboardFields: []
         ) {
             if shouldShowSourceSection {
                 Section("Source") {
@@ -121,16 +131,13 @@ struct EditLogEntryScreen: View {
 
             FoodQuantitySection(
                 quantityMode: $quantityMode,
+                servingsAmount: $servingsAmount,
+                gramsAmount: $gramsAmount,
                 canLogByGrams: previewDraft.canLogByGrams,
+                gramsPerServing: previewDraft.gramsPerServing,
+                gramLoggingMessage: "Add grams per serving to enable gram-based logging.",
                 showsGramLoggingMessageOnlyInGramsMode: true
-            ) { quantityMode in
-                AppNumericTextField(
-                    quantityMode == .servings ? "Servings eaten" : "Grams eaten",
-                    text: $quantityAmountText,
-                    focusedField: $focusedField,
-                    field: .quantityAmount
-                )
-            }
+            )
         } footerSections: {
             Section {
                 Button("Save Changes") {
@@ -194,7 +201,7 @@ struct EditLogEntryScreen: View {
                 entry: entry,
                 draft: finalizedDraft,
                 quantityMode: quantityMode,
-                quantityAmount: quantityAmountValue,
+                quantityAmount: activeQuantityAmount,
                 operation: "Save entry changes"
             )
             errorMessage = nil

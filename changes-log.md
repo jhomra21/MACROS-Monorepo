@@ -829,3 +829,96 @@ The following planning documents have been fully consolidated into this file and
 - An earlier review incorrectly generalized an older macro-ring note about a prior overlap-path bug onto the current `< 1.0` branch.
 - That same review also incorrectly treated “`2.0` looks like `1.0`” as a defect even though the current renderer explicitly intends that ouroboros-style behavior.
 - Corrected review status for that pass: `LGTM — no issues found.`
+
+## Food Quantity Editing and Nutrition Presentation Simplification
+
+### Delivered
+
+- Unified add-food and edit-entry quantity controls onto the same stepper-based `FoodQuantitySection`.
+- Added serving/gram mode conversion so switching quantity modes preserves the current amount logically instead of reinterpreting the raw number.
+- Removed the duplicate edit-only macro preview/logging summary UI.
+- Updated the existing nutrition rows in add/edit flows so they reflect the currently selected quantity instead of showing a second derived summary block elsewhere.
+- Capped quantity-driven nutrition display to sensible rounded values so floating-point noise like `28.349999999999998` no longer appears in the form.
+
+### Main implementation steps
+
+- Moved shared quantity state and conversion logic into `FoodQuantitySection.swift` so add and edit flows reuse the same stepper behavior and gram-mode synchronization.
+- Updated `LogFoodScreen.swift` and `EditLogEntryScreen.swift` to pass the active quantity state through the shared quantity section instead of maintaining divergent UI behavior.
+- Added `FoodDraftNutritionPresentation.swift` so log/edit flows can transform displayed nutrient text by the active quantity multiplier while still mapping edited values back to stored per-serving draft values.
+- Threaded the nutrition-presentation contract through `FoodDraftEditorForm.swift` and `FoodDraftFormSections.swift`, while leaving reusable-food/manual editing paths on plain per-serving presentation.
+- Extended `NutritionMath.swift` with a shared quantity-multiplier helper and removed no-longer-needed display-only helpers once the duplicate summary UI was removed.
+
+### Bugs and implementation findings
+
+- The first attempt added a separate derived macro block inside the quantity section, which duplicated information and made edit behavior inconsistent with add-food.
+- Keeping the section labeled `Nutrition per serving` while showing quantity-adjusted values would have been semantically wrong, so the quantity-driven presentation now uses a neutral `Nutrition` title in add/edit flows.
+- Quantity-driven nutrient display needs explicit rounding at the transformation boundary; otherwise binary floating-point artifacts leak directly into editable text fields.
+- The safe contract in this codebase remains: persist per-serving nutrition, derive consumed totals from quantity, and only transform values at the presentation layer for log/edit UX.
+
+### Validation
+
+- `make format`
+- `make quality-format-check`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
+- `make quality-dead`
+- `make quality-dup`
+- `make quality-debt`
+- `make quality-n1`
+- `make quality-secrets`
+- Focused `swiftui-visual-validator` runs code-confirmed:
+  - shared add/edit stepper quantity UI
+  - quantity-driven nutrition-row updates
+  - removal of the duplicate logging summary block
+
+### Follow-up fixes after review validation
+
+- Preserved the exact quantity-adjusted nutrient total the user types by removing reverse-mapping rounding from `FoodDraftNutritionPresentation.swift`; display values stay rounded, but stored per-serving values now keep the full derived quotient.
+- Corrected the shared quantity stepper labels so quarter-serving amounts display accurately (`0.25`, `0.75`, `1.25`, etc.) instead of being visually rounded to one decimal place.
+
+### Follow-up validation
+
+- `make format`
+- `make quality-format-check`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
+- `make quality-dead`
+- `make quality-dup`
+- `make quality-debt`
+- `make quality-deps`
+- `make quality-n1`
+- `make quality-secrets`
+
+### Second follow-up fixes after review validation
+
+- Preserved exact previously saved positive quantities when editing existing log entries; the shared quantity state no longer clamps legacy `0.1`-serving or sub-gram entries on load before save.
+- Kept the stepper minimum behavior at the interaction boundary instead of the persistence boundary, so sub-minimum legacy values only snap when the user explicitly steps the control.
+- Added a shared transformed nutrient editing bridge so quantity-adjusted nutrient rows preserve raw in-progress text while focused instead of reformatting valid partial input like `15.` on every keystroke.
+
+### Second follow-up validation
+
+- `make format`
+- `make quality-format-check`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
+- `make quality-dead`
+- `make quality-dup`
+- `make quality-debt`
+- `make quality-deps`
+- `make quality-n1`
+- `make quality-secrets`
+
+### Third follow-up fixes after review validation
+
+- Invalidated the shared transformed nutrient text cache whenever the quantity-driven presentation multiplier changes, so focused nutrient fields no longer keep showing stale totals after servings/grams updates.
+- Kept the fix in the shared form layer (`FoodDraftFormSections.swift` plus `FoodDraftNutrientEditingBridge.swift`) so add-food and edit-entry flows both refresh from canonical per-serving text under the new quantity context.
+- Compressed the shared form file slightly afterward to stay within the repo's `quality-debt` file-length limit while preserving the same editing behavior.
+
+### Third follow-up validation
+
+- `make format`
+- `make quality-format-check`
+- `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
+- `make quality-dead`
+- `make quality-dup`
+- `make quality-debt`
+- `make quality-deps`
+- `make quality-n1`
+- `make quality-secrets`

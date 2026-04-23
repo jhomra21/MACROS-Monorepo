@@ -6,9 +6,9 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
     @Binding var errorMessage: String?
     let brandPrompt: String
     let gramsPrompt: String
+    let nutritionPresentation: FoodDraftNutritionPresentation?
     let focusedField: FocusState<FoodDraftField?>.Binding
     let trailingKeyboardFields: [FoodDraftField]
-    let previewTotals: NutritionSnapshot?
     @ViewBuilder let quantitySection: () -> QuantitySection
     @ViewBuilder let footerSections: () -> FooterSections
     @State private var showsAdditionalNutrition = false
@@ -19,9 +19,9 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
         errorMessage: Binding<String?>,
         brandPrompt: String,
         gramsPrompt: String,
+        nutritionPresentation: FoodDraftNutritionPresentation? = nil,
         focusedField: FocusState<FoodDraftField?>.Binding,
         trailingKeyboardFields: [FoodDraftField],
-        previewTotals: NutritionSnapshot?,
         @ViewBuilder quantitySection: @escaping () -> QuantitySection,
         @ViewBuilder footerSections: @escaping () -> FooterSections
     ) {
@@ -30,9 +30,9 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
         _errorMessage = errorMessage
         self.brandPrompt = brandPrompt
         self.gramsPrompt = gramsPrompt
+        self.nutritionPresentation = nutritionPresentation
         self.focusedField = focusedField
         self.trailingKeyboardFields = trailingKeyboardFields
-        self.previewTotals = previewTotals
         self.quantitySection = quantitySection
         self.footerSections = footerSections
         _showsAdditionalNutrition = State(initialValue: draft.wrappedValue.isMissingAllSecondaryNutrients == false)
@@ -58,15 +58,12 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
                 numericText: $numericText,
                 brandPrompt: brandPrompt,
                 gramsPrompt: gramsPrompt,
+                nutritionPresentation: nutritionPresentation,
                 showsAdditionalNutrition: $showsAdditionalNutrition,
                 focusedField: focusedField
             )
 
             quantitySection()
-
-            if let previewTotals {
-                FoodDraftPreviewSection(totals: previewTotals)
-            }
 
             footerSections()
         }
@@ -77,26 +74,6 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
             if isMissingAllSecondaryNutrients == false {
                 showsAdditionalNutrition = true
             }
-        }
-    }
-}
-
-private struct FoodDraftPreviewSection: View {
-    let totals: NutritionSnapshot
-
-    var body: some View {
-        Section("Preview") {
-            previewRow(label: "Calories", value: totals.calories, suffix: "kcal")
-            previewRow(label: "Protein", value: totals.protein, suffix: "g")
-            previewRow(label: "Fat", value: totals.fat, suffix: "g")
-            previewRow(label: "Carbs", value: totals.carbs, suffix: "g")
-        }
-    }
-
-    private func previewRow(label: String, value: Double, suffix: String) -> some View {
-        LabeledContent(label) {
-            Text("\(value.roundedForDisplay) \(suffix)")
-                .monospacedDigit()
         }
     }
 }

@@ -45,6 +45,24 @@ struct LogFoodScreen: View {
         quantityMode == .servings ? servingsAmount : gramsAmount
     }
 
+    private var previewDraft: FoodDraft {
+        numericText.finalizedDraft(from: draft) ?? draft
+    }
+
+    private var nutritionPresentation: FoodDraftNutritionPresentation? {
+        guard
+            let multiplier = NutritionMath.quantityMultiplier(
+                mode: quantityMode,
+                amount: activeAmount,
+                gramsPerServing: previewDraft.gramsPerServing
+            )
+        else {
+            return nil
+        }
+
+        return FoodDraftNutritionPresentation(title: "Nutrition", multiplier: multiplier)
+    }
+
     private var reusableFoodPersistenceMode: ReusableFoodPersistenceMode {
         FoodDraft.reusableFoodPersistenceMode(initialDraft: initialDraft, currentDraft: draft)
     }
@@ -85,9 +103,9 @@ struct LogFoodScreen: View {
             errorMessage: $errorMessage,
             brandPrompt: "Brand (optional)",
             gramsPrompt: "Grams per serving (optional)",
+            nutritionPresentation: nutritionPresentation,
             focusedField: $focusedField,
-            trailingKeyboardFields: [],
-            previewTotals: nil
+            trailingKeyboardFields: []
         ) {
             if shouldShowReviewSection {
                 Section(reviewSectionTitle) {
@@ -122,25 +140,12 @@ struct LogFoodScreen: View {
 
             FoodQuantitySection(
                 quantityMode: $quantityMode,
-                canLogByGrams: draft.canLogByGrams,
+                servingsAmount: $servingsAmount,
+                gramsAmount: $gramsAmount,
+                canLogByGrams: previewDraft.canLogByGrams,
+                gramsPerServing: previewDraft.gramsPerServing,
                 gramLoggingMessage: "Add grams per serving to enable gram-based logging."
-            ) { quantityMode in
-                if quantityMode == .servings {
-                    Stepper(value: $servingsAmount, in: 0.25...20, step: 0.25) {
-                        LabeledContent("Servings") {
-                            Text(servingsAmount.roundedForDisplay)
-                                .monospacedDigit()
-                        }
-                    }
-                } else {
-                    Stepper(value: $gramsAmount, in: 1...2000, step: 5) {
-                        LabeledContent("Grams") {
-                            Text("\(gramsAmount.roundedForDisplay) g")
-                                .monospacedDigit()
-                        }
-                    }
-                }
-            }
+            )
         } footerSections: {
             Section {
                 Toggle("Save as reusable food", isOn: $draft.saveAsCustomFood)
