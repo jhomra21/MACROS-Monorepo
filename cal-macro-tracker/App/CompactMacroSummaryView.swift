@@ -33,23 +33,14 @@ struct CompactMacroSummaryView: View {
     }
 
     private func macroColumn(metric: MacroMetric) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 6) {
-                Circle()
-                    .fill(metric.accentColor)
-                    .frame(width: 8, height: 8)
-                Text(metric.title)
-                    .font(.caption.weight(.medium))
-            }
-
-            Text("\(metric.value(from: totals).roundedForDisplay)g")
-                .font(.headline.weight(.semibold))
-                .monospacedDigit()
-
-            Text("Goal \(metric.goal(from: goalSnapshot).roundedForDisplay)g")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, minHeight: 60)
+        MacroSummaryColumnView(
+            metric: metric,
+            totals: totals,
+            goals: goalSnapshot,
+            alignment: .center,
+            titleStyle: .full,
+            style: .compact,
+            minimumHeight: 60
+        )
     }
 }

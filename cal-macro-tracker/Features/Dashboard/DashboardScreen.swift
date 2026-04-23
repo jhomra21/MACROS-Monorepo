@@ -150,23 +150,14 @@ private struct MacroLegendView: View {
     }
 
     private func legendCard(metric: MacroMetric) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(metric.accentColor)
-                    .frame(width: 10, height: 10)
-                Text(metric.title)
-                    .font(.subheadline.weight(.medium))
-            }
-
-            Text("\(metric.value(from: totals).roundedForDisplay)g")
-                .font(.title3.weight(.semibold))
-                .monospacedDigit()
-
-            Text("Goal \(metric.goal(from: goalSnapshot).roundedForDisplay)g")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
+        MacroSummaryColumnView(
+            metric: metric,
+            totals: totals,
+            goals: goalSnapshot,
+            alignment: .center,
+            titleStyle: .full,
+            style: .dashboardCard
+        )
         .padding(16)
     }
 }

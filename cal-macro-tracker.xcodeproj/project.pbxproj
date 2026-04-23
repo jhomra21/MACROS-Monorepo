@@ -52,6 +52,7 @@
 				Shared/MacroGoalsSnapshot.swift,
 				Shared/MacroMetric.swift,
 				Shared/MacroRingSetView.swift,
+				Shared/MacroSummaryColumnView.swift,
 				Shared/NutritionSnapshot.swift,
 				Shared/SharedAppConfiguration.swift,
 				Shared/SharedModelContainerFactory.swift,

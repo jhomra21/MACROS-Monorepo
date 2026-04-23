@@ -634,6 +634,41 @@ The following planning documents have been fully consolidated into this file and
 
 - Ran the usual repo validation `make` commands for this work.
 
+## Macro Goal Number Presentation and Small Widget Over-Goal Layout
+
+### Delivered
+
+- Reworked macro number summaries so app surfaces now show the current value plus a baseline goal and optional over-goal delta without the literal `Goal` label.
+- Preserved the colored macro dots and restored centered macro summary columns on app surfaces after the first shared-summary pass changed that presentation.
+- Kept widgets lighter-weight than the app: over-goal state now appears as an up arrow on the current value, while in-app summaries still show the explicit `+delta`.
+- Fixed the small Home Screen widget so decimal-heavy over-goal values such as `194.6 ↑` and `49.1 ↑` can render fully instead of truncating or dropping their indicator.
+
+### Main implementation steps
+
+- Added `cal-macro-tracker/Shared/MacroSummaryColumnView.swift` to centralize macro title, current value, baseline goal, and over-goal styling across dashboard, compact/history, and widget surfaces.
+- Updated `DashboardScreen.swift` and `CompactMacroSummaryView.swift` to reuse the shared summary view while keeping the centered column layout and colored macro dots the product wanted.
+- Updated `DailyMacroWidget.swift` and `DailyMacroAccessoryWidget.swift` so widget summaries reuse the same macro presentation contract but switch to value-line arrows instead of goal-line `+delta` text.
+- Reworked the small widget layout using `GeometryReader`, explicit per-macro column widths, reduced ring diameter/padding, and font sizing based on the worst-case displayed value width including the over-goal indicator.
+- Added the new shared summary file to the Xcode synchronized-group membership exceptions so it compiles once in the right targets without duplicate build-file warnings.
+
+### Bugs and implementation findings
+
+- Treating widget over-goal state like the app's more detailed `goal + delta` presentation overloaded the tiny three-column row and caused repeated truncation regressions.
+- Simply concatenating the over-goal arrow onto the value text was still not enough, because the real constraint was the small widget's usable row width and per-column sizing rather than only text scaling.
+- The reliable fix for the small widget was to make the row use the actual available width, assign explicit widths to the three macro columns, and size from the worst-case displayed character count including the arrow.
+- Protein over-goal state needed to stay visually distinct without reading as an error, while carbs and fat still needed a warning-style tone; the shared summary styles now encode that contract directly.
+
+### Validation recorded during this work
+
+- Formatter validation and iOS simulator builds passed after the final widget layout fix.
+
+### Review-driven display-threshold follow-up
+
+- A focused code review found that over-goal state was still driven by the raw floating-point delta even when the visible rounded values were equal.
+- Added `Double.hasVisiblePositiveDisplayValue` in `cal-macro-tracker/Data/Models/NumericText.swift` so macro summary over-goal state now follows the same display-precision contract as the rendered numbers.
+- Updated `MacroSummaryColumnView.swift` to suppress false `+0` goal deltas and false widget up-arrow states caused by tiny positive floating-point residue that rounds to zero on screen.
+- Formatter validation and iOS simulator builds still passed after this follow-up fix.
+
 ## Legacy Open Food Facts Identity Recovery and Manual Nutrient Refresh
 
 ### Delivered
@@ -869,3 +904,21 @@ The following planning documents have been fully consolidated into this file and
 ### Third follow-up validation
 
 - Ran the usual repo validation `make` commands for this work.
+
+## Daily Macro Widget Value Layout
+
+### Delivered
+
+- Reworked the small daily macro widget value line so over-goal arrows no longer make non-arrow macro values reserve hidden trailing space.
+- Kept non-arrow values centered over their baseline goals while allowing over-goal values to render as a compact value-plus-arrow group.
+- Matched the small-widget arrow font to the macro value font so the indicator does not change the perceived row height.
+
+### Bugs fixed
+
+- Non-over-goal values such as carbs could appear shifted left when hidden arrow space was reserved after the value.
+- Adding a balancing hidden arrow slot fixed centering but made long values such as `190.3` truncate to an ellipsis in the small widget.
+- The final layout avoids hidden indicator slots in the no-arrow case, giving full column width back to the number.
+
+### Validation
+
+- Ran `make quality-format-check` and the documented macOS `xcodebuild` command after the widget value-layout changes.

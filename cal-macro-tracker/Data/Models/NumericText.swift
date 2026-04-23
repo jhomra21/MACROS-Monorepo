@@ -50,6 +50,13 @@ enum NumericText {
 }
 
 extension Double {
+    var hasVisiblePositiveDisplayValue: Bool {
+        guard self > 0 else { return false }
+
+        let displayedValue = roundedForDisplay
+        return displayedValue != "0" && displayedValue != "0.0"
+    }
+
     var roundedForDisplay: String {
         if abs(self.rounded() - self) < 0.01 {
             return String(Int(self.rounded()))

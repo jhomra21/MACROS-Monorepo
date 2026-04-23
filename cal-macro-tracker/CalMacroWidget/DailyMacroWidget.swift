@@ -80,22 +80,35 @@ private struct DailyMacroWidgetContentView: View {
     }
 
     private var smallContent: some View {
-        VStack(spacing: 10) {
-            MacroRingSetView(
-                totals: entry.snapshot.totals,
-                goals: entry.snapshot.goals,
-                ringDiameter: 84,
-                centerValueFontSize: 18,
-                minimumLineWidth: 5,
-                showsGoalSubtitle: false,
-                colorStyle: ringColorStyle
-            )
-            .widgetAccentable()
-            .frame(maxWidth: .infinity)
+        GeometryReader { geometry in
+            let horizontalPadding: CGFloat = 8
+            let verticalPadding: CGFloat = 10
+            let metricSpacing: CGFloat = 2
+            let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
+            let columnCount = CGFloat(MacroMetric.allCases.count)
+            let totalSpacing = metricSpacing * (columnCount - 1)
+            let columnWidth = max((availableWidth - totalSpacing) / columnCount, 0)
 
-            smallMetricsRow
+            VStack(spacing: 8) {
+                MacroRingSetView(
+                    totals: entry.snapshot.totals,
+                    goals: entry.snapshot.goals,
+                    ringDiameter: 80,
+                    centerValueFontSize: 18,
+                    minimumLineWidth: 5,
+                    showsGoalSubtitle: false,
+                    colorStyle: ringColorStyle
+                )
+                .widgetAccentable()
+                .frame(maxWidth: .infinity)
+
+                smallMetricsRow(columnWidth: columnWidth, spacing: metricSpacing)
+                    .frame(width: availableWidth)
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
         }
-        .padding(12)
     }
 
     private var mediumContent: some View {
@@ -126,66 +139,61 @@ private struct DailyMacroWidgetContentView: View {
         .padding(16)
     }
 
-    private var smallMetricValues: [String] {
-        MacroMetric.allCases.map(smallMetricValue(for:))
-    }
-
-    private var smallMetricValueFontSize: CGFloat {
-        let widestValueLength = smallMetricValues.map(\.count).max() ?? 1
-
-        switch widestValueLength {
-        case 0...2:
-            return 22
-        case 3:
-            return 16
-        default:
-            return 14
+    private var smallMetricDisplayLengths: [Int] {
+        MacroMetric.allCases.map { metric in
+            let presentation = metric.goalValuePresentation(
+                totals: entry.snapshot.totals,
+                goals: entry.snapshot.goals
+            )
+            return presentation.currentValueText.count
         }
     }
 
-    private var smallMetricsRow: some View {
-        HStack(spacing: 4) {
+    private var smallMetricValueFontSize: CGFloat {
+        let widestValueLength = smallMetricDisplayLengths.max() ?? 1
+
+        switch widestValueLength {
+        case 0...2:
+            return 20
+        case 3:
+            return 15
+        case 4:
+            return 13
+        case 5:
+            return 11
+        default:
+            return 10
+        }
+    }
+
+    private func smallMetricsRow(columnWidth: CGFloat, spacing: CGFloat) -> some View {
+        HStack(spacing: spacing) {
             ForEach(MacroMetric.allCases) { metric in
-                smallMetric(metric: metric, value: smallMetricValue(for: metric), fontSize: smallMetricValueFontSize)
+                smallMetric(metric: metric, fontSize: smallMetricValueFontSize)
+                    .frame(width: columnWidth)
             }
         }
     }
 
-    private func smallMetricValue(for metric: MacroMetric) -> String {
-        metric.value(from: entry.snapshot.totals).roundedForDisplay
-    }
-
-    private func smallMetric(metric: MacroMetric, value: String, fontSize: CGFloat) -> some View {
-        return VStack(spacing: 3) {
-            Text(metric.shortTitle)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-
-            smallMetricValueText(value, fontSize: fontSize)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func smallMetricValueText(_ value: String, fontSize: CGFloat) -> some View {
-        return Text(value)
-            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
-            .monospacedDigit()
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
-            .allowsTightening(true)
+    private func smallMetric(metric: MacroMetric, fontSize: CGFloat) -> some View {
+        MacroSummaryColumnView(
+            metric: metric,
+            totals: entry.snapshot.totals,
+            goals: entry.snapshot.goals,
+            alignment: .center,
+            titleStyle: .short,
+            style: .widgetSmall(valueFontSize: fontSize)
+        )
     }
 
     private func mediumMetric(metric: MacroMetric) -> some View {
-        HStack(spacing: 8) {
-            Text(metric.title)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
-
-            Spacer(minLength: 0)
-
-            Text("\(metric.value(from: entry.snapshot.totals).roundedForDisplay)g")
-                .font(.headline.weight(.semibold))
-                .monospacedDigit()
-        }
+        MacroSummaryColumnView(
+            metric: metric,
+            totals: entry.snapshot.totals,
+            goals: entry.snapshot.goals,
+            alignment: .leading,
+            titleStyle: .full,
+            style: .widgetMedium
+        )
     }
 }

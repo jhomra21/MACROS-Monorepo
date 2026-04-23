@@ -56,41 +56,22 @@ private struct DailyMacroAccessoryWidgetContentView: View {
     }
 
     private var rectangularContent: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Today")
-                .font(.caption.weight(.medium))
-                .foregroundStyle(.secondary)
-
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("\(entry.snapshot.totals.calories.roundedForDisplay) kcal")
-                    .font(.headline.weight(.semibold))
-                    .monospacedDigit()
-
-                Text("of \(entry.snapshot.goals.calorieGoal.roundedForDisplay)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+        HStack(spacing: 6) {
+            ForEach(MacroMetric.allCases) { metric in
+                MacroSummaryColumnView(
+                    metric: metric,
+                    totals: entry.snapshot.totals,
+                    goals: entry.snapshot.goals,
+                    alignment: .center,
+                    titleStyle: .short,
+                    style: .accessoryRectangular
+                )
             }
-
-            Text(
-                rectangularMacroSummary
-            )
-            .font(.caption2.weight(.medium))
-            .monospacedDigit()
-            .lineLimit(1)
         }
     }
 
     private var inlineSummary: String {
         "\(entry.snapshot.totals.calories.roundedForDisplay) cal · \(compactMacroSummary)"
-    }
-
-    private var rectangularMacroSummary: String {
-        MacroMetric.allCases
-            .map { metric in
-                "\(metric.shortTitle) \(metric.value(from: entry.snapshot.totals).roundedForDisplay)g"
-            }
-            .joined(separator: "  ")
     }
 
     private var compactMacroSummary: String {
