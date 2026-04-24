@@ -3,6 +3,7 @@ import PhotosUI
 import SwiftUI
 
 struct LabelScanScreen: View {
+    let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
     @State private var selectedPhoto: PhotosPickerItem?
@@ -13,6 +14,11 @@ struct LabelScanScreen: View {
     @State private var scanFeedbackToken = 0
 
     private let recognizer = NutritionLabelTextRecognizer()
+
+    init(onFoodLogged: @escaping () -> Void, loggingDay: CalendarDay? = nil) {
+        self.loggingDay = loggingDay
+        self.onFoodLogged = onFoodLogged
+    }
 
     var body: some View {
         List {
@@ -53,6 +59,7 @@ struct LabelScanScreen: View {
             if let logFoodDestination {
                 LogFoodScreen(
                     initialDraft: logFoodDestination.draft,
+                    loggingDay: loggingDay,
                     reviewNotes: logFoodDestination.reviewNotes,
                     previewImageData: logFoodDestination.previewImageData,
                     onFoodLogged: onFoodLogged
@@ -121,7 +128,13 @@ private struct LogFoodDestination {
 import SwiftUI
 
 struct LabelScanScreen: View {
+    let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
+
+    init(onFoodLogged: @escaping () -> Void, loggingDay: CalendarDay? = nil) {
+        self.loggingDay = loggingDay
+        self.onFoodLogged = onFoodLogged
+    }
 
     var body: some View {
         ContentUnavailableView(

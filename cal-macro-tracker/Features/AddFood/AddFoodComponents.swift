@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddFoodQuickActions: View {
+    let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
     var body: some View {
@@ -21,7 +22,11 @@ struct AddFoodQuickActions: View {
     private var quickActionLinks: some View {
         HStack(alignment: .top, spacing: 10) {
             NavigationLink {
-                BarcodeScanScreen(onFoodLogged: onFoodLogged, entryMode: .immediateCamera)
+                BarcodeScanScreen(
+                    onFoodLogged: onFoodLogged,
+                    loggingDay: loggingDay,
+                    entryMode: .immediateCamera
+                )
             } label: {
                 quickActionCard(title: "Scan Barcode", systemImage: "barcode.viewfinder")
             }
@@ -29,7 +34,7 @@ struct AddFoodQuickActions: View {
             .buttonStyle(.plain)
 
             NavigationLink {
-                LabelScanScreen(onFoodLogged: onFoodLogged)
+                LabelScanScreen(onFoodLogged: onFoodLogged, loggingDay: loggingDay)
             } label: {
                 quickActionCard(title: "Scan Label", systemImage: "camera.viewfinder")
             }
@@ -72,6 +77,7 @@ enum AddFoodMode: String, CaseIterable, Identifiable {
 }
 
 struct ManualFoodEntryScreen: View {
+    let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
     @State private var draft = FoodDraft()
@@ -95,6 +101,7 @@ struct ManualFoodEntryScreen: View {
                 NavigationLink {
                     LogFoodScreen(
                         initialDraft: numericText.finalizedDraft(from: draft) ?? draft,
+                        loggingDay: loggingDay,
                         onFoodLogged: onFoodLogged
                     )
                 } label: {

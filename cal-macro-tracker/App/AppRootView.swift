@@ -2,13 +2,13 @@ import SwiftData
 import SwiftUI
 
 private enum AppRootSheetDestination: Identifiable, Hashable {
-    case addFood(AddFoodEntryPoint)
+    case addFood(AddFoodEntryPoint, CalendarDay?)
     case editLogEntry(PersistentIdentifier)
 
     var id: String {
         switch self {
-        case let .addFood(entryPoint):
-            "add-food:\(entryPoint.rawValue)"
+        case let .addFood(entryPoint, loggingDay):
+            "add-food:\(entryPoint.rawValue):\(String(describing: loggingDay))"
         case let .editLogEntry(entryID):
             "edit-log-entry:\(String(describing: entryID))"
         }
@@ -25,6 +25,7 @@ struct AppRootView: View {
 
     @State private var destination: Route?
     @State private var sheetDestination: AppRootSheetDestination?
+    @State private var dashboardResetToken = 0
 
     init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
         _pendingOpenRequest = pendingOpenRequest
@@ -33,7 +34,10 @@ struct AppRootView: View {
     var body: some View {
         NavigationStack {
             DashboardScreen(
-                onOpenAddFood: { presentSheet(.addFood(.addFood)) },
+                resetToTodayToken: dashboardResetToken,
+                onOpenAddFood: { loggingDay in
+                    presentSheet(.addFood(.addFood, loggingDay))
+                },
                 onEditEntry: { entry in
                     presentSheet(.editLogEntry(entry.persistentModelID))
                 },
@@ -82,8 +86,9 @@ struct AppRootView: View {
         switch request {
         case .dashboard:
             resetPresentedState()
+            dashboardResetToken += 1
         case let .addFood(entryPoint):
-            presentSheet(.addFood(entryPoint))
+            presentSheet(.addFood(entryPoint, nil))
         }
 
         pendingOpenRequest = nil
@@ -97,12 +102,12 @@ private struct AppRootSheetContent: View {
 
     var body: some View {
         switch destination {
-        case let .addFood(entryPoint):
+        case let .addFood(entryPoint, loggingDay):
             switch entryPoint {
             case .addFood:
-                AddFoodScreen()
+                AddFoodScreen(loggingDay: loggingDay)
             case .scanBarcode:
-                BarcodeScanScreen(onFoodLogged: dismissSheet, entryMode: .immediateCamera)
+                BarcodeScanScreen(onFoodLogged: dismissSheet, loggingDay: loggingDay, entryMode: .immediateCamera)
                     .toolbar {
                         ToolbarItem(placement: .appTopBarTrailing) {
                             Button("Done") {
@@ -111,7 +116,7 @@ private struct AppRootSheetContent: View {
                         }
                     }
             case .scanLabel:
-                LabelScanScreen(onFoodLogged: dismissSheet)
+                LabelScanScreen(onFoodLogged: dismissSheet, loggingDay: loggingDay)
                     .toolbar {
                         ToolbarItem(placement: .appTopBarTrailing) {
                             Button("Done") {
@@ -120,7 +125,7 @@ private struct AppRootSheetContent: View {
                         }
                     }
             case .manualEntry:
-                AddFoodScreen(initialMode: .manual)
+                AddFoodScreen(initialMode: .manual, loggingDay: loggingDay)
             }
         case let .editLogEntry(entryID):
             EditLogEntrySheetContent(entryID: entryID)

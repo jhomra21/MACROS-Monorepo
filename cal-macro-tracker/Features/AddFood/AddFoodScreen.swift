@@ -5,6 +5,8 @@ struct AddFoodScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
 
+    let loggingDay: CalendarDay?
+
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
     @State private var errorMessage: String?
@@ -34,7 +36,8 @@ struct AddFoodScreen: View {
     private let remotePageSize = 12
     private let packagedFoodSearchClient = PackagedFoodSearchClient()
 
-    init(initialMode: AddFoodMode = .search) {
+    init(initialMode: AddFoodMode = .search, loggingDay: CalendarDay? = nil) {
+        self.loggingDay = loggingDay
         _selectedMode = State(initialValue: initialMode)
     }
 
@@ -52,13 +55,14 @@ struct AddFoodScreen: View {
             .padding(.top, 12)
             VStack(alignment: .leading, spacing: 10) {
                 if selectedMode == .search {
-                    AddFoodQuickActions(onFoodLogged: closeSheet)
+                    AddFoodQuickActions(loggingDay: loggingDay, onFoodLogged: closeSheet)
                         .padding(.horizontal, 20)
                 }
                 Group {
                     switch selectedMode {
                     case .search:
                         SearchFoodListView(
+                            loggingDay: loggingDay,
                             foods: rankedFoods,
                             totalFoodsCount: searchableFoods.count,
                             hasLoadedFoods: !foods.isEmpty,
@@ -74,7 +78,7 @@ struct AddFoodScreen: View {
                             onLoadMoreRemoteResults: loadMoreRemoteResults
                         )
                     case .manual:
-                        ManualFoodEntryScreen(onFoodLogged: closeSheet)
+                        ManualFoodEntryScreen(loggingDay: loggingDay, onFoodLogged: closeSheet)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)

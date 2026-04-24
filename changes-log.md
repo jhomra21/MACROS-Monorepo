@@ -922,3 +922,77 @@ The following planning documents have been fully consolidated into this file and
 ### Validation
 
 - Ran `make quality-format-check` and the documented macOS `xcodebuild` command after the widget value-layout changes.
+
+## Dashboard Day Navigation and Visible-Day Logging
+
+### Delivered
+
+- Added dashboard day navigation with horizontal swipes across the macro summary area.
+- Added a conditional `Today` toolbar button when the dashboard is showing an older day.
+- Updated the dashboard to load titles, summaries, and entries from the selected visible day instead of always pinning to today.
+- Updated dashboard add-food flows so logging respects the currently visible day.
+- Updated dashboard `Log Again` so repeated entries are logged onto the visible dashboard day.
+
+### Main implementation steps
+
+- Reused the existing `HistoryScreen` selected-day sync pattern in `DashboardScreen.swift` with local `selectedDay` and `followsCurrentDay` state.
+- Switched `LogEntryDaySnapshotReader` and dashboard titles from `dayContext.today` to `selectedDay`.
+- Scoped the day-swipe gesture to the top summary surfaces so existing row swipe actions remain native and unaffected.
+- Extended `CalendarDay.swift` with small date-advancement and time-matching helpers instead of introducing new date-selection infrastructure.
+- Threaded an optional `loggingDay` through `AppRootView.swift`, add-food search/manual flows, scan flows, and `LogFoodScreen.swift`.
+
+### Bugs and implementation findings
+
+- The correct root fix was not new global date state; the existing History-local day-selection pattern already matched this feature.
+- Attaching the swipe gesture to the full dashboard list would have risked conflicts with existing row edit/delete/log-again swipe actions, so the gesture was limited to the dashboard summary region.
+- Logging against the visible day was already supported by `LogEntryRepository` via explicit `loggedAt`, so the clean implementation was to route the selected day through existing add-food and log-again flows rather than add a parallel persistence path.
+
+### Validation
+
+- Formatter check plus both documented app builds passed after this work.
+
+### Review-driven follow-up
+
+- A focused code review found that the floating compact dashboard summary had stopped acting as a visual-only overlay after day-swipe support was added.
+- The real regression was not the selected-day logic itself, but removing the overlay's passthrough interaction contract while it still sat above the `List` in the dashboard `ZStack`.
+- `DashboardScreen.swift` now restores `.allowsHitTesting(false)` on the floating `CompactMacroSummaryView` and keeps day-swipe handling on the dashboard summary rows inside the list instead of on the overlay itself.
+- Formatter validation plus both documented app builds still passed after this follow-up fix.
+
+### Follow-up: pinned compact summary swipe restoration
+
+- A deeper validation pass found that keeping the compact summary visual-only was correct, but it also left the pinned state without any remaining visible day-swipe owner once the large summary rows had scrolled offscreen.
+- The root issue was not the swipe-threshold logic and not the selected-day state; it was splitting the visible compact summary from the gesture surface that still owned `handleDaySwipe(...)`.
+- `DashboardScreen.swift` now keeps the large summary rows on the shared `dayNavigationGesture`, preserves `.allowsHitTesting(false)` on the floating `CompactMacroSummaryView`, and adds one bounded list-level simultaneous drag handler that only activates when:
+  - the compact summary is visible
+  - the drag starts inside the measured pinned-summary height
+- The compact summary height is measured locally in `DashboardScreen.swift` with a small preference key instead of hard-coding another layout assumption or moving dashboard-specific interaction into `CompactMacroSummaryView.swift`.
+- This restores horizontal day navigation on the pinned compact summary state without expanding the gesture to the full list interaction surface or interfering with native row swipe actions below it.
+- Formatter validation plus both documented app builds still passed after this follow-up fix.
+
+### Follow-up: interaction-safe swipe ownership and bottom-bar coverage
+
+- A later validation pass showed that the broader pinned-summary gesture surface was still too aggressive: it could reverse the expected swipe direction and steal interaction from food rows and list scrolling.
+- The final dashboard interaction contract is now:
+  - right swipe moves to the previous day
+  - left swipe moves toward newer days
+  - food rows keep their native edit / log-again / delete swipe actions
+  - the pinned compact summary and bottom `Add Food` bar are both valid day-swipe surfaces
+- `DashboardScreen.swift` now lets the pinned `CompactMacroSummaryView` own the compact-state day-swipe gesture directly instead of relying on a larger invisible overlay above the list.
+- `DashboardScreen.swift` also keeps the bottom `BottomPinnedActionBar` on the shared day-navigation gesture, so day switching still works from the lower non-row surface without expanding the gesture across the full list.
+- The root fix was to keep day navigation attached only to explicit non-row surfaces rather than to a broad transparent layer that could intercept list interaction.
+- Formatter validation plus both documented app builds still passed after this follow-up fix.
+
+### Follow-up: day-swipe coverage for the dashboard list header
+
+- Dashboard day navigation now also works from the list header row that shows the visible date and item count.
+- `LogEntryListSection.swift` now exposes a small header-only drag callback so the dashboard can reuse `handleDaySwipe(...)` without attaching the gesture to food rows themselves.
+- This keeps row edit/log-again/delete swipe actions and vertical list scrolling intact while slightly widening the non-row day-navigation surface below the macro summary.
+- Formatter validation plus both documented app builds still passed after this follow-up fix.
+
+### Follow-up: dashboard deep-link resets visible day
+
+- A later review pass found that widget-driven `AppOpenRequest.dashboard` opens could still land on an old selected day if the dashboard was already alive and someone had swiped away from today.
+- The root issue was ownership mismatch: `AppRootView.swift` consumed dashboard open requests, but `DashboardScreen.swift` privately owned the visible-day state and had no reset contract for that app-entry path.
+- `AppRootView.swift` now increments a small `dashboardResetToken` whenever it handles `.dashboard`, and `DashboardScreen.swift` observes that token to route back through its existing `updateSelectedDay(dayContext.today)` path.
+- This keeps selected-day state local to the dashboard, preserves the existing `AppOpenRequest.dashboard` deep-link contract, and avoids introducing a second global date-state path just to satisfy widget and app-entry resets.
+- Formatter validation plus both documented app builds still passed after this follow-up fix.

@@ -8,6 +8,7 @@ struct LogFoodScreen: View {
     @Environment(\.modelContext) private var modelContext
 
     let initialDraft: FoodDraft
+    let loggingDay: CalendarDay?
     let reviewNotes: [String]
     let previewImageData: Data?
     let onFoodLogged: () -> Void
@@ -26,11 +27,13 @@ struct LogFoodScreen: View {
 
     init(
         initialDraft: FoodDraft,
+        loggingDay: CalendarDay? = nil,
         reviewNotes: [String] = [],
         previewImageData: Data? = nil,
         onFoodLogged: @escaping () -> Void = {}
     ) {
         self.initialDraft = initialDraft
+        self.loggingDay = loggingDay
         self.reviewNotes = reviewNotes
         self.previewImageData = previewImageData
         self.onFoodLogged = onFoodLogged
@@ -218,6 +221,7 @@ struct LogFoodScreen: View {
             try logEntryRepository.logFood(
                 draft: finalizedDraft,
                 reusableFoodPersistenceMode: reusableFoodPersistenceMode,
+                loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now,
                 quantityMode: quantityMode,
                 quantityAmount: activeAmount,
                 operation: "Log food"

@@ -51,6 +51,22 @@ struct CalendarDay: Hashable, Sendable {
         }
     }
 
+    func advanced(byDays days: Int) -> CalendarDay? {
+        resolvedCalendar.date(byAdding: .day, value: days, to: startDate).map {
+            CalendarDay(date: $0, calendar: resolvedCalendar)
+        }
+    }
+
+    func date(matchingTimeOf referenceDate: Date = .now) -> Date {
+        let calendar = resolvedCalendar
+        var components = calendar.dateComponents([.hour, .minute, .second, .nanosecond], from: referenceDate)
+        components.era = era
+        components.year = year
+        components.month = month
+        components.day = day
+        return calendar.date(from: components) ?? startDate
+    }
+
     var dayTitle: String {
         if isToday {
             return "Today"

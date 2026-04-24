@@ -14,6 +14,7 @@ struct LogEntryListSection: View {
     let emptyVerticalPadding: Double
     let layout: Layout
     let showsHeader: Bool
+    let onHeaderSwipeTranslation: ((CGSize) -> Void)?
     let onDeleteEntry: ((LogEntry) -> Void)?
     let onEditEntry: ((LogEntry) -> Void)?
     let onLogAgain: ((LogEntry) -> Void)?
@@ -27,6 +28,7 @@ struct LogEntryListSection: View {
         emptyVerticalPadding: Double,
         layout: Layout = .stackedCards,
         showsHeader: Bool = true,
+        onHeaderSwipeTranslation: ((CGSize) -> Void)? = nil,
         onDeleteEntry: ((LogEntry) -> Void)? = nil,
         onEditEntry: ((LogEntry) -> Void)? = nil,
         onLogAgain: ((LogEntry) -> Void)? = nil
@@ -39,6 +41,7 @@ struct LogEntryListSection: View {
         self.emptyVerticalPadding = emptyVerticalPadding
         self.layout = layout
         self.showsHeader = showsHeader
+        self.onHeaderSwipeTranslation = onHeaderSwipeTranslation
         self.onDeleteEntry = onDeleteEntry
         self.onEditEntry = onEditEntry
         self.onLogAgain = onLogAgain
@@ -63,6 +66,13 @@ struct LogEntryListSection: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+        .contentShape(Rectangle())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 24)
+                .onEnded { value in
+                    onHeaderSwipeTranslation?(value.translation)
+                }
+        )
     }
 
     private var emptyState: some View {

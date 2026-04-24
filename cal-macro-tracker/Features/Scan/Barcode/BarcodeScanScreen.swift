@@ -29,10 +29,16 @@ struct BarcodeScanScreen: View {
     @Environment(\.modelContext) private var modelContext
 
     let onFoodLogged: () -> Void
+    let loggingDay: CalendarDay?
     let entryMode: EntryMode
 
-    init(onFoodLogged: @escaping () -> Void, entryMode: EntryMode = .options) {
+    init(
+        onFoodLogged: @escaping () -> Void,
+        loggingDay: CalendarDay? = nil,
+        entryMode: EntryMode = .options
+    ) {
         self.onFoodLogged = onFoodLogged
+        self.loggingDay = loggingDay
         self.entryMode = entryMode
     }
 
@@ -104,7 +110,7 @@ struct BarcodeScanScreen: View {
         }
         .navigationDestination(isPresented: isShowingLogFood) {
             if let logFoodDraft {
-                LogFoodScreen(initialDraft: logFoodDraft, onFoodLogged: onFoodLogged)
+                LogFoodScreen(initialDraft: logFoodDraft, loggingDay: loggingDay, onFoodLogged: onFoodLogged)
             }
         }
         .onChange(of: errorMessage) { oldValue, newValue in
@@ -279,10 +285,16 @@ struct BarcodeScanScreen: View {
     }
 
     let onFoodLogged: () -> Void
+    let loggingDay: CalendarDay?
     let entryMode: EntryMode
 
-    init(onFoodLogged: @escaping () -> Void, entryMode: EntryMode = .options) {
+    init(
+        onFoodLogged: @escaping () -> Void,
+        loggingDay: CalendarDay? = nil,
+        entryMode: EntryMode = .options
+    ) {
         self.onFoodLogged = onFoodLogged
+        self.loggingDay = loggingDay
         self.entryMode = entryMode
     }
 
