@@ -1,6 +1,14 @@
 import SwiftUI
 
 extension ToolbarItemPlacement {
+    static var appTopBarLeading: ToolbarItemPlacement {
+        #if os(iOS)
+        .topBarLeading
+        #else
+        .automatic
+        #endif
+    }
+
     static var appTopBarTrailing: ToolbarItemPlacement {
         #if os(iOS)
         .topBarTrailing

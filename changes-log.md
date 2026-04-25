@@ -66,6 +66,47 @@
 - Removed the custom interactive-pop UIKit bridge entirely.
 - Kept the content-spacing fix separately, since the top-offset issue was real but unrelated to the back-navigation failure.
 
+### Dashboard and History header polish
+
+#### Delivered
+
+- Reworked the Dashboard header so the visible date is left-aligned, smaller than the native iOS large title, and never wrapped in an iOS 26 Liquid Glass title capsule.
+- Kept the Dashboard calendar and settings buttons visually grouped with balanced spacing inside the trailing toolbar capsule.
+- Kept the Dashboard `Today` reset action visible only for non-today dates and balanced its spacing with the calendar/settings icons.
+- Shortened non-today Dashboard titles to a compact form such as `Fri, Apr 24` so day-swipe navigation does not truncate the title.
+- Reworked the pushed History header so its date title sits next to the native back affordance instead of centered in the navigation bar.
+- Kept History on native back-navigation semantics while hiding the default centered title and rendering a plain leading toolbar title without a glass capsule.
+- Increased the History title size so it reads naturally beside the back button.
+- Changed non-today History titles to full weekday names such as `Tuesday, Apr 21`, while keeping `Today` concise.
+
+#### Main implementation steps
+
+- Added `ToolbarItemPlacement.appTopBarLeading` alongside the existing platform-aware trailing placement helper.
+- Updated `DashboardScreen.swift` to use a leading toolbar `Text` with `.sharedBackgroundVisibility(.hidden)` instead of the native large title for the home date.
+- Added a Dashboard-specific navigation title formatter so Dashboard can use `Today` / abbreviated weekday-date text without changing the longer History title contract.
+- Grouped the Dashboard reset/history/settings actions into one trailing `HStack(spacing: 8)` and applied plain button styling so internal spacing stays even.
+- Updated `HistoryScreen.swift` to use a leading toolbar title with `.sharedBackgroundVisibility(.hidden)` while preserving the native pushed-screen back button.
+- Added a History-specific toolbar title formatter so the header can use `Today` or a full weekday date without reusing the longer centered history navigation title.
+
+#### Bugs and implementation findings
+
+- Separate trailing toolbar items let SwiftUI insert uneven Liquid Glass spacing between `Today`, calendar, and settings; grouping the actions in one trailing toolbar item produced balanced internal spacing.
+- Rendering custom title text as a leading toolbar item on iOS 26 can receive a glass capsule unless the shared toolbar background is explicitly hidden.
+- Native `.toolbarTitleDisplayMode(.inlineLarge)` solved left alignment but made the Dashboard title too large for this design; a plain leading toolbar title gave the needed size control.
+- Leading toolbar text can compress to `T...` under the navigation bar's layout constraints unless it is fixed-size horizontally.
+- Full `HistoryScreen.historyNavigationTitle` strings were too long beside the native back button; a shorter toolbar-specific formatter preserved context without truncation.
+
+#### Validation recorded during this follow-up
+
+- Formatter and macOS debug builds with local code-signing disabled passed.
+- SwiftUI visual validation confirmed the Dashboard today/non-today headers, balanced trailing action spacing, and History today/non-today headers including full weekday titles.
+
+#### Header motion and capsule spacing follow-up
+
+- Disabled implicit animations on the Dashboard and History leading date labels so date changes update immediately instead of fading/sliding during day selection.
+- Added small horizontal padding inside the trailing toolbar capsule content so `Today`, calendar, and settings controls have more breathing room from the Liquid Glass pill edges.
+- Formatter, macOS debug build with local code-signing disabled, and focused SwiftUI visual validation passed after the adjustment.
+
 ## Scan Flows
 
 ### Delivered

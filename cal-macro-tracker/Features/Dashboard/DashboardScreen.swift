@@ -74,7 +74,7 @@ struct DashboardScreen: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
                 }
             }
-            .navigationTitle(daySelection.selectedDay.historyNavigationTitle)
+            .navigationTitle("")
             .inlineNavigationTitle()
             .animation(.easeInOut(duration: 0.2), value: showsCompactSummary)
             .onAppear {
@@ -90,30 +90,46 @@ struct DashboardScreen: View {
                 }
             }
             .toolbar {
-                if daySelection.selectedDay != dayContext.today {
-                    ToolbarItem(placement: .appTopBarTrailing) {
-                        Button("Today") {
-                            withAnimation(.easeInOut(duration: 0.18)) {
-                                daySelection.resetToToday(dayContext.today)
+                ToolbarItem(placement: .appTopBarLeading) {
+                    Text(dashboardNavigationTitle)
+                        .font(.title2.weight(.semibold))
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .transaction { $0.animation = nil }
+                        .accessibilityAddTraits(.isHeader)
+                }
+                .sharedBackgroundVisibility(.hidden)
+
+                ToolbarItem(placement: .appTopBarTrailing) {
+                    HStack(spacing: 8) {
+                        if daySelection.selectedDay != dayContext.today {
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.18)) {
+                                    daySelection.resetToToday(dayContext.today)
+                                }
+                            } label: {
+                                Text("Today")
+                                    .fixedSize()
                             }
+                            .buttonStyle(.plain)
                         }
-                    }
-                }
 
-                ToolbarItem(placement: .appTopBarTrailing) {
-                    Button(action: onOpenHistory) {
-                        Image(systemName: "calendar")
-                            .font(.title3.weight(.semibold))
-                    }
-                    .accessibilityLabel("Open history")
-                }
+                        Button(action: onOpenHistory) {
+                            Image(systemName: "calendar")
+                                .font(.title3.weight(.semibold))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Open history")
 
-                ToolbarItem(placement: .appTopBarTrailing) {
-                    Button(action: onOpenSettings) {
-                        Image(systemName: "gearshape")
-                            .font(.title3.weight(.semibold))
+                        Button(action: onOpenSettings) {
+                            Image(systemName: "gearshape")
+                                .font(.title3.weight(.semibold))
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Open settings")
                     }
-                    .accessibilityLabel("Open settings")
+                    .padding(.horizontal, 4)
+                    .foregroundStyle(.primary)
                 }
             }
             .safeAreaInset(edge: .bottom) {
@@ -135,6 +151,14 @@ struct DashboardScreen: View {
         }
 
         return "Tap the add button to log your first food for this day."
+    }
+
+    private var dashboardNavigationTitle: String {
+        if daySelection.selectedDay.isToday {
+            return "Today"
+        }
+
+        return daySelection.selectedDay.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
     }
 
     private var dayNavigationGesture: some Gesture {
