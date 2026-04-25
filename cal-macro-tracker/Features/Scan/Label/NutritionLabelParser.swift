@@ -3,9 +3,17 @@ import Foundation
 struct NutritionLabelParseResult {
     let draft: FoodDraft
     let notes: [String]
+    let missingRequiredNutrients: [RequiredNutritionReviewNutrient]
 }
 
 enum NutritionLabelParser {
+    static func reviewRequiredNutrientsMessage(_ nutrients: [RequiredNutritionReviewNutrient]) -> String {
+        let nutrientNames = joinedList(nutrients.map(\.displayName))
+        return
+            "\(nutrientNames) were not confidently detected. Edit those values before logging, "
+            + "or confirm that any remaining 0 values are intentional."
+    }
+
     static func parse(recognizedText: NutritionLabelRecognizedText) -> NutritionLabelParseResult {
         let parsedText = ParsedLabelText(recognizedText: recognizedText)
         let detectedServingDescription = servingDescription(from: parsedText)
@@ -16,16 +24,7 @@ enum NutritionLabelParser {
                 source: .labelScan,
                 servingDescription: detectedServingDescription ?? FoodDraft.defaultServingDescription,
                 gramsPerServing: gramsPerServing(from: parsedText),
-                caloriesPerServing: detectedNutrients.calories ?? 0,
-                proteinPerServing: detectedNutrients.protein ?? 0,
-                fatPerServing: detectedNutrients.fat ?? 0,
-                carbsPerServing: detectedNutrients.carbs ?? 0,
-                saturatedFatPerServing: detectedNutrients.saturatedFat,
-                fiberPerServing: detectedNutrients.fiber,
-                sugarsPerServing: detectedNutrients.sugars,
-                addedSugarsPerServing: detectedNutrients.addedSugars,
-                sodiumPerServing: detectedNutrients.sodium,
-                cholesterolPerServing: detectedNutrients.cholesterol
+                perServingNutrition: detectedNutrients.perServingNutritionValues
             )
         )
 
@@ -35,7 +34,8 @@ enum NutritionLabelParser {
                 for: draft,
                 servingDescriptionDetected: detectedServingDescription != nil,
                 detectedNutrients: detectedNutrients
-            )
+            ),
+            missingRequiredNutrients: detectedNutrients.missingRequiredNutrients
         )
     }
 

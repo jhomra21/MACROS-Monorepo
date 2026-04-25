@@ -21,6 +21,87 @@ struct FoodDraftImportedData: Hashable {
     var addedSugarsPerServing: Double? = nil
     var sodiumPerServing: Double? = nil
     var cholesterolPerServing: Double? = nil
+
+    init(
+        name: String,
+        brand: String? = nil,
+        source: FoodSource,
+        secondaryNutrientBackfillState: SecondaryNutrientBackfillState? = .current,
+        barcode: String? = nil,
+        externalProductID: String? = nil,
+        sourceName: String? = nil,
+        sourceURL: String? = nil,
+        servingDescription: String,
+        gramsPerServing: Double? = nil,
+        caloriesPerServing: Double,
+        proteinPerServing: Double,
+        fatPerServing: Double,
+        carbsPerServing: Double,
+        saturatedFatPerServing: Double? = nil,
+        fiberPerServing: Double? = nil,
+        sugarsPerServing: Double? = nil,
+        addedSugarsPerServing: Double? = nil,
+        sodiumPerServing: Double? = nil,
+        cholesterolPerServing: Double? = nil
+    ) {
+        self.name = name
+        self.brand = brand
+        self.source = source
+        self.secondaryNutrientBackfillState = secondaryNutrientBackfillState
+        self.barcode = barcode
+        self.externalProductID = externalProductID
+        self.sourceName = sourceName
+        self.sourceURL = sourceURL
+        self.servingDescription = servingDescription
+        self.gramsPerServing = gramsPerServing
+        self.caloriesPerServing = caloriesPerServing
+        self.proteinPerServing = proteinPerServing
+        self.fatPerServing = fatPerServing
+        self.carbsPerServing = carbsPerServing
+        self.saturatedFatPerServing = saturatedFatPerServing
+        self.fiberPerServing = fiberPerServing
+        self.sugarsPerServing = sugarsPerServing
+        self.addedSugarsPerServing = addedSugarsPerServing
+        self.sodiumPerServing = sodiumPerServing
+        self.cholesterolPerServing = cholesterolPerServing
+    }
+
+    init(
+        name: String,
+        brand: String? = nil,
+        source: FoodSource,
+        secondaryNutrientBackfillState: SecondaryNutrientBackfillState? = .current,
+        barcode: String? = nil,
+        externalProductID: String? = nil,
+        sourceName: String? = nil,
+        sourceURL: String? = nil,
+        servingDescription: String,
+        gramsPerServing: Double? = nil,
+        perServingNutrition: PerServingNutritionValues
+    ) {
+        self.init(
+            name: name,
+            brand: brand,
+            source: source,
+            secondaryNutrientBackfillState: secondaryNutrientBackfillState,
+            barcode: barcode,
+            externalProductID: externalProductID,
+            sourceName: sourceName,
+            sourceURL: sourceURL,
+            servingDescription: servingDescription,
+            gramsPerServing: gramsPerServing,
+            caloriesPerServing: perServingNutrition.calories,
+            proteinPerServing: perServingNutrition.protein,
+            fatPerServing: perServingNutrition.fat,
+            carbsPerServing: perServingNutrition.carbs,
+            saturatedFatPerServing: perServingNutrition.saturatedFat,
+            fiberPerServing: perServingNutrition.fiber,
+            sugarsPerServing: perServingNutrition.sugars,
+            addedSugarsPerServing: perServingNutrition.addedSugars,
+            sodiumPerServing: perServingNutrition.sodium,
+            cholesterolPerServing: perServingNutrition.cholesterol
+        )
+    }
 }
 
 protocol FoodDraftImportedDataConvertible {

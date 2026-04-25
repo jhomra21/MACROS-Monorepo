@@ -1,8 +1,5 @@
 import SwiftData
 import SwiftUI
-#if os(iOS)
-import UIKit
-#endif
 
 struct EditLogEntryScreen: View {
     @Environment(\.dismiss) private var dismiss
@@ -69,10 +66,6 @@ struct EditLogEntryScreen: View {
         return URL(string: sourceURL)
     }
 
-    private var shouldShowSourceSection: Bool {
-        draft.sourceNameOrNil != nil || sourceURL != nil || shouldShowNutrientRefreshButton
-    }
-
     private var shouldShowNutrientRefreshButton: Bool {
         draft.shouldOfferManualSecondaryNutrientRefresh && canRefreshNutrients
     }
@@ -90,44 +83,37 @@ struct EditLogEntryScreen: View {
         return hasher.finalize()
     }
 
+    private var sourceSectionActionMessage: String? {
+        shouldShowNutrientRefreshButton ? nutrientRefreshMessage : nil
+    }
+
+    private var sourceSectionActionTitle: String? {
+        guard shouldShowNutrientRefreshButton else { return nil }
+        return isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients"
+    }
+
     var body: some View {
         FoodDraftEditorForm(
             draft: $draft,
             numericText: $numericText,
             errorMessage: $errorMessage,
-            brandPrompt: "Brand",
-            gramsPrompt: "Grams per serving",
-            nutritionPresentation: nutritionPresentation,
-            focusedField: $focusedField,
-            trailingKeyboardFields: []
+            configuration: FoodDraftEditorConfiguration(
+                brandPrompt: "Brand",
+                gramsPrompt: "Grams per serving",
+                nutritionPresentation: nutritionPresentation
+            ),
+            focusedField: $focusedField
         ) {
-            if shouldShowSourceSection {
-                Section("Source") {
-                    if let sourceName = draft.sourceNameOrNil {
-                        LabeledContent("Provider") {
-                            Text(sourceName)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    if let sourceURL {
-                        Link(destination: sourceURL) {
-                            Label("View Source", systemImage: "link")
-                        }
-                    }
-
-                    if shouldShowNutrientRefreshButton {
-                        Text(nutrientRefreshMessage)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-
-                        Button(isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients") {
-                            refreshNutrients()
-                        }
-                        .disabled(isRefreshingNutrients)
-                    }
-                }
-            }
+            FoodDraftSourceSection(
+                title: "Source",
+                sourceNameLabel: "Provider",
+                sourceName: draft.sourceNameOrNil,
+                sourceURL: sourceURL,
+                actionMessage: sourceSectionActionMessage,
+                actionTitle: sourceSectionActionTitle,
+                isActionDisabled: isRefreshingNutrients,
+                onAction: shouldShowNutrientRefreshButton ? { refreshNutrients() } : nil
+            )
 
             FoodQuantitySection(
                 quantityMode: $quantityMode,
@@ -173,11 +159,8 @@ struct EditLogEntryScreen: View {
             return
         }
 
-        dismissEditing()
-
-        DispatchQueue.main.async {
-            persistChanges(finalizedDraft)
-        }
+        dismissKeyboard($focusedField)
+        persistChanges(finalizedDraft)
     }
 
     private func deleteEntry() {
@@ -185,10 +168,7 @@ struct EditLogEntryScreen: View {
             try logEntryRepository.delete(entry: entry, operation: "Delete entry")
             errorMessage = nil
             deleteFeedbackToken += 1
-
-            DispatchQueue.main.async {
-                dismiss()
-            }
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
@@ -206,10 +186,7 @@ struct EditLogEntryScreen: View {
             )
             errorMessage = nil
             saveFeedbackToken += 1
-
-            DispatchQueue.main.async {
-                dismiss()
-            }
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
@@ -217,7 +194,7 @@ struct EditLogEntryScreen: View {
     }
 
     private func refreshNutrients() {
-        dismissEditing()
+        dismissKeyboard($focusedField)
         isRefreshingNutrients = true
 
         Task { @MainActor in
@@ -260,12 +237,5 @@ struct EditLogEntryScreen: View {
         } catch {
             canRefreshNutrients = false
         }
-    }
-
-    private func dismissEditing() {
-        focusedField = nil
-        #if os(iOS)
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        #endif
     }
 }

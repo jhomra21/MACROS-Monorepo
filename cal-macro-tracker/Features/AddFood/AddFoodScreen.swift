@@ -13,11 +13,6 @@ struct AddFoodScreen: View {
     @State private var remoteSearch = RemoteSearchSession()
     @State private var remoteSearchTask: Task<Void, Never>?
 
-    private struct SearchMatch {
-        let food: FoodItem
-        let rank: Int
-    }
-
     private struct RemoteSearchSession {
         var query = ""
         var page = 0
@@ -30,6 +25,16 @@ struct AddFoodScreen: View {
 
         var hasState: Bool {
             query.isEmpty == false || errorMessage != nil || isLoading
+        }
+
+        var viewState: RemoteSearchViewState {
+            RemoteSearchViewState(
+                results: results,
+                errorMessage: errorMessage,
+                isLoading: isLoading,
+                hasState: hasState,
+                hasMore: hasMore
+            )
         }
     }
 
@@ -66,11 +71,7 @@ struct AddFoodScreen: View {
                             foods: rankedFoods,
                             totalFoodsCount: searchableFoods.count,
                             hasLoadedFoods: !foods.isEmpty,
-                            remoteResults: remoteSearch.results,
-                            remoteErrorMessage: remoteSearch.errorMessage,
-                            isLoadingRemoteResults: remoteSearch.isLoading,
-                            hasRemoteSearchState: remoteSearch.hasState,
-                            hasMoreRemoteResults: remoteSearch.hasMore,
+                            remoteSearch: remoteSearch.viewState,
                             isRemoteSearchAvailable: isRemoteSearchAvailable,
                             searchText: trimmedSearchText,
                             onFoodLogged: closeSheet,
@@ -93,6 +94,7 @@ struct AddFoodScreen: View {
         }
         .onDisappear {
             remoteSearchTask?.cancel()
+            remoteSearchTask = nil
         }
         .toolbar {
             ToolbarItem(placement: .appTopBarTrailing) {
@@ -113,37 +115,12 @@ struct AddFoodScreen: View {
     }
 
     private var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
-    private var normalizedSearchText: String { trimmedSearchText.lowercased() }
     private var isRemoteSearchAvailable: Bool {
         RemoteFoodSearchConfiguration.isPackagedFoodSearchAvailable
     }
 
     private var rankedFoods: [FoodItem] {
-        let query = normalizedSearchText
-        guard query.isEmpty == false else { return searchableFoods }
-        let queryTokens = Set(query.split(whereSeparator: { $0.isWhitespace }).map(String.init))
-        let matches: [SearchMatch] = searchableFoods.reduce(into: []) { partialResult, food in
-            guard let rank = localSearchRank(for: food, query: query, queryTokens: queryTokens) else { return }
-            partialResult.append(SearchMatch(food: food, rank: rank))
-        }
-        return
-            matches
-            .sorted { lhs, rhs in
-                if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
-                return lhs.food.name.localizedCaseInsensitiveCompare(rhs.food.name) == .orderedAscending
-            }
-            .map(\.food)
-    }
-
-    private func localSearchRank(for food: FoodItem, query: String, queryTokens: Set<String>) -> Int? {
-        let name = food.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let brand = food.brand?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
-        if name == query || (brand.isEmpty == false && brand == query) { return 0 }
-        if name.hasPrefix(query) || (brand.isEmpty == false && brand.hasPrefix(query)) { return 1 }
-        guard food.searchableText.contains(query) else { return nil }
-        guard queryTokens.isEmpty == false else { return 2 }
-        let searchableTokens = Set(food.searchableText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
-        return queryTokens.isSubset(of: searchableTokens) ? 2 : 3
+        FoodItemLocalSearch.rankedFoods(searchableFoods, matching: trimmedSearchText)
     }
 
     private func searchOnline() {

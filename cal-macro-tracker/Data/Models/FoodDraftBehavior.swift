@@ -90,6 +90,15 @@ extension FoodDraft {
         return gramsPerServing > 0
     }
 
+    func missingLabelScanRequiredNutrients(
+        from nutrients: [RequiredNutritionReviewNutrient],
+        confirmedZeroNutrients: Set<RequiredNutritionReviewNutrient>
+    ) -> [RequiredNutritionReviewNutrient] {
+        nutrients.filter { nutrient in
+            requiredNutrientValue(for: nutrient) <= 0 && confirmedZeroNutrients.contains(nutrient) == false
+        }
+    }
+
     var canSaveReusableFood: Bool {
         validationErrorForSaving() == nil
     }
@@ -100,6 +109,11 @@ extension FoodDraft {
 
         return normalizedDraft.name != normalizedOther.name
             || normalizedDraft.brand != normalizedOther.brand
+            || normalizedDraft.source != normalizedOther.source
+            || normalizedDraft.barcode != normalizedOther.barcode
+            || normalizedDraft.externalProductID != normalizedOther.externalProductID
+            || normalizedDraft.sourceName != normalizedOther.sourceName
+            || normalizedDraft.sourceURL != normalizedOther.sourceURL
             || normalizedDraft.servingDescription != normalizedOther.servingDescription
             || normalizedDraft.gramsPerServing != normalizedOther.gramsPerServing
             || normalizedDraft.caloriesPerServing != normalizedOther.caloriesPerServing
@@ -242,5 +256,18 @@ extension FoodDraft {
     private static func trimmedText(from value: String) -> String? {
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedValue.isEmpty ? nil : trimmedValue
+    }
+
+    private func requiredNutrientValue(for nutrient: RequiredNutritionReviewNutrient) -> Double {
+        switch nutrient {
+        case .calories:
+            caloriesPerServing
+        case .protein:
+            proteinPerServing
+        case .fat:
+            fatPerServing
+        case .carbs:
+            carbsPerServing
+        }
     }
 }

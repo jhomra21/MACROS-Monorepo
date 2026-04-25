@@ -39,7 +39,7 @@ extension LogEntryRepository {
             )
         }
 
-        WidgetTimelineReloader.reloadDailyMacroWidget()
+        WidgetTimelineReloader.reloadMacroWidgets()
     }
 
     func delete(entry: LogEntry, operation: String) throws {
@@ -54,7 +54,7 @@ extension LogEntryRepository {
             isolatedContext.delete(isolatedEntry)
         }
 
-        WidgetTimelineReloader.reloadDailyMacroWidget()
+        WidgetTimelineReloader.reloadMacroWidgets()
     }
 
     func logAgain(entry: LogEntry, loggedAt: Date = .now, operation: String) throws {
@@ -105,7 +105,7 @@ extension LogEntryRepository {
             isolatedContext.insert(entry)
         }
 
-        WidgetTimelineReloader.reloadDailyMacroWidget()
+        WidgetTimelineReloader.reloadMacroWidgets()
     }
 
     private func apply(
@@ -131,16 +131,16 @@ extension LogEntryRepository {
         entry.sourceURL = values.sourceURL
         entry.servingDescription = values.servingDescription
         entry.gramsPerServing = values.gramsPerServing
-        entry.caloriesPerServing = values.caloriesPerServing
-        entry.proteinPerServing = values.proteinPerServing
-        entry.fatPerServing = values.fatPerServing
-        entry.carbsPerServing = values.carbsPerServing
-        entry.saturatedFatPerServing = values.saturatedFatPerServing
-        entry.fiberPerServing = values.fiberPerServing
-        entry.sugarsPerServing = values.sugarsPerServing
-        entry.addedSugarsPerServing = values.addedSugarsPerServing
-        entry.sodiumPerServing = values.sodiumPerServing
-        entry.cholesterolPerServing = values.cholesterolPerServing
+        entry.caloriesPerServing = values.perServingNutrition.calories
+        entry.proteinPerServing = values.perServingNutrition.protein
+        entry.fatPerServing = values.perServingNutrition.fat
+        entry.carbsPerServing = values.perServingNutrition.carbs
+        entry.saturatedFatPerServing = values.perServingNutrition.saturatedFat
+        entry.fiberPerServing = values.perServingNutrition.fiber
+        entry.sugarsPerServing = values.perServingNutrition.sugars
+        entry.addedSugarsPerServing = values.perServingNutrition.addedSugars
+        entry.sodiumPerServing = values.perServingNutrition.sodium
+        entry.cholesterolPerServing = values.perServingNutrition.cholesterol
         entry.quantityMode = values.quantityMode.rawValue
         entry.servingsConsumed = values.servingsConsumed
         entry.gramsConsumed = values.gramsConsumed
@@ -183,16 +183,16 @@ extension LogEntryRepository {
             sourceURL: values.sourceURL,
             servingDescription: values.servingDescription,
             gramsPerServing: values.gramsPerServing,
-            caloriesPerServing: values.caloriesPerServing,
-            proteinPerServing: values.proteinPerServing,
-            fatPerServing: values.fatPerServing,
-            carbsPerServing: values.carbsPerServing,
-            saturatedFatPerServing: values.saturatedFatPerServing,
-            fiberPerServing: values.fiberPerServing,
-            sugarsPerServing: values.sugarsPerServing,
-            addedSugarsPerServing: values.addedSugarsPerServing,
-            sodiumPerServing: values.sodiumPerServing,
-            cholesterolPerServing: values.cholesterolPerServing,
+            caloriesPerServing: values.perServingNutrition.calories,
+            proteinPerServing: values.perServingNutrition.protein,
+            fatPerServing: values.perServingNutrition.fat,
+            carbsPerServing: values.perServingNutrition.carbs,
+            saturatedFatPerServing: values.perServingNutrition.saturatedFat,
+            fiberPerServing: values.perServingNutrition.fiber,
+            sugarsPerServing: values.perServingNutrition.sugars,
+            addedSugarsPerServing: values.perServingNutrition.addedSugars,
+            sodiumPerServing: values.perServingNutrition.sodium,
+            cholesterolPerServing: values.perServingNutrition.cholesterol,
             quantityMode: values.quantityMode,
             servingsConsumed: values.servingsConsumed,
             gramsConsumed: values.gramsConsumed,

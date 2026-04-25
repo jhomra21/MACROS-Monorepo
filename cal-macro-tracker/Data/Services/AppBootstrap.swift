@@ -5,15 +5,14 @@ import SwiftData
 enum AppBootstrap {
     struct Plan: Sendable {
         let shouldSeedCommonFoods: Bool
-        let shouldSeedGoals: Bool
+        let shouldNormalizeGoals: Bool
         let shouldRepairReusableFoodSearchIndexes: Bool
-        let shouldRepairSecondaryNutrients: Bool
     }
 
     static func bootstrapIfNeeded(in container: ModelContainer) async throws {
         let planningContext = ModelContext(container)
         let plan = try makePlan(modelContext: planningContext)
-        guard plan.shouldSeedCommonFoods || plan.shouldSeedGoals || plan.shouldRepairReusableFoodSearchIndexes else { return }
+        guard plan.shouldSeedCommonFoods || plan.shouldNormalizeGoals || plan.shouldRepairReusableFoodSearchIndexes else { return }
 
         let commonFoodRecords = try plan.shouldSeedCommonFoods ? await CommonFoodSeedLoader.commonFoodSeedRecords() : []
         let writeContext = ModelContext(container)
@@ -22,8 +21,8 @@ enum AppBootstrap {
             try CommonFoodSeedLoader.seedIfNeeded(modelContext: writeContext, records: commonFoodRecords)
         }
 
-        if plan.shouldSeedGoals {
-            try seedGoalsIfNeeded(modelContext: writeContext)
+        if plan.shouldNormalizeGoals {
+            try normalizeGoalsIfNeeded(modelContext: writeContext)
         }
 
         if plan.shouldRepairReusableFoodSearchIndexes {
@@ -33,8 +32,7 @@ enum AppBootstrap {
 
     static func repairSecondaryNutrientsIfNeeded(in container: ModelContainer) async throws {
         let planningContext = ModelContext(container)
-        let plan = try makePlan(modelContext: planningContext)
-        guard plan.shouldRepairSecondaryNutrients else { return }
+        guard try SecondaryNutrientRepairService.requiresRepairPass(modelContext: planningContext) else { return }
 
         let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
         let writeContext = ModelContext(container)
@@ -47,15 +45,14 @@ enum AppBootstrap {
     // periphery:ignore - preview-only bootstrap used by in-memory SwiftUI previews
     static func bootstrapPreview(modelContext: ModelContext) throws {
         try CommonFoodSeedLoader.seedIfNeeded(modelContext: modelContext)
-        try seedGoalsIfNeeded(modelContext: modelContext)
+        try normalizeGoalsIfNeeded(modelContext: modelContext)
     }
 
     private static func makePlan(modelContext: ModelContext) throws -> Plan {
         Plan(
             shouldSeedCommonFoods: try shouldSeedCommonFoods(modelContext: modelContext),
-            shouldSeedGoals: try shouldSeedGoals(modelContext: modelContext),
-            shouldRepairReusableFoodSearchIndexes: try shouldRepairReusableFoodSearchIndexes(modelContext: modelContext),
-            shouldRepairSecondaryNutrients: try shouldRepairSecondaryNutrients(modelContext: modelContext)
+            shouldNormalizeGoals: try shouldNormalizeGoals(modelContext: modelContext),
+            shouldRepairReusableFoodSearchIndexes: try shouldRepairReusableFoodSearchIndexes(modelContext: modelContext)
         )
     }
 
@@ -65,16 +62,12 @@ enum AppBootstrap {
         return try modelContext.fetchCount(descriptor) == 0
     }
 
-    private static func shouldSeedGoals(modelContext: ModelContext) throws -> Bool {
-        try modelContext.fetchCount(FetchDescriptor<DailyGoals>()) == 0
+    private static func shouldNormalizeGoals(modelContext: ModelContext) throws -> Bool {
+        try modelContext.fetchCount(FetchDescriptor<DailyGoals>()) != 1
     }
 
     private static func shouldRepairReusableFoodSearchIndexes(modelContext: ModelContext) throws -> Bool {
         try reusableFoodsNeedingSearchIndexRepair(modelContext: modelContext).isEmpty == false
-    }
-
-    private static func shouldRepairSecondaryNutrients(modelContext: ModelContext) throws -> Bool {
-        try SecondaryNutrientRepairService.requiresRepairPass(modelContext: modelContext)
     }
 
     private static func repairReusableFoodSearchIndexesIfNeeded(modelContext: ModelContext) throws {
@@ -93,13 +86,11 @@ enum AppBootstrap {
         let descriptor = FetchDescriptor<FoodItem>(predicate: #Predicate { $0.source != commonSource })
         return try modelContext.fetch(descriptor).filter(\.needsSearchableTextRepair)
     }
-    private static func seedGoalsIfNeeded(modelContext: ModelContext) throws {
-        let descriptor = FetchDescriptor<DailyGoals>()
-        let count = try modelContext.fetchCount(descriptor)
-        guard count == 0 else { return }
+    private static func normalizeGoalsIfNeeded(modelContext: ModelContext) throws {
+        guard try shouldNormalizeGoals(modelContext: modelContext) else { return }
 
-        try PersistenceReporter.persist(modelContext: modelContext, operation: "Seed daily goals") {
-            modelContext.insert(DailyGoals())
+        try PersistenceReporter.persist(modelContext: modelContext, operation: "Normalize daily goals") {
+            try DailyGoalsRepository.normalizeGoalsRecordsIfNeeded(modelContext: modelContext)
         }
     }
 }

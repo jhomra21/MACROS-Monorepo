@@ -3,21 +3,19 @@ import SwiftData
 
 extension SecondaryNutrientRepairService {
     static func requiresRepairPass(modelContext: ModelContext) throws -> Bool {
-        let foods = try fetchAllFoods(modelContext: modelContext)
-        if foods.contains(where: needsBackfillStateClassification) {
+        if try modelContext.fetchCount(foodClassificationDescriptor()) > 0 {
             return true
         }
 
-        if foods.contains(where: { $0.secondaryNutrientBackfillState == .needsRepair }) {
+        if try modelContext.fetchCount(foodNeedsRepairDescriptor()) > 0 {
             return true
         }
 
-        let entries = try fetchAllLogEntries(modelContext: modelContext)
-        if entries.contains(where: needsBackfillStateClassification) {
+        if try modelContext.fetchCount(entryClassificationDescriptor()) > 0 {
             return true
         }
 
-        return entries.contains(where: { $0.secondaryNutrientBackfillState == .needsRepair })
+        return try modelContext.fetchCount(entryNeedsRepairDescriptor()) > 0
     }
 
     static func repairIfNeeded(
@@ -44,14 +42,20 @@ extension SecondaryNutrientRepairService {
     }
 
     static func classifyBackfillStatesIfNeeded(modelContext: ModelContext) throws {
-        let foods = try fetchAllFoods(modelContext: modelContext)
-        let entries = try fetchAllLogEntries(modelContext: modelContext)
-        let foodsNeedingClassification = foods.filter(needsBackfillStateClassification)
-        let entriesNeedingClassification = entries.filter(needsBackfillStateClassification)
+        let foodsNeedingClassification = try modelContext.fetch(foodClassificationDescriptor())
+        let entriesNeedingClassification = try modelContext.fetch(entryClassificationDescriptor())
         guard foodsNeedingClassification.isEmpty == false || entriesNeedingClassification.isEmpty == false else { return }
 
-        let foodsByID = Dictionary(uniqueKeysWithValues: foods.map { ($0.id, $0) })
-        let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
+        let foodsByID: [UUID: FoodItem]
+        let externalTargetsByKey: [SecondaryNutrientRepairKey: SecondaryNutrientRepairTarget]
+        if entriesNeedingClassification.isEmpty {
+            foodsByID = [:]
+            externalTargetsByKey = [:]
+        } else {
+            let foods = try fetchAllFoods(modelContext: modelContext)
+            foodsByID = Dictionary(uniqueKeysWithValues: foods.map { ($0.id, $0) })
+            externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
+        }
 
         try PersistenceReporter.persist(modelContext: modelContext, operation: "Classify secondary nutrient backfill state") {
             for food in foodsNeedingClassification {
@@ -72,16 +76,20 @@ extension SecondaryNutrientRepairService {
     }
 
     static func normalizeUnrepairableStatesIfNeeded(modelContext: ModelContext) throws {
-        let foods = try fetchAllFoods(modelContext: modelContext)
-        let foodsByID = Dictionary(uniqueKeysWithValues: foods.map { ($0.id, $0) })
+        let foods = try modelContext.fetch(foodNeedsRepairDescriptor())
+        let entries = try modelContext.fetch(entryNeedsRepairDescriptor())
+        guard foods.isEmpty == false || entries.isEmpty == false else {
+            return
+        }
+
+        let allFoods = try fetchAllFoods(modelContext: modelContext)
+        let foodsByID = Dictionary(uniqueKeysWithValues: allFoods.map { ($0.id, $0) })
         let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
-        let entries = try fetchAllLogEntries(modelContext: modelContext)
 
         let foodIDsToMarkNotRepairable =
             foods
             .filter { food in
-                food.secondaryNutrientBackfillState == .needsRepair
-                    && food.sourceKind != .common
+                food.sourceKind != .common
                     && food.secondaryNutrientRepairTarget == nil
             }
             .map(\.persistentModelID)
@@ -89,8 +97,7 @@ extension SecondaryNutrientRepairService {
         let entryIDsToMarkNotRepairable =
             entries
             .filter { entry in
-                entry.secondaryNutrientBackfillState == .needsRepair
-                    && entry.sourceKind != .common
+                entry.sourceKind != .common
                     && historicalRepairTarget(
                         for: entry,
                         foodsByID: foodsByID,
@@ -130,6 +137,24 @@ extension SecondaryNutrientRepairService {
 
     static func needsBackfillStateClassification(_ entry: LogEntry) -> Bool {
         entry.secondaryNutrientBackfillState == nil
+    }
+
+    private static func foodClassificationDescriptor() -> FetchDescriptor<FoodItem> {
+        FetchDescriptor<FoodItem>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == nil })
+    }
+
+    private static func entryClassificationDescriptor() -> FetchDescriptor<LogEntry> {
+        FetchDescriptor<LogEntry>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == nil })
+    }
+
+    private static func foodNeedsRepairDescriptor() -> FetchDescriptor<FoodItem> {
+        let needsRepairRaw = SecondaryNutrientBackfillState.needsRepair.rawValue
+        return FetchDescriptor<FoodItem>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == needsRepairRaw })
+    }
+
+    private static func entryNeedsRepairDescriptor() -> FetchDescriptor<LogEntry> {
+        let needsRepairRaw = SecondaryNutrientBackfillState.needsRepair.rawValue
+        return FetchDescriptor<LogEntry>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == needsRepairRaw })
     }
 
     static func legacyLogEntryNeedsRepair(

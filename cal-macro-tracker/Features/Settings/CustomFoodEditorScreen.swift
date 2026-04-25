@@ -1,8 +1,5 @@
 import SwiftData
 import SwiftUI
-#if os(iOS)
-import UIKit
-#endif
 
 struct ReusableFoodEditorScreen: View {
     @Environment(\.dismiss) private var dismiss
@@ -95,43 +92,36 @@ struct ReusableFoodEditorScreen: View {
         return "Extra nutrients are missing for this saved food. Refresh from the source, then save to keep the new values."
     }
 
+    private var sourceSectionActionMessage: String? {
+        canRefreshNutrients ? nutrientRefreshMessage : nil
+    }
+
+    private var sourceSectionActionTitle: String? {
+        guard canRefreshNutrients else { return nil }
+        return isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients"
+    }
+
     var body: some View {
         FoodDraftEditorForm(
             draft: $draft,
             numericText: $numericText,
             errorMessage: $errorMessage,
-            brandPrompt: "Brand (optional)",
-            gramsPrompt: "Grams per serving (optional)",
-            focusedField: $focusedField,
-            trailingKeyboardFields: []
+            configuration: FoodDraftEditorConfiguration(
+                brandPrompt: "Brand (optional)",
+                gramsPrompt: "Grams per serving (optional)"
+            ),
+            focusedField: $focusedField
         ) {
-            if draft.sourceNameOrNil != nil || sourceURL != nil || canRefreshNutrients {
-                Section("Source") {
-                    if let sourceName = draft.sourceNameOrNil {
-                        LabeledContent("Provider") {
-                            Text(sourceName)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    if let sourceURL {
-                        Link(destination: sourceURL) {
-                            Label("View Source", systemImage: "link")
-                        }
-                    }
-
-                    if canRefreshNutrients {
-                        Text(nutrientRefreshMessage)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-
-                        Button(isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients") {
-                            refreshNutrients()
-                        }
-                        .disabled(isRefreshingNutrients)
-                    }
-                }
-            }
+            FoodDraftSourceSection(
+                title: "Source",
+                sourceNameLabel: "Provider",
+                sourceName: draft.sourceNameOrNil,
+                sourceURL: sourceURL,
+                actionMessage: sourceSectionActionMessage,
+                actionTitle: sourceSectionActionTitle,
+                isActionDisabled: isRefreshingNutrients,
+                onAction: canRefreshNutrients ? { refreshNutrients() } : nil
+            )
         } footerSections: {
             Section {
                 Button("Save") {
@@ -160,11 +150,8 @@ struct ReusableFoodEditorScreen: View {
             return
         }
 
-        dismissEditing()
-
-        DispatchQueue.main.async {
-            persistFood(finalizedDraft)
-        }
+        dismissKeyboard($focusedField)
+        persistFood(finalizedDraft)
     }
 
     private func deleteFood() {
@@ -172,10 +159,7 @@ struct ReusableFoodEditorScreen: View {
             try foodRepository.deleteReusableFood(food, operation: deleteOperationName)
             errorMessage = nil
             deleteFeedbackToken += 1
-
-            DispatchQueue.main.async {
-                dismiss()
-            }
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
@@ -188,10 +172,7 @@ struct ReusableFoodEditorScreen: View {
             draft = FoodDraft(foodItem: persistedFood, saveAsCustomFood: true)
             errorMessage = nil
             saveFeedbackToken += 1
-
-            DispatchQueue.main.async {
-                dismiss()
-            }
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
@@ -199,7 +180,7 @@ struct ReusableFoodEditorScreen: View {
     }
 
     private func refreshNutrients() {
-        dismissEditing()
+        dismissKeyboard($focusedField)
         isRefreshingNutrients = true
 
         Task { @MainActor in
@@ -224,12 +205,5 @@ struct ReusableFoodEditorScreen: View {
 
             isRefreshingNutrients = false
         }
-    }
-
-    private func dismissEditing() {
-        focusedField = nil
-        #if os(iOS)
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        #endif
     }
 }

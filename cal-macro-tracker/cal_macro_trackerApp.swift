@@ -31,7 +31,7 @@ struct cal_macro_trackerApp: App {
                     ProgressView("Starting app…")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case let .ready(modelContainer):
-                    ContentView(pendingOpenRequest: $pendingOpenRequest)
+                    AppRootView(pendingOpenRequest: $pendingOpenRequest)
                         .modelContainer(modelContainer)
                 case let .failed(message):
                     AppLaunchErrorView(message: message)

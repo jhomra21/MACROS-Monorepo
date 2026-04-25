@@ -1,16 +1,28 @@
 import SwiftData
 import SwiftUI
 
+struct RemoteSearchViewState {
+    let results: [RemoteSearchResult]
+    let errorMessage: String?
+    let isLoading: Bool
+    let hasState: Bool
+    let hasMore: Bool
+
+    static let empty = RemoteSearchViewState(
+        results: [],
+        errorMessage: nil,
+        isLoading: false,
+        hasState: false,
+        hasMore: false
+    )
+}
+
 struct SearchFoodListView: View {
     let loggingDay: CalendarDay?
     let foods: [FoodItem]
     let totalFoodsCount: Int
     let hasLoadedFoods: Bool
-    let remoteResults: [RemoteSearchResult]
-    let remoteErrorMessage: String?
-    let isLoadingRemoteResults: Bool
-    let hasRemoteSearchState: Bool
-    let hasMoreRemoteResults: Bool
+    let remoteSearch: RemoteSearchViewState
     let isRemoteSearchAvailable: Bool
     let searchText: String
     let onFoodLogged: () -> Void
@@ -60,7 +72,7 @@ struct SearchFoodListView: View {
                         onSearchOnline()
                     }
 
-                    if isLoadingRemoteResults && remoteResults.isEmpty {
+                    if remoteSearch.isLoading && remoteSearch.results.isEmpty {
                         HStack {
                             ProgressView()
                             Text("Searching online packaged foods…")
@@ -68,17 +80,21 @@ struct SearchFoodListView: View {
                         }
                     }
 
-                    if let remoteErrorMessage {
+                    if let remoteErrorMessage = remoteSearch.errorMessage {
                         Text(remoteErrorMessage)
                             .foregroundStyle(.secondary)
                     }
 
-                    if remoteResults.isEmpty && hasRemoteSearchState && isLoadingRemoteResults == false && remoteErrorMessage == nil {
+                    if remoteSearch.results.isEmpty
+                        && remoteSearch.hasState
+                        && remoteSearch.isLoading == false
+                        && remoteSearch.errorMessage == nil
+                    {
                         Text("No online packaged foods matched this search.")
                             .foregroundStyle(.secondary)
                     }
 
-                    ForEach(remoteResults) { result in
+                    ForEach(remoteSearch.results) { result in
                         NavigationLink {
                             RemoteSearchSelectionScreen(
                                 result: result,
@@ -90,7 +106,7 @@ struct SearchFoodListView: View {
                         }
                     }
 
-                    if isLoadingRemoteResults && remoteResults.isEmpty == false {
+                    if remoteSearch.isLoading && remoteSearch.results.isEmpty == false {
                         HStack {
                             ProgressView()
                             Text("Loading more results…")
@@ -98,11 +114,11 @@ struct SearchFoodListView: View {
                         }
                     }
 
-                    if hasMoreRemoteResults {
+                    if remoteSearch.hasMore {
                         Button("Load More") {
                             onLoadMoreRemoteResults()
                         }
-                        .disabled(isLoadingRemoteResults)
+                        .disabled(remoteSearch.isLoading)
                     }
                 }
             } header: {

@@ -28,7 +28,7 @@ private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
             Spacer()
 
             Button("Done") {
-                focusedField.wrappedValue = nil
+                dismissKeyboard(focusedField)
             }
         }
     }

@@ -128,9 +128,7 @@ struct FoodDraftNumericText: Equatable {
 
 struct FoodDraftFormSections: View {
     @Binding var draft: FoodDraft
-    let brandPrompt: String
-    let gramsPrompt: String
-    let nutritionPresentation: FoodDraftNutritionPresentation?
+    let configuration: FoodDraftEditorConfiguration
     let focusedField: FocusState<FoodDraftField?>.Binding
     @Binding var showsAdditionalNutrition: Bool
     @Binding private var numericText: FoodDraftNumericText
@@ -139,17 +137,13 @@ struct FoodDraftFormSections: View {
     init(
         draft: Binding<FoodDraft>,
         numericText: Binding<FoodDraftNumericText>,
-        brandPrompt: String,
-        gramsPrompt: String,
-        nutritionPresentation: FoodDraftNutritionPresentation? = nil,
+        configuration: FoodDraftEditorConfiguration,
         showsAdditionalNutrition: Binding<Bool>,
         focusedField: FocusState<FoodDraftField?>.Binding
     ) {
         _draft = draft
         _numericText = numericText
-        self.brandPrompt = brandPrompt
-        self.gramsPrompt = gramsPrompt
-        self.nutritionPresentation = nutritionPresentation
+        self.configuration = configuration
         _showsAdditionalNutrition = showsAdditionalNutrition
         self.focusedField = focusedField
     }
@@ -159,12 +153,12 @@ struct FoodDraftFormSections: View {
             Section("Food") {
                 TextField("Name", text: $draft.name)
                     .focused(focusedField, equals: .name)
-                TextField(brandPrompt, text: $draft.brand)
+                TextField(configuration.brandPrompt, text: $draft.brand)
                     .focused(focusedField, equals: .brand)
                 TextField("Serving description", text: $draft.servingDescription)
                     .focused(focusedField, equals: .servingDescription)
                 AppNumericTextField(
-                    gramsPrompt,
+                    configuration.gramsPrompt,
                     text: numericBinding(\.gramsPerServing),
                     focusedField: focusedField,
                     field: .gramsPerServing
@@ -206,7 +200,7 @@ struct FoodDraftFormSections: View {
         .onChange(of: focusedField.wrappedValue) { _, focusedField in
             nutrientEditingBridge.syncPresentedValues(with: focusedField)
         }
-        .onChange(of: nutritionPresentation?.multiplier) { _, _ in
+        .onChange(of: configuration.nutritionPresentation?.multiplier) { _, _ in
             nutrientEditingBridge.invalidatePresentedValues()
         }
     }
@@ -269,7 +263,7 @@ struct FoodDraftFormSections: View {
                     for: field,
                     configuration: configuration,
                     numericText: numericText,
-                    nutritionPresentation: nutritionPresentation,
+                    nutritionPresentation: self.configuration.nutritionPresentation,
                     focusedField: focusedField.wrappedValue
                 )
             },
@@ -280,13 +274,13 @@ struct FoodDraftFormSections: View {
                     configuration: configuration,
                     numericText: &numericText,
                     draft: &draft,
-                    nutritionPresentation: nutritionPresentation
+                    nutritionPresentation: self.configuration.nutritionPresentation
                 )
             }
         )
     }
 
-    private var nutritionSectionTitle: String { nutritionPresentation?.title ?? "Nutrition per serving" }
+    private var nutritionSectionTitle: String { configuration.nutritionPresentation?.title ?? "Nutrition per serving" }
 
     private var showsVisibleAdditionalNutrition: Bool { showsAdditionalNutrition || requiresAdditionalNutritionVisibility }
 

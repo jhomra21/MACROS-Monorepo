@@ -68,16 +68,7 @@ extension FoodDraft {
             sourceURL: draft.sourceURLOrNil,
             servingDescription: draft.servingDescription,
             gramsPerServing: draft.gramsPerServing,
-            caloriesPerServing: draft.caloriesPerServing,
-            proteinPerServing: draft.proteinPerServing,
-            fatPerServing: draft.fatPerServing,
-            carbsPerServing: draft.carbsPerServing,
-            saturatedFatPerServing: draft.saturatedFatPerServing,
-            fiberPerServing: draft.fiberPerServing,
-            sugarsPerServing: draft.sugarsPerServing,
-            addedSugarsPerServing: draft.addedSugarsPerServing,
-            sodiumPerServing: draft.sodiumPerServing,
-            cholesterolPerServing: draft.cholesterolPerServing
+            perServingNutrition: draft.perServingNutritionValues
         )
     }
 }

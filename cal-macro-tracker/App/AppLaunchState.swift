@@ -23,12 +23,12 @@ final class AppLaunchState {
         do {
             let container = try AppModelContainerFactory.makePersistentContainer()
             try await AppBootstrap.bootstrapIfNeeded(in: container)
-            WidgetTimelineReloader.reloadDailyMacroWidget()
+            WidgetTimelineReloader.reloadMacroWidgets()
             phase = .ready(container)
             Task { @MainActor in
                 do {
                     try await AppBootstrap.repairSecondaryNutrientsIfNeeded(in: container)
-                    WidgetTimelineReloader.reloadDailyMacroWidget()
+                    WidgetTimelineReloader.reloadMacroWidgets()
                 } catch {
                     Self.logger.error("Secondary nutrient repair failed: \(error.localizedDescription, privacy: .public)")
                 }

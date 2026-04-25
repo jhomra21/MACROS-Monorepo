@@ -19,16 +19,7 @@ struct LogEntryRepository {
         let sourceURL: String?
         let servingDescription: String
         let gramsPerServing: Double?
-        let caloriesPerServing: Double
-        let proteinPerServing: Double
-        let fatPerServing: Double
-        let carbsPerServing: Double
-        let saturatedFatPerServing: Double?
-        let fiberPerServing: Double?
-        let sugarsPerServing: Double?
-        let addedSugarsPerServing: Double?
-        let sodiumPerServing: Double?
-        let cholesterolPerServing: Double?
+        let perServingNutrition: PerServingNutritionValues
         let quantityMode: QuantityMode
         let servingsConsumed: Double?
         let gramsConsumed: Double?
@@ -50,16 +41,7 @@ struct LogEntryRepository {
             self.sourceURL = draft.sourceURLOrNil
             self.servingDescription = draft.servingDescription
             self.gramsPerServing = draft.gramsPerServing
-            self.caloriesPerServing = draft.caloriesPerServing
-            self.proteinPerServing = draft.proteinPerServing
-            self.fatPerServing = draft.fatPerServing
-            self.carbsPerServing = draft.carbsPerServing
-            self.saturatedFatPerServing = draft.saturatedFatPerServing
-            self.fiberPerServing = draft.fiberPerServing
-            self.sugarsPerServing = draft.sugarsPerServing
-            self.addedSugarsPerServing = draft.addedSugarsPerServing
-            self.sodiumPerServing = draft.sodiumPerServing
-            self.cholesterolPerServing = draft.cholesterolPerServing
+            perServingNutrition = draft.perServingNutritionValues
             self.quantityMode = quantityMode
             self.servingsConsumed = quantityMode == .servings ? quantityAmount : nil
             self.gramsConsumed = quantityMode == .grams ? quantityAmount : nil

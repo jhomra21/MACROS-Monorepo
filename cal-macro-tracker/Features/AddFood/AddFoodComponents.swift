@@ -90,10 +90,11 @@ struct ManualFoodEntryScreen: View {
             draft: $draft,
             numericText: $numericText,
             errorMessage: $errorMessage,
-            brandPrompt: "Brand (optional)",
-            gramsPrompt: "Grams per serving (optional)",
-            focusedField: $focusedField,
-            trailingKeyboardFields: []
+            configuration: FoodDraftEditorConfiguration(
+                brandPrompt: "Brand (optional)",
+                gramsPrompt: "Grams per serving (optional)"
+            ),
+            focusedField: $focusedField
         ) {
             EmptyView()
         } footerSections: {

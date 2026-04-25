@@ -7,17 +7,17 @@ struct MacroGoalsSnapshot: Hashable {
     var carbGoalGrams: Double
 
     static let `default` = MacroGoalsSnapshot(
-        calorieGoal: 2_200,
-        proteinGoalGrams: 160,
-        fatGoalGrams: 70,
-        carbGoalGrams: 220
+        calorieGoal: DailyGoalsDefaults.calorieGoal,
+        proteinGoalGrams: DailyGoalsDefaults.proteinGoalGrams,
+        fatGoalGrams: DailyGoalsDefaults.fatGoalGrams,
+        carbGoalGrams: DailyGoalsDefaults.carbGoalGrams
     )
 
     init(
-        calorieGoal: Double = 2_200,
-        proteinGoalGrams: Double = 160,
-        fatGoalGrams: Double = 70,
-        carbGoalGrams: Double = 220
+        calorieGoal: Double = DailyGoalsDefaults.calorieGoal,
+        proteinGoalGrams: Double = DailyGoalsDefaults.proteinGoalGrams,
+        fatGoalGrams: Double = DailyGoalsDefaults.fatGoalGrams,
+        carbGoalGrams: Double = DailyGoalsDefaults.carbGoalGrams
     ) {
         self.calorieGoal = calorieGoal
         self.proteinGoalGrams = proteinGoalGrams

@@ -154,3 +154,67 @@ final class FoodItem {
         return trimmedValue
     }
 }
+
+struct FoodItemSearchQuery: Hashable {
+    let normalizedText: String
+    let tokens: Set<String>
+
+    init(_ query: String) {
+        let normalizedText = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        self.normalizedText = normalizedText
+        tokens = Set(normalizedText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
+    }
+
+    var isEmpty: Bool {
+        normalizedText.isEmpty
+    }
+}
+
+enum FoodItemLocalSearch {
+    private struct SearchMatch {
+        let food: FoodItem
+        let rank: Int
+    }
+
+    static func rankedFoods(_ foods: [FoodItem], matching query: String) -> [FoodItem] {
+        let searchQuery = FoodItemSearchQuery(query)
+        guard searchQuery.isEmpty == false else { return foods }
+
+        let searchMatches: [SearchMatch] = foods.compactMap { food in
+            guard let rank = rank(for: food, matching: searchQuery) else {
+                return nil
+            }
+            return SearchMatch(food: food, rank: rank)
+        }
+
+        let rankedMatches = searchMatches.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            return lhs.food.name.localizedCaseInsensitiveCompare(rhs.food.name) == .orderedAscending
+        }
+
+        return rankedMatches.map { $0.food }
+    }
+
+    static func rank(for food: FoodItem, matching query: FoodItemSearchQuery) -> Int? {
+        let name = food.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let brand = food.brand?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
+
+        if name == query.normalizedText || (brand.isEmpty == false && brand == query.normalizedText) {
+            return 0
+        }
+
+        if name.hasPrefix(query.normalizedText) || (brand.isEmpty == false && brand.hasPrefix(query.normalizedText)) {
+            return 1
+        }
+
+        let isTextMatch = food.searchableText.contains(query.normalizedText)
+        guard query.tokens.isEmpty == false else { return 2 }
+
+        let searchableTokens = Set(food.searchableText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
+        if query.tokens.isSubset(of: searchableTokens) {
+            return 2
+        }
+
+        return isTextMatch ? 3 : nil
+    }
+}

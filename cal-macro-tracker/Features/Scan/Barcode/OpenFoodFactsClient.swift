@@ -187,14 +187,24 @@ struct OpenFoodFactsClient {
             throw OpenFoodFactsClientError.invalidBarcode
         }
 
-        let url = URL(string: "https://world.openfoodfacts.org/api/v2/product/\(normalizedBarcode).json")!
-        let decodedResponse: OpenFoodFactsResponse = try await sendRequest(url: url)
+        for barcodeAlias in OpenFoodFactsIdentity.barcodeAliases(for: normalizedBarcode) {
+            do {
+                let url = URL(string: "https://world.openfoodfacts.org/api/v2/product/\(barcodeAlias).json")!
+                let decodedResponse: OpenFoodFactsResponse = try await sendRequest(url: url)
 
-        guard let product = decodedResponse.product else {
-            throw OpenFoodFactsClientError.productNotFound
+                guard let product = decodedResponse.product else {
+                    throw OpenFoodFactsClientError.productNotFound
+                }
+
+                return product
+            } catch OpenFoodFactsClientError.productNotFound {
+                continue
+            } catch {
+                throw error
+            }
         }
 
-        return product
+        throw OpenFoodFactsClientError.productNotFound
     }
 
     private func sendRequest<Response: Decodable>(url: URL) async throws -> Response {

@@ -10,6 +10,7 @@ struct LogFoodScreen: View {
     let initialDraft: FoodDraft
     let loggingDay: CalendarDay?
     let reviewNotes: [String]
+    let requiredReviewNutrients: [RequiredNutritionReviewNutrient]
     let previewImageData: Data?
     let onFoodLogged: () -> Void
 
@@ -20,6 +21,7 @@ struct LogFoodScreen: View {
     @State private var numericText: FoodDraftNumericText
     @State private var errorMessage: String?
     @State private var logFeedbackToken = 0
+    @State private var confirmedZeroRequiredNutrients = Set<RequiredNutritionReviewNutrient>()
     #if os(iOS)
     @State private var showingPreviewImage = false
     #endif
@@ -29,12 +31,14 @@ struct LogFoodScreen: View {
         initialDraft: FoodDraft,
         loggingDay: CalendarDay? = nil,
         reviewNotes: [String] = [],
+        requiredReviewNutrients: [RequiredNutritionReviewNutrient] = [],
         previewImageData: Data? = nil,
         onFoodLogged: @escaping () -> Void = {}
     ) {
         self.initialDraft = initialDraft
         self.loggingDay = loggingDay
         self.reviewNotes = reviewNotes
+        self.requiredReviewNutrients = requiredReviewNutrients
         self.previewImageData = previewImageData
         self.onFoodLogged = onFoodLogged
         _draft = State(initialValue: initialDraft)
@@ -46,6 +50,10 @@ struct LogFoodScreen: View {
 
     private var activeAmount: Double {
         quantityMode == .servings ? servingsAmount : gramsAmount
+    }
+
+    private var reviewDraft: FoodDraft {
+        numericText.editingDraft(from: draft)
     }
 
     private var previewDraft: FoodDraft {
@@ -73,14 +81,11 @@ struct LogFoodScreen: View {
     private var canSave: Bool {
         guard let finalizedDraft = numericText.finalizedDraft(from: draft) else { return false }
         return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: activeAmount)
+            && unresolvedRequiredReviewNutrients.isEmpty
     }
 
     private var hasPreviewImage: Bool {
         previewImageData != nil
-    }
-
-    private var shouldShowReviewSection: Bool {
-        reviewNotes.isEmpty == false || hasPreviewImage || draft.sourceNameOrNil != nil || sourceURL != nil
     }
 
     private var reviewSectionTitle: String {
@@ -99,43 +104,76 @@ struct LogFoodScreen: View {
         return URL(string: sourceURL)
     }
 
+    private var combinedReviewNotes: [String] {
+        let labelScanNote: [String]
+        if requiredReviewNutrients.isEmpty {
+            labelScanNote = []
+        } else {
+            labelScanNote = [NutritionLabelParser.reviewRequiredNutrientsMessage(requiredReviewNutrients)]
+        }
+
+        return labelScanNote + reviewNotes
+    }
+
+    private var unresolvedRequiredReviewNutrients: [RequiredNutritionReviewNutrient] {
+        reviewDraft.missingLabelScanRequiredNutrients(
+            from: requiredReviewNutrients,
+            confirmedZeroNutrients: confirmedZeroRequiredNutrients
+        )
+    }
+
+    private var shouldShowRequiredReviewSection: Bool {
+        requiredReviewNutrients.isEmpty == false
+    }
+
     var body: some View {
         FoodDraftEditorForm(
             draft: $draft,
             numericText: $numericText,
             errorMessage: $errorMessage,
-            brandPrompt: "Brand (optional)",
-            gramsPrompt: "Grams per serving (optional)",
-            nutritionPresentation: nutritionPresentation,
-            focusedField: $focusedField,
-            trailingKeyboardFields: []
+            configuration: FoodDraftEditorConfiguration(
+                brandPrompt: "Brand (optional)",
+                gramsPrompt: "Grams per serving (optional)",
+                nutritionPresentation: nutritionPresentation
+            ),
+            focusedField: $focusedField
         ) {
-            if shouldShowReviewSection {
-                Section(reviewSectionTitle) {
-                    ForEach(reviewNotes, id: \.self) { note in
-                        Text(note)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
+            FoodDraftSourceSection(
+                title: reviewSectionTitle,
+                notes: combinedReviewNotes,
+                sourceName: draft.sourceNameOrNil,
+                sourceURL: sourceURL,
+                previewActionTitle: hasPreviewImage ? "Preview Captured Image" : nil,
+                onPreview: hasPreviewImage
+                    ? {
+                        #if os(iOS)
+                        showingPreviewImage = true
+                        #endif
                     }
+                    : nil
+            )
 
-                    if let sourceName = draft.sourceNameOrNil {
-                        LabeledContent("Source") {
-                            Text(sourceName)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
+            if shouldShowRequiredReviewSection {
+                Section("Required Review") {
+                    Text(
+                        "Missing OCR values must be updated to a value greater than 0, "
+                            + "or explicitly confirmed as intentional 0 values before logging."
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
 
-                    if let sourceURL {
-                        Link(destination: sourceURL) {
-                            Label("View Source", systemImage: "link")
-                        }
-                    }
-
-                    if hasPreviewImage {
-                        Button("Preview Captured Image") {
-                            #if os(iOS)
-                            showingPreviewImage = true
-                            #endif
+                    ForEach(requiredReviewNutrients, id: \.self) { nutrient in
+                        if unresolvedRequiredReviewNutrients.contains(nutrient) {
+                            Toggle(
+                                "\(nutrient.displayName) is intentionally 0",
+                                isOn: confirmationBinding(for: nutrient)
+                            )
+                        } else {
+                            Label(
+                                "\(nutrient.displayName) reviewed",
+                                systemImage: "checkmark.circle.fill"
+                            )
+                            .foregroundStyle(.green)
                         }
                     }
                 }
@@ -209,11 +247,8 @@ struct LogFoodScreen: View {
             return
         }
 
-        dismissEditing()
-
-        DispatchQueue.main.async {
-            persistEntry(finalizedDraft)
-        }
+        dismissKeyboard($focusedField)
+        persistEntry(finalizedDraft)
     }
 
     private func persistEntry(_ finalizedDraft: FoodDraft) {
@@ -228,20 +263,23 @@ struct LogFoodScreen: View {
             )
             errorMessage = nil
             logFeedbackToken += 1
-
-            DispatchQueue.main.async {
-                onFoodLogged()
-            }
+            onFoodLogged()
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
     }
 
-    private func dismissEditing() {
-        focusedField = nil
-        #if os(iOS)
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        #endif
+    private func confirmationBinding(for nutrient: RequiredNutritionReviewNutrient) -> Binding<Bool> {
+        Binding(
+            get: { confirmedZeroRequiredNutrients.contains(nutrient) },
+            set: { isConfirmed in
+                if isConfirmed {
+                    confirmedZeroRequiredNutrients.insert(nutrient)
+                } else {
+                    confirmedZeroRequiredNutrients.remove(nutrient)
+                }
+            }
+        )
     }
 }

@@ -197,28 +197,28 @@ extension SecondaryNutrientRepairService {
     }
 
     private static func externalFoodRepairTargets(modelContext: ModelContext) throws -> [ExternalFoodRepairTarget] {
-        try fetchAllFoods(modelContext: modelContext)
-            .compactMap { food in
-                guard
-                    food.secondaryNutrientBackfillState == .needsRepair,
-                    let target = food.secondaryNutrientRepairTarget
-                else {
-                    return nil
-                }
-
-                return ExternalFoodRepairTarget(
-                    foodID: food.id,
-                    source: food.sourceKind,
-                    target: target
-                )
+        let needsRepairRaw = SecondaryNutrientBackfillState.needsRepair.rawValue
+        let foods = try modelContext.fetch(
+            FetchDescriptor<FoodItem>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == needsRepairRaw })
+        )
+        return foods.compactMap { food in
+            guard let target = food.secondaryNutrientRepairTarget else {
+                return nil
             }
+
+            return ExternalFoodRepairTarget(
+                foodID: food.id,
+                source: food.sourceKind,
+                target: target
+            )
+        }
     }
 
     static func repairableFoodIDsByKey(modelContext: ModelContext) throws -> [SecondaryNutrientRepairKey: UUID] {
         var matches: [SecondaryNutrientRepairKey: UUID] = [:]
         var ambiguousKeys = Set<SecondaryNutrientRepairKey>()
 
-        for food in try fetchAllFoods(modelContext: modelContext) where food.sourceKind == .common {
+        for food in try commonFoods(modelContext: modelContext) {
             let key = food.secondaryNutrientRepairKey
             if matches[key] != nil {
                 ambiguousKeys.insert(key)
@@ -232,16 +232,30 @@ extension SecondaryNutrientRepairService {
     }
 
     static func logEntriesNeedingFoodLinkRepair(modelContext: ModelContext) throws -> [LogEntry] {
-        try fetchAllLogEntries(modelContext: modelContext)
-            .filter { entry in
-                entry.foodItemID == nil
-                    && entry.secondaryNutrientBackfillState == .needsRepair
-                    && entry.sourceKind == .common
-            }
+        let commonSource = FoodSource.common.rawValue
+        let needsRepairRaw = SecondaryNutrientBackfillState.needsRepair.rawValue
+        return try modelContext.fetch(
+            FetchDescriptor<LogEntry>(
+                predicate: #Predicate { entry in
+                    entry.foodItemID == nil
+                        && entry.secondaryNutrientBackfillStateRaw == needsRepairRaw
+                        && entry.source == commonSource
+                }
+            )
+        )
     }
 
     static func logEntriesNeedingSecondaryNutrientRepair(modelContext: ModelContext) throws -> [LogEntry] {
-        try fetchAllLogEntries(modelContext: modelContext)
-            .filter { $0.secondaryNutrientBackfillState == .needsRepair }
+        let needsRepairRaw = SecondaryNutrientBackfillState.needsRepair.rawValue
+        return try modelContext.fetch(
+            FetchDescriptor<LogEntry>(predicate: #Predicate { $0.secondaryNutrientBackfillStateRaw == needsRepairRaw })
+        )
+    }
+
+    private static func commonFoods(modelContext: ModelContext) throws -> [FoodItem] {
+        let commonSource = FoodSource.common.rawValue
+        return try modelContext.fetch(
+            FetchDescriptor<FoodItem>(predicate: #Predicate { $0.source == commonSource })
+        )
     }
 }

@@ -12,6 +12,7 @@ struct LabelScanScreen: View {
     @State private var isLoading = false
     @State private var showingCamera = false
     @State private var scanFeedbackToken = 0
+    @State private var workTask: Task<Void, Never>?
 
     private let recognizer = NutritionLabelTextRecognizer()
 
@@ -51,9 +52,13 @@ struct LabelScanScreen: View {
         }
         .onChange(of: selectedPhoto) { _, item in
             guard let item else { return }
-            Task {
+            startWorkTask {
                 await loadSelectedPhoto(item)
             }
+        }
+        .onDisappear {
+            workTask?.cancel()
+            workTask = nil
         }
         .navigationDestination(isPresented: isShowingLogFood) {
             if let logFoodDestination {
@@ -61,6 +66,7 @@ struct LabelScanScreen: View {
                     initialDraft: logFoodDestination.draft,
                     loggingDay: loggingDay,
                     reviewNotes: logFoodDestination.reviewNotes,
+                    requiredReviewNutrients: logFoodDestination.missingRequiredNutrients,
                     previewImageData: logFoodDestination.previewImageData,
                     onFoodLogged: onFoodLogged
                 )
@@ -68,6 +74,13 @@ struct LabelScanScreen: View {
         }
         .sensoryFeedback(.success, trigger: scanFeedbackToken)
         .errorBanner(message: $errorMessage)
+    }
+
+    private func startWorkTask(_ operation: @escaping @Sendable () async -> Void) {
+        workTask?.cancel()
+        workTask = Task {
+            await operation()
+        }
     }
 
     private var isShowingLogFood: Binding<Bool> {
@@ -101,10 +114,12 @@ struct LabelScanScreen: View {
 
             let recognizedText = try await recognizer.recognizeText(in: image)
             let result = NutritionLabelParser.parse(recognizedText: recognizedText)
+
             presentLogFood(
                 LogFoodDestination(
                     draft: result.draft,
                     reviewNotes: result.notes,
+                    missingRequiredNutrients: result.missingRequiredNutrients,
                     previewImageData: image.jpegData(compressionQuality: 0.9)
                 )
             )
@@ -122,6 +137,7 @@ struct LabelScanScreen: View {
 private struct LogFoodDestination {
     let draft: FoodDraft
     let reviewNotes: [String]
+    let missingRequiredNutrients: [RequiredNutritionReviewNutrient]
     let previewImageData: Data?
 }
 #else

@@ -13,8 +13,7 @@ struct DashboardScreen: View {
 
     @Query private var goals: [DailyGoals]
 
-    @State private var selectedDay = CalendarDay(date: .now)
-    @State private var followsCurrentDay = true
+    @State private var daySelection = AppDaySelection(today: CalendarDay(date: .now))
     @State private var errorMessage: String?
     @State private var logAgainFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
@@ -22,12 +21,12 @@ struct DashboardScreen: View {
 
     private let compactSummaryTopPadding: CGFloat = 8
 
-    private var currentGoals: DailyGoals {
-        goals.first ?? DailyGoals()
+    private var currentGoals: MacroGoalsSnapshot {
+        MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
     }
 
     var body: some View {
-        LogEntryDaySnapshotReader(day: selectedDay) { snapshot in
+        LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
             ZStack(alignment: .top) {
                 List {
                     HStack {
@@ -48,7 +47,7 @@ struct DashboardScreen: View {
                         .dashboardDaySwipe(dayNavigationGesture)
 
                     LogEntryListSection(
-                        title: selectedDay.dayTitle,
+                        title: daySelection.selectedDay.dayTitle,
                         emptyTitle: "No food logged yet",
                         emptySystemImage: "fork.knife.circle",
                         emptyDescription: emptyLogDescription,
@@ -75,31 +74,27 @@ struct DashboardScreen: View {
                         .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
                 }
             }
-            .navigationTitle(selectedDay.historyNavigationTitle)
+            .navigationTitle(daySelection.selectedDay.historyNavigationTitle)
             .inlineNavigationTitle()
             .animation(.easeInOut(duration: 0.2), value: showsCompactSummary)
             .onAppear {
-                guard followsCurrentDay else { return }
-                selectedDay = dayContext.today
+                guard daySelection.followsCurrentDay else { return }
+                daySelection.resetToToday(dayContext.today)
             }
             .onChange(of: dayContext.today) { oldToday, newToday in
-                if followsCurrentDay {
-                    selectedDay = newToday
-                } else if selectedDay == oldToday {
-                    selectedDay = newToday
-                }
+                daySelection.syncToday(from: oldToday, to: newToday)
             }
             .onChange(of: resetToTodayToken) { _, _ in
                 withAnimation(.easeInOut(duration: 0.18)) {
-                    updateSelectedDay(dayContext.today)
+                    daySelection.resetToToday(dayContext.today)
                 }
             }
             .toolbar {
-                if selectedDay != dayContext.today {
+                if daySelection.selectedDay != dayContext.today {
                     ToolbarItem(placement: .appTopBarTrailing) {
                         Button("Today") {
                             withAnimation(.easeInOut(duration: 0.18)) {
-                                updateSelectedDay(dayContext.today)
+                                daySelection.resetToToday(dayContext.today)
                             }
                         }
                     }
@@ -135,7 +130,7 @@ struct DashboardScreen: View {
     }
 
     private var emptyLogDescription: String {
-        if selectedDay.isToday {
+        if daySelection.selectedDay.isToday {
             return "Tap the add button to log your first food today."
         }
 
@@ -172,7 +167,7 @@ struct DashboardScreen: View {
         do {
             try logEntryRepository.logAgain(
                 entry: entry,
-                loggedAt: selectedDay.date(matchingTimeOf: .now),
+                loggedAt: daySelection.selectedDay.date(matchingTimeOf: .now),
                 operation: "Log food again"
             )
             errorMessage = nil
@@ -198,7 +193,7 @@ struct DashboardScreen: View {
 
     private var dashboardBottomBar: some View {
         BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false) {
-            onOpenAddFood(selectedDay)
+            onOpenAddFood(daySelection.selectedDay)
         }
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
@@ -218,17 +213,11 @@ struct DashboardScreen: View {
     }
 
     private func moveSelection(by dayOffset: Int) {
-        guard let candidateDay = selectedDay.advanced(byDays: dayOffset) else { return }
-        guard candidateDay.startDate <= dayContext.today.startDate else { return }
+        guard let candidateDay = daySelection.selectedDay.advanced(byDays: dayOffset) else { return }
 
         withAnimation(.easeInOut(duration: 0.18)) {
-            updateSelectedDay(candidateDay)
+            daySelection.select(candidateDay, today: dayContext.today)
         }
-    }
-
-    private func updateSelectedDay(_ newDay: CalendarDay) {
-        selectedDay = newDay
-        followsCurrentDay = newDay == dayContext.today
     }
 
     private func updateCompactSummaryVisibility(for offset: CGFloat) {
@@ -246,11 +235,7 @@ private extension View {
 
 private struct MacroLegendView: View {
     let totals: NutritionSnapshot
-    let goals: DailyGoals
-
-    private var goalSnapshot: MacroGoalsSnapshot {
-        MacroGoalsSnapshot(goals: goals)
-    }
+    let goals: MacroGoalsSnapshot
 
     var body: some View {
         HStack(spacing: 24) {
@@ -265,7 +250,7 @@ private struct MacroLegendView: View {
         MacroSummaryColumnView(
             metric: metric,
             totals: totals,
-            goals: goalSnapshot,
+            goals: goals,
             alignment: .center,
             titleStyle: .full,
             style: .dashboardCard

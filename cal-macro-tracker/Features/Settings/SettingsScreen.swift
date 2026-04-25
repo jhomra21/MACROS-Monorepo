@@ -7,7 +7,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         Form {
-            if let goals = goals.first {
+            if let goals = activeGoals {
                 SettingsGoalsEditorSection(goals: goals, focusedField: $focusedField)
             }
 
@@ -25,6 +25,10 @@ struct SettingsScreen: View {
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
         .navigationTitle("Settings")
+    }
+
+    private var activeGoals: DailyGoals? {
+        DailyGoals.activeRecord(from: goals)
     }
 
     private static var customFoodsDescriptor: FetchDescriptor<FoodItem> {

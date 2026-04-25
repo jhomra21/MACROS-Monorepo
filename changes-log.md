@@ -101,9 +101,7 @@
 
 ### Validation recorded during scan work
 
-- iOS simulator builds passed.
-- Duplicate blocks, tech debt, dependency inventory, and n+1 smoke checks passed.
-- At that stage, formatter and dead-code commands were present in the repo but the required local tools were not yet installed, so those scripts skipped cleanly.
+- iOS simulator builds and the available repo quality checks passed; formatter and dead-code tooling were documented but not locally available at that stage.
 
 ## Food Search
 
@@ -136,9 +134,7 @@
 
 ### Validation recorded during food-search work
 
-- iOS simulator build passed.
-- Repo quality checks for duplicate blocks, tech debt, dependency inventory, and n+1 smoke passed.
-- At that stage, formatter and dead-code validation still depended on tooling that was not yet installed locally.
+- The iOS simulator build and available repo quality checks passed; formatter and dead-code validation still depended on tooling that was not installed locally at that stage.
 
 ## USDA Proxy and Unified Remote Search
 
@@ -173,12 +169,7 @@
 
 ### Validation recorded during USDA proxy work
 
-- Worker type checks passed with Bun.
-- Invalid query requests returned stable `400` JSON errors.
-- Mocked Open Food Facts success returned normalized `openFoodFacts` results.
-- Mocked Open Food Facts empty responses widened correctly to normalized USDA results when enabled.
-- Local `bun run dev` worked with a real USDA key and real packaged-food queries.
-- iOS simulator builds and repo quality commands passed.
+- Worker type checks, representative endpoint checks, local Bun validation, iOS simulator builds, and repo quality checks passed.
 
 ### Still open operational follow-ups
 
@@ -261,12 +252,7 @@
 
 ### Final validation state
 
-- Formatter validation passes.
-- iOS simulator build passes.
-- macOS build passes.
-- Worker TypeScript/Bun checks pass.
-- Periphery reports `No unused code detected.`
-- Focused review pass on the Periphery cleanup returned LGTM.
+- Formatter, iOS/macOS builds, Worker TypeScript/Bun checks, Periphery, and focused review all passed.
 
 ## Deferred Work
 
@@ -280,6 +266,7 @@ The following planning documents have been fully consolidated into this file and
 - `food-search-implementation-plan.md`
 - `usda-proxy-implementation-plan.md`
 - `off-reliability-and-nutrients-plan.md`
+- `CODEBASE_IMPROVEMENT_PLAN.md`
 
 ## Macro Ring Architecture Refinement
 
@@ -361,10 +348,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this follow-up
 
-- Formatter validation passes.
-- iOS simulator build passes.
-- macOS build passes when code signing is disabled for local CLI validation.
-- Focused code review on the cleanup diff returned LGTM with no high-confidence findings.
+- Formatter, iOS/macOS builds with local code-signing handling, and focused code review all passed.
 
 ## Shared Draft / Macro / Scan Cleanup
 
@@ -464,9 +448,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation recorded during this widget follow-up
 
-- Formatter validation passes.
-- iOS simulator app build passes.
-- iOS simulator widget build passes.
+- Formatter validation plus iOS simulator app and widget builds passed.
 
 ## Open Food Facts Reliability, Secondary Nutrients, and Historical Repair
 
@@ -829,13 +811,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation
 
-- Rendered the current `GoalProgressRing` implementation into a temporary local SwiftUI image under `/tmp` and inspected these cases side by side:
-  - tiny sub-goal progress: `0.01`, `0.02`, `0.03`, `0.10`
-  - near-goal progress: `0.97`, `0.98`, `0.99`, `1.00`
-- Validation results:
-  - no peanut / disconnected-dot artifact appeared in those low-progress cases
-  - `0.97`, `0.98`, and `0.99` remained visually distinct from `1.00`
-  - exact multiples such as `2.0` and `3.0` matching the `1.0` completed-ring look is intentional and correct for this renderer
+- Rendered the current `GoalProgressRing` implementation into a temporary local SwiftUI image under `/tmp`; low-progress, near-goal, and exact-multiple cases matched the intended renderer contract.
 
 ### Review correction
 
@@ -870,11 +846,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation
 
-- Ran the usual repo validation `make` commands for this work.
-- Focused `swiftui-visual-validator` runs code-confirmed:
-  - shared add/edit stepper quantity UI
-  - quantity-driven nutrition-row updates
-  - removal of the duplicate logging summary block
+- Ran the usual repo validation commands and focused SwiftUI visual validation for the shared add/edit quantity UI, quantity-driven nutrition rows, and duplicate-summary removal.
 
 ### Follow-up fixes after review validation
 
@@ -921,7 +893,7 @@ The following planning documents have been fully consolidated into this file and
 
 ### Validation
 
-- Ran `make quality-format-check` and the documented macOS `xcodebuild` command after the widget value-layout changes.
+- Ran formatter validation and the documented macOS build after the widget value-layout changes.
 
 ## Dashboard Day Navigation and Visible-Day Logging
 
@@ -996,3 +968,103 @@ The following planning documents have been fully consolidated into this file and
 - `AppRootView.swift` now increments a small `dashboardResetToken` whenever it handles `.dashboard`, and `DashboardScreen.swift` observes that token to route back through its existing `updateSelectedDay(dayContext.today)` path.
 - This keeps selected-day state local to the dashboard, preserves the existing `AppOpenRequest.dashboard` deep-link contract, and avoids introducing a second global date-state path just to satisfy widget and app-entry resets.
 - Formatter validation plus both documented app builds still passed after this follow-up fix.
+
+## Codebase Improvement Plan Execution and Review-Driven Cleanup
+
+### Delivered
+
+- Executed the completed `CODEBASE_IMPROVEMENT_PLAN.md` batch across logging, search, scan, goals, widget, and persistence surfaces.
+- Consolidated the completed plan into this history so the separate tracker can be removed.
+- Fixed the two later review-validated bugs:
+  - incomplete label-scan OCR now stays editable in review and is only gated at final logging
+  - `DailyGoals` singleton handling is now deterministic across app and widget readers
+- Reduced editor/search/scan plumbing with shared value helpers instead of adding new coordinator or view-model layers.
+- Ran multiple follow-up review passes focused on correctness, over-defensive branching, and unnecessary optionality, then removed only the high-confidence redundant code.
+
+### Main implementation steps
+
+- Added explicit required-nutrient tracking for label OCR and moved the zero-value protection to the final `LogFoodScreen` save path.
+- Added `DailyGoalsDefaults`, `DailyGoals.id`, `createdAt`, and `updatedAt`, plus shared active-record selection and duplicate normalization.
+- Extracted shared day-selection behavior so dashboard and history now follow the same selected-day and future-date rules.
+- Added manual barcode fallback, OFF alias retry behavior, deterministic local search extraction, and grouped remote-search view state.
+- Introduced `FoodDraftEditorConfiguration`, `FoodDraftSourceSection`, and shared keyboard-dismiss helpers to simplify the food-editing surfaces.
+- Introduced `PerServingNutritionValues` plus shared conversion helpers to reduce repeated nutrient-copy boilerplate across food, draft, log, scan, and persistence paths.
+- Split bootstrap planning from secondary-nutrient repair planning, replaced broad repair scans with targeted queries, and made widget reload side effects easier to trace.
+- Hardened shared app-group persistence with a read-only widget container path, lightweight widget failure logging, and iOS shared-store file protection.
+
+### Review-driven fixes and cleanup
+
+- Removed the old pre-review block in `LabelScanScreen.swift`; missing OCR nutrients now surface as editable review warnings instead of an early dead end.
+- Moved deterministic `DailyGoals` active-record logic into shared model code so widget snapshot loading and app surfaces compile against the same rule.
+- Simplified validated redundant code in:
+  - `EditLogEntryScreen.swift`
+  - `LogFoodScreen.swift`
+  - `OpenFoodFactsClient.swift`
+  - `DailyGoalsRepository.swift`
+  - `SecondaryNutrientRepairMaintenance.swift`
+- Intentionally left weaker-assumption optionality branches alone when review passes could not prove the state was impossible.
+
+### Validation
+
+- Ran the full repo validation set and macOS Debug build for this implementation batch; no test target exists yet.
+
+### Plan closure
+
+- The completed plan tracker was folded into this history file; future follow-ups should be tracked as normal change-log entries instead of in a separate planning document.
+
+## History Future-Day UI and Barcode Fallback Provenance Follow-up
+
+### Delivered
+
+- Disabled future days in the current-week History strip so dates that cannot be selected no longer appear tappable.
+- Preserved barcode-scan provenance for manual barcode fallback saves so rescanning the same previously unknown barcode can reuse the local saved food.
+
+### Main implementation steps
+
+- Passed `maximumDay` into `HistoryWeekStrip` and disabled/de-emphasized weekday cells after today while keeping `AppDaySelection` as the root future-date guard.
+- Updated `BarcodeManualFallbackFactory` so manual fallback drafts keep `FoodSource.barcodeLookup` and the scanned barcode instead of being downgraded to `.custom`.
+
+### Bugs and implementation findings
+
+- The real History issue was UI contract drift: future-date clamping already existed in shared day-selection logic, but the week strip still advertised those days as selectable.
+- The barcode reuse regression came from dropping external-food provenance too early; local barcode cache reuse in this codebase depends on saved source identity, not just the presence of a barcode value.
+
+### Validation
+
+- Formatter validation passed, and the macOS debug build passed after rerunning local CLI validation with code signing disabled because the default signed build lacked local provisioning profiles.
+
+## DailyGoals SwiftData Migration Follow-up
+
+### Delivered
+
+- Fixed the `DailyGoals` schema update so existing SwiftData stores can open after adding deterministic goal-record metadata.
+- Kept the deterministic active-goals policy while making the new `id`, `createdAt`, and `updatedAt` fields safe for legacy rows.
+- Updated duplicate-goals cleanup to preserve the selected active record by `persistentModelID` instead of the migrated `id` value.
+
+### Bugs and implementation findings
+
+- A review validation pass found that initializer defaults are not enough for existing persisted rows; SwiftData needs stored-property defaults or an explicit migration before the `ModelContainer` can open.
+- A focused old-schema to new-schema SwiftData smoke test reproduced the launch-blocking migration failure with mandatory destination attributes missing values.
+- Adding SwiftData-visible stored-property defaults fixed the root schema contract so app bootstrap can run normally afterward.
+- The migration smoke test also showed legacy duplicate rows can receive the same generated default UUID during lightweight migration, so duplicate normalization must compare `persistentModelID` rather than `DailyGoals.id`.
+
+### Validation
+
+- Ran whitespace, formatter, focused SwiftData migration smoke, and macOS debug build validation after the fix.
+
+## Local Food Search Token-Match Follow-up
+
+### Delivered
+
+- Fixed local saved-food search so reordered multi-word queries can still match foods that contain the same search tokens.
+- Preserved the existing deterministic ranking contract: exact match, prefix match, token containment, then contiguous text containment.
+
+### Bugs and implementation findings
+
+- A review pass found that `FoodItemLocalSearch.rank` checked `searchableText.contains(query.normalizedText)` before evaluating token containment.
+- That made the intended token-subset fallback unreachable for queries like `butter peanut` against a saved food searchable as `peanut butter`.
+- The fix stayed inside the existing `FoodItemLocalSearch` abstraction instead of adding a second search path or UI-level workaround.
+
+### Validation
+
+- Formatter validation and the iOS simulator build passed after the fix.

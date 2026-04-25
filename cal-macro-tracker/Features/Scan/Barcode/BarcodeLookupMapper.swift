@@ -31,16 +31,7 @@ struct BarcodeLookupMapper {
     private struct NutritionBasis {
         let servingDescription: String
         let gramsPerServing: Double?
-        let calories: Double
-        let protein: Double
-        let fat: Double
-        let carbs: Double
-        let saturatedFat: Double?
-        let fiber: Double?
-        let sugars: Double?
-        let addedSugars: Double?
-        let sodium: Double?
-        let cholesterol: Double?
+        let perServingNutrition: PerServingNutritionValues
     }
 
     static func makeDraft(from product: OpenFoodFactsProduct, barcode: String) throws -> FoodDraft {
@@ -74,16 +65,7 @@ struct BarcodeLookupMapper {
                 ),
                 servingDescription: nutritionBasis.servingDescription,
                 gramsPerServing: nutritionBasis.gramsPerServing,
-                caloriesPerServing: nutritionBasis.calories,
-                proteinPerServing: nutritionBasis.protein,
-                fatPerServing: nutritionBasis.fat,
-                carbsPerServing: nutritionBasis.carbs,
-                saturatedFatPerServing: nutritionBasis.saturatedFat,
-                fiberPerServing: nutritionBasis.fiber,
-                sugarsPerServing: nutritionBasis.sugars,
-                addedSugarsPerServing: nutritionBasis.addedSugars,
-                sodiumPerServing: nutritionBasis.sodium,
-                cholesterolPerServing: nutritionBasis.cholesterol
+                perServingNutrition: nutritionBasis.perServingNutrition
             )
         )
     }
@@ -97,39 +79,41 @@ struct BarcodeLookupMapper {
         return NutritionBasis(
             servingDescription: requiredNutritionBasis.servingDescription,
             gramsPerServing: requiredNutritionBasis.gramsPerServing,
-            calories: requiredNutritionBasis.calories,
-            protein: requiredNutritionBasis.protein,
-            fat: requiredNutritionBasis.fat,
-            carbs: requiredNutritionBasis.carbs,
-            saturatedFat: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: nutriments.saturatedFatPerServing,
-                per100gValue: nutriments.saturatedFatPer100g
-            ),
-            fiber: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: nutriments.fiberPerServing,
-                per100gValue: nutriments.fiberPer100g
-            ),
-            sugars: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: nutriments.sugarsPerServing,
-                per100gValue: nutriments.sugarsPer100g
-            ),
-            addedSugars: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: nutriments.addedSugarsPerServing,
-                per100gValue: nutriments.addedSugarsPer100g
-            ),
-            sodium: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: sodiumPerServing(for: nutriments),
-                per100gValue: sodiumPer100g(for: nutriments)
-            ),
-            cholesterol: resolvedOptionalNutrient(
-                for: requiredNutritionBasis,
-                servingValue: milligrams(fromGrams: nutriments.cholesterolPerServing),
-                per100gValue: milligrams(fromGrams: nutriments.cholesterolPer100g)
+            perServingNutrition: PerServingNutritionValues(
+                calories: requiredNutritionBasis.calories,
+                protein: requiredNutritionBasis.protein,
+                fat: requiredNutritionBasis.fat,
+                carbs: requiredNutritionBasis.carbs,
+                saturatedFat: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: nutriments.saturatedFatPerServing,
+                    per100gValue: nutriments.saturatedFatPer100g
+                ),
+                fiber: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: nutriments.fiberPerServing,
+                    per100gValue: nutriments.fiberPer100g
+                ),
+                sugars: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: nutriments.sugarsPerServing,
+                    per100gValue: nutriments.sugarsPer100g
+                ),
+                addedSugars: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: nutriments.addedSugarsPerServing,
+                    per100gValue: nutriments.addedSugarsPer100g
+                ),
+                sodium: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: sodiumPerServing(for: nutriments),
+                    per100gValue: sodiumPer100g(for: nutriments)
+                ),
+                cholesterol: resolvedOptionalNutrient(
+                    for: requiredNutritionBasis,
+                    servingValue: milligrams(fromGrams: nutriments.cholesterolPerServing),
+                    per100gValue: milligrams(fromGrams: nutriments.cholesterolPer100g)
+                )
             )
         )
     }

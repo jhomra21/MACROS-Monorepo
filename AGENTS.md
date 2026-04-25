@@ -53,6 +53,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 - Preserve public contracts unless change is intentional and documented.
 - Validate before finishing
 - Do not append routine validation command lists to `changes-log.md` unless explicitly requested; if validation needs to be recorded, use one short summary line instead.
+- When a GPT-5.4/GPT-5.5-style model completes a multi-step implementation plan, run the project skill `/defensive-code-review` only after the planned work and normal validators are complete. This is a final cleanup pass for proven redundant guards, duplicated validation, and impossible-state branching; do not run it after every edit or for trivial one-off changes.
 
 ## Commands
 

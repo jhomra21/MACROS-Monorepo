@@ -1,3 +1,4 @@
+import OSLog
 import SwiftUI
 import WidgetKit
 
@@ -7,6 +8,8 @@ struct DailyMacroWidgetEntry: TimelineEntry {
 }
 
 struct DailyMacroWidgetProvider: TimelineProvider {
+    private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "Widget")
+
     func placeholder(in context: Context) -> DailyMacroWidgetEntry {
         DailyMacroWidgetEntry(
             date: .now,
@@ -38,6 +41,7 @@ struct DailyMacroWidgetProvider: TimelineProvider {
                 snapshot = .empty
             }
         } catch {
+            Self.logger.error("Unable to load widget snapshot: \(error.localizedDescription, privacy: .public)")
             snapshot = .empty
         }
 

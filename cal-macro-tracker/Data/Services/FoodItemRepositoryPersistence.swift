@@ -180,6 +180,7 @@ extension FoodItemRepository {
         secondaryNutrientBackfillState: SecondaryNutrientBackfillState?,
         to food: FoodItem
     ) {
+        let perServingNutrition = draft.perServingNutritionValues
         food.name = draft.name
         food.brand = draft.brandOrNil
         food.source = source.rawValue
@@ -189,16 +190,16 @@ extension FoodItemRepository {
         food.sourceURL = draft.sourceURLOrNil
         food.servingDescription = draft.servingDescription
         food.gramsPerServing = draft.gramsPerServing
-        food.caloriesPerServing = draft.caloriesPerServing
-        food.proteinPerServing = draft.proteinPerServing
-        food.fatPerServing = draft.fatPerServing
-        food.carbsPerServing = draft.carbsPerServing
-        food.saturatedFatPerServing = draft.saturatedFatPerServing
-        food.fiberPerServing = draft.fiberPerServing
-        food.sugarsPerServing = draft.sugarsPerServing
-        food.addedSugarsPerServing = draft.addedSugarsPerServing
-        food.sodiumPerServing = draft.sodiumPerServing
-        food.cholesterolPerServing = draft.cholesterolPerServing
+        food.caloriesPerServing = perServingNutrition.calories
+        food.proteinPerServing = perServingNutrition.protein
+        food.fatPerServing = perServingNutrition.fat
+        food.carbsPerServing = perServingNutrition.carbs
+        food.saturatedFatPerServing = perServingNutrition.saturatedFat
+        food.fiberPerServing = perServingNutrition.fiber
+        food.sugarsPerServing = perServingNutrition.sugars
+        food.addedSugarsPerServing = perServingNutrition.addedSugars
+        food.sodiumPerServing = perServingNutrition.sodium
+        food.cholesterolPerServing = perServingNutrition.cholesterol
         food.secondaryNutrientBackfillState = secondaryNutrientBackfillState
         food.normalizeForPersistence()
     }

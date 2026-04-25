@@ -5,6 +5,14 @@ import SwiftData
 struct DailyGoalsRepository {
     let modelContext: ModelContext
 
+    static func activeGoals(from goals: [DailyGoals]) -> DailyGoals? {
+        DailyGoals.activeRecord(from: goals)
+    }
+
+    static func fetchActiveGoals(modelContext: ModelContext) throws -> DailyGoals? {
+        activeGoals(from: try modelContext.fetch(FetchDescriptor<DailyGoals>()))
+    }
+
     func saveGoals(from draft: DailyGoalsDraft, to goals: DailyGoals, operation: String) throws {
         if let validationError = draft.validationError {
             throw validationError
@@ -22,6 +30,22 @@ struct DailyGoalsRepository {
             draft.apply(to: isolatedGoals)
         }
 
-        WidgetTimelineReloader.reloadDailyMacroWidget()
+        WidgetTimelineReloader.reloadMacroWidgets()
+    }
+
+    static func normalizeGoalsRecordsIfNeeded(modelContext: ModelContext) throws {
+        let goals = try modelContext.fetch(FetchDescriptor<DailyGoals>())
+        guard goals.count != 1 else { return }
+
+        if goals.isEmpty {
+            modelContext.insert(DailyGoals())
+            return
+        }
+
+        let activeGoals = DailyGoals.activeRecord(from: goals)!
+
+        for duplicateGoals in goals where duplicateGoals.persistentModelID != activeGoals.persistentModelID {
+            modelContext.delete(duplicateGoals)
+        }
     }
 }

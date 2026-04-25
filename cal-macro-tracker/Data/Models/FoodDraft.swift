@@ -31,29 +31,7 @@ struct FoodDraft: Identifiable, Hashable {
 
     init(foodItem: FoodItem, saveAsCustomFood: Bool = false) {
         self.init(
-            importedData: FoodDraftImportedData(
-                name: foodItem.name,
-                brand: foodItem.brand,
-                source: foodItem.sourceKind,
-                secondaryNutrientBackfillState: foodItem.secondaryNutrientBackfillState
-                    ?? SecondaryNutrientBackfillPolicy.inferredState(for: foodItem),
-                barcode: foodItem.barcode,
-                externalProductID: foodItem.externalProductID,
-                sourceName: foodItem.sourceName,
-                sourceURL: foodItem.sourceURL,
-                servingDescription: foodItem.servingDescription,
-                gramsPerServing: foodItem.gramsPerServing,
-                caloriesPerServing: foodItem.caloriesPerServing,
-                proteinPerServing: foodItem.proteinPerServing,
-                fatPerServing: foodItem.fatPerServing,
-                carbsPerServing: foodItem.carbsPerServing,
-                saturatedFatPerServing: foodItem.saturatedFatPerServing,
-                fiberPerServing: foodItem.fiberPerServing,
-                sugarsPerServing: foodItem.sugarsPerServing,
-                addedSugarsPerServing: foodItem.addedSugarsPerServing,
-                sodiumPerServing: foodItem.sodiumPerServing,
-                cholesterolPerServing: foodItem.cholesterolPerServing
-            ),
+            importedData: foodItem.importedData,
             foodItemID: foodItem.id,
             saveAsCustomFood: saveAsCustomFood
         )
@@ -61,29 +39,7 @@ struct FoodDraft: Identifiable, Hashable {
 
     init(logEntry: LogEntry, saveAsCustomFood: Bool = false) {
         self.init(
-            importedData: FoodDraftImportedData(
-                name: logEntry.foodName,
-                brand: logEntry.brand,
-                source: logEntry.sourceKind,
-                secondaryNutrientBackfillState: logEntry.secondaryNutrientBackfillState
-                    ?? SecondaryNutrientBackfillPolicy.inferredState(for: logEntry),
-                barcode: logEntry.barcodeOrNil,
-                externalProductID: logEntry.externalProductIDOrNil,
-                sourceName: logEntry.sourceNameOrNil,
-                sourceURL: logEntry.sourceURLOrNil,
-                servingDescription: logEntry.servingDescription,
-                gramsPerServing: logEntry.gramsPerServing,
-                caloriesPerServing: logEntry.caloriesPerServing,
-                proteinPerServing: logEntry.proteinPerServing,
-                fatPerServing: logEntry.fatPerServing,
-                carbsPerServing: logEntry.carbsPerServing,
-                saturatedFatPerServing: logEntry.saturatedFatPerServing,
-                fiberPerServing: logEntry.fiberPerServing,
-                sugarsPerServing: logEntry.sugarsPerServing,
-                addedSugarsPerServing: logEntry.addedSugarsPerServing,
-                sodiumPerServing: logEntry.sodiumPerServing,
-                cholesterolPerServing: logEntry.cholesterolPerServing
-            ),
+            importedData: logEntry.importedData,
             foodItemID: logEntry.foodItemID,
             saveAsCustomFood: saveAsCustomFood
         )
@@ -117,5 +73,43 @@ struct FoodDraft: Identifiable, Hashable {
         self.sodiumPerServing = importedData.sodiumPerServing
         self.cholesterolPerServing = importedData.cholesterolPerServing
         self.saveAsCustomFood = saveAsCustomFood
+    }
+}
+
+extension FoodItem {
+    var importedData: FoodDraftImportedData {
+        FoodDraftImportedData(
+            name: name,
+            brand: brand,
+            source: sourceKind,
+            secondaryNutrientBackfillState: secondaryNutrientBackfillState
+                ?? SecondaryNutrientBackfillPolicy.inferredState(for: self),
+            barcode: barcode,
+            externalProductID: externalProductID,
+            sourceName: sourceName,
+            sourceURL: sourceURL,
+            servingDescription: servingDescription,
+            gramsPerServing: gramsPerServing,
+            perServingNutrition: perServingNutritionValues
+        )
+    }
+}
+
+extension LogEntry {
+    var importedData: FoodDraftImportedData {
+        FoodDraftImportedData(
+            name: foodName,
+            brand: brand,
+            source: sourceKind,
+            secondaryNutrientBackfillState: secondaryNutrientBackfillState
+                ?? SecondaryNutrientBackfillPolicy.inferredState(for: self),
+            barcode: barcodeOrNil,
+            externalProductID: externalProductIDOrNil,
+            sourceName: sourceNameOrNil,
+            sourceURL: sourceURLOrNil,
+            servingDescription: servingDescription,
+            gramsPerServing: gramsPerServing,
+            perServingNutrition: perServingNutritionValues
+        )
     }
 }

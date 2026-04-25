@@ -2,17 +2,13 @@ import SwiftUI
 
 struct CompactMacroSummaryView: View {
     let totals: NutritionSnapshot
-    let goals: DailyGoals
+    let goals: MacroGoalsSnapshot
     let horizontalPadding: CGFloat
 
-    init(totals: NutritionSnapshot, goals: DailyGoals, horizontalPadding: CGFloat = 8) {
+    init(totals: NutritionSnapshot, goals: MacroGoalsSnapshot, horizontalPadding: CGFloat = 8) {
         self.totals = totals
         self.goals = goals
         self.horizontalPadding = horizontalPadding
-    }
-
-    private var goalSnapshot: MacroGoalsSnapshot {
-        MacroGoalsSnapshot(goals: goals)
     }
 
     var body: some View {
@@ -36,7 +32,7 @@ struct CompactMacroSummaryView: View {
         MacroSummaryColumnView(
             metric: metric,
             totals: totals,
-            goals: goalSnapshot,
+            goals: goals,
             alignment: .center,
             titleStyle: .full,
             style: .compact,

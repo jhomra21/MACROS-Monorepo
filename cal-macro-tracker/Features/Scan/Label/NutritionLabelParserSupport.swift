@@ -42,6 +42,31 @@ extension NutritionLabelParser {
         let addedSugars: Double?
         let sodium: Double?
         let cholesterol: Double?
+
+        var missingRequiredNutrients: [RequiredNutritionReviewNutrient] {
+            [
+                calories == nil ? .calories : nil,
+                protein == nil ? .protein : nil,
+                fat == nil ? .fat : nil,
+                carbs == nil ? .carbs : nil
+            ]
+            .compactMap { $0 }
+        }
+
+        var perServingNutritionValues: PerServingNutritionValues {
+            PerServingNutritionValues(
+                calories: calories ?? 0,
+                protein: protein ?? 0,
+                fat: fat ?? 0,
+                carbs: carbs ?? 0,
+                saturatedFat: saturatedFat,
+                fiber: fiber,
+                sugars: sugars,
+                addedSugars: addedSugars,
+                sodium: sodium,
+                cholesterol: cholesterol
+            )
+        }
     }
 
     struct ParsedLabelText {
@@ -243,21 +268,9 @@ extension NutritionLabelParser {
     }
 
     static func missingMacroNames(from nutrients: DetectedNutrients) -> [String] {
-        var missingNames: [String] = []
-
-        if nutrients.protein == nil {
-            missingNames.append("Protein")
-        }
-
-        if nutrients.fat == nil {
-            missingNames.append("fat")
-        }
-
-        if nutrients.carbs == nil {
-            missingNames.append("carbs")
-        }
-
-        return missingNames
+        nutrients.missingRequiredNutrients
+            .filter { $0 != .calories }
+            .map(\.displayName)
     }
 
     static func joinedList(_ values: [String]) -> String {

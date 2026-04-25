@@ -1,8 +1,5 @@
 import SwiftData
 import SwiftUI
-#if os(iOS)
-import UIKit
-#endif
 
 enum DailyGoalsField: Hashable {
     case calories
@@ -119,7 +116,7 @@ private struct DailyGoalsSaveSection: View {
                 .contentShape(Rectangle())
                 .foregroundStyle(actionColor)
             }
-            .allowsHitTesting(canSave)
+            .disabled(!canSave)
             .opacity(canSave || actionSystemImage != nil ? 1 : 0.55)
         }
     }
@@ -206,11 +203,8 @@ struct SettingsGoalsEditorSection: View {
             return
         }
 
-        dismissEditing()
-
-        DispatchQueue.main.async {
-            persistGoals(finalizedDraft)
-        }
+        dismissKeyboard(focusedField)
+        persistGoals(finalizedDraft)
     }
 
     private func persistGoals(_ finalizedDraft: DailyGoalsDraft) {
@@ -224,12 +218,5 @@ struct SettingsGoalsEditorSection: View {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
-    }
-
-    private func dismissEditing() {
-        focusedField.wrappedValue = nil
-        #if os(iOS)
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-        #endif
     }
 }

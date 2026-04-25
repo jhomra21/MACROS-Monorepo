@@ -15,11 +15,8 @@ private struct PackagedFoodSearchResponse: Decodable {
     let results: [PackagedFoodSearchResultDTO]
     let hasMore: Bool
 
-    func pageResults() throws -> PackagedFoodSearchPage {
-        let provider = resolvedProvider ?? results.first?.provider
-        guard let provider else {
-            throw PackagedFoodSearchClientError.invalidResponse
-        }
+    func pageResults(requestedProvider: RemoteSearchProvider?) -> PackagedFoodSearchPage {
+        let provider = resolvedProvider ?? results.first?.provider ?? requestedProvider ?? .openFoodFacts
 
         return PackagedFoodSearchPage(
             query: query,
@@ -132,6 +129,6 @@ struct PackagedFoodSearchClient {
         }
 
         let decodedResponse = try jsonClient.decode(PackagedFoodSearchResponse.self, from: data)
-        return try decodedResponse.pageResults()
+        return decodedResponse.pageResults(requestedProvider: provider)
     }
 }
