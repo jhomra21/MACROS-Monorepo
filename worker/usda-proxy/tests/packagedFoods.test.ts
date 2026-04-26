@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test'
 
-import { cacheReadOrder, cacheWritePlan, shouldWarmOpenFoodFactsCache } from '../src/packagedFoodSearchCache'
+import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
 import { nextRetryDelayMs, searchPackagedFoods } from '../src/packagedFoods'
 import type { PackagedFoodSearchExecution } from '../src/packagedFoods'
 import { OpenFoodFactsClientError } from '../src/openFoodFacts'
 import type { PackagedFoodSearchQuery, PackagedFoodSearchResponse } from '../src/types'
-import { fetchUSDAFood } from '../src/usda'
+import { fetchUSDAFood, searchUSDAFoods } from '../src/usda'
 
 const DEFAULT_QUERY: PackagedFoodSearchQuery = {
   query: 'protein bar',
@@ -84,10 +84,10 @@ describe('searchPackagedFoods', () => {
 
     expect(response.resolvedProvider).toBe('usda')
     expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
-    expect(response.openFoodFactsAttemptCount).toBe(3)
-    expect(openFoodFactsCallCount).toBe(3)
+    expect(response.openFoodFactsAttemptCount).toBe(11)
+    expect(openFoodFactsCallCount).toBe(11)
     expect(usdaCallCount).toBe(1)
-    expect(waitedDelays).toHaveLength(2)
+    expect(waitedDelays).toHaveLength(10)
     expect(waitedDelays[0]).toBeGreaterThanOrEqual(750)
     expect(waitedDelays[1]).toBeGreaterThanOrEqual(1500)
   })
@@ -118,6 +118,80 @@ describe('searchPackagedFoods', () => {
     expect(response.openFoodFactsAttemptCount).toBe(1)
     expect(openFoodFactsCallCount).toBe(1)
     expect(usdaCallCount).toBe(1)
+  })
+
+  it('shares the Open Food Facts request budget across paginated page fetches', async () => {
+    let openFoodFactsCallCount = 0
+    let usdaCallCount = 0
+
+    const response = await searchPackagedFoods(
+      DEFAULT_QUERY,
+      'test-usda-key',
+      'cal-macro-tracker/1.0 (test@example.com)',
+      async (input) => {
+        const url = requestURL(input)
+
+        if (url.includes('openfoodfacts.org')) {
+          openFoodFactsCallCount += 1
+          return Response.json(unusableOpenFoodFactsPayload())
+        }
+
+        usdaCallCount += 1
+        return Response.json(usdaPayload())
+      },
+    )
+
+    expect(response.resolvedProvider).toBe('usda')
+    expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
+    expect(openFoodFactsCallCount).toBe(11)
+    expect(usdaCallCount).toBe(1)
+  })
+
+  it('throws instead of falling back when pinned Open Food Facts exhausts the request budget', async () => {
+    let openFoodFactsCallCount = 0
+    let usdaCallCount = 0
+
+    await expect(
+      searchPackagedFoods(
+        { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
+        'test-usda-key',
+        'cal-macro-tracker/1.0 (test@example.com)',
+        async (input) => {
+          const url = requestURL(input)
+
+          if (url.includes('openfoodfacts.org')) {
+            openFoodFactsCallCount += 1
+            return Response.json(unusableOpenFoodFactsPayload())
+          }
+
+          usdaCallCount += 1
+          return Response.json(usdaPayload())
+        },
+      ),
+    ).rejects.toThrow('Open Food Facts request budget was exhausted.')
+
+    expect(openFoodFactsCallCount).toBe(11)
+    expect(usdaCallCount).toBe(0)
+  })
+
+  it('returns collected Open Food Facts results when pagination exhausts the request budget', async () => {
+    let openFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
+      'test-usda-key',
+      'cal-macro-tracker/1.0 (test@example.com)',
+      async (input) => {
+        const page = Number(new URL(requestURL(input)).searchParams.get('page') ?? '1')
+        openFoodFactsCallCount += 1
+        return Response.json(page <= 9 ? sparseUsableOpenFoodFactsPayload(page) : unusableOpenFoodFactsPayload())
+      },
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(9)
+    expect(response.hasMore).toBe(false)
+    expect(openFoodFactsCallCount).toBe(11)
   })
 
   it('maps USDA secondary nutrients into the packaged food response contract', async () => {
@@ -204,7 +278,7 @@ describe('nextRetryDelayMs', () => {
   })
 
   it('gives up instead of shortening Retry-After beyond the retry budget', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 10_000)
+    const error = new OpenFoodFactsClientError('busy', 503, true, 60_000)
 
     expect(nextRetryDelayMs(error, 0, 0, 0)).toBe(null)
   })
@@ -212,11 +286,42 @@ describe('nextRetryDelayMs', () => {
   it('still respects the total retry wait budget after combining delays', () => {
     const error = new OpenFoodFactsClientError('busy', 503, true, 1000)
 
-    expect(nextRetryDelayMs(error, 2, 3500, 0)).toBe(null)
+    expect(nextRetryDelayMs(error, 2, 39_000, 0)).toBe(null)
   })
 })
 
 describe('fetchUSDAFood', () => {
+  it('sends USDA API keys in headers instead of traced URLs', async () => {
+    const seenRequests: Array<{ url: string, apiKey: string | null }> = []
+
+    await searchUSDAFoods(DEFAULT_QUERY, 'test-usda-key', async (input, init) => {
+      seenRequests.push({
+        url: requestURL(input),
+        apiKey: new Headers(init?.headers).get('X-Api-Key'),
+      })
+      return Response.json(usdaPayload())
+    })
+
+    await fetchUSDAFood(123, 'test-usda-key', async (input, init) => {
+      seenRequests.push({
+        url: requestURL(input),
+        apiKey: new Headers(init?.headers).get('X-Api-Key'),
+      })
+      return Response.json(usdaDetailsPayload())
+    })
+
+    expect(seenRequests).toEqual([
+      {
+        url: 'https://api.nal.usda.gov/fdc/v1/foods/search',
+        apiKey: 'test-usda-key',
+      },
+      {
+        url: 'https://api.nal.usda.gov/fdc/v1/food/123',
+        apiKey: 'test-usda-key',
+      },
+    ])
+  })
+
   it('maps USDA food details into the proxy contract', async () => {
     const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(usdaDetailsPayload()))
 
@@ -245,7 +350,7 @@ describe('fetchUSDAFood', () => {
 })
 
 describe('packaged food cache policy', () => {
-  it('warms Open Food Facts under the same provider cache key default reads check first', () => {
+  it('shares successful pinned Open Food Facts results under the default read key', () => {
     const warmedOpenFoodFactsQuery: PackagedFoodSearchQuery = {
       ...DEFAULT_QUERY,
       provider: 'openFoodFacts',
@@ -314,9 +419,6 @@ describe('packaged food cache policy', () => {
     ).map((entry) => entry.kind)
 
     expect(cacheKinds).toEqual(['usda'])
-    expect(shouldWarmOpenFoodFactsCache(DEFAULT_QUERY, makeResponse('usda', {
-      degradedFallbackReason: 'openFoodFactsUnavailable',
-    }))).toBe(true)
     expect(cacheReadOrder(new URL(BASE_URL), DEFAULT_QUERY).map((entry) => entry.kind)).toEqual([
       'openFoodFacts',
       'default',
@@ -424,6 +526,32 @@ function openFoodFactsPayload() {
         },
       },
     ],
+  }
+}
+
+function unusableOpenFoodFactsPayload() {
+  return {
+    count: 1_000,
+    products: [
+      {
+        _id: 'missing-nutrition',
+        product_name: 'Missing Nutrition',
+      },
+    ],
+  }
+}
+
+function sparseUsableOpenFoodFactsPayload(page: number) {
+  const product = {
+    ...openFoodFactsPayload().products[0],
+    _id: String(page),
+    code: `01234567890${page}`,
+    product_name: `Protein Bar ${page}`,
+  }
+
+  return {
+    count: 1_000,
+    products: [product],
   }
 }
 

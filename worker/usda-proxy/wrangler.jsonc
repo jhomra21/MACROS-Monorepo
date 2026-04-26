@@ -4,6 +4,17 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-04-06",
   "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    }
+  },
   "secrets": {
     "required": ["USDA_API_KEY", "OPEN_FOOD_FACTS_USER_AGENT"]
   }

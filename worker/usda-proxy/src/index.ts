@@ -5,7 +5,6 @@ import {
   buildCacheKey,
   cacheReadOrder,
   cacheWritePlan,
-  shouldWarmOpenFoodFactsCache,
 } from './packagedFoodSearchCache'
 import type { PackagedFoodCacheKeyKind } from './packagedFoodSearchCache'
 import { searchPackagedFoods } from './packagedFoods'
@@ -80,19 +79,6 @@ app.get('/v1/packaged-foods/search', async (c) => {
       c.executionCtx.waitUntil(
         Promise.all(
           cacheWrites.map((cacheKey) => cache.put(cacheKey.request, jsonResponse.clone())),
-        ),
-      )
-    }
-
-    if (shouldWarmOpenFoodFactsCache(params, response)) {
-      c.executionCtx.waitUntil(
-        warmOpenFoodFactsCache(
-          cache,
-          requestURL,
-          params,
-          logContext,
-          c.env.USDA_API_KEY,
-          c.env.OPEN_FOOD_FACTS_USER_AGENT,
         ),
       )
     }
@@ -264,52 +250,6 @@ function publicPackagedFoodResponse(response: PackagedFoodSearchExecution): Pack
     resolvedProvider: response.resolvedProvider,
     results: response.results,
     hasMore: response.hasMore,
-  }
-}
-
-async function warmOpenFoodFactsCache(
-  cache: Cache,
-  requestURL: URL,
-  params: PackagedFoodSearchQuery,
-  logContext: PackagedFoodSearchLogContext,
-  apiKey: string,
-  openFoodFactsUserAgent: string,
-): Promise<void> {
-  const openFoodFactsParams = {
-    ...params,
-    provider: 'openFoodFacts' as const,
-    fallbackOnEmpty: false,
-  }
-
-  try {
-    const response = await searchPackagedFoods(
-      openFoodFactsParams,
-      apiKey,
-      openFoodFactsUserAgent,
-    )
-
-    if (response.resolvedProvider !== 'openFoodFacts' || response.results.length === 0) {
-      return
-    }
-
-    const cacheWrites = cacheWritePlan(
-      requestURL,
-      openFoodFactsParams,
-      response,
-    )
-    if (cacheWrites.length === 0) {
-      return
-    }
-
-    const cachedResponse = cachedJSONResponse(publicPackagedFoodResponse(response))
-    await Promise.all(cacheWrites.map((cacheKey) => cache.put(cacheKey.request, cachedResponse.clone())))
-    logPackagedFoodSearch('warm-cache-success', logContext, {
-      openFoodFactsAttemptCount: response.openFoodFactsAttemptCount,
-    })
-  } catch (error) {
-    logPackagedFoodSearch('warm-cache-failed', logContext, {
-      errorMessage: error instanceof Error ? error.message : 'Unknown error',
-    })
   }
 }
 

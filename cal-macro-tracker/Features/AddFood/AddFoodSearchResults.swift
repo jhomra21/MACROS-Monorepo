@@ -3,6 +3,7 @@ import SwiftUI
 
 struct RemoteSearchViewState {
     let results: [RemoteSearchResult]
+    let provider: RemoteSearchProvider?
     let errorMessage: String?
     let isLoading: Bool
     let hasState: Bool
@@ -10,6 +11,7 @@ struct RemoteSearchViewState {
 
     static let empty = RemoteSearchViewState(
         results: [],
+        provider: nil,
         errorMessage: nil,
         isLoading: false,
         hasState: false,
@@ -27,6 +29,7 @@ struct SearchFoodListView: View {
     let searchText: String
     let onFoodLogged: () -> Void
     let onSearchOnline: () -> Void
+    let onSearchUSDA: () -> Void
     let onLoadMoreRemoteResults: () -> Void
 
     var body: some View {
@@ -68,7 +71,7 @@ struct SearchFoodListView: View {
                     Text("Online packaged food search is not configured for this build.")
                         .foregroundStyle(.secondary)
                 } else {
-                    Button("Search Online Packaged Foods") {
+                    Button("Search Open Food Facts") {
                         onSearchOnline()
                     }
 
@@ -90,8 +93,14 @@ struct SearchFoodListView: View {
                         && remoteSearch.isLoading == false
                         && remoteSearch.errorMessage == nil
                     {
-                        Text("No online packaged foods matched this search.")
+                        Text(emptyRemoteSearchMessage)
                             .foregroundStyle(.secondary)
+                    }
+
+                    if showsUSDASearchFallback {
+                        Button("Search USDA instead") {
+                            onSearchUSDA()
+                        }
                     }
 
                     ForEach(remoteSearch.results) { result in
@@ -140,6 +149,24 @@ struct SearchFoodListView: View {
         }
 
         return "No on-device foods match this search yet."
+    }
+
+    private var showsUSDASearchFallback: Bool {
+        remoteSearch.provider == .openFoodFacts
+            && remoteSearch.isLoading == false
+            && remoteSearch.results.isEmpty
+            && remoteSearch.hasState
+    }
+
+    private var emptyRemoteSearchMessage: String {
+        switch remoteSearch.provider {
+        case .openFoodFacts:
+            return "No Open Food Facts packaged foods matched this search."
+        case .usda:
+            return "No USDA packaged foods matched this search."
+        case nil:
+            return "No online packaged foods matched this search."
+        }
     }
 }
 

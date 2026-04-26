@@ -83,11 +83,12 @@ export async function searchUSDAFoods(
   apiKey: string,
   fetcher: HTTPFetcher = fetch,
 ): Promise<USDAProxySearchResponse> {
-  const response = await fetcher(buildSearchURL(apiKey), {
+  const response = await fetcher(buildSearchURL(), {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
     },
     body: JSON.stringify({
       query: input.query,
@@ -136,10 +137,11 @@ export async function fetchUSDAFood(
   apiKey: string,
   fetcher: HTTPFetcher = fetch,
 ): Promise<USDAProxyFoodResult> {
-  const response = await fetcher(buildFoodDetailsURL(apiKey, fdcId), {
+  const response = await fetcher(buildFoodDetailsURL(fdcId), {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
+      'X-Api-Key': apiKey,
     },
     cf: {
       cacheTtl: CACHE_TTL_SECONDS,
@@ -172,16 +174,12 @@ export async function fetchUSDAFood(
   return result
 }
 
-function buildSearchURL(apiKey: string): string {
-  const url = new URL(USDA_SEARCH_URL)
-  url.searchParams.set('api_key', apiKey)
-  return url.toString()
+function buildSearchURL(): string {
+  return USDA_SEARCH_URL
 }
 
-function buildFoodDetailsURL(apiKey: string, fdcId: number): string {
-  const url = new URL(`${USDA_FOOD_DETAILS_URL}/${fdcId}`)
-  url.searchParams.set('api_key', apiKey)
-  return url.toString()
+function buildFoodDetailsURL(fdcId: number): string {
+  return `${USDA_FOOD_DETAILS_URL}/${fdcId}`
 }
 
 type USDAFood = USDASearchFood | USDAFoodDetails

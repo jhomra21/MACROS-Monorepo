@@ -30,6 +30,7 @@ struct AddFoodScreen: View {
         var viewState: RemoteSearchViewState {
             RemoteSearchViewState(
                 results: results,
+                provider: provider,
                 errorMessage: errorMessage,
                 isLoading: isLoading,
                 hasState: hasState,
@@ -76,6 +77,7 @@ struct AddFoodScreen: View {
                             searchText: trimmedSearchText,
                             onFoodLogged: closeSheet,
                             onSearchOnline: searchOnline,
+                            onSearchUSDA: searchUSDA,
                             onLoadMoreRemoteResults: loadMoreRemoteResults
                         )
                     case .manual:
@@ -124,7 +126,11 @@ struct AddFoodScreen: View {
     }
 
     private func searchOnline() {
-        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: nil)
+        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: .openFoodFacts)
+    }
+
+    private func searchUSDA() {
+        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: .usda)
     }
 
     private func loadMoreRemoteResults() {
@@ -153,7 +159,7 @@ struct AddFoodScreen: View {
             remoteSearch = RemoteSearchSession(
                 query: normalizedQuery,
                 page: 0,
-                provider: nil,
+                provider: provider,
                 results: [],
                 hasMore: false,
                 isLoading: true,
@@ -192,7 +198,7 @@ struct AddFoodScreen: View {
                 query: query,
                 page: page,
                 pageSize: remotePageSize,
-                fallbackOnEmpty: append == false,
+                fallbackOnEmpty: append == false && provider == nil,
                 provider: provider
             )
 
@@ -227,7 +233,7 @@ struct AddFoodScreen: View {
             if append == false {
                 remoteSearch.results = []
                 remoteSearch.page = 0
-                remoteSearch.provider = nil
+                remoteSearch.provider = provider
                 remoteSearch.hasMore = false
             }
             remoteSearch.isLoading = false

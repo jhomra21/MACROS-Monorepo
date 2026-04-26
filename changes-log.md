@@ -1109,3 +1109,46 @@ The following planning documents have been fully consolidated into this file and
 ### Validation
 
 - Formatter validation and the iOS simulator build passed after the fix.
+
+## Open Food Facts-First Search and Worker Observability Follow-up
+
+### Delivered
+
+- Changed Add Food online search so Open Food Facts is the default and only automatic provider for packaged-food text search.
+- Kept USDA available only as an explicit secondary action after Open Food Facts returns no visible results or an error.
+- Added provider-aware empty states so OFF and USDA misses are described accurately instead of using a generic online-search message.
+- Enabled Cloudflare Workers observability for the USDA proxy with logs and traces configured in `wrangler.jsonc`.
+- Raised the Worker cap for retryable Open Food Facts outages to 11 actual outbound OFF HTTP requests per search request.
+
+### Main implementation steps
+
+- Updated `AddFoodScreen.swift` so the default online search calls the existing provider-pinned path with `.openFoodFacts` instead of the Worker default fallback path.
+- Added a separate `searchUSDA()` action that reuses the same remote search flow with `.usda`, preserving existing pagination and stale-request handling.
+- Extended `RemoteSearchViewState` in `AddFoodSearchResults.swift` with the active provider so the UI can decide when to show `Search USDA instead` and provider-specific empty copy.
+- Updated `worker/usda-proxy/wrangler.jsonc` with `observability.logs` and `observability.traces`, both enabled with `head_sampling_rate: 1`.
+- Updated `worker/usda-proxy/src/packagedFoods.ts` so one shared request budget wraps the actual OFF fetcher used by both retry attempts and raw-page pagination.
+- Added Worker tests proving the OFF request budget is shared across paginated page fetches and that provider-pinned OFF does not fall back to USDA when the budget is exhausted.
+- Removed background OFF cache warming after unavailable fallback because it created a second provider-pinned search execution with a fresh request budget.
+- Updated the budget-exhausted partial OFF response contract so partial pages do not advertise additional pagination the Worker cannot reliably fulfill.
+
+### Bugs and implementation findings
+
+- USDA fallback results were often irrelevant for normal packaged-food text search, so silently replacing empty OFF results with USDA made the app feel wrong even though the Worker fallback path was functioning as designed.
+- The Worker already supported provider-pinned OFF and USDA searches, so the root fix was app-side provider selection rather than a new Worker endpoint or retry loop.
+- Provider-pinned OFF searches also avoid default USDA fallback cache semantics, so no Worker cache change was needed for this UX change.
+- Current Cloudflare docs and the local Wrangler schema confirm `observability.logs` and `observability.traces` are supported config fields; `observability.enabled` alone currently enables logs but not automatic tracing.
+- A real deployed trace for a Wendy's search confirmed the app was using `provider=openFoodFacts&fallbackOnEmpty=0`, that OFF could recover after transient 503s, and that successful OFF results were cached under the pinned and shared OFF cache keys.
+- The deployed trace also showed search terms and the configured OFF `User-Agent` contact in observability data, so the Worker secret should use a non-personal support/contact address rather than an individual email.
+- The higher OFF retry cap intentionally increases provider pressure and worst-case wait time, but the final fix caps actual OFF HTTP calls rather than logical retry attempts, preventing pagination from multiplying provider requests beyond the intended budget.
+- A review pass found that the old warm-cache path could still double OFF traffic after unavailable fallback: the foreground request could spend 11 OFF calls, then `warmOpenFoodFactsCache` could schedule another provider-pinned search with another 11-call budget. Removing that warm-on-unavailable path keeps the per-search request cap truthful.
+- A follow-up review found that enabling Worker traces while sending USDA credentials as `api_key` URL parameters could expose the secret in captured outbound fetch metadata; USDA search and details requests now send the key through `X-Api-Key` headers so observability can stay enabled.
+- The same review found that enforcing the OFF request budget inside the fetch wrapper could discard valid products already collected during sparse pagination; request budgeting now lives at the OFF pagination layer so partial current-page results are returned when available.
+- A final review found that those budget-limited partial pages still returned `hasMore: true`, which could show `Load More` in the app even though the next page would restart raw OFF scanning and likely exhaust the same request budget again; partial budget responses now return `hasMore: false`.
+
+### Validation
+
+- OFF-first app search changes: formatter validation and iOS simulator build passed.
+- Worker observability and retry-cap changes: `bun run --cwd worker/usda-proxy check`, `bun test worker/usda-proxy/tests`, and `bun run --cwd worker/usda-proxy deploy:dry-run` passed.
+- Cache-warm budget review fix: Worker tests, Worker typecheck, Worker deploy dry-run, and `git diff --check` passed.
+- Observability-safe USDA auth and OFF partial-budget fixes: `bun test worker/usda-proxy/tests`, `bun run --cwd worker/usda-proxy check`, `bun run --cwd worker/usda-proxy deploy:dry-run`, and `git diff --check` passed.
+- OFF partial-pagination follow-up: Worker tests, Worker typecheck, Worker deploy dry-run, `git diff --check`, and defensive-code review passed.

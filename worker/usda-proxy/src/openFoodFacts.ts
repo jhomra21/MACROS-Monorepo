@@ -64,6 +64,7 @@ export interface OpenFoodFactsQuery {
 
 export interface OpenFoodFactsRequestOptions {
   userAgent: string
+  requestBudget?: OpenFoodFactsRequestBudget
 }
 
 export async function searchOpenFoodFactsFoods(
@@ -80,6 +81,10 @@ export async function searchOpenFoodFactsFoods(
   let rawPageCount = 1
 
   while (currentRawPage <= rawPageCount && collectedProducts.length < requestedResultCount) {
+    if (options.requestBudget != null && options.requestBudget.consume() === false) {
+      return partialBudgetResponse(input.query, requestedPage, requestedPageSize, collectedProducts)
+    }
+
     const rawPage = await fetchOpenFoodFactsPage(
       {
         query: input.query,
@@ -104,6 +109,43 @@ export async function searchOpenFoodFactsFoods(
     pageSize: requestedPageSize,
     results: collectedProducts.slice(startIndex, endIndex),
     hasMore: collectedProducts.length > endIndex || currentRawPage <= rawPageCount,
+  }
+}
+
+export class OpenFoodFactsRequestBudget {
+  private requestCount = 0
+
+  constructor(private readonly maxRequests: number) {}
+
+  consume(): boolean {
+    if (this.requestCount >= this.maxRequests) {
+      return false
+    }
+
+    this.requestCount += 1
+    return true
+  }
+}
+
+function partialBudgetResponse(
+  query: string,
+  requestedPage: number,
+  requestedPageSize: number,
+  collectedProducts: OpenFoodFactsProxyProduct[],
+): ProviderPage<OpenFoodFactsProxyProduct> {
+  const startIndex = (requestedPage - 1) * requestedPageSize
+  const endIndex = startIndex + requestedPageSize
+  const results = collectedProducts.slice(startIndex, endIndex)
+  if (results.length === 0) {
+    throw new OpenFoodFactsClientError('Open Food Facts request budget was exhausted.', 503, false)
+  }
+
+  return {
+    query,
+    page: requestedPage,
+    pageSize: requestedPageSize,
+    results,
+    hasMore: false,
   }
 }
 

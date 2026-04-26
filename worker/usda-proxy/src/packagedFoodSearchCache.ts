@@ -59,13 +59,6 @@ export function cacheWritePlan(url: URL, params: PackagedFoodSearchQuery, respon
   }
 }
 
-export function shouldWarmOpenFoodFactsCache(
-  params: PackagedFoodSearchQuery,
-  response: PackagedFoodCacheableResponse,
-): boolean {
-  return params.provider == null && response.degradedFallbackReason === 'openFoodFactsUnavailable'
-}
-
 export function shouldPersistDefaultFallback(
   degradedFallbackReason: PackagedFoodSearchDegradedFallbackReason | undefined,
 ): boolean {

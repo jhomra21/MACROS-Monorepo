@@ -1,4 +1,4 @@
-import { OpenFoodFactsClientError, searchOpenFoodFactsFoods } from './openFoodFacts'
+import { OpenFoodFactsClientError, OpenFoodFactsRequestBudget, searchOpenFoodFactsFoods } from './openFoodFacts'
 import type {
   HTTPFetcher,
   PackagedFoodSearchDegradedFallbackReason,
@@ -12,10 +12,10 @@ import { searchUSDAFoods } from './usda'
 const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 const USDA_PROVIDER = 'usda' as const
 const REQUEST_TIMEOUT_MS = 2_500
-const MAX_RETRY_ATTEMPTS = 3
+const MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS = 11
 const BASE_RETRY_DELAY_MS = 750
 const MAX_BACKOFF_DELAY_MS = 4_000
-const MAX_TOTAL_RETRY_WAIT_MS = 6_000
+const MAX_TOTAL_RETRY_WAIT_MS = 40_000
 
 type RetryWait = (delayMs: number) => Promise<void>
 
@@ -80,15 +80,17 @@ async function searchOpenFoodFactsWithOutcome(
   let lastError: OpenFoodFactsClientError | null = null
   let attemptsMade = 0
   let totalRetryWaitMs = 0
+  const requestBudget = new OpenFoodFactsRequestBudget(MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS)
+  const openFoodFactsFetcher = withTimeout(fetcher, REQUEST_TIMEOUT_MS)
 
-  for (let attempt = 0; attempt < MAX_RETRY_ATTEMPTS; attempt += 1) {
+  for (let attempt = 0; attempt < MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS; attempt += 1) {
     attemptsMade = attempt + 1
 
     try {
       const result = await searchOpenFoodFactsFoods(
         input,
-        { userAgent },
-        withTimeout(fetcher, REQUEST_TIMEOUT_MS),
+        { userAgent, requestBudget },
+        openFoodFactsFetcher,
       )
       return {
         kind: 'response',
@@ -105,7 +107,7 @@ async function searchOpenFoodFactsWithOutcome(
       }
 
       lastError = normalizedError
-      if (shouldRetryOpenFoodFacts(lastError) === false || attempt + 1 >= MAX_RETRY_ATTEMPTS) {
+      if (shouldRetryOpenFoodFacts(lastError) === false || attempt + 1 >= MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS) {
         break
       }
 
