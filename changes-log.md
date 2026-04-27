@@ -1120,6 +1120,9 @@ The following planning documents have been fully consolidated into this file and
 - Updated the expanded ring animation so the whole ring, including the center calorie value, scales as one centered unit instead of resizing separate layout pieces.
 - Increased the collapsed dashboard ring size by about 20% and kept the macro row closer to the ring.
 - Reduced the first dashboard row top inset so the dashboard content starts higher below the navigation header.
+- Tightened the no-data dashboard layout so the empty day state no longer shows a card, does not bounce when content fits, and keeps the bottom Add Food button close to the content.
+- Preserved the smoother anchored ring scale behavior while removing attempted stagger/delay experiments that caused ring snapping or secondary layout drift.
+- Standardized dashboard macro-ring interaction timings at 180ms so ring expansion, collapse, and selection feedback no longer use 200ms-era timing.
 
 ### Main implementation steps
 
@@ -1133,6 +1136,11 @@ The following planning documents have been fully consolidated into this file and
 - Adjusted the dashboard ring panel so its row height follows the visible ring diameter and the macro row can move with the ring's expanded/collapsed layout space.
 - Split `MacroSummaryColumnView` styles into `MacroSummaryColumnStyles.swift` after adding dashboard-specific value-first ordering pushed the original file over the repo's line-count guardrail.
 - Updated the Xcode synchronized-group exception list so the new shared style file compiles once without duplicate build-file warnings.
+- Added an `EmptyStyle` option to `LogEntryListSection` so Dashboard can use a plain empty state while other list/card surfaces keep the card-style default.
+- Let `BottomPinnedActionBar` customize top padding so Dashboard can remove the extra gap above the pinned Add Food button without changing other bottom action bars.
+- Added Dashboard list sizing tweaks with `.scrollBounceBehavior(.basedOnSize)`, zero top scroll-content margin, and zero bottom safe-area inset spacing.
+- Anchored dashboard ring scaling at the top and reclaimed the collapsed-size layout delta with bottom padding, keeping the ring circular and avoiding the clipping artifacts from smaller frames.
+- Updated dashboard macro-ring expansion/collapse and selected-macro highlight animations to use the shared 180ms interaction timing.
 
 ### Bugs and implementation findings
 
@@ -1145,6 +1153,10 @@ The following planning documents have been fully consolidated into this file and
 - The ring diameter animated smoothly, but independently resizing the ring layout and center text caused perceived vertical shifts; center-scaling the complete ring keeps the visual center stable while the row layout remains deterministic.
 - Grouping the ring, macro row, and nutrition details into one list row coupled their animations too tightly and caused vertical shifts/overlap; restoring separate rows kept the nutrition transition independent.
 - Clipping a scaled ring inside a smaller layout frame squared off the ring corners; rendering the ring at its visible animated diameter preserved the circular shape.
+- A delayed collapse stagger was tested but rejected because separating ring scale from content layout state made the ring appear to snap or drift when the macro row later reflowed.
+- Resizing the ring panel frame directly during expansion made the ring animation look squeezed; keeping a stable expanded drawing frame and scaling the rendered ring remained the smoother approach.
+- The no-data dashboard gap was not caused by active scrolling alone; it also came from card empty-state chrome, safe-area inset spacing, and the pinned button's internal top padding.
+- The selected-macro highlight path still had a leftover 150ms animation while ring expansion had moved to 180ms; aligning both keeps macro-ring interactions on one timing standard.
 
 ### Validation
 

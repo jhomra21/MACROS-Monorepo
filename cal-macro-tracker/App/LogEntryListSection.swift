@@ -6,12 +6,18 @@ struct LogEntryListSection: View {
         case list
     }
 
+    enum EmptyStyle {
+        case card
+        case plain
+    }
+
     let title: String
     let emptyTitle: String
     let emptySystemImage: String
     let emptyDescription: String
     let entries: [LogEntry]
     let emptyVerticalPadding: Double
+    let emptyStyle: EmptyStyle
     let layout: Layout
     let showsHeader: Bool
     let onHeaderSwipeTranslation: ((CGSize) -> Void)?
@@ -26,6 +32,7 @@ struct LogEntryListSection: View {
         emptyDescription: String,
         entries: [LogEntry],
         emptyVerticalPadding: Double,
+        emptyStyle: EmptyStyle = .card,
         layout: Layout = .stackedCards,
         showsHeader: Bool = true,
         onHeaderSwipeTranslation: ((CGSize) -> Void)? = nil,
@@ -39,6 +46,7 @@ struct LogEntryListSection: View {
         self.emptyDescription = emptyDescription
         self.entries = entries
         self.emptyVerticalPadding = emptyVerticalPadding
+        self.emptyStyle = emptyStyle
         self.layout = layout
         self.showsHeader = showsHeader
         self.onHeaderSwipeTranslation = onHeaderSwipeTranslation
@@ -75,7 +83,19 @@ struct LogEntryListSection: View {
         )
     }
 
+    @ViewBuilder
     private var emptyState: some View {
+        switch emptyStyle {
+        case .card:
+            emptyStateContent
+                .background(PlatformColors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        case .plain:
+            emptyStateContent
+        }
+    }
+
+    private var emptyStateContent: some View {
         ContentUnavailableView(
             emptyTitle,
             systemImage: emptySystemImage,
@@ -83,8 +103,6 @@ struct LogEntryListSection: View {
         )
         .frame(maxWidth: .infinity)
         .padding(.vertical, emptyVerticalPadding)
-        .background(PlatformColors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
     private var stackedBody: some View {

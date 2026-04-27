@@ -4,6 +4,7 @@ struct BottomPinnedActionBar: View {
     let title: String
     let systemImage: String?
     let isDisabled: Bool
+    var topPadding: CGFloat = 10
     let action: () -> Void
 
     var body: some View {
@@ -15,7 +16,7 @@ struct BottomPinnedActionBar: View {
             }
             .buttonStyle(.glassProminent)
             .padding(.horizontal, 20)
-            .padding(.top, 10)
+            .padding(.top, topPadding)
             .padding(.bottom, 8)
             .disabled(isDisabled)
         } else {
@@ -27,7 +28,7 @@ struct BottomPinnedActionBar: View {
                     .background(isDisabled ? Color.secondary.opacity(0.5) : Color.black)
                     .clipShape(Capsule())
                     .padding(.horizontal, 20)
-                    .padding(.top, 10)
+                    .padding(.top, topPadding)
                     .padding(.bottom, 8)
                     .background(.ultraThinMaterial)
             }

@@ -81,9 +81,13 @@ struct MacroDashboardRingPanel: View {
         isExpanded ? 1 : collapsedRingDiameter / expandedRingDiameter
     }
 
+    private var bottomPadding: CGFloat {
+        isExpanded ? 0 : collapsedRingDiameter - expandedRingDiameter
+    }
+
     var body: some View {
         Button(action: onToggleExpansion) {
-            ZStack {
+            ZStack(alignment: .top) {
                 MacroRingView(
                     totals: totals,
                     goals: goals,
@@ -91,9 +95,10 @@ struct MacroDashboardRingPanel: View {
                     ringDiameter: expandedRingDiameter
                 )
                 .compositingGroup()
-                .scaleEffect(ringScale)
+                .scaleEffect(ringScale, anchor: .top)
             }
-            .frame(width: expandedRingDiameter, height: expandedRingDiameter)
+            .frame(width: expandedRingDiameter, height: expandedRingDiameter, alignment: .top)
+            .padding(.bottom, bottomPadding)
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)

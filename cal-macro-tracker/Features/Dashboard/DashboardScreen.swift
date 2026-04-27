@@ -65,7 +65,8 @@ struct DashboardScreen: View {
                         emptySystemImage: "fork.knife.circle",
                         emptyDescription: emptyLogDescription,
                         entries: snapshot.entries,
-                        emptyVerticalPadding: 24,
+                        emptyVerticalPadding: 12,
+                        emptyStyle: .plain,
                         layout: .list,
                         onHeaderSwipeTranslation: handleDaySwipe,
                         onDeleteEntry: deleteEntry,
@@ -75,6 +76,8 @@ struct DashboardScreen: View {
                 }
                 .listStyle(.plain)
                 .scrollContentBackground(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
+                .contentMargins(.top, 0, for: .scrollContent)
                 .background(PlatformColors.groupedBackground)
                 .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
                     max(0, scrollGeometry.contentOffset.y)
@@ -89,7 +92,7 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
-            .animation(.easeInOut(duration: 0.2), value: showsCompactSummary)
+            .animation(.easeInOut(duration: 0.18), value: showsCompactSummary)
             .onAppear {
                 guard daySelection.followsCurrentDay else { return }
                 daySelection.resetToToday(dayContext.today)
@@ -145,7 +148,7 @@ struct DashboardScreen: View {
                     .foregroundStyle(.primary)
                 }
             }
-            .safeAreaInset(edge: .bottom) {
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
             }
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
@@ -229,7 +232,7 @@ struct DashboardScreen: View {
     }
 
     private var dashboardBottomBar: some View {
-        BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false) {
+        BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false, topPadding: 0) {
             onOpenAddFood(daySelection.selectedDay)
         }
         .frame(maxWidth: .infinity)
@@ -263,7 +266,7 @@ struct DashboardScreen: View {
     }
 
     private func toggleMacroRingExpansion() {
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(.easeOut(duration: 0.18)) {
             isMacroRingExpanded.toggle()
         }
     }
