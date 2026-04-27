@@ -13,6 +13,7 @@ struct MacroRingSetView: View {
     let minimumLineWidth: CGFloat
     let showsGoalSubtitle: Bool
     let colorStyle: MacroRingColorStyle
+    let selectedMetric: MacroMetric?
 
     init(
         totals: NutritionSnapshot,
@@ -21,7 +22,8 @@ struct MacroRingSetView: View {
         centerValueFontSize: CGFloat?,
         minimumLineWidth: CGFloat,
         showsGoalSubtitle: Bool,
-        colorStyle: MacroRingColorStyle = .standard
+        colorStyle: MacroRingColorStyle = .standard,
+        selectedMetric: MacroMetric? = nil
     ) {
         self.totals = totals
         self.goals = goals
@@ -30,6 +32,7 @@ struct MacroRingSetView: View {
         self.minimumLineWidth = minimumLineWidth
         self.showsGoalSubtitle = showsGoalSubtitle
         self.colorStyle = colorStyle
+        self.selectedMetric = selectedMetric
     }
 
     private struct RingMetric {
@@ -51,43 +54,64 @@ struct MacroRingSetView: View {
         max(ringLineWidth * 2, 1)
     }
 
-    private var baseMetrics: [(track: Color, start: Color, end: Color)] {
+    private typealias RingColors = (track: Color, start: Color, end: Color)
+
+    private func baseColors(for metric: MacroMetric) -> RingColors {
         switch colorStyle {
         case .standard:
-            [
-                (
-                    track: Color(red: 0.62, green: 0.75, blue: 0.93),
-                    start: Color(red: 0.14, green: 0.40, blue: 0.90),
-                    end: Color(red: 0.40, green: 0.68, blue: 1.0)
-                ),
-                (
-                    track: Color(red: 0.84, green: 0.62, blue: 0.24),
-                    start: Color(red: 0.92, green: 0.50, blue: 0.02),
-                    end: Color(red: 1.0, green: 0.76, blue: 0.34)
-                ),
-                (
-                    track: Color(red: 0.84, green: 0.48, blue: 0.62),
-                    start: Color(red: 0.90, green: 0.18, blue: 0.44),
-                    end: Color(red: 1.0, green: 0.44, blue: 0.62)
-                )
-            ]
+            standardColors(for: metric)
         case .accentedWidget:
-            [
-                (track: .primary.opacity(0.16), start: .primary.opacity(0.55), end: .primary),
-                (track: .primary.opacity(0.12), start: .primary.opacity(0.45), end: .primary.opacity(0.82)),
-                (track: .primary.opacity(0.08), start: .primary.opacity(0.35), end: .primary.opacity(0.64))
-            ]
+            accentedWidgetColors(for: metric)
         }
     }
 
-    private var ringMetrics: [RingMetric] {
-        let progresses = MacroMetric.allCases.map { metric in
-            progress(consumed: metric.value(from: totals), goal: metric.goal(from: goals))
+    private func standardColors(for metric: MacroMetric) -> RingColors {
+        switch metric {
+        case .protein:
+            (
+                track: Color(red: 0.62, green: 0.75, blue: 0.93),
+                start: Color(red: 0.14, green: 0.40, blue: 0.90),
+                end: Color(red: 0.40, green: 0.68, blue: 1.0)
+            )
+        case .carbs:
+            (
+                track: Color(red: 0.84, green: 0.62, blue: 0.24),
+                start: Color(red: 0.92, green: 0.50, blue: 0.02),
+                end: Color(red: 1.0, green: 0.76, blue: 0.34)
+            )
+        case .fat:
+            (
+                track: Color(red: 0.84, green: 0.48, blue: 0.62),
+                start: Color(red: 0.90, green: 0.18, blue: 0.44),
+                end: Color(red: 1.0, green: 0.44, blue: 0.62)
+            )
+        }
+    }
+
+    private func accentedWidgetColors(for metric: MacroMetric) -> RingColors {
+        switch metric {
+        case .protein:
+            (track: .primary.opacity(0.16), start: .primary.opacity(0.55), end: .primary)
+        case .carbs:
+            (track: .primary.opacity(0.12), start: .primary.opacity(0.45), end: .primary.opacity(0.82))
+        case .fat:
+            (track: .primary.opacity(0.08), start: .primary.opacity(0.35), end: .primary.opacity(0.64))
+        }
+    }
+
+    private func colors(for metric: MacroMetric) -> RingColors {
+        guard let selectedMetric, selectedMetric != metric else {
+            return baseColors(for: metric)
         }
 
-        return zip(progresses, baseMetrics).map { progress, colors in
-            RingMetric(
-                progress: progress,
+        return (track: .secondary.opacity(0.18), start: .secondary.opacity(0.38), end: .secondary.opacity(0.62))
+    }
+
+    private var ringMetrics: [RingMetric] {
+        MacroMetric.allCases.map { metric in
+            let colors = colors(for: metric)
+            return RingMetric(
+                progress: progress(consumed: metric.value(from: totals), goal: metric.goal(from: goals)),
                 trackColor: colors.track,
                 gradientStartColor: colors.start,
                 gradientEndColor: colors.end

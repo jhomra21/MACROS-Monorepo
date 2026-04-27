@@ -18,6 +18,8 @@ struct DashboardScreen: View {
     @State private var logAgainFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
     @State private var showsCompactSummary = false
+    @State private var selectedMacro: MacroMetric?
+    @State private var isMacroRingExpanded = false
 
     private let compactSummaryTopPadding: CGFloat = 8
 
@@ -29,22 +31,33 @@ struct DashboardScreen: View {
         LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
             ZStack(alignment: .top) {
                 List {
-                    HStack {
-                        Spacer(minLength: 0)
-                        MacroRingView(totals: snapshot.totals, goals: currentGoals)
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.bottom, 20)
-                    .listRowInsets(EdgeInsets(top: 12, leading: 20, bottom: 0, trailing: 20))
+                    MacroDashboardRingPanel(
+                        totals: snapshot.totals,
+                        goals: currentGoals,
+                        selectedMacro: selectedMacro,
+                        isExpanded: isMacroRingExpanded,
+                        onToggleExpansion: toggleMacroRingExpansion
+                    )
+                    .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .dashboardDaySwipe(dayNavigationGesture)
 
-                    MacroLegendView(totals: snapshot.totals, goals: currentGoals)
+                    MacroLegendView(totals: snapshot.totals, goals: currentGoals, selectedMacro: $selectedMacro)
                         .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                         .dashboardDaySwipe(dayNavigationGesture)
+
+                    if isMacroRingExpanded {
+                        SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                            .padding(.top, 4)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            .dashboardDaySwipe(dayNavigationGesture)
+                    }
 
                     LogEntryListSection(
                         title: daySelection.selectedDay.dayTitle,
@@ -248,37 +261,17 @@ struct DashboardScreen: View {
         let visibilityThreshold: CGFloat = showsCompactSummary ? 180 : 220
         showsCompactSummary = offset > visibilityThreshold
     }
+
+    private func toggleMacroRingExpansion() {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            isMacroRingExpanded.toggle()
+        }
+    }
 }
 
 private extension View {
     func dashboardDaySwipe<G: Gesture>(_ gesture: G) -> some View {
         contentShape(Rectangle())
             .simultaneousGesture(gesture)
-    }
-}
-
-private struct MacroLegendView: View {
-    let totals: NutritionSnapshot
-    let goals: MacroGoalsSnapshot
-
-    var body: some View {
-        HStack(spacing: 24) {
-            ForEach(MacroMetric.allCases) { metric in
-                legendCard(metric: metric)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    private func legendCard(metric: MacroMetric) -> some View {
-        MacroSummaryColumnView(
-            metric: metric,
-            totals: totals,
-            goals: goals,
-            alignment: .center,
-            titleStyle: .full,
-            style: .dashboardCard
-        )
-        .padding(16)
     }
 }

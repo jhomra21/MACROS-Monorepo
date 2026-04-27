@@ -70,42 +70,12 @@
 
 #### Delivered
 
-- Reworked the Dashboard header so the visible date is left-aligned, smaller than the native iOS large title, and never wrapped in an iOS 26 Liquid Glass title capsule.
-- Kept the Dashboard calendar and settings buttons visually grouped with balanced spacing inside the trailing toolbar capsule.
-- Kept the Dashboard `Today` reset action visible only for non-today dates and balanced its spacing with the calendar/settings icons.
-- Shortened non-today Dashboard titles to a compact form such as `Fri, Apr 24` so day-swipe navigation does not truncate the title.
-- Reworked the pushed History header so its date title sits next to the native back affordance instead of centered in the navigation bar.
-- Kept History on native back-navigation semantics while hiding the default centered title and rendering a plain leading toolbar title without a glass capsule.
-- Increased the History title size so it reads naturally beside the back button.
-- Changed non-today History titles to full weekday names such as `Tuesday, Apr 21`, while keeping `Today` concise.
+- Reworked Dashboard and History date headers to use concise leading toolbar titles without iOS 26 Liquid Glass title capsules.
+- Kept native navigation/back behavior, balanced trailing toolbar actions, and non-today date titles that fit the available header space.
 
-#### Main implementation steps
+#### Validation
 
-- Added `ToolbarItemPlacement.appTopBarLeading` alongside the existing platform-aware trailing placement helper.
-- Updated `DashboardScreen.swift` to use a leading toolbar `Text` with `.sharedBackgroundVisibility(.hidden)` instead of the native large title for the home date.
-- Added a Dashboard-specific navigation title formatter so Dashboard can use `Today` / abbreviated weekday-date text without changing the longer History title contract.
-- Grouped the Dashboard reset/history/settings actions into one trailing `HStack(spacing: 8)` and applied plain button styling so internal spacing stays even.
-- Updated `HistoryScreen.swift` to use a leading toolbar title with `.sharedBackgroundVisibility(.hidden)` while preserving the native pushed-screen back button.
-- Added a History-specific toolbar title formatter so the header can use `Today` or a full weekday date without reusing the longer centered history navigation title.
-
-#### Bugs and implementation findings
-
-- Separate trailing toolbar items let SwiftUI insert uneven Liquid Glass spacing between `Today`, calendar, and settings; grouping the actions in one trailing toolbar item produced balanced internal spacing.
-- Rendering custom title text as a leading toolbar item on iOS 26 can receive a glass capsule unless the shared toolbar background is explicitly hidden.
-- Native `.toolbarTitleDisplayMode(.inlineLarge)` solved left alignment but made the Dashboard title too large for this design; a plain leading toolbar title gave the needed size control.
-- Leading toolbar text can compress to `T...` under the navigation bar's layout constraints unless it is fixed-size horizontally.
-- Full `HistoryScreen.historyNavigationTitle` strings were too long beside the native back button; a shorter toolbar-specific formatter preserved context without truncation.
-
-#### Validation recorded during this follow-up
-
-- Formatter and macOS debug builds with local code-signing disabled passed.
-- SwiftUI visual validation confirmed the Dashboard today/non-today headers, balanced trailing action spacing, and History today/non-today headers including full weekday titles.
-
-#### Header motion and capsule spacing follow-up
-
-- Disabled implicit animations on the Dashboard and History leading date labels so date changes update immediately instead of fading/sliding during day selection.
-- Added small horizontal padding inside the trailing toolbar capsule content so `Today`, calendar, and settings controls have more breathing room from the Liquid Glass pill edges.
-- Formatter, macOS debug build with local code-signing disabled, and focused SwiftUI visual validation passed after the adjustment.
+- Formatter, macOS debug build, and focused SwiftUI visual validation passed.
 
 ## Scan Flows
 
@@ -1114,41 +1084,72 @@ The following planning documents have been fully consolidated into this file and
 
 ### Delivered
 
-- Changed Add Food online search so Open Food Facts is the default and only automatic provider for packaged-food text search.
-- Kept USDA available only as an explicit secondary action after Open Food Facts returns no visible results or an error.
-- Added provider-aware empty states so OFF and USDA misses are described accurately instead of using a generic online-search message.
-- Enabled Cloudflare Workers observability for the USDA proxy with logs and traces configured in `wrangler.jsonc`.
-- Raised the Worker cap for retryable Open Food Facts outages to 11 actual outbound OFF HTTP requests per search request.
-
-### Main implementation steps
-
-- Updated `AddFoodScreen.swift` so the default online search calls the existing provider-pinned path with `.openFoodFacts` instead of the Worker default fallback path.
-- Added a separate `searchUSDA()` action that reuses the same remote search flow with `.usda`, preserving existing pagination and stale-request handling.
-- Extended `RemoteSearchViewState` in `AddFoodSearchResults.swift` with the active provider so the UI can decide when to show `Search USDA instead` and provider-specific empty copy.
-- Updated `worker/usda-proxy/wrangler.jsonc` with `observability.logs` and `observability.traces`, both enabled with `head_sampling_rate: 1`.
-- Updated `worker/usda-proxy/src/packagedFoods.ts` so one shared request budget wraps the actual OFF fetcher used by both retry attempts and raw-page pagination.
-- Added Worker tests proving the OFF request budget is shared across paginated page fetches and that provider-pinned OFF does not fall back to USDA when the budget is exhausted.
-- Removed background OFF cache warming after unavailable fallback because it created a second provider-pinned search execution with a fresh request budget.
-- Updated the budget-exhausted partial OFF response contract so partial pages do not advertise additional pagination the Worker cannot reliably fulfill.
-
-### Bugs and implementation findings
-
-- USDA fallback results were often irrelevant for normal packaged-food text search, so silently replacing empty OFF results with USDA made the app feel wrong even though the Worker fallback path was functioning as designed.
-- The Worker already supported provider-pinned OFF and USDA searches, so the root fix was app-side provider selection rather than a new Worker endpoint or retry loop.
-- Provider-pinned OFF searches also avoid default USDA fallback cache semantics, so no Worker cache change was needed for this UX change.
-- Current Cloudflare docs and the local Wrangler schema confirm `observability.logs` and `observability.traces` are supported config fields; `observability.enabled` alone currently enables logs but not automatic tracing.
-- A real deployed trace for a Wendy's search confirmed the app was using `provider=openFoodFacts&fallbackOnEmpty=0`, that OFF could recover after transient 503s, and that successful OFF results were cached under the pinned and shared OFF cache keys.
-- The deployed trace also showed search terms and the configured OFF `User-Agent` contact in observability data, so the Worker secret should use a non-personal support/contact address rather than an individual email.
-- The higher OFF retry cap intentionally increases provider pressure and worst-case wait time, but the final fix caps actual OFF HTTP calls rather than logical retry attempts, preventing pagination from multiplying provider requests beyond the intended budget.
-- A review pass found that the old warm-cache path could still double OFF traffic after unavailable fallback: the foreground request could spend 11 OFF calls, then `warmOpenFoodFactsCache` could schedule another provider-pinned search with another 11-call budget. Removing that warm-on-unavailable path keeps the per-search request cap truthful.
-- A follow-up review found that enabling Worker traces while sending USDA credentials as `api_key` URL parameters could expose the secret in captured outbound fetch metadata; USDA search and details requests now send the key through `X-Api-Key` headers so observability can stay enabled.
-- The same review found that enforcing the OFF request budget inside the fetch wrapper could discard valid products already collected during sparse pagination; request budgeting now lives at the OFF pagination layer so partial current-page results are returned when available.
-- A final review found that those budget-limited partial pages still returned `hasMore: true`, which could show `Load More` in the app even though the next page would restart raw OFF scanning and likely exhaust the same request budget again; partial budget responses now return `hasMore: false`.
+- Made Add Food online search Open Food Facts-first, with USDA available only as an explicit fallback action.
+- Kept provider-aware empty/error states, safe partial pagination handling, and USDA API keys out of traced URLs.
+- Split Open Food Facts retry attempts from the shared HTTP request budget: transient outages stop after a short retry window, while sparse pagination still cannot exceed the per-search outbound request cap.
+- Kept Worker logs and traces enabled at full sampling for fast solo-project debugging.
+- Trimmed the recent history entries to concise outcome and validation summaries instead of carrying detailed routine command lists.
 
 ### Validation
 
-- OFF-first app search changes: formatter validation and iOS simulator build passed.
-- Worker observability and retry-cap changes: `bun run --cwd worker/usda-proxy check`, `bun test worker/usda-proxy/tests`, and `bun run --cwd worker/usda-proxy deploy:dry-run` passed.
-- Cache-warm budget review fix: Worker tests, Worker typecheck, Worker deploy dry-run, and `git diff --check` passed.
-- Observability-safe USDA auth and OFF partial-budget fixes: `bun test worker/usda-proxy/tests`, `bun run --cwd worker/usda-proxy check`, `bun run --cwd worker/usda-proxy deploy:dry-run`, and `git diff --check` passed.
-- OFF partial-pagination follow-up: Worker tests, Worker typecheck, Worker deploy dry-run, `git diff --check`, and defensive-code review passed.
+- Swift formatter/build checks and Worker tests, typecheck, dry-run deploy, and diff check passed during the follow-up.
+
+## Dashboard Macro Ring Interactions and Expanded Nutrition Details
+
+### Delivered
+
+- Made the dashboard macro ring interactive.
+- Added macro focus selection from the dashboard macro row:
+  - selected macro keeps its normal colored ring
+  - unselected macro rings gray out
+  - tapping the selected macro again clears the focus
+- Added an expanded dashboard ring state when tapping the ring.
+- Kept the ring expansion focused on the existing three macro rings instead of inventing unsupported secondary-nutrient goal rings.
+- Added read-only secondary nutrition totals beneath the macro row when expanded:
+  - saturated fat
+  - fiber
+  - sugars
+  - added sugar
+  - sodium
+  - cholesterol
+- Changed the expanded nutrition presentation from a card/list into a plain, centered 2x3 metric grid that follows the macro row's rhythm.
+- Standardized the expanded dashboard metric presentation to value-first:
+  - calories already show value then context in the ring center
+  - dashboard macros now show current value, goal, then label
+  - secondary nutrition details now show value then label
+- Updated the expanded ring animation so the whole ring, including the center calorie value, scales as one centered unit instead of resizing separate layout pieces.
+- Increased the collapsed dashboard ring size by about 20% and kept the macro row closer to the ring.
+- Reduced the first dashboard row top inset so the dashboard content starts higher below the navigation header.
+
+### Main implementation steps
+
+- Added dashboard-local `selectedMacro` and `isMacroRingExpanded` state in `DashboardScreen.swift`.
+- Extended `MacroRingView` and `MacroRingSetView` with optional selected-macro support while preserving default behavior for compact, history, and widget call sites.
+- Replaced the old index-coupled macro ring color array with metric-keyed color lookup so selection styling does not add another parallel mapping.
+- Added `SecondaryNutritionSnapshot` aggregation from consumed `LogEntry` secondary nutrient fields while preserving `nil` as "not tracked" instead of treating missing data as zero.
+- Extended `LogEntryDaySnapshot` so dashboard day snapshots carry both macro totals and secondary nutrient totals.
+- Added `MacroDashboardRingPanel`, `MacroLegendView`, and `SecondaryNutritionDetailsView` as focused dashboard ring/metric presentation pieces.
+- Kept the dashboard ring's expanded-size layout stable and center-scaled the complete ring between collapsed and expanded sizes so the ring does not translate during the animation.
+- Adjusted the dashboard ring panel so its row height follows the visible ring diameter and the macro row can move with the ring's expanded/collapsed layout space.
+- Split `MacroSummaryColumnView` styles into `MacroSummaryColumnStyles.swift` after adding dashboard-specific value-first ordering pushed the original file over the repo's line-count guardrail.
+- Updated the Xcode synchronized-group exception list so the new shared style file compiles once without duplicate build-file warnings.
+
+### Bugs and implementation findings
+
+- Secondary nutrients already existed on `LogEntry`, but daily dashboard aggregation only covered calories and macros; the correct fix was summary aggregation, not new persistence fields.
+- The app does not currently have daily goals or user-configurable standards for secondary nutrients, so extra nutrient rings would have implied unsupported goal semantics.
+- The first secondary-nutrition UI as a separate card felt visually disconnected from the dashboard; removing the card and placing a plain metric grid under macros better matched the existing app surface.
+- The initial 2-column details layout read like a form and left the section feeling misaligned; a centered 3-column grid over two rows matches the macro row's structure.
+- Leading-aligning each secondary metric inside flexible grid columns created more visible empty space on the right; centering the grid items fixed the perceived imbalance.
+- Keeping dashboard macros as label-first while calories and secondary nutrients were value-first made the expanded panel feel inconsistent; the dashboard macro style now owns the value-first variant while compact/widget styles keep their existing ordering.
+- The ring diameter animated smoothly, but independently resizing the ring layout and center text caused perceived vertical shifts; center-scaling the complete ring keeps the visual center stable while the row layout remains deterministic.
+- Grouping the ring, macro row, and nutrition details into one list row coupled their animations too tightly and caused vertical shifts/overlap; restoring separate rows kept the nutrition transition independent.
+- Clipping a scaled ring inside a smaller layout frame squared off the ring corners; rendering the ring at its visible animated diameter preserved the circular shape.
+
+### Validation
+
+- `make format` passed.
+- `make quality-format-check` passed.
+- `make quality-build` passed.
+- `make quality-debt` passed.
+- `git diff --check` passed.

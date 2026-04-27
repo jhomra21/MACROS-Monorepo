@@ -84,10 +84,10 @@ describe('searchPackagedFoods', () => {
 
     expect(response.resolvedProvider).toBe('usda')
     expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
-    expect(response.openFoodFactsAttemptCount).toBe(11)
-    expect(openFoodFactsCallCount).toBe(11)
+    expect(response.openFoodFactsAttemptCount).toBe(3)
+    expect(openFoodFactsCallCount).toBe(3)
     expect(usdaCallCount).toBe(1)
-    expect(waitedDelays).toHaveLength(10)
+    expect(waitedDelays).toHaveLength(2)
     expect(waitedDelays[0]).toBeGreaterThanOrEqual(750)
     expect(waitedDelays[1]).toBeGreaterThanOrEqual(1500)
   })
@@ -278,7 +278,7 @@ describe('nextRetryDelayMs', () => {
   })
 
   it('gives up instead of shortening Retry-After beyond the retry budget', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 60_000)
+    const error = new OpenFoodFactsClientError('busy', 503, true, 10_000)
 
     expect(nextRetryDelayMs(error, 0, 0, 0)).toBe(null)
   })
@@ -286,7 +286,7 @@ describe('nextRetryDelayMs', () => {
   it('still respects the total retry wait budget after combining delays', () => {
     const error = new OpenFoodFactsClientError('busy', 503, true, 1000)
 
-    expect(nextRetryDelayMs(error, 2, 39_000, 0)).toBe(null)
+    expect(nextRetryDelayMs(error, 2, 3500, 0)).toBe(null)
   })
 })
 

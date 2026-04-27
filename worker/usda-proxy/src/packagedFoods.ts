@@ -13,9 +13,10 @@ const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 const USDA_PROVIDER = 'usda' as const
 const REQUEST_TIMEOUT_MS = 2_500
 const MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS = 11
+const MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS = 3
 const BASE_RETRY_DELAY_MS = 750
 const MAX_BACKOFF_DELAY_MS = 4_000
-const MAX_TOTAL_RETRY_WAIT_MS = 40_000
+const MAX_TOTAL_RETRY_WAIT_MS = 6_000
 
 type RetryWait = (delayMs: number) => Promise<void>
 
@@ -83,7 +84,7 @@ async function searchOpenFoodFactsWithOutcome(
   const requestBudget = new OpenFoodFactsRequestBudget(MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS)
   const openFoodFactsFetcher = withTimeout(fetcher, REQUEST_TIMEOUT_MS)
 
-  for (let attempt = 0; attempt < MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS; attempt += 1) {
+  for (let attempt = 0; attempt < MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS; attempt += 1) {
     attemptsMade = attempt + 1
 
     try {
@@ -107,7 +108,7 @@ async function searchOpenFoodFactsWithOutcome(
       }
 
       lastError = normalizedError
-      if (shouldRetryOpenFoodFacts(lastError) === false || attempt + 1 >= MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS) {
+      if (shouldRetryOpenFoodFacts(lastError) === false || attempt + 1 >= MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS) {
         break
       }
 
