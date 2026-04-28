@@ -87,4 +87,5 @@ struct DailyShareCardView: View {
     )
     .padding()
     .background(PlatformColors.groupedBackground)
+    .preferredColorScheme(.dark)
 }

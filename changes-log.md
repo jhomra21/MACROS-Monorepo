@@ -1294,6 +1294,7 @@ The following planning documents have been fully consolidated into this file and
 - Added retry handling for share preparation: each share flow attempts image generation up to three times, then presents a simple retry alert if preparation still fails.
 - Kept empty days shareable as zeroed summary cards.
 - Added temporary SwiftUI preview coverage for visual review of the share card, clearly marked for removal after testing.
+- Replaced the launch-time spinner and `Starting app…` text with a centered strong-arm app logo.
 
 ### Main implementation steps
 
@@ -1303,6 +1304,8 @@ The following planning documents have been fully consolidated into this file and
 - Added `DashboardShareSupport.swift` for Dashboard toolbar sharing state, share preparation, retry handling, and the iOS `UIActivityViewController` share sheet bridge.
 - Stored generated PNGs in a dedicated temporary `macro-share` directory and cleanup is limited to generated `macros-*.png` files in that directory.
 - Preserved the originally requested selected day for retry alerts, so retrying after swiping to another day does not share the wrong date.
+- Moved the share export color-scheme environment after the background modifier so the exported background resolves in the same light/dark mode as the rendered text.
+- Set the temporary share-card preview to dark mode so the dark export can be checked directly in Xcode previews.
 
 ### Bugs and implementation findings
 
@@ -1312,6 +1315,7 @@ The following planning documents have been fully consolidated into this file and
 - Removing rounded card chrome required follow-up layout tuning because the original image still carried card-era padding; the final share layout uses tight `8` point edge padding.
 - The share button initially shifted the toolbar while preparing because the icon and spinner had different intrinsic sizes; a fixed button frame stabilized the nav bar.
 - Simulator console messages about CKShare / file-provider item lookup can appear when sharing the temp PNG URL, but they are system share-sheet probing logs rather than app-side generation failures.
+- Dark-mode share images could render light backgrounds with light foreground text when the color scheme was applied before `PlatformColors.groupedBackground`; applying the environment after the background fixed the contrast mismatch.
 
 ### Validation
 
@@ -1320,3 +1324,4 @@ The following planning documents have been fully consolidated into this file and
 - iOS simulator `xcodebuild` passed.
 - Full `make quality` passed after the sharing implementation and cleanup.
 - Simplify and defensive-code-review passes found no remaining high-confidence cleanup required beyond the temp-directory and retry-day fixes.
+- Follow-up launch-logo and dark-share fixes passed `make quality`, simplify review, defensive-code-review, and `git diff --check`.

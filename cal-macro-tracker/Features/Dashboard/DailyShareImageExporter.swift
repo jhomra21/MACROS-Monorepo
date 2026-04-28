@@ -14,9 +14,9 @@ enum DailyShareImageExporter {
         try cleanUpGeneratedFiles()
 
         let content = DailyShareCardView(day: day, snapshot: snapshot, goals: goals)
-            .environment(\.colorScheme, colorScheme)
             .padding(8)
             .background(PlatformColors.groupedBackground)
+            .environment(\.colorScheme, colorScheme)
 
         let renderer = ImageRenderer(content: content)
         renderer.scale = UIScreen.main.scale

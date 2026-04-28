@@ -37,7 +37,9 @@ struct cal_macro_trackerApp: App {
             Group {
                 switch launchState.phase {
                 case .launching:
-                    ProgressView("Starting app…")
+                    Text("💪")
+                        .font(.system(size: 72))
+                        .accessibilityLabel("MACROS")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case let .ready(modelContainer):
                     ZStack {
