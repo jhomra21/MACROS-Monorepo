@@ -44,15 +44,24 @@ struct cal_macro_trackerApp: App {
                         if shouldShowAppRoot {
                             AppRootView(pendingOpenRequest: $pendingOpenRequest)
                                 .modelContainer(modelContainer)
-                                .transition(.opacity.animation(.easeOut(duration: 0.15).delay(0.15)))
+                                .transition(.opacity.animation(.easeOut(duration: 0.2).delay(0.12)))
+                                .zIndex(0)
                         } else {
                             GoalSetupScreen {
                                 completeGoalSetup()
                             }
                             .modelContainer(modelContainer)
-                            .transition(.opacity.animation(.easeOut(duration: 0.15)))
+                            .transition(
+                                .asymmetric(
+                                    insertion: .identity,
+                                    removal: .move(edge: .bottom)
+                                )
+                                .animation(.easeOut(duration: 0.22))
+                            )
+                            .zIndex(1)
                         }
                     }
+                    .background(PlatformColors.groupedBackground)
                 case let .failed(message):
                     AppLaunchErrorView(message: message)
                 }
@@ -85,8 +94,6 @@ struct cal_macro_trackerApp: App {
                 consumePendingQuickActionIfNeeded()
             }
             #endif
-            .animation(.easeOut(duration: 0.15), value: hasCompletedGoalSetup)
-            .animation(.easeOut(duration: 0.15), value: didCompleteForcedGoalSetup)
         }
     }
 
@@ -100,7 +107,7 @@ struct cal_macro_trackerApp: App {
     }
 
     private func completeGoalSetup() {
-        withAnimation(.easeOut(duration: 0.15)) {
+        withAnimation(.easeOut(duration: 0.22)) {
             hasCompletedGoalSetup = true
             didCompleteForcedGoalSetup = true
         }

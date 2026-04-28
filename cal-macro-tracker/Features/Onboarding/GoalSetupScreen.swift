@@ -11,6 +11,7 @@ struct GoalSetupScreen: View {
     @State private var numericText = DailyGoalsNumericText()
     @State private var hasLoadedGoals = false
     @State private var errorMessage: String?
+    @State private var continueFeedbackToken = 0
 
     private let fieldOrder: [DailyGoalsField] = [.calories, .protein, .carbs, .fat]
 
@@ -33,6 +34,7 @@ struct GoalSetupScreen: View {
             .errorBanner(message: $errorMessage)
             .scrollDismissesKeyboard(.interactively)
             .keyboardNavigationToolbar(focusedField: $focusedField, fields: fieldOrder)
+            .sensoryFeedback(.success, trigger: continueFeedbackToken)
             .onAppear(perform: loadGoalsIfNeeded)
     }
 
@@ -148,6 +150,7 @@ struct GoalSetupScreen: View {
         do {
             try goalsRepository.saveGoals(from: finalizedDraft, to: activeGoals, operation: "Complete goal setup")
             errorMessage = nil
+            continueFeedbackToken += 1
             onComplete()
         } catch {
             errorMessage = error.localizedDescription

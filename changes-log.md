@@ -249,6 +249,8 @@
 - Updated dashboard macro ring-related interactions so ring expansion, compact-summary visibility, and macro legend selection all use `easeOut` timing.
 - Fixed the shared bottom pinned action bar so keyboard accessory controls no longer overlap `Continue` / `Log Food` while editing numeric fields.
 - Added a code-only onboarding display mode so the setup screen can be forced on launch for regression testing without deleting simulator app data.
+- Added a success haptic to the onboarding `Continue` action after goal persistence succeeds.
+- Refined the onboarding handoff so the setup screen slides down while the home screen fades in over 200ms.
 
 ### Main implementation steps
 
@@ -260,6 +262,9 @@
 - Kept the onboarding transition declarative with SwiftUI opacity transitions instead of using `Task.sleep` for sequencing.
 - Replaced the raw force-show boolean with `GoalSetupDisplayMode.normal` / `.forceOnLaunch` so the persisted completion state and the test-only launch override have distinct responsibilities.
 - Defaulted the display mode back to `.normal` after review so completed users are not shown onboarding again on every cold launch.
+- Added screen-local `.sensoryFeedback(.success)` state to `GoalSetupScreen`, matching the existing successful-save haptic pattern elsewhere in the app.
+- Updated the final handoff animation to use an asymmetric onboarding removal transition, `zIndex` layering, a stable grouped background, and a delayed `AppRootView` opacity insertion.
+- Removed parent `.animation(..., value:)` modifiers from the app root so transition-specific animations own the route change without competing animation sources.
 
 ### Bugs and implementation findings
 
@@ -270,12 +275,15 @@
 - The keyboard accessory toolbar overlap was not onboarding-specific; `Log Food` had the same bottom action bar conflict, so the fix belonged in `BottomPinnedActionBar`.
 - A permanent force-show flag would trap the current app session on onboarding after `Continue`, so `.forceOnLaunch` now uses session-only completion state to show onboarding at launch while still letting `Continue` enter the dashboard.
 - Review validation found that leaving `.forceOnLaunch` as the checked-in default would bypass the first-run-only contract on every fresh process; `.normal` is now the default, with `.forceOnLaunch` retained only as a temporary local testing switch.
+- Scaling the whole app root during the handoff looked snappy and exposed background-layer mismatches, so the scale transition was replaced with a stable background plus home opacity insertion.
+- The final transition sequencing intentionally starts the home fade after a short delay while onboarding slides down first.
 
 ### Validation recorded during this work
 
 - Formatter validation passed.
 - macOS debug builds passed with `CODE_SIGNING_ALLOWED=NO` because local signing profiles were unavailable.
 - The final display-mode fix passed formatter validation, macOS debug build with signing disabled, and a focused diff review.
+- The haptic and final transition cleanup passed formatter validation, macOS debug build with signing disabled, and `git diff --check`.
 
 ## Branding and App Configuration
 
