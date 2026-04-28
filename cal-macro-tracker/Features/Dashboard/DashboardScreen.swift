@@ -39,7 +39,7 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
-            .animation(.easeInOut(duration: 0.18), value: showsCompactSummary)
+            .animation(.easeOut(duration: 0.18), value: showsCompactSummary)
             .onAppear {
                 guard daySelection.followsCurrentDay else { return }
                 daySelection.resetToToday(dayContext.today)

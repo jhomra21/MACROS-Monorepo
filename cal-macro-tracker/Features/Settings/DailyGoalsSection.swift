@@ -31,11 +31,18 @@ enum DailyGoalsField: Hashable {
     }
 }
 
-private struct DailyGoalsNumericText: Equatable {
+struct DailyGoalsNumericText: Equatable {
     var calories: String
     var protein: String
     var fat: String
     var carbs: String
+
+    init() {
+        calories = NumericText.editingDisplay(for: DailyGoalsDefaults.calorieGoal)
+        protein = NumericText.editingDisplay(for: DailyGoalsDefaults.proteinGoalGrams)
+        fat = NumericText.editingDisplay(for: DailyGoalsDefaults.fatGoalGrams)
+        carbs = NumericText.editingDisplay(for: DailyGoalsDefaults.carbGoalGrams)
+    }
 
     init(goals: DailyGoals) {
         calories = NumericText.editingDisplay(for: goals.calorieGoal)

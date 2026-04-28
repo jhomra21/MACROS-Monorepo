@@ -15,9 +15,18 @@ import UIKit
 
 @main
 struct cal_macro_trackerApp: App {
+    private enum GoalSetupDisplayMode {
+        case normal
+        case forceOnLaunch
+    }
+
+    private let goalSetupDisplayMode: GoalSetupDisplayMode = .normal
+
+    @AppStorage("hasCompletedGoalSetup") private var hasCompletedGoalSetup = false
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
     @State private var pendingOpenRequest: AppOpenRequest?
+    @State private var didCompleteForcedGoalSetup = false
     @Environment(\.scenePhase) private var scenePhase
     #if os(iOS)
     @UIApplicationDelegateAdaptor(HomeScreenQuickActionAppDelegate.self) private var appDelegate
@@ -31,8 +40,19 @@ struct cal_macro_trackerApp: App {
                     ProgressView("Starting app…")
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case let .ready(modelContainer):
-                    AppRootView(pendingOpenRequest: $pendingOpenRequest)
-                        .modelContainer(modelContainer)
+                    ZStack {
+                        if shouldShowAppRoot {
+                            AppRootView(pendingOpenRequest: $pendingOpenRequest)
+                                .modelContainer(modelContainer)
+                                .transition(.opacity.animation(.easeOut(duration: 0.15).delay(0.15)))
+                        } else {
+                            GoalSetupScreen {
+                                completeGoalSetup()
+                            }
+                            .modelContainer(modelContainer)
+                            .transition(.opacity.animation(.easeOut(duration: 0.15)))
+                        }
+                    }
                 case let .failed(message):
                     AppLaunchErrorView(message: message)
                 }
@@ -65,6 +85,24 @@ struct cal_macro_trackerApp: App {
                 consumePendingQuickActionIfNeeded()
             }
             #endif
+            .animation(.easeOut(duration: 0.15), value: hasCompletedGoalSetup)
+            .animation(.easeOut(duration: 0.15), value: didCompleteForcedGoalSetup)
+        }
+    }
+
+    private var shouldShowAppRoot: Bool {
+        switch goalSetupDisplayMode {
+        case .normal:
+            hasCompletedGoalSetup
+        case .forceOnLaunch:
+            hasCompletedGoalSetup && didCompleteForcedGoalSetup
+        }
+    }
+
+    private func completeGoalSetup() {
+        withAnimation(.easeOut(duration: 0.15)) {
+            hasCompletedGoalSetup = true
+            didCompleteForcedGoalSetup = true
         }
     }
 

@@ -219,7 +219,7 @@ struct MacroLegendView: View {
 
     private func legendCard(metric: MacroMetric) -> some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.18)) {
+            withAnimation(.easeOut(duration: 0.18)) {
                 selectedMacro = selectedMacro == metric ? nil : metric
             }
         } label: {

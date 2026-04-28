@@ -237,6 +237,46 @@
 - The save action remains in its own section, so the first edit no longer mutates the same input section structure while someone is actively typing.
 - This kept the UX inline, removed the extra navigation step, and reused existing shared keyboard behavior instead of duplicating it.
 
+## First-Run Goal Setup Onboarding
+
+### Delivered
+
+- Added a first-run goal setup onboarding screen for calorie, protein, carb, and fat targets.
+- Gated the onboarding flow behind `@AppStorage("hasCompletedGoalSetup")`, so `false` shows onboarding and `true` shows the dashboard.
+- Reused the existing `DailyGoals`, `DailyGoalsRepository`, `DailyGoalsField`, numeric text validation, and shared numeric input components instead of creating a parallel goals model.
+- Styled the onboarding screen with the existing iOS 26 Liquid Glass helpers: glass goal rows, `GlassEffectContainer`, and the shared prominent bottom action bar.
+- Added a smooth onboarding-to-dashboard opacity transition: onboarding fades out over 150ms and the dashboard fades in over the next 150ms.
+- Updated dashboard macro ring-related interactions so ring expansion, compact-summary visibility, and macro legend selection all use `easeOut` timing.
+- Fixed the shared bottom pinned action bar so keyboard accessory controls no longer overlap `Continue` / `Log Food` while editing numeric fields.
+- Added a code-only onboarding display mode so the setup screen can be forced on launch for regression testing without deleting simulator app data.
+
+### Main implementation steps
+
+- Added `Features/Onboarding/GoalSetupScreen.swift` as the first-run setup surface.
+- Updated `cal_macro_trackerApp.swift` to route between onboarding and `AppRootView` after launch readiness.
+- Made `DailyGoalsNumericText` reusable and added a default initializer so onboarding and Settings share the same goal text/draft conversion path.
+- Removed an unnecessary nested `NavigationStack` from onboarding so the shared keyboard toolbar matches the Settings numeric-entry flow.
+- Updated `BottomPinnedActionBar.swift` centrally so onboarding and food logging both get keyboard-toolbar clearance from the same component.
+- Kept the onboarding transition declarative with SwiftUI opacity transitions instead of using `Task.sleep` for sequencing.
+- Replaced the raw force-show boolean with `GoalSetupDisplayMode.normal` / `.forceOnLaunch` so the persisted completion state and the test-only launch override have distinct responsibilities.
+- Defaulted the display mode back to `.normal` after review so completed users are not shown onboarding again on every cold launch.
+
+### Bugs and implementation findings
+
+- Rebuilds do not reset `@AppStorage`; testing the onboarding flow again requires deleting the simulator app, resetting the persisted key, or temporarily changing the storage key.
+- Placing the keyboard toolbar too low in the onboarding view tree prevented the up/down/Done accessory controls from matching Settings behavior.
+- The first transition implementation felt snappy because the app root swapped views immediately; using matched opacity transitions inside the same root `ZStack` made the handoff smoother.
+- A staged delay with `Task.sleep` worked but was not the cleanest SwiftUI approach, so it was replaced with declarative transition animation.
+- The keyboard accessory toolbar overlap was not onboarding-specific; `Log Food` had the same bottom action bar conflict, so the fix belonged in `BottomPinnedActionBar`.
+- A permanent force-show flag would trap the current app session on onboarding after `Continue`, so `.forceOnLaunch` now uses session-only completion state to show onboarding at launch while still letting `Continue` enter the dashboard.
+- Review validation found that leaving `.forceOnLaunch` as the checked-in default would bypass the first-run-only contract on every fresh process; `.normal` is now the default, with `.forceOnLaunch` retained only as a temporary local testing switch.
+
+### Validation recorded during this work
+
+- Formatter validation passed.
+- macOS debug builds passed with `CODE_SIGNING_ALLOWED=NO` because local signing profiles were unavailable.
+- The final display-mode fix passed formatter validation, macOS debug build with signing disabled, and a focused diff review.
+
 ## Branding and App Configuration
 
 ### Delivered
