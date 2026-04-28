@@ -2,8 +2,9 @@ import SwiftData
 import SwiftUI
 
 struct DashboardScreen: View {
-    @Environment(AppDayContext.self) private var dayContext
+    @Environment(AppDayContext.self) var dayContext
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) var colorScheme
 
     let resetToTodayToken: Int
     let onOpenAddFood: (CalendarDay) -> Void
@@ -13,17 +14,21 @@ struct DashboardScreen: View {
 
     @Query private var goals: [DailyGoals]
 
-    @State private var daySelection = AppDaySelection(today: CalendarDay(date: .now))
+    @State var daySelection = AppDaySelection(today: CalendarDay(date: .now))
     @State private var errorMessage: String?
     @State private var logAgainFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
     @State private var showsCompactSummary = false
     @State private var selectedMacro: MacroMetric?
     @State private var isMacroRingExpanded = false
+    #if os(iOS)
+    @State var shareSheetItem: DashboardShareSheetItem?
+    @State var isPreparingShare = false
+    @State var shareFailureRequest: ShareFailureRequest?
+    #endif
 
     private let compactSummaryTopPadding: CGFloat = 8
-
-    private var currentGoals: MacroGoalsSnapshot {
+    var currentGoals: MacroGoalsSnapshot {
         MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
     }
 
@@ -54,7 +59,7 @@ struct DashboardScreen: View {
             }
             .toolbar {
                 dashboardToolbarLeading
-                dashboardToolbarTrailing
+                dashboardToolbarTrailing(snapshot: snapshot)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
@@ -62,6 +67,20 @@ struct DashboardScreen: View {
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
             .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
             .errorBanner(message: $errorMessage)
+            #if os(iOS)
+            .sheet(item: $shareSheetItem) { item in
+                ShareSheet(activityItems: [item.url])
+            }
+            .alert(item: $shareFailureRequest) { request in
+                Alert(
+                    title: Text("Something went wrong sharing."),
+                    primaryButton: .default(Text("Retry")) {
+                        prepareShare(day: request.day, snapshot: request.snapshot)
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
+            #endif
         }
     }
 
@@ -95,40 +114,6 @@ struct DashboardScreen: View {
                 .accessibilityAddTraits(.isHeader)
         }
         .sharedBackgroundVisibility(.hidden)
-    }
-
-    private var dashboardToolbarTrailing: some ToolbarContent {
-        ToolbarItem(placement: .appTopBarTrailing) {
-            HStack(spacing: 8) {
-                if daySelection.selectedDay != dayContext.today {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            daySelection.resetToToday(dayContext.today)
-                        }
-                    } label: {
-                        Text("Today")
-                            .fixedSize()
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                Button(action: onOpenHistory) {
-                    Image(systemName: "calendar")
-                        .font(.title3.weight(.semibold))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open history")
-
-                Button(action: onOpenSettings) {
-                    Image(systemName: "gearshape")
-                        .font(.title3.weight(.semibold))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open settings")
-            }
-            .padding(.horizontal, 4)
-            .foregroundStyle(.primary)
-        }
     }
 
     private var dayNavigationGesture: some Gesture {
@@ -288,4 +273,5 @@ struct DashboardScreen: View {
             isMacroRingExpanded.toggle()
         }
     }
+
 }

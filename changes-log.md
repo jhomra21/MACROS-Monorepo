@@ -1274,3 +1274,49 @@ The following planning documents have been fully consolidated into this file and
 - The macOS debug build with `CODE_SIGNING_ALLOWED=NO` passed after the `ScanCancellation` fix.
 - A defensive-code-review cleanup pass completed with no remaining actionable findings.
 - Manual QA remains pending for the affected audit flows recorded above.
+
+## Dashboard Daily Summary Sharing
+
+### Delivered
+
+- Added Dashboard sharing for the currently selected day, including days reached by swiping instead of only today.
+- Implemented a fixed-layout share image rather than capturing the live dashboard scroll position.
+- Kept the shared image focused on totals only:
+  - macro rings
+  - calorie total and calorie goal
+  - protein, carbs, and fat totals/goals
+  - all six secondary nutrition totals with existing `Not tracked` semantics
+- Added subtle `MACROS` branding in the bottom-right corner of the generated image.
+- Matched the generated card to the user's active color scheme instead of forcing light or dark mode.
+- Added a Dashboard toolbar share action beside History and Settings.
+- Added a stable loading state for the share button so the toolbar no longer shifts while the image is being prepared.
+- Tuned the share icon's fixed frame and visual offset so it aligns with the adjacent calendar and settings toolbar icons.
+- Added retry handling for share preparation: each share flow attempts image generation up to three times, then presents a simple retry alert if preparation still fails.
+- Kept empty days shareable as zeroed summary cards.
+- Added temporary SwiftUI preview coverage for visual review of the share card, clearly marked for removal after testing.
+
+### Main implementation steps
+
+- Added `DailyShareCardView.swift` as the deterministic share-image surface.
+- Reused existing `MacroRingView`, `MacroSummaryColumnView`, `SecondaryNutritionDetailsView`, `LogEntryDaySnapshot`, and `MacroGoalsSnapshot` instead of creating separate share-only nutrition models.
+- Added `DailyShareImageExporter.swift` to render the SwiftUI card with `ImageRenderer`, export PNG data, and write a date-named temporary file such as `macros-2026-04-28.png`.
+- Added `DashboardShareSupport.swift` for Dashboard toolbar sharing state, share preparation, retry handling, and the iOS `UIActivityViewController` share sheet bridge.
+- Stored generated PNGs in a dedicated temporary `macro-share` directory and cleanup is limited to generated `macros-*.png` files in that directory.
+- Preserved the originally requested selected day for retry alerts, so retrying after swiping to another day does not share the wrong date.
+
+### Bugs and implementation findings
+
+- A literal screenshot was rejected because it would depend on scroll offset, toolbar state, ring expansion state, and device size; a fixed SwiftUI card gives deterministic output.
+- Including food entries was deferred because long days create truncation and multi-page layout questions; v1 shares totals only.
+- Secondary nutrient display keeps the existing semantic distinction between real values and `nil` / `Not tracked`; missing values are not converted to zero.
+- Removing rounded card chrome required follow-up layout tuning because the original image still carried card-era padding; the final share layout uses tight `8` point edge padding.
+- The share button initially shifted the toolbar while preparing because the icon and spinner had different intrinsic sizes; a fixed button frame stabilized the nav bar.
+- Simulator console messages about CKShare / file-provider item lookup can appear when sharing the temp PNG URL, but they are system share-sheet probing logs rather than app-side generation failures.
+
+### Validation
+
+- `make format` passed.
+- `make quality-format-check` passed.
+- iOS simulator `xcodebuild` passed.
+- Full `make quality` passed after the sharing implementation and cleanup.
+- Simplify and defensive-code-review passes found no remaining high-confidence cleanup required beyond the temp-directory and retry-day fixes.
