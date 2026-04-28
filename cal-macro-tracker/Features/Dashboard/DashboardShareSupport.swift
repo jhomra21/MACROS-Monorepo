@@ -4,18 +4,6 @@ extension DashboardScreen {
     func dashboardToolbarTrailing(snapshot: LogEntryDaySnapshot) -> some ToolbarContent {
         ToolbarItem(placement: .appTopBarTrailing) {
             HStack(spacing: 8) {
-                if daySelection.selectedDay != dayContext.today {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            daySelection.resetToToday(dayContext.today)
-                        }
-                    } label: {
-                        Text("Today")
-                            .fixedSize()
-                    }
-                    .buttonStyle(.plain)
-                }
-
                 #if os(iOS)
                 Button {
                     prepareShare(for: snapshot)
@@ -29,14 +17,14 @@ extension DashboardScreen {
 
                 Button(action: onOpenHistory) {
                     Image(systemName: "calendar")
-                        .font(.title3.weight(.semibold))
+                        .appTopBarIconStyle()
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Open history")
 
                 Button(action: onOpenSettings) {
                     Image(systemName: "gearshape")
-                        .font(.title3.weight(.semibold))
+                        .appTopBarIconStyle()
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Open settings")
@@ -55,7 +43,7 @@ extension DashboardScreen {
                 .frame(width: 32, height: 32)
         } else {
             Image(systemName: "square.and.arrow.up")
-                .font(.title3.weight(.semibold))
+                .appTopBarIconStyle()
                 .frame(width: 32, height: 32)
                 .offset(y: -2)
         }

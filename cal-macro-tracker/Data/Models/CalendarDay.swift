@@ -89,14 +89,15 @@ struct CalendarDay: Hashable, Sendable {
         startDate.formatted(.dateTime.weekday(.wide).month(.wide).day())
     }
 
-    var historyNavigationTitle: String {
-        let dateTitle = startDate.formatted(.dateTime.month(.abbreviated).day().year())
+    var topBarTitle: String {
+        let start = startDate
+        let dateTitle = start.formatted(.dateTime.month(.abbreviated).day().year())
 
         if isToday {
             return "Today, \(dateTitle)"
         }
 
-        return "\(startDate.formatted(.dateTime.weekday(.wide))), \(dateTitle)"
+        return "\(start.formatted(.dateTime.weekday(.wide))), \(dateTitle)"
     }
 
     var isToday: Bool {

@@ -37,9 +37,16 @@ struct DashboardScreen: View {
             ZStack(alignment: .top) {
                 dashboardList(snapshot: snapshot)
 
+                if daySelection.selectedDay != dayContext.today {
+                    todayReturnRow
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .zIndex(2)
+                }
+
                 if showsCompactSummary {
                     pinnedCompactSummaryView(totals: snapshot.totals)
                         .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                        .zIndex(1)
                 }
             }
             .navigationTitle("")
@@ -97,21 +104,13 @@ struct DashboardScreen: View {
     }
 
     private var dashboardNavigationTitle: String {
-        if daySelection.selectedDay.isToday {
-            return "Today"
-        }
-
-        return daySelection.selectedDay.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
+        daySelection.selectedDay.topBarTitle
     }
 
     private var dashboardToolbarLeading: some ToolbarContent {
         ToolbarItem(placement: .appTopBarLeading) {
             Text(dashboardNavigationTitle)
-                .font(.title2.weight(.semibold))
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)
-                .transaction { $0.animation = nil }
-                .accessibilityAddTraits(.isHeader)
+                .appTopBarTitleStyle()
         }
         .sharedBackgroundVisibility(.hidden)
     }
@@ -121,6 +120,28 @@ struct DashboardScreen: View {
             .onEnded { value in
                 handleDaySwipe(value.translation)
             }
+    }
+
+    private var todayReturnRow: some View {
+        HStack {
+            Spacer()
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.18)) {
+                    daySelection.resetToToday(dayContext.today)
+                }
+            } label: {
+                Text("Today")
+                    .font(.subheadline.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+            .appGlassRoundedRect(cornerRadius: 18)
+            .accessibilityLabel("Return to today")
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
     }
 
     private func dashboardList(snapshot: LogEntryDaySnapshot) -> some View {

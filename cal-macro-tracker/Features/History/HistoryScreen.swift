@@ -52,11 +52,7 @@ struct HistoryScreen: View {
         .toolbar {
             ToolbarItem(placement: .appTopBarLeading) {
                 Text(historyToolbarTitle)
-                    .font(.title3.weight(.semibold))
-                    .lineLimit(1)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .transaction { $0.animation = nil }
-                    .accessibilityAddTraits(.isHeader)
+                    .appTopBarTitleStyle()
             }
             .sharedBackgroundVisibility(.hidden)
 
@@ -81,11 +77,7 @@ struct HistoryScreen: View {
     }
 
     private var historyToolbarTitle: String {
-        if daySelection.selectedDay.isToday {
-            return "Today"
-        }
-
-        return daySelection.selectedDay.startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day())
+        daySelection.selectedDay.topBarTitle
     }
 
     private func updateSelectedDay(_ newDay: CalendarDay) {
@@ -95,7 +87,7 @@ struct HistoryScreen: View {
     private var calendarToolbarButton: some View {
         Button(action: toggleCalendar) {
             Image(systemName: "calendar")
-                .font(.title3.weight(.semibold))
+                .appTopBarIconStyle()
         }
         .accessibilityLabel("Toggle calendar")
         .accessibilityValue(showsCalendar ? "Expanded" : "Collapsed")

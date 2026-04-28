@@ -72,10 +72,25 @@
 
 - Reworked Dashboard and History date headers to use concise leading toolbar titles without iOS 26 Liquid Glass title capsules.
 - Kept native navigation/back behavior, balanced trailing toolbar actions, and non-today date titles that fit the available header space.
+- Moved the Dashboard `Today` return action out of the trailing toolbar into a floating under-nav row so the share, history, and settings actions no longer crowd the top-right control group.
+- Updated Dashboard and History to share the same `CalendarDay.topBarTitle` formatting, including `Today, Apr 28, 2026` style titles for the current day.
+- Standardized Dashboard and History top-bar typography through `AppTopBarStyle`, keeping title and icon sizing tunable from one place.
+- Tuned top-bar icon sizing/weight separately from title weight so the toolbar can stay visually aligned with native iOS app conventions.
+
+#### Main implementation steps
+
+- `DashboardShareSupport.swift` now keeps only the share, history, and settings actions in the trailing toolbar.
+- `DashboardScreen.swift` overlays the conditional `Today` return row above the dashboard list instead of inserting it into the scroll content, so the macro panel and logged-food content do not shift.
+- `CalendarDay.swift` now owns the shared top-bar title string used by both Dashboard and History.
+- `DashboardScreen.swift`, `DashboardShareSupport.swift`, and `HistoryScreen.swift` now use shared top-bar title/icon styling from `AppTopBarStyle.swift`.
+- A simplify pass removed the informal top-bar style comment, centralized repeated title/icon modifiers, renamed the shared date title to the more specific `topBarTitle`, and removed an overly broad selected-day animation from the Dashboard container.
+- A defensive-code review found no high-confidence redundant guards or impossible-state branches to remove.
 
 #### Validation
 
 - Formatter, macOS debug build, and focused SwiftUI visual validation passed.
+- Formatter validation and iOS simulator builds passed for the Dashboard/History toolbar follow-up.
+- Simplify and defensive-code review follow-ups passed formatter validation, iOS simulator build, and `git diff --check`.
 
 ## Scan Flows
 
