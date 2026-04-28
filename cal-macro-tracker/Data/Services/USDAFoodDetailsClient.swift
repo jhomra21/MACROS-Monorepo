@@ -42,23 +42,16 @@ struct USDAFoodDetailsClient {
 
         let url = baseURL.appendingPathComponent("v1/usda/foods/\(id)")
         let request = jsonClient.makeRequest(url: url, acceptJSON: true)
-        let data: Data
-        let httpResponse: HTTPURLResponse
-
-        do {
-            (data, httpResponse) = try await jsonClient.data(for: request)
-        } catch HTTPJSONClientError.invalidResponse {
-            throw USDAFoodDetailsClientError.invalidResponse
-        }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            let errorResponse = jsonClient.decodeIfPresent(USDAFoodDetailsErrorResponse.self, from: data)
-            throw USDAFoodDetailsClientError.requestFailed(
-                statusCode: httpResponse.statusCode,
+        return try await jsonClient.proxyResponse(
+            for: request,
+            responseType: USDAProxyFood.self,
+            errorResponseType: USDAFoodDetailsErrorResponse.self,
+            invalidResponseError: USDAFoodDetailsClientError.invalidResponse
+        ) { statusCode, errorResponse in
+            USDAFoodDetailsClientError.requestFailed(
+                statusCode: statusCode,
                 message: errorResponse?.error
             )
         }
-
-        return try jsonClient.decode(USDAProxyFood.self, from: data)
     }
 }

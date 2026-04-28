@@ -65,8 +65,9 @@ struct LogEntryListSection: View {
         }
     }
 
+    @ViewBuilder
     private var headerView: some View {
-        HStack {
+        let content = HStack {
             Text(title)
                 .font(.title3.weight(.semibold))
             Spacer()
@@ -75,12 +76,18 @@ struct LogEntryListSection: View {
                 .foregroundStyle(.secondary)
         }
         .contentShape(Rectangle())
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 24)
-                .onEnded { value in
-                    onHeaderSwipeTranslation?(value.translation)
-                }
-        )
+
+        if let onHeaderSwipeTranslation {
+            content
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 24)
+                        .onEnded { value in
+                            onHeaderSwipeTranslation(value.translation)
+                        }
+                )
+        } else {
+            content
+        }
     }
 
     @ViewBuilder
@@ -139,10 +146,11 @@ struct LogEntryListSection: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
             } else {
-                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                let lastEntryID = entries[entries.index(before: entries.endIndex)].id
+                ForEach(entries) { entry in
                     entryRow(for: entry)
                         .overlay(alignment: .bottom) {
-                            if index < entries.count - 1 {
+                            if entry.id != lastEntryID {
                                 Rectangle()
                                     .fill(Color.white.opacity(0.12))
                                     .frame(height: 0.5)

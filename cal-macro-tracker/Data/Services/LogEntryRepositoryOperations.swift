@@ -121,39 +121,7 @@ extension LogEntryRepository {
             quantityAmount: quantityAmount
         )
 
-        entry.foodName = values.foodName
-        entry.brand = values.brand
-        entry.source = values.source.rawValue
-        entry.foodItemID = values.foodItemID
-        entry.barcode = values.barcode
-        entry.externalProductID = values.externalProductID
-        entry.sourceName = values.sourceName
-        entry.sourceURL = values.sourceURL
-        entry.servingDescription = values.servingDescription
-        entry.gramsPerServing = values.gramsPerServing
-        entry.caloriesPerServing = values.perServingNutrition.calories
-        entry.proteinPerServing = values.perServingNutrition.protein
-        entry.fatPerServing = values.perServingNutrition.fat
-        entry.carbsPerServing = values.perServingNutrition.carbs
-        entry.saturatedFatPerServing = values.perServingNutrition.saturatedFat
-        entry.fiberPerServing = values.perServingNutrition.fiber
-        entry.sugarsPerServing = values.perServingNutrition.sugars
-        entry.addedSugarsPerServing = values.perServingNutrition.addedSugars
-        entry.sodiumPerServing = values.perServingNutrition.sodium
-        entry.cholesterolPerServing = values.perServingNutrition.cholesterol
-        entry.quantityMode = values.quantityMode.rawValue
-        entry.servingsConsumed = values.servingsConsumed
-        entry.gramsConsumed = values.gramsConsumed
-        entry.caloriesConsumed = values.consumedNutrients.calories
-        entry.proteinConsumed = values.consumedNutrients.protein
-        entry.fatConsumed = values.consumedNutrients.fat
-        entry.carbsConsumed = values.consumedNutrients.carbs
-        entry.saturatedFatConsumed = values.consumedNutrients.saturatedFat
-        entry.fiberConsumed = values.consumedNutrients.fiber
-        entry.sugarsConsumed = values.consumedNutrients.sugars
-        entry.addedSugarsConsumed = values.consumedNutrients.addedSugars
-        entry.sodiumConsumed = values.consumedNutrients.sodium
-        entry.cholesterolConsumed = values.consumedNutrients.cholesterol
+        entry.apply(values)
         entry.secondaryNutrientBackfillState = secondaryNutrientBackfillState
         entry.updatedAt = .now
     }
@@ -172,40 +140,8 @@ extension LogEntryRepository {
         )
 
         return LogEntry(
-            foodItemID: values.foodItemID,
+            values: values,
             dateLogged: loggedAt,
-            foodName: values.foodName,
-            brand: values.brand,
-            source: values.source,
-            barcode: values.barcode,
-            externalProductID: values.externalProductID,
-            sourceName: values.sourceName,
-            sourceURL: values.sourceURL,
-            servingDescription: values.servingDescription,
-            gramsPerServing: values.gramsPerServing,
-            caloriesPerServing: values.perServingNutrition.calories,
-            proteinPerServing: values.perServingNutrition.protein,
-            fatPerServing: values.perServingNutrition.fat,
-            carbsPerServing: values.perServingNutrition.carbs,
-            saturatedFatPerServing: values.perServingNutrition.saturatedFat,
-            fiberPerServing: values.perServingNutrition.fiber,
-            sugarsPerServing: values.perServingNutrition.sugars,
-            addedSugarsPerServing: values.perServingNutrition.addedSugars,
-            sodiumPerServing: values.perServingNutrition.sodium,
-            cholesterolPerServing: values.perServingNutrition.cholesterol,
-            quantityMode: values.quantityMode,
-            servingsConsumed: values.servingsConsumed,
-            gramsConsumed: values.gramsConsumed,
-            caloriesConsumed: values.consumedNutrients.calories,
-            proteinConsumed: values.consumedNutrients.protein,
-            fatConsumed: values.consumedNutrients.fat,
-            carbsConsumed: values.consumedNutrients.carbs,
-            saturatedFatConsumed: values.consumedNutrients.saturatedFat,
-            fiberConsumed: values.consumedNutrients.fiber,
-            sugarsConsumed: values.consumedNutrients.sugars,
-            addedSugarsConsumed: values.consumedNutrients.addedSugars,
-            sodiumConsumed: values.consumedNutrients.sodium,
-            cholesterolConsumed: values.consumedNutrients.cholesterol,
             secondaryNutrientBackfillState: secondaryNutrientBackfillState
         )
     }
@@ -259,5 +195,87 @@ extension LogEntryRepository {
             quantityAmount: quantityAmount,
             consumedNutrients: consumedNutrients
         )
+    }
+}
+
+private extension LogEntry {
+    convenience init(
+        values: LogEntryRepository.EntryValues,
+        dateLogged: Date,
+        secondaryNutrientBackfillState: SecondaryNutrientBackfillState?
+    ) {
+        self.init(
+            foodItemID: values.foodItemID,
+            dateLogged: dateLogged,
+            foodName: values.foodName,
+            brand: values.brand,
+            source: values.source,
+            barcode: values.barcode,
+            externalProductID: values.externalProductID,
+            sourceName: values.sourceName,
+            sourceURL: values.sourceURL,
+            servingDescription: values.servingDescription,
+            gramsPerServing: values.gramsPerServing,
+            caloriesPerServing: values.perServingNutrition.calories,
+            proteinPerServing: values.perServingNutrition.protein,
+            fatPerServing: values.perServingNutrition.fat,
+            carbsPerServing: values.perServingNutrition.carbs,
+            saturatedFatPerServing: values.perServingNutrition.saturatedFat,
+            fiberPerServing: values.perServingNutrition.fiber,
+            sugarsPerServing: values.perServingNutrition.sugars,
+            addedSugarsPerServing: values.perServingNutrition.addedSugars,
+            sodiumPerServing: values.perServingNutrition.sodium,
+            cholesterolPerServing: values.perServingNutrition.cholesterol,
+            quantityMode: values.quantityMode,
+            servingsConsumed: values.servingsConsumed,
+            gramsConsumed: values.gramsConsumed,
+            caloriesConsumed: values.consumedNutrients.calories,
+            proteinConsumed: values.consumedNutrients.protein,
+            fatConsumed: values.consumedNutrients.fat,
+            carbsConsumed: values.consumedNutrients.carbs,
+            saturatedFatConsumed: values.consumedNutrients.saturatedFat,
+            fiberConsumed: values.consumedNutrients.fiber,
+            sugarsConsumed: values.consumedNutrients.sugars,
+            addedSugarsConsumed: values.consumedNutrients.addedSugars,
+            sodiumConsumed: values.consumedNutrients.sodium,
+            cholesterolConsumed: values.consumedNutrients.cholesterol,
+            secondaryNutrientBackfillState: secondaryNutrientBackfillState
+        )
+    }
+
+    func apply(_ values: LogEntryRepository.EntryValues) {
+        foodName = values.foodName
+        brand = values.brand
+        source = values.source.rawValue
+        foodItemID = values.foodItemID
+        barcode = values.barcode
+        externalProductID = values.externalProductID
+        sourceName = values.sourceName
+        sourceURL = values.sourceURL
+        servingDescription = values.servingDescription
+        gramsPerServing = values.gramsPerServing
+        caloriesPerServing = values.perServingNutrition.calories
+        proteinPerServing = values.perServingNutrition.protein
+        fatPerServing = values.perServingNutrition.fat
+        carbsPerServing = values.perServingNutrition.carbs
+        saturatedFatPerServing = values.perServingNutrition.saturatedFat
+        fiberPerServing = values.perServingNutrition.fiber
+        sugarsPerServing = values.perServingNutrition.sugars
+        addedSugarsPerServing = values.perServingNutrition.addedSugars
+        sodiumPerServing = values.perServingNutrition.sodium
+        cholesterolPerServing = values.perServingNutrition.cholesterol
+        quantityMode = values.quantityMode.rawValue
+        servingsConsumed = values.servingsConsumed
+        gramsConsumed = values.gramsConsumed
+        caloriesConsumed = values.consumedNutrients.calories
+        proteinConsumed = values.consumedNutrients.protein
+        fatConsumed = values.consumedNutrients.fat
+        carbsConsumed = values.consumedNutrients.carbs
+        saturatedFatConsumed = values.consumedNutrients.saturatedFat
+        fiberConsumed = values.consumedNutrients.fiber
+        sugarsConsumed = values.consumedNutrients.sugars
+        addedSugarsConsumed = values.consumedNutrients.addedSugars
+        sodiumConsumed = values.consumedNutrients.sodium
+        cholesterolConsumed = values.consumedNutrients.cholesterol
     }
 }

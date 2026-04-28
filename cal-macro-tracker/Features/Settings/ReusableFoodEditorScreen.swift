@@ -6,6 +6,7 @@ struct ReusableFoodEditorScreen: View {
     @Environment(\.modelContext) private var modelContext
 
     let food: FoodItem
+    let initialDraft: FoodDraft
     @State private var draft: FoodDraft
     @State private var numericText: FoodDraftNumericText
     @State private var errorMessage: String?
@@ -17,16 +18,13 @@ struct ReusableFoodEditorScreen: View {
     init(food: FoodItem) {
         self.food = food
         let initialDraft = FoodDraft(foodItem: food, saveAsCustomFood: true)
+        self.initialDraft = initialDraft
         _draft = State(initialValue: initialDraft)
         _numericText = State(initialValue: FoodDraftNumericText(draft: initialDraft))
     }
 
     private var foodRepository: FoodItemRepository {
         FoodItemRepository(modelContext: modelContext)
-    }
-
-    private var initialDraft: FoodDraft {
-        FoodDraft(foodItem: food, saveAsCustomFood: true)
     }
 
     private var canSave: Bool {
@@ -92,13 +90,14 @@ struct ReusableFoodEditorScreen: View {
         return "Extra nutrients are missing for this saved food. Refresh from the source, then save to keep the new values."
     }
 
-    private var sourceSectionActionMessage: String? {
-        canRefreshNutrients ? nutrientRefreshMessage : nil
-    }
-
-    private var sourceSectionActionTitle: String? {
+    private var sourceSectionAction: FoodDraftSourceSection.Action? {
         guard canRefreshNutrients else { return nil }
-        return isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients"
+        return FoodDraftSourceSection.Action(
+            message: nutrientRefreshMessage,
+            title: isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients",
+            isDisabled: isRefreshingNutrients,
+            action: refreshNutrients
+        )
     }
 
     var body: some View {
@@ -117,10 +116,7 @@ struct ReusableFoodEditorScreen: View {
                 sourceNameLabel: "Provider",
                 sourceName: draft.sourceNameOrNil,
                 sourceURL: sourceURL,
-                actionMessage: sourceSectionActionMessage,
-                actionTitle: sourceSectionActionTitle,
-                isActionDisabled: isRefreshingNutrients,
-                onAction: canRefreshNutrients ? { refreshNutrients() } : nil
+                sourceAction: sourceSectionAction
             )
         } footerSections: {
             Section {

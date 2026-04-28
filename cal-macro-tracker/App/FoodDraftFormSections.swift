@@ -282,10 +282,19 @@ struct FoodDraftFormSections: View {
 
     private var nutritionSectionTitle: String { configuration.nutritionPresentation?.title ?? "Nutrition per serving" }
 
-    private var showsVisibleAdditionalNutrition: Bool { showsAdditionalNutrition || requiresAdditionalNutritionVisibility }
+    private var showsVisibleAdditionalNutrition: Bool {
+        additionalNutritionVisibility.isVisible
+    }
 
     private var requiresAdditionalNutritionVisibility: Bool {
-        numericText.hasInvalidAdditionalNutritionValues
-            || focusedField.wrappedValue?.isAdditionalNutritionField == true
+        additionalNutritionVisibility.requiresVisibility
+    }
+
+    private var additionalNutritionVisibility: FoodDraftAdditionalNutritionVisibility {
+        FoodDraftAdditionalNutritionVisibility(
+            isExpanded: showsAdditionalNutrition,
+            hasInvalidAdditionalNutritionValues: numericText.hasInvalidAdditionalNutritionValues,
+            focusedField: focusedField.wrappedValue
+        )
     }
 }

@@ -114,21 +114,14 @@ struct PackagedFoodSearchClient {
         }
 
         let request = jsonClient.makeRequest(url: url, acceptJSON: true)
-        let data: Data
-        let httpResponse: HTTPURLResponse
-
-        do {
-            (data, httpResponse) = try await jsonClient.data(for: request)
-        } catch HTTPJSONClientError.invalidResponse {
-            throw PackagedFoodSearchClientError.invalidResponse
+        let decodedResponse = try await jsonClient.proxyResponse(
+            for: request,
+            responseType: PackagedFoodSearchResponse.self,
+            errorResponseType: PackagedFoodSearchErrorResponse.self,
+            invalidResponseError: PackagedFoodSearchClientError.invalidResponse
+        ) { statusCode, errorResponse in
+            PackagedFoodSearchClientError.requestFailed(statusCode: statusCode, message: errorResponse?.error)
         }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            let errorResponse = jsonClient.decodeIfPresent(PackagedFoodSearchErrorResponse.self, from: data)
-            throw PackagedFoodSearchClientError.requestFailed(statusCode: httpResponse.statusCode, message: errorResponse?.error)
-        }
-
-        let decodedResponse = try jsonClient.decode(PackagedFoodSearchResponse.self, from: data)
         return decodedResponse.pageResults(requestedProvider: provider)
     }
 }

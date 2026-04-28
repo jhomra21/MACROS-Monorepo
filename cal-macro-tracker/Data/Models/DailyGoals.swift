@@ -9,6 +9,10 @@ enum DailyGoalsDefaults {
 }
 
 enum DailyGoalsValidationError: LocalizedError {
+    case invalidCalories
+    case invalidProtein
+    case invalidFat
+    case invalidCarbs
     case negativeCalories
     case negativeProtein
     case negativeFat
@@ -16,6 +20,14 @@ enum DailyGoalsValidationError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
+        case .invalidCalories:
+            "Calorie goal must be a finite number."
+        case .invalidProtein:
+            "Protein goal must be a finite number."
+        case .invalidFat:
+            "Fat goal must be a finite number."
+        case .invalidCarbs:
+            "Carb goal must be a finite number."
         case .negativeCalories:
             "Calorie goal cannot be negative."
         case .negativeProtein:
@@ -88,23 +100,10 @@ struct DailyGoalsDraft: Hashable {
     }
 
     var validationError: DailyGoalsValidationError? {
-        if calorieGoal < 0 {
-            return .negativeCalories
-        }
-
-        if proteinGoalGrams < 0 {
-            return .negativeProtein
-        }
-
-        if fatGoalGrams < 0 {
-            return .negativeFat
-        }
-
-        if carbGoalGrams < 0 {
-            return .negativeCarbs
-        }
-
-        return nil
+        validationError(for: calorieGoal, invalidError: .invalidCalories, negativeError: .negativeCalories)
+            ?? validationError(for: proteinGoalGrams, invalidError: .invalidProtein, negativeError: .negativeProtein)
+            ?? validationError(for: fatGoalGrams, invalidError: .invalidFat, negativeError: .negativeFat)
+            ?? validationError(for: carbGoalGrams, invalidError: .invalidCarbs, negativeError: .negativeCarbs)
     }
 
     func apply(to goals: DailyGoals) {
@@ -113,5 +112,14 @@ struct DailyGoalsDraft: Hashable {
         goals.fatGoalGrams = fatGoalGrams
         goals.carbGoalGrams = carbGoalGrams
         goals.updatedAt = .now
+    }
+
+    private func validationError(
+        for value: Double,
+        invalidError: DailyGoalsValidationError,
+        negativeError: DailyGoalsValidationError
+    ) -> DailyGoalsValidationError? {
+        guard value.isFinite else { return invalidError }
+        return value < 0 ? negativeError : nil
     }
 }

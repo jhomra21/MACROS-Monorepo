@@ -9,7 +9,6 @@ struct AddFoodScreen: View {
 
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
-    @State private var errorMessage: String?
     @State private var remoteSearch = RemoteSearchSession()
     @State private var remoteSearchTask: Task<Void, Never>?
 
@@ -70,7 +69,7 @@ struct AddFoodScreen: View {
                         SearchFoodListView(
                             loggingDay: loggingDay,
                             foods: rankedFoods,
-                            totalFoodsCount: searchableFoods.count,
+                            totalFoodsCount: foods.count,
                             hasLoadedFoods: !foods.isEmpty,
                             remoteSearch: remoteSearch.viewState,
                             isRemoteSearchAvailable: isRemoteSearchAvailable,
@@ -105,15 +104,6 @@ struct AddFoodScreen: View {
         }
         .searchable(text: $searchText, placement: .appNavigationDrawer, prompt: "Search foods on device or online")
         .onSubmit(of: .search) { searchOnline() }
-        .errorBanner(message: $errorMessage)
-    }
-
-    private var searchableFoods: [FoodItem] {
-        foods.filter {
-            switch $0.sourceKind {
-            case .common, .custom, .barcodeLookup, .labelScan, .searchLookup: true
-            }
-        }
     }
 
     private var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -122,7 +112,7 @@ struct AddFoodScreen: View {
     }
 
     private var rankedFoods: [FoodItem] {
-        FoodItemLocalSearch.rankedFoods(searchableFoods, matching: trimmedSearchText)
+        FoodItemLocalSearch.rankedFoods(foods, matching: trimmedSearchText)
     }
 
     private func searchOnline() {

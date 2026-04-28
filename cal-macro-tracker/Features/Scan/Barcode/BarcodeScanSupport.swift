@@ -93,6 +93,10 @@ struct BarcodeLookupResolver {
     }
 
     private func shouldRetryRemoteLookup(after error: Error) -> Bool {
+        if ScanCancellation.isCancellation(error) {
+            return false
+        }
+
         if let openFoodFactsError = error as? OpenFoodFactsClientError {
             return openFoodFactsError.isRetryable
         }

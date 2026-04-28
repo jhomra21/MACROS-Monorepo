@@ -17,6 +17,7 @@ enum ScanStillImageImport {
             let image = try await ScanImageLoading.loadUIImage(from: item)
             await processImage(image)
         } catch {
+            guard ScanCancellation.isCancellation(error) == false else { return }
             onError(error.localizedDescription)
         }
     }

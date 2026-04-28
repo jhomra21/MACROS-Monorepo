@@ -30,60 +30,7 @@ struct DashboardScreen: View {
     var body: some View {
         LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
             ZStack(alignment: .top) {
-                List {
-                    MacroDashboardRingPanel(
-                        totals: snapshot.totals,
-                        goals: currentGoals,
-                        selectedMacro: selectedMacro,
-                        isExpanded: isMacroRingExpanded,
-                        onToggleExpansion: toggleMacroRingExpansion
-                    )
-                    .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .dashboardDaySwipe(dayNavigationGesture)
-
-                    MacroLegendView(totals: snapshot.totals, goals: currentGoals, selectedMacro: $selectedMacro)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .dashboardDaySwipe(dayNavigationGesture)
-
-                    if isMacroRingExpanded {
-                        SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
-                            .padding(.top, 4)
-                            .listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 8, trailing: 20))
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
-                            .dashboardDaySwipe(dayNavigationGesture)
-                    }
-
-                    LogEntryListSection(
-                        title: daySelection.selectedDay.dayTitle,
-                        emptyTitle: "No food logged yet",
-                        emptySystemImage: "fork.knife.circle",
-                        emptyDescription: emptyLogDescription,
-                        entries: snapshot.entries,
-                        emptyVerticalPadding: 12,
-                        emptyStyle: .plain,
-                        layout: .list,
-                        onHeaderSwipeTranslation: handleDaySwipe,
-                        onDeleteEntry: deleteEntry,
-                        onEditEntry: onEditEntry,
-                        onLogAgain: logEntryAgain
-                    )
-                }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
-                .scrollBounceBehavior(.basedOnSize)
-                .contentMargins(.top, 0, for: .scrollContent)
-                .background(PlatformColors.groupedBackground)
-                .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
-                    max(0, scrollGeometry.contentOffset.y)
-                } action: { _, newOffset in
-                    updateCompactSummaryVisibility(for: newOffset)
-                }
+                dashboardList(snapshot: snapshot)
 
                 if showsCompactSummary {
                     pinnedCompactSummaryView(totals: snapshot.totals)
@@ -106,47 +53,8 @@ struct DashboardScreen: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .appTopBarLeading) {
-                    Text(dashboardNavigationTitle)
-                        .font(.title2.weight(.semibold))
-                        .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
-                        .transaction { $0.animation = nil }
-                        .accessibilityAddTraits(.isHeader)
-                }
-                .sharedBackgroundVisibility(.hidden)
-
-                ToolbarItem(placement: .appTopBarTrailing) {
-                    HStack(spacing: 8) {
-                        if daySelection.selectedDay != dayContext.today {
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.18)) {
-                                    daySelection.resetToToday(dayContext.today)
-                                }
-                            } label: {
-                                Text("Today")
-                                    .fixedSize()
-                            }
-                            .buttonStyle(.plain)
-                        }
-
-                        Button(action: onOpenHistory) {
-                            Image(systemName: "calendar")
-                                .font(.title3.weight(.semibold))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Open history")
-
-                        Button(action: onOpenSettings) {
-                            Image(systemName: "gearshape")
-                                .font(.title3.weight(.semibold))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Open settings")
-                    }
-                    .padding(.horizontal, 4)
-                    .foregroundStyle(.primary)
-                }
+                dashboardToolbarLeading
+                dashboardToolbarTrailing
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
@@ -177,11 +85,118 @@ struct DashboardScreen: View {
         return daySelection.selectedDay.startDate.formatted(.dateTime.weekday(.abbreviated).month(.abbreviated).day())
     }
 
+    private var dashboardToolbarLeading: some ToolbarContent {
+        ToolbarItem(placement: .appTopBarLeading) {
+            Text(dashboardNavigationTitle)
+                .font(.title2.weight(.semibold))
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .transaction { $0.animation = nil }
+                .accessibilityAddTraits(.isHeader)
+        }
+        .sharedBackgroundVisibility(.hidden)
+    }
+
+    private var dashboardToolbarTrailing: some ToolbarContent {
+        ToolbarItem(placement: .appTopBarTrailing) {
+            HStack(spacing: 8) {
+                if daySelection.selectedDay != dayContext.today {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            daySelection.resetToToday(dayContext.today)
+                        }
+                    } label: {
+                        Text("Today")
+                            .fixedSize()
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Button(action: onOpenHistory) {
+                    Image(systemName: "calendar")
+                        .font(.title3.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open history")
+
+                Button(action: onOpenSettings) {
+                    Image(systemName: "gearshape")
+                        .font(.title3.weight(.semibold))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open settings")
+            }
+            .padding(.horizontal, 4)
+            .foregroundStyle(.primary)
+        }
+    }
+
     private var dayNavigationGesture: some Gesture {
         DragGesture(minimumDistance: 24)
             .onEnded { value in
                 handleDaySwipe(value.translation)
             }
+    }
+
+    private func dashboardList(snapshot: LogEntryDaySnapshot) -> some View {
+        List {
+            dashboardContent(snapshot: snapshot)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
+        .contentMargins(.top, 0, for: .scrollContent)
+        .background(PlatformColors.groupedBackground)
+        .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
+            max(0, scrollGeometry.contentOffset.y)
+        } action: { _, newOffset in
+            updateCompactSummaryVisibility(for: newOffset)
+        }
+    }
+
+    @ViewBuilder
+    private func dashboardContent(snapshot: LogEntryDaySnapshot) -> some View {
+        macroRows(snapshot: snapshot)
+
+        LogEntryListSection(
+            title: daySelection.selectedDay.dayTitle,
+            emptyTitle: "No food logged yet",
+            emptySystemImage: "fork.knife.circle",
+            emptyDescription: emptyLogDescription,
+            entries: snapshot.entries,
+            emptyVerticalPadding: 12,
+            emptyStyle: .plain,
+            layout: .list,
+            onHeaderSwipeTranslation: handleDaySwipe,
+            onDeleteEntry: deleteEntry,
+            onEditEntry: onEditEntry,
+            onLogAgain: logEntryAgain
+        )
+    }
+
+    @ViewBuilder
+    private func macroRows(snapshot: LogEntryDaySnapshot) -> some View {
+        MacroDashboardRingPanel(
+            totals: snapshot.totals,
+            goals: currentGoals,
+            selectedMacro: selectedMacro,
+            isExpanded: isMacroRingExpanded,
+            onToggleExpansion: toggleMacroRingExpansion
+        )
+        .dashboardListRow(bottom: 0)
+        .dashboardDaySwipe(dayNavigationGesture)
+
+        MacroLegendView(totals: snapshot.totals, goals: currentGoals, selectedMacro: $selectedMacro)
+            .dashboardListRow(bottom: 0)
+            .dashboardDaySwipe(dayNavigationGesture)
+
+        if isMacroRingExpanded {
+            SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                .padding(.top, 4)
+                .dashboardListRow(bottom: 8)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+                .dashboardDaySwipe(dayNavigationGesture)
+        }
     }
 
     private var pinnedCompactSummaryDayNavigationGesture: some Gesture {
@@ -262,19 +277,15 @@ struct DashboardScreen: View {
 
     private func updateCompactSummaryVisibility(for offset: CGFloat) {
         let visibilityThreshold: CGFloat = showsCompactSummary ? 180 : 220
-        showsCompactSummary = offset > visibilityThreshold
+        let shouldShowCompactSummary = offset > visibilityThreshold
+        guard shouldShowCompactSummary != showsCompactSummary else { return }
+
+        showsCompactSummary = shouldShowCompactSummary
     }
 
     private func toggleMacroRingExpansion() {
         withAnimation(.easeOut(duration: 0.18)) {
             isMacroRingExpanded.toggle()
         }
-    }
-}
-
-private extension View {
-    func dashboardDaySwipe<G: Gesture>(_ gesture: G) -> some View {
-        contentShape(Rectangle())
-            .simultaneousGesture(gesture)
     }
 }

@@ -5,7 +5,7 @@ import UIKit
 struct ScanCameraCapturePresenter: ViewModifier {
     @Binding var isPresented: Bool
     let isInteractiveDismissDisabled: Bool
-    let action: (UIImage) async -> Void
+    let action: (UIImage) -> Void
     let onCancel: () -> Void
 
     func body(content view: Content) -> some View {
@@ -13,9 +13,7 @@ struct ScanCameraCapturePresenter: ViewModifier {
             CameraImagePicker(
                 onImagePicked: { image in
                     isPresented = false
-                    Task {
-                        await action(image)
-                    }
+                    action(image)
                 },
                 onCancel: {
                     isPresented = false
@@ -31,7 +29,7 @@ extension View {
     func scanCameraCaptureSheet(
         isPresented: Binding<Bool>,
         isInteractiveDismissDisabled: Bool = false,
-        action: @escaping (UIImage) async -> Void,
+        action: @escaping (UIImage) -> Void,
         onCancel: @escaping () -> Void = {}
     ) -> some View {
         modifier(

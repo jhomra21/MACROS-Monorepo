@@ -39,4 +39,27 @@ struct HTTPJSONClient {
     func decodeIfPresent<Response: Decodable>(_ type: Response.Type, from data: Data) -> Response? {
         try? decoder.decode(Response.self, from: data)
     }
+
+    func proxyResponse<Response: Decodable, ErrorResponse: Decodable>(
+        for request: URLRequest,
+        responseType: Response.Type,
+        errorResponseType: ErrorResponse.Type,
+        invalidResponseError: @autoclosure () -> Error,
+        requestFailedError: (Int, ErrorResponse?) -> Error
+    ) async throws -> Response {
+        let data: Data
+        let httpResponse: HTTPURLResponse
+
+        do {
+            (data, httpResponse) = try await self.data(for: request)
+        } catch HTTPJSONClientError.invalidResponse {
+            throw invalidResponseError()
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw requestFailedError(httpResponse.statusCode, decodeIfPresent(errorResponseType, from: data))
+        }
+
+        return try decode(responseType, from: data)
+    }
 }

@@ -84,6 +84,10 @@ extension SecondaryNutrientRepairService {
             return nil
         }
 
+        guard sourceDraft.hasAnySecondaryNutrient else {
+            return nil
+        }
+
         var refreshedDraft = draft.backfillingSourceIdentity(from: sourceDraft)
             .withSecondaryNutrients(from: sourceDraft)
         refreshedDraft.secondaryNutrientBackfillState = .current
@@ -126,7 +130,8 @@ extension SecondaryNutrientRepairService {
 
             guard
                 let sourceDraft,
-                sourceDraft.secondaryNutrientRepairKey == entry.secondaryNutrientRepairKey
+                sourceDraft.secondaryNutrientRepairKey == entry.secondaryNutrientRepairKey,
+                sourceDraft.hasAnySecondaryNutrient
             else {
                 return .notRepairable
             }

@@ -13,6 +13,22 @@ enum DailyGoalsField: Hashable {
         .fat,
         .carbs
     ]
+
+    var title: String {
+        switch self {
+        case .calories: "Calories"
+        case .protein: "Protein"
+        case .fat: "Fat"
+        case .carbs: "Carbs"
+        }
+    }
+
+    var suffix: String {
+        switch self {
+        case .calories: "kcal"
+        case .protein, .fat, .carbs: "g"
+        }
+    }
 }
 
 private struct DailyGoalsNumericText: Equatable {
@@ -51,6 +67,26 @@ private struct DailyGoalsNumericText: Equatable {
             return value
         }
     }
+
+    subscript(field: DailyGoalsField) -> String {
+        get {
+            self[keyPath: field.textKeyPath]
+        }
+        set {
+            self[keyPath: field.textKeyPath] = newValue
+        }
+    }
+}
+
+private extension DailyGoalsField {
+    var textKeyPath: WritableKeyPath<DailyGoalsNumericText, String> {
+        switch self {
+        case .calories: \.calories
+        case .protein: \.protein
+        case .fat: \.fat
+        case .carbs: \.carbs
+        }
+    }
 }
 
 private struct DailyGoalsSection: View {
@@ -59,35 +95,23 @@ private struct DailyGoalsSection: View {
 
     var body: some View {
         Section("Daily Goals") {
-            NutrientInputField(
-                title: "Calories",
-                suffix: "kcal",
-                text: $numericText.calories,
-                focusedField: focusedField,
-                field: .calories
-            )
-            NutrientInputField(
-                title: "Protein",
-                suffix: "g",
-                text: $numericText.protein,
-                focusedField: focusedField,
-                field: .protein
-            )
-            NutrientInputField(
-                title: "Fat",
-                suffix: "g",
-                text: $numericText.fat,
-                focusedField: focusedField,
-                field: .fat
-            )
-            NutrientInputField(
-                title: "Carbs",
-                suffix: "g",
-                text: $numericText.carbs,
-                focusedField: focusedField,
-                field: .carbs
-            )
+            ForEach(DailyGoalsField.formOrder, id: \.self) { field in
+                NutrientInputField(
+                    title: field.title,
+                    suffix: field.suffix,
+                    text: binding(for: field),
+                    focusedField: focusedField,
+                    field: field
+                )
+            }
         }
+    }
+
+    private func binding(for field: DailyGoalsField) -> Binding<String> {
+        Binding(
+            get: { numericText[field] },
+            set: { numericText[field] = $0 }
+        )
     }
 }
 

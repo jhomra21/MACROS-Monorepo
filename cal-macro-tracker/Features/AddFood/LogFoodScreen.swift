@@ -163,7 +163,7 @@ struct LogFoodScreen: View {
                     .foregroundStyle(.secondary)
 
                     ForEach(requiredReviewNutrients, id: \.self) { nutrient in
-                        if unresolvedRequiredReviewNutrients.contains(nutrient) {
+                        if reviewDraft.isRequiredNutrientPositive(nutrient) == false {
                             Toggle(
                                 "\(nutrient.displayName) is intentionally 0",
                                 isOn: confirmationBinding(for: nutrient)
@@ -212,6 +212,9 @@ struct LogFoodScreen: View {
         .sensoryFeedback(.success, trigger: logFeedbackToken)
         .navigationTitle("Log Food")
         .inlineNavigationTitle()
+        .onChange(of: numericText) { _, _ in
+            pruneResolvedZeroConfirmations()
+        }
         #if os(iOS)
         .sheet(isPresented: $showingPreviewImage) {
             if let previewImageData, let previewImage = UIImage(data: previewImageData) {
@@ -281,5 +284,12 @@ struct LogFoodScreen: View {
                 }
             }
         )
+    }
+
+    private func pruneResolvedZeroConfirmations() {
+        confirmedZeroRequiredNutrients = Set(
+            confirmedZeroRequiredNutrients.filter {
+                reviewDraft.isRequiredNutrientPositive($0) == false
+            })
     }
 }

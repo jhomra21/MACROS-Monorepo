@@ -74,22 +74,23 @@ struct EditLogEntryScreen: View {
         return "Extra nutrients are missing for this entry. Refresh from the source, then save to keep the new values."
     }
 
-    private var nutrientRefreshAvailabilityID: Int {
-        var hasher = Hasher()
-        hasher.combine(draft.secondaryNutrientRepairKey)
-        hasher.combine(draft.secondaryNutrientRepairTarget)
-        hasher.combine(draft.shouldOfferManualSecondaryNutrientRefresh)
-        hasher.combine(entry.foodItemID)
-        return hasher.finalize()
+    private var nutrientRefreshAvailabilityID: NutrientRefreshAvailabilityID {
+        NutrientRefreshAvailabilityID(
+            repairKey: draft.secondaryNutrientRepairKey,
+            repairTarget: draft.secondaryNutrientRepairTarget,
+            shouldOfferRefresh: draft.shouldOfferManualSecondaryNutrientRefresh,
+            foodItemID: entry.foodItemID
+        )
     }
 
-    private var sourceSectionActionMessage: String? {
-        shouldShowNutrientRefreshButton ? nutrientRefreshMessage : nil
-    }
-
-    private var sourceSectionActionTitle: String? {
+    private var sourceSectionAction: FoodDraftSourceSection.Action? {
         guard shouldShowNutrientRefreshButton else { return nil }
-        return isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients"
+        return FoodDraftSourceSection.Action(
+            message: nutrientRefreshMessage,
+            title: isRefreshingNutrients ? "Refreshing Nutrients…" : "Refresh Nutrients",
+            isDisabled: isRefreshingNutrients,
+            action: refreshNutrients
+        )
     }
 
     var body: some View {
@@ -109,10 +110,7 @@ struct EditLogEntryScreen: View {
                 sourceNameLabel: "Provider",
                 sourceName: draft.sourceNameOrNil,
                 sourceURL: sourceURL,
-                actionMessage: sourceSectionActionMessage,
-                actionTitle: sourceSectionActionTitle,
-                isActionDisabled: isRefreshingNutrients,
-                onAction: shouldShowNutrientRefreshButton ? { refreshNutrients() } : nil
+                sourceAction: sourceSectionAction
             )
 
             FoodQuantitySection(
@@ -238,4 +236,11 @@ struct EditLogEntryScreen: View {
             canRefreshNutrients = false
         }
     }
+}
+
+private struct NutrientRefreshAvailabilityID: Equatable {
+    let repairKey: SecondaryNutrientRepairKey
+    let repairTarget: SecondaryNutrientRepairTarget?
+    let shouldOfferRefresh: Bool
+    let foodItemID: UUID?
 }

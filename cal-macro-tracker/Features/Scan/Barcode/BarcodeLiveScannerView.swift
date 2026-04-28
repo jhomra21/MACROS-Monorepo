@@ -5,6 +5,7 @@ import VisionKit
 
 struct BarcodeLiveScannerView: UIViewControllerRepresentable {
     let onBarcodeScanned: (String) -> Void
+    let onStartFailed: (Error) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(onBarcodeScanned: onBarcodeScanned)
@@ -26,7 +27,11 @@ struct BarcodeLiveScannerView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: DataScannerViewController, context: Context) {
         if uiViewController.isScanning == false {
-            try? uiViewController.startScanning()
+            do {
+                try uiViewController.startScanning()
+            } catch {
+                onStartFailed(error)
+            }
         }
     }
 

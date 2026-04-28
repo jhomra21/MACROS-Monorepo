@@ -181,13 +181,12 @@ private struct HistoryWeekStrip: View {
         selectedDay.weekDays
     }
 
-    private var snapshotsByDay: [CalendarDay: LogEntryDaySnapshot] {
-        LogEntryDaySummary.snapshotsByDay(for: entries, matching: weekDays)
-    }
-
     var body: some View {
+        let days = weekDays
+        let snapshotsByDay = LogEntryDaySummary.snapshotsByDay(for: entries, matching: days)
+
         HStack(alignment: .top, spacing: 0) {
-            ForEach(weekDays, id: \.self) { day in
+            ForEach(days, id: \.self) { day in
                 let isSelectable = day.startDate <= maximumDay.startDate
 
                 Button {

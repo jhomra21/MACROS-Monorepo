@@ -8,15 +8,6 @@ struct RemoteSearchViewState {
     let isLoading: Bool
     let hasState: Bool
     let hasMore: Bool
-
-    static let empty = RemoteSearchViewState(
-        results: [],
-        provider: nil,
-        errorMessage: nil,
-        isLoading: false,
-        hasState: false,
-        hasMore: false
-    )
 }
 
 struct SearchFoodListView: View {

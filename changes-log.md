@@ -278,6 +278,7 @@ The following planning documents have been fully consolidated into this file and
 - `usda-proxy-implementation-plan.md`
 - `off-reliability-and-nutrients-plan.md`
 - `CODEBASE_IMPROVEMENT_PLAN.md`
+- `swift-codebase-audit-plan.md`
 
 ## Macro Ring Architecture Refinement
 
@@ -1165,3 +1166,63 @@ The following planning documents have been fully consolidated into this file and
 - `make quality-build` passed.
 - `make quality-debt` passed.
 - `git diff --check` passed.
+
+## Swift Codebase Audit Implementation and Cleanup
+
+### Delivered
+
+- Completed the implementation pass from `swift-codebase-audit-plan.md`; all 31 Swift audit items are implemented and CLI validated.
+- Hardened numeric correctness by rejecting non-finite numeric input in shared parsing, draft validation, daily goals, and nutrition math boundaries.
+- Prevented invalid gram-mode logging by making grams selection unreachable when a draft cannot be logged by grams while keeping repository/model validation as the final safety check.
+- Improved scan robustness:
+  - camera capture work is now cancellable and owned by the calling scan screens
+  - cancellation is silent instead of surfacing recovery UI
+  - live scanner start failures route into fallback/error handling
+  - label preview JPEG encoding moved off the UI path
+- Improved OCR review behavior so zero required-nutrient confirmations remain undoable and stale confirmations are pruned once values become positive.
+- Reconciled bundled common food seeds without duplicating records or churning unchanged saved foods.
+- Removed silent `CalendarDay` fallbacks in favor of explicit invariants or deliberate propagation.
+- Tightened secondary-nutrient repair/refresh semantics so unresolved external repairs become `.notRepairable` rather than being marked `.current` without recovered secondary nutrients.
+- Centralized log-entry create/update mapping through shared resolved entry values.
+- Removed low-value state and redundant work in Add Food, remote search state, local search filtering, and food-draft normalization comparisons.
+- Deduplicated remote JSON request handling for packaged-food search and USDA food details with the shared `HTTPJSONClient`.
+- Moved shared USDA/remote search service files out of `Features/AddFood` and into `Data/Services`.
+- Reduced unnecessary SwiftUI work in dashboard/history/list rendering:
+  - guarded day refresh assignments
+  - avoided enumerated-array allocation in log-entry lists
+  - attached header swipe gestures only when needed
+  - narrowed macro alignment styling to supported cases
+  - split dashboard body composition into smaller helpers
+  - avoided redundant compact-summary state writes
+  - clarified macro-ring collapsed/expanded layout with explicit current diameter
+  - computed history week snapshots once per render
+- Centralized additional-nutrition visibility logic across food editor sections.
+- Replaced the nutrient-refresh `.task(id:)` `Hasher` workaround with a stable `Equatable` availability ID.
+- Stored `ReusableFoodEditorScreen.initialDraft` once so refresh comparison uses the original baseline.
+- Deduplicated edit-screen nutrient refresh UI plumbing through `FoodDraftSourceSection.Action`.
+- Rendered Daily Goals fields from `DailyGoalsField` metadata, including title, suffix, and text key-path metadata.
+- Renamed `CustomFoodEditorScreen.swift` to `ReusableFoodEditorScreen.swift` so the file name matches the type and Settings saved-food role.
+
+### Follow-up fixes and cleanup
+
+- Fixed the Daily Goals audit gap found during verification by adding explicit text key-path metadata to `DailyGoalsField` and using it from `DailyGoalsNumericText`.
+- Removed a defensive optional check in `LogEntryListSection.swift` by computing the non-optional last entry ID inside the already non-empty branch.
+- Ran a simplification pass over the completed audit work:
+  - removed the `normalizedComparisonPair` helper
+  - replaced a single-use nutrition validation rule struct with tuple metadata and a small helper
+  - consolidated `DailyGoalsDraft` validation
+  - removed an intermediate required-nutrient review array in `LogFoodScreen`
+  - nested nutrient refresh action configuration as `FoodDraftSourceSection.Action`
+- Reverted an attempted dashboard helper inline move because it pushed `DashboardScreen.swift` past the repo's 300-line guardrail; `View+DashboardRows.swift` remains separate.
+- Ran a final defensive-code-review pass after validation; no further high-confidence redundant defensive code remained.
+- Fixed a review-found macOS build regression where cross-platform barcode lookup support called `ScanCancellation` while the helper was still gated to iOS-only compilation.
+- Made `ScanCancellation` a shared Foundation-only helper instead of duplicating cancellation checks or platform-gating the barcode retry path.
+
+### Validation
+
+- `make quality-format-check` passed.
+- `make quality-build` passed.
+- `make quality` passed after the implementation and follow-up cleanup.
+- The macOS debug build with `CODE_SIGNING_ALLOWED=NO` passed after the `ScanCancellation` fix.
+- A defensive-code-review cleanup pass completed with no remaining actionable findings.
+- Manual QA remains pending for the affected audit flows recorded above.

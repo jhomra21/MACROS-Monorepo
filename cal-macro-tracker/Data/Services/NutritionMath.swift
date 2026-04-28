@@ -29,13 +29,13 @@ struct LoggedFoodNutrients {
 
 struct NutritionMath {
     static func quantityMultiplier(mode: QuantityMode, amount: Double, gramsPerServing: Double?) -> Double? {
-        guard amount > 0 else { return nil }
+        guard amount.isFinite, amount > 0 else { return nil }
 
         switch mode {
         case .servings:
             return amount
         case .grams:
-            guard let gramsPerServing, gramsPerServing > 0 else { return nil }
+            guard let gramsPerServing, gramsPerServing.isFinite, gramsPerServing > 0 else { return nil }
             return amount / gramsPerServing
         }
     }
@@ -48,7 +48,17 @@ struct NutritionMath {
         return scaledNutrients(for: food, multiplier: multiplier)
     }
     private static func scaledNutrients(for food: FoodDraft, multiplier: Double) -> LoggedFoodNutrients {
-        LoggedFoodNutrients(
+        guard
+            multiplier.isFinite,
+            food.caloriesPerServing.isFinite,
+            food.proteinPerServing.isFinite,
+            food.fatPerServing.isFinite,
+            food.carbsPerServing.isFinite
+        else {
+            return .zero
+        }
+
+        return LoggedFoodNutrients(
             calories: food.caloriesPerServing * multiplier,
             protein: food.proteinPerServing * multiplier,
             fat: food.fatPerServing * multiplier,
@@ -64,6 +74,7 @@ struct NutritionMath {
 
     private static func scaled(_ value: Double?, by multiplier: Double) -> Double? {
         guard let value else { return nil }
+        guard value.isFinite else { return nil }
         return value * multiplier
     }
 }

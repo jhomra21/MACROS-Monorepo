@@ -4,6 +4,7 @@ enum FoodDraftValidationError: LocalizedError {
     case missingName
     case missingServingDescription
     case invalidGramsPerServing
+    case invalidValue(String)
     case negativeCalories
     case negativeProtein
     case negativeFat
@@ -25,6 +26,8 @@ enum FoodDraftValidationError: LocalizedError {
             "Enter a serving description."
         case .invalidGramsPerServing:
             "Grams per serving must be greater than zero when provided."
+        case let .invalidValue(name):
+            "\(name) must be a finite number."
         case .negativeCalories:
             "Calories cannot be negative."
         case .negativeProtein:
@@ -87,7 +90,7 @@ extension FoodDraft {
 
     var canLogByGrams: Bool {
         guard let gramsPerServing else { return false }
-        return gramsPerServing > 0
+        return gramsPerServing.isFinite && gramsPerServing > 0
     }
 
     func missingLabelScanRequiredNutrients(
@@ -95,8 +98,12 @@ extension FoodDraft {
         confirmedZeroNutrients: Set<RequiredNutritionReviewNutrient>
     ) -> [RequiredNutritionReviewNutrient] {
         nutrients.filter { nutrient in
-            requiredNutrientValue(for: nutrient) <= 0 && confirmedZeroNutrients.contains(nutrient) == false
+            isRequiredNutrientPositive(nutrient) == false && confirmedZeroNutrients.contains(nutrient) == false
         }
+    }
+
+    func isRequiredNutrientPositive(_ nutrient: RequiredNutritionReviewNutrient) -> Bool {
+        requiredNutrientValue(for: nutrient) > 0
     }
 
     var canSaveReusableFood: Bool {
@@ -104,35 +111,11 @@ extension FoodDraft {
     }
 
     func hasMeaningfulChanges(comparedTo other: FoodDraft) -> Bool {
-        let normalizedDraft = normalized()
-        let normalizedOther = other.normalized()
-
-        return normalizedDraft.name != normalizedOther.name
-            || normalizedDraft.brand != normalizedOther.brand
-            || normalizedDraft.source != normalizedOther.source
-            || normalizedDraft.barcode != normalizedOther.barcode
-            || normalizedDraft.externalProductID != normalizedOther.externalProductID
-            || normalizedDraft.sourceName != normalizedOther.sourceName
-            || normalizedDraft.sourceURL != normalizedOther.sourceURL
-            || normalizedDraft.servingDescription != normalizedOther.servingDescription
-            || normalizedDraft.gramsPerServing != normalizedOther.gramsPerServing
-            || normalizedDraft.caloriesPerServing != normalizedOther.caloriesPerServing
-            || normalizedDraft.proteinPerServing != normalizedOther.proteinPerServing
-            || normalizedDraft.fatPerServing != normalizedOther.fatPerServing
-            || normalizedDraft.carbsPerServing != normalizedOther.carbsPerServing
-            || normalizedDraft.hasSecondaryNutrientChanges(comparedTo: normalizedOther)
+        normalized().hasMeaningfulChanges(comparedToNormalized: other.normalized())
     }
 
     func hasSecondaryNutrientChanges(comparedTo other: FoodDraft) -> Bool {
-        let normalizedDraft = normalized()
-        let normalizedOther = other.normalized()
-
-        return normalizedDraft.saturatedFatPerServing != normalizedOther.saturatedFatPerServing
-            || normalizedDraft.fiberPerServing != normalizedOther.fiberPerServing
-            || normalizedDraft.sugarsPerServing != normalizedOther.sugarsPerServing
-            || normalizedDraft.addedSugarsPerServing != normalizedOther.addedSugarsPerServing
-            || normalizedDraft.sodiumPerServing != normalizedOther.sodiumPerServing
-            || normalizedDraft.cholesterolPerServing != normalizedOther.cholesterolPerServing
+        normalized().hasSecondaryNutrientChanges(comparedToNormalized: other.normalized())
     }
 
     static func reusableFoodPersistenceMode(
@@ -146,7 +129,7 @@ extension FoodDraft {
             return .userRequested
         }
 
-        guard normalizedCurrentDraft.hasMeaningfulChanges(comparedTo: normalizedInitialDraft) else {
+        guard normalizedCurrentDraft.hasMeaningfulChanges(comparedToNormalized: normalizedInitialDraft) else {
             return .none
         }
 
@@ -175,48 +158,18 @@ extension FoodDraft {
             return .missingServingDescription
         }
 
-        if let gramsPerServing = draft.gramsPerServing, gramsPerServing <= 0 {
+        if let gramsPerServing = draft.gramsPerServing, gramsPerServing.isFinite == false || gramsPerServing <= 0 {
             return .invalidGramsPerServing
         }
 
-        if draft.caloriesPerServing < 0 {
-            return .negativeCalories
-        }
-
-        if draft.proteinPerServing < 0 {
-            return .negativeProtein
-        }
-
-        if draft.fatPerServing < 0 {
-            return .negativeFat
-        }
-
-        if draft.carbsPerServing < 0 {
-            return .negativeCarbs
-        }
-
-        if let saturatedFatPerServing = draft.saturatedFatPerServing, saturatedFatPerServing < 0 {
-            return .negativeSaturatedFat
-        }
-
-        if let fiberPerServing = draft.fiberPerServing, fiberPerServing < 0 {
-            return .negativeFiber
-        }
-
-        if let sugarsPerServing = draft.sugarsPerServing, sugarsPerServing < 0 {
-            return .negativeSugars
-        }
-
-        if let addedSugarsPerServing = draft.addedSugarsPerServing, addedSugarsPerServing < 0 {
-            return .negativeAddedSugars
-        }
-
-        if let sodiumPerServing = draft.sodiumPerServing, sodiumPerServing < 0 {
-            return .negativeSodium
-        }
-
-        if let cholesterolPerServing = draft.cholesterolPerServing, cholesterolPerServing < 0 {
-            return .negativeCholesterol
+        for rule in draft.nutritionValidationRules {
+            if let error = draft.nutritionValidationError(
+                name: rule.name,
+                value: rule.value,
+                negativeError: rule.negativeError
+            ) {
+                return error
+            }
         }
 
         return nil
@@ -230,7 +183,7 @@ extension FoodDraft {
             return validationError
         }
 
-        guard quantityAmount > 0 else {
+        guard quantityAmount.isFinite, quantityAmount > 0 else {
             return .invalidQuantity
         }
 
@@ -258,6 +211,32 @@ extension FoodDraft {
         return trimmedValue.isEmpty ? nil : trimmedValue
     }
 
+    private func hasMeaningfulChanges(comparedToNormalized other: FoodDraft) -> Bool {
+        name != other.name
+            || brand != other.brand
+            || source != other.source
+            || barcode != other.barcode
+            || externalProductID != other.externalProductID
+            || sourceName != other.sourceName
+            || sourceURL != other.sourceURL
+            || servingDescription != other.servingDescription
+            || gramsPerServing != other.gramsPerServing
+            || caloriesPerServing != other.caloriesPerServing
+            || proteinPerServing != other.proteinPerServing
+            || fatPerServing != other.fatPerServing
+            || carbsPerServing != other.carbsPerServing
+            || hasSecondaryNutrientChanges(comparedToNormalized: other)
+    }
+
+    private func hasSecondaryNutrientChanges(comparedToNormalized other: FoodDraft) -> Bool {
+        saturatedFatPerServing != other.saturatedFatPerServing
+            || fiberPerServing != other.fiberPerServing
+            || sugarsPerServing != other.sugarsPerServing
+            || addedSugarsPerServing != other.addedSugarsPerServing
+            || sodiumPerServing != other.sodiumPerServing
+            || cholesterolPerServing != other.cholesterolPerServing
+    }
+
     private func requiredNutrientValue(for nutrient: RequiredNutritionReviewNutrient) -> Double {
         switch nutrient {
         case .calories:
@@ -269,5 +248,30 @@ extension FoodDraft {
         case .carbs:
             carbsPerServing
         }
+    }
+
+    private var nutritionValidationRules: [(name: String, value: Double?, negativeError: FoodDraftValidationError)] {
+        [
+            ("Calories", caloriesPerServing, .negativeCalories),
+            ("Protein", proteinPerServing, .negativeProtein),
+            ("Fat", fatPerServing, .negativeFat),
+            ("Carbs", carbsPerServing, .negativeCarbs),
+            ("Saturated fat", saturatedFatPerServing, .negativeSaturatedFat),
+            ("Fiber", fiberPerServing, .negativeFiber),
+            ("Sugars", sugarsPerServing, .negativeSugars),
+            ("Added sugars", addedSugarsPerServing, .negativeAddedSugars),
+            ("Sodium", sodiumPerServing, .negativeSodium),
+            ("Cholesterol", cholesterolPerServing, .negativeCholesterol)
+        ]
+    }
+
+    private func nutritionValidationError(
+        name: String,
+        value: Double?,
+        negativeError: FoodDraftValidationError
+    ) -> FoodDraftValidationError? {
+        guard let value else { return nil }
+        guard value.isFinite else { return .invalidValue(name) }
+        return value < 0 ? negativeError : nil
     }
 }

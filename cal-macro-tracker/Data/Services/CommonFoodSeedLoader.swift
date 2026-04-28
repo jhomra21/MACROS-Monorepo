@@ -37,10 +37,13 @@ enum CommonFoodSeedLoader {
     }
 
     static func seedIfNeeded(modelContext: ModelContext, records: [CommonFoodSeedRecord]? = nil) throws {
+        try reconcile(modelContext: modelContext, records: records)
+    }
+
+    static func reconcile(modelContext: ModelContext, records: [CommonFoodSeedRecord]? = nil) throws {
         let commonSource = FoodSource.common.rawValue
         let descriptor = FetchDescriptor<FoodItem>(predicate: #Predicate { $0.source == commonSource })
-        let existing = try modelContext.fetchCount(descriptor)
-        guard existing == 0 else { return }
+        let existingFoods = try modelContext.fetch(descriptor)
 
         let foods: [CommonFoodSeedRecord]
         if let records {
@@ -51,10 +54,27 @@ enum CommonFoodSeedLoader {
             foods = try JSONDecoder().decode([CommonFoodSeedRecord].self, from: data)
         }
 
-        try PersistenceReporter.persist(modelContext: modelContext, operation: "Seed common foods") {
-            foods.forEach { item in
-                let food = makeFoodItem(from: item)
-                modelContext.insert(food)
+        var existingFoodsByName: [String: FoodItem] = [:]
+        for food in existingFoods {
+            let name = normalizedName(food.name)
+            if existingFoodsByName[name] == nil {
+                existingFoodsByName[name] = food
+            }
+        }
+        let changes = foods.compactMap { record -> (record: CommonFoodSeedRecord, food: FoodItem?)? in
+            let existingFood = existingFoodsByName.removeValue(forKey: normalizedName(record.name))
+            guard existingFood.map({ recordMatches(record, food: $0) }) != true else { return nil }
+            return (record, existingFood)
+        }
+        guard changes.isEmpty == false else { return }
+
+        try PersistenceReporter.persist(modelContext: modelContext, operation: "Reconcile common foods") {
+            for change in changes {
+                if let food = change.food {
+                    apply(change.record, to: food)
+                } else {
+                    modelContext.insert(makeFoodItem(from: change.record))
+                }
             }
         }
     }
@@ -103,6 +123,29 @@ enum CommonFoodSeedLoader {
         food.cholesterolPerServing = record.cholesterolPerServing
         food.secondaryNutrientBackfillState = .current
         food.updateSearchableText(with: record.aliases)
+    }
+
+    private static func recordMatches(_ record: CommonFoodSeedRecord, food: FoodItem) -> Bool {
+        let seededFood = makeFoodItem(from: record)
+        return food.name == seededFood.name
+            && food.servingDescription == seededFood.servingDescription
+            && food.gramsPerServing == seededFood.gramsPerServing
+            && food.caloriesPerServing == seededFood.caloriesPerServing
+            && food.proteinPerServing == seededFood.proteinPerServing
+            && food.fatPerServing == seededFood.fatPerServing
+            && food.carbsPerServing == seededFood.carbsPerServing
+            && food.saturatedFatPerServing == seededFood.saturatedFatPerServing
+            && food.fiberPerServing == seededFood.fiberPerServing
+            && food.sugarsPerServing == seededFood.sugarsPerServing
+            && food.addedSugarsPerServing == seededFood.addedSugarsPerServing
+            && food.sodiumPerServing == seededFood.sodiumPerServing
+            && food.cholesterolPerServing == seededFood.cholesterolPerServing
+            && food.secondaryNutrientBackfillState == .current
+            && food.searchableText == seededFood.searchableText
+    }
+
+    private static func normalizedName(_ name: String) -> String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
     }
 }
 

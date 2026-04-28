@@ -1,6 +1,13 @@
 import SwiftUI
 
 struct FoodDraftSourceSection: View {
+    struct Action {
+        let message: String
+        let title: String
+        let isDisabled: Bool
+        let action: () -> Void
+    }
+
     let title: String
     let notes: [String]
     let sourceNameLabel: String
@@ -8,10 +15,7 @@ struct FoodDraftSourceSection: View {
     let sourceURL: URL?
     let previewActionTitle: String?
     let onPreview: (() -> Void)?
-    let actionMessage: String?
-    let actionTitle: String?
-    let isActionDisabled: Bool
-    let onAction: (() -> Void)?
+    let sourceAction: Action?
 
     init(
         title: String,
@@ -21,10 +25,7 @@ struct FoodDraftSourceSection: View {
         sourceURL: URL? = nil,
         previewActionTitle: String? = nil,
         onPreview: (() -> Void)? = nil,
-        actionMessage: String? = nil,
-        actionTitle: String? = nil,
-        isActionDisabled: Bool = false,
-        onAction: (() -> Void)? = nil
+        sourceAction: Action? = nil
     ) {
         self.title = title
         self.notes = notes
@@ -33,10 +34,7 @@ struct FoodDraftSourceSection: View {
         self.sourceURL = sourceURL
         self.previewActionTitle = previewActionTitle
         self.onPreview = onPreview
-        self.actionMessage = actionMessage
-        self.actionTitle = actionTitle
-        self.isActionDisabled = isActionDisabled
-        self.onAction = onAction
+        self.sourceAction = sourceAction
     }
 
     var body: some View {
@@ -65,15 +63,13 @@ struct FoodDraftSourceSection: View {
                     Button(previewActionTitle, action: onPreview)
                 }
 
-                if let actionMessage {
-                    Text(actionMessage)
+                if let sourceAction {
+                    Text(sourceAction.message)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
-                }
 
-                if let actionTitle, let onAction {
-                    Button(actionTitle, action: onAction)
-                        .disabled(isActionDisabled)
+                    Button(sourceAction.title, action: sourceAction.action)
+                        .disabled(sourceAction.isDisabled)
                 }
             }
         }
@@ -83,8 +79,7 @@ struct FoodDraftSourceSection: View {
         notes.isEmpty == false
             || sourceName != nil
             || sourceURL != nil
-            || previewActionTitle != nil
-            || actionMessage != nil
-            || actionTitle != nil
+            || (previewActionTitle != nil && onPreview != nil)
+            || sourceAction != nil
     }
 }

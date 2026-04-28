@@ -56,6 +56,15 @@ extension SecondaryNutrientRepairService {
                     continue
                 }
 
+                guard refreshedDraft.hasAnySecondaryNutrient else {
+                    try repository.saveReusableFood(
+                        from: existingDraft,
+                        operation: "Mark reusable food secondary nutrients not repairable",
+                        secondaryNutrientBackfillStateOverride: .notRepairable
+                    )
+                    continue
+                }
+
                 let repairedDraft = existingDraft.backfillingSourceIdentity(from: refreshedDraft)
                     .withSecondaryNutrients(from: refreshedDraft)
                 try repository.saveReusableFood(

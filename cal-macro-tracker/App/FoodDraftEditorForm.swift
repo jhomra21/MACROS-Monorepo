@@ -56,9 +56,12 @@ struct FoodDraftEditorForm<QuantitySection: View, FooterSections: View>: View {
     }
 
     private var showsVisibleAdditionalNutrition: Bool {
-        showsAdditionalNutrition
-            || numericText.hasInvalidAdditionalNutritionValues
-            || focusedField.wrappedValue?.isAdditionalNutritionField == true
+        FoodDraftAdditionalNutritionVisibility(
+            isExpanded: showsAdditionalNutrition,
+            hasInvalidAdditionalNutritionValues: numericText.hasInvalidAdditionalNutritionValues,
+            focusedField: focusedField.wrappedValue
+        )
+        .isVisible
     }
 
     var body: some View {

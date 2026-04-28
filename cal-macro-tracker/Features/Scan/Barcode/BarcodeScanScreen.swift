@@ -72,6 +72,11 @@ struct BarcodeScanScreen: View {
                         await resolveBarcode(barcode, captureSource: .liveScanner)
                     }
                 },
+                onStartFailed: { error in
+                    showingLiveScanner = false
+                    showManualOptions = true
+                    errorMessage = "Live barcode scanning could not start. \(error.localizedDescription)"
+                },
                 onCancel: {
                     showingLiveScanner = false
                     handleImmediateCancelIfNeeded()
@@ -83,7 +88,9 @@ struct BarcodeScanScreen: View {
             isPresented: $showingCamera,
             isInteractiveDismissDisabled: entryMode == .immediateCamera,
             action: { image in
-                await scanSelectedImage(image, captureSource: .cameraPhoto)
+                startWorkTask {
+                    await scanSelectedImage(image, captureSource: .cameraPhoto)
+                }
             },
             onCancel: {
                 handleImmediateCancelIfNeeded()
@@ -201,10 +208,13 @@ struct BarcodeScanScreen: View {
     private func scanSelectedImage(_ image: UIImage, captureSource: BarcodeCaptureSource) async {
         do {
             isLoading = true
+            defer { isLoading = false }
+
             let barcode = try await barcodeScanner.scanBarcode(from: image)
+            guard Task.isCancelled == false else { return }
             await resolveBarcode(barcode, captureSource: captureSource)
         } catch {
-            isLoading = false
+            guard ScanCancellation.isCancellation(error) == false else { return }
             pendingRecoveryCaptureSource = entryMode == .immediateCamera ? captureSource : nil
             errorMessage = error.localizedDescription
         }
@@ -231,6 +241,7 @@ struct BarcodeScanScreen: View {
                 )
             )
         } catch {
+            guard ScanCancellation.isCancellation(error) == false else { return }
             showManualOptions = true
             pendingRecoveryCaptureSource = nil
             errorRecovery = BarcodeScanErrorRecovery(
@@ -242,6 +253,8 @@ struct BarcodeScanScreen: View {
     }
 
     private func presentLogFood(_ destination: BarcodeScanLogFoodDestination) {
+        guard Task.isCancelled == false else { return }
+
         showManualOptions = true
         logFoodDestination = destination
         scanFeedbackToken += 1
@@ -261,38 +274,6 @@ struct BarcodeScanScreen: View {
             showingCamera: &showingCamera,
             showManualOptions: &showManualOptions
         )
-    }
-}
-#else
-import SwiftUI
-
-struct BarcodeScanScreen: View {
-    enum EntryMode {
-        case options
-        case immediateCamera
-    }
-
-    let onFoodLogged: () -> Void
-    let loggingDay: CalendarDay?
-    let entryMode: EntryMode
-
-    init(
-        onFoodLogged: @escaping () -> Void,
-        loggingDay: CalendarDay? = nil,
-        entryMode: EntryMode = .options
-    ) {
-        self.onFoodLogged = onFoodLogged
-        self.loggingDay = loggingDay
-        self.entryMode = entryMode
-    }
-
-    var body: some View {
-        ContentUnavailableView(
-            "Barcode scan unavailable",
-            systemImage: "barcode.viewfinder",
-            description: Text("Barcode scanning is only available on iPhone builds.")
-        )
-        .navigationTitle("Scan Barcode")
     }
 }
 #endif

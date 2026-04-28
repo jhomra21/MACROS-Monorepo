@@ -16,15 +16,15 @@ struct CalendarDay: Hashable, Sendable {
         calendarIdentifier = calendar.identifier
         let components = calendar.dateComponents([.era, .year, .month, .day], from: date)
         era = components.era
-        year = components.year ?? 0
-        month = components.month ?? 1
-        day = components.day ?? 1
+        year = Self.required(components.year, component: "year")
+        month = Self.required(components.month, component: "month")
+        day = Self.required(components.day, component: "day")
     }
 
     var startDate: Date {
         let calendar = resolvedCalendar
         guard let date = calendar.date(from: dateComponents) else {
-            return Date()
+            preconditionFailure("CalendarDay contains invalid date components.")
         }
 
         return calendar.startOfDay(for: date)
@@ -33,21 +33,24 @@ struct CalendarDay: Hashable, Sendable {
     var dayInterval: DayInterval {
         let calendar = resolvedCalendar
         let start = startDate
-        let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start
+        guard let end = calendar.date(byAdding: .day, value: 1, to: start) else {
+            preconditionFailure("CalendarDay could not advance to the next day.")
+        }
         return DayInterval(start: start, end: end)
     }
 
     var weekDays: [CalendarDay] {
         let calendar = resolvedCalendar
         guard let interval = calendar.dateInterval(of: .weekOfYear, for: startDate) else {
-            return [self]
+            preconditionFailure("CalendarDay could not resolve a week interval.")
         }
 
         let weekStart = CalendarDay(date: interval.start, calendar: calendar)
-        return (0..<7).compactMap { offset in
-            calendar.date(byAdding: .day, value: offset, to: weekStart.startDate).map {
-                CalendarDay(date: $0, calendar: calendar)
+        return (0..<7).map { offset in
+            guard let date = calendar.date(byAdding: .day, value: offset, to: weekStart.startDate) else {
+                preconditionFailure("CalendarDay could not build week day \(offset).")
             }
+            return CalendarDay(date: date, calendar: calendar)
         }
     }
 
@@ -64,7 +67,10 @@ struct CalendarDay: Hashable, Sendable {
         components.year = year
         components.month = month
         components.day = day
-        return calendar.date(from: components) ?? startDate
+        guard let date = calendar.date(from: components) else {
+            preconditionFailure("CalendarDay could not combine date and time components.")
+        }
+        return date
     }
 
     var dayTitle: String {
@@ -111,6 +117,14 @@ struct CalendarDay: Hashable, Sendable {
         calendar.locale = .current
         calendar.timeZone = .current
         return calendar
+    }
+
+    private static func required(_ value: Int?, component: String) -> Int {
+        guard let value else {
+            preconditionFailure("CalendarDay requires a \(component) component.")
+        }
+
+        return value
     }
 }
 

@@ -30,7 +30,7 @@ struct FoodQuantitySection: View {
 
     var body: some View {
         Section("Quantity") {
-            Picker("Mode", selection: $quantityMode) {
+            Picker("Mode", selection: guardedQuantityMode) {
                 Text("Servings").tag(QuantityMode.servings)
                 Text("Grams").tag(QuantityMode.grams)
             }
@@ -92,6 +92,18 @@ struct FoodQuantitySection: View {
         if !canLogByGrams && quantityMode == .grams {
             quantityMode = .servings
         }
+    }
+
+    private var guardedQuantityMode: Binding<QuantityMode> {
+        Binding(
+            get: {
+                canLogByGrams || quantityMode != .grams ? quantityMode : .servings
+            },
+            set: { newMode in
+                guard canLogByGrams || newMode != .grams else { return }
+                quantityMode = newMode
+            }
+        )
     }
 
     private var shouldShowGramLoggingMessage: Bool {

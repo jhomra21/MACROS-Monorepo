@@ -4,7 +4,6 @@ import SwiftData
 @MainActor
 enum AppBootstrap {
     struct Plan: Sendable {
-        let shouldSeedCommonFoods: Bool
         let shouldNormalizeGoals: Bool
         let shouldRepairReusableFoodSearchIndexes: Bool
     }
@@ -12,14 +11,10 @@ enum AppBootstrap {
     static func bootstrapIfNeeded(in container: ModelContainer) async throws {
         let planningContext = ModelContext(container)
         let plan = try makePlan(modelContext: planningContext)
-        guard plan.shouldSeedCommonFoods || plan.shouldNormalizeGoals || plan.shouldRepairReusableFoodSearchIndexes else { return }
-
-        let commonFoodRecords = try plan.shouldSeedCommonFoods ? await CommonFoodSeedLoader.commonFoodSeedRecords() : []
+        let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
         let writeContext = ModelContext(container)
 
-        if plan.shouldSeedCommonFoods {
-            try CommonFoodSeedLoader.seedIfNeeded(modelContext: writeContext, records: commonFoodRecords)
-        }
+        try CommonFoodSeedLoader.reconcile(modelContext: writeContext, records: commonFoodRecords)
 
         if plan.shouldNormalizeGoals {
             try normalizeGoalsIfNeeded(modelContext: writeContext)
@@ -50,16 +45,9 @@ enum AppBootstrap {
 
     private static func makePlan(modelContext: ModelContext) throws -> Plan {
         Plan(
-            shouldSeedCommonFoods: try shouldSeedCommonFoods(modelContext: modelContext),
             shouldNormalizeGoals: try shouldNormalizeGoals(modelContext: modelContext),
             shouldRepairReusableFoodSearchIndexes: try shouldRepairReusableFoodSearchIndexes(modelContext: modelContext)
         )
-    }
-
-    private static func shouldSeedCommonFoods(modelContext: ModelContext) throws -> Bool {
-        let commonSource = FoodSource.common.rawValue
-        let descriptor = FetchDescriptor<FoodItem>(predicate: #Predicate { $0.source == commonSource })
-        return try modelContext.fetchCount(descriptor) == 0
     }
 
     private static func shouldNormalizeGoals(modelContext: ModelContext) throws -> Bool {

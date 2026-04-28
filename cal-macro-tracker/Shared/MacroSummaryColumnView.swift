@@ -6,6 +6,11 @@ struct MacroSummaryColumnView: View {
         case short
     }
 
+    enum ContentAlignment {
+        case leading
+        case center
+    }
+
     struct Style {
         let titleFont: Font
         let valueFont: Font
@@ -30,7 +35,7 @@ struct MacroSummaryColumnView: View {
     let metric: MacroMetric
     let totals: NutritionSnapshot
     let goals: MacroGoalsSnapshot
-    let alignment: HorizontalAlignment
+    let alignment: ContentAlignment
     let titleStyle: TitleStyle
     let style: Style
     let minimumHeight: CGFloat?
@@ -39,7 +44,7 @@ struct MacroSummaryColumnView: View {
         metric: MacroMetric,
         totals: NutritionSnapshot,
         goals: MacroGoalsSnapshot,
-        alignment: HorizontalAlignment,
+        alignment: ContentAlignment,
         titleStyle: TitleStyle,
         style: Style,
         minimumHeight: CGFloat? = nil
@@ -70,8 +75,12 @@ struct MacroSummaryColumnView: View {
         alignment == .center ? .center : .leading
     }
 
+    private var stackAlignment: HorizontalAlignment {
+        alignment == .center ? .center : .leading
+    }
+
     var body: some View {
-        VStack(alignment: alignment, spacing: style.verticalSpacing) {
+        VStack(alignment: stackAlignment, spacing: style.verticalSpacing) {
             if style.showsTitleAfterValues == false {
                 titleLine
             }

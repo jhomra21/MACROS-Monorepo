@@ -47,11 +47,12 @@ struct BarcodeScanOptionsList: View {
 
 struct BarcodeLiveScannerSheet: View {
     let onBarcodeScanned: (String) -> Void
+    let onStartFailed: (Error) -> Void
     let onCancel: () -> Void
 
     var body: some View {
         NavigationStack {
-            BarcodeLiveScannerView(onBarcodeScanned: onBarcodeScanned)
+            BarcodeLiveScannerView(onBarcodeScanned: onBarcodeScanned, onStartFailed: onStartFailed)
                 .ignoresSafeArea()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {

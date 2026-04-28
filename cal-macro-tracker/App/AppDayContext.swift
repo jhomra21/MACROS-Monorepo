@@ -39,6 +39,9 @@ final class AppDayContext {
     private(set) var today = CalendarDay(date: .now)
 
     func refresh(using date: Date = .now) {
-        today = CalendarDay(date: date)
+        let refreshedDay = CalendarDay(date: date)
+        guard refreshedDay != today else { return }
+
+        today = refreshedDay
     }
 }

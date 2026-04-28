@@ -48,7 +48,9 @@ struct LabelScanScreen: View {
         .navigationTitle("Scan Label")
         .inlineNavigationTitle()
         .scanCameraCaptureSheet(isPresented: $showingCamera) { image in
-            await parseLabelImage(image)
+            startWorkTask {
+                await parseLabelImage(image)
+            }
         }
         .onChange(of: selectedPhoto) { _, item in
             guard let item else { return }
@@ -114,16 +116,19 @@ struct LabelScanScreen: View {
 
             let recognizedText = try await recognizer.recognizeText(in: image)
             let result = NutritionLabelParser.parse(recognizedText: recognizedText)
+            let previewImageData = await ScanPreviewImageEncoder.jpegData(from: image, compressionQuality: 0.9)
+            guard Task.isCancelled == false else { return }
 
             presentLogFood(
                 LogFoodDestination(
                     draft: result.draft,
                     reviewNotes: result.notes,
                     missingRequiredNutrients: result.missingRequiredNutrients,
-                    previewImageData: image.jpegData(compressionQuality: 0.9)
+                    previewImageData: previewImageData
                 )
             )
         } catch {
+            guard ScanCancellation.isCancellation(error) == false else { return }
             errorMessage = error.localizedDescription
         }
     }

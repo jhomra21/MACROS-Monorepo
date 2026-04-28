@@ -33,10 +33,11 @@ enum NumericText {
         guard !trimmed.isEmpty else { return .empty }
 
         do {
-            return .valid(try numberStyle.parseStrategy.parse(trimmed))
+            let value = try numberStyle.parseStrategy.parse(trimmed)
+            return value.isFinite ? .valid(value) : .invalid
         } catch {
             if let number = Double(trimmed) {
-                return .valid(number)
+                return number.isFinite ? .valid(number) : .invalid
             }
 
             return .invalid

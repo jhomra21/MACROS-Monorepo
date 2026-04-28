@@ -202,6 +202,10 @@ extension FoodDraft {
             && cholesterolPerServing == nil
     }
 
+    var hasAnySecondaryNutrient: Bool {
+        isMissingAllSecondaryNutrients == false
+    }
+
     var shouldOfferManualSecondaryNutrientRefresh: Bool {
         switch source {
         case .barcodeLookup, .searchLookup:
