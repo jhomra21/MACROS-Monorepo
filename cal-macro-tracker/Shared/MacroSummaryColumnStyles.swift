@@ -40,14 +40,14 @@ extension MacroSummaryColumnView.Style {
         deltaWeight: .bold,
         showsOverGoalIndicatorInValueLine: false,
         showsOverGoalDeltaInGoalLine: true,
-        showsTitleAfterValues: false
+        showsTitleAfterValues: true
     )
 
     static func widgetSmall(valueFontSize: CGFloat) -> MacroSummaryColumnView.Style {
         MacroSummaryColumnView.Style(
-            titleFont: .caption2.weight(.semibold),
+            titleFont: .caption2.weight(.medium),
             valueFont: .system(size: valueFontSize, weight: .semibold),
-            baselineFont: .caption2.weight(.medium),
+            baselineFont: .caption2.weight(.semibold),
             valueIndicatorFont: .system(size: valueFontSize, weight: .semibold),
             titleColor: .secondary,
             valueColor: .primary,
@@ -62,7 +62,7 @@ extension MacroSummaryColumnView.Style {
             deltaWeight: .bold,
             showsOverGoalIndicatorInValueLine: true,
             showsOverGoalDeltaInGoalLine: false,
-            showsTitleAfterValues: false
+            showsTitleAfterValues: true
         )
     }
 
@@ -105,6 +105,6 @@ extension MacroSummaryColumnView.Style {
         deltaWeight: .bold,
         showsOverGoalIndicatorInValueLine: true,
         showsOverGoalDeltaInGoalLine: false,
-        showsTitleAfterValues: false
+        showsTitleAfterValues: true
     )
 }

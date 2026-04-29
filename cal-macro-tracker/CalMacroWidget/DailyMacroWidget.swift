@@ -171,15 +171,15 @@ private struct DailyMacroWidgetContentView: View {
 
         switch widestValueLength {
         case 0...2:
-            return 20
+            return 21
         case 3:
-            return 15
+            return 16
         case 4:
-            return 13
+            return 14
         case 5:
-            return 11
+            return 12
         default:
-            return 10
+            return 11
         }
     }
 
@@ -210,18 +210,6 @@ private struct DailyMacroWidgetContentView: View {
         )
 
         return VStack(spacing: 4) {
-            VStack(spacing: 1) {
-                Text(metric.title)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
-
-                Capsule()
-                    .fill(metric.accentColor.opacity(0.55))
-                    .frame(width: 24, height: 1)
-            }
-
             VStack(spacing: 2) {
                 Text(presentation.currentValueText)
                     .font(.headline.weight(.semibold))
@@ -234,6 +222,18 @@ private struct DailyMacroWidgetContentView: View {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+
+            VStack(spacing: 1) {
+                Capsule()
+                    .fill(metric.accentColor.opacity(0.55))
+                    .frame(width: 24, height: 1)
+
+                Text(metric.title)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
             }
