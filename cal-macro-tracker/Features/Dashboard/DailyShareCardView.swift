@@ -24,14 +24,8 @@ struct DailyShareCardView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Daily Summary")
-                .font(.title2.weight(.semibold))
-
-            Text(day.startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
+        Text(day.startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
+            .font(.title2.weight(.semibold))
     }
 
     private var macroSummary: some View {

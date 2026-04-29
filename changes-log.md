@@ -76,6 +76,9 @@
 - Updated Dashboard and History to share the same `CalendarDay.topBarTitle` formatting, including `Today, Apr 28, 2026` style titles for the current day.
 - Standardized Dashboard and History top-bar typography through `AppTopBarStyle`, keeping title and icon sizing tunable from one place.
 - Tuned top-bar icon sizing/weight separately from title weight so the toolbar can stay visually aligned with native iOS app conventions.
+- Reduced the cold first-share delay on Dashboard by warming the share render and system share-controller setup after the app is ready.
+- Kept the Dashboard share preview image visible while avoiding generated PNG caching.
+- Updated the generated Dashboard share image and share-sheet metadata to use the selected date as the only title instead of `Daily Summary`.
 
 #### Main implementation steps
 
@@ -85,12 +88,27 @@
 - `DashboardScreen.swift`, `DashboardShareSupport.swift`, and `HistoryScreen.swift` now use shared top-bar title/icon styling from `AppTopBarStyle.swift`.
 - A simplify pass removed the informal top-bar style comment, centralized repeated title/icon modifiers, renamed the shared date title to the more specific `topBarTitle`, and removed an overly broad selected-day animation from the Dashboard container.
 - A defensive-code review found no high-confidence redundant guards or impossible-state branches to remove.
+- Added `AppWarmupCoordinator` as a one-shot, after-ready warm-up path so Dashboard can prepay the cold `ImageRenderer` and `UIActivityViewController` setup cost without blocking app launch.
+- Updated Dashboard sharing to pass an in-memory image item through `UIActivityItemSource` with `LPLinkMetadata` and thumbnail support, restoring the share-sheet preview while avoiding temporary PNG-file sharing.
+- Added focused `OSLog` timing around share render, presentation request, controller creation, and controller update to prove where first-share latency moved.
+- Renamed the share exporter API from PNG-specific wording to image-export wording after the implementation stopped writing temporary PNG files.
+- Removed the `Daily Summary` fallback from the share item source so the date-only share title contract cannot regress through preview metadata.
+
+#### Bugs and implementation findings
+
+- Initial logs showed the share card render was the first cold bottleneck; warming the render path reduced real tap-time image export to single-digit milliseconds.
+- Follow-up logs showed the remaining delay was inside `UIActivityViewController` / LaunchServices setup after controller creation, so a one-shot controller warm-up moved that system cost off the tap path.
+- Sharing a raw `UIImage` fixed file-provider / LaunchServices file URL work but temporarily caused the share sheet to show the app icon; using `UIActivityItemSource` plus `LPLinkMetadata` restored the image preview.
+- Apple docs support the `UIActivityViewController`, `UIActivityItemSource`, thumbnail, and `LPLinkMetadata` pieces; the non-presented controller warm-up is a measured workaround justified by local timing logs, not a general Apple-required pattern.
+- A simplify pass caught misleading `exportPNG` naming after the share path became image-based, and a defensive-code review caught the stale `Daily Summary` metadata fallback after the visual title was removed.
 
 #### Validation
 
 - Formatter, macOS debug build, and focused SwiftUI visual validation passed.
 - Formatter validation and iOS simulator builds passed for the Dashboard/History toolbar follow-up.
 - Simplify and defensive-code review follow-ups passed formatter validation, iOS simulator build, and `git diff --check`.
+- Share warm-up and item-source changes passed formatter validation, iOS simulator build, and `git diff --check`.
+- Date-only share title and final defensive-code cleanup passed formatter validation, iOS simulator build, and `git diff --check`.
 
 ## Scan Flows
 

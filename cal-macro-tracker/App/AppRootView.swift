@@ -63,6 +63,7 @@ struct AppRootView: View {
         }
         .task {
             applyPendingOpenRequest(pendingOpenRequest)
+            await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
     }
 

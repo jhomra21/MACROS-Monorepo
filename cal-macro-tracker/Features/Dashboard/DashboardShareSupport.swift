@@ -58,15 +58,16 @@ extension DashboardScreen {
     func prepareShare(for snapshot: LogEntryDaySnapshot) {
         guard !isPreparingShare else { return }
 
-        prepareShare(day: daySelection.selectedDay, snapshot: snapshot)
+        prepareShare(day: daySelection.selectedDay, snapshot: snapshot, requestStartedAt: Date())
     }
 
-    func prepareShare(day: CalendarDay, snapshot: LogEntryDaySnapshot) {
+    func prepareShare(day: CalendarDay, snapshot: LogEntryDaySnapshot, requestStartedAt: Date = Date()) {
         isPreparingShare = true
         Task { @MainActor in
             do {
-                let url = try prepareShareURL(day: day, snapshot: snapshot)
-                shareSheetItem = DashboardShareSheetItem(url: url)
+                let image = try prepareShareImage(day: day, snapshot: snapshot)
+                DailyShareImageExporter.logSheetPresentationStarted(since: requestStartedAt)
+                shareSheetItem = DashboardShareSheetItem(day: day, image: image, requestStartedAt: requestStartedAt)
             } catch {
                 shareFailureRequest = ShareFailureRequest(day: day, snapshot: snapshot)
             }
@@ -74,12 +75,12 @@ extension DashboardScreen {
         }
     }
 
-    private func prepareShareURL(day: CalendarDay, snapshot: LogEntryDaySnapshot) throws -> URL {
+    private func prepareShareImage(day: CalendarDay, snapshot: LogEntryDaySnapshot) throws -> UIImage {
         var lastError: Error = DailyShareImageExportError.renderingFailed
 
         for _ in 0..<Self.maximumSharePreparationAttempts {
             do {
-                return try DailyShareImageExporter.exportPNG(
+                return try DailyShareImageExporter.exportImage(
                     day: day,
                     snapshot: snapshot,
                     goals: currentGoals,
@@ -96,7 +97,19 @@ extension DashboardScreen {
 
 struct DashboardShareSheetItem: Identifiable {
     let id = UUID()
-    let url: URL
+    let itemSource: DashboardShareImageItemSource
+    let requestStartedAt: Date
+
+    init(day: CalendarDay, image: UIImage, requestStartedAt: Date) {
+        itemSource = DashboardShareImageItemSource(image: image, title: day.shareTitle)
+        self.requestStartedAt = requestStartedAt
+    }
+}
+
+private extension CalendarDay {
+    var shareTitle: String {
+        startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year())
+    }
 }
 
 struct ShareFailureRequest: Identifiable {
