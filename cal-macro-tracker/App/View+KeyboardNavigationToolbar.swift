@@ -10,25 +10,27 @@ private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
     }
 
     var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .keyboard) {
-            Button {
-                moveFocus(offset: -1)
-            } label: {
-                Image(systemName: "chevron.up")
-            }
-            .disabled(!canMove(offset: -1))
+        if focusedField.wrappedValue != nil {
+            ToolbarItemGroup(placement: .keyboard) {
+                Button {
+                    moveFocus(offset: -1)
+                } label: {
+                    Image(systemName: "chevron.up")
+                }
+                .disabled(!canMove(offset: -1))
 
-            Button {
-                moveFocus(offset: 1)
-            } label: {
-                Image(systemName: "chevron.down")
-            }
-            .disabled(!canMove(offset: 1))
+                Button {
+                    moveFocus(offset: 1)
+                } label: {
+                    Image(systemName: "chevron.down")
+                }
+                .disabled(!canMove(offset: 1))
 
-            Spacer()
+                Spacer()
 
-            Button("Done") {
-                dismissKeyboard(focusedField)
+                Button("Done") {
+                    dismissKeyboard(focusedField)
+                }
             }
         }
     }

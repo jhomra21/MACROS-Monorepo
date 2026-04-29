@@ -294,6 +294,30 @@
 - The save action remains in its own section, so the first edit no longer mutates the same input section structure while someone is actively typing.
 - This kept the UX inline, removed the extra navigation step, and reused existing shared keyboard behavior instead of duplicating it.
 
+### Follow-up: Settings navigation title and iOS 26 back-button artifact
+
+#### What went wrong
+
+- Pushing `SettingsScreen` with the native centered Settings title showed a temporary iOS 26 Liquid Glass rectangular artifact behind the native back button during the transition.
+- The same transition also logged `Invalid frame dimension (negative or non-finite).`
+- History did not reproduce the back-button artifact because it already avoided the native centered title path: it uses an empty navigation title plus a leading toolbar title with hidden shared glass background.
+
+#### Attempts that did not work
+
+- Adding only `.inlineNavigationTitle()` to Settings did not change the artifact or the invalid-frame log.
+- Moving `Settings` into a centered `.principal` toolbar item kept the title centered, but it brought the back-button artifact back because it still used the native centered/principal nav-bar layout path.
+- Hiding the native navigation bar and adding a custom top safe-area header removed the artifact, but it replaced native iOS navigation, pushed the content down, and created a black/header band that did not match the History screen.
+- Rendering a centered title with a top overlay avoided layout participation, but the placement still felt unlike the app's other pushed screens.
+- Widening a leading toolbar title frame could approximate centering without the artifact, but it was device-size dependent and too guessy for iPhone Max vs regular widths.
+
+#### What actually fixed it
+
+- `SettingsScreen.swift` now matches History's supported title pattern: empty native navigation title, inline title mode, a leading `.appTopBarLeading` title, and `.sharedBackgroundVisibility(.hidden)`.
+- A simplify pass extracted that repeated leading title setup into `AppTopBarLeadingTitle`, so Dashboard, History, and Settings now share one toolbar-title implementation instead of duplicating the same Liquid Glass background behavior.
+- This keeps native back navigation intact while avoiding the iOS 26 centered/principal toolbar transition path that caused the temporary glass artifact.
+- `View+KeyboardNavigationToolbar.swift` now only installs the keyboard toolbar while a field is focused, which removed the unrelated invalid-frame log when entering Settings.
+- A defensive-code review found no redundant guards or impossible-state branches in the final Settings/navigation diff.
+
 ## First-Run Goal Setup Onboarding
 
 ### Delivered

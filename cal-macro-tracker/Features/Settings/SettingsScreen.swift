@@ -24,7 +24,11 @@ struct SettingsScreen: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
-        .navigationTitle("Settings")
+        .navigationTitle("")
+        .inlineNavigationTitle()
+        .toolbar {
+            AppTopBarLeadingTitle("Settings")
+        }
     }
 
     private var activeGoals: DailyGoals? {

@@ -109,11 +109,7 @@ struct DashboardScreen: View {
     }
 
     private var dashboardToolbarLeading: some ToolbarContent {
-        ToolbarItem(placement: .appTopBarLeading) {
-            Text(dashboardNavigationTitle)
-                .appTopBarTitleStyle()
-        }
-        .sharedBackgroundVisibility(.hidden)
+        AppTopBarLeadingTitle(dashboardNavigationTitle)
     }
 
     private var dayNavigationGesture: some Gesture {
