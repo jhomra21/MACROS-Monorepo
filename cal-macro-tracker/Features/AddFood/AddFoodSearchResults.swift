@@ -22,6 +22,7 @@ struct SearchFoodListView: View {
     let onSearchOnline: () -> Void
     let onSearchUSDA: () -> Void
     let onLoadMoreRemoteResults: () -> Void
+    let onScrollOffsetChange: (CGFloat) -> Void
 
     var body: some View {
         List {
@@ -126,6 +127,12 @@ struct SearchFoodListView: View {
             }
         }
         .listStyle(.plain)
+        .contentMargins(.top, 0, for: .scrollContent)
+        .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
+            max(0, scrollGeometry.contentOffset.y)
+        } action: { _, newOffset in
+            onScrollOffsetChange(newOffset)
+        }
     }
 
     private var localEmptyMessage: String {

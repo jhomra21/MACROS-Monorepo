@@ -96,22 +96,7 @@ struct BottomPinnedActionBar: View {
     }
 
     private var labelContent: some View {
-        HStack(spacing: isCompact ? 0 : 12) {
-            if let systemImage {
-                Image(systemName: systemImage)
-                    .font(.headline)
-            } else if isCompact {
-                Text(title.prefix(1))
-                    .font(.headline.weight(.semibold))
-            }
-
-            if !isCompact {
-                Text(title)
-                    .font(.headline.weight(.semibold))
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
-            }
-        }
-        .frame(maxWidth: .infinity)
+        AppAccentActionLabel(title: title, systemImage: systemImage, isCompact: isCompact)
     }
 
     private var bottomBarHeight: CGFloat {
@@ -144,5 +129,38 @@ struct BottomPinnedActionBar: View {
         #else
         Notification.Name("BottomPinnedActionBarKeyboardWillHide")
         #endif
+    }
+}
+
+struct AppAccentActionLabel: View {
+    let title: String
+    let systemImage: String?
+    let isCompact: Bool
+
+    var body: some View {
+        HStack(spacing: isCompact ? 0 : 8) {
+            if let systemImage {
+                filledIcon(systemImage)
+            } else if isCompact {
+                Text(title.prefix(1))
+                    .font(.headline.weight(.semibold))
+            }
+
+            if !isCompact {
+                Text(title)
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.82))
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func filledIcon(_ systemImage: String) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 13, weight: .bold))
+            .foregroundStyle(Color.accentColor)
+            .frame(width: 24, height: 24)
+            .background(.white, in: Circle())
     }
 }

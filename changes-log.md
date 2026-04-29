@@ -251,6 +251,40 @@
 
 - The iOS simulator build and available repo quality checks passed; formatter and dead-code validation still depended on tooling that was not installed locally at that stage.
 
+### Follow-up: Add Food search and scan action redesign
+
+#### Delivered
+
+- Moved the Search-mode scan actions from the top of `AddFoodScreen` into a bottom-pinned two-button action bar.
+- Matched the Dashboard Add Food button behavior: expanded scan actions render as two equal-width bottom capsules, then compact into two trailing stacked circular buttons after scrolling.
+- Removed the Search/Manual segmented control and replaced it with native top-bar mode actions: `Manual` in Search mode and `Search` in Manual mode.
+- Restored the native iOS search drawer for Search mode only, so Manual entry no longer shows an irrelevant search field.
+- Tightened the Search list top spacing so the `On Device` section sits closer to the native search drawer and first result.
+- Updated shared blue bottom action labels to use the Apple-style filled white icon circle with accent-colored symbol, softer white text, and an 8pt icon-to-text gap.
+
+#### Main implementation steps
+
+- Added `BottomPinnedDualActionBar.swift` for paired bottom actions with the same 60pt control height, 20pt horizontal padding, keyboard clearance behavior, iOS 26 glass styling, and non-glass fallback as the existing bottom action pattern.
+- Updated `AddFoodScreen.swift` to own scan-bar compact state, scan destination routing, top-bar Search/Manual mode switching, and conditional bottom scan actions.
+- Updated `SearchFoodListView` to report scroll offset through an action closure so `AddFoodScreen` can compact the bottom scan bar without wrapping the `List` in another scroll container.
+- Removed the now-unused `AddFoodQuickActions` view from `AddFoodComponents.swift`.
+- Extracted `AppAccentActionLabel` from `BottomPinnedActionBar.swift` so the Dashboard Add Food button and Add Food scan buttons share the same accent-label treatment.
+- A simplify pass replaced an imprecise `AddFoodEntryPoint` scan destination with a local scan-only destination enum, avoiding impossible `.addFood` / `.manualEntry` branches.
+
+#### Bugs and implementation findings
+
+- Keeping the scan buttons at the top duplicated the new bottom action bar and consumed vertical search-result space, so the old top quick-action section was removed rather than hidden.
+- A custom inline search field made keyboard/search behavior less native; restoring `.searchable` only while in Search mode kept Apple search behavior and removed the search field from Manual entry.
+- A large Manual-mode `Search` button in the content area felt visually heavy, so the mode switch moved into the leading navigation area instead.
+- Using `AddFoodEntryPoint` for local scan navigation made unreachable states representable; the final local enum keeps the screen's scan routing precise.
+- The shared filled-icon bottom label intentionally uses an 8pt icon/text gap; Apple HIG guidance supports consistent layout but does not publish a fixed icon-label gap for this exact control.
+- Simplify review also noted shared bottom-bar infrastructure duplication and scroll-compaction similarity with Dashboard; those were left unchanged for now to keep the redesign focused and avoid destabilizing the already accepted Dashboard bottom bar.
+- Defensive-code review found no further high-confidence redundant guards, duplicated validation, or impossible-state branches after the scan-destination enum cleanup.
+
+#### Validation
+
+- Formatter validation, whitespace diff validation, iOS simulator build, and focused simulator visual checks passed.
+
 ## USDA Proxy and Unified Remote Search
 
 ### Delivered

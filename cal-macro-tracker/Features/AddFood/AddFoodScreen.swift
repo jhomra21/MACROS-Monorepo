@@ -11,6 +11,15 @@ struct AddFoodScreen: View {
     @State private var searchText = ""
     @State private var remoteSearch = RemoteSearchSession()
     @State private var remoteSearchTask: Task<Void, Never>?
+    @State private var isScanActionBarCompact = false
+    @State private var scanDestination: ScanDestination?
+
+    private enum ScanDestination: Hashable, Identifiable {
+        case barcode
+        case label
+
+        var id: Self { self }
+    }
 
     private struct RemoteSearchSession {
         var query = ""
@@ -50,19 +59,7 @@ struct AddFoodScreen: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("Add Food", selection: $selectedMode) {
-                ForEach(AddFoodMode.allCases) { mode in
-                    Text(mode.title).tag(mode)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
             VStack(alignment: .leading, spacing: 10) {
-                if selectedMode == .search {
-                    AddFoodQuickActions(loggingDay: loggingDay, onFoodLogged: closeSheet)
-                        .padding(.horizontal, 20)
-                }
                 Group {
                     switch selectedMode {
                     case .search:
@@ -77,7 +74,8 @@ struct AddFoodScreen: View {
                             onFoodLogged: closeSheet,
                             onSearchOnline: searchOnline,
                             onSearchUSDA: searchUSDA,
-                            onLoadMoreRemoteResults: loadMoreRemoteResults
+                            onLoadMoreRemoteResults: loadMoreRemoteResults,
+                            onScrollOffsetChange: updateScanActionBarDisplay
                         )
                     case .manual:
                         ManualFoodEntryScreen(loggingDay: loggingDay, onFoodLogged: closeSheet)
@@ -85,7 +83,6 @@ struct AddFoodScreen: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .padding(.top, 16)
         }
         .navigationTitle("Add Food")
         .inlineNavigationTitle()
@@ -98,12 +95,37 @@ struct AddFoodScreen: View {
             remoteSearchTask = nil
         }
         .toolbar {
+            ToolbarItem(placement: .appTopBarLeading) {
+                if selectedMode == .search {
+                    Button("Manual") {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            selectedMode = .manual
+                        }
+                    }
+                } else {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.18)) {
+                            selectedMode = .search
+                        }
+                    } label: {
+                        Text("Search")
+                    }
+                }
+            }
+
             ToolbarItem(placement: .appTopBarTrailing) {
                 Button("Done") { dismiss() }
             }
         }
-        .searchable(text: $searchText, placement: .appNavigationDrawer, prompt: "Search foods on device or online")
-        .onSubmit(of: .search) { searchOnline() }
+        .addFoodSearchable(isSearchMode: selectedMode == .search, text: $searchText, onSubmit: searchOnline)
+        .navigationDestination(item: $scanDestination) { destination in
+            scanScreen(for: destination)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if selectedMode == .search {
+                scanActionBar
+            }
+        }
     }
 
     private var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -113,6 +135,47 @@ struct AddFoodScreen: View {
 
     private var rankedFoods: [FoodItem] {
         FoodItemLocalSearch.rankedFoods(foods, matching: trimmedSearchText)
+    }
+
+    private var scanActionBar: some View {
+        BottomPinnedDualActionBar(
+            leadingAction: BottomPinnedDualAction(
+                title: "Scan Barcode",
+                systemImage: "barcode.viewfinder"
+            ) {
+                scanDestination = .barcode
+            },
+            trailingAction: BottomPinnedDualAction(
+                title: "Scan Label",
+                systemImage: "camera.viewfinder"
+            ) {
+                scanDestination = .label
+            },
+            displayMode: isScanActionBarCompact ? .compactIcon : .expanded,
+            topPadding: 0,
+            bottomOffset: 6
+        )
+        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func scanScreen(for destination: ScanDestination) -> some View {
+        switch destination {
+        case .barcode:
+            BarcodeScanScreen(onFoodLogged: closeSheet, loggingDay: loggingDay, entryMode: .immediateCamera)
+        case .label:
+            LabelScanScreen(onFoodLogged: closeSheet, loggingDay: loggingDay)
+        }
+    }
+
+    private func updateScanActionBarDisplay(for offset: CGFloat) {
+        let compactThreshold: CGFloat = isScanActionBarCompact ? 2 : 12
+        let shouldCompact = offset > compactThreshold
+        guard shouldCompact != isScanActionBarCompact else { return }
+
+        withAnimation(.smooth(duration: 0.22)) {
+            isScanActionBarCompact = shouldCompact
+        }
     }
 
     private func searchOnline() {
@@ -229,6 +292,23 @@ struct AddFoodScreen: View {
             remoteSearch.isLoading = false
             remoteSearch.errorMessage = error.localizedDescription
             remoteSearchTask = nil
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func addFoodSearchable(
+        isSearchMode: Bool,
+        text: Binding<String>,
+        onSubmit: @escaping () -> Void
+    ) -> some View {
+        if isSearchMode {
+            self
+                .searchable(text: text, placement: .appNavigationDrawer, prompt: "Search foods on device or online")
+                .onSubmit(of: .search, onSubmit)
+        } else {
+            self
         }
     }
 }
