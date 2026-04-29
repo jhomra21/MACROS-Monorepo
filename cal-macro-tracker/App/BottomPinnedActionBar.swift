@@ -10,15 +10,16 @@ enum BottomPinnedActionBarDisplayMode {
 
 struct BottomPinnedActionBar: View {
     private let compactButtonSize: CGFloat = 60
+    private let horizontalPadding: CGFloat = 20
 
     let title: String
     let systemImage: String?
     let isDisabled: Bool
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var topPadding: CGFloat = 10
+    var bottomOffset: CGFloat = 0
     let action: () -> Void
 
-    @Namespace private var glassNamespace
     @State private var isKeyboardVisible = false
 
     private var isCompact: Bool {
@@ -29,13 +30,10 @@ struct BottomPinnedActionBar: View {
         isKeyboardVisible ? 72 : 8
     }
 
-    private var buttonBorderShape: ButtonBorderShape {
-        isCompact ? .circle : .capsule
-    }
-
     var body: some View {
         buttonContent
             .frame(height: bottomBarHeight, alignment: .bottom)
+            .offset(y: bottomOffset)
             .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
                 isKeyboardVisible = true
             }
@@ -47,35 +45,31 @@ struct BottomPinnedActionBar: View {
     @ViewBuilder
     private var buttonContent: some View {
         if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 20) {
-                HStack {
-                    if isCompact {
-                        Spacer(minLength: 0)
-                    }
-
-                    glassButton
-                        .glassEffectID("add-food-action", in: glassNamespace)
+            GeometryReader { proxy in
+                GlassEffectContainer(spacing: 20) {
+                    glassButton(buttonWidth: buttonWidth(for: proxy.size.width))
                 }
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .trailing)
             }
-            .frame(maxWidth: .infinity)
         } else {
             fallbackButton
         }
     }
 
-    private var glassButton: some View {
+    private func glassButton(buttonWidth: CGFloat) -> some View {
         Button(action: action) {
             labelContent
-                .frame(width: labelWidth, height: isCompact ? compactButtonSize : nil)
-                .frame(maxWidth: isCompact ? nil : .infinity)
-                .padding(.vertical, verticalLabelPadding)
+                .frame(width: buttonWidth, alignment: .trailing)
+                .frame(height: compactButtonSize)
+                .clipped()
+                .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
+                .contentShape(Capsule())
         }
-        .buttonStyle(.glassProminent)
-        .buttonBorderShape(buttonBorderShape)
-        .padding(.horizontal, 20)
+        .buttonStyle(.plain)
+        .frame(width: buttonWidth, height: compactButtonSize)
+        .padding(.horizontal, horizontalPadding)
         .padding(.top, topPadding)
         .padding(.bottom, bottomPadding)
-        .frame(maxWidth: isCompact ? nil : .infinity)
         .disabled(isDisabled)
         .accessibilityLabel(title)
     }
@@ -84,12 +78,13 @@ struct BottomPinnedActionBar: View {
         Button(action: action) {
             labelContent
                 .foregroundStyle(.white)
-                .frame(width: labelWidth, height: isCompact ? compactButtonSize : nil)
+                .frame(width: fallbackLabelWidth, height: isCompact ? compactButtonSize : nil)
                 .frame(maxWidth: isCompact ? nil : .infinity)
                 .padding(.vertical, verticalLabelPadding)
                 .background(isDisabled ? Color.secondary.opacity(0.5) : Color.black)
                 .clipShape(isCompact ? AnyShape(Circle()) : AnyShape(Capsule()))
-                .padding(.horizontal, 20)
+                .contentShape(isCompact ? AnyShape(Circle()) : AnyShape(Capsule()))
+                .padding(.horizontal, horizontalPadding)
                 .padding(.top, topPadding)
                 .padding(.bottom, bottomPadding)
         }
@@ -104,7 +99,7 @@ struct BottomPinnedActionBar: View {
             if let systemImage {
                 Image(systemName: systemImage)
                     .font(.headline)
-            } else {
+            } else if isCompact {
                 Text(title.prefix(1))
                     .font(.headline.weight(.semibold))
             }
@@ -122,7 +117,11 @@ struct BottomPinnedActionBar: View {
         topPadding + bottomPadding + compactButtonSize
     }
 
-    private var labelWidth: CGFloat {
+    private func buttonWidth(for availableWidth: CGFloat) -> CGFloat {
+        isCompact ? compactButtonSize : max(compactButtonSize, availableWidth - horizontalPadding * 2)
+    }
+
+    private var fallbackLabelWidth: CGFloat {
         isCompact ? compactButtonSize : 124
     }
 

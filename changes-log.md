@@ -106,6 +106,13 @@
 - Updated `BottomPinnedActionBar.swift` with an expanded/compact display mode, native `GlassEffectContainer` / `glassEffectID` morphing, explicit circular compact button shape, and a non-glass fallback.
 - Updated `DashboardScreen.swift` to drive the compact Add Food state from existing scroll geometry with a small hysteresis threshold, while keeping the transition animation owned by the state mutation.
 - Removed the bottom bar's full-width hit shape and day-swipe gesture so compact mode only intercepts taps on the circular plus button and logged-food rows beside it remain editable.
+- Reworked the Add Food Liquid Glass button to keep one trailing-aligned capsule surface while its width changes, so compaction shrinks from the left edge into the fixed right edge instead of spawning a separate circular glass blob that slides across the bottom bar.
+- Kept the prominent blue treatment by tinting the direct capsule glass effect with the app accent color instead of returning to `.glassProminent`, whose separate compact shape path reintroduced the moving-ball artifact.
+- A simplify pass removed a redundant `buttonHeight` computed property after the fixed-height button contract became just `compactButtonSize`.
+- Added a `bottomOffset` override to `BottomPinnedActionBar` so Dashboard can visually lower the Add Food control into the bottom safe-area gap while onboarding and Log Food keep the default placement.
+- Validated and fixed the review finding that the shared bottom bar's default bottom padding had accidentally changed during Dashboard-only bottom-position tuning; the default `8pt` spacing is preserved while Dashboard keeps its explicit offset.
+- Fixed text-only expanded bottom actions so shared buttons like `Log Food` and onboarding `Continue` render just their title instead of prefixing the title with the compact-mode fallback initial.
+- Fixed the shared bottom action hit target so the full visible capsule/circle triggers the button, including Dashboard Add Food's blue glass area in expanded mode and its compact icon-only state.
 
 #### Bugs and implementation findings
 
@@ -122,6 +129,13 @@
 - A simplify pass caught misleading `exportPNG` naming after the share path became image-based, and a defensive-code review caught the stale `Daily Summary` metadata fallback after the visual title was removed.
 - Compacting the Add Food button initially caused row flashes and blocked taps beside the button; the fix stabilized the reserved bottom inset height and narrowed compact-mode hit testing to the button itself.
 - The compact button animation was tuned so the same plus icon size is used in both states, the compact plus remains centered, and the `Add Food` text transitions from the trailing edge instead of fading or clipping from the middle.
+- A follow-up animation pass found that separate expanded/compact glass shapes made compaction form a ball on the left and then move it to the right, while expansion already felt correctly anchored. The working fix removed the separate compact circle/matched morph and uses one clipped capsule glass surface with trailing-aligned width animation.
+- Trying to preserve the old prominent button style directly was rejected because the important behavior was the single-surface trailing anchor; the final version restores the blue look with `.regular.tint(.accentColor).interactive()` on that same capsule.
+- A defensive-code review found no redundant guards, duplicated validations, or impossible-state branches in the final Add Food compaction diff.
+- Moving regular bottom padding to zero did not visibly lower the button enough because `.safeAreaInset(edge: .bottom)` still keeps the bar above the iOS home-indicator safe area; the accepted adjustment is a Dashboard-only visual offset, currently tuned to match the feel of Apple bottom search bars/buttons.
+- Review validation confirmed that bottom-position tuning must stay Dashboard-owned: changing the shared hidden-keyboard padding shifted onboarding and Log Food too, so the root fix restored the shared default instead of patching those call sites.
+- The text-only bottom action label path was rechecked after the single-capsule refactor: fallback initials are useful only for compact icon mode without a system image, while expanded text-only actions should not duplicate their first letter before the full title.
+- The single-capsule Liquid Glass refactor left the visual surface wider than SwiftUI's inferred tappable label content; adding an explicit capsule/circle content shape restored the expected full-button hit target without widening compact-mode interception beyond the visible control.
 
 #### Validation
 
@@ -133,6 +147,12 @@
 - Save Photo JPEG payload and cleanup passes passed `git diff --check`, formatter validation, repeated simplify review, and iOS simulator builds.
 - The nested-provider review fix passed `git diff --check`, formatter validation, iOS simulator build, and a final focused diff review.
 - The compact Add Food Liquid Glass follow-up passed `git diff --check`, formatter validation, iOS simulator build, simplify review, and defensive-code review.
+- The Add Food compaction animation follow-up passed `git diff --check`, formatter validation, and iOS simulator build; visual acceptance came from interactive review of the compacting animation.
+- The simplify and defensive-code-review follow-up passed `git diff --check`, formatter validation, and iOS simulator build.
+- The Dashboard Add Food bottom-position follow-up passed formatter validation and iOS simulator build.
+- The bottom-padding review-validation fix passed `git diff --check`, formatter validation, iOS simulator build, and a final diff review.
+- The text-only bottom action label fix passed `git diff --check`, formatter validation, and iOS simulator build.
+- The bottom action hit-target fix passed `git diff --check`, formatter validation, and iOS simulator build.
 
 ## Scan Flows
 

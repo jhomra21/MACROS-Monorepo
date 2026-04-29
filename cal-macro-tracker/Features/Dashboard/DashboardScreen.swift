@@ -256,7 +256,8 @@ struct DashboardScreen: View {
             systemImage: "plus",
             isDisabled: false,
             displayMode: isAddFoodButtonCompact ? .compactIcon : .expanded,
-            topPadding: 0
+            topPadding: 0,
+            bottomOffset: 6
         ) {
             onOpenAddFood(daySelection.selectedDay)
         }
