@@ -58,16 +58,15 @@ extension DashboardScreen {
     func prepareShare(for snapshot: LogEntryDaySnapshot) {
         guard !isPreparingShare else { return }
 
-        prepareShare(day: daySelection.selectedDay, snapshot: snapshot, requestStartedAt: Date())
+        prepareShare(day: daySelection.selectedDay, snapshot: snapshot)
     }
 
-    func prepareShare(day: CalendarDay, snapshot: LogEntryDaySnapshot, requestStartedAt: Date = Date()) {
+    func prepareShare(day: CalendarDay, snapshot: LogEntryDaySnapshot) {
         isPreparingShare = true
         Task { @MainActor in
             do {
                 let image = try prepareShareImage(day: day, snapshot: snapshot)
-                DailyShareImageExporter.logSheetPresentationStarted(since: requestStartedAt)
-                shareSheetItem = DashboardShareSheetItem(day: day, image: image, requestStartedAt: requestStartedAt)
+                shareSheetItem = DashboardShareSheetItem(day: day, image: image)
             } catch {
                 shareFailureRequest = ShareFailureRequest(day: day, snapshot: snapshot)
             }
@@ -98,11 +97,9 @@ extension DashboardScreen {
 struct DashboardShareSheetItem: Identifiable {
     let id = UUID()
     let itemSource: DashboardShareImageItemSource
-    let requestStartedAt: Date
 
-    init(day: CalendarDay, image: UIImage, requestStartedAt: Date) {
+    init(day: CalendarDay, image: UIImage) {
         itemSource = DashboardShareImageItemSource(image: image, title: day.shareTitle)
-        self.requestStartedAt = requestStartedAt
     }
 }
 

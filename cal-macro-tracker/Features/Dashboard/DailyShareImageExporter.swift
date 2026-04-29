@@ -2,43 +2,21 @@ import SwiftUI
 
 #if os(iOS)
 import LinkPresentation
-import OSLog
 import UIKit
 
 @MainActor
 enum DailyShareImageExporter {
-    private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "DashboardShare")
-
     static func exportImage(
         day: CalendarDay,
         snapshot: LogEntryDaySnapshot,
         goals: MacroGoalsSnapshot,
         colorScheme: ColorScheme
     ) throws -> UIImage {
-        let startedAt = Date()
-
         guard let image = renderImage(day: day, snapshot: snapshot, goals: goals, colorScheme: colorScheme) else {
             throw DailyShareImageExportError.renderingFailed
         }
 
-        logger.debug("Share image export finished in \(Date().timeIntervalSince(startedAt), format: .fixed(precision: 3))s")
         return image
-    }
-
-    static func logSheetPresentationStarted(since requestStartedAt: Date) {
-        logger.debug(
-            "Share sheet presentation requested after \(Date().timeIntervalSince(requestStartedAt), format: .fixed(precision: 3))s"
-        )
-    }
-
-    static func logShareControllerCreated(creationDuration: TimeInterval, totalDuration: TimeInterval) {
-        logger.debug(
-            "Share controller created in \(creationDuration, format: .fixed(precision: 3))s; total since tap \(totalDuration, format: .fixed(precision: 3))s"
-        )
-    }
-
-    static func logShareControllerUpdated(totalDuration: TimeInterval) {
-        logger.debug("Share controller updated after \(totalDuration, format: .fixed(precision: 3))s since tap")
     }
 
     static func warmUpRenderingPipeline(colorScheme: ColorScheme) {
@@ -74,23 +52,12 @@ enum DailyShareImageExportError: Error {
 
 struct ShareSheet: UIViewControllerRepresentable {
     let item: DashboardShareImageItemSource
-    let requestStartedAt: Date
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        let startedAt = Date()
-        let controller = UIActivityViewController(activityItems: [item], applicationActivities: nil)
-        DailyShareImageExporter.logShareControllerCreated(
-            creationDuration: Date().timeIntervalSince(startedAt),
-            totalDuration: Date().timeIntervalSince(requestStartedAt)
-        )
-        return controller
+        UIActivityViewController(activityItems: [item], applicationActivities: nil)
     }
 
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
-        DailyShareImageExporter.logShareControllerUpdated(
-            totalDuration: Date().timeIntervalSince(requestStartedAt)
-        )
-    }
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {

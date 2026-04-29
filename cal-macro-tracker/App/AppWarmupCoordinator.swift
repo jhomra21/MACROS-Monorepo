@@ -1,4 +1,3 @@
-import OSLog
 import SwiftUI
 #if os(iOS)
 import UIKit
@@ -6,7 +5,6 @@ import UIKit
 
 @MainActor
 enum AppWarmupCoordinator {
-    private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "AppWarmup")
     private static let firstRenderDelay: Duration = .milliseconds(350)
     private static var hasStarted = false
 
@@ -19,13 +17,8 @@ enum AppWarmupCoordinator {
         try? await Task.sleep(for: firstRenderDelay)
         guard Task.isCancelled == false else { return }
 
-        let startedAt = Date()
         DailyShareImageExporter.warmUpRenderingPipeline(colorScheme: .light)
-        logger.debug("Share render warm-up finished in \(Date().timeIntervalSince(startedAt), format: .fixed(precision: 3))s")
-
-        let controllerStartedAt = Date()
         warmUpShareController()
-        logger.debug("Share controller warm-up finished in \(Date().timeIntervalSince(controllerStartedAt), format: .fixed(precision: 3))s")
         #endif
     }
 

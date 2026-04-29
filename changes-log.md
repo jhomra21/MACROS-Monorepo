@@ -90,7 +90,6 @@
 - A defensive-code review found no high-confidence redundant guards or impossible-state branches to remove.
 - Added `AppWarmupCoordinator` as a one-shot, after-ready warm-up path so Dashboard can prepay the cold `ImageRenderer` and `UIActivityViewController` setup cost without blocking app launch.
 - Updated Dashboard sharing to pass an in-memory image item through `UIActivityItemSource` with `LPLinkMetadata` and thumbnail support, restoring the share-sheet preview while avoiding temporary PNG-file sharing.
-- Added focused `OSLog` timing around share render, presentation request, controller creation, and controller update to prove where first-share latency moved.
 - Renamed the share exporter API from PNG-specific wording to image-export wording after the implementation stopped writing temporary PNG files.
 - Removed the `Daily Summary` fallback from the share item source so the date-only share title contract cannot regress through preview metadata.
 
