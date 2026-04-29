@@ -51,10 +51,10 @@ enum DailyShareImageExportError: Error {
 }
 
 struct ShareSheet: UIViewControllerRepresentable {
-    let item: DashboardShareImageItemSource
+    let itemSource: DashboardShareImageItemSource
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [item], applicationActivities: nil)
+        UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
     }
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
@@ -63,6 +63,8 @@ struct ShareSheet: UIViewControllerRepresentable {
 final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
     private let image: UIImage
     private let title: String
+    private let savePhotoDataLock = NSLock()
+    private var savePhotoJPEGData: Data?
 
     init(image: UIImage, title: String) {
         self.image = image
@@ -77,7 +79,11 @@ final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
         _ activityViewController: UIActivityViewController,
         itemForActivityType activityType: UIActivity.ActivityType?
     ) -> Any? {
-        image
+        if activityType == .saveToCameraRoll {
+            return savePhotoItem()
+        }
+
+        return image
     }
 
     func activityViewController(
@@ -107,5 +113,22 @@ final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
             image.draw(in: CGRect(origin: .zero, size: thumbnailSize))
         }
     }
+
+    private func savePhotoItem() -> Any {
+        savePhotoDataLock.lock()
+        defer { savePhotoDataLock.unlock() }
+
+        if let savePhotoJPEGData {
+            return savePhotoJPEGData
+        }
+
+        guard let jpegData = ImageJPEGEncoder.jpegDataSynchronously(from: image, compressionQuality: 0.95) else {
+            return image
+        }
+
+        savePhotoJPEGData = jpegData
+        return jpegData
+    }
 }
+
 #endif

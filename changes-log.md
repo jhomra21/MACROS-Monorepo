@@ -79,6 +79,9 @@
 - Reduced the cold first-share delay on Dashboard by warming the share render and system share-controller setup after the app is ready.
 - Kept the Dashboard share preview image visible while avoiding generated PNG caching.
 - Updated the generated Dashboard share image and share-sheet metadata to use the selected date as the only title instead of `Daily Summary`.
+- Fixed the Dashboard Save Photo payload so Photos receives JPEG data instead of an alpha-bearing `UIImage`.
+- Shared JPEG encoding between Dashboard sharing and label-scan preview generation.
+- Removed temporary Dashboard share/save timing diagnostics after the Save Photo issue was isolated.
 
 #### Main implementation steps
 
@@ -92,12 +95,25 @@
 - Updated Dashboard sharing to pass an in-memory image item through `UIActivityItemSource` with `LPLinkMetadata` and thumbnail support, restoring the share-sheet preview while avoiding temporary PNG-file sharing.
 - Renamed the share exporter API from PNG-specific wording to image-export wording after the implementation stopped writing temporary PNG files.
 - Removed the `Daily Summary` fallback from the share item source so the date-only share title contract cannot regress through preview metadata.
+- Added `Shared/ImageJPEGEncoder.swift` as the shared iOS JPEG encoding utility.
+- Replaced the scan-only `ScanPreviewImageEncoder` wrapper with `ImageJPEGEncoder` in `LabelScanScreen.swift`.
+- Updated `DashboardShareImageItemSource` so `.saveToCameraRoll` receives direct JPEG data while other share activities still receive the original image.
+- Cached the encoded Save Photo JPEG data per Dashboard share item source to avoid repeated compression if UIKit asks for the item more than once.
+- Added `Shared/ImageJPEGEncoder.swift` to the Xcode synchronized-group exception list so the file is not compiled twice through both the app root and shared groups.
+- Overlapped label OCR and preview JPEG encoding with `async let` so scan preview preparation no longer waits until OCR finishes.
+- Validated and fixed the review finding that returning a nested `UIActivityItemProvider` from another `UIActivityItemSource` was the wrong UIKit share contract; the Save Photo branch now returns the final cached JPEG `Data` directly.
 
 #### Bugs and implementation findings
 
 - Initial logs showed the share card render was the first cold bottleneck; warming the render path reduced real tap-time image export to single-digit milliseconds.
 - Follow-up logs showed the remaining delay was inside `UIActivityViewController` / LaunchServices setup after controller creation, so a one-shot controller warm-up moved that system cost off the tap path.
 - Sharing a raw `UIImage` fixed file-provider / LaunchServices file URL work but temporarily caused the share sheet to show the app icon; using `UIActivityItemSource` plus `LPLinkMetadata` restored the image preview.
+- Device logs showed the post-reload Save Photo delay was no longer in Dashboard image export or share-sheet presentation; the remaining cost was in the system Save Photo path.
+- Photos emitted alpha-channel warnings for the share image (`AlphaPremulLast` / `AlphaLast`), so the Save Photo activity now receives JPEG data to avoid alpha-bearing image payloads.
+- Eagerly preparing JPEG data before presenting the share sheet improved Save Photo readiness but made every share action pay the Save Photo cost; the final implementation scopes JPEG work to `.saveToCameraRoll`.
+- Returning a `UIActivityItemProvider` from `itemForActivityType` would rely on undocumented recursive provider resolution; the corrected root fix keeps `DashboardShareImageItemSource` as the single owner of activity-specific payload selection.
+- A temporary logging pass helped isolate the issue but was removed before the final cleanup so production sharing has no extra lifecycle logging/context plumbing.
+- Repeated simplify passes intentionally converged through layers of cleanup: removing diagnostics, sharing JPEG encoding, deleting the scan-specific wrapper, avoiding eager JPEG work, caching Save Photo output, and fixing Xcode synchronized membership for the new shared file.
 - Apple docs support the `UIActivityViewController`, `UIActivityItemSource`, thumbnail, and `LPLinkMetadata` pieces; the non-presented controller warm-up is a measured workaround justified by local timing logs, not a general Apple-required pattern.
 - A simplify pass caught misleading `exportPNG` naming after the share path became image-based, and a defensive-code review caught the stale `Daily Summary` metadata fallback after the visual title was removed.
 
@@ -108,6 +124,8 @@
 - Simplify and defensive-code review follow-ups passed formatter validation, iOS simulator build, and `git diff --check`.
 - Share warm-up and item-source changes passed formatter validation, iOS simulator build, and `git diff --check`.
 - Date-only share title and final defensive-code cleanup passed formatter validation, iOS simulator build, and `git diff --check`.
+- Save Photo JPEG payload and cleanup passes passed `git diff --check`, formatter validation, repeated simplify review, and iOS simulator builds.
+- The nested-provider review fix passed `git diff --check`, formatter validation, iOS simulator build, and a final focused diff review.
 
 ## Scan Flows
 

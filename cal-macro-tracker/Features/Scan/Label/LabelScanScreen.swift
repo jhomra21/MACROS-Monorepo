@@ -114,9 +114,12 @@ struct LabelScanScreen: View {
             isLoading = true
             defer { isLoading = false }
 
-            let recognizedText = try await recognizer.recognizeText(in: image)
+            async let recognizedTextTask = recognizer.recognizeText(in: image)
+            async let previewImageDataTask = ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
+
+            let recognizedText = try await recognizedTextTask
             let result = NutritionLabelParser.parse(recognizedText: recognizedText)
-            let previewImageData = await ScanPreviewImageEncoder.jpegData(from: image, compressionQuality: 0.9)
+            let previewImageData = await previewImageDataTask
             guard Task.isCancelled == false else { return }
 
             presentLogFood(
