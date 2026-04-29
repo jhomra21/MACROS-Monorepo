@@ -113,6 +113,7 @@
 - Validated and fixed the review finding that the shared bottom bar's default bottom padding had accidentally changed during Dashboard-only bottom-position tuning; the default `8pt` spacing is preserved while Dashboard keeps its explicit offset.
 - Fixed text-only expanded bottom actions so shared buttons like `Log Food` and onboarding `Continue` render just their title instead of prefixing the title with the compact-mode fallback initial.
 - Fixed the shared bottom action hit target so the full visible capsule/circle triggers the button, including Dashboard Add Food's blue glass area in expanded mode and its compact icon-only state.
+- Fixed blue/accent Liquid Glass bottom action labels so shared buttons like onboarding `Continue` and Dashboard `Add Food` render with white text in light mode, preserving readability and accessibility contrast.
 
 #### Bugs and implementation findings
 
@@ -136,6 +137,7 @@
 - Review validation confirmed that bottom-position tuning must stay Dashboard-owned: changing the shared hidden-keyboard padding shifted onboarding and Log Food too, so the root fix restored the shared default instead of patching those call sites.
 - The text-only bottom action label path was rechecked after the single-capsule refactor: fallback initials are useful only for compact icon mode without a system image, while expanded text-only actions should not duplicate their first letter before the full title.
 - The single-capsule Liquid Glass refactor left the visual surface wider than SwiftUI's inferred tappable label content; adding an explicit capsule/circle content shape restored the expected full-button hit target without widening compact-mode interception beyond the visible control.
+- The iOS 26 tinted glass path did not inherit the fallback button's white foreground styling, which made blue action buttons hard to read in light mode; the shared bottom action label now explicitly uses white foreground text for the glass button path.
 
 #### Validation
 
@@ -153,6 +155,7 @@
 - The bottom-padding review-validation fix passed `git diff --check`, formatter validation, iOS simulator build, and a final diff review.
 - The text-only bottom action label fix passed `git diff --check`, formatter validation, and iOS simulator build.
 - The bottom action hit-target fix passed `git diff --check`, formatter validation, and iOS simulator build.
+- The blue button contrast fix passed formatter validation, iOS simulator build, and focused visual validation of the Dashboard `Add Food` button.
 
 ## Scan Flows
 

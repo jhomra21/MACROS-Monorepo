@@ -59,6 +59,7 @@ struct BottomPinnedActionBar: View {
     private func glassButton(buttonWidth: CGFloat) -> some View {
         Button(action: action) {
             labelContent
+                .foregroundStyle(.white)
                 .frame(width: buttonWidth, alignment: .trailing)
                 .frame(height: compactButtonSize)
                 .clipped()
