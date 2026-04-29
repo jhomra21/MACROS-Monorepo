@@ -468,6 +468,8 @@ The following planning documents have been fully consolidated into this file and
 - Added shared snapshot/value types so the widget and app use the same daily macro representation.
 - Reused the shared macro ring renderer instead of maintaining separate app and widget ring implementations.
 - Added app-open routing so widget taps and quick actions land in the right app flow.
+- Reworked the medium Home Screen daily macro widget so the wide layout uses a large left-side ring and three right-side macro columns instead of a cramped vertical metric list.
+- Added full `Protein`, `Carbs`, and `Fat` labels with subtle color-matched underlines under each label in the medium widget.
 
 ### Main implementation steps
 
@@ -477,12 +479,23 @@ The following planning documents have been fully consolidated into this file and
 - Added `WidgetTimelineReloader.swift` so app launches and mutations can refresh widget timelines.
 - Updated `AppRootView.swift`, `ContentView.swift`, and `cal_macro_trackerApp.swift` so app-open requests can route into add-food sheets and the dashboard from native entry points.
 - Added `HomeScreenQuickActionSupport.swift` and the corresponding iOS shortcut item configuration.
+- Updated `DailyMacroWidget.swift` so `.systemMedium` computes its ring and metric-column widths from widget geometry, keeping the ring fully visible while giving each macro a dedicated column.
+- Kept the medium metric presentation widget-specific so the underline/title/value/goal stack can fit the wide Home Screen family without changing the shared compact summary component.
+- Simplify review replaced duplicated medium-widget spacing literals with one `ringMetricSpacing` value and derived column sizing from `MacroMetric.allCases.count` instead of hard-coding three columns.
+- Defensive-code review removed the unnecessary metric-count fallback because `MacroMetric.allCases` is the fixed non-empty source used by the same `ForEach`.
 
 ### Bugs and implementation findings
 
 - The widget needed read access to the same persisted data as the app; the real fix was a shared app-group-backed model container rather than a second persistence path.
 - Home screen shortcuts and widget URLs are both just app-entry surfaces, so they now map into the same `AppOpenRequest` contract instead of inventing separate routing models.
 - Macro ring rendering had already gone through heavy iteration, so the widget work reused the shared renderer rather than cloning another visual implementation.
+- The previous medium widget wasted wide-widget space by stacking metrics vertically next to the ring, which caused labels and values to feel crowded or cut off.
+- The accepted medium layout keeps the ring on the left and treats macros as three horizontal columns; visual iterations confirmed the color underline reads best directly under each full macro label.
+- The medium metric renderer intentionally keeps this family-specific presentation local; extending the shared summary component for one widget-only underline variant would add more abstraction than reuse.
+
+### Validation recorded during this widget follow-up
+
+- Formatter validation, iOS simulator build, simplify review, defensive-code review, and focused Home Screen widget visual validation passed.
 
 ## Scan Navigation Stability and Root-Level Cleanup
 

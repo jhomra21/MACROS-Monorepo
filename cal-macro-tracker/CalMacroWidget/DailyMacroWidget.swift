@@ -116,31 +116,44 @@ private struct DailyMacroWidgetContentView: View {
     }
 
     private var mediumContent: some View {
-        HStack(spacing: 16) {
-            MacroRingSetView(
-                totals: entry.snapshot.totals,
-                goals: entry.snapshot.goals,
-                ringDiameter: 96,
-                centerValueFontSize: 22,
-                minimumLineWidth: 5,
-                showsGoalSubtitle: false,
-                colorStyle: ringColorStyle
-            )
-            .widgetAccentable()
+        GeometryReader { geometry in
+            let horizontalPadding: CGFloat = 16
+            let verticalPadding: CGFloat = 14
+            let ringMetricSpacing: CGFloat = 24
+            let contentWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
+            let ringDiameter = min(112, max(92, geometry.size.height - (verticalPadding * 2)))
+            let metricWidth = max(contentWidth - ringDiameter - ringMetricSpacing, 0)
+            let metricSpacing: CGFloat = 10
+            let metricCount = CGFloat(MacroMetric.allCases.count)
+            let metricTotalSpacing = metricSpacing * (metricCount - 1)
+            let columnWidth = max((metricWidth - metricTotalSpacing) / metricCount, 0)
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Today")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+            HStack(spacing: ringMetricSpacing) {
+                MacroRingSetView(
+                    totals: entry.snapshot.totals,
+                    goals: entry.snapshot.goals,
+                    ringDiameter: ringDiameter,
+                    centerValueFontSize: 24,
+                    minimumLineWidth: 5,
+                    showsGoalSubtitle: false,
+                    colorStyle: ringColorStyle
+                )
+                .widgetAccentable()
 
-                ForEach(MacroMetric.allCases) { metric in
-                    mediumMetric(metric: metric)
+                HStack(alignment: .center, spacing: metricSpacing) {
+                    ForEach(MacroMetric.allCases) { metric in
+                        mediumMetric(metric: metric)
+                            .frame(width: columnWidth, alignment: .center)
+                    }
                 }
-            }
+                .frame(width: metricWidth, alignment: .center)
 
-            Spacer(minLength: 0)
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
         }
-        .padding(16)
     }
 
     private var smallMetricDisplayLengths: [Int] {
@@ -191,13 +204,39 @@ private struct DailyMacroWidgetContentView: View {
     }
 
     private func mediumMetric(metric: MacroMetric) -> some View {
-        MacroSummaryColumnView(
-            metric: metric,
+        let presentation = metric.goalValuePresentation(
             totals: entry.snapshot.totals,
-            goals: entry.snapshot.goals,
-            alignment: .leading,
-            titleStyle: .full,
-            style: .widgetMedium
+            goals: entry.snapshot.goals
         )
+
+        return VStack(spacing: 4) {
+            VStack(spacing: 1) {
+                Text(metric.title)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+
+                Capsule()
+                    .fill(metric.accentColor.opacity(0.55))
+                    .frame(width: 24, height: 1)
+            }
+
+            VStack(spacing: 2) {
+                Text(presentation.currentValueText)
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+
+                Text(presentation.goalValueText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+        }
     }
 }
