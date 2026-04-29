@@ -7,6 +7,16 @@ import AppKit
 #endif
 
 enum PlatformColors {
+    static var systemBackground: Color {
+        #if os(iOS)
+        Color(uiColor: .systemBackground)
+        #elseif os(macOS)
+        Color(nsColor: .windowBackgroundColor)
+        #else
+        Color(.systemBackground)
+        #endif
+    }
+
     static var groupedBackground: Color {
         #if os(iOS)
         Color(uiColor: .systemGroupedBackground)

@@ -31,15 +31,15 @@ struct BottomPinnedActionBar: View {
     }
 
     var body: some View {
-        buttonContent
-            .frame(height: bottomBarHeight, alignment: .bottom)
-            .offset(y: bottomOffset)
-            .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
-                isKeyboardVisible = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
-                isKeyboardVisible = false
-            }
+        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
+            buttonContent
+        }
+        .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
+            isKeyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
+            isKeyboardVisible = false
+        }
     }
 
     @ViewBuilder
@@ -162,5 +162,39 @@ struct AppAccentActionLabel: View {
             .foregroundStyle(Color.accentColor)
             .frame(width: 24, height: 24)
             .background(.white, in: Circle())
+    }
+}
+
+struct BottomPinnedActionContainer<Content: View>: View {
+    let height: CGFloat
+    let bottomOffset: CGFloat
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            BottomPinnedEdgeFade()
+            content.offset(y: bottomOffset)
+        }
+        .frame(height: height, alignment: .bottom)
+    }
+}
+
+private struct BottomPinnedEdgeFade: View {
+    var body: some View {
+        LinearGradient(
+            stops: [
+                .init(color: bottomColor.opacity(0), location: 0),
+                .init(color: bottomColor.opacity(0.72), location: 0.52),
+                .init(color: bottomColor, location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea(.container, edges: .bottom)
+        .allowsHitTesting(false)
+    }
+
+    private var bottomColor: Color {
+        PlatformColors.systemBackground
     }
 }

@@ -31,15 +31,15 @@ struct BottomPinnedDualActionBar: View {
     }
 
     var body: some View {
-        buttonContent
-            .frame(height: bottomBarHeight, alignment: .bottom)
-            .offset(y: bottomOffset)
-            .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
-                isKeyboardVisible = true
-            }
-            .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
-                isKeyboardVisible = false
-            }
+        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
+            buttonContent
+        }
+        .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
+            isKeyboardVisible = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
+            isKeyboardVisible = false
+        }
     }
 
     @ViewBuilder

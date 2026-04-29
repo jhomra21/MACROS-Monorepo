@@ -261,6 +261,7 @@
 - Restored the native iOS search drawer for Search mode only, so Manual entry no longer shows an irrelevant search field.
 - Tightened the Search list top spacing so the `On Device` section sits closer to the native search drawer and first result.
 - Updated shared blue bottom action labels to use the Apple-style filled white icon circle with accent-colored symbol, softer white text, and an 8pt icon-to-text gap.
+- Added a native-style bottom edge fade behind the Dashboard Add Food button and Add Food scan actions so list content fades into the screen edge/home-indicator area instead of stopping abruptly behind the floating controls.
 
 #### Main implementation steps
 
@@ -270,6 +271,8 @@
 - Removed the now-unused `AddFoodQuickActions` view from `AddFoodComponents.swift`.
 - Extracted `AppAccentActionLabel` from `BottomPinnedActionBar.swift` so the Dashboard Add Food button and Add Food scan buttons share the same accent-label treatment.
 - A simplify pass replaced an imprecise `AddFoodEntryPoint` scan destination with a local scan-only destination enum, avoiding impossible `.addFood` / `.manualEntry` branches.
+- Added `BottomPinnedActionContainer` and `BottomPinnedEdgeFade` so single and dual bottom action bars share the same screen-edge fade placement while keeping the visual `bottomOffset` scoped to the buttons.
+- Added `PlatformColors.systemBackground` so the edge fade reuses the app's platform color helpers and adapts correctly in light and dark mode.
 
 #### Bugs and implementation findings
 
@@ -280,10 +283,12 @@
 - The shared filled-icon bottom label intentionally uses an 8pt icon/text gap; Apple HIG guidance supports consistent layout but does not publish a fixed icon-label gap for this exact control.
 - Simplify review also noted shared bottom-bar infrastructure duplication and scroll-compaction similarity with Dashboard; those were left unchanged for now to keep the redesign focused and avoid destabilizing the already accepted Dashboard bottom bar.
 - Defensive-code review found no further high-confidence redundant guards, duplicated validation, or impossible-state branches after the scan-destination enum cleanup.
+- The first bottom fade attempt moved with the visually lowered buttons, placing the fade under the controls instead of at the app/list edge; the final container keeps the fade pinned to the bottom safe-area edge and offsets only the button content.
+- A follow-up simplify pass extracted the repeated fade/container wrapper shared by `BottomPinnedActionBar` and `BottomPinnedDualActionBar`; defensive-code review found no further redundant defensive branches in the fade follow-up.
 
 #### Validation
 
-- Formatter validation, whitespace diff validation, iOS simulator build, and focused simulator visual checks passed.
+- Formatter validation, whitespace diff validation, iOS simulator build, and focused simulator visual checks passed, including the bottom edge fade placement on Dashboard and Add Food expanded/compact states.
 
 ## USDA Proxy and Unified Remote Search
 
