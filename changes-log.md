@@ -82,6 +82,7 @@
 - Fixed the Dashboard Save Photo payload so Photos receives JPEG data instead of an alpha-bearing `UIImage`.
 - Shared JPEG encoding between Dashboard sharing and label-scan preview generation.
 - Removed temporary Dashboard share/save timing diagnostics after the Save Photo issue was isolated.
+- Added a scroll-responsive compact Add Food control on Dashboard: the full-width bottom action morphs into a bottom-right circular iOS 26 Liquid Glass plus button once the user scrolls.
 
 #### Main implementation steps
 
@@ -102,6 +103,9 @@
 - Added `Shared/ImageJPEGEncoder.swift` to the Xcode synchronized-group exception list so the file is not compiled twice through both the app root and shared groups.
 - Overlapped label OCR and preview JPEG encoding with `async let` so scan preview preparation no longer waits until OCR finishes.
 - Validated and fixed the review finding that returning a nested `UIActivityItemProvider` from another `UIActivityItemSource` was the wrong UIKit share contract; the Save Photo branch now returns the final cached JPEG `Data` directly.
+- Updated `BottomPinnedActionBar.swift` with an expanded/compact display mode, native `GlassEffectContainer` / `glassEffectID` morphing, explicit circular compact button shape, and a non-glass fallback.
+- Updated `DashboardScreen.swift` to drive the compact Add Food state from existing scroll geometry with a small hysteresis threshold, while keeping the transition animation owned by the state mutation.
+- Removed the bottom bar's full-width hit shape and day-swipe gesture so compact mode only intercepts taps on the circular plus button and logged-food rows beside it remain editable.
 
 #### Bugs and implementation findings
 
@@ -116,6 +120,8 @@
 - Repeated simplify passes intentionally converged through layers of cleanup: removing diagnostics, sharing JPEG encoding, deleting the scan-specific wrapper, avoiding eager JPEG work, caching Save Photo output, and fixing Xcode synchronized membership for the new shared file.
 - Apple docs support the `UIActivityViewController`, `UIActivityItemSource`, thumbnail, and `LPLinkMetadata` pieces; the non-presented controller warm-up is a measured workaround justified by local timing logs, not a general Apple-required pattern.
 - A simplify pass caught misleading `exportPNG` naming after the share path became image-based, and a defensive-code review caught the stale `Daily Summary` metadata fallback after the visual title was removed.
+- Compacting the Add Food button initially caused row flashes and blocked taps beside the button; the fix stabilized the reserved bottom inset height and narrowed compact-mode hit testing to the button itself.
+- The compact button animation was tuned so the same plus icon size is used in both states, the compact plus remains centered, and the `Add Food` text transitions from the trailing edge instead of fading or clipping from the middle.
 
 #### Validation
 
@@ -126,6 +132,7 @@
 - Date-only share title and final defensive-code cleanup passed formatter validation, iOS simulator build, and `git diff --check`.
 - Save Photo JPEG payload and cleanup passes passed `git diff --check`, formatter validation, repeated simplify review, and iOS simulator builds.
 - The nested-provider review fix passed `git diff --check`, formatter validation, iOS simulator build, and a final focused diff review.
+- The compact Add Food Liquid Glass follow-up passed `git diff --check`, formatter validation, iOS simulator build, simplify review, and defensive-code review.
 
 ## Scan Flows
 

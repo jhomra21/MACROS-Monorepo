@@ -19,6 +19,7 @@ struct DashboardScreen: View {
     @State private var logAgainFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
     @State private var showsCompactSummary = false
+    @State private var isAddFoodButtonCompact = false
     @State private var selectedMacro: MacroMetric?
     @State private var isMacroRingExpanded = false
     #if os(iOS)
@@ -157,6 +158,7 @@ struct DashboardScreen: View {
             max(0, scrollGeometry.contentOffset.y)
         } action: { _, newOffset in
             updateCompactSummaryVisibility(for: newOffset)
+            updateAddFoodButtonDisplay(for: newOffset)
         }
     }
 
@@ -253,12 +255,16 @@ struct DashboardScreen: View {
     }
 
     private var dashboardBottomBar: some View {
-        BottomPinnedActionBar(title: "Add Food", systemImage: "plus", isDisabled: false, topPadding: 0) {
+        BottomPinnedActionBar(
+            title: "Add Food",
+            systemImage: "plus",
+            isDisabled: false,
+            displayMode: isAddFoodButtonCompact ? .compactIcon : .expanded,
+            topPadding: 0
+        ) {
             onOpenAddFood(daySelection.selectedDay)
         }
         .frame(maxWidth: .infinity)
-        .contentShape(Rectangle())
-        .simultaneousGesture(dayNavigationGesture)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot) -> some View {
@@ -287,6 +293,16 @@ struct DashboardScreen: View {
         guard shouldShowCompactSummary != showsCompactSummary else { return }
 
         showsCompactSummary = shouldShowCompactSummary
+    }
+
+    private func updateAddFoodButtonDisplay(for offset: CGFloat) {
+        let compactThreshold: CGFloat = isAddFoodButtonCompact ? 2 : 12
+        let shouldCompact = offset > compactThreshold
+        guard shouldCompact != isAddFoodButtonCompact else { return }
+
+        withAnimation(.smooth(duration: 0.22)) {
+            isAddFoodButtonCompact = shouldCompact
+        }
     }
 
     private func toggleMacroRingExpansion() {
