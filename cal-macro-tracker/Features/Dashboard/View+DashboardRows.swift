@@ -3,7 +3,7 @@ import SwiftUI
 extension View {
     func dashboardDaySwipe<G: Gesture>(_ gesture: G) -> some View {
         contentShape(Rectangle())
-            .simultaneousGesture(gesture)
+            .highPriorityGesture(gesture)
     }
 
     func dashboardListRow(bottom: CGFloat) -> some View {

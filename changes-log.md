@@ -157,6 +157,30 @@
 - The bottom action hit-target fix passed `git diff --check`, formatter validation, and iOS simulator build.
 - The blue button contrast fix passed formatter validation, iOS simulator build, and focused visual validation of the Dashboard `Add Food` button.
 
+### Follow-up: Dashboard macro swipe vs tap gestures
+
+#### Delivered
+
+- Fixed Dashboard day swipes over the macro ring and macro legend so horizontal swipes no longer trigger ring expansion or macro-selection tap animations.
+- Preserved the existing smooth tap behavior for intentional ring and macro card taps.
+
+#### Main implementation steps
+
+- Updated `View+DashboardRows.swift` so dashboard day-swipe handling uses `.highPriorityGesture` instead of `.simultaneousGesture`.
+- Restored the macro ring and macro legend to native `Button` interactions after gesture-only tap attempts caused layout snapping during ring scaling.
+
+#### Bugs and implementation findings
+
+- The original `.simultaneousGesture` allowed child buttons to enter their tap/press path while the parent row was also recognizing a horizontal day swipe.
+- Replacing buttons with `DragGesture(minimumDistance: 0)` or plain tap gestures stopped the press behavior but made the ring scale transition feel jumpy because gesture recognition and list-row layout participated during the same interaction.
+- The accepted fix makes the row swipe gesture win before child button taps during drags, avoiding the unwanted swipe-triggered tap animation without changing the macro panel layout contract.
+- A simplify review found no reuse, quality, or efficiency cleanup needed for the final gesture diff.
+- A defensive-code review found no redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Validation
+
+- Formatter validation, whitespace diff validation, and iOS simulator build passed.
+
 ## Scan Flows
 
 ### Delivered
