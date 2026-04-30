@@ -30,9 +30,11 @@ struct SearchFoodListView: View {
             if suggestions.isEmpty == false {
                 ScrollView(.horizontal, showsIndicators: false) {
                     suggestionPills
+                        .padding(.vertical, 8)
+                        .contentShape(Rectangle())
                 }
                 .environment(\.defaultMinListRowHeight, 0)
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 0))
+                .listRowInsets(EdgeInsets(top: -8, leading: 16, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             }

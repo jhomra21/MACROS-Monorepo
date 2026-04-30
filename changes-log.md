@@ -257,6 +257,7 @@
 
 - Added local-first food suggestions in Add Food search mode based on the user's recent on-device logging history.
 - Showed up to five suggestion shortcuts above `On Device` when search text is empty, then removed the visible suggestion header and shaded/glass pill background after visual review showed an artifact in the list row.
+- Enlarged the suggestion row's vertical swipe capture area while preserving the accepted visible spacing between suggestions and `On Device`.
 - Added a Settings `Food Suggestions` toggle that is on by default and explains that suggestions come from on-device logging history.
 
 #### Main implementation steps
@@ -275,10 +276,14 @@
 - `LogEntry` already contains enough snapshot data to suggest scanned/search foods even when no reusable `FoodItem` exists.
 - The initial heuristic uses only the last 14 days; a future version can extend this to all-history scoring with time decay once v1 proves useful.
 - Native glass and bordered button styles created visible row artifacts in this context, so the accepted visual cleanup keeps suggestion shortcuts as plain tappable text with an invisible capsule hit target.
+- Visual validation found that canceling the added padding with matching negative padding likely neutralized the intended gesture area; the follow-up keeps the row's 8pt vertical gesture padding and offsets the list-row inset instead, with simulator swipes near the row edges no longer handing off to vertical list scrolling.
+- A simplify review found no reuse or efficiency cleanup for the swipe-area follow-up; its broader caution about negative list insets was left unchanged because the current layout is the smallest visually validated way to add gesture area without reintroducing visible spacing.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the swipe-area follow-up.
 
 #### Validation
 
 - The heuristic suggestions follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
+- The suggestion swipe-area follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, focused visual validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: Add Food search and scan action redesign
 
