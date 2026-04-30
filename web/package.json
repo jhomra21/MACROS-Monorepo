@@ -8,7 +8,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
+    "dev": "set -m; bun run dev:api & api_pid=$!; trap 'kill -- -$api_pid' EXIT INT TERM; bun run dev:astro",
+    "dev:astro": "astro dev",
+    "dev:api": "wrangler types --config wrangler.api.jsonc && wrangler dev --config wrangler.api.jsonc",
     "dev:worker": "bun run build && wrangler dev",
     "build": "wrangler types && astro check && tsc --noEmit && astro build",
     "preview": "bun run dev:worker",

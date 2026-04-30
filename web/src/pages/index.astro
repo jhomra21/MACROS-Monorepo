@@ -23,8 +23,8 @@ import {
 			<div class="macros-hero-visual">
 				<Image
 					class="app-showcase-img"
-					src={site.heroShowcase[0].src}
-					alt={site.heroShowcase[0].alt}
+					src={site.heroShowcase.src}
+					alt={site.heroShowcase.alt}
 					format="webp"
 					widths={[360, 720]}
 					sizes="(max-width: 960px) 44vw, 22vw"
@@ -33,10 +33,45 @@ import {
 		</div>
 	</section>
 
+	<!-- Section 2: Waitlist -->
+	<section class="section section--waitlist">
+		<div class="container container--waitlist">
+			<div class="waitlist-form-container">
+				<h2>Join waitlist</h2>
+				<p
+					class="status status-banner waitlist-status"
+					data-waitlist-status
+					data-default-message={waitlistStatusMessages.submitted}
+					data-default-error-message={waitlistStatusMessages.error}
+				>
+					{waitlistStatusMessages.submitted}
+				</p>
+				<form
+					class="waitlist-form"
+					action="/api/waitlist"
+					method="POST"
+					data-waitlist-form
+					data-astro-reload
+				>
+					<input
+						type="email"
+						name="email"
+						placeholder="Email address"
+						required
+						maxlength={waitlistFieldAttributes.email.maxLength}
+						class="waitlist-input"
+					/>
+					<button type="submit" class="waitlist-submit" aria-label="Join Waitlist">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+					</button>
+				</form>
+			</div>
+		</div>
+	</section>
+
 	<!-- Section 3: App Photos Carousel -->
 	<section class="section section--carousel">
 		<div class="container">
-			<h2 class="carousel-title">APP Photos</h2>
 			<div class="carousel-container">
 				<button
 					type="button"
@@ -84,54 +119,6 @@ import {
 		</div>
 	</section>
 
-	<!-- Section 4: Waitlist -->
-	<section class="section section--waitlist">
-		<div class="container container--waitlist">
-			<div class="waitlist-visual">
-				<Image
-					class="app-showcase-img"
-					src={site.screenshots[2].src}
-					alt="Logged meals UI"
-					loading="lazy"
-					format="webp"
-					widths={[360, 720]}
-					sizes="(max-width: 960px) 44vw, 22vw"
-				/>
-			</div>
-
-			<div class="waitlist-form-container">
-				<h2>Join waitlist</h2>
-				<p
-					class="status status-banner waitlist-status"
-					data-waitlist-status
-					data-default-message={waitlistStatusMessages.submitted}
-					data-default-error-message={waitlistStatusMessages.error}
-				>
-					{waitlistStatusMessages.submitted}
-				</p>
-				<form
-					class="waitlist-form"
-					action="/api/waitlist"
-					method="POST"
-					data-waitlist-form
-					data-astro-reload
-				>
-					<input
-						type="email"
-						name="email"
-						placeholder="Email address"
-						required
-						maxlength={waitlistFieldAttributes.email.maxLength}
-						class="waitlist-input"
-					/>
-					<button type="submit" class="waitlist-submit" aria-label="Join Waitlist">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-					</button>
-				</form>
-			</div>
-		</div>
-	</section>
-
 	<script>
 		import {
 			getWaitlistEmailValidationMessage,
@@ -149,6 +136,7 @@ import {
 			const nextCarouselButton = document.querySelector('[data-carousel-next]');
 			const form = document.querySelector('[data-waitlist-form]');
 			const status = document.querySelector('[data-waitlist-status]');
+			const submitControl = form?.querySelector('.waitlist-submit');
 			const defaultSuccessMessage =
 				status instanceof HTMLElement ? status.dataset.defaultMessage ?? status.textContent ?? '' : '';
 			const defaultErrorMessage =
@@ -223,13 +211,7 @@ import {
 			}
 
 			function getSubmitControl() {
-				if (!(form instanceof HTMLFormElement)) {
-					return null;
-				}
-
-				const control = form.querySelector('.waitlist-submit');
-
-				return control instanceof HTMLButtonElement ? control : null;
+				return submitControl instanceof HTMLButtonElement ? submitControl : null;
 			}
 
 			function getNormalizedWaitlistEmailValue() {

@@ -1,48 +1,29 @@
 :root {
-	color-scheme: light dark;
-	/* Apple Native System Colors - Light */
+	color-scheme: light;
 	--background: #f2f2f7;
 	--background-elevated: #ffffff;
-	--surface: rgba(255, 255, 255, 0.7);
-	--surface-strong: rgba(255, 255, 255, 0.9);
-	--surface-muted: rgba(242, 242, 247, 0.88);
+	--surface: rgba(255, 255, 255, 0.74);
+	--surface-strong: rgba(255, 255, 255, 0.94);
+	--surface-muted: rgba(242, 242, 247, 0.92);
 	--text: #000000;
-	--text-muted: #86868b;
+	--text-muted: #6e6e73;
 	--border: rgba(0, 0, 0, 0.08);
 	--border-strong: rgba(0, 0, 0, 0.16);
-	
-	/* Brand Colors */
-	--accent: #f58f3d;
-	--accent-strong: #e06a18;
-	--protein: #2c7df0;
-	--carbs: #f59a23;
+
+	--accent: #007aff;
+	--accent-strong: #0066d6;
+	--accent-soft: rgba(0, 122, 255, 0.12);
+	--protein: #007aff;
+	--carbs: #ff9f0a;
 	--fat: #ef4f87;
-	
-	/* Shadows & Radius (Bento) */
-	--shadow-bento: 0 8px 32px rgba(0, 0, 0, 0.06);
-	--shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+	--shadow-bento: 0 18px 48px rgba(0, 57, 115, 0.08);
+	--shadow-strong: 0 28px 70px rgba(0, 57, 115, 0.14);
 	--radius-lg: 32px;
 	--radius-md: 20px;
 	--radius-sm: 12px;
 	--radius-pill: 999px;
 	--container: 1040px;
-}
-
-@media (prefers-color-scheme: dark) {
-	:root {
-		/* Apple Native System Colors - Dark */
-		--background: #000000;
-		--background-elevated: #1c1c1e;
-		--surface: rgba(28, 28, 30, 0.7);
-		--surface-strong: rgba(28, 28, 30, 0.9);
-		--surface-muted: rgba(44, 44, 46, 0.9);
-		--text: #ffffff;
-		--text-muted: #86868b;
-		--border: rgba(255, 255, 255, 0.1);
-		--border-strong: rgba(255, 255, 255, 0.15);
-		--shadow-bento: 0 8px 32px rgba(0, 0, 0, 0.3);
-		--shadow-strong: 0 16px 48px rgba(0, 0, 0, 0.5);
-	}
 }
 
 * {
@@ -55,7 +36,9 @@ html {
 
 body {
 	margin: 0;
-	background-color: var(--background);
+	background:
+		radial-gradient(circle at top left, rgba(0, 122, 255, 0.14), transparent 34rem),
+		linear-gradient(180deg, #ffffff 0%, var(--background) 28rem);
 	color: var(--text);
 	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 	line-height: 1.5;
@@ -114,11 +97,12 @@ main,
 
 .brand {
 	font-size: 1.1rem;
-	font-weight: 600;
+	font-weight: 700;
 	letter-spacing: -0.01em;
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
+	color: var(--accent);
 }
 
 .nav-list {
@@ -142,18 +126,13 @@ main,
 
 .nav-link--active,
 .nav-link:hover {
-	background: var(--background-elevated);
-	color: var(--text);
+	background: var(--accent-soft);
+	color: var(--accent);
 }
 
 /* Sections */
 .section {
 	padding: 4rem 0;
-}
-
-.section--hero {
-	padding: 6rem 0 4rem;
-	text-align: center;
 }
 
 /* Typography Overrides */
@@ -200,6 +179,7 @@ h1, h2, h3 {
 .button {
 	background-color: var(--accent);
 	color: #ffffff;
+	box-shadow: 0 12px 28px rgba(0, 122, 255, 0.24);
 }
 
 .button-secondary {
@@ -216,7 +196,6 @@ h1, h2, h3 {
 
 /* Bento Cards System */
 .card-grid,
-.screenshot-grid,
 .detail-grid {
 	display: grid;
 	gap: 1.5rem;
@@ -226,9 +205,8 @@ h1, h2, h3 {
 .card,
 .detail-card,
 .support-card,
-.screenshot-card,
 .page-panel {
-	background: var(--background-elevated);
+	background: var(--surface-strong);
 	border-radius: var(--radius-lg);
 	padding: 2rem;
 	box-shadow: var(--shadow-bento);
@@ -240,8 +218,7 @@ h1, h2, h3 {
 
 .card h2,
 .detail-card h2,
-.page-panel h2,
-.screenshot-card h2 {
+.page-panel h2 {
 	font-size: 1.5rem;
 	margin-bottom: 0.75rem;
 	font-weight: 700;
@@ -250,8 +227,7 @@ h1, h2, h3 {
 
 .card p,
 .detail-card p,
-.page-panel p,
-.screenshot-card p {
+.page-panel p {
 	color: var(--text-muted);
 	font-size: 1.05rem;
 	margin: 0;
@@ -262,21 +238,12 @@ h1, h2, h3 {
 	gap: 1.5rem;
 }
 
-/* Hero Visuals */
-.hero-visual-panel {
-	margin-top: 4rem;
-	display: flex;
-	justify-content: center;
-	gap: 2rem;
-	flex-wrap: wrap;
-}
-
 .app-showcase-img {
 	border-radius: 2rem;
 	width: min(100%, 320px);
 	height: auto;
 	object-fit: contain;
-	box-shadow: none;
+	box-shadow: 0 24px 70px rgba(0, 57, 115, 0.16);
 }
 
 /* Removed macro-highlight classes for new redesign */
@@ -305,7 +272,7 @@ h1, h2, h3 {
 	margin: 0;
 	display: inline-block;
 	padding-right: 0.08em;
-	background: -webkit-linear-gradient(135deg, var(--text) 0%, rgba(134, 134, 139, 0.8) 100%);
+	background: -webkit-linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -313,7 +280,7 @@ h1, h2, h3 {
 
 .down-arrow {
 	margin: 2.5rem 0;
-	color: var(--text-muted);
+	color: var(--accent);
 	transform: scale(1.2);
 	animation: bounce 2s infinite ease-in-out;
 }
@@ -326,11 +293,12 @@ h1, h2, h3 {
 .subtitle {
 	font-size: clamp(1.25rem, 3vw, 1.75rem);
 	font-weight: 600;
-	color: var(--text);
-	background: var(--background-elevated);
+	color: var(--accent);
+	background: var(--surface-strong);
 	padding: 0.85rem 1.75rem;
 	border-radius: var(--radius-pill);
 	box-shadow: var(--shadow-strong);
+	border: 1px solid var(--border);
 }
 
 .macros-hero-visual {
@@ -348,14 +316,6 @@ h1, h2, h3 {
 /* App Photos Carousel */
 .section--carousel {
 	overflow: hidden;
-}
-
-.carousel-title {
-	text-align: center;
-	font-size: 2.5rem;
-	font-weight: 700;
-	letter-spacing: -0.04em;
-	margin-bottom: 2.5rem;
 }
 
 .carousel-container {
@@ -445,24 +405,26 @@ h1, h2, h3 {
 }
 
 /* Waitlist Section */
+.section--waitlist {
+	padding-top: 1rem;
+	padding-bottom: 2rem;
+}
+
 .container--waitlist {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 1.5rem;
 	max-width: 500px;
 }
-
-.waitlist-visual {
-	width: 100%;
-	display: flex;
-	justify-content: center;
-}
-
 
 .waitlist-form-container {
 	width: 100%;
 	text-align: center;
+	padding: 0;
+}
+
+.waitlist-form-container h2 {
+	margin-bottom: 1.5rem;
 }
 
 .status {
@@ -511,10 +473,10 @@ h1, h2, h3 {
 	display: flex;
 	gap: 0.5rem;
 	background: var(--background-elevated);
-	padding: 0.5rem;
+	padding: 0.45rem;
 	border-radius: var(--radius-pill);
 	border: 1px solid var(--border-strong);
-	box-shadow: var(--shadow-bento);
+	box-shadow: 0 14px 36px rgba(0, 57, 115, 0.08);
 }
 
 .waitlist-input {
@@ -567,33 +529,6 @@ h1, h2, h3 {
 	}
 }
 
-/* Screenshots Grid */
-.screenshot-card {
-	padding: 0;
-}
-
-.screenshot-card__media {
-	background: var(--background);
-	padding: 1.5rem 1.5rem 0 1.5rem;
-	display: flex;
-	justify-content: center;
-	border-bottom: 1px solid var(--border);
-}
-
-.screenshot-card__media img {
-	border-radius: 16px 16px 0 0;
-	box-shadow: 0 -4px 16px rgba(0,0,0,0.05);
-	width: 100%;
-}
-
-.screenshot-card__body {
-	padding: 2rem;
-}
-
-.theme-badge {
-	display: none; /* Simplify UI by removing badge if visual alone is clear, or can restyle it */
-}
-
 /* Support Form Elements */
 .support-list,
 .policy-list {
@@ -610,16 +545,12 @@ h1, h2, h3 {
 }
 
 .status--success {
-	background: #e8f5e9;
-	color: #2e7d32;
+	background: rgba(52, 199, 89, 0.12);
+	color: #248a3d;
 }
 .status--error {
-	background: #ffebee;
-	color: #c62828;
-}
-@media (prefers-color-scheme: dark) {
-	.status--success { background: rgba(46, 125, 50, 0.2); }
-	.status--error { background: rgba(198, 40, 40, 0.2); }
+	background: rgba(255, 59, 48, 0.12);
+	color: #d70015;
 }
 
 .field-list {
@@ -648,7 +579,7 @@ h1, h2, h3 {
 	padding: 0.85rem 1rem;
 	border-radius: var(--radius-sm);
 	border: 1px solid var(--border-strong);
-	background: var(--background);
+	background: rgba(255, 255, 255, 0.78);
 	color: var(--text);
 	font-size: 1rem;
 	font-family: inherit;
@@ -664,6 +595,7 @@ h1, h2, h3 {
 .field textarea:focus {
 	outline: none;
 	border-color: var(--accent);
+	box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 /* Footer Styling */
@@ -703,7 +635,7 @@ h1, h2, h3 {
 	color: var(--text-muted);
 }
 .site-footer__links a:hover {
-	color: var(--text);
+	color: var(--accent);
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "macros-web-api-dev",
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-04-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "dev": {
+    "port": 8787,
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "invocation_logs": true,
+      "head_sampling_rate": 1,
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+    },
+  },
+  "d1_databases": [
+    {
+      "binding": "SUPPORT_DB",
+      "database_name": "cal-macro-tracker-support",
+      "database_id": "fde5c0b8-dda4-4c92-b068-baf7e19e3b0e",
+      "migrations_dir": "./migrations",
+    },
+  ],
+}

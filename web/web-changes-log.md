@@ -30,12 +30,16 @@
 ### Delivered
 
 - Moved website screenshots from `public/app-images/` to `src/assets/app-images/`.
-- Added light-mode screenshots:
-  - `src/assets/app-images/home1-light.jpeg`
-  - `src/assets/app-images/calendar-closed-light.jpeg`
+- Replaced the older screenshot set with high-resolution seeded app screenshots:
+  - `src/assets/app-images/app-home.png`
+  - `src/assets/app-images/app-add-food.png`
+  - `src/assets/app-images/app-settings.png`
+  - `src/assets/app-images/app-history.png`
+  - `src/assets/app-images/app-calendar.png`
+  - `src/assets/app-images/app-share.png`
 - Updated `src/data/site.ts` to import screenshots as local Astro assets instead of string paths.
 - Updated `src/pages/index.astro` to render screenshots through `astro:assets` `<Image />`.
-- Updated the root `README.md` to reuse the shared web screenshot assets, including the new light-mode images.
+- Updated the root `README.md` to reuse the shared seeded screenshot assets.
 
 ### What went wrong
 
@@ -602,3 +606,42 @@
 
 - `bun run check`
 - `bun run build`
+
+## Seeded Screenshot Refresh and Apple Blue Visual Language
+
+### Delivered
+
+- Replaced the website and README screenshot set with high-resolution seeded app screenshots:
+  - `src/assets/app-images/app-home.png`
+  - `src/assets/app-images/app-add-food.png`
+  - `src/assets/app-images/app-settings.png`
+  - `src/assets/app-images/app-history.png`
+  - `src/assets/app-images/app-calendar.png`
+  - `src/assets/app-images/app-share.png`
+- Seeded simulator food logs for today and the prior six days during screenshot capture so dashboard rings, history, and calendar views show a full week of realistic data.
+- Updated `src/data/site.ts` so the Astro gallery and hero use the new screenshot assets and copy.
+- Updated the root `README.md` screenshot sections to match the new seeded image set.
+- Refreshed `src/styles/global.css` around the app's current visual language: Apple-light backgrounds, system blue accents, glassy white surfaces, blue-tinted shadows, and blue-focused controls/states.
+- Moved the waitlist between the hero and app image carousel, removed its old screenshot/card treatment, and kept only the heading, status alert, and email input.
+- Removed the page eyebrow pills from About, Privacy, and Support so the secondary pages match the cleaner Apple-light treatment.
+- Added `wrangler.api.jsonc` for API-only local Worker development without rebuilding the Astro site.
+- Split local development scripts into `dev:astro` and `dev:api`, with `bun dev` running both together.
+- Added a shell `trap` to the Bun-based `dev` script because validation showed the simple background-process form left `wrangler dev`/`workerd` running after Astro exited.
+- Removed carousel image shadows that bled into the gallery edges.
+- Removed the `APP Photos` gallery heading so the screenshot carousel follows the waitlist without extra header text.
+- Simplified stale web data/CSS after the redesign by removing unused site data fields and old screenshot-grid/hero selectors.
+
+### Main implementation steps
+
+- Captured home, add food, settings, history, expanded calendar, and native share-sheet interactions from the iOS Simulator at high-resolution PNG output.
+- Removed the older mixed screenshot assets so the web app and README now point at one current image set.
+- Kept the screenshot seed helper out of source after capture so demo data does not ship in the app runtime.
+- Updated the global CSS token layer instead of adding page-local styling, so all Astro pages inherit the same Apple-light/blue treatment consistently.
+- Verified the original `bun run dev:api & bun run dev:astro` script orphaned the API Worker process, then used the smallest no-dependency shell cleanup pattern instead of adding a process-manager dependency or Node wrapper.
+- Accepted the `dev:api` Wrangler type regeneration behavior as intentional: `bun dev` uses `wrangler.api.jsonc` so local API-only development omits the `ASSETS` binding while Astro serves pages/assets, and `bun run check`, `bun run build`, and production deploy regenerate main-config types with `ASSETS` when needed.
+
+### Validation recorded
+
+- `bun run check`
+- `git diff --check`
+- iOS Simulator build for the `cal-macro-tracker` scheme succeeded.
