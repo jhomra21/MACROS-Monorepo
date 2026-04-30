@@ -27,19 +27,14 @@ struct BottomPinnedActionBar: View {
     }
 
     private var bottomPadding: CGFloat {
-        isKeyboardVisible ? 72 : 8
+        isKeyboardVisible ? BottomPinnedActionBarMetrics.keyboardGap + bottomOffset : BottomPinnedActionBarMetrics.bottomPadding
     }
 
     var body: some View {
         BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
             buttonContent
         }
-        .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
-            isKeyboardVisible = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
-            isKeyboardVisible = false
-        }
+        .bottomPinnedKeyboardVisibility($isKeyboardVisible)
     }
 
     @ViewBuilder
@@ -115,6 +110,27 @@ struct BottomPinnedActionBar: View {
         isCompact ? 0 : 18
     }
 
+}
+
+private struct BottomPinnedKeyboardVisibilityModifier: ViewModifier {
+    @Binding var isKeyboardVisible: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                isKeyboardVisible = false
+            }
+            .onDisappear {
+                isKeyboardVisible = false
+            }
+            .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
+                isKeyboardVisible = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
+                isKeyboardVisible = false
+            }
+    }
+
     private var keyboardWillShowNotification: Notification.Name {
         #if os(iOS)
         UIResponder.keyboardWillShowNotification
@@ -130,6 +146,17 @@ struct BottomPinnedActionBar: View {
         Notification.Name("BottomPinnedActionBarKeyboardWillHide")
         #endif
     }
+}
+
+extension View {
+    func bottomPinnedKeyboardVisibility(_ isKeyboardVisible: Binding<Bool>) -> some View {
+        modifier(BottomPinnedKeyboardVisibilityModifier(isKeyboardVisible: isKeyboardVisible))
+    }
+}
+
+enum BottomPinnedActionBarMetrics {
+    static let bottomPadding: CGFloat = 8
+    static let keyboardGap: CGFloat = 20
 }
 
 struct AppAccentActionLabel: View {

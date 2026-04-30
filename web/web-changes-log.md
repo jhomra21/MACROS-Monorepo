@@ -645,3 +645,17 @@
 - `bun run check`
 - `git diff --check`
 - iOS Simulator build for the `cal-macro-tracker` scheme succeeded.
+
+## Hero Branding Review Cleanup
+
+### Delivered
+
+- Removed the gradient treatment from the hero `MACROS` title and restored dark text.
+- Updated the header `MACROS` brand to match the hero title color.
+- Removed the animated down arrow between the hero title and subtitle.
+- Replaced the subtitle pill with plain text directly under the title: `Simplest Calorie and Macro tracking app`.
+- Updated the hero screenshot styling to follow the carousel image presentation: natural image ratio, no forced max-height/object-fit clipping, and no extra image shadow, while preserving the hero-specific image width.
+
+### Validation recorded
+
+- `bun run astro check`

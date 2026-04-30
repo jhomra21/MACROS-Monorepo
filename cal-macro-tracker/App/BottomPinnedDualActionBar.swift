@@ -27,19 +27,14 @@ struct BottomPinnedDualActionBar: View {
     }
 
     private var bottomPadding: CGFloat {
-        isKeyboardVisible ? 72 : 8
+        isKeyboardVisible ? BottomPinnedActionBarMetrics.keyboardGap + bottomOffset : BottomPinnedActionBarMetrics.bottomPadding
     }
 
     var body: some View {
         BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
             buttonContent
         }
-        .onReceive(NotificationCenter.default.publisher(for: keyboardWillShowNotification)) { _ in
-            isKeyboardVisible = true
-        }
-        .onReceive(NotificationCenter.default.publisher(for: keyboardWillHideNotification)) { _ in
-            isKeyboardVisible = false
-        }
+        .bottomPinnedKeyboardVisibility($isKeyboardVisible)
     }
 
     @ViewBuilder
@@ -110,21 +105,6 @@ struct BottomPinnedDualActionBar: View {
         compactButtonSize * 2 + buttonSpacing
     }
 
-    private var keyboardWillShowNotification: Notification.Name {
-        #if os(iOS)
-        UIResponder.keyboardWillShowNotification
-        #else
-        Notification.Name("BottomPinnedDualActionBarKeyboardWillShow")
-        #endif
-    }
-
-    private var keyboardWillHideNotification: Notification.Name {
-        #if os(iOS)
-        UIResponder.keyboardWillHideNotification
-        #else
-        Notification.Name("BottomPinnedDualActionBarKeyboardWillHide")
-        #endif
-    }
 }
 
 private extension View {

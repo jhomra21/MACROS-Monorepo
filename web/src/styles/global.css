@@ -13,6 +13,7 @@
 	--accent: #007aff;
 	--accent-strong: #0066d6;
 	--accent-soft: rgba(0, 122, 255, 0.12);
+	--brand-title: var(--text);
 	--protein: #007aff;
 	--carbs: #ff9f0a;
 	--fat: #ef4f87;
@@ -102,7 +103,7 @@ main,
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
-	color: var(--accent);
+	color: var(--brand-title);
 }
 
 .nav-list {
@@ -262,6 +263,7 @@ h1, h2, h3 {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
+	gap: 1rem;
 }
 
 .huge-title {
@@ -272,33 +274,13 @@ h1, h2, h3 {
 	margin: 0;
 	display: inline-block;
 	padding-right: 0.08em;
-	background: -webkit-linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
-	background-clip: text;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-}
-
-.down-arrow {
-	margin: 2.5rem 0;
-	color: var(--accent);
-	transform: scale(1.2);
-	animation: bounce 2s infinite ease-in-out;
-}
-
-@keyframes bounce {
-	0%, 100% { transform: translateY(0) scale(1.2); }
-	50% { transform: translateY(10px) scale(1.2); }
+	color: var(--brand-title);
 }
 
 .subtitle {
 	font-size: clamp(1.25rem, 3vw, 1.75rem);
 	font-weight: 600;
-	color: var(--accent);
-	background: var(--surface-strong);
-	padding: 0.85rem 1.75rem;
-	border-radius: var(--radius-pill);
-	box-shadow: var(--shadow-strong);
-	border: 1px solid var(--border);
+	color: var(--brand-title);
 }
 
 .macros-hero-visual {
@@ -308,9 +290,8 @@ h1, h2, h3 {
 
 .macros-hero-visual .app-showcase-img {
 	width: min(100%, 360px);
-	max-height: min(78vh, 760px);
-	object-fit: contain;
-	aspect-ratio: auto;
+	height: auto;
+	box-shadow: none;
 }
 
 /* App Photos Carousel */

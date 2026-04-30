@@ -29,6 +29,9 @@ struct SettingsScreen: View {
         .toolbar {
             AppTopBarLeadingTitle("Settings")
         }
+        .onDisappear {
+            dismissKeyboard($focusedField)
+        }
     }
 
     private var activeGoals: DailyGoals? {

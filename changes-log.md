@@ -299,6 +299,33 @@
 - The Add Food scroll-direction follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 - The 192pt upward threshold tuning passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 
+### Follow-up: bottom action keyboard positioning
+
+#### Delivered
+
+- Reduced the visible gap between the software keyboard and the Add Food scan action buttons to the intended small spacing.
+- Fixed stale keyboard state that could leave Dashboard `Add Food` and Add Food scan buttons shifted into the middle of the screen after leaving Settings with the keyboard still open.
+
+#### Main implementation steps
+
+- Centralized bottom action spacing in `BottomPinnedActionBarMetrics` so the single and dual bottom action bars share the same keyboard and non-keyboard padding values.
+- Updated `BottomPinnedActionBar.swift` and `BottomPinnedDualActionBar.swift` to account for `bottomOffset` when keyboard spacing is active, preserving the existing visually lowered controls while tightening the keyboard gap.
+- Reset bottom action bar keyboard visibility state on view appear/disappear so pushed screens cannot leave stale keyboard-visible layout state behind.
+- Updated `SettingsScreen.swift` to dismiss the focused numeric field when leaving Settings, matching the shared keyboard dismissal path used by the Done button.
+- A simplify review accepted the shared-bottom-bar cleanup and moved duplicated keyboard notification/lifecycle handling into one bottom-pinned keyboard visibility modifier.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Bugs and implementation findings
+
+- The original `72pt` keyboard padding was too large once the scan actions were bottom-pinned, creating a large visual gap above the software keyboard.
+- A naive `8pt` internal padding did not produce an `8pt` visible gap because `bottomOffset` and safe-area inset positioning also affect the final screen-space distance; the shared keyboard spacing is tuned against the rendered simulator result.
+- The shifted-button regression was caused by bottom action bars retaining `isKeyboardVisible = true` after navigating away from Settings without pressing Done; resetting lifecycle state and dismissing Settings focus fixes the stale coupling.
+- The parent Settings keyboard dismissal is intentionally retained even though the goals editor clears focus on disappear, because the parent owns the focused field and also sends the first-responder resignation needed when the whole pushed screen leaves.
+
+#### Validation
+
+- The follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, final diff review, and focused simulator visual checks for keyboard-open Add Food spacing plus the Settings-keyboard-back navigation regression.
+
 ## USDA Proxy and Unified Remote Search
 
 ### Delivered
