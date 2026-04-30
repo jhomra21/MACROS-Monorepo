@@ -4,9 +4,11 @@ import SwiftUI
 struct AddFoodScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
+    @Query private var recentLogEntries: [LogEntry]
 
     let loggingDay: CalendarDay?
 
+    @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
     @State private var remoteSearch = AddFoodRemoteSearchSession()
@@ -21,6 +23,7 @@ struct AddFoodScreen: View {
     init(initialMode: AddFoodMode = .search, loggingDay: CalendarDay? = nil) {
         self.loggingDay = loggingDay
         _selectedMode = State(initialValue: initialMode)
+        _recentLogEntries = Query(Self.suggestionHistoryDescriptor())
     }
 
     private func closeSheet() { dismiss() }
@@ -34,6 +37,7 @@ struct AddFoodScreen: View {
                         SearchFoodListView(
                             loggingDay: loggingDay,
                             foods: rankedFoods,
+                            suggestions: foodSuggestions,
                             totalFoodsCount: foods.count,
                             hasLoadedFoods: !foods.isEmpty,
                             remoteSearch: remoteSearch.viewState,
@@ -106,6 +110,11 @@ struct AddFoodScreen: View {
 
     private var rankedFoods: [FoodItem] {
         FoodItemLocalSearch.rankedFoods(foods, matching: trimmedSearchText)
+    }
+
+    private var foodSuggestions: [FoodSuggestion] {
+        guard selectedMode == .search, trimmedSearchText.isEmpty, isFoodSuggestionsEnabled else { return [] }
+        return FoodSuggestionEngine.suggestions(from: recentLogEntries)
     }
 
     private var scanActionBar: some View {
@@ -238,6 +247,13 @@ struct AddFoodScreen: View {
         remoteSearchTask?.cancel()
         remoteSearchTask = nil
         remoteSearch = AddFoodRemoteSearchSession()
+    }
+
+    private static func suggestionHistoryDescriptor(now: Date = .now) -> FetchDescriptor<LogEntry> {
+        let calendar = Calendar.current
+        let end = now
+        let start = calendar.date(byAdding: .day, value: -14, to: end) ?? end
+        return LogEntryQuery.descriptor(start: start, end: end)
     }
 
     @MainActor

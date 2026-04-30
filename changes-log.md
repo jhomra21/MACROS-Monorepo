@@ -251,6 +251,35 @@
 
 - The iOS simulator build and available repo quality checks passed; formatter and dead-code validation still depended on tooling that was not installed locally at that stage.
 
+### Follow-up: heuristic food suggestions
+
+#### Delivered
+
+- Added local-first food suggestions in Add Food search mode based on the user's recent on-device logging history.
+- Showed up to five suggestion shortcuts above `On Device` when search text is empty, then removed the visible suggestion header and shaded/glass pill background after visual review showed an artifact in the list row.
+- Added a Settings `Food Suggestions` toggle that is on by default and explains that suggestions come from on-device logging history.
+
+#### Main implementation steps
+
+- Added a pure `FoodSuggestionEngine` that scores recent `LogEntry` snapshots with adaptive 3/7/14-day signals for recent repeats, time-of-day patterns, and weekday patterns.
+- Grouped repeated foods by stable identity order: `foodItemID`, barcode, provider external ID, then normalized brand/name/serving text.
+- Preserved internal suggestion reason metadata for future user-facing explanations and feedback-based algorithm tuning.
+- Reused `LogFoodScreen` as the review/log destination for suggestion taps, prefilled from the selected historical `LogEntry` snapshot and quantity without auto-logging.
+- Kept suggestions app-only for v1, with no LLM, Apple Intelligence, server-side learning, notifications, widgets, remote fetches, or persisted analytics.
+- A simplify review replaced duplicated quantity fallback logic with `FoodQuantityState`, reused existing Open Food Facts barcode normalization, centralized the Settings storage key, collapsed duplicated score calculation, modeled suggestion identities as typed cases, and scoped the compact row-height override to suggestion/header rows.
+- A defensive-code review removed a redundant entry-count guard and impossible positive-score filter from `FoodSuggestionEngine`.
+
+#### Bugs and implementation findings
+
+- The existing Add Food local search already owns deterministic on-device ranking, so suggestions were added as a separate empty-search section rather than changing typed search behavior.
+- `LogEntry` already contains enough snapshot data to suggest scanned/search foods even when no reusable `FoodItem` exists.
+- The initial heuristic uses only the last 14 days; a future version can extend this to all-history scoring with time decay once v1 proves useful.
+- Native glass and bordered button styles created visible row artifacts in this context, so the accepted visual cleanup keeps suggestion shortcuts as plain tappable text with an invisible capsule hit target.
+
+#### Validation
+
+- The heuristic suggestions follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
+
 ### Follow-up: Add Food search and scan action redesign
 
 #### Delivered

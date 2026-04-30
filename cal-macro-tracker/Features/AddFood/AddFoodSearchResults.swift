@@ -13,6 +13,7 @@ struct RemoteSearchViewState {
 struct SearchFoodListView: View {
     let loggingDay: CalendarDay?
     let foods: [FoodItem]
+    let suggestions: [FoodSuggestion]
     let totalFoodsCount: Int
     let hasLoadedFoods: Bool
     let remoteSearch: RemoteSearchViewState
@@ -26,6 +27,25 @@ struct SearchFoodListView: View {
 
     var body: some View {
         List {
+            if suggestions.isEmpty == false {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    suggestionPills
+                }
+                .environment(\.defaultMinListRowHeight, 0)
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 8, trailing: 0))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+            }
+
+            Text("On Device")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .environment(\.defaultMinListRowHeight, 0)
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+
             Section {
                 if foods.isEmpty {
                     Text(localEmptyMessage)
@@ -43,8 +63,6 @@ struct SearchFoodListView: View {
                         }
                     }
                 }
-            } header: {
-                Text("On Device")
             } footer: {
                 Text("\(totalFoodsCount) foods available offline")
                     .font(.footnote)
@@ -135,6 +153,34 @@ struct SearchFoodListView: View {
         }
     }
 
+    @ViewBuilder
+    private var suggestionPills: some View {
+        HStack(spacing: 8) {
+            ForEach(suggestions) { suggestion in
+                suggestionLink(for: suggestion)
+                    .buttonStyle(.plain)
+            }
+        }
+    }
+
+    private func suggestionLink(for suggestion: FoodSuggestion) -> some View {
+        let initialAmounts = FoodQuantityState.initialAmounts(for: suggestion.sourceEntry)
+        let initialQuantityAmount =
+            suggestion.sourceEntry.quantityModeKind == .servings ? initialAmounts.servings : initialAmounts.grams
+
+        return NavigationLink {
+            LogFoodScreen(
+                initialDraft: FoodDraft(logEntry: suggestion.sourceEntry, saveAsCustomFood: false),
+                loggingDay: loggingDay,
+                initialQuantityMode: suggestion.sourceEntry.quantityModeKind,
+                initialQuantityAmount: initialQuantityAmount,
+                onFoodLogged: onFoodLogged
+            )
+        } label: {
+            SuggestionPillLabel(title: suggestion.foodName)
+        }
+    }
+
     private var localEmptyMessage: String {
         if hasLoadedFoods == false {
             return isRemoteSearchAvailable
@@ -165,6 +211,21 @@ struct SearchFoodListView: View {
         case nil:
             return "No online packaged foods matched this search."
         }
+    }
+}
+
+private struct SuggestionPillLabel: View {
+    let title: String
+
+    var body: some View {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .lineLimit(1)
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.clear, in: Capsule())
+            .contentShape(Capsule())
     }
 }
 

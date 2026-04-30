@@ -30,6 +30,8 @@ struct LogFoodScreen: View {
     init(
         initialDraft: FoodDraft,
         loggingDay: CalendarDay? = nil,
+        initialQuantityMode: QuantityMode = .servings,
+        initialQuantityAmount: Double? = nil,
         reviewNotes: [String] = [],
         requiredReviewNutrients: [RequiredNutritionReviewNutrient] = [],
         previewImageData: Data? = nil,
@@ -42,9 +44,11 @@ struct LogFoodScreen: View {
         self.previewImageData = previewImageData
         self.onFoodLogged = onFoodLogged
         _draft = State(initialValue: initialDraft)
-        _quantityMode = State(initialValue: .servings)
-        _servingsAmount = State(initialValue: 1)
-        _gramsAmount = State(initialValue: initialDraft.gramsPerServing ?? 100)
+        _quantityMode = State(initialValue: initialQuantityMode)
+        _servingsAmount = State(initialValue: initialQuantityMode == .servings ? (initialQuantityAmount ?? 1) : 1)
+        _gramsAmount = State(
+            initialValue: initialQuantityMode == .grams
+                ? (initialQuantityAmount ?? initialDraft.gramsPerServing ?? 100) : (initialDraft.gramsPerServing ?? 100))
         _numericText = State(initialValue: FoodDraftNumericText(draft: initialDraft))
     }
 

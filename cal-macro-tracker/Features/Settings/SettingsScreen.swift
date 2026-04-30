@@ -3,12 +3,19 @@ import SwiftUI
 
 struct SettingsScreen: View {
     @Query private var goals: [DailyGoals]
+    @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @FocusState private var focusedField: DailyGoalsField?
 
     var body: some View {
         Form {
             if let goals = activeGoals {
                 SettingsGoalsEditorSection(goals: goals, focusedField: $focusedField)
+            }
+
+            Section {
+                Toggle("Food Suggestions", isOn: $isFoodSuggestionsEnabled)
+            } footer: {
+                Text("Suggest foods from your on-device logging history.")
             }
 
             SavedFoodsSection(
