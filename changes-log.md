@@ -262,6 +262,7 @@
 - Tightened the Search list top spacing so the `On Device` section sits closer to the native search drawer and first result.
 - Updated shared blue bottom action labels to use the Apple-style filled white icon circle with accent-colored symbol, softer white text, and an 8pt icon-to-text gap.
 - Added a native-style bottom edge fade behind the Dashboard Add Food button and Add Food scan actions so list content fades into the screen edge/home-indicator area instead of stopping abruptly behind the floating controls.
+- Updated Add Food search scan actions so the compact two-circle mode expands after a meaningful upward scroll instead of waiting until the list reaches the top.
 
 #### Main implementation steps
 
@@ -273,6 +274,8 @@
 - A simplify pass replaced an imprecise `AddFoodEntryPoint` scan destination with a local scan-only destination enum, avoiding impossible `.addFood` / `.manualEntry` branches.
 - Added `BottomPinnedActionContainer` and `BottomPinnedEdgeFade` so single and dual bottom action bars share the same screen-edge fade placement while keeping the visual `bottomOffset` scoped to the buttons.
 - Added `PlatformColors.systemBackground` so the edge fade reuses the app's platform color helpers and adapts correctly in light and dark mode.
+- Updated `AddFoodScreen.swift` to track search-list scroll direction and deepest offset locally, compacting scan actions after downward scroll and expanding them after a 96pt upward reversal or near-top reset.
+- Extracted Add Food screen support types into `AddFoodScreenSupport.swift` so the screen stays within the repository quality size budget.
 
 #### Bugs and implementation findings
 
@@ -285,10 +288,14 @@
 - Defensive-code review found no further high-confidence redundant guards, duplicated validation, or impossible-state branches after the scan-destination enum cleanup.
 - The first bottom fade attempt moved with the visually lowered buttons, placing the fade under the controls instead of at the app/list edge; the final container keeps the fade pinned to the bottom safe-area edge and offsets only the button content.
 - A follow-up simplify pass extracted the repeated fade/container wrapper shared by `BottomPinnedActionBar` and `BottomPinnedDualActionBar`; defensive-code review found no further redundant defensive branches in the fade follow-up.
+- The original Add Food scan-bar compaction only used absolute scroll offset, so compact buttons stayed compact until the list nearly reached the top; the fix tracks scroll reversal intent with a larger upward threshold while preserving near-top expansion.
+- A simplify review found no reuse or quality cleanup needed, but did flag high-frequency `@State` churn for scroll bookkeeping; the final implementation keeps only the visible compact flag as render-driving state and stores scroll bookkeeping in a lightweight local tracker.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Add Food scroll-direction follow-up.
 
 #### Validation
 
 - Formatter validation, whitespace diff validation, iOS simulator build, and focused simulator visual checks passed, including the bottom edge fade placement on Dashboard and Add Food expanded/compact states.
+- The Add Food scroll-direction follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 
 ## USDA Proxy and Unified Remote Search
 

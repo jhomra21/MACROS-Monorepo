@@ -29,9 +29,7 @@ struct DashboardScreen: View {
     #endif
 
     private let compactSummaryTopPadding: CGFloat = 8
-    var currentGoals: MacroGoalsSnapshot {
-        MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
-    }
+    var currentGoals: MacroGoalsSnapshot { MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)) }
 
     var body: some View {
         LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
@@ -66,7 +64,7 @@ struct DashboardScreen: View {
                 }
             }
             .toolbar {
-                dashboardToolbarLeading
+                AppTopBarLeadingTitle(daySelection.selectedDay.topBarTitle)
                 dashboardToolbarTrailing(snapshot: snapshot)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -97,19 +95,9 @@ struct DashboardScreen: View {
     }
 
     private var emptyLogDescription: String {
-        if daySelection.selectedDay.isToday {
-            return "Tap the add button to log your first food today."
-        }
-
-        return "Tap the add button to log your first food for this day."
-    }
-
-    private var dashboardNavigationTitle: String {
-        daySelection.selectedDay.topBarTitle
-    }
-
-    private var dashboardToolbarLeading: some ToolbarContent {
-        AppTopBarLeadingTitle(dashboardNavigationTitle)
+        daySelection.selectedDay.isToday
+            ? "Tap the add button to log your first food today."
+            : "Tap the add button to log your first food for this day."
     }
 
     private var dayNavigationGesture: some Gesture {
@@ -307,5 +295,4 @@ struct DashboardScreen: View {
             isMacroRingExpanded.toggle()
         }
     }
-
 }

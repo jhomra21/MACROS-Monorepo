@@ -9,43 +9,11 @@ struct AddFoodScreen: View {
 
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
-    @State private var remoteSearch = RemoteSearchSession()
+    @State private var remoteSearch = AddFoodRemoteSearchSession()
     @State private var remoteSearchTask: Task<Void, Never>?
     @State private var isScanActionBarCompact = false
-    @State private var scanDestination: ScanDestination?
-
-    private enum ScanDestination: Hashable, Identifiable {
-        case barcode
-        case label
-
-        var id: Self { self }
-    }
-
-    private struct RemoteSearchSession {
-        var query = ""
-        var page = 0
-        var provider: RemoteSearchProvider?
-        var results: [RemoteSearchResult] = []
-        var hasMore = false
-        var isLoading = false
-        var errorMessage: String?
-        var requestID = UUID()
-
-        var hasState: Bool {
-            query.isEmpty == false || errorMessage != nil || isLoading
-        }
-
-        var viewState: RemoteSearchViewState {
-            RemoteSearchViewState(
-                results: results,
-                provider: provider,
-                errorMessage: errorMessage,
-                isLoading: isLoading,
-                hasState: hasState,
-                hasMore: hasMore
-            )
-        }
-    }
+    @State private var searchScrollTracking = AddFoodSearchScrollTracking()
+    @State private var scanDestination: AddFoodScanDestination?
 
     private let remotePageSize = 12
     private let packagedFoodSearchClient = PackagedFoodSearchClient()
@@ -89,6 +57,9 @@ struct AddFoodScreen: View {
         .onChange(of: trimmedSearchText) { oldValue, newValue in
             guard oldValue != newValue, remoteSearch.query != newValue else { return }
             clearRemoteSearch()
+        }
+        .onChange(of: selectedMode) { _, _ in
+            resetSearchScrollTracking()
         }
         .onDisappear {
             remoteSearchTask?.cancel()
@@ -159,7 +130,7 @@ struct AddFoodScreen: View {
     }
 
     @ViewBuilder
-    private func scanScreen(for destination: ScanDestination) -> some View {
+    private func scanScreen(for destination: AddFoodScanDestination) -> some View {
         switch destination {
         case .barcode:
             BarcodeScanScreen(onFoodLogged: closeSheet, loggingDay: loggingDay, entryMode: .immediateCamera)
@@ -169,12 +140,43 @@ struct AddFoodScreen: View {
     }
 
     private func updateScanActionBarDisplay(for offset: CGFloat) {
-        let compactThreshold: CGFloat = isScanActionBarCompact ? 2 : 12
-        let shouldCompact = offset > compactThreshold
-        guard shouldCompact != isScanActionBarCompact else { return }
+        let compactThreshold: CGFloat = 12
+        let expandedThreshold: CGFloat = 2
+        let upwardExpansionThreshold: CGFloat = 96
+        let isScrollingDown = offset > searchScrollTracking.lastOffset
+
+        if offset > searchScrollTracking.deepestOffset {
+            searchScrollTracking.deepestOffset = offset
+        }
+        searchScrollTracking.lastOffset = offset
+
+        if offset <= expandedThreshold {
+            searchScrollTracking.deepestOffset = offset
+            setScanActionBarCompact(false)
+            return
+        }
+
+        if isScrollingDown, offset > compactThreshold {
+            setScanActionBarCompact(true)
+            return
+        }
+
+        if isScanActionBarCompact, searchScrollTracking.deepestOffset - offset >= upwardExpansionThreshold {
+            searchScrollTracking.deepestOffset = offset
+            setScanActionBarCompact(false)
+        }
+    }
+
+    private func resetSearchScrollTracking() {
+        searchScrollTracking.reset()
+        setScanActionBarCompact(false)
+    }
+
+    private func setScanActionBarCompact(_ isCompact: Bool) {
+        guard isCompact != isScanActionBarCompact else { return }
 
         withAnimation(.smooth(duration: 0.22)) {
-            isScanActionBarCompact = shouldCompact
+            isScanActionBarCompact = isCompact
         }
     }
 
@@ -209,7 +211,7 @@ struct AddFoodScreen: View {
             remoteSearch.errorMessage = nil
             remoteSearch.requestID = requestID
         } else {
-            remoteSearch = RemoteSearchSession(
+            remoteSearch = AddFoodRemoteSearchSession(
                 query: normalizedQuery,
                 page: 0,
                 provider: provider,
@@ -235,7 +237,7 @@ struct AddFoodScreen: View {
     private func clearRemoteSearch() {
         remoteSearchTask?.cancel()
         remoteSearchTask = nil
-        remoteSearch = RemoteSearchSession()
+        remoteSearch = AddFoodRemoteSearchSession()
     }
 
     @MainActor
@@ -292,23 +294,6 @@ struct AddFoodScreen: View {
             remoteSearch.isLoading = false
             remoteSearch.errorMessage = error.localizedDescription
             remoteSearchTask = nil
-        }
-    }
-}
-
-private extension View {
-    @ViewBuilder
-    func addFoodSearchable(
-        isSearchMode: Bool,
-        text: Binding<String>,
-        onSubmit: @escaping () -> Void
-    ) -> some View {
-        if isSearchMode {
-            self
-                .searchable(text: text, placement: .appNavigationDrawer, prompt: "Search foods on device or online")
-                .onSubmit(of: .search, onSubmit)
-        } else {
-            self
         }
     }
 }
