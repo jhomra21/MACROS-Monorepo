@@ -142,7 +142,7 @@ struct AddFoodScreen: View {
     private func updateScanActionBarDisplay(for offset: CGFloat) {
         let compactThreshold: CGFloat = 12
         let expandedThreshold: CGFloat = 2
-        let upwardExpansionThreshold: CGFloat = 96
+        let upwardExpansionThreshold: CGFloat = 192
         let isScrollingDown = offset > searchScrollTracking.lastOffset
 
         if offset > searchScrollTracking.deepestOffset {

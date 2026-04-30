@@ -274,7 +274,7 @@
 - A simplify pass replaced an imprecise `AddFoodEntryPoint` scan destination with a local scan-only destination enum, avoiding impossible `.addFood` / `.manualEntry` branches.
 - Added `BottomPinnedActionContainer` and `BottomPinnedEdgeFade` so single and dual bottom action bars share the same screen-edge fade placement while keeping the visual `bottomOffset` scoped to the buttons.
 - Added `PlatformColors.systemBackground` so the edge fade reuses the app's platform color helpers and adapts correctly in light and dark mode.
-- Updated `AddFoodScreen.swift` to track search-list scroll direction and deepest offset locally, compacting scan actions after downward scroll and expanding them after a 96pt upward reversal or near-top reset.
+- Updated `AddFoodScreen.swift` to track search-list scroll direction and deepest offset locally, compacting scan actions after downward scroll and expanding them after a 192pt upward reversal or near-top reset.
 - Extracted Add Food screen support types into `AddFoodScreenSupport.swift` so the screen stays within the repository quality size budget.
 
 #### Bugs and implementation findings
@@ -291,11 +291,13 @@
 - The original Add Food scan-bar compaction only used absolute scroll offset, so compact buttons stayed compact until the list nearly reached the top; the fix tracks scroll reversal intent with a larger upward threshold while preserving near-top expansion.
 - A simplify review found no reuse or quality cleanup needed, but did flag high-frequency `@State` churn for scroll bookkeeping; the final implementation keeps only the visible compact flag as render-driving state and stores scroll bookkeeping in a lightweight local tracker.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Add Food scroll-direction follow-up.
+- A follow-up simplify and defensive-code review for the 192pt upward threshold tuning found no scoped cleanup or redundant defensive branches to remove.
 
 #### Validation
 
 - Formatter validation, whitespace diff validation, iOS simulator build, and focused simulator visual checks passed, including the bottom edge fade placement on Dashboard and Add Food expanded/compact states.
 - The Add Food scroll-direction follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
+- The 192pt upward threshold tuning passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 
 ## USDA Proxy and Unified Remote Search
 
