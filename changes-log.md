@@ -258,6 +258,7 @@
 - Added local-first food suggestions in Add Food search mode based on the user's recent on-device logging history.
 - Showed up to five suggestion shortcuts above `On Device` when search text is empty, then removed the visible suggestion header and shaded/glass pill background after visual review showed an artifact in the list row.
 - Enlarged the suggestion row's vertical swipe capture area while preserving the accepted visible spacing between suggestions and `On Device`.
+- Reintroduced the suggestion shortcuts as native iOS/macOS 26 Liquid Glass capsules after validating the surrounding Add Food page, search drawer, toolbar actions, and bottom scan buttons were compatible.
 - Added a Settings `Food Suggestions` toggle that is on by default and explains that suggestions come from on-device logging history.
 
 #### Main implementation steps
@@ -269,21 +270,27 @@
 - Kept suggestions app-only for v1, with no LLM, Apple Intelligence, server-side learning, notifications, widgets, remote fetches, or persisted analytics.
 - A simplify review replaced duplicated quantity fallback logic with `FoodQuantityState`, reused existing Open Food Facts barcode normalization, centralized the Settings storage key, collapsed duplicated score calculation, modeled suggestion identities as typed cases, and scoped the compact row-height override to suggestion/header rows.
 - A defensive-code review removed a redundant entry-count guard and impossible positive-score filter from `FoodSuggestionEngine`.
+- Updated `AddFoodSearchResults.swift` so suggestion shortcuts use `GlassEffectContainer`, per-pill interactive capsule glass, and a non-glass capsule fallback for earlier OS versions.
+- Added extra horizontal and vertical bleed space plus disabled horizontal scroll clipping so light-mode glass refraction/shadow does not square off at the row bounds while preserving the accepted pill alignment.
+- A simplify review for the Liquid Glass pill follow-up found no scoped reuse, quality, or efficiency cleanup needed.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Liquid Glass pill follow-up.
 
 #### Bugs and implementation findings
 
 - The existing Add Food local search already owns deterministic on-device ranking, so suggestions were added as a separate empty-search section rather than changing typed search behavior.
 - `LogEntry` already contains enough snapshot data to suggest scanned/search foods even when no reusable `FoodItem` exists.
 - The initial heuristic uses only the last 14 days; a future version can extend this to all-history scoring with time decay once v1 proves useful.
-- Native glass and bordered button styles created visible row artifacts in this context, so the accepted visual cleanup keeps suggestion shortcuts as plain tappable text with an invisible capsule hit target.
+- Native glass and bordered button styles initially created visible row artifacts in this context, so an earlier visual cleanup temporarily kept suggestion shortcuts as plain tappable text with an invisible capsule hit target before the final native Liquid Glass capsule pass fixed the clipping artifacts.
 - Visual validation found that canceling the added padding with matching negative padding likely neutralized the intended gesture area; the follow-up keeps the row's 8pt vertical gesture padding and offsets the list-row inset instead, with simulator swipes near the row edges no longer handing off to vertical list scrolling.
 - A simplify review found no reuse or efficiency cleanup for the swipe-area follow-up; its broader caution about negative list insets was left unchanged because the current layout is the smallest visually validated way to add gesture area without reintroducing visible spacing.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the swipe-area follow-up.
+- Light-mode visual validation showed the native glass effect could look clipped at the row's top, bottom, and leading edge; the final row adds internal bleed space and disables scroll clipping instead of redesigning the item presentation.
 
 #### Validation
 
 - The heuristic suggestions follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 - The suggestion swipe-area follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, focused visual validation, simplify review, defensive-code review, and final diff review.
+- The Liquid Glass suggestion-pill follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, focused light-mode visual validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: Add Food search and scan action redesign
 

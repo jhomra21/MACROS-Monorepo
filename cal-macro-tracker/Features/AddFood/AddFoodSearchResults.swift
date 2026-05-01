@@ -30,11 +30,13 @@ struct SearchFoodListView: View {
             if suggestions.isEmpty == false {
                 ScrollView(.horizontal, showsIndicators: false) {
                     suggestionPills
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 14)
                         .contentShape(Rectangle())
                 }
+                .scrollClipDisabled()
                 .environment(\.defaultMinListRowHeight, 0)
-                .listRowInsets(EdgeInsets(top: -8, leading: 16, bottom: 0, trailing: 0))
+                .listRowInsets(EdgeInsets(top: -8, leading: 4, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
             }
@@ -157,6 +159,16 @@ struct SearchFoodListView: View {
 
     @ViewBuilder
     private var suggestionPills: some View {
+        if #available(iOS 26, macOS 26, *) {
+            GlassEffectContainer(spacing: 8) {
+                suggestionPillStack
+            }
+        } else {
+            suggestionPillStack
+        }
+    }
+
+    private var suggestionPillStack: some View {
         HStack(spacing: 8) {
             ForEach(suggestions) { suggestion in
                 suggestionLink(for: suggestion)
@@ -226,8 +238,28 @@ private struct SuggestionPillLabel: View {
             .foregroundStyle(.primary)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(Color.clear, in: Capsule())
+            .background(fallbackBackground)
             .contentShape(Capsule())
+            .ifAvailableSuggestionGlassCapsule()
+    }
+
+    @ViewBuilder
+    private var fallbackBackground: some View {
+        if #unavailable(iOS 26, macOS 26) {
+            PlatformColors.cardBackground
+                .clipShape(Capsule())
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func ifAvailableSuggestionGlassCapsule() -> some View {
+        if #available(iOS 26, macOS 26, *) {
+            glassEffect(.regular.interactive(), in: .capsule)
+        } else {
+            self
+        }
     }
 }
 
