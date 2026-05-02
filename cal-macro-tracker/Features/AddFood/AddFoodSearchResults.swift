@@ -1,6 +1,22 @@
 import SwiftData
 import SwiftUI
 
+private enum SearchFoodSpacing {
+    static let targetVisualGap: CGFloat = 16
+    static let suggestionGlassBleed: CGFloat = 4
+    static let suggestionToHeader = targetVisualGap - suggestionGlassBleed
+    static let headerLeading: CGFloat = 12
+    static let headerRowLeading: CGFloat = 4
+    static let headerRowBottom: CGFloat = -16
+    static let suggestionTop: CGFloat = -7
+    static let foodRowVertical: CGFloat = 8
+    static let foodRowHorizontal: CGFloat = 16
+    static let rowTitleSpacing: CGFloat = 6
+    static let pillSpacing: CGFloat = 8
+    static let pillHorizontalPadding: CGFloat = 14
+    static let pillVerticalPadding: CGFloat = 8
+}
+
 struct RemoteSearchViewState {
     let results: [RemoteSearchResult]
     let provider: RemoteSearchProvider?
@@ -27,26 +43,16 @@ struct SearchFoodListView: View {
 
     var body: some View {
         List {
-            if suggestions.isEmpty == false {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    suggestionPills
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 14)
-                        .contentShape(Rectangle())
-                }
-                .scrollClipDisabled()
+            localResultsHeader
                 .environment(\.defaultMinListRowHeight, 0)
-                .listRowInsets(EdgeInsets(top: -8, leading: 4, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-            }
-
-            Text("On Device")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
-                .environment(\.defaultMinListRowHeight, 0)
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowInsets(
+                    EdgeInsets(
+                        top: suggestions.isEmpty ? SearchFoodSpacing.targetVisualGap : SearchFoodSpacing.suggestionTop,
+                        leading: SearchFoodSpacing.headerRowLeading,
+                        bottom: SearchFoodSpacing.headerRowBottom,
+                        trailing: 0
+                    )
+                )
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.clear)
 
@@ -56,15 +62,9 @@ struct SearchFoodListView: View {
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(foods) { food in
-                        NavigationLink {
-                            LogFoodScreen(
-                                initialDraft: FoodDraft(foodItem: food, saveAsCustomFood: false),
-                                loggingDay: loggingDay,
-                                onFoodLogged: onFoodLogged
-                            )
-                        } label: {
-                            LocalFoodRow(food: food)
-                        }
+                        localFoodLink(for: food)
+                            .environment(\.defaultMinListRowHeight, 0)
+                            .listRowInsets(foodRowInsets)
                     }
                 }
             } footer: {
@@ -158,9 +158,46 @@ struct SearchFoodListView: View {
     }
 
     @ViewBuilder
+    private var localResultsHeader: some View {
+        if suggestions.isEmpty {
+            onDeviceHeader
+                .padding(.leading, SearchFoodSpacing.headerLeading)
+        } else {
+            VStack(alignment: .leading, spacing: SearchFoodSpacing.suggestionToHeader) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    suggestionPills
+                        .padding(.horizontal, SearchFoodSpacing.headerLeading)
+                        .padding(.vertical, SearchFoodSpacing.suggestionGlassBleed)
+                        .contentShape(Rectangle())
+                }
+                .scrollClipDisabled()
+
+                onDeviceHeader
+                    .padding(.leading, SearchFoodSpacing.headerLeading)
+            }
+        }
+    }
+
+    private var onDeviceHeader: some View {
+        Text("On Device")
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+    }
+
+    private var foodRowInsets: EdgeInsets {
+        EdgeInsets(
+            top: SearchFoodSpacing.foodRowVertical,
+            leading: SearchFoodSpacing.foodRowHorizontal,
+            bottom: SearchFoodSpacing.foodRowVertical,
+            trailing: SearchFoodSpacing.foodRowHorizontal
+        )
+    }
+
+    @ViewBuilder
     private var suggestionPills: some View {
         if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 8) {
+            GlassEffectContainer(spacing: SearchFoodSpacing.pillSpacing) {
                 suggestionPillStack
             }
         } else {
@@ -169,7 +206,7 @@ struct SearchFoodListView: View {
     }
 
     private var suggestionPillStack: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: SearchFoodSpacing.pillSpacing) {
             ForEach(suggestions) { suggestion in
                 suggestionLink(for: suggestion)
                     .buttonStyle(.plain)
@@ -192,6 +229,18 @@ struct SearchFoodListView: View {
             )
         } label: {
             SuggestionPillLabel(title: suggestion.foodName)
+        }
+    }
+
+    private func localFoodLink(for food: FoodItem) -> some View {
+        NavigationLink {
+            LogFoodScreen(
+                initialDraft: FoodDraft(foodItem: food, saveAsCustomFood: false),
+                loggingDay: loggingDay,
+                onFoodLogged: onFoodLogged
+            )
+        } label: {
+            LocalFoodRow(food: food)
         }
     }
 
@@ -236,8 +285,8 @@ private struct SuggestionPillLabel: View {
             .font(.subheadline.weight(.semibold))
             .lineLimit(1)
             .foregroundStyle(.primary)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
+            .padding(.horizontal, SearchFoodSpacing.pillHorizontalPadding)
+            .padding(.vertical, SearchFoodSpacing.pillVerticalPadding)
             .background(fallbackBackground)
             .contentShape(Capsule())
             .ifAvailableSuggestionGlassCapsule()
@@ -267,14 +316,13 @@ private struct LocalFoodRow: View {
     let food: FoodItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: SearchFoodSpacing.rowTitleSpacing) {
             Text(food.name)
                 .font(.headline)
             Text("\(food.caloriesPerServing.roundedForDisplay) kcal • \(food.servingDescription)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 6)
     }
 }
 

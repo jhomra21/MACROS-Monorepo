@@ -92,7 +92,11 @@ struct AddFoodScreen: View {
                 Button("Done") { dismiss() }
             }
         }
-        .addFoodSearchable(isSearchMode: selectedMode == .search, text: $searchText, onSubmit: searchOnline)
+        .addFoodSearchable(
+            isSearchMode: selectedMode == .search,
+            text: $searchText,
+            onSubmit: searchOnline
+        )
         .navigationDestination(item: $scanDestination) { destination in
             scanScreen(for: destination)
         }
