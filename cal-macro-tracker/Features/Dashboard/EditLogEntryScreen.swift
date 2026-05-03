@@ -243,4 +243,11 @@ private struct NutrientRefreshAvailabilityID: Equatable {
     let repairTarget: SecondaryNutrientRepairTarget?
     let shouldOfferRefresh: Bool
     let foodItemID: UUID?
+
+    static func == (lhs: NutrientRefreshAvailabilityID, rhs: NutrientRefreshAvailabilityID) -> Bool {
+        lhs.repairKey == rhs.repairKey
+            && lhs.repairTarget == rhs.repairTarget
+            && lhs.shouldOfferRefresh == rhs.shouldOfferRefresh
+            && lhs.foodItemID == rhs.foodItemID
+    }
 }

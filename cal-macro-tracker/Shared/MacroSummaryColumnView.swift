@@ -6,11 +6,6 @@ struct MacroSummaryColumnView: View {
         case short
     }
 
-    enum ContentAlignment {
-        case leading
-        case center
-    }
-
     struct Style {
         let titleFont: Font
         let valueFont: Font
@@ -35,7 +30,6 @@ struct MacroSummaryColumnView: View {
     let metric: MacroMetric
     let totals: NutritionSnapshot
     let goals: MacroGoalsSnapshot
-    let alignment: ContentAlignment
     let titleStyle: TitleStyle
     let style: Style
     let minimumHeight: CGFloat?
@@ -44,7 +38,6 @@ struct MacroSummaryColumnView: View {
         metric: MacroMetric,
         totals: NutritionSnapshot,
         goals: MacroGoalsSnapshot,
-        alignment: ContentAlignment,
         titleStyle: TitleStyle,
         style: Style,
         minimumHeight: CGFloat? = nil
@@ -52,7 +45,6 @@ struct MacroSummaryColumnView: View {
         self.metric = metric
         self.totals = totals
         self.goals = goals
-        self.alignment = alignment
         self.titleStyle = titleStyle
         self.style = style
         self.minimumHeight = minimumHeight
@@ -71,16 +63,8 @@ struct MacroSummaryColumnView: View {
         }
     }
 
-    private var frameAlignment: Alignment {
-        alignment == .center ? .center : .leading
-    }
-
-    private var stackAlignment: HorizontalAlignment {
-        alignment == .center ? .center : .leading
-    }
-
     var body: some View {
-        VStack(alignment: stackAlignment, spacing: style.verticalSpacing) {
+        VStack(alignment: .center, spacing: style.verticalSpacing) {
             if style.showsTitleAfterValues == false {
                 titleLine
             }
@@ -88,13 +72,13 @@ struct MacroSummaryColumnView: View {
             currentValueLine
 
             goalLine
-                .frame(maxWidth: .infinity, alignment: frameAlignment)
+                .frame(maxWidth: .infinity, alignment: .center)
 
             if style.showsTitleAfterValues {
                 titleLine
             }
         }
-        .frame(maxWidth: .infinity, minHeight: minimumHeight, alignment: frameAlignment)
+        .frame(maxWidth: .infinity, minHeight: minimumHeight, alignment: .center)
     }
 
     private var titleLine: some View {
@@ -110,33 +94,27 @@ struct MacroSummaryColumnView: View {
                 .foregroundStyle(style.titleColor)
                 .lineLimit(1)
         }
-        .frame(maxWidth: .infinity, alignment: frameAlignment)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 
     @ViewBuilder
     private var currentValueLine: some View {
-        if style.showsOverGoalIndicatorInValueLine {
-            if presentation.overGoalValueText != nil {
-                HStack(spacing: 1) {
-                    currentValueText
-
-                    Text("↑")
-                        .font(style.valueIndicatorFont)
-                        .foregroundStyle(metric.overGoalHighlightColor)
-                        .fixedSize(horizontal: true, vertical: false)
-                        .layoutPriority(1)
-                }
-                .monospacedDigit()
-                .frame(maxWidth: .infinity, alignment: frameAlignment)
-            } else {
+        if style.showsOverGoalIndicatorInValueLine, presentation.overGoalValueText != nil {
+            HStack(spacing: 1) {
                 currentValueText
-                    .monospacedDigit()
-                    .frame(maxWidth: .infinity, alignment: frameAlignment)
+
+                Text("↑")
+                    .font(style.valueIndicatorFont)
+                    .foregroundStyle(metric.overGoalHighlightColor)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .layoutPriority(1)
             }
+            .monospacedDigit()
+            .frame(maxWidth: .infinity, alignment: .center)
         } else {
             currentValueText
                 .monospacedDigit()
-                .frame(maxWidth: .infinity, alignment: frameAlignment)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
     }
 

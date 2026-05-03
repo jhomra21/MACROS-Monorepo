@@ -3,27 +3,15 @@ import Foundation
 struct FoodSuggestion: Identifiable {
     let id: String
     let foodName: String
-    let reason: FoodSuggestionReason
     let sourceEntry: LogEntry
-}
-
-// Kept as internal metadata so a later UI can explain why a food was suggested,
-// and so feedback tuning can distinguish recency, time-of-day, and weekday signals.
-enum FoodSuggestionReason {
-    case recent
-    case timeOfDay
-    case weekday
 }
 
 enum FoodSuggestionEngine {
     private struct Candidate {
         let identity: FoodSuggestionIdentity
         let foodName: String
-        var reason: FoodSuggestionReason
         var score: Int
         var totalCount: Int
-        var timeOfDayCount: Int
-        var weekdayCount: Int
         var latestEntry: LogEntry
         var bestMatchingEntry: LogEntry
         var bestMatchingScore: Int
@@ -68,11 +56,8 @@ enum FoodSuggestionEngine {
                 ?? Candidate(
                     identity: identity,
                     foodName: entry.foodName,
-                    reason: .recent,
                     score: 0,
                     totalCount: 0,
-                    timeOfDayCount: 0,
-                    weekdayCount: 0,
                     latestEntry: entry,
                     bestMatchingEntry: entry,
                     bestMatchingScore: 0
@@ -80,8 +65,6 @@ enum FoodSuggestionEngine {
 
             candidate.score += entryScore
             candidate.totalCount += 1
-            candidate.timeOfDayCount += matches.isTimeOfDay ? 1 : 0
-            candidate.weekdayCount += matches.isWeekday ? 1 : 0
 
             if entry.dateLogged > candidate.latestEntry.dateLogged {
                 candidate.latestEntry = entry
@@ -91,7 +74,6 @@ enum FoodSuggestionEngine {
                 candidate.bestMatchingScore = entryScore
             }
 
-            candidate.reason = reason(for: candidate)
             candidates[identity] = candidate
         }
 
@@ -109,7 +91,6 @@ enum FoodSuggestionEngine {
                 FoodSuggestion(
                     id: $0.identity.rawValue,
                     foodName: $0.foodName,
-                    reason: $0.reason,
                     sourceEntry: $0.bestMatchingEntry
                 )
             }
@@ -135,11 +116,6 @@ enum FoodSuggestionEngine {
         (matches.isRecent ? 30 : 0) + (matches.isTimeOfDay ? 24 : 0) + (matches.isWeekday ? 18 : 0) + 4
     }
 
-    private static func reason(for candidate: Candidate) -> FoodSuggestionReason {
-        if candidate.timeOfDayCount > 0 { return .timeOfDay }
-        if candidate.weekdayCount > 0 { return .weekday }
-        return .recent
-    }
 }
 
 private struct FoodSuggestionScoreMatches {
@@ -196,9 +172,18 @@ private struct FoodSuggestionIdentity: Hashable {
     }
 }
 
-private struct FoodSuggestionDayIdentity: Hashable {
+private struct FoodSuggestionDayIdentity: Equatable, Hashable {
     let day: CalendarDay
     let identity: FoodSuggestionIdentity
+
+    static func == (lhs: FoodSuggestionDayIdentity, rhs: FoodSuggestionDayIdentity) -> Bool {
+        lhs.day == rhs.day && lhs.identity == rhs.identity
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(day)
+        hasher.combine(identity)
+    }
 }
 
 private enum FoodSuggestionTimeWindow: Hashable {

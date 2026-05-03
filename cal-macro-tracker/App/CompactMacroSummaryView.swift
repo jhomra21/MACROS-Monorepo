@@ -33,7 +33,6 @@ struct CompactMacroSummaryView: View {
             metric: metric,
             totals: totals,
             goals: goals,
-            alignment: .center,
             titleStyle: .full,
             style: .compact,
             minimumHeight: 60

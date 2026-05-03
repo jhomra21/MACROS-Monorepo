@@ -16,12 +16,35 @@ struct USDAProxyFood: Decodable, Identifiable, Hashable {
     let addedSugarsPerServing: Double?
     let sodiumPerServing: Double?
     let cholesterolPerServing: Double?
-    let sourceName: String
-    let sourceURL: String
+    private let usdaSourceName: String
+    private let usdaSourceURL: String
     let barcode: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case brand
+        case servingDescription
+        case gramsPerServing
+        case caloriesPerServing
+        case proteinPerServing
+        case fatPerServing
+        case carbsPerServing
+        case saturatedFatPerServing
+        case fiberPerServing
+        case sugarsPerServing
+        case addedSugarsPerServing
+        case sodiumPerServing
+        case cholesterolPerServing
+        case usdaSourceName = "sourceName"
+        case usdaSourceURL = "sourceURL"
+        case barcode
+    }
 }
 
 extension USDAProxyFood: FoodDraftImportedDataConvertible {
     var source: FoodSource { .searchLookup }
     var externalProductID: String? { id }
+    var sourceName: String? { usdaSourceName }
+    var sourceURL: String? { usdaSourceURL }
 }

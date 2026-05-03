@@ -184,10 +184,6 @@ final class LogEntry {
     }
 
     private static func trimmedText(from value: String?) -> String? {
-        guard let trimmedValue = value?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmedValue.isEmpty else {
-            return nil
-        }
-
-        return trimmedValue
+        TextNormalization.trimmedNonEmpty(value)
     }
 }

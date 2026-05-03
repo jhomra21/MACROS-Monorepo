@@ -881,6 +881,16 @@ The following planning documents have been fully consolidated into this file and
 
 - Ran the usual repo validation `make` commands for this work.
 
+### Root performance and quality cleanup follow-up
+
+- Moved still-image barcode and nutrition-label Vision work off the main actor, reused shared scan-image preparation, and downsampled scan-only photo-library inputs before OCR/barcode analysis.
+- Added shared text normalization for reusable foods and log entries, and centralized unambiguous secondary-nutrient repair indexing so history/execution paths no longer rebuild the same ambiguity filters inline.
+- Split oversized Add Food search and secondary-nutrient repair support files into focused feature/model helpers, removed unused repository/style/title APIs, and kept Periphery-required equality implementations where synthesis would reintroduce assign-only warnings.
+- Simplify and defensive-code-review passes removed the string-token search cache, consolidated duplicate sendable scan-image wrappers, and collapsed a duplicated macro-summary value branch.
+- Code-review validation caught that app-side USDA cleanup had dropped Worker-provided `sourceURL`; `USDAProxyFood` now decodes `sourceName` and `sourceURL` via its existing imported-data adapter so FoodData Central links keep flowing into drafts, saved foods, and logged entries.
+- Final code-review and validator-agent passes found no remaining high-confidence issues after the USDA metadata fix.
+- Final validation passed `git diff --check`, the full repo `make quality` workflow, and simulator flow checks across Dashboard, Add Food, manual logging, local/remote search fallback, barcode/label scan entry surfaces, Settings, and History.
+
 ## Haptics and Food Entry Save Interaction
 
 ### Delivered

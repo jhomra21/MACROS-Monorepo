@@ -227,7 +227,6 @@ struct MacroLegendView: View {
                 metric: metric,
                 totals: totals,
                 goals: goals,
-                alignment: .center,
                 titleStyle: .full,
                 style: .dashboardCard
             )

@@ -62,7 +62,6 @@ private struct DailyMacroAccessoryWidgetContentView: View {
                     metric: metric,
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
-                    alignment: .center,
                     titleStyle: .short,
                     style: .accessoryRectangular
                 )

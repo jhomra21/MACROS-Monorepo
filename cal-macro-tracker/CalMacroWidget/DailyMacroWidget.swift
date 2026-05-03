@@ -197,7 +197,6 @@ private struct DailyMacroWidgetContentView: View {
             metric: metric,
             totals: entry.snapshot.totals,
             goals: entry.snapshot.goals,
-            alignment: .center,
             titleStyle: .short,
             style: .widgetSmall(valueFontSize: fontSize)
         )

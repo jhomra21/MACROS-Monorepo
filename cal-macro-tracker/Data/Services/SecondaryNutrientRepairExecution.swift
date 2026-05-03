@@ -224,20 +224,8 @@ extension SecondaryNutrientRepairService {
     }
 
     static func repairableFoodIDsByKey(modelContext: ModelContext) throws -> [SecondaryNutrientRepairKey: UUID] {
-        var matches: [SecondaryNutrientRepairKey: UUID] = [:]
-        var ambiguousKeys = Set<SecondaryNutrientRepairKey>()
-
-        for food in try commonFoods(modelContext: modelContext) {
-            let key = food.secondaryNutrientRepairKey
-            if matches[key] != nil {
-                ambiguousKeys.insert(key)
-            } else {
-                matches[key] = food.id
-            }
-        }
-
-        ambiguousKeys.forEach { matches.removeValue(forKey: $0) }
-        return matches
+        unambiguousValuesByKey(try commonFoods(modelContext: modelContext)) { $0.secondaryNutrientRepairKey }
+            .mapValues(\.id)
     }
 
     static func logEntriesNeedingFoodLinkRepair(modelContext: ModelContext) throws -> [LogEntry] {

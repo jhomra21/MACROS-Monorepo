@@ -11,14 +11,14 @@ struct AddFoodScreen: View {
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
-    @State private var remoteSearch = AddFoodRemoteSearchSession()
-    @State private var remoteSearchTask: Task<Void, Never>?
+    @State var remoteSearch = AddFoodRemoteSearchSession()
+    @State var remoteSearchTask: Task<Void, Never>?
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var scanDestination: AddFoodScanDestination?
 
-    private let remotePageSize = 12
-    private let packagedFoodSearchClient = PackagedFoodSearchClient()
+    let remotePageSize = 12
+    let packagedFoodSearchClient = PackagedFoodSearchClient()
 
     init(initialMode: AddFoodMode = .search, loggingDay: CalendarDay? = nil) {
         self.loggingDay = loggingDay
@@ -107,7 +107,7 @@ struct AddFoodScreen: View {
         }
     }
 
-    private var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
+    var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
     private var isRemoteSearchAvailable: Bool {
         RemoteFoodSearchConfiguration.isPackagedFoodSearchAvailable
     }
@@ -193,66 +193,6 @@ struct AddFoodScreen: View {
         }
     }
 
-    private func searchOnline() {
-        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: .openFoodFacts)
-    }
-
-    private func searchUSDA() {
-        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: .usda)
-    }
-
-    private func loadMoreRemoteResults() {
-        guard remoteSearch.isLoading == false,
-            remoteSearch.hasMore,
-            let provider = remoteSearch.provider
-        else { return }
-        startRemoteSearch(query: remoteSearch.query, page: remoteSearch.page + 1, append: true, provider: provider)
-    }
-
-    private func startRemoteSearch(query: String, page: Int, append: Bool, provider: RemoteSearchProvider?) {
-        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard normalizedQuery.count >= PackagedFoodSearchClient.minimumQueryLength else {
-            clearRemoteSearch()
-            return
-        }
-
-        remoteSearchTask?.cancel()
-        let requestID = UUID()
-
-        if append {
-            remoteSearch.isLoading = true
-            remoteSearch.errorMessage = nil
-            remoteSearch.requestID = requestID
-        } else {
-            remoteSearch = AddFoodRemoteSearchSession(
-                query: normalizedQuery,
-                page: 0,
-                provider: provider,
-                results: [],
-                hasMore: false,
-                isLoading: true,
-                errorMessage: nil,
-                requestID: requestID
-            )
-        }
-
-        remoteSearchTask = Task {
-            await loadRemoteResults(
-                requestID: requestID,
-                query: normalizedQuery,
-                page: page,
-                append: append,
-                provider: provider
-            )
-        }
-    }
-
-    private func clearRemoteSearch() {
-        remoteSearchTask?.cancel()
-        remoteSearchTask = nil
-        remoteSearch = AddFoodRemoteSearchSession()
-    }
-
     private static func suggestionHistoryDescriptor(now: Date = .now) -> FetchDescriptor<LogEntry> {
         let calendar = Calendar.current
         let end = now
@@ -260,60 +200,4 @@ struct AddFoodScreen: View {
         return LogEntryQuery.descriptor(start: start, end: end)
     }
 
-    @MainActor
-    private func loadRemoteResults(
-        requestID: UUID,
-        query: String,
-        page: Int,
-        append: Bool,
-        provider: RemoteSearchProvider?
-    ) async {
-        do {
-            let response = try await packagedFoodSearchClient.searchFoods(
-                query: query,
-                page: page,
-                pageSize: remotePageSize,
-                fallbackOnEmpty: append == false && provider == nil,
-                provider: provider
-            )
-
-            guard Task.isCancelled == false,
-                remoteSearch.requestID == requestID,
-                remoteSearch.query == query
-            else { return }
-
-            if append,
-                (remoteSearch.provider != provider || response.provider != provider || response.page != page)
-            {
-                remoteSearch.errorMessage = PackagedFoodSearchClientError.invalidResponse.localizedDescription
-                remoteSearch.isLoading = false
-                remoteSearchTask = nil
-                return
-            }
-
-            remoteSearch.query = response.query
-            remoteSearch.page = response.page
-            remoteSearch.provider = response.provider
-            remoteSearch.results = append ? (remoteSearch.results + response.results) : response.results
-            remoteSearch.hasMore = response.hasMore
-            remoteSearch.isLoading = false
-            remoteSearch.errorMessage = nil
-            remoteSearchTask = nil
-        } catch {
-            guard Task.isCancelled == false,
-                remoteSearch.requestID == requestID,
-                remoteSearch.query == query
-            else { return }
-
-            if append == false {
-                remoteSearch.results = []
-                remoteSearch.page = 0
-                remoteSearch.provider = provider
-                remoteSearch.hasMore = false
-            }
-            remoteSearch.isLoading = false
-            remoteSearch.errorMessage = error.localizedDescription
-            remoteSearchTask = nil
-        }
-    }
 }

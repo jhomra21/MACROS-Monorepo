@@ -114,11 +114,11 @@ final class FoodItem {
     func normalizeForPersistence() {
         name = name.trimmingCharacters(in: .whitespacesAndNewlines)
         servingDescription = servingDescription.trimmingCharacters(in: .whitespacesAndNewlines)
-        brand = FoodItem.trimmedText(from: brand)
-        barcode = FoodItem.trimmedText(from: barcode)
-        externalProductID = FoodItem.trimmedText(from: externalProductID)
-        sourceName = FoodItem.trimmedText(from: sourceName)
-        sourceURL = FoodItem.trimmedText(from: sourceURL)
+        brand = TextNormalization.trimmedNonEmpty(brand)
+        barcode = TextNormalization.trimmedNonEmpty(barcode)
+        externalProductID = TextNormalization.trimmedNonEmpty(externalProductID)
+        sourceName = TextNormalization.trimmedNonEmpty(sourceName)
+        sourceURL = TextNormalization.trimmedNonEmpty(sourceURL)
 
         updateSearchableText()
     }
@@ -139,19 +139,7 @@ final class FoodItem {
     }
 
     private static func normalizedSearchValue(_ value: String?) -> String? {
-        guard let trimmedValue = value?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased(), !trimmedValue.isEmpty else {
-            return nil
-        }
-
-        return trimmedValue
-    }
-
-    private static func trimmedText(from value: String?) -> String? {
-        guard let trimmedValue = value?.trimmingCharacters(in: .whitespacesAndNewlines), !trimmedValue.isEmpty else {
-            return nil
-        }
-
-        return trimmedValue
+        TextNormalization.normalizedSearchText(value)
     }
 }
 

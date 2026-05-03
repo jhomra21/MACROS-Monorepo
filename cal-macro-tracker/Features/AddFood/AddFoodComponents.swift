@@ -5,13 +5,6 @@ enum AddFoodMode: String, CaseIterable, Identifiable {
     case manual
 
     var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .search: "Search"
-        case .manual: "Manual"
-        }
-    }
 }
 
 struct ManualFoodEntryScreen: View {

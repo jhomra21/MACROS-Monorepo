@@ -145,21 +145,7 @@ extension SecondaryNutrientRepairService {
     static func commonRepairDraftsByKey(
         records: [CommonFoodSeedRecord]
     ) -> [SecondaryNutrientRepairKey: FoodDraft] {
-        var matches: [SecondaryNutrientRepairKey: FoodDraft] = [:]
-        var ambiguousKeys = Set<SecondaryNutrientRepairKey>()
-
-        for record in records {
-            let draft = CommonFoodSeedLoader.makeFoodDraft(from: record)
-            let key = draft.secondaryNutrientRepairKey
-            if matches[key] != nil {
-                ambiguousKeys.insert(key)
-            } else {
-                matches[key] = draft
-            }
-        }
-
-        ambiguousKeys.forEach { matches.removeValue(forKey: $0) }
-        return matches
+        unambiguousValuesByKey(records.map(CommonFoodSeedLoader.makeFoodDraft(from:)), key: \.secondaryNutrientRepairKey)
     }
 
     static func supportsHistoricalSecondaryNutrientRepair(
@@ -219,23 +205,12 @@ extension SecondaryNutrientRepairService {
     static func repairableExternalTargetsByKey(
         foodsByID: [UUID: FoodItem]
     ) -> [SecondaryNutrientRepairKey: SecondaryNutrientRepairTarget] {
-        var matches: [SecondaryNutrientRepairKey: SecondaryNutrientRepairTarget] = [:]
-        var ambiguousKeys = Set<SecondaryNutrientRepairKey>()
-
-        for food in foodsByID.values {
-            guard let target = food.secondaryNutrientRepairTarget else {
-                continue
+        unambiguousValuesByKey(
+            foodsByID.values.compactMap { food -> (SecondaryNutrientRepairKey, SecondaryNutrientRepairTarget)? in
+                guard let target = food.secondaryNutrientRepairTarget else { return nil }
+                return (food.secondaryNutrientRepairKey, target)
             }
-
-            let key = food.secondaryNutrientRepairKey
-            if matches[key] != nil {
-                ambiguousKeys.insert(key)
-            } else {
-                matches[key] = target
-            }
-        }
-
-        ambiguousKeys.forEach { matches.removeValue(forKey: $0) }
-        return matches
+        ) { $0.0 }
+        .mapValues(\.1)
     }
 }

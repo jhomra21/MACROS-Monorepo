@@ -35,7 +35,6 @@ struct DailyShareCardView: View {
                     metric: metric,
                     totals: snapshot.totals,
                     goals: goals,
-                    alignment: .center,
                     titleStyle: .full,
                     style: .dashboardCard
                 )

@@ -1,6 +1,6 @@
 import Foundation
 
-struct SecondaryNutrientRepairKey: Hashable {
+struct SecondaryNutrientRepairKey: Equatable, Hashable {
     let source: FoodSource
     let name: String
     let brand: String?
@@ -41,6 +41,31 @@ struct SecondaryNutrientRepairKey: Hashable {
         let normalized = value?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         return normalized?.isEmpty == false ? normalized : nil
     }
+
+    static func == (lhs: SecondaryNutrientRepairKey, rhs: SecondaryNutrientRepairKey) -> Bool {
+        lhs.source == rhs.source
+            && lhs.name == rhs.name
+            && lhs.brand == rhs.brand
+            && lhs.servingDescription == rhs.servingDescription
+            && lhs.gramsPerServing == rhs.gramsPerServing
+            && lhs.caloriesPerServing == rhs.caloriesPerServing
+            && lhs.proteinPerServing == rhs.proteinPerServing
+            && lhs.fatPerServing == rhs.fatPerServing
+            && lhs.carbsPerServing == rhs.carbsPerServing
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(source)
+        hasher.combine(name)
+        hasher.combine(brand)
+        hasher.combine(servingDescription)
+        hasher.combine(gramsPerServing)
+        hasher.combine(caloriesPerServing)
+        hasher.combine(proteinPerServing)
+        hasher.combine(fatPerServing)
+        hasher.combine(carbsPerServing)
+    }
+
 }
 
 enum SecondaryNutrientRepairTarget: Hashable {
@@ -189,102 +214,5 @@ enum SecondaryNutrientBackfillPolicy {
         case .custom, .labelScan:
             return .current
         }
-    }
-}
-
-extension FoodDraft {
-    var isMissingAllSecondaryNutrients: Bool {
-        saturatedFatPerServing == nil
-            && fiberPerServing == nil
-            && sugarsPerServing == nil
-            && addedSugarsPerServing == nil
-            && sodiumPerServing == nil
-            && cholesterolPerServing == nil
-    }
-
-    var hasAnySecondaryNutrient: Bool {
-        isMissingAllSecondaryNutrients == false
-    }
-
-    var shouldOfferManualSecondaryNutrientRefresh: Bool {
-        switch source {
-        case .barcodeLookup, .searchLookup:
-            return isMissingAllSecondaryNutrients && secondaryNutrientBackfillState != .notRepairable
-        case .common, .custom, .labelScan:
-            return false
-        }
-    }
-
-    var secondaryNutrientRepairKey: SecondaryNutrientRepairKey {
-        SecondaryNutrientRepairKey(
-            source: source,
-            name: name,
-            brand: brandOrNil,
-            servingDescription: servingDescription,
-            gramsPerServing: gramsPerServing,
-            caloriesPerServing: caloriesPerServing,
-            proteinPerServing: proteinPerServing,
-            fatPerServing: fatPerServing,
-            carbsPerServing: carbsPerServing
-        )
-    }
-
-    var secondaryNutrientRepairTarget: SecondaryNutrientRepairTarget? {
-        SecondaryNutrientRepairTarget.resolve(
-            source: source,
-            externalProductID: externalProductIDOrNil,
-            barcode: barcodeOrNil,
-            sourceURL: sourceURLOrNil
-        )
-    }
-}
-
-extension FoodItem {
-    var secondaryNutrientRepairKey: SecondaryNutrientRepairKey {
-        SecondaryNutrientRepairKey(
-            source: sourceKind,
-            name: name,
-            brand: brand,
-            servingDescription: servingDescription,
-            gramsPerServing: gramsPerServing,
-            caloriesPerServing: caloriesPerServing,
-            proteinPerServing: proteinPerServing,
-            fatPerServing: fatPerServing,
-            carbsPerServing: carbsPerServing
-        )
-    }
-
-    var secondaryNutrientRepairTarget: SecondaryNutrientRepairTarget? {
-        SecondaryNutrientRepairTarget.resolve(
-            source: sourceKind,
-            externalProductID: externalProductID,
-            barcode: barcode,
-            sourceURL: sourceURL
-        )
-    }
-}
-
-extension LogEntry {
-    var secondaryNutrientRepairKey: SecondaryNutrientRepairKey {
-        SecondaryNutrientRepairKey(
-            source: sourceKind,
-            name: foodName,
-            brand: brand,
-            servingDescription: servingDescription,
-            gramsPerServing: gramsPerServing,
-            caloriesPerServing: caloriesPerServing,
-            proteinPerServing: proteinPerServing,
-            fatPerServing: fatPerServing,
-            carbsPerServing: carbsPerServing
-        )
-    }
-
-    var secondaryNutrientRepairTarget: SecondaryNutrientRepairTarget? {
-        SecondaryNutrientRepairTarget.resolve(
-            source: sourceKind,
-            externalProductID: externalProductIDOrNil,
-            barcode: barcodeOrNil,
-            sourceURL: sourceURLOrNil
-        )
     }
 }

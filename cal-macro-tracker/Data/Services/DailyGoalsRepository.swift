@@ -5,14 +5,6 @@ import SwiftData
 struct DailyGoalsRepository {
     let modelContext: ModelContext
 
-    static func activeGoals(from goals: [DailyGoals]) -> DailyGoals? {
-        DailyGoals.activeRecord(from: goals)
-    }
-
-    static func fetchActiveGoals(modelContext: ModelContext) throws -> DailyGoals? {
-        activeGoals(from: try modelContext.fetch(FetchDescriptor<DailyGoals>()))
-    }
-
     func saveGoals(from draft: DailyGoalsDraft, to goals: DailyGoals, operation: String) throws {
         if let validationError = draft.validationError {
             throw validationError

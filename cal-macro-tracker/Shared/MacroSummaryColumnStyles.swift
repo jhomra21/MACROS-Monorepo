@@ -66,27 +66,6 @@ extension MacroSummaryColumnView.Style {
         )
     }
 
-    static let widgetMedium = MacroSummaryColumnView.Style(
-        titleFont: .caption.weight(.medium),
-        valueFont: .headline.weight(.semibold),
-        baselineFont: .caption2,
-        valueIndicatorFont: .caption.weight(.semibold),
-        titleColor: .secondary,
-        valueColor: .primary,
-        baselineColor: .secondary,
-        showsTitleDot: false,
-        titleSpacing: 0,
-        titleDotDiameter: 0,
-        verticalSpacing: 2,
-        goalSpacing: 3,
-        valueMinimumScaleFactor: 0.75,
-        baselineMinimumScaleFactor: 0.75,
-        deltaWeight: .bold,
-        showsOverGoalIndicatorInValueLine: true,
-        showsOverGoalDeltaInGoalLine: false,
-        showsTitleAfterValues: false
-    )
-
     static let accessoryRectangular = MacroSummaryColumnView.Style(
         titleFont: .caption2.weight(.semibold),
         valueFont: .caption.weight(.semibold),

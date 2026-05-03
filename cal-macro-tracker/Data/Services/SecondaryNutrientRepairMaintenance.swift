@@ -37,10 +37,6 @@ extension SecondaryNutrientRepairService {
         try modelContext.fetch(FetchDescriptor<FoodItem>())
     }
 
-    static func fetchAllLogEntries(modelContext: ModelContext) throws -> [LogEntry] {
-        try modelContext.fetch(FetchDescriptor<LogEntry>())
-    }
-
     static func classifyBackfillStatesIfNeeded(modelContext: ModelContext) throws {
         let foodsNeedingClassification = try modelContext.fetch(foodClassificationDescriptor())
         let entriesNeedingClassification = try modelContext.fetch(entryClassificationDescriptor())
@@ -129,14 +125,6 @@ extension SecondaryNutrientRepairService {
                 entry.updatedAt = .now
             }
         }
-    }
-
-    static func needsBackfillStateClassification(_ food: FoodItem) -> Bool {
-        food.secondaryNutrientBackfillState == nil
-    }
-
-    static func needsBackfillStateClassification(_ entry: LogEntry) -> Bool {
-        entry.secondaryNutrientBackfillState == nil
     }
 
     private static func foodClassificationDescriptor() -> FetchDescriptor<FoodItem> {
