@@ -261,6 +261,7 @@
 - Reintroduced the suggestion shortcuts as native iOS/macOS 26 Liquid Glass capsules after validating the surrounding Add Food page, search drawer, toolbar actions, and bottom scan buttons were compatible.
 - Added a Settings `Food Suggestions` toggle that is on by default and explains that suggestions come from on-device logging history.
 - Retuned Add Food's native search-drawer suggestion spacing so the suggestion pills, `On Device` header, and on-device result rows keep a visually consistent rhythm without replacing SwiftUI's native `.searchable` behavior.
+- Updated Add Food's on-device result rows to keep the tight native list styling while moving the serving description under the food name and centering a right-aligned calorie value with a smaller, lighter `kcal` unit.
 
 #### Main implementation steps
 
@@ -276,10 +277,13 @@
 - Grouped suggestion pills and the `On Device` label into one local-results header row, keeping the glass bleed inside the header while avoiding first-result-only offsets.
 - Made local food result rows use explicit `8pt` top and bottom row insets with the default minimum row height disabled, replacing the previous implicit `List` spacing plus extra row padding.
 - Centralized the Add Food search spacing values in `SearchFoodSpacing` so the visually tuned native-search/header/list spacing is traceable from one place.
+- Kept the Add Food row presentation scoped to search results only, without changing Dashboard/Home rows or adding cards, corner backgrounds, extra result spacing, or macro values.
+- A simplify review for the Add Food row typography follow-up found no reuse or efficiency cleanup; its quality finding was applied by moving the new row and calorie-unit spacing values into `SearchFoodSpacing`.
 - A simplify review for the Liquid Glass pill follow-up found no scoped reuse, quality, or efficiency cleanup needed.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Liquid Glass pill follow-up.
 - A simplify review for the spacing follow-up found no reuse or efficiency cleanup; its broader caution about negative list insets was left unchanged because the current values are the smallest visually validated way to preserve native `.searchable` behavior, Liquid Glass bleed, and stable keyboard focus transitions.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the spacing follow-up.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the row typography follow-up.
 
 #### Bugs and implementation findings
 
@@ -292,6 +296,7 @@
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the swipe-area follow-up.
 - Light-mode visual validation showed the native glass effect could look clipped at the row's top, bottom, and leading edge; the final row adds internal bleed space and disables scroll clipping instead of redesigning the item presentation.
 - The search-drawer spacing follow-up rejected a custom search field and focus-dependent compensation because they either moved away from native behavior or introduced a visible down-then-up transition when the keyboard opened; the accepted fix keeps one stable suggestion inset and accepts the native focused search geometry.
+- The row typography follow-up rejected rounded card backgrounds and macro values because the target was a tighter continuation of native list rows, not a new card presentation.
 
 #### Validation
 
@@ -299,6 +304,7 @@
 - The suggestion swipe-area follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, focused visual validation, simplify review, defensive-code review, and final diff review.
 - The Liquid Glass suggestion-pill follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, focused light-mode visual validation, simplify review, defensive-code review, and final diff review.
 - The Add Food suggestion spacing follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
+- The Add Food row typography follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: Add Food search and scan action redesign
 

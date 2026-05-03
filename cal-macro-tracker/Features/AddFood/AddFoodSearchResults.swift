@@ -12,6 +12,8 @@ private enum SearchFoodSpacing {
     static let foodRowVertical: CGFloat = 8
     static let foodRowHorizontal: CGFloat = 16
     static let rowTitleSpacing: CGFloat = 6
+    static let localFoodRowSpacing: CGFloat = 12
+    static let calorieUnitSpacing: CGFloat = 2
     static let pillSpacing: CGFloat = 8
     static let pillHorizontalPadding: CGFloat = 14
     static let pillVerticalPadding: CGFloat = 8
@@ -316,12 +318,28 @@ private struct LocalFoodRow: View {
     let food: FoodItem
 
     var body: some View {
-        VStack(alignment: .leading, spacing: SearchFoodSpacing.rowTitleSpacing) {
-            Text(food.name)
-                .font(.headline)
-            Text("\(food.caloriesPerServing.roundedForDisplay) kcal • \(food.servingDescription)")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+        HStack(alignment: .center, spacing: SearchFoodSpacing.localFoodRowSpacing) {
+            VStack(alignment: .leading, spacing: SearchFoodSpacing.rowTitleSpacing) {
+                Text(food.name)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+
+                Text(food.servingDescription)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            HStack(alignment: .firstTextBaseline, spacing: SearchFoodSpacing.calorieUnitSpacing) {
+                Text(food.caloriesPerServing.roundedForDisplay)
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Text("kcal")
+                    .font(.footnote.weight(.regular))
+                    .foregroundStyle(.tertiary)
+            }
+            .monospacedDigit()
         }
     }
 }
