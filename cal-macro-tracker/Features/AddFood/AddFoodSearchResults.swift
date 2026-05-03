@@ -9,9 +9,8 @@ private enum SearchFoodSpacing {
     static let headerRowLeading: CGFloat = 4
     static let headerRowBottom: CGFloat = -16
     static let suggestionTop: CGFloat = -7
-    static let foodRowVertical: CGFloat = 8
+    static let foodRowVertical: CGFloat = 16
     static let foodRowHorizontal: CGFloat = 16
-    static let rowTitleSpacing: CGFloat = 6
     static let localFoodRowSpacing: CGFloat = 12
     static let calorieUnitSpacing: CGFloat = 2
     static let pillSpacing: CGFloat = 8
@@ -319,15 +318,9 @@ private struct LocalFoodRow: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: SearchFoodSpacing.localFoodRowSpacing) {
-            VStack(alignment: .leading, spacing: SearchFoodSpacing.rowTitleSpacing) {
-                Text(food.name)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
-
-                Text(food.servingDescription)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Text(food.name)
+                .font(.headline)
+                .foregroundStyle(.primary)
 
             Spacer()
 
