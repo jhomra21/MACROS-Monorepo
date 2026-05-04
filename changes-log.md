@@ -108,6 +108,7 @@
 - Removed the bottom bar's full-width hit shape and day-swipe gesture so compact mode only intercepts taps on the circular plus button and logged-food rows beside it remain editable.
 - Reworked the Add Food Liquid Glass button to keep one trailing-aligned capsule surface while its width changes, so compaction shrinks from the left edge into the fixed right edge instead of spawning a separate circular glass blob that slides across the bottom bar.
 - Kept the prominent blue treatment by tinting the direct capsule glass effect with the app accent color instead of returning to `.glassProminent`, whose separate compact shape path reintroduced the moving-ball artifact.
+- Native `.buttonStyle(.glassProminent)` / `GlassProminentButtonStyle` remains the preferred Apple-provided prominent glass style in ordinary cases, but this app uses direct `.glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)` for the accepted bottom action because its single-surface capsule behavior is more predictable during our custom compact/expanded animation.
 - A simplify pass removed a redundant `buttonHeight` computed property after the fixed-height button contract became just `compactButtonSize`.
 - Added a `bottomOffset` override to `BottomPinnedActionBar` so Dashboard can visually lower the Add Food control into the bottom safe-area gap while onboarding and Log Food keep the default placement.
 - Validated and fixed the review finding that the shared bottom bar's default bottom padding had accidentally changed during Dashboard-only bottom-position tuning; the default `8pt` spacing is preserved while Dashboard keeps its explicit offset.
@@ -132,6 +133,9 @@
 - The compact button animation was tuned so the same plus icon size is used in both states, the compact plus remains centered, and the `Add Food` text transitions from the trailing edge instead of fading or clipping from the middle.
 - A follow-up animation pass found that separate expanded/compact glass shapes made compaction form a ball on the left and then move it to the right, while expansion already felt correctly anchored. The working fix removed the separate compact circle/matched morph and uses one clipped capsule glass surface with trailing-aligned width animation.
 - Trying to preserve the old prominent button style directly was rejected because the important behavior was the single-surface trailing anchor; the final version restores the blue look with `.regular.tint(.accentColor).interactive()` on that same capsule.
+- The reusable accent action pieces intentionally split responsibilities: `AppAccentActionLabel` owns only the custom label treatment (white filled icon circle, accent-colored SF Symbol, softer white title text, compact icon/initial behavior, and title move/opacity transition), while `AppAccentActionButton` owns the button surface (native iOS/macOS 26 tinted capsule glass, older-OS capsule fallback, fixed 60pt height, disabled opacity, and explicit capsule hit shape).
+- The bottom-pinned wrappers remain separate from the accent button because their responsibilities are layout-specific rather than button-style-specific: `safeAreaInset` placement, one-vs-two-action arrangements, keyboard gap/state reset, bottom edge fade, Dashboard-only visual offset, and scroll-driven compact/expanded state.
+- A post-implementation simplify review found that the single bottom action bar still had a separate older-OS fallback path after `AppAccentActionButton` was introduced; the fallback now routes through the shared accent button too, so the button surface and fallback behavior live in one component.
 - A defensive-code review found no redundant guards, duplicated validations, or impossible-state branches in the final Add Food compaction diff.
 - Moving regular bottom padding to zero did not visibly lower the button enough because `.safeAreaInset(edge: .bottom)` still keeps the bar above the iOS home-indicator safe area; the accepted adjustment is a Dashboard-only visual offset, currently tuned to match the feel of Apple bottom search bars/buttons.
 - Review validation confirmed that bottom-position tuning must stay Dashboard-owned: changing the shared hidden-keyboard padding shifted onboarding and Log Food too, so the root fix restored the shared default instead of patching those call sites.
@@ -331,6 +335,7 @@
 - Updated `SearchFoodListView` to report scroll offset through an action closure so `AddFoodScreen` can compact the bottom scan bar without wrapping the `List` in another scroll container.
 - Removed the now-unused `AddFoodQuickActions` view from `AddFoodComponents.swift`.
 - Extracted `AppAccentActionLabel` from `BottomPinnedActionBar.swift` so the Dashboard Add Food button and Add Food scan buttons share the same accent-label treatment.
+- Added the shared `AppAccentActionButton` wrapper for the app's custom prominent accent action surface, keeping the native iOS/macOS 26 Liquid Glass path and the older-OS fallback in one place instead of repeating availability checks at each use site.
 - A simplify pass replaced an imprecise `AddFoodEntryPoint` scan destination with a local scan-only destination enum, avoiding impossible `.addFood` / `.manualEntry` branches.
 - Added `BottomPinnedActionContainer` and `BottomPinnedEdgeFade` so single and dual bottom action bars share the same screen-edge fade placement while keeping the visual `bottomOffset` scoped to the buttons.
 - Added `PlatformColors.systemBackground` so the edge fade reuses the app's platform color helpers and adapts correctly in light and dark mode.
@@ -344,6 +349,9 @@
 - A large Manual-mode `Search` button in the content area felt visually heavy, so the mode switch moved into the leading navigation area instead.
 - Using `AddFoodEntryPoint` for local scan navigation made unreachable states representable; the final local enum keeps the screen's scan routing precise.
 - The shared filled-icon bottom label intentionally uses an 8pt icon/text gap; Apple HIG guidance supports consistent layout but does not publish a fixed icon-label gap for this exact control.
+- The accent action label/button are custom because native `Label`, `Button`, `.buttonStyle(.glass)`, and `.buttonStyle(.glassProminent)` do not provide this exact combination: white filled icon circle, accent-colored SF Symbol, softer white expanded text, compact title hiding, direct tinted capsule glass, fixed 60pt control height, and explicit full-capsule hit target.
+- Native `safeAreaInset(edge: .bottom)` is still the placement primitive, but the app-specific bottom action wrappers are warranted because they also manage paired action layout, scroll-driven compacting, tuned keyboard clearance, lifecycle reset for stale keyboard state, visual edge fade behind floating controls, and Dashboard/Add Food bottom offset tuning.
+- A simplify review validated the shared accent action extraction and accepted the scoped cleanup that removed the remaining duplicate single-button fallback implementation; the restore-purchases button duplication was left as-is because it is small and keeps each purchase surface explicit.
 - Simplify review also noted shared bottom-bar infrastructure duplication and scroll-compaction similarity with Dashboard; those were left unchanged for now to keep the redesign focused and avoid destabilizing the already accepted Dashboard bottom bar.
 - Defensive-code review found no further high-confidence redundant guards, duplicated validation, or impossible-state branches after the scan-destination enum cleanup.
 - The first bottom fade attempt moved with the visually lowered buttons, placing the fade under the controls instead of at the app/list edge; the final container keeps the fade pinned to the bottom safe-area edge and offsets only the button content.
@@ -499,6 +507,51 @@
 - This keeps native back navigation intact while avoiding the iOS 26 centered/principal toolbar transition path that caused the temporary glass artifact.
 - `View+KeyboardNavigationToolbar.swift` now only installs the keyboard toolbar while a field is focused, which removed the unrelated invalid-frame log when entering Settings.
 - A defensive-code review found no redundant guards or impossible-state branches in the final Settings/navigation diff.
+
+### Follow-up: Full Unlock sheet Liquid Glass button edge
+
+#### What went wrong
+
+- The Settings `Unlock Full App` row opens the Full Unlock paywall in a native SwiftUI sheet with `.medium` and `.large` detents.
+- In the compact / medium drawer state, the main Unlock button's native Liquid Glass refractive border/edge disappeared.
+- The same button edge became visible again when the sheet expanded to `.large`.
+- The misleading symptom made the button look broken, but the button glass itself was not the root cause.
+
+#### Attempts that did not work
+
+- Switching the paywall action to `.buttonStyle(.glassProminent)` did not restore the edge in the compact sheet.
+- Matching the Add Food button's direct `.glassEffect(.regular.tint(...).interactive(), in: .capsule)` pattern did not restore the edge by itself.
+- Adding a custom AngularGradient / white stroke overlay made the button look fake and moved away from native Liquid Glass.
+- Adding `.regularMaterial`, a second untinted glass rim, a blurred contrast capsule, or an action-group backing behind the button did not change the compact-detent rendering problem.
+- A hybrid sheet background that layered a mostly opaque grouped fill with `.regularMaterial` kept trying to preserve blur, but it also failed to restore the compact-detent Liquid Glass edge.
+- Softer sheet backgrounds such as `.thinMaterial` and `.ultraThinMaterial`, plus clearing the iOS navigation container background, did not restore the native see-through sheet appearance once a presentation background override was involved.
+- Local opaque backing behind the button, even when doubled and widened, did not affect the native refractive edge because the controlling surface is the sheet presentation background, not a sibling view behind the button.
+
+#### Root cause
+
+- The compact native sheet/drawer uses a translucent blurred presentation background.
+- Liquid Glass samples what is behind it to create the refractive edge.
+- In the compact detent, the button was effectively sitting on top of the sheet's transparent/blurred presentation surface, so there was not enough stable opaque surface immediately behind the glass for the native refractive border to read.
+- Expanding the sheet changes the presentation background behavior enough that the same native glass button can sample a visible surface again, which is why the edge appeared only in `.large`.
+
+#### Final decision
+
+- The control for this border effect is the sheet presentation background.
+- Applying `.presentationBackground(PlatformColors.groupedBackground)` confirmed the diagnosis: the compact sheet became opaque and the native Liquid Glass button edge came back.
+- We are intentionally not keeping that opaque override because the product choice is to preserve the native translucent drawer/sheet background.
+- Accepted behavior: in the compact translucent drawer, the Unlock button may not show its native refractive border; when the drawer expands and the presentation becomes filled/opaque, the native button border returns.
+- The Full Unlock paywall now reuses the shared Add Food / Log Food `AppAccentActionButton`, so the paywall gets the same label treatment, native iOS/macOS 26 direct tinted capsule glass path, older-OS fallback, disabled opacity, and explicit capsule hit target without a purchase-specific button wrapper.
+- A simplify review replaced the feature-gate-derived settings status with the direct `PurchaseStore.hasFullUnlock` source, added an in-flight guard to `PurchaseStore.loadProducts()`, and kept product loading lazy instead of fetching StoreKit products during app startup.
+- A final simplify pass also centralized the remaining single-button older-OS fallback through `AppAccentActionButton` and intentionally left the small restore-purchases buttons inline in Settings and the paywall.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Rule for future Liquid Glass sheets
+
+- If a native Liquid Glass control loses its refractive edge only in a compact sheet/drawer detent, first check whether the sheet presentation background is translucent.
+- An opaque `presentationBackground` can restore the native edge, but it trades away the native translucent drawer look.
+- If translucency is more important, leave the sheet native and accept that the edge returns only when the presentation expands/fills.
+- Do not recreate the Liquid Glass border with custom strokes unless the product explicitly wants a non-native decorative border.
+- This follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, simplify review, defensive-code review, and final diff review.
 
 ## First-Run Goal Setup Onboarding
 

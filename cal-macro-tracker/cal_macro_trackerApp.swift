@@ -23,6 +23,8 @@ struct cal_macro_trackerApp: App {
     private let goalSetupDisplayMode: GoalSetupDisplayMode = .normal
 
     @AppStorage("hasCompletedGoalSetup") private var hasCompletedGoalSetup = false
+    @State private var entitlements: AppEntitlements
+    @State private var purchaseStore: PurchaseStore
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
     @State private var pendingOpenRequest: AppOpenRequest?
@@ -31,6 +33,12 @@ struct cal_macro_trackerApp: App {
     #if os(iOS)
     @UIApplicationDelegateAdaptor(HomeScreenQuickActionAppDelegate.self) private var appDelegate
     #endif
+
+    init() {
+        let entitlements = AppEntitlements()
+        _entitlements = State(initialValue: entitlements)
+        _purchaseStore = State(initialValue: PurchaseStore(entitlements: entitlements))
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -69,11 +77,14 @@ struct cal_macro_trackerApp: App {
                 }
             }
             .environment(dayContext)
+            .environment(entitlements)
+            .environment(purchaseStore)
             .task {
                 #if os(iOS)
                 consumePendingQuickActionIfNeeded()
                 #endif
                 await launchState.start()
+                await purchaseStore.start()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }

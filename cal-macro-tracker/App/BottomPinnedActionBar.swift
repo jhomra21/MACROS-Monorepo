@@ -52,46 +52,37 @@ struct BottomPinnedActionBar: View {
     }
 
     private func glassButton(buttonWidth: CGFloat) -> some View {
-        Button(action: action) {
-            labelContent
-                .foregroundStyle(.white)
-                .frame(width: buttonWidth, alignment: .trailing)
-                .frame(height: compactButtonSize)
-                .clipped()
-                .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
-                .contentShape(Capsule())
-        }
-        .buttonStyle(.plain)
+        AppAccentActionButton(
+            title: title,
+            systemImage: systemImage,
+            isCompact: isCompact,
+            isDisabled: isDisabled,
+            labelWidth: buttonWidth,
+            action: action
+        )
+        .clipped()
         .frame(width: buttonWidth, height: compactButtonSize)
         .padding(.horizontal, horizontalPadding)
         .padding(.top, topPadding)
         .padding(.bottom, bottomPadding)
-        .disabled(isDisabled)
         .accessibilityLabel(title)
     }
 
     private var fallbackButton: some View {
-        Button(action: action) {
-            labelContent
-                .foregroundStyle(.white)
-                .frame(width: fallbackLabelWidth, height: isCompact ? compactButtonSize : nil)
-                .frame(maxWidth: isCompact ? nil : .infinity)
-                .padding(.vertical, verticalLabelPadding)
-                .background(isDisabled ? Color.secondary.opacity(0.5) : Color.black)
-                .clipShape(isCompact ? AnyShape(Circle()) : AnyShape(Capsule()))
-                .contentShape(isCompact ? AnyShape(Circle()) : AnyShape(Capsule()))
-                .padding(.horizontal, horizontalPadding)
-                .padding(.top, topPadding)
-                .padding(.bottom, bottomPadding)
-        }
-        .disabled(isDisabled)
+        AppAccentActionButton(
+            title: title,
+            systemImage: systemImage,
+            isCompact: isCompact,
+            isDisabled: isDisabled,
+            labelWidth: fallbackLabelWidth,
+            action: action
+        )
+        .padding(.horizontal, horizontalPadding)
+        .padding(.top, topPadding)
+        .padding(.bottom, bottomPadding)
         .accessibilityLabel(title)
         .frame(maxWidth: isCompact ? nil : .infinity, alignment: .trailing)
         .background(.ultraThinMaterial)
-    }
-
-    private var labelContent: some View {
-        AppAccentActionLabel(title: title, systemImage: systemImage, isCompact: isCompact)
     }
 
     private var bottomBarHeight: CGFloat {
@@ -104,10 +95,6 @@ struct BottomPinnedActionBar: View {
 
     private var fallbackLabelWidth: CGFloat {
         isCompact ? compactButtonSize : 124
-    }
-
-    private var verticalLabelPadding: CGFloat {
-        isCompact ? 0 : 18
     }
 
 }
@@ -159,6 +146,48 @@ enum BottomPinnedActionBarMetrics {
     static let keyboardGap: CGFloat = 20
 }
 
+struct AppAccentActionButton: View {
+    let title: String
+    let systemImage: String?
+    let isCompact: Bool
+    var isDisabled = false
+    var labelWidth: CGFloat?
+    let action: () -> Void
+
+    private let buttonHeight: CGFloat = 60
+
+    var body: some View {
+        if #available(iOS 26, macOS 26, *) {
+            Button(action: action) {
+                label
+                    .glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(isDisabled)
+            .opacity(isDisabled ? 0.55 : 1)
+        } else {
+            Button(action: action) {
+                label
+                    .background(isDisabled ? Color.secondary.opacity(0.5) : Color.black)
+                    .clipShape(Capsule())
+                    .contentShape(Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(isDisabled)
+            .opacity(isDisabled ? 0.55 : 1)
+        }
+    }
+
+    private var label: some View {
+        AppAccentActionLabel(title: title, systemImage: systemImage, isCompact: isCompact)
+            .foregroundStyle(.white)
+            .frame(width: labelWidth, alignment: .trailing)
+            .frame(maxWidth: labelWidth == nil ? .infinity : nil)
+            .frame(height: buttonHeight)
+    }
+}
+
 struct AppAccentActionLabel: View {
     let title: String
     let systemImage: String?
@@ -185,9 +214,9 @@ struct AppAccentActionLabel: View {
 
     private func filledIcon(_ systemImage: String) -> some View {
         Image(systemName: systemImage)
-            .font(.system(size: 13, weight: .bold))
+            .font(.system(size: 10, weight: .bold))
             .foregroundStyle(Color.accentColor)
-            .frame(width: 24, height: 24)
+            .frame(width: 18, height: 18)
             .background(.white, in: Circle())
     }
 }

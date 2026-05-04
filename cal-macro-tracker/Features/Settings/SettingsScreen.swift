@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftData
 import SwiftUI
 
@@ -5,6 +6,7 @@ struct SettingsScreen: View {
     @Query private var goals: [DailyGoals]
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @FocusState private var focusedField: DailyGoalsField?
+    @State private var isPresentingFullUnlock = false
 
     var body: some View {
         Form {
@@ -17,6 +19,8 @@ struct SettingsScreen: View {
             } footer: {
                 Text("Suggest foods from your on-device logging history.")
             }
+
+            FullUnlockSettingsSection(isPresentingFullUnlock: $isPresentingFullUnlock)
 
             SavedFoodsSection(
                 title: "Saved Custom Foods",
@@ -38,6 +42,10 @@ struct SettingsScreen: View {
         }
         .onDisappear {
             dismissKeyboard($focusedField)
+        }
+        .sheet(isPresented: $isPresentingFullUnlock) {
+            FullUnlockPaywallSheet()
+                .presentationDetents([.medium, .large])
         }
     }
 
@@ -67,6 +75,56 @@ struct SettingsScreen: View {
             },
             sortBy: [SortDescriptor(\FoodItem.name)]
         )
+    }
+}
+
+private struct FullUnlockSettingsSection: View {
+    @Environment(PurchaseStore.self) private var purchaseStore
+    @Binding var isPresentingFullUnlock: Bool
+
+    var body: some View {
+        Section {
+            fullUnlockStatusButton(isUnlocked: purchaseStore.hasFullUnlock)
+
+            Button("Restore Purchases") {
+                Task {
+                    await purchaseStore.restorePurchases()
+                }
+            }
+            .disabled(purchaseStore.isPurchasing)
+        } footer: {
+            Text("Purchases are processed by Apple. Restore anytime with the same Apple ID.")
+        }
+        .task {
+            await purchaseStore.loadProducts()
+        }
+    }
+
+    private func fullUnlockStatusButton(isUnlocked: Bool) -> some View {
+        Button {
+            isPresentingFullUnlock = true
+        } label: {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(isUnlocked ? "Full App Unlocked" : "Unlock Full App")
+                        .foregroundStyle(isUnlocked ? Color.primary : Color.accentColor)
+                    Text(isUnlocked ? "All paid features are available." : "Unlock all features with one purchase.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                if purchaseStore.isLoadingProducts {
+                    ProgressView()
+                } else if !isUnlocked, let product = purchaseStore.fullUnlockProduct {
+                    Text(product.displayPrice)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(Color.accentColor)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 

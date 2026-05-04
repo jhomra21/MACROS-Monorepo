@@ -72,29 +72,14 @@ struct BottomPinnedDualActionBar: View {
     }
 
     private func actionButton(_ action: BottomPinnedDualAction) -> some View {
-        Button(action: action.action) {
-            labelContent(for: action)
-                .foregroundStyle(.white)
-                .frame(maxWidth: isCompact ? compactButtonSize : .infinity)
-                .frame(height: compactButtonSize)
-                .background(fallbackBackground)
-                .clipShape(Capsule())
-                .contentShape(Capsule())
-                .ifAvailableGlassTintedCapsule()
-        }
-        .buttonStyle(.plain)
+        AppAccentActionButton(
+            title: action.title,
+            systemImage: action.systemImage,
+            isCompact: isCompact,
+            labelWidth: isCompact ? compactButtonSize : nil,
+            action: action.action
+        )
         .accessibilityLabel(action.title)
-    }
-
-    private func labelContent(for action: BottomPinnedDualAction) -> some View {
-        AppAccentActionLabel(title: action.title, systemImage: action.systemImage, isCompact: isCompact)
-    }
-
-    @ViewBuilder
-    private var fallbackBackground: some View {
-        if #unavailable(iOS 26, macOS 26) {
-            Color.black
-        }
     }
 
     private var bottomBarHeight: CGFloat {
@@ -105,15 +90,4 @@ struct BottomPinnedDualActionBar: View {
         compactButtonSize * 2 + buttonSpacing
     }
 
-}
-
-private extension View {
-    @ViewBuilder
-    func ifAvailableGlassTintedCapsule() -> some View {
-        if #available(iOS 26, macOS 26, *) {
-            self.glassEffect(.regular.tint(.accentColor).interactive(), in: .capsule)
-        } else {
-            self
-        }
-    }
 }
