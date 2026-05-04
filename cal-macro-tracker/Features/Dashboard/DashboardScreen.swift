@@ -3,8 +3,15 @@ import SwiftUI
 
 struct DashboardScreen: View {
     @Environment(AppDayContext.self) var dayContext
+    @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
+    @AppStorage(AppStorageKeys.customProteinRingColor) private var customProteinRingColor =
+        MacroRingColorStorage.defaultProteinHex
+    @AppStorage(AppStorageKeys.customCarbRingColor) private var customCarbRingColor =
+        MacroRingColorStorage.defaultCarbHex
+    @AppStorage(AppStorageKeys.customFatRingColor) private var customFatRingColor =
+        MacroRingColorStorage.defaultFatHex
 
     let resetToTodayToken: Int
     let onOpenAddFood: (CalendarDay) -> Void
@@ -31,10 +38,22 @@ struct DashboardScreen: View {
     private let compactSummaryTopPadding: CGFloat = 8
     var currentGoals: MacroGoalsSnapshot { MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)) }
 
+    private var customRingPalette: MacroRingPalette? {
+        guard entitlements.canUse(.customMacroRingColors) else { return nil }
+        return MacroRingColorStorage(
+            proteinHex: customProteinRingColor,
+            carbHex: customCarbRingColor,
+            fatHex: customFatRingColor
+        )
+        .palette
+    }
+
     var body: some View {
         LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
+            let customRingPalette = customRingPalette
+
             ZStack(alignment: .top) {
-                dashboardList(snapshot: snapshot)
+                dashboardList(snapshot: snapshot, customRingPalette: customRingPalette)
 
                 if daySelection.selectedDay != dayContext.today {
                     todayReturnRow
@@ -43,7 +62,7 @@ struct DashboardScreen: View {
                 }
 
                 if showsCompactSummary {
-                    pinnedCompactSummaryView(totals: snapshot.totals)
+                    pinnedCompactSummaryView(totals: snapshot.totals, customRingPalette: customRingPalette)
                         .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
                         .zIndex(1)
                 }
@@ -129,9 +148,9 @@ struct DashboardScreen: View {
         .padding(.top, 8)
     }
 
-    private func dashboardList(snapshot: LogEntryDaySnapshot) -> some View {
+    private func dashboardList(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
         List {
-            dashboardContent(snapshot: snapshot)
+            dashboardContent(snapshot: snapshot, customRingPalette: customRingPalette)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -147,8 +166,8 @@ struct DashboardScreen: View {
     }
 
     @ViewBuilder
-    private func dashboardContent(snapshot: LogEntryDaySnapshot) -> some View {
-        macroRows(snapshot: snapshot)
+    private func dashboardContent(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
+        macroRows(snapshot: snapshot, customRingPalette: customRingPalette)
 
         LogEntryListSection(
             title: daySelection.selectedDay.dayTitle,
@@ -167,20 +186,26 @@ struct DashboardScreen: View {
     }
 
     @ViewBuilder
-    private func macroRows(snapshot: LogEntryDaySnapshot) -> some View {
+    private func macroRows(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
         MacroDashboardRingPanel(
             totals: snapshot.totals,
             goals: currentGoals,
             selectedMacro: selectedMacro,
             isExpanded: isMacroRingExpanded,
+            colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
             onToggleExpansion: toggleMacroRingExpansion
         )
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
 
-        MacroLegendView(totals: snapshot.totals, goals: currentGoals, selectedMacro: $selectedMacro)
-            .dashboardListRow(bottom: 0)
-            .dashboardDaySwipe(dayNavigationGesture)
+        MacroLegendView(
+            totals: snapshot.totals,
+            goals: currentGoals,
+            selectedMacro: $selectedMacro,
+            palette: customRingPalette
+        )
+        .dashboardListRow(bottom: 0)
+        .dashboardDaySwipe(dayNavigationGesture)
 
         if isMacroRingExpanded {
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
@@ -252,12 +277,12 @@ struct DashboardScreen: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func pinnedCompactSummaryView(totals: NutritionSnapshot) -> some View {
+    private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
         VStack(spacing: 0) {
             Color.clear
                 .frame(height: compactSummaryTopPadding)
 
-            CompactMacroSummaryView(totals: totals, goals: currentGoals)
+            CompactMacroSummaryView(totals: totals, goals: currentGoals, ringColorPalette: customRingPalette)
         }
         .frame(maxWidth: .infinity, alignment: .top)
         .contentShape(Rectangle())

@@ -101,6 +101,13 @@ final class PurchaseStore {
         entitlements.update(fullUnlock: hasVerifiedFullUnlock)
     }
 
+    #if DEBUG
+    func setDebugFullUnlock(_ isUnlocked: Bool) {
+        entitlements.update(fullUnlock: isUnlocked)
+        errorMessage = nil
+    }
+    #endif
+
     private func handle(transactionResult result: VerificationResult<Transaction>) async {
         guard case let .verified(transaction) = result else { return }
         await refreshEntitlements()
@@ -113,8 +120,15 @@ final class PurchaseStore {
             return
         }
 
-        await refreshEntitlements()
+        applyFullUnlock(from: transaction)
         await transaction.finish()
         errorMessage = nil
+    }
+
+    private func applyFullUnlock(from transaction: Transaction) {
+        guard transaction.productID == Self.fullUnlockProductID else { return }
+        guard transaction.revocationDate == nil else { return }
+
+        entitlements.update(fullUnlock: true)
     }
 }

@@ -55,9 +55,6 @@ struct FullUnlockPaywallSheet: View {
                             ) {
                                 Task {
                                     await purchaseStore.purchaseFullUnlock()
-                                    if purchaseStore.hasFullUnlock {
-                                        dismiss()
-                                    }
                                 }
                             }
                         }
@@ -70,6 +67,16 @@ struct FullUnlockPaywallSheet: View {
                     }
                     .buttonStyle(.borderless)
                     .disabled(purchaseStore.isPurchasing)
+
+                    #if DEBUG
+                    if !purchaseStore.hasFullUnlock {
+                        Button("Grant Debug Unlock") {
+                            purchaseStore.setDebugFullUnlock(true)
+                            dismiss()
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                    #endif
                 }
                 .frame(maxWidth: .infinity)
 

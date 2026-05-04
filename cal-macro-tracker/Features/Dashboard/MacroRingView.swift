@@ -5,17 +5,20 @@ struct MacroRingView: View {
     let goals: MacroGoalsSnapshot
     let selectedMetric: MacroMetric?
     let ringDiameter: CGFloat
+    let colorStyle: MacroRingColorStyle
 
     init(
         totals: NutritionSnapshot,
         goals: MacroGoalsSnapshot,
         selectedMetric: MacroMetric? = nil,
-        ringDiameter: CGFloat = 224
+        ringDiameter: CGFloat = 224,
+        colorStyle: MacroRingColorStyle = .standard
     ) {
         self.totals = totals
         self.goals = goals
         self.selectedMetric = selectedMetric
         self.ringDiameter = ringDiameter
+        self.colorStyle = colorStyle
     }
 
     var body: some View {
@@ -26,6 +29,7 @@ struct MacroRingView: View {
             centerValueFontSize: 42,
             minimumLineWidth: 5,
             showsGoalSubtitle: true,
+            colorStyle: colorStyle,
             selectedMetric: selectedMetric
         )
     }
@@ -34,8 +38,15 @@ struct MacroRingView: View {
 struct CompactMacroRingView: View {
     let totals: NutritionSnapshot
     let goals: MacroGoalsSnapshot
+    let colorStyle: MacroRingColorStyle
 
     private let ringDiameter: CGFloat = 64
+
+    init(totals: NutritionSnapshot, goals: MacroGoalsSnapshot, colorStyle: MacroRingColorStyle = .standard) {
+        self.totals = totals
+        self.goals = goals
+        self.colorStyle = colorStyle
+    }
 
     var body: some View {
         MacroRingSetView(
@@ -44,7 +55,8 @@ struct CompactMacroRingView: View {
             ringDiameter: ringDiameter,
             centerValueFontSize: 14,
             minimumLineWidth: 5,
-            showsGoalSubtitle: false
+            showsGoalSubtitle: false,
+            colorStyle: colorStyle
         )
     }
 }
@@ -72,6 +84,7 @@ struct MacroDashboardRingPanel: View {
     let goals: MacroGoalsSnapshot
     let selectedMacro: MacroMetric?
     let isExpanded: Bool
+    let colorStyle: MacroRingColorStyle
     let onToggleExpansion: () -> Void
 
     private let collapsedRingDiameter: CGFloat = 269
@@ -92,7 +105,8 @@ struct MacroDashboardRingPanel: View {
                     totals: totals,
                     goals: goals,
                     selectedMetric: selectedMacro,
-                    ringDiameter: expandedRingDiameter
+                    ringDiameter: expandedRingDiameter,
+                    colorStyle: colorStyle
                 )
                 .compositingGroup()
                 .scaleEffect(ringScale, anchor: .top)
@@ -207,6 +221,7 @@ struct MacroLegendView: View {
     let totals: NutritionSnapshot
     let goals: MacroGoalsSnapshot
     @Binding var selectedMacro: MacroMetric?
+    let palette: MacroRingPalette?
 
     var body: some View {
         HStack(spacing: 24) {
@@ -228,7 +243,8 @@ struct MacroLegendView: View {
                 totals: totals,
                 goals: goals,
                 titleStyle: .full,
-                style: .dashboardCard
+                style: .dashboardCard,
+                accentColor: palette?.color(for: metric)
             )
             .padding(16)
             .opacity(selectedMacro == nil || selectedMacro == metric ? 1 : 0.48)

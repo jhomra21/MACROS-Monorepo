@@ -545,6 +545,29 @@
 - A final simplify pass also centralized the remaining single-button older-OS fallback through `AppAccentActionButton` and intentionally left the small restore-purchases buttons inline in Settings and the paywall.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
 
+### Follow-up: Full Unlock custom macro ring colors
+
+#### Delivered
+
+- Added Full Unlock-gated custom protein, carb, and fat ring colors in Settings.
+- Applied custom colors to the Dashboard macro ring, macro legend dots, and compact macro summary while keeping standard colors for locked users.
+- Added debug-only Full Unlock grant/revoke controls so the gated color flow can be validated without completing a StoreKit purchase.
+
+#### Main implementation steps
+
+- Added shared macro ring color storage keys and `MacroRingPalette` / `MacroRingColorStorage` helpers for persisted hex colors.
+- Extended `MacroRingSetView`, `MacroRingView`, `MacroDashboardRingPanel`, `MacroLegendView`, `CompactMacroSummaryView`, and `MacroSummaryColumnView` so a custom palette can flow from Dashboard to the ring and summary surfaces.
+- Updated `SettingsScreen.swift` with a `PaidFeatureGate(.customMacroRingColors)` section containing ColorPicker rows and reset actions.
+- Updated `PurchaseStore` to apply verified full-unlock transactions directly and expose debug-only entitlement toggling in DEBUG builds.
+- Fixed the StoreKit scheme reference so local Full Unlock products resolve from the checked-in root `FullUnlock.storekit` file.
+- Fixed StoreKit transaction updates to refresh current entitlements again, so revocations or refunds clear Full Unlock instead of leaving the previous unlocked state active.
+- A simplify review reused the standard macro color palette in ring rendering, switched the Settings section to the existing paid-feature gate, centralized default macro color hex lookup, preserved the existing scheme version, computed custom Dashboard palettes once per render scope, and reduced repeated per-macro color row/reset definitions.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Validation
+
+- The custom color follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
+
 #### Rule for future Liquid Glass sheets
 
 - If a native Liquid Glass control loses its refractive edge only in a compact sheet/drawer detent, first check whether the sheet presentation background is translucent.

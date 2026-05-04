@@ -37,6 +37,7 @@
 /* Begin PBXFileReference section */
 		0D8B87CD2F7D86E700453C64 /* cal-macro-tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cal-macro-tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1111111111111111111111 /* CalMacroWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CalMacroWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B000000000000000000000C /* FullUnlock.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FullUnlock.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -52,6 +53,7 @@
 				Shared/LogEntryQuery.swift,
 				Shared/MacroGoalsSnapshot.swift,
 				Shared/MacroMetric.swift,
+				Shared/MacroRingPalette.swift,
 				Shared/MacroRingSetView.swift,
 				Shared/MacroSummaryColumnStyles.swift,
 				Shared/MacroSummaryColumnView.swift,
@@ -111,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				0D8B87CF2F7D86E700453C64 /* cal-macro-tracker */,
+				2B000000000000000000000C /* FullUnlock.storekit */,
 				1A1111111111111111111115 /* cal-macro-tracker/Shared */,
 				1A1111111111111111111116 /* cal-macro-tracker/CalMacroWidget */,
 				1A1111111111111111111117 /* cal-macro-tracker/Data/Models */,
@@ -191,6 +194,11 @@
 				TargetAttributes = {
 					0D8B87CC2F7D86E700453C64 = {
 						CreatedOnToolsVersion = 26.4;
+						SystemCapabilities = {
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+						};
 					};
 					1A111111111111111111111B = {
 						CreatedOnToolsVersion = 26.4;

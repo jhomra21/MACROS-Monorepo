@@ -33,6 +33,7 @@ struct MacroSummaryColumnView: View {
     let titleStyle: TitleStyle
     let style: Style
     let minimumHeight: CGFloat?
+    let accentColor: Color?
 
     init(
         metric: MacroMetric,
@@ -40,7 +41,8 @@ struct MacroSummaryColumnView: View {
         goals: MacroGoalsSnapshot,
         titleStyle: TitleStyle,
         style: Style,
-        minimumHeight: CGFloat? = nil
+        minimumHeight: CGFloat? = nil,
+        accentColor: Color? = nil
     ) {
         self.metric = metric
         self.totals = totals
@@ -48,6 +50,7 @@ struct MacroSummaryColumnView: View {
         self.titleStyle = titleStyle
         self.style = style
         self.minimumHeight = minimumHeight
+        self.accentColor = accentColor
     }
 
     private var presentation: MacroGoalValuePresentation {
@@ -85,7 +88,7 @@ struct MacroSummaryColumnView: View {
         HStack(spacing: style.titleSpacing) {
             if style.showsTitleDot {
                 Circle()
-                    .fill(metric.accentColor)
+                    .fill(accentColor ?? metric.accentColor)
                     .frame(width: style.titleDotDiameter, height: style.titleDotDiameter)
             }
 

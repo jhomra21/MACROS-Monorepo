@@ -3,6 +3,7 @@ import SwiftUI
 enum MacroRingColorStyle {
     case standard
     case accentedWidget
+    case custom(MacroRingPalette)
 }
 
 struct MacroRingSetView: View {
@@ -62,27 +63,30 @@ struct MacroRingSetView: View {
             standardColors(for: metric)
         case .accentedWidget:
             accentedWidgetColors(for: metric)
+        case let .custom(palette):
+            customColors(for: metric, palette: palette)
         }
     }
 
     private func standardColors(for metric: MacroMetric) -> RingColors {
-        switch metric {
+        let start = MacroRingPalette.standard.color(for: metric)
+        return switch metric {
         case .protein:
             (
                 track: Color(red: 0.62, green: 0.75, blue: 0.93),
-                start: Color(red: 0.14, green: 0.40, blue: 0.90),
+                start: start,
                 end: Color(red: 0.40, green: 0.68, blue: 1.0)
             )
         case .carbs:
             (
                 track: Color(red: 0.84, green: 0.62, blue: 0.24),
-                start: Color(red: 0.92, green: 0.50, blue: 0.02),
+                start: start,
                 end: Color(red: 1.0, green: 0.76, blue: 0.34)
             )
         case .fat:
             (
                 track: Color(red: 0.84, green: 0.48, blue: 0.62),
-                start: Color(red: 0.90, green: 0.18, blue: 0.44),
+                start: start,
                 end: Color(red: 1.0, green: 0.44, blue: 0.62)
             )
         }
@@ -97,6 +101,11 @@ struct MacroRingSetView: View {
         case .fat:
             (track: .primary.opacity(0.08), start: .primary.opacity(0.35), end: .primary.opacity(0.64))
         }
+    }
+
+    private func customColors(for metric: MacroMetric, palette: MacroRingPalette) -> RingColors {
+        let color = palette.color(for: metric)
+        return (track: color.opacity(0.45), start: color.opacity(0.82), end: color)
     }
 
     private func colors(for metric: MacroMetric) -> RingColors {
