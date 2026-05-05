@@ -561,12 +561,15 @@
 - Updated `PurchaseStore` to apply verified full-unlock transactions directly and expose debug-only entitlement toggling in DEBUG builds.
 - Fixed the StoreKit scheme reference so local Full Unlock products resolve from the checked-in root `FullUnlock.storekit` file.
 - Fixed StoreKit transaction updates to refresh current entitlements again, so revocations or refunds clear Full Unlock instead of leaving the previous unlocked state active.
+- Fixed Settings hit targets so the Full Unlock row and locked macro-color row respond across the full row instead of only on their text or trailing content.
+- Reworked unlocked macro color rows so tapping the row presents the native UIKit color picker directly from the current top controller, keeps per-color reset buttons visible whenever each color is changed, and starts the picker at a tuned custom compact detent that can expand to full height.
 - A simplify review reused the standard macro color palette in ring rendering, switched the Settings section to the existing paid-feature gate, centralized default macro color hex lookup, preserved the existing scheme version, computed custom Dashboard palettes once per render scope, and reduced repeated per-macro color row/reset definitions.
+- A follow-up simplify review removed stale color-binding and platform-stub code left behind after the direct UIKit picker presentation replaced inline SwiftUI color pickers.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
 
 #### Validation
 
-- The custom color follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
+- The custom color follow-up passed whitespace diff validation, formatter validation, iOS simulator builds, simplify review, defensive-code review, and final diff review.
 
 #### Rule for future Liquid Glass sheets
 

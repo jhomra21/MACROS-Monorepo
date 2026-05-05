@@ -1,6 +1,9 @@
 import StoreKit
 import SwiftData
 import SwiftUI
+#if os(iOS)
+import ObjectiveC
+#endif
 
 struct SettingsScreen: View {
     @Query private var goals: [DailyGoals]
@@ -104,7 +107,7 @@ private struct MacroRingColorSettingsSection: View {
         Section {
             PaidFeatureGate(.customMacroRingColors) {
                 ForEach(MacroMetric.allCases) { metric in
-                    colorRow(for: metric, changedMetricCount: changedMetrics.count)
+                    colorRow(for: metric)
                 }
 
                 if changedMetrics.count > 1 {
@@ -132,6 +135,8 @@ private struct MacroRingColorSettingsSection: View {
                         Image(systemName: "lock.fill")
                             .foregroundStyle(.secondary)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
@@ -150,7 +155,7 @@ private struct MacroRingColorSettingsSection: View {
         MacroMetric.allCases.filter { hex(for: $0).wrappedValue != defaultHex(for: $0) }
     }
 
-    private func colorRow(for metric: MacroMetric, changedMetricCount: Int) -> some View {
+    private func colorRow(for metric: MacroMetric) -> some View {
         let title = "\(metric.title) Ring"
         let hex = hex(for: metric)
         let defaultHex = defaultHex(for: metric)
@@ -158,34 +163,37 @@ private struct MacroRingColorSettingsSection: View {
         let isChanged = hex.wrappedValue != defaultHex
 
         return HStack(spacing: 16) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(color)
-                    .frame(width: 14, height: 14)
-                    .accessibilityHidden(true)
+            Button {
+                presentColorPicker(for: metric)
+            } label: {
+                HStack(spacing: 12) {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 14, height: 14)
+                        .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                    Text(isChanged ? "Custom color" : "Default color")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(title)
+                        Text(isChanged ? "Custom color" : "Default color")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
                 }
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .tint(color)
 
-            Spacer()
-
-            if changedMetricCount <= 1, isChanged {
+            if isChanged {
                 Button("Reset") {
                     hex.wrappedValue = defaultHex
                 }
                 .buttonStyle(.glass)
             }
-
-            ColorPicker(title, selection: colorBinding(hex), supportsOpacity: false)
-                .labelsHidden()
-                .tint(color)
         }
-        .padding(.vertical, 4)
     }
 
     private func hex(for metric: MacroMetric) -> Binding<String> {
@@ -203,16 +211,81 @@ private struct MacroRingColorSettingsSection: View {
         MacroRingColorStorage.defaultHex(for: metric)
     }
 
-    private func colorBinding(_ hex: Binding<String>) -> Binding<Color> {
-        Binding {
-            Color(hex: hex.wrappedValue) ?? .accentColor
-        } set: { newColor in
-            if let newHex = newColor.hexString {
+    private func presentColorPicker(for metric: MacroMetric) {
+        #if os(iOS)
+        let hex = hex(for: metric)
+        ColorPickerPresenter.present(
+            initialColor: Color(hex: hex.wrappedValue) ?? MacroRingPalette.standard.color(for: metric)
+        ) { selectedColor in
+            if let newHex = Color(selectedColor).hexString {
                 hex.wrappedValue = newHex
             }
         }
+        #endif
     }
 }
+
+#if os(iOS)
+private enum ColorPickerPresenter {
+    private static var delegateAssociationKey = 0
+
+    static func present(initialColor: Color, onChange: @escaping (UIColor) -> Void) {
+        guard let presenter = UIApplication.shared.activeTopViewController else { return }
+        let picker = UIColorPickerViewController()
+        picker.supportsAlpha = false
+        picker.selectedColor = UIColor(initialColor)
+        if let sheet = picker.sheetPresentationController {
+            let compactColorPickerDetent = UISheetPresentationController.Detent.custom(
+                identifier: .colorPickerCompact
+            ) { context in
+                min(context.maximumDetentValue * 0.72, 556)
+            }
+            sheet.detents = [compactColorPickerDetent, .large()]
+            sheet.selectedDetentIdentifier = .colorPickerCompact
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+        }
+
+        let delegate = ColorPickerDelegate(onChange: onChange)
+        picker.delegate = delegate
+        objc_setAssociatedObject(picker, &delegateAssociationKey, delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        presenter.present(picker, animated: true)
+    }
+}
+
+private final class ColorPickerDelegate: NSObject, UIColorPickerViewControllerDelegate {
+    private let onChange: (UIColor) -> Void
+
+    init(onChange: @escaping (UIColor) -> Void) {
+        self.onChange = onChange
+    }
+
+    func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
+        onChange(viewController.selectedColor)
+    }
+}
+
+private extension UIApplication {
+    var activeTopViewController: UIViewController? {
+        connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }?
+            .keyWindow?
+            .rootViewController?
+            .topPresentedViewController
+    }
+}
+
+private extension UIViewController {
+    var topPresentedViewController: UIViewController {
+        presentedViewController?.topPresentedViewController ?? self
+    }
+}
+
+private extension UISheetPresentationController.Detent.Identifier {
+    static let colorPickerCompact = Self("colorPickerCompact")
+}
+#endif
 
 private struct FullUnlockSettingsSection: View {
     @Environment(PurchaseStore.self) private var purchaseStore
@@ -265,6 +338,8 @@ private struct FullUnlockSettingsSection: View {
                         .foregroundStyle(Color.accentColor)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
