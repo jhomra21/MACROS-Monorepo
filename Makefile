@@ -3,9 +3,9 @@ SCHEME := cal-macro-tracker
 DESTINATION := generic/platform=iOS Simulator
 QUALITY_DIR := tools/quality
 
-.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets
+.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit
 
-quality: quality-build quality-format-check quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets
+quality: quality-build quality-format-check quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit
 
 quality-build:
 	xcodebuild -project "$(PROJECT)" -scheme "$(SCHEME)" -configuration Debug -destination '$(DESTINATION)' build
@@ -34,3 +34,6 @@ quality-n1:
 quality-secrets:
 	sh "$(QUALITY_DIR)/test_validate_example_env_secrets.sh"
 	sh "$(QUALITY_DIR)/validate_example_env_secrets.sh" --root "."
+
+quality-storekit:
+	python3 "$(QUALITY_DIR)/validate_storekit_config.py"

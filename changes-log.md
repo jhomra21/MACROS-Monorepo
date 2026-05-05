@@ -578,6 +578,7 @@
 - Updated `SettingsScreen.swift` with a `PaidFeatureGate(.customMacroRingColors)` section containing ColorPicker rows and reset actions.
 - Updated `PurchaseStore` to apply verified full-unlock transactions directly and expose debug-only entitlement toggling in DEBUG builds.
 - Fixed the StoreKit scheme reference so local Full Unlock products resolve from the checked-in root `FullUnlock.storekit` file.
+- Added `make quality-storekit` with a StoreKit scheme validator that fails when the shared scheme points at a missing `.storekit` file or when the configured Full Unlock product ID drifts from `PurchaseStore.fullUnlockProductID`.
 - Fixed StoreKit transaction updates to refresh current entitlements again, so revocations or refunds clear Full Unlock instead of leaving the previous unlocked state active.
 - Fixed Settings hit targets so the Full Unlock row and locked macro-color row respond across the full row instead of only on their text or trailing content.
 - Reworked unlocked macro color rows so tapping the row presents the native UIKit color picker directly from the current top controller, keeps per-color reset buttons visible whenever each color is changed, and starts the picker at a tuned custom compact detent that can expand to full height.
@@ -593,6 +594,10 @@
 - A follow-up simplify review removed stale color-binding and platform-stub code left behind after the direct UIKit picker presentation replaced inline SwiftUI color pickers.
 - A simplify review for the widget-gradient follow-up reused one RGB component extraction path for hex formatting and color mixing, iterated the legacy color-key migration, centralized Settings color writes behind a helper, and coalesced widget reloads so color picker scrubbing updates app UI immediately but reloads widgets once when picking finishes.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+- A StoreKit follow-up used focused purchase diagnostics to confirm local product loading returned zero products when Xcode selected the broken red StoreKit reference, then removed the temporary diagnostics after adding the permanent validation guardrail.
+- A simplify review removed the temporary purchase diagnostics, tightened the StoreKit validator to parse files directly with friendly parse/open failures, and made the product-ID source check require the expected `PurchaseStore.fullUnlockProductID` assignment.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the StoreKit validation follow-up.
+- The StoreKit validation follow-up passed StoreKit guardrail validation, whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 
 #### Validation
 
