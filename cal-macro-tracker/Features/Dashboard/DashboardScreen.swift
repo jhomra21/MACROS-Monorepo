@@ -202,7 +202,9 @@ struct DashboardScreen: View {
             totals: snapshot.totals,
             goals: currentGoals,
             selectedMacro: $selectedMacro,
-            palette: customRingPalette
+            palette: customRingPalette,
+            canCustomizeColors: entitlements.canUse(.customMacroRingColors),
+            onChangeColor: presentColorPicker
         )
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
@@ -318,6 +320,23 @@ struct DashboardScreen: View {
     private func toggleMacroRingExpansion() {
         withAnimation(.easeOut(duration: 0.18)) {
             isMacroRingExpanded.toggle()
+        }
+    }
+
+    private func presentColorPicker(for metric: MacroMetric) {
+        #if os(iOS)
+        MacroRingColorPickerPresenter.present(for: metric, hex: hex(for: metric))
+        #endif
+    }
+
+    private func hex(for metric: MacroMetric) -> Binding<String> {
+        switch metric {
+        case .protein:
+            $customProteinRingColor
+        case .carbs:
+            $customCarbRingColor
+        case .fat:
+            $customFatRingColor
         }
     }
 }

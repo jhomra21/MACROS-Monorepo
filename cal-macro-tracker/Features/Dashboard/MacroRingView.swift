@@ -222,35 +222,143 @@ struct MacroLegendView: View {
     let goals: MacroGoalsSnapshot
     @Binding var selectedMacro: MacroMetric?
     let palette: MacroRingPalette?
+    let canCustomizeColors: Bool
+    let onChangeColor: (MacroMetric) -> Void
 
     var body: some View {
-        HStack(spacing: 24) {
-            ForEach(MacroMetric.allCases) { metric in
-                legendCard(metric: metric)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
+        GeometryReader { geometry in
+            let spacing: CGFloat = 24
+            let metricCount = CGFloat(MacroMetric.allCases.count)
+            let columnWidth = max((geometry.size.width - (spacing * (metricCount - 1))) / metricCount, 0)
 
-    private func legendCard(metric: MacroMetric) -> some View {
-        Button {
-            withAnimation(.easeOut(duration: 0.18)) {
-                selectedMacro = selectedMacro == metric ? nil : metric
+            HStack(spacing: spacing) {
+                ForEach(MacroMetric.allCases) { metric in
+                    MacroLegendColumn(
+                        metric: metric,
+                        totals: totals,
+                        goals: goals,
+                        selectedMacro: $selectedMacro,
+                        color: palette?.color(for: metric),
+                        canCustomizeColors: canCustomizeColors,
+                        columnWidth: columnWidth,
+                        onChangeColor: onChangeColor
+                    )
+                }
             }
-        } label: {
-            MacroSummaryColumnView(
-                metric: metric,
-                totals: totals,
-                goals: goals,
-                titleStyle: .full,
-                style: .dashboardCard,
-                accentColor: palette?.color(for: metric)
-            )
-            .padding(16)
-            .opacity(selectedMacro == nil || selectedMacro == metric ? 1 : 0.48)
-            .contentShape(Rectangle())
+            .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.plain)
-        .accessibilityValue(selectedMacro == metric ? "Selected" : "")
+        .frame(height: 102)
     }
 }
+
+private struct MacroLegendColumn: View {
+    let metric: MacroMetric
+    let totals: NutritionSnapshot
+    let goals: MacroGoalsSnapshot
+    @Binding var selectedMacro: MacroMetric?
+    let color: Color?
+    let canCustomizeColors: Bool
+    let columnWidth: CGFloat
+    let onChangeColor: (MacroMetric) -> Void
+
+    @ViewBuilder
+    var body: some View {
+        let column = MacroSummaryColumnView(
+            metric: metric,
+            totals: totals,
+            goals: goals,
+            titleStyle: .full,
+            style: .dashboardCard,
+            accentColor: color
+        )
+        .padding(.vertical, 16)
+        .frame(width: columnWidth)
+        .opacity(selectedMacro == nil || selectedMacro == metric ? 1 : 0.48)
+        .contentShape(Rectangle())
+        .accessibilityAddTraits(.isButton)
+        .accessibilityValue(selectedMacro == metric ? "Selected" : "")
+
+        if canCustomizeColors {
+            #if os(iOS)
+            column.overlay {
+                MacroLegendContextMenuInteraction(
+                    metric: metric,
+                    onTap: toggleSelection,
+                    onChangeColor: onChangeColor
+                )
+            }
+            #else
+            column
+                .onTapGesture {
+                    toggleSelection()
+                }
+            #endif
+        } else {
+            column
+                .onTapGesture {
+                    toggleSelection()
+                }
+        }
+    }
+
+    private func toggleSelection() {
+        withAnimation(.easeOut(duration: 0.18)) {
+            selectedMacro = selectedMacro == metric ? nil : metric
+        }
+    }
+}
+
+#if os(iOS)
+private struct MacroLegendContextMenuInteraction: UIViewRepresentable {
+    let metric: MacroMetric
+    let onTap: () -> Void
+    let onChangeColor: (MacroMetric) -> Void
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.addInteraction(UIContextMenuInteraction(delegate: context.coordinator))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap)))
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.metric = metric
+        context.coordinator.onTap = onTap
+        context.coordinator.onChangeColor = onChangeColor
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(metric: metric, onTap: onTap, onChangeColor: onChangeColor)
+    }
+
+    final class Coordinator: NSObject, UIContextMenuInteractionDelegate {
+        var metric: MacroMetric
+        var onTap: () -> Void
+        var onChangeColor: (MacroMetric) -> Void
+
+        init(metric: MacroMetric, onTap: @escaping () -> Void, onChangeColor: @escaping (MacroMetric) -> Void) {
+            self.metric = metric
+            self.onTap = onTap
+            self.onChangeColor = onChangeColor
+        }
+
+        @objc func handleTap() {
+            onTap()
+        }
+
+        func contextMenuInteraction(
+            _ interaction: UIContextMenuInteraction,
+            configurationForMenuAtLocation location: CGPoint
+        ) -> UIContextMenuConfiguration? {
+            UIContextMenuConfiguration(actionProvider: { _ in
+                UIMenu(children: [
+                    UIAction(title: "Change Color", image: UIImage(systemName: "paintpalette")) { _ in
+                        self.onChangeColor(self.metric)
+                    }
+                ])
+            })
+        }
+    }
+}
+#endif
