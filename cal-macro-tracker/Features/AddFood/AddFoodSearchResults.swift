@@ -5,13 +5,8 @@ enum SearchFoodSpacing {
     static let suggestionGlassBleed: CGFloat = 4
     static let suggestionToHeader = targetVisualGap - suggestionGlassBleed
     static let headerLeading: CGFloat = 12
-    static let headerRowLeading: CGFloat = 4
-    static let headerRowBottom: CGFloat = -16
-    static let suggestionTop: CGFloat = -7
-    static let foodRowVertical: CGFloat = 16
+    static let headerRowTop: CGFloat = 8
     static let foodRowHorizontal: CGFloat = 16
-    static let localFoodRowSpacing: CGFloat = 12
-    static let calorieUnitSpacing: CGFloat = 2
     static let pillSpacing: CGFloat = 8
     static let pillHorizontalPadding: CGFloat = 14
     static let pillVerticalPadding: CGFloat = 8
@@ -41,22 +36,25 @@ struct SearchFoodListView: View {
     let onLoadMoreRemoteResults: () -> Void
     let onScrollOffsetChange: (CGFloat) -> Void
 
+    @State private var selectedLocalFood: FoodItem?
+    @State private var selectedRemoteResult: RemoteSearchResult?
+
     var body: some View {
         List {
-            localResultsHeader
-                .environment(\.defaultMinListRowHeight, 0)
-                .listRowInsets(
-                    EdgeInsets(
-                        top: suggestions.isEmpty ? SearchFoodSpacing.targetVisualGap : SearchFoodSpacing.suggestionTop,
-                        leading: SearchFoodSpacing.headerRowLeading,
-                        bottom: SearchFoodSpacing.headerRowBottom,
-                        trailing: 0
-                    )
-                )
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-
             Section {
+                localResultsHeader
+                    .environment(\.defaultMinListRowHeight, 0)
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: SearchFoodSpacing.headerRowTop,
+                            leading: 0,
+                            bottom: 0,
+                            trailing: 0
+                        )
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+
                 if foods.isEmpty {
                     Text(localEmptyMessage)
                         .foregroundStyle(.secondary)
@@ -118,15 +116,14 @@ struct SearchFoodListView: View {
                     }
 
                     ForEach(remoteSearch.results) { result in
-                        NavigationLink {
-                            RemoteSearchSelectionScreen(
-                                result: result,
-                                loggingDay: loggingDay,
-                                onFoodLogged: onFoodLogged
-                            )
+                        Button {
+                            selectedRemoteResult = result
                         } label: {
                             RemoteFoodRow(result: result)
                         }
+                        .buttonStyle(.plain)
+                        .environment(\.defaultMinListRowHeight, 0)
+                        .listRowInsets(foodRowInsets)
                     }
 
                     if remoteSearch.isLoading && remoteSearch.results.isEmpty == false {
@@ -149,11 +146,24 @@ struct SearchFoodListView: View {
             }
         }
         .listStyle(.plain)
-        .contentMargins(.top, 0, for: .scrollContent)
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
             max(0, scrollGeometry.contentOffset.y)
         } action: { _, newOffset in
             onScrollOffsetChange(newOffset)
+        }
+        .navigationDestination(item: $selectedLocalFood) { food in
+            LogFoodScreen(
+                initialDraft: FoodDraft(foodItem: food, saveAsCustomFood: false),
+                loggingDay: loggingDay,
+                onFoodLogged: onFoodLogged
+            )
+        }
+        .navigationDestination(item: $selectedRemoteResult) { result in
+            RemoteSearchSelectionScreen(
+                result: result,
+                loggingDay: loggingDay,
+                onFoodLogged: onFoodLogged
+            )
         }
     }
 
@@ -187,9 +197,9 @@ struct SearchFoodListView: View {
 
     private var foodRowInsets: EdgeInsets {
         EdgeInsets(
-            top: SearchFoodSpacing.foodRowVertical,
+            top: 0,
             leading: SearchFoodSpacing.foodRowHorizontal,
-            bottom: SearchFoodSpacing.foodRowVertical,
+            bottom: 0,
             trailing: SearchFoodSpacing.foodRowHorizontal
         )
     }
@@ -233,15 +243,12 @@ struct SearchFoodListView: View {
     }
 
     private func localFoodLink(for food: FoodItem) -> some View {
-        NavigationLink {
-            LogFoodScreen(
-                initialDraft: FoodDraft(foodItem: food, saveAsCustomFood: false),
-                loggingDay: loggingDay,
-                onFoodLogged: onFoodLogged
-            )
+        Button {
+            selectedLocalFood = food
         } label: {
             LocalFoodRow(food: food)
         }
+        .buttonStyle(.plain)
     }
 
     private var localEmptyMessage: String {

@@ -38,6 +38,11 @@ struct BarcodeLookupMapper {
         try makeDraft(from: product, source: .barcodeLookup, barcode: barcode)
     }
 
+    static func perServingNutritionPreview(from product: OpenFoodFactsProduct) -> PerServingNutritionValues? {
+        guard let nutritionBasis = try? nutritionBasis(for: product) else { return nil }
+        return nutritionBasis.perServingNutrition
+    }
+
     static func makeDraft(
         from product: OpenFoodFactsProduct,
         source: FoodSource,

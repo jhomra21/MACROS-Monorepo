@@ -48,6 +48,7 @@
 				CalMacroWidget/DailyMacroAccessoryWidget.swift,
 				CalMacroWidget/DailyMacroWidget.swift,
 				Shared/AppOpenRequest.swift,
+				Shared/FoodNutritionRow.swift,
 				Shared/DailyMacroSnapshotLoader.swift,
 				Shared/ImageJPEGEncoder.swift,
 				Shared/LogEntryQuery.swift,

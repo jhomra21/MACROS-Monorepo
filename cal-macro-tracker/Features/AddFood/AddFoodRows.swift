@@ -39,23 +39,14 @@ struct LocalFoodRow: View {
     let food: FoodItem
 
     var body: some View {
-        HStack(alignment: .center, spacing: SearchFoodSpacing.localFoodRowSpacing) {
-            Text(food.name)
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            Spacer()
-
-            HStack(alignment: .firstTextBaseline, spacing: SearchFoodSpacing.calorieUnitSpacing) {
-                Text(food.caloriesPerServing.roundedForDisplay)
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Text("kcal")
-                    .font(.footnote.weight(.regular))
-                    .foregroundStyle(.tertiary)
-            }
-            .monospacedDigit()
-        }
+        FoodNutritionRow(
+            name: food.name,
+            subtitle: nil,
+            calories: food.caloriesPerServing,
+            protein: food.proteinPerServing,
+            carbs: food.carbsPerServing,
+            fat: food.fatPerServing
+        )
     }
 }
 
@@ -63,20 +54,20 @@ struct RemoteFoodRow: View {
     let result: RemoteSearchResult
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        if let nutrition = result.nutritionPreview {
+            FoodNutritionRow(
+                name: result.name,
+                subtitle: nil,
+                calories: nutrition.calories,
+                protein: nutrition.protein,
+                carbs: nutrition.carbs,
+                fat: nutrition.fat
+            )
+        } else {
             Text(result.name)
                 .font(.headline)
-
-            if let brand = result.brand {
-                Text(brand)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            Text(result.summary)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
+                .padding(.vertical, 16)
         }
-        .padding(.vertical, 6)
     }
 }

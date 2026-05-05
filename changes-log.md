@@ -266,7 +266,8 @@
 - Added a Settings `Food Suggestions` toggle that is on by default and explains that suggestions come from on-device logging history.
 - Retuned Add Food's native search-drawer suggestion spacing so the suggestion pills, `On Device` header, and on-device result rows keep a visually consistent rhythm without replacing SwiftUI's native `.searchable` behavior.
 - Updated Add Food's on-device result rows to keep the tight native list styling while moving the serving description under the food name and centering a right-aligned calorie value with a smaller, lighter `kcal` unit.
-- Simplified Add Food's on-device result rows to show only the centered food name and calorie amount, with shared 16pt vertical row insets for balanced top and bottom spacing.
+- Simplified Add Food's on-device result rows to reuse the Dashboard food-row typography and spacing, showing centered food names with calories and macro totals while omitting serving/time metadata.
+- Applied the same row presentation to nutrition-backed remote search results and removed search-result chevrons so result rows keep the Dashboard-style content alignment without the default list disclosure indicator.
 
 #### Main implementation steps
 
@@ -280,9 +281,9 @@
 - Updated `AddFoodSearchResults.swift` so suggestion shortcuts use `GlassEffectContainer`, per-pill interactive capsule glass, and a non-glass capsule fallback for earlier OS versions.
 - Added extra horizontal and vertical bleed space plus disabled horizontal scroll clipping so light-mode glass refraction/shadow does not square off at the row bounds while preserving the accepted pill alignment.
 - Grouped suggestion pills and the `On Device` label into one local-results header row, keeping the glass bleed inside the header while avoiding first-result-only offsets.
-- Made local food result rows use explicit `8pt` top and bottom row insets with the default minimum row height disabled, replacing the previous implicit `List` spacing plus extra row padding.
+- Made local food result rows disable the default minimum row height and rely on the shared food-row vertical padding, replacing the previous implicit `List` spacing plus extra row padding.
 - Centralized the Add Food search spacing values in `SearchFoodSpacing` so the visually tuned native-search/header/list spacing is traceable from one place.
-- Kept the Add Food row presentation scoped to search results only, without changing Dashboard/Home rows or adding cards, corner backgrounds, extra result spacing, or macro values.
+- Kept the Add Food row presentation aligned with the Dashboard/Home food-row layout, without adding cards, corner backgrounds, or extra result spacing.
 - A simplify review for the Add Food row typography follow-up found no reuse or efficiency cleanup; its quality finding was applied by moving the new row and calorie-unit spacing values into `SearchFoodSpacing`.
 - Removed the now-unused serving-description stack and row-title spacing constant from the Add Food local row after the row became a single-line name/calorie layout.
 - A simplify review for the single-line Add Food row follow-up found no scoped reuse, quality, or efficiency cleanup needed.
@@ -292,6 +293,11 @@
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the spacing follow-up.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the row typography follow-up.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the single-line row follow-up.
+- Extracted `FoodNutritionRow` as shared row UI reused by Dashboard logged entries plus local and remote Add Food search rows, and added a focused Open Food Facts nutrition-preview mapper so remote row previews do not build a full `FoodDraft`.
+- Replaced local and remote search-result `NavigationLink` rows with plain row buttons plus explicit destinations, preserving navigation while removing right-side disclosure chevrons.
+- Removed fragile negative Add Food search header/list offsets and the forced zero top scroll margin, kept the Liquid Glass suggestion bleed required to avoid light-mode clipping, and moved `On Device` into the same local-results section so its spacing to the first food row matches normal row-to-row spacing.
+- A simplify review moved the shared nutrition row out of Dashboard-owned files, reused the existing barcode nutrition-basis mapping for preview values, and added the Xcode synchronized-group exception needed to avoid duplicate compilation of the new shared file.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Dashboard-style search-row follow-up.
 
 #### Bugs and implementation findings
 
@@ -304,7 +310,7 @@
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the swipe-area follow-up.
 - Light-mode visual validation showed the native glass effect could look clipped at the row's top, bottom, and leading edge; the final row adds internal bleed space and disables scroll clipping instead of redesigning the item presentation.
 - The search-drawer spacing follow-up rejected a custom search field and focus-dependent compensation because they either moved away from native behavior or introduced a visible down-then-up transition when the keyboard opened; the accepted fix keeps one stable suggestion inset and accepts the native focused search geometry.
-- The row typography follow-up rejected rounded card backgrounds and macro values because the target was a tighter continuation of native list rows, not a new card presentation.
+- The row typography follow-up rejected rounded card backgrounds because the target was a tighter continuation of native list rows, not a new card presentation; the later Dashboard-style follow-up intentionally adopted the Dashboard macro-summary line.
 
 #### Validation
 
@@ -314,6 +320,7 @@
 - The Add Food suggestion spacing follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 - The Add Food row typography follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 - The single-line Add Food row follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
+- The Dashboard-style search-row follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: Add Food search and scan action redesign
 

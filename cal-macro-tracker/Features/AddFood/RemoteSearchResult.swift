@@ -45,15 +45,6 @@ enum RemoteSearchResult: Identifiable, Hashable {
         }
     }
 
-    var brand: String? {
-        switch self {
-        case let .openFoodFacts(product):
-            return product.brands?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
-        case let .usda(food):
-            return food.brand?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
-        }
-    }
-
     var cacheLookupExternalProductIDs: [String] {
         switch self {
         case let .openFoodFacts(product):
@@ -81,26 +72,12 @@ enum RemoteSearchResult: Identifiable, Hashable {
         }
     }
 
-    var summary: String {
+    var nutritionPreview: PerServingNutritionValues? {
         switch self {
         case let .openFoodFacts(product):
-            let servingText =
-                product.servingSize?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
-                ?? product.quantity?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
-                ?? "Packaged food"
-            let nutriments = product.nutrition
-
-            if let calories = nutriments.caloriesPerServing {
-                return "\(provider.displayName) • \(calories.roundedForDisplay) kcal • \(servingText)"
-            }
-
-            if let calories = nutriments.caloriesPer100g {
-                return "\(provider.displayName) • \(calories.roundedForDisplay) kcal per 100 g • \(servingText)"
-            }
-
-            return "\(provider.displayName) • \(servingText)"
+            return BarcodeLookupMapper.perServingNutritionPreview(from: product)
         case let .usda(food):
-            return "\(provider.displayName) • \(food.caloriesPerServing.roundedForDisplay) kcal • \(food.servingDescription)"
+            return food.importedData.perServingNutritionValues
         }
     }
 
