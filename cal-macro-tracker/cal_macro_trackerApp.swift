@@ -35,6 +35,7 @@ struct cal_macro_trackerApp: App {
     #endif
 
     init() {
+        MacroRingColorStorage.migrateLegacyStandardDefaultsToAppGroup()
         let entitlements = AppEntitlements()
         _entitlements = State(initialValue: entitlements)
         _purchaseStore = State(initialValue: PurchaseStore(entitlements: entitlements))

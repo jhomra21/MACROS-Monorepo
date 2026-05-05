@@ -105,7 +105,11 @@ struct MacroRingSetView: View {
 
     private func customColors(for metric: MacroMetric, palette: MacroRingPalette) -> RingColors {
         let color = palette.color(for: metric)
-        return (track: color.opacity(0.45), start: color.opacity(0.82), end: color)
+        return (
+            track: color.opacity(0.45),
+            start: color,
+            end: color.mixed(with: .white, amount: 0.28)
+        )
     }
 
     private func colors(for metric: MacroMetric) -> RingColors {

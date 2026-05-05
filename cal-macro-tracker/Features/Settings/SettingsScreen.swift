@@ -8,11 +8,11 @@ import ObjectiveC
 struct SettingsScreen: View {
     @Query private var goals: [DailyGoals]
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
-    @AppStorage(AppStorageKeys.customProteinRingColor) private var customProteinRingColor =
+    @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
-    @AppStorage(AppStorageKeys.customCarbRingColor) private var customCarbRingColor =
+    @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
         MacroRingColorStorage.defaultCarbHex
-    @AppStorage(AppStorageKeys.customFatRingColor) private var customFatRingColor =
+    @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
         MacroRingColorStorage.defaultFatHex
     @FocusState private var focusedField: DailyGoalsField?
     @State private var isPresentingFullUnlock = false
@@ -113,8 +113,9 @@ private struct MacroRingColorSettingsSection: View {
                 if changedMetrics.count > 1 {
                     Button("Reset Ring Colors") {
                         for metric in changedMetrics {
-                            hex(for: metric).wrappedValue = defaultHex(for: metric)
+                            setHex(defaultHex(for: metric), for: metric, reloadWidgets: false)
                         }
+                        WidgetTimelineReloader.reloadMacroWidgets()
                     }
                 }
             } locked: {
@@ -189,7 +190,7 @@ private struct MacroRingColorSettingsSection: View {
 
             if isChanged {
                 Button("Reset") {
-                    hex.wrappedValue = defaultHex
+                    setHex(defaultHex, for: metric)
                 }
                 .buttonStyle(.glass)
             }
@@ -211,14 +212,32 @@ private struct MacroRingColorSettingsSection: View {
         MacroRingColorStorage.defaultHex(for: metric)
     }
 
+    private func setHex(_ newHex: String, for metric: MacroMetric, reloadWidgets: Bool = true) {
+        let hex = hex(for: metric)
+        guard hex.wrappedValue != newHex else { return }
+
+        hex.wrappedValue = newHex
+        if reloadWidgets {
+            WidgetTimelineReloader.reloadMacroWidgets()
+        }
+    }
+
     private func presentColorPicker(for metric: MacroMetric) {
         #if os(iOS)
         let hex = hex(for: metric)
+        var didChangeColor = false
         ColorPickerPresenter.present(
             initialColor: Color(hex: hex.wrappedValue) ?? MacroRingPalette.standard.color(for: metric)
         ) { selectedColor in
             if let newHex = Color(selectedColor).hexString {
+                guard hex.wrappedValue != newHex else { return }
+
                 hex.wrappedValue = newHex
+                didChangeColor = true
+            }
+        } onFinish: {
+            if didChangeColor {
+                WidgetTimelineReloader.reloadMacroWidgets()
             }
         }
         #endif
@@ -229,7 +248,7 @@ private struct MacroRingColorSettingsSection: View {
 private enum ColorPickerPresenter {
     private static var delegateAssociationKey = 0
 
-    static func present(initialColor: Color, onChange: @escaping (UIColor) -> Void) {
+    static func present(initialColor: Color, onChange: @escaping (UIColor) -> Void, onFinish: @escaping () -> Void) {
         guard let presenter = UIApplication.shared.activeTopViewController else { return }
         let picker = UIColorPickerViewController()
         picker.supportsAlpha = false
@@ -246,7 +265,7 @@ private enum ColorPickerPresenter {
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true
         }
 
-        let delegate = ColorPickerDelegate(onChange: onChange)
+        let delegate = ColorPickerDelegate(onChange: onChange, onFinish: onFinish)
         picker.delegate = delegate
         objc_setAssociatedObject(picker, &delegateAssociationKey, delegate, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         presenter.present(picker, animated: true)
@@ -255,13 +274,19 @@ private enum ColorPickerPresenter {
 
 private final class ColorPickerDelegate: NSObject, UIColorPickerViewControllerDelegate {
     private let onChange: (UIColor) -> Void
+    private let onFinish: () -> Void
 
-    init(onChange: @escaping (UIColor) -> Void) {
+    init(onChange: @escaping (UIColor) -> Void, onFinish: @escaping () -> Void) {
         self.onChange = onChange
+        self.onFinish = onFinish
     }
 
     func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
         onChange(viewController.selectedColor)
+    }
+
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        onFinish()
     }
 }
 

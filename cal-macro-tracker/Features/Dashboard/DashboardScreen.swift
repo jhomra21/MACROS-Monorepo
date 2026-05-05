@@ -6,11 +6,11 @@ struct DashboardScreen: View {
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
-    @AppStorage(AppStorageKeys.customProteinRingColor) private var customProteinRingColor =
+    @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
-    @AppStorage(AppStorageKeys.customCarbRingColor) private var customCarbRingColor =
+    @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
         MacroRingColorStorage.defaultCarbHex
-    @AppStorage(AppStorageKeys.customFatRingColor) private var customFatRingColor =
+    @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
         MacroRingColorStorage.defaultFatHex
 
     let resetToTodayToken: Int
@@ -45,7 +45,7 @@ struct DashboardScreen: View {
             carbHex: customCarbRingColor,
             fatHex: customFatRingColor
         )
-        .palette
+        .customPalette
     }
 
     var body: some View {

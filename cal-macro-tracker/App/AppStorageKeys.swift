@@ -1,6 +1,6 @@
 enum AppStorageKeys {
     static let isFoodSuggestionsEnabled = "isFoodSuggestionsEnabled"
-    static let customProteinRingColor = "customProteinRingColor"
-    static let customCarbRingColor = "customCarbRingColor"
-    static let customFatRingColor = "customFatRingColor"
+    static let customProteinRingColor = MacroRingColorStorage.proteinKey
+    static let customCarbRingColor = MacroRingColorStorage.carbKey
+    static let customFatRingColor = MacroRingColorStorage.fatKey
 }

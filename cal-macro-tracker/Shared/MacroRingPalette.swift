@@ -1,3 +1,4 @@
+import Foundation
 import SwiftUI
 
 struct MacroRingPalette {
@@ -24,6 +25,10 @@ struct MacroRingPalette {
 }
 
 struct MacroRingColorStorage {
+    static let proteinKey = "customProteinRingColor"
+    static let carbKey = "customCarbRingColor"
+    static let fatKey = "customFatRingColor"
+
     static let defaultProteinHex = "#2466E6"
     static let defaultCarbHex = "#EB8005"
     static let defaultFatHex = "#E62E70"
@@ -40,6 +45,14 @@ struct MacroRingColorStorage {
         )
     }
 
+    var customPalette: MacroRingPalette? {
+        guard proteinHex != Self.defaultProteinHex || carbHex != Self.defaultCarbHex || fatHex != Self.defaultFatHex else {
+            return nil
+        }
+
+        return palette
+    }
+
     static func defaultHex(for metric: MacroMetric) -> String {
         switch metric {
         case .protein:
@@ -50,6 +63,35 @@ struct MacroRingColorStorage {
             defaultFatHex
         }
     }
+
+    static func storedPalette(in defaults: UserDefaults = .macroRingColors) -> MacroRingPalette? {
+        let proteinHex = defaults.string(forKey: proteinKey) ?? defaultProteinHex
+        let carbHex = defaults.string(forKey: carbKey) ?? defaultCarbHex
+        let fatHex = defaults.string(forKey: fatKey) ?? defaultFatHex
+        return MacroRingColorStorage(
+            proteinHex: proteinHex,
+            carbHex: carbHex,
+            fatHex: fatHex
+        )
+        .customPalette
+    }
+
+    static func migrateLegacyStandardDefaultsToAppGroup() {
+        for key in [proteinKey, carbKey, fatKey] {
+            migrateLegacyValue(forKey: key)
+        }
+    }
+
+    private static func migrateLegacyValue(forKey key: String) {
+        guard UserDefaults.macroRingColors.object(forKey: key) == nil else { return }
+        guard let legacyValue = UserDefaults.standard.string(forKey: key) else { return }
+
+        UserDefaults.macroRingColors.set(legacyValue, forKey: key)
+    }
+}
+
+extension UserDefaults {
+    static let macroRingColors = UserDefaults(suiteName: SharedAppConfiguration.appGroupIdentifier) ?? .standard
 }
 
 extension Color {
@@ -65,6 +107,28 @@ extension Color {
     }
 
     var hexString: String? {
+        guard let rgbComponents else { return nil }
+
+        return String(
+            format: "#%02X%02X%02X",
+            Int((rgbComponents.red * 255).rounded()),
+            Int((rgbComponents.green * 255).rounded()),
+            Int((rgbComponents.blue * 255).rounded())
+        )
+    }
+
+    func mixed(with color: Color, amount: Double) -> Color {
+        guard let source = rgbComponents, let target = color.rgbComponents else { return self }
+        let clampedAmount = min(max(amount, 0), 1)
+        let retainedAmount = 1 - clampedAmount
+        return Color(
+            red: (source.red * retainedAmount) + (target.red * clampedAmount),
+            green: (source.green * retainedAmount) + (target.green * clampedAmount),
+            blue: (source.blue * retainedAmount) + (target.blue * clampedAmount)
+        )
+    }
+
+    private var rgbComponents: (red: Double, green: Double, blue: Double)? {
         #if os(iOS)
         let nativeColor = UIColor(self)
         var red: CGFloat = 0
@@ -72,20 +136,16 @@ extension Color {
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
         guard nativeColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else { return nil }
+        return (Double(red), Double(green), Double(blue))
         #elseif os(macOS)
         guard let nativeColor = NSColor(self).usingColorSpace(.sRGB) else { return nil }
-        let red = nativeColor.redComponent
-        let green = nativeColor.greenComponent
-        let blue = nativeColor.blueComponent
+        return (
+            Double(nativeColor.redComponent),
+            Double(nativeColor.greenComponent),
+            Double(nativeColor.blueComponent)
+        )
         #else
         return nil
         #endif
-
-        return String(
-            format: "#%02X%02X%02X",
-            Int((red * 255).rounded()),
-            Int((green * 255).rounded()),
-            Int((blue * 255).rounded())
-        )
     }
 }

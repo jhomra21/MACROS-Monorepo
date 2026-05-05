@@ -5,6 +5,7 @@ import WidgetKit
 struct DailyMacroWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: DailyMacroSnapshot
+    let customRingPalette: MacroRingPalette?
 }
 
 struct DailyMacroWidgetProvider: TimelineProvider {
@@ -16,7 +17,8 @@ struct DailyMacroWidgetProvider: TimelineProvider {
             snapshot: DailyMacroSnapshot(
                 totals: NutritionSnapshot(calories: 1_840, protein: 132, fat: 58, carbs: 176),
                 goals: .default
-            )
+            ),
+            customRingPalette: nil
         )
     }
 
@@ -45,7 +47,11 @@ struct DailyMacroWidgetProvider: TimelineProvider {
             snapshot = .empty
         }
 
-        return DailyMacroWidgetEntry(date: .now, snapshot: snapshot)
+        return DailyMacroWidgetEntry(
+            date: .now,
+            snapshot: snapshot,
+            customRingPalette: MacroRingColorStorage.storedPalette()
+        )
     }
 }
 
@@ -80,7 +86,13 @@ private struct DailyMacroWidgetContentView: View {
     }
 
     private var ringColorStyle: MacroRingColorStyle {
-        renderingMode == .accented ? .accentedWidget : .standard
+        if renderingMode == .accented {
+            .accentedWidget
+        } else if let customRingPalette = entry.customRingPalette {
+            .custom(customRingPalette)
+        } else {
+            .standard
+        }
     }
 
     private var smallContent: some View {

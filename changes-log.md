@@ -550,7 +550,7 @@
 #### Delivered
 
 - Added Full Unlock-gated custom protein, carb, and fat ring colors in Settings.
-- Applied custom colors to the Dashboard macro ring, macro legend dots, and compact macro summary while keeping standard colors for locked users.
+- Applied custom colors as gradients to the Dashboard macro ring, macro legend dots, compact macro summary, and Home Screen widgets while keeping standard colors for locked users.
 - Added debug-only Full Unlock grant/revoke controls so the gated color flow can be validated without completing a StoreKit purchase.
 
 #### Main implementation steps
@@ -563,13 +563,18 @@
 - Fixed StoreKit transaction updates to refresh current entitlements again, so revocations or refunds clear Full Unlock instead of leaving the previous unlocked state active.
 - Fixed Settings hit targets so the Full Unlock row and locked macro-color row respond across the full row instead of only on their text or trailing content.
 - Reworked unlocked macro color rows so tapping the row presents the native UIKit color picker directly from the current top controller, keeps per-color reset buttons visible whenever each color is changed, and starts the picker at a tuned custom compact detent that can expand to full height.
+- Fixed custom macro rings so user-selected colors keep a gradient by blending the selected color toward a lighter shade instead of rendering as a flat custom fill.
+- Moved custom macro ring color storage into the shared app-group defaults, migrated existing app-default values forward, and updated Home Screen widgets to read the stored custom palette while preserving accented widget rendering.
+- Updated Settings color changes and resets to reload macro widget timelines so widget colors refresh after users customize or reset ring colors.
+- Validated and fixed a review finding where an unlocked Dashboard with all default color values still used the custom palette path; `MacroRingColorStorage` now owns a shared `customPalette` contract so Dashboard and widgets only switch to custom ring gradients after at least one stored color differs from the defaults.
 - A simplify review reused the standard macro color palette in ring rendering, switched the Settings section to the existing paid-feature gate, centralized default macro color hex lookup, preserved the existing scheme version, computed custom Dashboard palettes once per render scope, and reduced repeated per-macro color row/reset definitions.
 - A follow-up simplify review removed stale color-binding and platform-stub code left behind after the direct UIKit picker presentation replaced inline SwiftUI color pickers.
+- A simplify review for the widget-gradient follow-up reused one RGB component extraction path for hex formatting and color mixing, iterated the legacy color-key migration, centralized Settings color writes behind a helper, and coalesced widget reloads so color picker scrubbing updates app UI immediately but reloads widgets once when picking finishes.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
 
 #### Validation
 
-- The custom color follow-up passed whitespace diff validation, formatter validation, iOS simulator builds, simplify review, defensive-code review, and final diff review.
+- The custom color follow-up passed whitespace diff validation, formatter validation, iOS simulator builds, simplify review, defensive-code review, widget review, and final diff review.
 
 #### Rule for future Liquid Glass sheets
 
