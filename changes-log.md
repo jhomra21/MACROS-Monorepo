@@ -268,6 +268,7 @@
 - Updated Add Food's on-device result rows to keep the tight native list styling while moving the serving description under the food name and centering a right-aligned calorie value with a smaller, lighter `kcal` unit.
 - Simplified Add Food's on-device result rows to reuse the Dashboard food-row typography and spacing, showing centered food names with calories and macro totals while omitting serving/time metadata.
 - Applied the same row presentation to nutrition-backed remote search results and removed search-result chevrons so result rows keep the Dashboard-style content alignment without the default list disclosure indicator.
+- Fixed the shared Dashboard/Add Food food-row hit target so tapping empty space between the food name and macro summary opens the row action instead of requiring a tap directly on text.
 
 #### Main implementation steps
 
@@ -298,6 +299,9 @@
 - Removed fragile negative Add Food search header/list offsets and the forced zero top scroll margin, kept the Liquid Glass suggestion bleed required to avoid light-mode clipping, and moved `On Device` into the same local-results section so its spacing to the first food row matches normal row-to-row spacing.
 - A simplify review moved the shared nutrition row out of Dashboard-owned files, reused the existing barcode nutrition-basis mapping for preview values, and added the Xcode synchronized-group exception needed to avoid duplicate compilation of the new shared file.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Dashboard-style search-row follow-up.
+- Expanded `FoodNutritionRow` to the available row width and gave it a rectangular content shape so Dashboard edit rows and Add Food search buttons share the same full-row tap behavior.
+- A simplify review found no scoped reuse, quality, or efficiency cleanup needed for the shared food-row hit-target follow-up.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the shared food-row hit-target follow-up.
 
 #### Bugs and implementation findings
 
@@ -311,6 +315,7 @@
 - Light-mode visual validation showed the native glass effect could look clipped at the row's top, bottom, and leading edge; the final row adds internal bleed space and disables scroll clipping instead of redesigning the item presentation.
 - The search-drawer spacing follow-up rejected a custom search field and focus-dependent compensation because they either moved away from native behavior or introduced a visible down-then-up transition when the keyboard opened; the accepted fix keeps one stable suggestion inset and accepts the native focused search geometry.
 - The row typography follow-up rejected rounded card backgrounds because the target was a tighter continuation of native list rows, not a new card presentation; the later Dashboard-style follow-up intentionally adopted the Dashboard macro-summary line.
+- The shared food-row hit-target fix belongs in `FoodNutritionRow` rather than each `NavigationLink` or `Button` call site because Dashboard/Home and Add Food search rows now intentionally share that reusable row body.
 
 #### Validation
 
@@ -321,6 +326,7 @@
 - The Add Food row typography follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 - The single-line Add Food row follow-up passed whitespace diff validation, formatter validation, macOS debug build validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 - The Dashboard-style search-row follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
+- The shared food-row hit-target follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: Add Food search and scan action redesign
 
@@ -450,6 +456,7 @@
 - Fixed Settings macro inputs so a single row tap focuses more reliably.
 - Added an iOS trailing-caret numeric input bridge so the insertion point appears at the end instead of the beginning.
 - Made the Settings save row fully tappable instead of only the `Save` text.
+- Limited each saved-food section on Settings to five preview rows, with a `Show All` navigation row that opens the full saved-food list only when more items exist.
 - Ran a Settings-focused SwiftUI review pass; the result was LGTM.
 
 ### Main implementation steps
@@ -457,6 +464,10 @@
 - Updated `NutrientInputField.swift` to make the whole row tappable and adapt focus handling cleanly.
 - Added `TrailingCaretNumericTextField.swift` as a small `UIViewRepresentable` escape hatch for iOS numeric entry.
 - Updated `DailyGoalsSection.swift` so the full save row acts as the button target.
+- Updated `SavedFoodsSection` to use a capped SwiftData preview fetch and added a dedicated `SavedFoodsListScreen` that reuses the saved-food editor row for the uncapped detail view.
+- A simplify review found no scoped reuse, quality, or efficiency cleanup needed for the saved-food preview-limit follow-up.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the saved-food preview-limit follow-up.
+- The saved-food preview-limit follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ### Follow-up: inline Settings editor with shared keyboard flow
 

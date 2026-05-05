@@ -371,6 +371,59 @@ private struct FullUnlockSettingsSection: View {
 }
 
 private struct SavedFoodsSection: View {
+    private static let previewDisplayLimit = 5
+    private static let previewFetchLimit = previewDisplayLimit + 1
+
+    let title: String
+    let emptyState: String
+    let allFoodsDescriptor: FetchDescriptor<FoodItem>
+    @Query private var foods: [FoodItem]
+
+    init(title: String, emptyState: String, descriptor: FetchDescriptor<FoodItem>) {
+        self.title = title
+        self.emptyState = emptyState
+        self.allFoodsDescriptor = descriptor
+
+        var previewDescriptor = descriptor
+        previewDescriptor.fetchLimit = Self.previewFetchLimit
+        _foods = Query(previewDescriptor)
+    }
+
+    var body: some View {
+        Section(title) {
+            if foods.isEmpty {
+                Text(emptyState)
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(previewFoods) { food in
+                    SavedFoodNavigationLink(food: food)
+                }
+
+                if hasMoreFoods {
+                    NavigationLink {
+                        SavedFoodsListScreen(
+                            title: title,
+                            emptyState: emptyState,
+                            descriptor: allFoodsDescriptor
+                        )
+                    } label: {
+                        Text("Show All")
+                    }
+                }
+            }
+        }
+    }
+
+    private var previewFoods: [FoodItem] {
+        Array(foods.prefix(Self.previewDisplayLimit))
+    }
+
+    private var hasMoreFoods: Bool {
+        foods.count > Self.previewDisplayLimit
+    }
+}
+
+private struct SavedFoodsListScreen: View {
     let title: String
     let emptyState: String
     @Query private var foods: [FoodItem]
@@ -382,19 +435,29 @@ private struct SavedFoodsSection: View {
     }
 
     var body: some View {
-        Section(title) {
+        List {
             if foods.isEmpty {
                 Text(emptyState)
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(foods) { food in
-                    NavigationLink {
-                        ReusableFoodEditorScreen(food: food)
-                    } label: {
-                        SavedFoodRow(food: food)
-                    }
+                    SavedFoodNavigationLink(food: food)
                 }
             }
+        }
+        .navigationTitle(title)
+        .inlineNavigationTitle()
+    }
+}
+
+private struct SavedFoodNavigationLink: View {
+    let food: FoodItem
+
+    var body: some View {
+        NavigationLink {
+            ReusableFoodEditorScreen(food: food)
+        } label: {
+            SavedFoodRow(food: food)
         }
     }
 }

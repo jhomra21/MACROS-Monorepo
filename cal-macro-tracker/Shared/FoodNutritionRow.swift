@@ -24,7 +24,9 @@ struct FoodNutritionRow: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 16)
+        .contentShape(Rectangle())
     }
 
     @ViewBuilder
