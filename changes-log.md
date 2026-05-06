@@ -407,6 +407,40 @@
 
 - The follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, final diff review, and focused simulator visual checks for keyboard-open Add Food spacing plus the Settings-keyboard-back navigation regression.
 
+### Follow-up: Add Food local search performance
+
+#### Delivered
+
+- Improved Add Food on-device search CPU behavior by removing the eager all-food SwiftData query from `AddFoodScreen`.
+- Kept empty Add Food search cheap while preserving browsing: the screen now fetches a bounded recent saved-food list instead of materializing every saved food.
+- Preserved existing local ranking behavior while bounding search work to a fetched candidate set and displayed result cap.
+- Kept result rows lightweight by rendering `LocalFoodSearchResult` display DTOs and fetching the full `FoodItem` only when a result is selected for logging.
+
+#### Main implementation steps
+
+- Removed `@Query(sort: \FoodItem.name)` and the derived `rankedFoods` path from `AddFoodScreen.swift`.
+- Moved local saved-food fetching into `SearchFoodListView`, using a bounded recent-food fetch for empty search, bounded `FetchDescriptor<FoodItem>` candidate searches against `searchableText`, existing deterministic ranking, and a 60-result display cap.
+- Added `LocalFoodSearchResult` and `LocalFoodSearchResultRow` so visible search rows do not retain full SwiftData models.
+- Marked the pure local ranking helpers as `nonisolated` so they can run from the detached search context under Swift 6 actor isolation.
+- Updated local search candidate fetching to include a bounded field-prefix priority bucket before the bounded fallback contains bucket, so the existing name/brand ranking contract is not defeated by an alphabetical pre-rank fetch cap.
+- A simplify review removed the now-unused full-model local row, clarified capped-result footer wording, and made detached local-search work cancel with SwiftUI `.task(id:)` cancellation.
+- A defensive-code review removed a redundant empty-token guard from `FoodItemLocalSearch.rank`, leaving the query-empty boundary in `rankedFoods`.
+
+#### Bugs and implementation findings
+
+- The CPU bottleneck was the eager Add Food path: opening the sheet materialized and observed every saved `FoodItem`, then ranked against that full collection as search text changed.
+- Saved benchmark evidence showed the retained CPU-only change reduced Add Food CPU from `6.64%` average / `111.50%` max to `0.00%` / `0.00%` in the seeded Add Food measurements.
+- Post-review sampling confirmed the simplify and defensive-code cleanup did not regress CPU: empty Add Food and `performance 999` search both sampled at `0.00%` average / `0.00%` max CPU.
+- Review-validation passes found that alphabetically capping fallback candidates before ranking could hide better exact, name-prefix, or brand-prefix matches for broad queries; the fix keeps candidate fetching bounded while making the first fetch bucket ranking-aware.
+- The candidate fetch remains intentionally bounded to preserve the measured CPU behavior; broader total-match counting/ranking was left out because it would reintroduce larger per-search work.
+- SwiftData lookup on result tap remains fallible because selected IDs come from persisted local data and the row-to-destination boundary should tolerate deleted or unavailable records.
+
+#### Validation
+
+- The local-search performance follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
+- The ranking-aware candidate-fetch fix passed `git diff --check`, formatter validation, iOS simulator build, defensive-code review, and final diff review.
+- Final simulator sampling after the ranking-aware fetch fix measured empty Add Food at `0.0%` average CPU / `365.7 MB` average RSS and `performance 999` search at `0.0%` average CPU / `394.8 MB` average RSS.
+
 ## USDA Proxy and Unified Remote Search
 
 ### Delivered
@@ -596,8 +630,10 @@
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
 - A StoreKit follow-up used focused purchase diagnostics to confirm local product loading returned zero products when Xcode selected the broken red StoreKit reference, then removed the temporary diagnostics after adding the permanent validation guardrail.
 - A simplify review removed the temporary purchase diagnostics, tightened the StoreKit validator to parse files directly with friendly parse/open failures, and made the product-ID source check require the expected `PurchaseStore.fullUnlockProductID` assignment.
+- A StoreKit scheme-drift follow-up corrected the guardrail model after Xcode showed `../../../FullUnlock.storekit` as a red missing Run Options entry; the project-opened scheme resolves the StoreKit identifier from `cal-macro-tracker.xcodeproj/project.xcworkspace`, so the stable repo-root reference is `../../FullUnlock.storekit`.
+- Tightened `make quality-storekit` to require the exact Xcode-compatible shared-scheme StoreKit identifier `../../FullUnlock.storekit`, resolve it from `cal-macro-tracker.xcodeproj/project.xcworkspace`, and require exactly one project `FullUnlock.storekit` reference, matching Apple's documented scheme Run Options flow where one active StoreKit configuration is selected even if a project contains multiple `.storekit` files.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the StoreKit validation follow-up.
-- The StoreKit validation follow-up passed StoreKit guardrail validation, whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
+- The StoreKit validation follow-up passed StoreKit guardrail validation, whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review; the later scheme-drift guardrail tightening passed StoreKit guardrail validation and formatter validation.
 
 #### Validation
 
