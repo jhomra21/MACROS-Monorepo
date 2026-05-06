@@ -35,17 +35,17 @@ private extension View {
     }
 }
 
-struct LocalFoodRow: View {
-    let food: FoodItem
+struct LocalFoodSearchResultRow: View {
+    let result: LocalFoodSearchResult
 
     var body: some View {
         FoodNutritionRow(
-            name: food.name,
+            name: result.name,
             subtitle: nil,
-            calories: food.caloriesPerServing,
-            protein: food.proteinPerServing,
-            carbs: food.carbsPerServing,
-            fat: food.fatPerServing
+            calories: result.calories,
+            protein: result.protein,
+            carbs: result.carbs,
+            fat: result.fat
         )
     }
 }

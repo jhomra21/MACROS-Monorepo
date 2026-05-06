@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 enum SearchFoodSpacing {
@@ -21,12 +22,29 @@ struct RemoteSearchViewState {
     let hasMore: Bool
 }
 
+struct LocalFoodSearchResult: Identifiable {
+    let id: UUID
+    let name: String
+    let calories: Double
+    let protein: Double
+    let carbs: Double
+    let fat: Double
+
+    nonisolated init(food: FoodItem) {
+        id = food.id
+        name = food.name
+        calories = food.caloriesPerServing
+        protein = food.proteinPerServing
+        carbs = food.carbsPerServing
+        fat = food.fatPerServing
+    }
+}
+
 struct SearchFoodListView: View {
+    @Environment(\.modelContext) private var modelContext
+
     let loggingDay: CalendarDay?
-    let foods: [FoodItem]
     let suggestions: [FoodSuggestion]
-    let totalFoodsCount: Int
-    let hasLoadedFoods: Bool
     let remoteSearch: RemoteSearchViewState
     let isRemoteSearchAvailable: Bool
     let searchText: String
@@ -36,7 +54,9 @@ struct SearchFoodListView: View {
     let onLoadMoreRemoteResults: () -> Void
     let onScrollOffsetChange: (CGFloat) -> Void
 
-    @State private var selectedLocalFood: FoodItem?
+    @State private var localFoods: [LocalFoodSearchResult] = []
+    @State private var isLocalSearchLoading = false
+    @State private var selectedLocalFoodDraft: FoodDraft?
     @State private var selectedRemoteResult: RemoteSearchResult?
 
     var body: some View {
@@ -55,18 +75,24 @@ struct SearchFoodListView: View {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
 
-                if foods.isEmpty {
+                if isLocalSearchLoading {
+                    HStack {
+                        ProgressView()
+                        Text("Searching on-device foods…")
+                            .foregroundStyle(.secondary)
+                    }
+                } else if localFoods.isEmpty {
                     Text(localEmptyMessage)
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(foods) { food in
-                        localFoodLink(for: food)
+                    ForEach(localFoods) { result in
+                        localFoodLink(for: result)
                             .environment(\.defaultMinListRowHeight, 0)
                             .listRowInsets(foodRowInsets)
                     }
                 }
             } footer: {
-                Text("\(totalFoodsCount) foods available offline")
+                Text(localResultsFooter)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .textCase(nil)
@@ -151,9 +177,12 @@ struct SearchFoodListView: View {
         } action: { _, newOffset in
             onScrollOffsetChange(newOffset)
         }
-        .navigationDestination(item: $selectedLocalFood) { food in
+        .task(id: searchText) {
+            await updateLocalFoods(for: searchText)
+        }
+        .navigationDestination(item: $selectedLocalFoodDraft) { draft in
             LogFoodScreen(
-                initialDraft: FoodDraft(foodItem: food, saveAsCustomFood: false),
+                initialDraft: draft,
                 loggingDay: loggingDay,
                 onFoodLogged: onFoodLogged
             )
@@ -242,27 +271,33 @@ struct SearchFoodListView: View {
         }
     }
 
-    private func localFoodLink(for food: FoodItem) -> some View {
+    private func localFoodLink(for result: LocalFoodSearchResult) -> some View {
         Button {
-            selectedLocalFood = food
+            selectedLocalFoodDraft = localFoodDraft(for: result.id)
         } label: {
-            LocalFoodRow(food: food)
+            LocalFoodSearchResultRow(result: result)
         }
         .buttonStyle(.plain)
     }
 
     private var localEmptyMessage: String {
-        if hasLoadedFoods == false {
-            return isRemoteSearchAvailable
-                ? "Foods are not available yet. You can still search online or use manual entry."
-                : "Foods are not available yet. You can still use manual entry."
-        }
-
         if searchText.isEmpty {
-            return "No on-device foods are available yet."
+            return "No saved foods available on device yet."
         }
 
         return "No on-device foods match this search yet."
+    }
+
+    private var localResultsFooter: String {
+        if searchText.isEmpty {
+            return localFoods.isEmpty ? "" : "\(localFoods.count) recent on-device foods shown"
+        }
+
+        if localFoods.isEmpty {
+            return "No foods available offline"
+        }
+
+        return "\(localFoods.count) on-device matches shown"
     }
 
     private var showsUSDASearchFallback: Bool {
@@ -282,4 +317,111 @@ struct SearchFoodListView: View {
             return "No online packaged foods matched this search."
         }
     }
+
+    private func updateLocalFoods(for query: String) async {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        isLocalSearchLoading = true
+        let container = modelContext.container
+        let searchTerm = localFetchSearchTerm(for: trimmedQuery)
+        let searchTask = Task<[LocalFoodSearchResult], Never>.detached(priority: .userInitiated) {
+            guard Task.isCancelled == false else { return [] }
+
+            let context = ModelContext(container)
+            let normalizedQuery = FoodItemSearchQuery(trimmedQuery).normalizedText
+            let fieldPrefixQuery = " \(normalizedQuery)"
+
+            do {
+                guard trimmedQuery.isEmpty == false else {
+                    return try recentLocalFoods(in: context).map(LocalFoodSearchResult.init)
+                }
+
+                let foods = try localFoodCandidates(
+                    in: context,
+                    normalizedQuery: normalizedQuery,
+                    fieldPrefixQuery: fieldPrefixQuery,
+                    searchTerm: searchTerm
+                )
+                guard Task.isCancelled == false else { return [] }
+                return FoodItemLocalSearch.rankedFoods(foods, matching: trimmedQuery).prefix(60).map(LocalFoodSearchResult.init)
+            } catch {
+                return []
+            }
+        }
+
+        let results = await withTaskCancellationHandler {
+            await searchTask.value
+        } onCancel: {
+            searchTask.cancel()
+        }
+
+        guard !Task.isCancelled else { return }
+        localFoods = results
+        isLocalSearchLoading = false
+    }
+
+    private func localFoodDraft(for id: UUID) -> FoodDraft? {
+        var descriptor = FetchDescriptor<FoodItem>(
+            predicate: #Predicate { food in
+                food.id == id
+            }
+        )
+        descriptor.fetchLimit = 1
+
+        guard let food = try? modelContext.fetch(descriptor).first else { return nil }
+        return FoodDraft(foodItem: food, saveAsCustomFood: false)
+    }
+
+    private func localFetchSearchTerm(for query: String) -> String {
+        let tokens = query.lowercased().split(whereSeparator: { $0.isWhitespace }).map(String.init)
+        return tokens.first(where: { $0.allSatisfy(\.isNumber) }) ?? tokens.max(by: { $0.count < $1.count }) ?? query
+    }
+}
+
+nonisolated private func recentLocalFoods(in context: ModelContext) throws -> [FoodItem] {
+    var descriptor = FetchDescriptor<FoodItem>(
+        sortBy: [
+            SortDescriptor(\.updatedAt, order: .reverse),
+            SortDescriptor(\.name)
+        ]
+    )
+    descriptor.fetchLimit = 60
+    return try context.fetch(descriptor)
+}
+
+nonisolated private func localFoodCandidates(
+    in context: ModelContext,
+    normalizedQuery: String,
+    fieldPrefixQuery: String,
+    searchTerm: String
+) throws -> [FoodItem] {
+    var candidates: [FoodItem] = []
+    var seen = Set<UUID>()
+
+    func append(_ foods: [FoodItem]) {
+        for food in foods where seen.insert(food.id).inserted {
+            candidates.append(food)
+        }
+    }
+
+    var prefixDescriptor = FetchDescriptor<FoodItem>(
+        predicate: #Predicate { food in
+            food.searchableText.starts(with: normalizedQuery)
+                || food.searchableText.localizedStandardContains(fieldPrefixQuery)
+        },
+        sortBy: [SortDescriptor(\.name)]
+    )
+    prefixDescriptor.fetchLimit = 60
+    append(try context.fetch(prefixDescriptor))
+
+    var fallbackDescriptor = FetchDescriptor<FoodItem>(
+        predicate: #Predicate { food in
+            food.searchableText.localizedStandardContains(searchTerm)
+        },
+        sortBy: [SortDescriptor(\.name)]
+    )
+    fallbackDescriptor.fetchLimit = 250
+    append(try context.fetch(fallbackDescriptor))
+
+    return candidates
 }

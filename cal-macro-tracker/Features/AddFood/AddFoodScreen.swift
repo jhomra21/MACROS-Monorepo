@@ -3,7 +3,6 @@ import SwiftUI
 
 struct AddFoodScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query private var recentLogEntries: [LogEntry]
 
     let loggingDay: CalendarDay?
@@ -36,10 +35,7 @@ struct AddFoodScreen: View {
                     case .search:
                         SearchFoodListView(
                             loggingDay: loggingDay,
-                            foods: rankedFoods,
                             suggestions: foodSuggestions,
-                            totalFoodsCount: foods.count,
-                            hasLoadedFoods: !foods.isEmpty,
                             remoteSearch: remoteSearch.viewState,
                             isRemoteSearchAvailable: isRemoteSearchAvailable,
                             searchText: trimmedSearchText,
@@ -110,10 +106,6 @@ struct AddFoodScreen: View {
     var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
     private var isRemoteSearchAvailable: Bool {
         RemoteFoodSearchConfiguration.isPackagedFoodSearchAvailable
-    }
-
-    private var rankedFoods: [FoodItem] {
-        FoodItemLocalSearch.rankedFoods(foods, matching: trimmedSearchText)
     }
 
     private var foodSuggestions: [FoodSuggestion] {
