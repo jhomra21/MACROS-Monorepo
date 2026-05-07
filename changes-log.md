@@ -2,6 +2,11 @@
 
 `changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
 
+Detailed implementation trackers live in `implementation-trackers/`:
+
+- [`implementation-trackers/insights-implementation-tracker.md`](implementation-trackers/insights-implementation-tracker.md)
+- [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
+
 ## History and Calendar
 
 ### Delivered
