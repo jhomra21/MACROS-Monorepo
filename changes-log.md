@@ -185,6 +185,42 @@
 
 - Formatter validation, whitespace diff validation, and iOS simulator build passed.
 
+## Insights
+
+### Delivered
+
+- Added a premium-gated Insights screen for Full Unlock users with rolling 7-day, 14-day, and 30-day nutrition analytics.
+- Added calorie, macro, and secondary-nutrient chart cards with per-card chart modes, selected-day callouts, previous-period summary comparison, logged-day consistency, and current-goal adherence.
+- Added a locked Insights preview that keeps the screen reachable for non-premium users while presenting the existing Full Unlock paywall.
+- Added a Dashboard toolbar entry point and native pushed route for Insights.
+- Added a small hosted XCTest target focused on the pure Insights analytics contract.
+
+### Main implementation steps
+
+- Added `Features/Insights/InsightsAnalytics.swift` with pure range, aggregation, comparison, nutrient-coverage, and goal-adherence helpers derived from local `LogEntry` data.
+- Added `Features/Insights/InsightsScreen.swift` with Swift Charts-based cards, local SwiftUI chart state, Reduce Motion-aware first-appearance animation, existing glass/card styling, and `PaidFeatureGate` integration.
+- Added `PaidFeature.nutritionInsights` under the existing `.fullUnlock` entitlement.
+- Updated `AppRootView`, `DashboardScreen`, and `DashboardShareSupport` to route from the Dashboard toolbar into Insights.
+- Added `cal-macro-trackerTests/InsightsAnalyticsTests.swift` and wired `cal-macro-trackerTests` into the Xcode project and shared app scheme.
+- Created `insights-implementation-tracker.md` to record the feature decisions, milestone progress, edge cases, validation findings, and intentionally deferred V1 scope.
+
+### Bugs and implementation findings
+
+- The first analytics build attempted to make `InsightsDayPoint` `Hashable`, but `LogEntryDaySnapshot` does not conform to `Hashable`; the conformance was removed because chart identity only needs `Identifiable`.
+- A generic safe-subscript helper initially used `Collection` with `Int`, which conflicted with arbitrary collection indices; it was narrowed to `Array` for the chart-selection use case.
+- Swift Charts selection and axis-label paths intentionally keep safe optional handling because chart-provided indices can be absent or out of range during interaction.
+- Missing secondary nutrients intentionally remain distinct from explicit zero values: nutrient averages and coverage count only days with an available value, while zero is treated as real data.
+- The calorie and protein goal-adherence summaries intentionally use current active goals only; historical goal versions remain out of V1 scope.
+- The locked preview intentionally avoids computing user-specific detailed chart data for non-premium users while still communicating the premium value.
+- Manual simulator verification on iPhone 17 Pro confirmed the Dashboard Insights entry, unlocked Insights content, range picker, chart-style controls, chart accessibility labels, selection interaction, and nutrient all-missing empty state with local test data.
+- Simplify review fixed duplicate calorie goal `RuleMark` rendering so the calorie goal line is emitted once per chart instead of once per data point.
+- A follow-up simplify review, run with the sharing and insights trackers in context, found no additional scoped reuse, quality, or efficiency cleanup needed.
+- Defensive-code review kept the remaining optional/fallback handling because it protects chart interaction, no-data UI, missing nutrient values, and derived dictionary lookup boundaries without broad refactors or force-unwrapping.
+
+### Validation
+
+- The Insights implementation passed whitespace diff validation, formatter validation, Insights analytics tests, iOS simulator build validation, simplify review, defensive-code review, final simulator UI checks, and final diff review.
+
 ## Scan Flows
 
 ### Delivered

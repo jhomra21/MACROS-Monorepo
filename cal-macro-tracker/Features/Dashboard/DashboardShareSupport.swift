@@ -15,6 +15,13 @@ extension DashboardScreen {
                 .accessibilityLabel("Share daily summary")
                 #endif
 
+                Button(action: onOpenInsights) {
+                    Image(systemName: "chart.xyaxis.line")
+                        .appTopBarIconStyle()
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open insights")
+
                 Button(action: onOpenHistory) {
                     Image(systemName: "calendar")
                         .appTopBarIconStyle()

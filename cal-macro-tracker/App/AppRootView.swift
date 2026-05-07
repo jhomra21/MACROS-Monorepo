@@ -18,6 +18,7 @@ private enum AppRootSheetDestination: Identifiable, Hashable {
 struct AppRootView: View {
     private enum Route: Hashable {
         case history
+        case insights
         case settings
         case sharingDashboard
         case sharing(inviteInput: String?, requestId: Int)
@@ -45,6 +46,7 @@ struct AppRootView: View {
                     presentSheet(.editLogEntry(entry.persistentModelID))
                 },
                 onOpenHistory: { open(.history) },
+                onOpenInsights: { open(.insights) },
                 onOpenSettings: { open(.settings) },
                 onOpenSharing: { open(.sharingDashboard) }
             )
@@ -52,6 +54,8 @@ struct AppRootView: View {
                 switch route {
                 case .history:
                     HistoryScreen()
+                case .insights:
+                    InsightsScreen()
                 case .settings:
                     SettingsScreen()
                 case .sharingDashboard:

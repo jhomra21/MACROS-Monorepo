@@ -18,6 +18,7 @@ struct DashboardScreen: View {
     let onOpenAddFood: (CalendarDay) -> Void
     let onEditEntry: (LogEntry) -> Void
     let onOpenHistory: () -> Void
+    let onOpenInsights: () -> Void
     let onOpenSettings: () -> Void
     let onOpenSharing: () -> Void
 

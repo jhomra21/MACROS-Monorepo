@@ -4,10 +4,11 @@ enum PaidEntitlement {
 
 enum PaidFeature {
     case customMacroRingColors
+    case nutritionInsights
 
     var requiredEntitlement: PaidEntitlement {
         switch self {
-        case .customMacroRingColors:
+        case .customMacroRingColors, .nutritionInsights:
             .fullUnlock
         }
     }
