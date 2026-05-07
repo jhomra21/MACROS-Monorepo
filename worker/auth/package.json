@@ -1,0 +1,25 @@
+{
+  "name": "macros-auth",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "bun@1.3.11",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8788",
+    "deploy": "wrangler deploy",
+    "deploy:dry-run": "wrangler deploy --dry-run",
+    "types": "wrangler types",
+    "test": "bun test",
+    "check": "bun run types && tsc --noEmit && bun test"
+  },
+  "dependencies": {
+    "hono": "^4.12.18",
+    "jose": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.12",
+    "@types/node": "^25.0.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.88.0"
+  }
+}

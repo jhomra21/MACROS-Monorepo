@@ -6,8 +6,11 @@ import ObjectiveC
 #endif
 
 struct SettingsScreen: View {
+    @Environment(SharingSyncService.self) private var sharingSyncService
+    @Environment(\.modelContext) private var modelContext
     @Query private var goals: [DailyGoals]
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
+    @AppStorage(AppStorageKeys.isSharingDeviceEnabled) private var isSharingDeviceEnabled = false
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
     @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
@@ -30,6 +33,16 @@ struct SettingsScreen: View {
             }
 
             FullUnlockSettingsSection(isPresentingFullUnlock: $isPresentingFullUnlock)
+
+            Section {
+                NavigationLink {
+                    SharingScreen()
+                } label: {
+                    Text("Sharing")
+                }
+            } footer: {
+                Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+            }
 
             MacroRingColorSettingsSection(
                 proteinHex: $customProteinRingColor,

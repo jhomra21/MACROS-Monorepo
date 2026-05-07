@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct EditLogEntryScreen: View {
+    @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
@@ -148,7 +149,7 @@ struct EditLogEntryScreen: View {
     }
 
     private var logEntryRepository: LogEntryRepository {
-        LogEntryRepository(modelContext: modelContext)
+        LogEntryRepository(modelContext: modelContext, onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange)
     }
 
     private func saveChanges() {

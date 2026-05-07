@@ -19,6 +19,7 @@ struct AppRootView: View {
     private enum Route: Hashable {
         case history
         case settings
+        case sharing(inviteInput: String?, requestId: Int)
     }
 
     @Binding private var pendingOpenRequest: AppOpenRequest?
@@ -26,6 +27,7 @@ struct AppRootView: View {
     @State private var destination: Route?
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var dashboardResetToken = 0
+    @State private var openRequestToken = 0
 
     init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
         _pendingOpenRequest = pendingOpenRequest
@@ -50,6 +52,8 @@ struct AppRootView: View {
                     HistoryScreen()
                 case .settings:
                     SettingsScreen()
+                case let .sharing(inviteInput, _):
+                    SharingScreen(initialInviteInput: inviteInput)
                 }
             }
         }
@@ -90,6 +94,13 @@ struct AppRootView: View {
             dashboardResetToken += 1
         case let .addFood(entryPoint):
             presentSheet(.addFood(entryPoint, nil))
+        case let .sharing(inviteInput):
+            resetPresentedState()
+            openRequestToken += 1
+            let requestId = openRequestToken
+            DispatchQueue.main.async {
+                destination = .sharing(inviteInput: inviteInput, requestId: requestId)
+            }
         }
 
         pendingOpenRequest = nil

@@ -5,6 +5,9 @@
 .dev.vars
 .dev.vars.*
 !.dev.vars.example
+.local-secrets/
+convex-backend/.agents/
+convex-backend/skills-lock.json
 
 DerivedData/
 build/

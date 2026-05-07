@@ -25,6 +25,8 @@ struct cal_macro_trackerApp: App {
     @AppStorage("hasCompletedGoalSetup") private var hasCompletedGoalSetup = false
     @State private var entitlements: AppEntitlements
     @State private var purchaseStore: PurchaseStore
+    @State private var sharingAuthService: SharingAuthService
+    @State private var sharingSyncService: SharingSyncService
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
     @State private var pendingOpenRequest: AppOpenRequest?
@@ -37,8 +39,11 @@ struct cal_macro_trackerApp: App {
     init() {
         MacroRingColorStorage.migrateLegacyStandardDefaultsToAppGroup()
         let entitlements = AppEntitlements()
+        let sharingAuthService = SharingAuthService()
         _entitlements = State(initialValue: entitlements)
         _purchaseStore = State(initialValue: PurchaseStore(entitlements: entitlements))
+        _sharingAuthService = State(initialValue: sharingAuthService)
+        _sharingSyncService = State(initialValue: SharingSyncService(authService: sharingAuthService))
     }
 
     var body: some Scene {
@@ -80,6 +85,8 @@ struct cal_macro_trackerApp: App {
             .environment(dayContext)
             .environment(entitlements)
             .environment(purchaseStore)
+            .environment(sharingAuthService)
+            .environment(sharingSyncService)
             .task {
                 #if os(iOS)
                 consumePendingQuickActionIfNeeded()
@@ -101,7 +108,10 @@ struct cal_macro_trackerApp: App {
                 dayContext.refresh()
             }
             .onOpenURL { url in
-                pendingOpenRequest = AppOpenRequest(url: url)
+                pendingOpenRequest = nil
+                DispatchQueue.main.async {
+                    pendingOpenRequest = AppOpenRequest(url: url)
+                }
             }
             #if os(iOS)
             .onReceive(appDelegate.$requestToken.dropFirst()) { _ in

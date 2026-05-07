@@ -1714,6 +1714,59 @@ The following planning documents have been fully consolidated into this file and
 - A defensive-code-review cleanup pass completed with no remaining actionable findings.
 - Manual QA remains pending for the affected audit flows recorded above.
 
+## No-Account Macro Sharing
+
+### Delivered
+
+- Added optional no-login sharing so a device can invite trusted people/devices to view current-day aggregate calories, protein, fat, carbs, entry count, owner timezone, and coarse updated time without exposing food/log details.
+- Added Convex-backed sharing identity, invites, relationships, grant intervals, daily snapshots, profile deletion, and live Sharing-screen dashboard data.
+- Added the `macros-auth` Cloudflare Worker auth broker for device-local Keychain credentials, Worker-issued Convex JWTs, JWKS publication, and generic browser invite redirects that do not forward invite tokens.
+- Added Swift sharing services, Settings entry point, Sharing screen setup/invite/accept/dashboard controls, automatic post-log sync, manual sync, device-level sharing disable, per-person controls, revoke/remove/delete confirmations, and custom app invite deep links.
+- Added deployed development smoke coverage for two-profile invite/accept, one-way and reciprocal sharing, same-day disable/re-enable, unauthorized access, and sharing-profile deletion cleanup.
+
+### Main implementation steps
+
+- `convex-backend/` now owns the Convex schema, auth config, profile bootstrap, invite mutations, grant-interval visibility helpers, snapshot upsert, sharing dashboard query, delete-profile mutation, TypeScript tests, and deployed smoke script.
+- `worker/auth/` now owns the Hono Worker token endpoint, bootstrap call to Convex using a Worker-held secret, RS256 JWT signing, JWKS endpoint, invite fallback redirect, Wrangler config, generated Worker types, and crypto tests.
+- `Features/Sharing/` now owns the Keychain identity store, Worker-backed Convex auth provider, sharing sync service, dev endpoint configuration, random invite/identity token helper, and the SwiftUI Sharing screen.
+- `AppRootView.swift`, `AppOpenRequest.swift`, and `cal_macro_trackerApp.swift` now route `calmacrotracker://sharing/invite/{token}` links into the Sharing screen, including repeated links while the app is already open.
+- `LogEntryRepositoryOperations.swift` now notifies after successful local log mutations, and the repository call sites pass the sharing sync callback so cloud snapshot upload never blocks local persistence.
+- The Sharing UI uses centered native SwiftUI alerts for invite acceptance and destructive sharing actions: revoke invite, device sharing off, remove person, stop sharing data, and delete sharing profile.
+
+### Bugs and implementation findings
+
+- The first live dashboard appeared empty after successful invite acceptance because Swift decoded backend `scope: { macros: true }` as a `String` and then replaced the subscription error with an empty dashboard; the unused decoded scope field was removed and subscription errors now surface.
+- Invite acceptance now accepts either a raw token or a full pasted invite URL, and locally created pending invite links persist until expiry/revocation/replacement/profile deletion so leaving the Sharing screen does not lose the link.
+- Deep links initially only felt reliable when the app was closed; clearing and asynchronously reapplying the pending open request fixed repeated/open-app invite links.
+- The invite confirmation initially used a top-anchored confirmation dialog; sharing confirmations now use centered alerts to match the requested native dialog behavior.
+- Threat/privacy review added server-side invite hash format validation, constant-time Convex bootstrap secret comparison, and Swift display-name truncation aligned to the backend 40-character limit.
+- A simplify review accepted scoped cleanup by sharing the secure random-token helper, reusing `HTTPJSONClient` in sharing auth, centralizing the post-log sharing sync callback on `SharingSyncService`, and replacing untyped Convex helper contexts with generated types.
+- Broader simplify findings around auth-session caching, upload coalescing, open-grant indexing, and dashboard query fan-out were left as future performance work because they change behavior or schema beyond this finishing pass.
+- A defensive-code review removed the impossible post-insert relationship reload/error branch in invite acceptance; Swift and Worker review groups had no high-confidence redundant defensive branches to remove.
+- A follow-up simplify rerun accepted additional scoped cleanup: sharing auth now uses the shared HTTP response decoder, invite confirmation consumes the captured invite input, the dashboard scope DTO is decoded as the planned `{ macros: true }` object, and the Worker caches imported JWT private keys per key string. Upload status metadata was kept because the sharing plan intentionally calls for sync status/staleness.
+- The follow-up defensive-code review found no further high-confidence redundant guards, duplicated validation, or impossible-state branches in the Swift, Convex, or Worker sharing changes.
+- The rebuild QA pass found that invite deep links opened with `booted` were targeting a different running simulator, and confirmed explicit simulator targeting plus the route request identity fix reliably shows the centered “Start Sharing?” dialog while the app is already open.
+- A final simplify review with the sharing tracker in context kept planned scope and upload-status metadata, then accepted scoped cleanup: invite app URLs now reuse `AppOpenRequest` route construction, sharing snapshot loading reuses the shared daily nutrition loader, invite revocation uses one clear-and-revoke helper, decoded `entryCount` uses integer count semantics, and last-upload metadata is persisted with a stable snapshot digest instead of process-local `hashValue`.
+- The final defensive-code review removed one proven redundant fallback in the stable snapshot digest path; Convex and Worker review groups had no high-confidence defensive cleanup candidates.
+- Code review found and fixed three sharing contract bugs: reconnecting after “Remove person” now reuses and un-tombstones the existing Convex relationship instead of inserting a duplicate `pairKey`, turning off sharing on this device clears session-only remote dashboard data, and deep-link invite confirmation can no longer accept while device sharing is disabled.
+- The deployed sharing smoke script now covers remove-person followed by reconnect and reciprocal toggle, exercising the previous duplicate-relationship failure path.
+- A follow-up deletion audit found that profile deletion only revoked pending owned invites and closed grants, leaving accepted invite records, relationships, old grants, snapshots, and the profile secret reusable by an existing token path. The fix now deletes all owned/accepted invites, owned snapshots, relationships, and related grant intervals, tombstones the profile with scrubbed display name/secret hash, and indexes accepted invites by accepted profile for bounded cleanup.
+- The deployed sharing smoke script now verifies that a deleted profile disappears from counterpart dashboards, that the deleted profile's existing token can no longer authorize sharing queries, and that deleted profile credentials cannot exchange a fresh token for the same cloud identity.
+- Review validation found and fixed two MVP contract gaps: the public Convex dashboard query now rejects non-current-day requests so retained future-history snapshots are not exposed through the current Sharing-screen API, and first-time device sharing setup now uploads today's aggregate snapshot immediately using the existing snapshot uploader.
+- The deployed sharing smoke script now asserts that non-current-day dashboard snapshot requests fail, preserving the current-day-only dashboard contract until a dedicated history endpoint is designed.
+- Follow-up review validation found that reconnecting after “Remove person” reused the canonical relationship row correctly but kept old grant intervals attached to it. `removePerson` now deletes all grants for the relationship before tombstoning it, so reconnecting starts with fresh grant history while still preserving `pairKey` uniqueness.
+- The deployed sharing smoke script now verifies that reconnecting after removal does not preserve the previous reciprocal sharing direction or expose the previous reciprocal snapshot before the other person explicitly re-enables sharing.
+- Follow-up review validation found that the dashboard current-day guard still trusted caller-supplied `ownerToday`, and that day-key validation accepted normalized invalid dates such as `2026-02-31`. The backend now rejects dashboard days outside the server-current UTC window and validates day keys by exact calendar round-trip.
+- Sharing model tests now cover invalid calendar dates and server-current dashboard day bounds, and the deployed sharing smoke script verifies historical `ownerToday` spoofing cannot expose retained snapshots.
+
+### Validation
+
+- The sharing implementation and review cleanup passed whitespace diff validation, Convex checks, deployed sharing smoke, Convex dev typecheck, Worker checks, Swift formatter validation, iOS simulator build, simulator QA, simplify review reruns, defensive-code review reruns, review validation, plan validation/execution, and final diff review.
+- The sharing-profile deletion cleanup passed whitespace diff validation, Convex backend check, Convex dev typecheck, and deployed sharing smoke validation.
+- The current-day dashboard and initial-upload fixes passed whitespace diff validation, Swift formatter validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, iOS simulator build, and final focused review.
+- The remove-person grant-history cleanup passed whitespace diff validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, and final focused review.
+- The strict dashboard day and day-key validation cleanup passed whitespace diff validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, and final review.
+
 ## Dashboard Daily Summary Sharing
 
 ### Delivered

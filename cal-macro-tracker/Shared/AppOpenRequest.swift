@@ -12,6 +12,7 @@ enum AddFoodEntryPoint: String, Hashable, Identifiable {
 enum AppOpenRequest: Hashable {
     case dashboard
     case addFood(AddFoodEntryPoint)
+    case sharing(inviteInput: String?)
 
     init?(url: URL) {
         guard
@@ -29,6 +30,13 @@ enum AppOpenRequest: Hashable {
             let entryPoint = path.isEmpty ? .addFood : AddFoodEntryPoint(rawValue: path)
             guard let entryPoint else { return nil }
             self = .addFood(entryPoint)
+        case "sharing":
+            let pathComponents = components.path.split(separator: "/").map(String.init)
+            if pathComponents.first == "invite", let token = pathComponents.dropFirst().first {
+                self = .sharing(inviteInput: token)
+            } else {
+                self = .sharing(inviteInput: nil)
+            }
         default:
             return nil
         }
@@ -44,6 +52,11 @@ enum AppOpenRequest: Hashable {
             }
 
             return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://add-food/\(entryPoint.rawValue)")!
+        case let .sharing(inviteInput):
+            if let inviteInput {
+                return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://sharing/invite/\(inviteInput)")!
+            }
+            return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://sharing")!
         }
     }
 }

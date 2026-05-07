@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "macros-auth",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-05-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    }
+  },
+  "vars": {
+    "JWT_ISSUER": "https://macros-auth.jhonra121.workers.dev",
+    "JWT_AUDIENCE": "macros-convex-dev",
+    "JWT_KEY_ID": "macros-auth-dev-1",
+    "ASTRO_REDIRECT_URL": "https://macros-web.jhonra121.workers.dev/"
+  },
+  "secrets": {
+    "required": ["CONVEX_BOOTSTRAP_URL", "CONVEX_BOOTSTRAP_SECRET", "JWT_PRIVATE_KEY_PKCS8", "JWT_PUBLIC_JWKS"]
+  }
+}

@@ -4,6 +4,7 @@ import SwiftUI
 struct DashboardScreen: View {
     @Environment(AppDayContext.self) var dayContext
     @Environment(AppEntitlements.self) private var entitlements
+    @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
@@ -110,7 +111,7 @@ struct DashboardScreen: View {
     }
 
     private var logEntryRepository: LogEntryRepository {
-        LogEntryRepository(modelContext: modelContext)
+        LogEntryRepository(modelContext: modelContext, onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange)
     }
 
     private var emptyLogDescription: String {

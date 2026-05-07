@@ -5,6 +5,7 @@ import UIKit
 #endif
 
 struct LogFoodScreen: View {
+    @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(\.modelContext) private var modelContext
 
     let initialDraft: FoodDraft
@@ -245,7 +246,7 @@ struct LogFoodScreen: View {
     }
 
     private var logEntryRepository: LogEntryRepository {
-        LogEntryRepository(modelContext: modelContext)
+        LogEntryRepository(modelContext: modelContext, onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange)
     }
 
     private func saveEntry() {

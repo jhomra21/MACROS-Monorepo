@@ -40,6 +40,7 @@ extension LogEntryRepository {
         }
 
         WidgetTimelineReloader.reloadMacroWidgets()
+        onDailyTotalsChanged?(modelContext.container)
     }
 
     func delete(entry: LogEntry, operation: String) throws {
@@ -55,6 +56,7 @@ extension LogEntryRepository {
         }
 
         WidgetTimelineReloader.reloadMacroWidgets()
+        onDailyTotalsChanged?(modelContext.container)
     }
 
     func logAgain(entry: LogEntry, loggedAt: Date = .now, operation: String) throws {
@@ -106,6 +108,7 @@ extension LogEntryRepository {
         }
 
         WidgetTimelineReloader.reloadMacroWidgets()
+        onDailyTotalsChanged?(modelContext.container)
     }
 
     private func apply(

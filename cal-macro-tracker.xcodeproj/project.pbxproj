@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1A1111111111111111111113 /* CalMacroWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111111 /* CalMacroWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2C0000000000000000000002 /* ConvexMobile in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0000000000000000000001 /* ConvexMobile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +49,8 @@
 				CalMacroWidget/DailyMacroAccessoryWidget.swift,
 				CalMacroWidget/DailyMacroWidget.swift,
 				Shared/AppOpenRequest.swift,
-				Shared/FoodNutritionRow.swift,
 				Shared/DailyMacroSnapshotLoader.swift,
+				Shared/FoodNutritionRow.swift,
 				Shared/ImageJPEGEncoder.swift,
 				Shared/LogEntryQuery.swift,
 				Shared/MacroGoalsSnapshot.swift,
@@ -97,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2C0000000000000000000002 /* ConvexMobile in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +156,7 @@
 			);
 			name = "cal-macro-tracker";
 			packageProductDependencies = (
+				2C0000000000000000000001 /* ConvexMobile */,
 			);
 			productName = "cal-macro-tracker";
 			productReference = 0D8B87CD2F7D86E700453C64 /* cal-macro-tracker.app */;
@@ -215,6 +218,9 @@
 			);
 			mainGroup = 0D8B87C42F7D86E700453C64;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2C0000000000000000000000 /* XCRemoteSwiftPackageReference "convex-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 0D8B87CE2F7D86E700453C64 /* Products */;
 			projectDirPath = "";
@@ -400,6 +406,7 @@
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Info-iOS.plist";
 				"INFOPLIST_FILE[sdk=macosx*]" = "Info-macOS.plist";
@@ -451,6 +458,7 @@
 				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "Info-iOS.plist";
 				"INFOPLIST_FILE[sdk=macosx*]" = "Info-macOS.plist";
@@ -592,6 +600,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2C0000000000000000000000 /* XCRemoteSwiftPackageReference "convex-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/get-convex/convex-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2C0000000000000000000001 /* ConvexMobile */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2C0000000000000000000000 /* XCRemoteSwiftPackageReference "convex-swift" */;
+			productName = ConvexMobile;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 0D8B87C52F7D86E700453C64 /* Project object */;
 }
