@@ -1,4 +1,3 @@
-import Combine
 import SwiftData
 import SwiftUI
 
@@ -9,7 +8,6 @@ struct SharingScreen: View {
     @AppStorage(AppStorageKeys.isSharingDeviceEnabled) private var isSharingDeviceEnabled = false
     @AppStorage(AppStorageKeys.sharingDisplayName) private var sharingDisplayName = "Me"
 
-    @State private var dashboard = SharingDashboard(people: [])
     @State private var invite: SharingInvite?
     @State private var inviteToken = ""
     @State private var isSavingProfile = false
@@ -18,7 +16,6 @@ struct SharingScreen: View {
     @State private var errorMessage: String?
     @State private var destructiveAction: SharingDestructiveAction?
     @State private var inviteConfirmationInput: String?
-    @State private var dashboardRefreshToken = 0
 
     init(initialInviteInput: String? = nil) {
         _inviteToken = State(initialValue: initialInviteInput ?? "")
@@ -91,14 +88,14 @@ struct SharingScreen: View {
             }
 
             Section("People") {
-                if dashboard.people.isEmpty {
+                if sharingSyncService.dashboard.people.isEmpty {
                     ContentUnavailableView(
                         "No shared data available for today.",
                         systemImage: "person.2",
                         description: Text("Invite someone or accept an invite to start sharing current-day macro totals.")
                     )
                 } else {
-                    ForEach(dashboard.people) { person in
+                    ForEach(sharingSyncService.dashboard.people) { person in
                         SharingPersonRow(
                             person: person,
                             onOutgoingChanged: { enabled in
@@ -167,17 +164,15 @@ struct SharingScreen: View {
                     : "Enable sharing on this device before accepting this invite."
             )
         }
-        .task(id: dashboardTaskId) {
-            guard isSharingDeviceEnabled else { return }
-            await observeDashboard()
+        .task(id: SharingDashboardSubscriptionKey(isDeviceSharingEnabled: isSharingDeviceEnabled, day: dayContext.today)) {
+            sharingSyncService.startDashboardSubscription(for: dayContext.today)
+        }
+        .onChange(of: sharingSyncService.dashboardErrorMessage) { _, message in
+            errorMessage = message
         }
         .task {
             invite = sharingSyncService.pendingInvite()
         }
-    }
-
-    private var dashboardTaskId: String {
-        "\(isSharingDeviceEnabled)-\(dashboardRefreshToken)-\(dayContext.today)"
     }
 
     private var destructiveActionBinding: Binding<Bool> {
@@ -209,19 +204,6 @@ struct SharingScreen: View {
         sharingDisplayName.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private func observeDashboard() async {
-        do {
-            try await sharingSyncService.prepareDashboardSubscription()
-            let values = sharingSyncService.dashboard(for: dayContext.today).values
-            for try await dashboard in values {
-                self.dashboard = dashboard
-                errorMessage = nil
-            }
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
     private var isAcceptInviteDisabled: Bool {
         !isSharingDeviceEnabled
             || inviteToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -245,7 +227,7 @@ struct SharingScreen: View {
                     try await sharingSyncService.enableSharing(displayName: displayName, container: modelContext.container)
                 }
                 sharingDisplayName = displayName
-                dashboardRefreshToken += 1
+                sharingSyncService.refreshDashboardSubscription(for: dayContext.today)
                 errorMessage = nil
             } catch {
                 errorMessage = error.localizedDescription
@@ -294,7 +276,7 @@ struct SharingScreen: View {
                 try await sharingSyncService.acceptInvite(input: token, ownerDay: dayContext.today)
                 inviteToken = ""
                 inviteConfirmationInput = nil
-                dashboardRefreshToken += 1
+                sharingSyncService.refreshDashboardSubscription(for: dayContext.today)
                 errorMessage = nil
             } catch {
                 errorMessage = "This invite is unavailable."
@@ -323,14 +305,13 @@ struct SharingScreen: View {
                 case .turnOffDevice:
                     try await sharingSyncService.stopSharingMyData(ownerDay: dayContext.today)
                     isSharingDeviceEnabled = false
-                    dashboard = SharingDashboard(people: [])
+                    sharingSyncService.stopDashboardSubscription(clearDashboard: true)
                 case .stopSharing:
                     try await sharingSyncService.stopSharingMyData(ownerDay: dayContext.today)
                 case let .removePerson(person):
                     try await sharingSyncService.removePerson(person.profileId, ownerDay: dayContext.today)
                 case .deleteProfile:
                     try await sharingSyncService.deleteSharingProfile()
-                    dashboard = SharingDashboard(people: [])
                     invite = nil
                 }
                 errorMessage = nil

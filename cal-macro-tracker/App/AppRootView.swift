@@ -19,12 +19,13 @@ struct AppRootView: View {
     private enum Route: Hashable {
         case history
         case settings
+        case sharingDashboard
         case sharing(inviteInput: String?, requestId: Int)
     }
 
     @Binding private var pendingOpenRequest: AppOpenRequest?
 
-    @State private var destination: Route?
+    @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var dashboardResetToken = 0
     @State private var openRequestToken = 0
@@ -34,7 +35,7 @@ struct AppRootView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             DashboardScreen(
                 resetToTodayToken: dashboardResetToken,
                 onOpenAddFood: { loggingDay in
@@ -44,14 +45,19 @@ struct AppRootView: View {
                     presentSheet(.editLogEntry(entry.persistentModelID))
                 },
                 onOpenHistory: { open(.history) },
-                onOpenSettings: { open(.settings) }
+                onOpenSettings: { open(.settings) },
+                onOpenSharing: { open(.sharingDashboard) }
             )
-            .navigationDestination(item: $destination) { route in
+            .navigationDestination(for: Route.self) { route in
                 switch route {
                 case .history:
                     HistoryScreen()
                 case .settings:
                     SettingsScreen()
+                case .sharingDashboard:
+                    SharingDashboardScreen {
+                        open(.sharing(inviteInput: nil, requestId: 0))
+                    }
                 case let .sharing(inviteInput, _):
                     SharingScreen(initialInviteInput: inviteInput)
                 }
@@ -72,8 +78,7 @@ struct AppRootView: View {
     }
 
     private func open(_ route: Route) {
-        guard destination == nil else { return }
-        destination = route
+        path.append(route)
     }
 
     private func presentSheet(_ destination: AppRootSheetDestination) {
@@ -81,7 +86,7 @@ struct AppRootView: View {
     }
 
     private func resetPresentedState() {
-        destination = nil
+        path.removeAll()
         sheetDestination = nil
     }
 
@@ -99,7 +104,7 @@ struct AppRootView: View {
             openRequestToken += 1
             let requestId = openRequestToken
             DispatchQueue.main.async {
-                destination = .sharing(inviteInput: inviteInput, requestId: requestId)
+                path.append(.sharing(inviteInput: inviteInput, requestId: requestId))
             }
         }
 

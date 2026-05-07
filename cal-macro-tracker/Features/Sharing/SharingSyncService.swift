@@ -55,6 +55,11 @@ private struct CreateInviteResponse: Decodable {
     let expiresAt: Double
 }
 
+struct SharingDashboardSubscriptionKey: Equatable {
+    let isDeviceSharingEnabled: Bool
+    let day: CalendarDay
+}
+
 private struct SharingMutationStatus: Decodable {
     let ok: Bool
 }
@@ -69,7 +74,11 @@ final class SharingSyncService {
     private let authService: SharingAuthService
     private(set) var lastUploadStatus: SharingUploadStatus
     private(set) var lastUploadDate: Date?
+    private(set) var dashboard = SharingDashboard(people: [])
+    private(set) var dashboardErrorMessage: String?
     private var lastUploadedSnapshotHash: String?
+    private var dashboardSubscriptionDay: CalendarDay?
+    private var dashboardSubscriptionTask: Task<Void, Never>?
     var isDeviceSharingEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
         set { UserDefaults.standard.set(newValue, forKey: AppStorageKeys.isSharingDeviceEnabled) }
@@ -168,6 +177,49 @@ final class SharingSyncService {
         _ = try await authService.authenticate(displayName: storedDisplayName)
     }
 
+    func startDashboardSubscription(for day: CalendarDay) {
+        guard isDeviceSharingEnabled else {
+            stopDashboardSubscription(clearDashboard: true)
+            return
+        }
+        guard dashboardSubscriptionDay != day || dashboardSubscriptionTask == nil else { return }
+
+        stopDashboardSubscription(clearDashboard: false)
+        dashboardSubscriptionDay = day
+        dashboardSubscriptionTask = Task { @MainActor in
+            do {
+                try await prepareDashboardSubscription()
+                let values = dashboard(for: day).values
+                for try await dashboard in values {
+                    if self.dashboard != dashboard {
+                        self.dashboard = dashboard
+                    }
+                    if dashboardErrorMessage != nil {
+                        dashboardErrorMessage = nil
+                    }
+                }
+            } catch is CancellationError {
+            } catch {
+                dashboardErrorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func refreshDashboardSubscription(for day: CalendarDay) {
+        stopDashboardSubscription(clearDashboard: false)
+        startDashboardSubscription(for: day)
+    }
+
+    func stopDashboardSubscription(clearDashboard: Bool) {
+        dashboardSubscriptionTask?.cancel()
+        dashboardSubscriptionTask = nil
+        dashboardSubscriptionDay = nil
+        dashboardErrorMessage = nil
+        if clearDashboard {
+            dashboard = SharingDashboard(people: [])
+        }
+    }
+
     func pendingInvite() -> SharingInvite? {
         let defaults = UserDefaults.standard
         guard
@@ -257,6 +309,7 @@ final class SharingSyncService {
         let _: SharingMutationStatus = try await authService.client.mutation("sharing:deleteMySharingProfile")
         try await authService.clearLocalIdentity()
         isDeviceSharingEnabled = false
+        stopDashboardSubscription(clearDashboard: true)
         clearUploadMetadata()
         clearPendingInvite()
     }

@@ -86,10 +86,7 @@ export const acceptInvite = mutation({
     }
 
     const pairKey = canonicalPairKey(owner.profileKey, viewer.profileKey);
-    const relationship = await ctx.db
-      .query("shareRelationships")
-      .withIndex("by_pair_key", (q) => q.eq("pairKey", pairKey))
-      .unique();
+    const relationship = await consolidatedRelationshipForPairKey(ctx, pairKey);
 
     const now = Date.now();
     const [profileAId, profileBId] = owner.profileKey < viewer.profileKey
@@ -363,7 +360,31 @@ async function relationshipForPair(ctx: MutationCtx, profileAId: Id<"profiles">,
     return null;
   }
   const pairKey = canonicalPairKey(profileA.profileKey, profileB.profileKey);
-  return await ctx.db.query("shareRelationships").withIndex("by_pair_key", (q) => q.eq("pairKey", pairKey)).unique();
+  return await consolidatedRelationshipForPairKey(ctx, pairKey);
+}
+
+async function consolidatedRelationshipForPairKey(ctx: MutationCtx, pairKey: string) {
+  const relationships = await ctx.db.query("shareRelationships").withIndex("by_pair_key", (q) => q.eq("pairKey", pairKey)).collect();
+  if (relationships.length <= 1) {
+    return relationships[0] ?? null;
+  }
+
+  const sorted = [...relationships].sort((a, b) => a.createdAt - b.createdAt);
+  const primary = sorted.find((relationship) => relationship.removedAt == null) ?? sorted[0];
+  const duplicates = sorted.filter((relationship) => relationship._id !== primary._id);
+  const duplicateGrants = (
+    await Promise.all(
+      duplicates.map((relationship) =>
+        ctx.db.query("shareGrantIntervals").withIndex("by_relationship", (q) => q.eq("relationshipId", relationship._id)).collect(),
+      ),
+    )
+  ).flat();
+
+  await Promise.all([
+    ...duplicateGrants.map((grant) => ctx.db.patch(grant._id, { relationshipId: primary._id })),
+    ...duplicates.map((relationship) => ctx.db.delete(relationship._id)),
+  ]);
+  return primary;
 }
 
 async function openGrantBetween(ctx: MutationCtx, fromProfileId: Id<"profiles">, toProfileId: Id<"profiles">) {
@@ -375,13 +396,21 @@ async function openGrantBetween(ctx: MutationCtx, fromProfileId: Id<"profiles">,
 }
 
 async function closeOpenGrants(ctx: MutationCtx, fromProfileId: Id<"profiles">, toProfileId: Id<"profiles">, ownerDay: string) {
-  const open = await openGrantBetween(ctx, fromProfileId, toProfileId);
-  if (open != null) {
-    await ctx.db.patch(open._id, {
-      endDay: closeIntervalEndDay(ownerDay),
-      endedAt: Date.now(),
-    });
-  }
+  const grants = await ctx.db
+    .query("shareGrantIntervals")
+    .withIndex("by_from_to", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId))
+    .collect();
+  const now = Date.now();
+  await Promise.all(
+    grants
+      .filter((grant) => grant.endedAt == null)
+      .map((grant) =>
+        ctx.db.patch(grant._id, {
+          endDay: closeIntervalEndDay(ownerDay),
+          endedAt: now,
+        }),
+      ),
+  );
 }
 
 function uniqueById<T extends { _id: string }>(documents: T[]) {

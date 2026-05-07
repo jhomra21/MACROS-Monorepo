@@ -19,6 +19,7 @@ struct DashboardScreen: View {
     let onEditEntry: (LogEntry) -> Void
     let onOpenHistory: () -> Void
     let onOpenSettings: () -> Void
+    let onOpenSharing: () -> Void
 
     @Query private var goals: [DailyGoals]
 
@@ -294,6 +295,13 @@ struct DashboardScreen: View {
 
     private func moveSelection(by dayOffset: Int) {
         guard let candidateDay = daySelection.selectedDay.advanced(byDays: dayOffset) else { return }
+        guard candidateDay.startDate <= dayContext.today.startDate else {
+            withAnimation(.easeInOut(duration: 0.18)) {
+                daySelection.resetToToday(dayContext.today)
+            }
+            onOpenSharing()
+            return
+        }
 
         withAnimation(.easeInOut(duration: 0.18)) {
             daySelection.select(candidateDay, today: dayContext.today)

@@ -1758,6 +1758,16 @@ The following planning documents have been fully consolidated into this file and
 - The deployed sharing smoke script now verifies that reconnecting after removal does not preserve the previous reciprocal sharing direction or expose the previous reciprocal snapshot before the other person explicitly re-enables sharing.
 - Follow-up review validation found that the dashboard current-day guard still trusted caller-supplied `ownerToday`, and that day-key validation accepted normalized invalid dates such as `2026-02-31`. The backend now rejects dashboard days outside the server-current UTC window and validates day keys by exact calendar round-trip.
 - Sharing model tests now cover invalid calendar dates and server-current dashboard day bounds, and the deployed sharing smoke script verifies historical `ownerToday` spoofing cannot expose retained snapshots.
+- Added a current-day Sharing dashboard entry from the main Dashboard: swiping past today no longer navigates into future dates and instead opens shared macro rings for connected people.
+- Moved live Sharing dashboard data into `SharingSyncService` so the Dashboard preview and Sharing settings reuse one cached subscription, avoiding empty-state flicker when reopening sharing surfaces.
+- Made Sharing dashboard rows expandable with the same interactive Liquid Glass card styling in compact and expanded states, showing per-person sharing direction pills plus a direct outgoing sharing toggle.
+- Refactored the Sharing dashboard from inline Dashboard state into a real `NavigationStack` destination so the swipe entry keeps the feature while the back button, toolbar transition, and edge-swipe pop match Settings and History.
+- Reviewed forward-swipe interaction options against Apple SwiftUI navigation APIs: SwiftUI `NavigationStack` supports native push/pop and navigation transitions, but not a public percent-driven forward push gesture; UIKit exposes percent-driven interactive transitions for custom navigation controllers, which was intentionally not adopted to preserve native SwiftUI navigation consistency.
+- Fixed duplicate `shareRelationships` rows causing `sharing:removePerson` to crash by replacing pair-key `unique()` lookups with duplicate-tolerant consolidation that migrates grants to a primary relationship and deletes duplicates.
+- Updated grant cleanup so removing a person closes or deletes all matching open grant history rather than only the first matching interval.
+- Post-navigation simplify review removed the now-unused main Dashboard live sharing subscription, replaced stringly typed dashboard subscription task IDs with `SharingDashboardSubscriptionKey`, avoided no-op dashboard/error observable invalidations, and renamed the backend pair-key helper to make its consolidation side effect explicit.
+- The same simplify pass intentionally deferred subscription reference-count ownership and open-grant indexing because those require broader lifecycle/schema decisions beyond the native-navigation cleanup.
+- Post-navigation defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Swift Sharing surfaces or Convex sharing cleanup.
 
 ### Validation
 
@@ -1766,6 +1776,9 @@ The following planning documents have been fully consolidated into this file and
 - The current-day dashboard and initial-upload fixes passed whitespace diff validation, Swift formatter validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, iOS simulator build, and final focused review.
 - The remove-person grant-history cleanup passed whitespace diff validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, and final focused review.
 - The strict dashboard day and day-key validation cleanup passed whitespace diff validation, Convex backend check, Convex dev typecheck, deployed sharing smoke, and final review.
+- The Sharing dashboard UX and native-navigation refactor passed Swift formatter validation, whitespace diff validation, and iOS simulator build validation.
+- The duplicate-relationship and grant-cleanup fixes passed TypeScript validation, Bun tests, Convex dev validation, whitespace diff validation, and focused backend review.
+- The post-navigation review cleanup passed Swift formatter validation, whitespace diff validation, iOS simulator build validation, Convex backend checks, simplify review, defensive-code review, and final diff review.
 
 ## Dashboard Daily Summary Sharing
 
