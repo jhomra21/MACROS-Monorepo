@@ -92,20 +92,21 @@ struct cal_macro_trackerApp: App {
                 consumePendingQuickActionIfNeeded()
                 #endif
                 await launchState.start()
+                refreshDayAndStartSharingDashboardSubscription()
                 await purchaseStore.start()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
-                dayContext.refresh()
+                refreshDayAndStartSharingDashboardSubscription()
             }
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
-                dayContext.refresh()
+                refreshDayAndStartSharingDashboardSubscription()
             }
             .onReceive(NotificationCenter.default.publisher(for: .NSSystemClockDidChange)) { _ in
-                dayContext.refresh()
+                refreshDayAndStartSharingDashboardSubscription()
             }
             .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
-                dayContext.refresh()
+                refreshDayAndStartSharingDashboardSubscription()
             }
             .onOpenURL { url in
                 pendingOpenRequest = nil
@@ -135,6 +136,11 @@ struct cal_macro_trackerApp: App {
             hasCompletedGoalSetup = true
             didCompleteForcedGoalSetup = true
         }
+    }
+
+    private func refreshDayAndStartSharingDashboardSubscription() {
+        dayContext.refresh()
+        sharingSyncService.startDashboardSubscription(for: dayContext.today)
     }
 
     #if os(iOS)

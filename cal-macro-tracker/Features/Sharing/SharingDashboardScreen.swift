@@ -34,7 +34,7 @@ struct SharingDashboardScreen: View {
 
     var body: some View {
         ScrollView {
-            sharingPreviewContent
+            sharingPreviewRows
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
                 .padding(.bottom, 24)
@@ -68,17 +68,6 @@ struct SharingDashboardScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var sharingPreviewContent: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                sharingPreviewRows
-            }
-        } else {
-            sharingPreviewRows
-        }
-    }
-
     private var sharingPreviewRows: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Today")
@@ -86,14 +75,17 @@ struct SharingDashboardScreen: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 2)
 
-            if sharingSyncService.dashboard.people.isEmpty {
+            if sharingSyncService.shouldShowDashboardLoading {
+                sharingLoadingState
+            } else if sharingSyncService.dashboard.people.isEmpty {
                 sharingEmptyState
             } else {
-                ForEach(sharingSyncService.dashboard.people) { person in
+                ForEach(Array(sharingSyncService.dashboard.people.enumerated()), id: \.element.id) { index, person in
                     SharingPreviewPersonRow(
                         person: person,
                         goals: currentGoals,
                         ringColorPalette: customRingPalette,
+                        entranceDelay: min(Double(index) * 0.045, 0.16),
                         isExpanded: expandedSharingPersonId == person.id,
                         onToggleExpansion: {
                             toggleSharingPersonExpansion(person)
@@ -128,6 +120,17 @@ struct SharingDashboardScreen: View {
         .frame(maxWidth: .infinity)
     }
 
+    private var sharingLoadingState: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+            Text("Loading sharing…")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 32)
+        .frame(maxWidth: .infinity)
+    }
+
     private func toggleSharingPersonExpansion(_ person: SharingPerson) {
         withAnimation(.smooth(duration: 0.24)) {
             expandedSharingPersonId = expandedSharingPersonId == person.id ? nil : person.id
@@ -150,9 +153,13 @@ private struct SharingPreviewPersonRow: View {
     let person: SharingPerson
     let goals: MacroGoalsSnapshot
     let ringColorPalette: MacroRingPalette?
+    let entranceDelay: Double
     let isExpanded: Bool
     let onToggleExpansion: () -> Void
     let onOutgoingChanged: (Bool) -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var hasAppeared = false
 
     private var totals: NutritionSnapshot {
         guard let snapshot = person.snapshot else { return .zero }
@@ -195,13 +202,34 @@ private struct SharingPreviewPersonRow: View {
             }
         }
         .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .appGlassRoundedRect(cornerRadius: isExpanded ? 28 : 22, interactive: true)
+        .compositingGroup()
+        .scaleEffect(entranceScale, anchor: .center)
+        .opacity(hasAppeared ? 1 : 0)
+        .animation(entranceAnimation, value: hasAppeared)
+        .onAppear(perform: animateInIfNeeded)
     }
 
     private var subtitle: String {
         guard let snapshot = person.snapshot else { return "No totals shared yet today" }
         return
             "\(snapshot.calories.roundedForDisplay) kcal · P \(snapshot.protein.roundedForDisplay)g · C \(snapshot.carbs.roundedForDisplay)g · F \(snapshot.fat.roundedForDisplay)g"
+    }
+
+    private var entranceScale: CGFloat {
+        reduceMotion || hasAppeared ? 1 : 0.94
+    }
+
+    private var entranceAnimation: Animation {
+        reduceMotion
+            ? .easeOut(duration: 0.18)
+            : .spring(response: 0.34, dampingFraction: 0.86).delay(entranceDelay)
+    }
+
+    private func animateInIfNeeded() {
+        guard !hasAppeared else { return }
+        hasAppeared = true
     }
 }
 

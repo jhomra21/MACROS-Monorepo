@@ -88,7 +88,13 @@ struct SharingScreen: View {
             }
 
             Section("People") {
-                if sharingSyncService.dashboard.people.isEmpty {
+                if sharingSyncService.shouldShowDashboardLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView("Loading sharing…")
+                        Spacer()
+                    }
+                } else if sharingSyncService.dashboard.people.isEmpty {
                     ContentUnavailableView(
                         "No shared data available for today.",
                         systemImage: "person.2",

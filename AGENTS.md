@@ -3,11 +3,8 @@
 ## Philosophy
 
 This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down. 
-
 You are not just writing code, you are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
-
 Fight entropy. Leave the codebase better than you found it.
-
 Do not write plausible code, write accurate code backed by the reality of this codebase
 
 ## Code Thinking
@@ -15,7 +12,6 @@ Do not write plausible code, write accurate code backed by the reality of this c
 Review your implementation before stopping. Check whether there is a better or simpler approach whether any redundant code remains, whether duplicate logic was introduced, and whether any dead or unused code was left behind. If you find issues, fix them now; if not, briefly confirm the implementation is clean.
                 
 Think carefully and only action the specific task I have given you with the most concise and elegant solution that takes into consideration existing code across codebase.
-
 Prefer the most concise and elegant solutions that changes or adds as little code as possible.
 
 Read `swift-dev.mdc` for specific swift coding guidance.
@@ -78,30 +74,6 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 - The project is configured for multiple Apple platforms in build settings, but the product direction for this repository is a native iPhone calorie/macro tracker. Optimize implementation decisions for iPhone-first workflows.
 - Root-level [`swift-dev.mdc`](./swift-dev.mdc) is the main local coding guidance: prefer idiomatic modern SwiftUI, keep state close to where it is used, use `async/await`, and avoid unnecessary view-model or UIKit-style abstraction layers.
 
-## Product Direction
-
-Build a native Swift iPhone app for calorie and macro tracking with these core constraints:
-
-- No required login.
-- User data is stored locally on-device by default.
-- The primary intake flows are:
-  - barcode scan
-  - nutrition label photo
-  - manual search / manual entry fallback
-- The app must normalize and log calories, protein, fat, carbs, serving sizes, and consumed quantity.
-- Ignore web-stack approaches such as SolidJS/Capacitor for this repository; implementation should stay native Swift/SwiftUI.
-
-## Target User Flow
-
-The intended pipeline is:
-
-1. Capture input: barcode, nutrition label photo, or manual search/entry.
-2. Extract identifier/text locally on-device.
-3. Resolve nutrition facts from a trusted source or parsed label.
-4. Normalize into a reusable food record.
-5. Log a consumed quantity for a meal/date.
-6. Compute daily calorie and macro totals from stored entries.
-
 Design for ambiguity explicitly: missing database items, OCR mistakes, incomplete nutrition values, and odd serving sizes are expected and must route through review/edit UX rather than silent assumptions.
 
 ## Recommended Native Architecture
@@ -113,20 +85,6 @@ Design for ambiguity explicitly: missing database items, OCR mistakes, incomplet
 - Prefer SwiftUI state tools (`@State`, `@Binding`, `@Observable`, `@Environment`) over introducing view-model layers by default.
 - Organize future code by feature areas such as `Logging`, `FoodSearch`, `Scan`, `History`, `Settings`, rather than global `Views/Models/ViewModels` folders.
 
-### Capture and Recognition
-
-- Barcode detection should be local-first using Apple frameworks such as Vision, AVFoundation, or VisionKit Data Scanner when live scanning UX is needed.
-- Nutrition label OCR should be local-first using Vision text recognition.
-- Use deterministic parsing first for OCR output: recognize serving size, calories, protein, fat, and carbs from known Nutrition Facts label patterns.
-- If parsing confidence is low, require user confirmation/editing before saving.
-
-### Data Sources
-
-- Prefer Open Food Facts for barcode-based packaged-food lookup because it supports read-only product queries without user authentication.
-- Treat external nutrition database results as user-editable, not authoritative; source data may be incomplete or wrong.
-- Cache resolved products locally so previously scanned foods work offline and repeated scans do not depend on the network.
-- If USDA FoodData Central is ever added, do not hardcode a confidential API key in the shipped client. Any such integration needs either a backend proxy or explicit user-supplied credentials stored securely.
-
 ### Persistence and Privacy
 
 - Keep primary user data in an on-device database.
@@ -135,51 +93,12 @@ Design for ambiguity explicitly: missing database items, OCR mistakes, incomplet
 - Plan for import/export of user data so people can migrate devices without requiring accounts.
 - Optional HealthKit integration is acceptable as an OS-permission-based feature and does not imply an app login system.
 
-## Core Domain Model Expectations
-
-At minimum, the app should evolve toward these concepts:
-
-- `FoodItem`
-  - source (`manual`, `labelScan`, `barcodeLookup`, etc.)
-  - display name / brand
-  - barcode when available
-  - serving description as printed for humans
-  - serving gram weight when available
-  - calories, protein, fat, carbs
-  - enough normalized nutrient data to support multiplication by servings or grams
-- `LogEntry`
-  - timestamp / meal context
-  - linked food item
-  - quantity in servings and/or grams
-  - computed calories and macro totals captured from deterministic math
-- `DailySummary`
-  - derived aggregation from log entries, not a separate manually edited truth source unless a product need emerges
-
-Preserve the original label values when available instead of recomputing calories from macros and expecting exact equality; labels and databases often involve rounding.
-
 ## Calculation Rules
 
 - Prefer deterministic math only.
 - If nutrients are stored per serving, multiply by consumed servings.
 - If nutrients are stored per 100g, compute consumed nutrients from grams consumed.
 - If a source only provides a volume-based serving without grams, do not fake precision; require a user-confirmed conversion or manual quantity entry.
-- Meal-photo-only calorie estimation is out of scope for high-confidence tracking unless paired with explicit user confirmation of food identity and portion.
-
-## Accuracy and UX Priorities
-
-When multiple input methods are available, design around this confidence order:
-
-1. Nutrition Facts label photo
-2. Barcode lookup
-3. Manual search
-4. Meal photo without a label
-
-Because source quality varies, the product should always support:
-
-- manual correction
-- manual food creation
-- serving-size editing
-- quantity adjustment before logging
 
 ## Implementation Notes for Future Agents
 
@@ -188,3 +107,9 @@ Because source quality varies, the product should always support:
 - Keep the app usable with zero account setup.
 - Treat scanning/OCR/network resolution as separate steps so each can fail independently without blocking manual logging.
 - Do not assume tests, linting, or persistence infrastructure already exist in this repository; the codebase is still at template scale and will need those pieces added deliberately.
+
+# Changes Log
+
+`changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
+
+Detailed implementation trackers live in `implementation-trackers/`

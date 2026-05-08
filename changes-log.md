@@ -1809,6 +1809,24 @@ The following planning documents have been fully consolidated into this file and
 - Post-navigation simplify review removed the now-unused main Dashboard live sharing subscription, replaced stringly typed dashboard subscription task IDs with `SharingDashboardSubscriptionKey`, avoided no-op dashboard/error observable invalidations, and renamed the backend pair-key helper to make its consolidation side effect explicit.
 - The same simplify pass intentionally deferred subscription reference-count ownership and open-grant indexing because those require broader lifecycle/schema decisions beyond the native-navigation cleanup.
 - Post-navigation defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Swift Sharing surfaces or Convex sharing cleanup.
+- Fixed cold-launch Sharing dashboard flicker without durably caching remote snapshots by starting the live Sharing dashboard subscription during app startup and again when the app returns active.
+- Sharing surfaces now show a neutral loading state instead of the no-sharing empty state while the first validated dashboard response is still in flight.
+- `SharingSyncService` now exposes first-response dashboard loading state so both the dashboard destination and Sharing settings People section avoid a false empty-state flash.
+- Follow-up review validation fixed a day-change stale data path: switching the live dashboard subscription to a new day now clears the old in-memory dashboard and shows loading instead of rendering previous-day remote snapshots while the new subscription starts.
+- Follow-up review validation fixed a retry path where failed dashboard subscription attempts kept stale task/day state and blocked automatic same-day retries from app-active or screen-start triggers.
+- Follow-up review validation aligned app-level Sharing preload with calendar day, system clock, and time-zone refresh events so the preloaded dashboard subscription restarts for the refreshed current day while the app stays active.
+- Follow-up review validation now ignores stale dashboard subscription failures before mutating loading or error state, keeping replaced attempts from overriding the current preload attempt.
+- Follow-up review validation preserved the retained dashboard day after current subscription failures so later day changes still clear stale people and show loading before the refreshed dashboard arrives.
+- The previous durable same-day dashboard cache approach was rejected because it could briefly show revoked remote snapshots after a cold launch before Convex relationship validation refreshed.
+- Post-implementation simplify review extracted the duplicated dashboard-loading display predicate into `SharingSyncService` and simplified first-response loading assignment after day-change clearing.
+- Post-implementation defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the Sharing dashboard preload/loading-state change.
+- Final post-implementation simplify review encapsulated raw Sharing dashboard loading state, inlined one-use subscription attempt cleanup helpers, and avoided repeated disabled-sharing no-op observable writes.
+- Final post-implementation defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches after the simplify cleanup.
+- A post-review cleanup rerun found no additional reuse or quality cleanup; the suggested row-index iteration and card compositing changes were left unchanged to preserve stable row identity and the known Liquid Glass animation fix.
+- The follow-up defensive-code review rerun found no high-confidence redundant guards, duplicated validation, or impossible-state branches.
+- Added a subtle center-scale and opacity entrance for loaded Sharing dashboard person cards, with short per-card staggering and Reduce Motion support.
+- Removed the `GlassEffectContainer` wrapper around the animated Sharing rows after review showed it could coordinate Liquid Glass geometry sideways during row entrance animation; each row now animates its own glass surface independently.
+- A final cleanup pass removed the now-unnecessary Sharing preview wrapper after the glass container was removed, keeping the card-animation diff focused on one row stack and one row-level entrance state.
 
 ### Validation
 
@@ -1820,6 +1838,8 @@ The following planning documents have been fully consolidated into this file and
 - The Sharing dashboard UX and native-navigation refactor passed Swift formatter validation, whitespace diff validation, and iOS simulator build validation.
 - The duplicate-relationship and grant-cleanup fixes passed TypeScript validation, Bun tests, Convex dev validation, whitespace diff validation, and focused backend review.
 - The post-navigation review cleanup passed Swift formatter validation, whitespace diff validation, iOS simulator build validation, Convex backend checks, simplify review, defensive-code review, and final diff review.
+- The Sharing dashboard preload follow-up passed whitespace diff validation, Swift formatter validation, iOS simulator tests, post-implementation simplify review, defensive-code review, and final diff review.
+- The Sharing dashboard card-animation cleanup passed whitespace diff validation, Swift formatter validation, iOS simulator tests, and final diff review.
 
 ## Dashboard Daily Summary Sharing
 

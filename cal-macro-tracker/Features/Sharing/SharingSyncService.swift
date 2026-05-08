@@ -76,9 +76,15 @@ final class SharingSyncService {
     private(set) var lastUploadDate: Date?
     private(set) var dashboard = SharingDashboard(people: [])
     private(set) var dashboardErrorMessage: String?
+    private var isDashboardLoading = false
+    var shouldShowDashboardLoading: Bool {
+        dashboard.people.isEmpty && isDashboardLoading
+    }
+
     private var lastUploadedSnapshotHash: String?
     private var dashboardSubscriptionDay: CalendarDay?
     private var dashboardSubscriptionTask: Task<Void, Never>?
+    private var dashboardSubscriptionAttemptId: UUID?
     var isDeviceSharingEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
         set { UserDefaults.standard.set(newValue, forKey: AppStorageKeys.isSharingDeviceEnabled) }
@@ -179,18 +185,33 @@ final class SharingSyncService {
 
     func startDashboardSubscription(for day: CalendarDay) {
         guard isDeviceSharingEnabled else {
-            stopDashboardSubscription(clearDashboard: true)
+            if dashboardSubscriptionTask != nil
+                || dashboardSubscriptionDay != nil
+                || dashboardSubscriptionAttemptId != nil
+                || dashboardErrorMessage != nil
+                || isDashboardLoading
+                || !dashboard.people.isEmpty
+            {
+                stopDashboardSubscription(clearDashboard: true)
+            }
             return
         }
         guard dashboardSubscriptionDay != day || dashboardSubscriptionTask == nil else { return }
 
-        stopDashboardSubscription(clearDashboard: false)
+        let isChangingDay = dashboardSubscriptionDay != nil && dashboardSubscriptionDay != day
+        stopDashboardSubscription(clearDashboard: isChangingDay)
         dashboardSubscriptionDay = day
+        isDashboardLoading = dashboard.people.isEmpty
+        let attemptId = UUID()
+        dashboardSubscriptionAttemptId = attemptId
         dashboardSubscriptionTask = Task { @MainActor in
             do {
                 try await prepareDashboardSubscription()
                 let values = dashboard(for: day).values
                 for try await dashboard in values {
+                    if isDashboardLoading {
+                        isDashboardLoading = false
+                    }
                     if self.dashboard != dashboard {
                         self.dashboard = dashboard
                     }
@@ -200,7 +221,11 @@ final class SharingSyncService {
                 }
             } catch is CancellationError {
             } catch {
+                guard dashboardSubscriptionAttemptId == attemptId else { return }
+                isDashboardLoading = false
                 dashboardErrorMessage = error.localizedDescription
+                dashboardSubscriptionTask = nil
+                dashboardSubscriptionAttemptId = nil
             }
         }
     }
@@ -214,7 +239,9 @@ final class SharingSyncService {
         dashboardSubscriptionTask?.cancel()
         dashboardSubscriptionTask = nil
         dashboardSubscriptionDay = nil
+        dashboardSubscriptionAttemptId = nil
         dashboardErrorMessage = nil
+        isDashboardLoading = false
         if clearDashboard {
             dashboard = SharingDashboard(people: [])
         }
