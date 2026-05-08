@@ -1,13 +1,13 @@
 # MACROS
 
-MACROS-Monorepo has three shipped surfaces:
+MACROS is a local-first calorie and macro tracker for iPhone, with a small supporting web and backend surface.
 
-- `cal-macro-tracker/` — the native SwiftUI iPhone app with SwiftData persistence and WidgetKit widgets
-- `worker/usda-proxy/` — a Cloudflare Worker API for USDA and Open Food Facts search
-- `web/` — an Astro site for the product page, privacy/support pages, and support form handling
+- `cal-macro-tracker/` — the native iPhone app with widgets
+- `worker/usda-proxy/` — the food-search API worker
+- `web/` — the product, privacy, and support site
   - <https://macros-web.jhonra121.workers.dev/>
 
-The app stays local-first: no required account, on-device data by default, and optional network-backed search layered on top.
+The app stays local-first: no required account, on-device data by default, and optional network features layered on top.
 
 ## Screenshots
 
@@ -45,25 +45,24 @@ The app stays local-first: no required account, on-device data by default, and o
 
 ## Features
 
-- **Dashboard** — daily calorie ring with protein / carbs / fat breakdown, compact summary on scroll, and full log entry list
-- **Food logging** — log by servings or grams with deterministic macro math
-- **Widgets** — Home Screen widget plus Lock Screen accessory widget for daily macro progress
-- **Barcode scanning** — live camera or photo-based barcode detection via Vision/AVFoundation, with product lookup from Open Food Facts
-- **Nutrition label scanning** — photo-based OCR via Vision text recognition with deterministic label parsing
-- **Food search** — search USDA FoodData Central and Open Food Facts through a Cloudflare Worker
-- **Common foods** — bundled seed database of common foods for quick offline logging
-- **Custom foods** — create and edit your own food items
-- **History** — calendar-based view of past daily logs with day summaries
-- **Daily goals** — configurable calorie, protein, fat, and carb targets
-- **Offline-first** — SwiftData persistence, cached lookups, and graceful network absence
+- **Dashboard** — daily calorie and macro progress, logged foods, quick edits, and shareable summaries
+- **Food logging** — log common foods, saved foods, searched foods, custom foods, or manual entries
+- **Scanning** — barcode scanning and nutrition-label scanning with editable review before logging
+- **Search and suggestions** — offline common foods, saved-food suggestions, and packaged-food search
+- **History** — calendar-based browsing of past days and weekly progress
+- **Insights** — premium nutrition trends for users who unlock the full app
+- **Sharing** — optional no-account sharing so someone else can view your macro dashboard
+- **Widgets** — Home Screen and Lock Screen widgets for daily macro progress
+- **Settings** — daily goals, saved foods, sharing, preferences, and Full Unlock purchase/restore
+- **Offline-first** — local persistence, cached lookups, and graceful network absence
 
 ## Workspace Overview
 
 | Path | Stack | Purpose |
 |---|---|---|
-| `cal-macro-tracker/` | SwiftUI, SwiftData, WidgetKit | Native iPhone calorie and macro tracking app |
-| `worker/usda-proxy/` | Cloudflare Workers, Hono, TypeScript, Bun | Search API proxy for packaged foods and USDA lookups |
-| `web/` | Astro, Cloudflare, TypeScript, Bun, D1 | Marketing site plus support form flow |
+| `cal-macro-tracker/` | SwiftUI, SwiftData, WidgetKit, StoreKit, Convex | Native iPhone calorie and macro tracking app |
+| `worker/usda-proxy/` | Cloudflare Workers, Hono, TypeScript, Bun | Food-search API worker |
+| `web/` | Astro, Cloudflare, TypeScript, Bun, D1 | Product site and support form |
 
 ## Requirements
 
@@ -79,6 +78,7 @@ The app stays local-first: no required account, on-device data by default, and o
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) for local dev and deployment
 - A [USDA FoodData Central API key](https://fdc.nal.usda.gov/api-key-signup) for `worker/usda-proxy`
 - Node.js `>=22.12.0` for the Astro site runtime/tooling expectations
+- Convex project configuration for optional sharing features
 
 ## Project Structure
 
@@ -89,7 +89,7 @@ cal-macro-tracker/
 │   ├── CalMacroWidget/         # WidgetKit extension, including Lock Screen widget
 │   ├── CommonFoods/            # Bundled common_foods.json seed data
 │   ├── Data/                   # SwiftData models and services
-│   ├── Features/               # Add Food, Dashboard, History, Scan, Settings
+│   ├── Features/               # App features such as Dashboard, Add Food, Scan, Insights, Sharing, Settings
 │   └── Shared/                 # Shared UI, formatting, and app helpers
 ├── worker/
 │   └── usda-proxy/             # Cloudflare Worker API for USDA + OFF search
@@ -115,11 +115,11 @@ xcodebuild -project "cal-macro-tracker.xcodeproj" \
   build
 ```
 
-The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme.
+The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme. Local StoreKit testing uses `FullUnlock.storekit`.
 
 ### Worker API
 
-The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that proxies USDA FoodData Central and Open Food Facts.
+The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that keeps provider lookups outside the app.
 
 ```sh
 cd worker/usda-proxy
@@ -194,11 +194,11 @@ Type checks outside the Xcode project:
 
 ## Architecture
 
-- **SwiftUI + SwiftData** — the app uses feature-scoped SwiftUI state and local persistence for logging and history
-- **WidgetKit surfaces** — daily macro progress is exposed through both the main widget and a Lock Screen accessory widget
-- **Worker-backed search** — the Hono Worker isolates USDA/Open Food Facts search, validation, and caching
-- **Astro + Cloudflare web** — the site stays lightweight while handling support submissions through a D1-backed endpoint
-- **Local-first core** — nutrition logs remain on-device; remote services are additive rather than required
+- **Native iPhone app** — SwiftUI app with local persistence, widgets, StoreKit purchase flow, scanning, insights, and sharing
+- **Local-first core** — nutrition logs remain on-device; accounts are not required for normal tracking
+- **Optional services** — Convex powers sharing, and Cloudflare powers packaged-food search plus the web/support surface
+- **Review-first logging** — scans and remote results route through editable screens before anything is saved
+- **Small backend surface** — network features are additive and isolated from the core logging experience
 
 ## License
 
