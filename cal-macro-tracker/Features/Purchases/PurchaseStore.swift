@@ -5,7 +5,7 @@ import StoreKit
 @MainActor
 @Observable
 final class PurchaseStore {
-    static let fullUnlockProductID = "juan-test.cal-macro-tracker.full-unlock"
+    static let fullUnlockProductID = "fullunlock001"
 
     private let entitlements: AppEntitlements
     private var transactionUpdatesTask: Task<Void, Never>?

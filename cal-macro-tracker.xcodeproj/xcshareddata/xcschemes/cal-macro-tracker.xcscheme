@@ -73,7 +73,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../FullUnlock.storekit">
+         identifier = "../../../FullUnlock.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction

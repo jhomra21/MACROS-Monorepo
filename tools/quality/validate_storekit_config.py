@@ -6,8 +6,8 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
-EXPECTED_PRODUCT_ID = "juan-test.cal-macro-tracker.full-unlock"
-EXPECTED_SCHEME_IDENTIFIER = "../../FullUnlock.storekit"
+EXPECTED_PRODUCT_ID = "fullunlock001"
+EXPECTED_SCHEME_IDENTIFIER = "../../../FullUnlock.storekit"
 
 
 def fail(message: str) -> None:
@@ -37,8 +37,7 @@ def main() -> None:
     if identifier != EXPECTED_SCHEME_IDENTIFIER:
         fail(f"scheme StoreKit identifier must be {EXPECTED_SCHEME_IDENTIFIER}, got {identifier}")
 
-    xcode_project_workspace_path = root / "cal-macro-tracker.xcodeproj/project.xcworkspace"
-    storekit_path = (xcode_project_workspace_path / identifier).resolve()
+    storekit_path = (scheme_path.parent / identifier).resolve()
     try:
         with storekit_path.open() as file:
             storekit_config = json.load(file)
