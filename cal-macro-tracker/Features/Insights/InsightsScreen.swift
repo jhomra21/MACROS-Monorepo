@@ -90,10 +90,9 @@ private struct InsightsRangeQueryContent: View {
 
         ScrollView {
             VStack(spacing: 16) {
-                InsightsOverviewCard(
+                InsightsSummaryTiles(
                     points: currentPoints,
-                    previousPoints: previousPoints,
-                    goals: currentGoals
+                    previousPoints: previousPoints
                 )
 
                 InsightsCaloriesCard(
@@ -120,62 +119,50 @@ private struct InsightsRangeQueryContent: View {
     }
 }
 
-private struct InsightsOverviewCard: View {
+private struct InsightsSummaryTiles: View {
     let points: [InsightsDayPoint]
     let previousPoints: [InsightsDayPoint]
-    let goals: MacroGoalsSnapshot
 
-    private var calorieSummary: InsightsMetricSummary {
-        InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.calories)
-    }
-
-    private var proteinSummary: InsightsMetricSummary {
-        InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.protein)
-    }
-
-    private var calorieAdherence: InsightsGoalAdherence {
-        InsightsAnalytics.calorieAdherence(in: points, calorieGoal: goals.calorieGoal)
-    }
-
-    private var proteinAdherence: InsightsGoalAdherence {
-        InsightsAnalytics.proteinAdherence(in: points, proteinGoal: goals.proteinGoalGrams)
-    }
-
-    private var loggingConsistency: Double? {
-        InsightsAnalytics.loggingConsistency(in: points)
+    private var summaries: [InsightsSummaryTileModel] {
+        [
+            InsightsSummaryTileModel(
+                title: "Avg Calories",
+                value: InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.calories),
+                unit: "kcal"
+            )
+        ]
+            + MacroMetric.allCases.map { metric in
+                InsightsSummaryTileModel(
+                    title: "Avg \(metric.title)",
+                    value: InsightsAnalytics.metricSummary(
+                        current: points,
+                        previous: previousPoints,
+                        value: { metric.value(from: $0) }
+                    ),
+                    unit: "g"
+                )
+            }
     }
 
     var body: some View {
-        InsightsCard(title: "Summary", subtitle: "Averages use days with logged foods.") {
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+            ForEach(summaries) { summary in
                 InsightsStatTile(
-                    title: "Avg Calories",
-                    value: calorieSummary.average.insightsFormattedValue(unit: "kcal"),
-                    detail: calorieSummary.comparisonPercent.insightsComparisonText
-                )
-                InsightsStatTile(
-                    title: "Avg Protein",
-                    value: proteinSummary.average.insightsFormattedValue(unit: "g"),
-                    detail: proteinSummary.comparisonPercent.insightsComparisonText
-                )
-                InsightsStatTile(
-                    title: "Logged Days",
-                    value: "\(calorieSummary.loggedDayCount)/\(calorieSummary.totalDayCount)",
-                    detail: loggingConsistency.insightsPercentText
-                )
-                InsightsStatTile(
-                    title: "Calorie Target",
-                    value: calorieAdherence.insightsRateText,
-                    detail: "Within ±10%"
-                )
-                InsightsStatTile(
-                    title: "Protein Goal",
-                    value: proteinAdherence.insightsRateText,
-                    detail: "At least \(goals.proteinGoalGrams.roundedForDisplay)g"
+                    title: summary.title,
+                    value: summary.value.average.insightsFormattedValue(unit: summary.unit),
+                    detail: summary.value.comparisonPercent.insightsComparisonText
                 )
             }
         }
     }
+}
+
+private struct InsightsSummaryTileModel: Identifiable {
+    let title: String
+    let value: InsightsMetricSummary
+    let unit: String
+
+    var id: String { title }
 }
 
 private struct InsightsCaloriesCard: View {
@@ -554,7 +541,7 @@ private struct InsightsStatTile: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .appGlassRoundedRect(cornerRadius: 16, interactive: false)
     }
 }
 

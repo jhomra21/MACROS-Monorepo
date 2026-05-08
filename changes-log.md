@@ -199,6 +199,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added a locked Insights preview that keeps the screen reachable for non-premium users while presenting the existing Full Unlock paywall.
 - Added a Dashboard toolbar entry point and native pushed route for Insights.
 - Added a small hosted XCTest target focused on the pure Insights analytics contract.
+- Simplified the Insights summary area by removing the outer Summary card/header and showing four Liquid Glass stat tiles for average calories, protein, carbs, and fat.
 
 ### Main implementation steps
 
@@ -221,10 +222,15 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Simplify review fixed duplicate calorie goal `RuleMark` rendering so the calorie goal line is emitted once per chart instead of once per data point.
 - A follow-up simplify review, run with the sharing and insights trackers in context, found no additional scoped reuse, quality, or efficiency cleanup needed.
 - Defensive-code review kept the remaining optional/fallback handling because it protects chart interaction, no-data UI, missing nutrient values, and derived dictionary lookup boundaries without broad refactors or force-unwrapping.
+- The summary tile restyle intentionally uses the shared non-interactive Liquid Glass rounded-rect treatment so the tiles keep card affordance without restoring the removed parent Summary container.
+- A visual review noted that the blue hue at the top of the Macros glass card comes from Liquid Glass sampling/refraction of the saturated blue Calories chart above it, especially in bar mode where the blue area is larger.
+- A simplify review renamed the now-cardless overview view to summary tiles, reused `MacroMetric` to generate macro tiles, and avoided repeated summary recomputation during tile rendering.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the summary tile follow-up.
 
 ### Validation
 
 - The Insights implementation passed whitespace diff validation, formatter validation, Insights analytics tests, iOS simulator build validation, simplify review, defensive-code review, final simulator UI checks, and final diff review.
+- The Insights summary layout follow-up passed whitespace diff validation, formatter validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ## Scan Flows
 
