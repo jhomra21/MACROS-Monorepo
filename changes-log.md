@@ -7,6 +7,39 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/insights-implementation-tracker.md`](implementation-trackers/insights-implementation-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
 
+## App Store and TestFlight Release Prep
+
+### Delivered
+
+- Prepared the app for App Store Connect/TestFlight review with the production Full Unlock non-consumable product ID.
+- Added export-compliance plist declarations for the iOS app, macOS app, and widget extension.
+- Flattened App Icon PNG alpha so uploaded builds satisfy TestFlight/App Store icon requirements.
+- Fixed the shared Xcode scheme's local StoreKit configuration reference so Xcode-launched StoreKit testing resolves `FullUnlock.storekit` correctly.
+- Updated the StoreKit quality guardrail to validate the production product ID and the scheme-relative StoreKit file path.
+- Created App Store Connect review/marketing screenshots for the paywall, home screen, and Add Food screen.
+
+### Main implementation steps
+
+- Updated `PurchaseStore.swift` and `FullUnlock.storekit` from the temporary product identifier to `fullunlock001`.
+- Updated `cal-macro-tracker.xcscheme` to reference `../../../FullUnlock.storekit`, matching Xcode's scheme-relative path behavior.
+- Updated `tools/quality/validate_storekit_config.py` so it validates `fullunlock001` and resolves the StoreKit file from the `.xcscheme` location instead of the workspace path.
+- Added `ITSAppUsesNonExemptEncryption = false` to `Info-iOS.plist`, `Info-macOS.plist`, and `Info-Widget.plist`.
+- Re-exported the app icon images without alpha channels.
+
+### Bugs and implementation findings
+
+- The initial local StoreKit scheme reference used the wrong relative path, so Xcode/MCP-launched simulator flows could fall back to sandbox StoreKit instead of the local `.storekit` file.
+- Manual Xcode testing confirmed local StoreKit purchase/unlock works after the scheme path fix; MCP simulator launch still did not apply the StoreKit override, so that remaining failure was treated as launch-tool-specific rather than app configuration evidence.
+- Apple documentation confirmed TestFlight builds operate in sandbox and that a first In-App Purchase must be submitted with a new app version; it did not clearly guarantee first-IAP purchasability while the app/IAP are still waiting for review.
+- App Store Connect required 6.5-inch screenshots and copyright metadata before the app/IAP submission could move to review.
+
+### Validation
+
+- StoreKit config validation passed.
+- iOS simulator build passed.
+- Manual Xcode local StoreKit purchase testing passed.
+- Final commit validation passed formatter, secrets, and StoreKit checks; full `make quality` remained blocked by existing Periphery/test-module and dependency-inventory guardrails unrelated to this release-prep diff.
+
 ## History and Calendar
 
 ### Delivered
