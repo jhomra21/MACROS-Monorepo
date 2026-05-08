@@ -29,6 +29,14 @@ The app stays local-first: no required account for normal tracking, on-device fo
 
 <p align="center">
   <img src="web/src/assets/app-images/app-settings.png" alt="Settings screen with daily goals and saved foods" width="220" />
+  &nbsp;&nbsp;
+  <img src="web/src/assets/app-images/app-full-unlock.png" alt="Full Unlock purchase screen" width="220" />
+</p>
+
+### Insights
+
+<p align="center">
+  <img src="web/src/assets/app-images/app-insights.png" alt="Insights screen with nutrition charts and macro trends" width="220" />
 </p>
 
 ### History
@@ -42,6 +50,8 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Sharing
 
 <p align="center">
+  <img src="web/src/assets/app-images/app-sharing-settings.png" alt="Sharing settings with invite link controls" width="220" />
+  &nbsp;&nbsp;
   <img src="web/src/assets/app-images/app-share.png" alt="Native iOS share sheet for daily summary" width="220" />
 </p>
 
