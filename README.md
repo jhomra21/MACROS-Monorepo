@@ -4,11 +4,12 @@ MACROS is a local-first calorie and macro tracker for iPhone, with a small suppo
 
 - `cal-macro-tracker/` — the native iPhone app with widgets
 - `convex-backend/` — the optional sharing backend
+- `worker/auth/` — the auth worker used by sharing
 - `worker/usda-proxy/` — the food-search API worker
-- `web/` — the product, privacy, and support site
+- `web/` — the product, privacy, waitlist, and support site
   - <https://macros-web.jhonra121.workers.dev/>
 
-The app stays local-first: no required account for normal tracking, on-device food/log data by default, and optional network features layered on top for sharing and packaged-food search.
+The app stays local-first: no required account for normal tracking, on-device food/log data by default, and optional network features layered on top for invite sharing and packaged-food search.
 
 ## Screenshots
 
@@ -47,14 +48,15 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ## Features
 
 - **Dashboard** — daily calorie and macro progress, logged foods, quick edits, and shareable summaries
-- **Food logging** — log common foods, saved foods, searched foods, custom foods, suggestions, or manual entries
-- **Scanning** — barcode scanning and nutrition-label scanning with editable review before logging
-- **Search and suggestions** — offline common foods, saved-food suggestions, and packaged-food search
+- **Food logging** — log common foods, saved foods, searched foods, custom foods, suggestions, or manual entries, with servings/grams math handled deterministically
+- **Scanning** — barcode scanning and nutrition-label scanning, including camera/photo fallback paths and editable review before logging
+- **Search and suggestions** — offline common foods, saved-food suggestions, packaged-food search, and saved reusable foods
 - **History** — calendar-based browsing of past days and weekly progress
 - **Insights** — premium nutrition graphs and trends for calories, macros, consistency, and goal progress
-- **Sharing dashboard** — optional no-account sharing with shared macro rings, today's totals, invite links, and per-person controls
+- **Sharing dashboard** — optional no-account sharing with Convex-backed invite links, shared macro rings, today's totals, per-person controls, and revocation/delete flows
 - **Widgets** — Home Screen and Lock Screen widgets for daily macro progress
-- **Settings** — daily goals, saved foods, sharing, preferences, and Full Unlock purchase/restore
+- **Settings** — daily goals, saved foods, macro ring colors, sharing, preferences, and Full Unlock purchase/restore
+- **Premium unlock** — StoreKit-backed Full Unlock for premium graphs and customization
 - **Offline-first** — local persistence, cached lookups, and graceful network absence
 
 ## Workspace Overview
@@ -63,8 +65,9 @@ The app stays local-first: no required account for normal tracking, on-device fo
 |---|---|---|
 | `cal-macro-tracker/` | SwiftUI, SwiftData, WidgetKit, StoreKit, Convex | Native iPhone calorie and macro tracking app |
 | `convex-backend/` | Convex, TypeScript, Bun | Optional sharing backend for invite-based macro dashboard sharing |
+| `worker/auth/` | Cloudflare Workers, Hono, TypeScript, Bun | Auth and invite-link worker for sharing |
 | `worker/usda-proxy/` | Cloudflare Workers, Hono, TypeScript, Bun | Food-search API worker |
-| `web/` | Astro, Cloudflare, TypeScript, Bun, D1 | Product site and support form |
+| `web/` | Astro, Cloudflare, TypeScript, Bun, D1 | Product site, waitlist, and support form |
 
 ## Requirements
 
@@ -94,11 +97,12 @@ cal-macro-tracker/
 │   ├── Features/               # App features such as Dashboard, Add Food, Scan, Insights, Sharing, Settings
 │   └── Shared/                 # Shared UI, formatting, and app helpers
 ├── worker/
+│   ├── auth/                   # Cloudflare auth worker for sharing profiles and invite redirects
 │   └── usda-proxy/             # Cloudflare Worker API for USDA + OFF search
 ├── convex-backend/             # Convex backend for optional macro sharing
 ├── web/
-│   ├── src/                    # Astro pages, layouts, components, support API
-│   ├── migrations/             # D1 schema migrations for support requests
+│   ├── src/                    # Astro pages, layouts, components, support/waitlist APIs
+│   ├── migrations/             # D1 schema migrations for support and waitlist data
 │   └── public/                 # Static site assets
 ├── tools/
 │   └── quality/                # Shell-based repo quality checks
@@ -122,7 +126,7 @@ The Apple project includes the main `cal-macro-tracker` app scheme and the `CalM
 
 ### Convex sharing backend
 
-The app uses `convex-backend/` for optional invite-based sharing. Normal food logging does not require it.
+The app uses `convex-backend/` for optional invite-based macro sharing. Normal food logging does not require it.
 
 ```sh
 cd convex-backend
@@ -131,9 +135,20 @@ bun run dev
 bun run check
 ```
 
+### Sharing auth worker
+
+The sharing flow also uses `worker/auth/` for app sharing identity, Convex auth tokens, and invite-link redirects.
+
+```sh
+cd worker/auth
+bun install
+bun run dev                      # starts on http://127.0.0.1:8788
+bun run check
+```
+
 ### Worker API
 
-The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that keeps provider lookups outside the app.
+The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that keeps provider lookups outside the app and combines Open Food Facts with USDA fallback.
 
 ```sh
 cd worker/usda-proxy
@@ -154,7 +169,7 @@ The `USDA_API_KEY` secret must be set in your Cloudflare Workers dashboard.
 
 ### Astro web app
 
-The Astro site in `web/` powers the product landing page and support/privacy flows. The support form posts into a D1-backed API route.
+The Astro site in `web/` powers the product landing page, waitlist, privacy/about pages, and support flow. Support requests and waitlist entries post into D1-backed API routes.
 
 ```sh
 cd web
@@ -199,6 +214,7 @@ Type checks outside the Xcode project:
 | Package | Command |
 |---|---|
 | `convex-backend` | `bun run check` |
+| `worker/auth` | `bun run check` |
 | `worker/usda-proxy` | `bun run check` |
 | `web` | `bun run check` |
 
@@ -211,7 +227,7 @@ Type checks outside the Xcode project:
 
 - **Native iPhone app** — SwiftUI app with local persistence, widgets, StoreKit purchase flow, scanning, insights, and sharing
 - **Local-first core** — nutrition logs remain on-device; accounts are not required for normal tracking
-- **Optional services** — Convex powers invite-based sharing, and Cloudflare powers packaged-food search plus the web/support surface
+- **Optional services** — Convex powers invite-based sharing, while Cloudflare powers sharing auth, packaged-food search, and the web/support/waitlist surface
 - **Review-first logging** — scans and remote results route through editable screens before anything is saved
 - **Small backend surface** — network features are additive and isolated from the core logging experience
 
