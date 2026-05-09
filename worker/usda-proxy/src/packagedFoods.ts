@@ -1,5 +1,6 @@
 import {
   OpenFoodFactsClientError,
+  normalizeOpenFoodFactsError,
   searchOpenFoodFactsLegacyFoods,
   searchOpenFoodFactsSearchALiciousFoods,
 } from './openFoodFacts'
@@ -195,18 +196,6 @@ function makeResponse(
     degradedFallbackReason,
     openFoodFactsAttemptCount,
   }
-}
-
-function normalizeOpenFoodFactsError(error: unknown): OpenFoodFactsClientError | null {
-  if (error instanceof OpenFoodFactsClientError) {
-    return error
-  }
-
-  if (error instanceof DOMException || error instanceof TypeError) {
-    return new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
-  }
-
-  return null
 }
 
 function withTimeout(fetcher: HTTPFetcher, timeoutMs: number): HTTPFetcher {

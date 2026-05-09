@@ -7,6 +7,10 @@ import type {
 
 const OPEN_FOOD_FACTS_LEGACY_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
 const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
+const OPEN_FOOD_FACTS_PRODUCT_URLS = [
+  'https://world.openfoodfacts.org/api/v2/product',
+  'https://world.openfoodfacts.net/api/v2/product',
+]
 const SEARCH_FIELDS = [
   '_id',
   'code',
@@ -52,6 +56,10 @@ interface OpenFoodFactsRawProduct {
   url?: string
 }
 
+interface OpenFoodFactsProductResponse {
+  product?: OpenFoodFactsRawProduct
+}
+
 export class OpenFoodFactsClientError extends Error {
   readonly status: number
   readonly retryable: boolean
@@ -76,6 +84,11 @@ export interface OpenFoodFactsRequestOptions {
   userAgent: string
 }
 
+export function normalizedOpenFoodFactsBarcode(value: string): string | null {
+  const barcode = trimmedText(value)
+  return barcode != null && /^\d+$/.test(barcode) ? barcode : null
+}
+
 export async function searchOpenFoodFactsSearchALiciousFoods(
   input: OpenFoodFactsQuery,
   options: OpenFoodFactsRequestOptions,
@@ -88,10 +101,7 @@ export async function searchOpenFoodFactsSearchALiciousFoods(
     page: requestedPage,
     pageSize: requestedPageSize,
   }), {
-    headers: {
-      Accept: 'application/json',
-      'User-Agent': options.userAgent,
-    },
+    headers: openFoodFactsHeaders(options),
   })
 
   assertOpenFoodFactsResponseOK(response)
@@ -109,6 +119,50 @@ export async function searchOpenFoodFactsSearchALiciousFoods(
     results: products,
     hasMore: (decoded.page_count ?? 0) > requestedPage,
   }
+}
+
+export async function fetchOpenFoodFactsProduct(
+  barcode: string,
+  options: OpenFoodFactsRequestOptions,
+  fetcher: HTTPFetcher = fetch,
+): Promise<OpenFoodFactsProxyProduct> {
+  let lastRetryableError: OpenFoodFactsClientError | null = null
+  let sawProductResponse = false
+
+  for (const barcodeAlias of barcodeAliases(barcode)) {
+    for (const productURL of OPEN_FOOD_FACTS_PRODUCT_URLS) {
+      let response: Response
+
+      try {
+        response = await fetcher(`${productURL}/${barcodeAlias}.json`, {
+          headers: openFoodFactsHeaders(options),
+        })
+        assertOpenFoodFactsResponseOK(response)
+      } catch (error) {
+        const normalizedError = normalizeOpenFoodFactsError(error)
+        if (normalizedError != null && normalizedError.retryable) {
+          lastRetryableError = normalizedError
+          continue
+        }
+
+        throw error
+      }
+
+      sawProductResponse = true
+      const decoded = (await response.json()) as OpenFoodFactsProductResponse
+      if (decoded.product != null) {
+        return makeProxyProduct(decoded.product)
+      }
+
+      break
+    }
+  }
+
+  if (sawProductResponse === false && lastRetryableError != null) {
+    throw lastRetryableError
+  }
+
+  throw new OpenFoodFactsClientError('No product was found for that barcode.', 404, false)
 }
 
 export async function searchOpenFoodFactsLegacyFoods(
@@ -144,10 +198,7 @@ async function fetchOpenFoodFactsPage(
   fetcher: HTTPFetcher,
 ): Promise<OpenFoodFactsRawPage> {
   const response = await fetcher(buildSearchURL(input), {
-    headers: {
-      Accept: 'application/json',
-      'User-Agent': options.userAgent,
-    },
+    headers: openFoodFactsHeaders(options),
   })
 
   assertOpenFoodFactsResponseOK(response)
@@ -189,6 +240,26 @@ function assertOpenFoodFactsResponseOK(response: Response): void {
       retryable,
       retryAfterMs(response),
     )
+  }
+}
+
+export function normalizeOpenFoodFactsError(error: unknown): OpenFoodFactsClientError | null {
+  if (error instanceof OpenFoodFactsClientError) {
+    return error
+  }
+
+  if (error instanceof DOMException || error instanceof TypeError) {
+    return new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
+  }
+
+  return null
+}
+
+function openFoodFactsHeaders(options: OpenFoodFactsRequestOptions): HeadersInit {
+  return {
+    Accept: 'application/json',
+    'User-Agent': options.userAgent,
+    'X-User-Agent': options.userAgent,
   }
 }
 

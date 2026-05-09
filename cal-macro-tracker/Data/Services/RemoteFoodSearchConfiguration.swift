@@ -3,6 +3,7 @@ import Foundation
 enum RemoteFoodSearchConfiguration {
     private static let infoDictionaryBaseURLKey = "USDA_PROXY_BASE_URL"
     private static let debugOverrideEnvironmentKey = "PACKAGED_FOOD_SEARCH_BASE_URL_OVERRIDE"
+    static let unavailableConfigurationMessage = "Online packaged food lookup is not configured for this build yet."
 
     static var isPackagedFoodSearchAvailable: Bool {
         packagedFoodSearchBaseURL != nil

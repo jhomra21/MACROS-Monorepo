@@ -106,7 +106,7 @@ struct SearchFoodListView: View {
                     Text("Enter at least 2 characters to search online packaged foods.")
                         .foregroundStyle(.secondary)
                 } else if isRemoteSearchAvailable == false {
-                    Text("Online packaged food search is not configured for this build.")
+                    Text(RemoteFoodSearchConfiguration.unavailableConfigurationMessage)
                         .foregroundStyle(.secondary)
                 } else {
                     Button("Search Open Food Facts") {

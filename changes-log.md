@@ -530,9 +530,9 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Used Hono as a thin routing layer.
 - Added a unified `GET /v1/packaged-foods/search` endpoint.
 - Kept `GET /v1/usda/search` for direct validation.
-- Moved packaged-food text search behind the Worker while leaving barcode lookup client-side.
+- Moved packaged-food text search behind the Worker; barcode lookup later moved behind the same Worker/proxy layer too.
 - Kept Open Food Facts as the primary provider and USDA as bounded fallback.
-- Added worker-side timeout, retry, fallback, and short-lived edge caching.
+- Added worker-side timeout, retry, fallback, and edge caching.
 - Split Open Food Facts retry behavior so default searches keep the fast USDA fallback path while provider-pinned Open Food Facts searches retry longer before surfacing unavailable.
 - Added a thin app-side `PackagedFoodSearchClient.swift`.
 - Reused a small shared `RemoteSearchResult` wrapper for OFF and USDA results.
@@ -600,6 +600,40 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Worker Bun tests, Worker type check, Swift format check, iOS simulator build, `git diff --check`, simplify review, defensive-code review, and final diff review passed; Wrangler still emits the existing experimental `secrets` warning.
 - Deployed Worker version `05d567cd-082e-4d4a-8dbd-ee2b6771d5bf`; production `Mcdonalds` checks returned 12 Open Food Facts results for unpinned search in about `1.43s` and pinned OFF search in about `0.15s`.
 - Simulator end-to-end validation passed with local Worker `wrangler dev` on `127.0.0.1:8787`: Add Food opened correctly, `Mcdonalds` online search resolved to Open Food Facts, results rendered with names/macros, the selected result prefilled the Log Food form, and logging it updated Today to `198.3 kcal` with one item.
+
+### Follow-up: 24-hour Worker caching and barcode proxying
+
+#### Delivered
+
+- Increased the Worker Cache API TTL for packaged-food lookups from 5 minutes to 24 hours.
+- Added a Worker-backed barcode lookup path, `GET /v1/packaged-foods/barcodes/:barcode`, so barcode scans no longer need to call Open Food Facts directly from the app.
+- Routed iOS barcode scanning through the same configured packaged-food proxy base URL used by normal text search.
+- Kept barcode cache entries separate from local saved-food reuse: local reusable-food lookup still happens first on-device, while cross-user barcode reuse now happens at the Worker cache layer.
+- Standardized missing-proxy behavior so text search and barcode lookup use the shared message: `Online packaged food lookup is not configured for this build yet.`
+
+#### Main implementation steps
+
+- Added `fetchOpenFoodFactsProduct` to `worker/usda-proxy/src/openFoodFacts.ts`, reusing the same Open Food Facts normalization and barcode-alias handling used by the search stack.
+- Added the `GET /v1/packaged-foods/barcodes/:barcode` route in `worker/usda-proxy/src/index.ts`, backed by `caches.open("usda-proxy")` and the same `cachedJSONResponse` / `Cache-Control` helper as search.
+- Cached successful barcode products and cacheable product-not-found responses for the shared 24-hour TTL.
+- Updated `OpenFoodFactsClient.swift` so barcode scans build Worker URLs from `RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL` and fail configuration validation instead of bypassing the Worker.
+- Added `RemoteFoodSearchConfiguration.unavailableConfigurationMessage` and reused it from packaged-food search, barcode lookup, and the Add Food unavailable empty-state text.
+- Added Bun coverage for barcode product lookup normalization and UPC alias fallback.
+
+#### Bugs and implementation findings
+
+- Normal text search already had no direct app-to-Open-Food-Facts fallback: `PackagedFoodSearchClient` requires the Worker base URL and calls `/v1/packaged-foods/search`.
+- Barcode scanning was the remaining direct Open Food Facts app path; moving it behind `/v1/packaged-foods/barcodes/:barcode` aligns the architecture with text search while preserving the existing barcode-specific OFF API under the Worker boundary.
+- The barcode cache is intentionally keyed by normalized barcode path, while text search cache keys remain query/page/provider-plan based; the data source is shared behind the Worker, but the lookup shape is different.
+- Production deployment validation found the Worker-to-`world.openfoodfacts.org` product API path returned Cloudflare `525` from Worker fetch; the barcode product lookup now keeps documented production `.org` as primary and falls back to staging `.net` only after retryable production product API failures.
+- A 24-hour TTL is the current production/testing default; a longer production TTL such as a week may be reasonable later, but durable stale behavior beyond Cache API semantics should be evaluated separately if needed.
+- Post-implementation simplify review removed duplicate client-side barcode alias fallback now that the Worker owns alias resolution, reused `OpenFoodFactsIdentity.trimmedText(from:)`, routed barcode proxy decoding through the shared `HTTPJSONClient.proxyResponse` helper, and consolidated Worker-side Open Food Facts barcode/header helpers.
+- Post-implementation defensive-code review found no additional high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Validation
+
+- Worker Bun tests, Worker type check, Swift format check, iOS simulator build, `git diff --check`, simplify review, defensive-code review, and final diff review passed.
+- Deployed Worker version `8ca09587-3229-4331-a825-b49f94cb3503`; after a 10-second propagation wait, production search for `Mcdonalds` and barcode lookup for `049000042566` both returned `200`.
 
 ## Settings and General UX Follow-ups
 

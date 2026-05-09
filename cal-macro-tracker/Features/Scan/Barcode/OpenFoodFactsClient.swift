@@ -139,7 +139,12 @@ struct OpenFoodFactsResponse: Decodable {
     let product: OpenFoodFactsProduct?
 }
 
+private struct OpenFoodFactsErrorResponse: Decodable {
+    let error: String
+}
+
 enum OpenFoodFactsClientError: LocalizedError {
+    case unavailableConfiguration
     case invalidBarcode
     case invalidResponse
     case requestFailed(statusCode: Int)
@@ -147,7 +152,7 @@ enum OpenFoodFactsClientError: LocalizedError {
 
     var isRetryable: Bool {
         switch self {
-        case .invalidBarcode, .productNotFound:
+        case .unavailableConfiguration, .invalidBarcode, .productNotFound:
             return false
         case .invalidResponse:
             return true
@@ -158,6 +163,8 @@ enum OpenFoodFactsClientError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
+        case .unavailableConfiguration:
+            return RemoteFoodSearchConfiguration.unavailableConfigurationMessage
         case .invalidBarcode:
             return "The scanned barcode is invalid."
         case .invalidResponse:
@@ -182,46 +189,36 @@ struct OpenFoodFactsClient {
     }
 
     func fetchProduct(barcode: String) async throws -> OpenFoodFactsProduct {
-        let normalizedBarcode = barcode.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !normalizedBarcode.isEmpty else {
+        guard let normalizedBarcode = OpenFoodFactsIdentity.trimmedText(from: barcode) else {
             throw OpenFoodFactsClientError.invalidBarcode
         }
 
-        for barcodeAlias in OpenFoodFactsIdentity.barcodeAliases(for: normalizedBarcode) {
-            do {
-                let url = URL(string: "https://world.openfoodfacts.org/api/v2/product/\(barcodeAlias).json")!
-                let decodedResponse: OpenFoodFactsResponse = try await sendRequest(url: url)
-
-                guard let product = decodedResponse.product else {
-                    throw OpenFoodFactsClientError.productNotFound
-                }
-
-                return product
-            } catch OpenFoodFactsClientError.productNotFound {
-                continue
-            } catch {
-                throw error
-            }
+        let url = try productLookupURL(for: normalizedBarcode)
+        let request = jsonClient.makeRequest(url: url, acceptJSON: true)
+        let decodedResponse = try await jsonClient.proxyResponse(
+            for: request,
+            responseType: OpenFoodFactsResponse.self,
+            errorResponseType: OpenFoodFactsErrorResponse.self,
+            invalidResponseError: OpenFoodFactsClientError.invalidResponse
+        ) { statusCode, _ in
+            OpenFoodFactsClientError.requestFailed(statusCode: statusCode)
         }
 
-        throw OpenFoodFactsClientError.productNotFound
+        guard let product = decodedResponse.product else {
+            throw OpenFoodFactsClientError.productNotFound
+        }
+
+        return product
     }
 
-    private func sendRequest<Response: Decodable>(url: URL) async throws -> Response {
-        let request = jsonClient.makeRequest(url: url)
-        let data: Data
-        let httpResponse: HTTPURLResponse
-
-        do {
-            (data, httpResponse) = try await jsonClient.data(for: request)
-        } catch HTTPJSONClientError.invalidResponse {
-            throw OpenFoodFactsClientError.invalidResponse
+    private func productLookupURL(for barcode: String) throws -> URL {
+        guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
+            throw OpenFoodFactsClientError.unavailableConfiguration
         }
 
-        guard (200...299).contains(httpResponse.statusCode) else {
-            throw OpenFoodFactsClientError.requestFailed(statusCode: httpResponse.statusCode)
-        }
-
-        return try jsonClient.decode(Response.self, from: data)
+        return
+            baseURL
+            .appendingPathComponent("v1/packaged-foods/barcodes")
+            .appendingPathComponent(barcode)
     }
 }

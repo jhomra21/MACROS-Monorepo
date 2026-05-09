@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
+import { fetchOpenFoodFactsProduct } from '../src/openFoodFacts'
 import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
 import { searchPackagedFoods } from '../src/packagedFoods'
 import type { PackagedFoodSearchExecution } from '../src/packagedFoods'
@@ -300,6 +301,83 @@ describe('searchPackagedFoods', () => {
         },
       ),
     ).rejects.toThrow('broken payload')
+  })
+})
+
+describe('fetchOpenFoodFactsProduct', () => {
+  it('fetches and normalizes products by barcode', async () => {
+    const product = await fetchOpenFoodFactsProduct(
+      '123456789012',
+      { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
+      async () => Response.json({ product: openFoodFactsPayload().products[0] }),
+    )
+
+    expect(product.product_name).toBe('Protein Bar')
+    expect(product.externalProductID).toBe('openfoodfacts:123456789012')
+  })
+
+  it('tries barcode aliases before reporting not found', async () => {
+    const requestedURLs: string[] = []
+
+    const product = await fetchOpenFoodFactsProduct(
+      '123456789012',
+      { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
+      async (input) => {
+        requestedURLs.push(requestURL(input))
+        return requestedURLs.length === 1
+          ? Response.json({})
+          : Response.json({ product: openFoodFactsPayload().products[0] })
+      },
+    )
+
+    expect(product.product_name).toBe('Protein Bar')
+    expect(requestedURLs).toHaveLength(2)
+    expect(requestedURLs[0]).toContain('/123456789012.json')
+    expect(requestedURLs[1]).toContain('/0123456789012.json')
+  })
+
+  it('falls back to the staging host after a retryable production product error', async () => {
+    const requestedURLs: string[] = []
+
+    const product = await fetchOpenFoodFactsProduct(
+      '123456789012',
+      { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
+      async (input) => {
+        requestedURLs.push(requestURL(input))
+        return requestedURLs.length === 1
+          ? new Response('SSL handshake failed', { status: 525 })
+          : Response.json({ product: openFoodFactsPayload().products[0] })
+      },
+    )
+
+    expect(product.product_name).toBe('Protein Bar')
+    expect(requestedURLs).toEqual([
+      'https://world.openfoodfacts.org/api/v2/product/123456789012.json',
+      'https://world.openfoodfacts.net/api/v2/product/123456789012.json',
+    ])
+  })
+
+  it('falls back to the staging host after a rejected production product request', async () => {
+    const requestedURLs: string[] = []
+
+    const product = await fetchOpenFoodFactsProduct(
+      '123456789012',
+      { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
+      async (input) => {
+        requestedURLs.push(requestURL(input))
+        if (requestedURLs.length === 1) {
+          throw new TypeError('fetch failed')
+        }
+
+        return Response.json({ product: openFoodFactsPayload().products[0] })
+      },
+    )
+
+    expect(product.product_name).toBe('Protein Bar')
+    expect(requestedURLs).toEqual([
+      'https://world.openfoodfacts.org/api/v2/product/123456789012.json',
+      'https://world.openfoodfacts.net/api/v2/product/123456789012.json',
+    ])
   })
 })
 

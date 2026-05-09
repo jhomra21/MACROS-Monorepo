@@ -64,7 +64,7 @@ enum PackagedFoodSearchClientError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unavailableConfiguration:
-            return "Online packaged food search is not configured for this build yet."
+            return RemoteFoodSearchConfiguration.unavailableConfigurationMessage
         case .invalidQuery:
             return "Enter at least 2 characters to search online."
         case .invalidResponse:

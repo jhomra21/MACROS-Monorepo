@@ -1,6 +1,10 @@
 import { Hono } from 'hono'
 import type { Context } from 'hono'
-import { OpenFoodFactsClientError } from './openFoodFacts'
+import {
+  fetchOpenFoodFactsProduct,
+  normalizedOpenFoodFactsBarcode,
+  OpenFoodFactsClientError,
+} from './openFoodFacts'
 import {
   buildCacheKey,
   cacheReadOrder,
@@ -18,7 +22,7 @@ import type {
 import { fetchUSDAFood, USDAClientError, searchUSDAFoods } from './usda'
 
 const app = new Hono<{ Bindings: Env }>()
-const CACHE_TTL_SECONDS = 300
+const CACHE_TTL_SECONDS = 86_400
 const MAX_PAGE = 10
 const MAX_PAGE_SIZE = 25
 const MIN_QUERY_LENGTH = 2
@@ -86,6 +90,39 @@ app.get('/v1/packaged-foods/search', async (c) => {
     return jsonResponse
   } catch (error) {
     return handleSearchError(error, 'Packaged food search is unavailable right now.')
+  }
+})
+
+app.get('/v1/packaged-foods/barcodes/:barcode', async (c) => {
+  const barcode = normalizedOpenFoodFactsBarcode(c.req.param('barcode'))
+  if (barcode == null) {
+    return jsonError(c, 'Barcode must contain digits only.', 400)
+  }
+
+  const cache = await caches.open('usda-proxy')
+  const cacheKey = buildCacheKey(new URL(c.req.url), `/v1/packaged-foods/barcodes/${barcode}`, [])
+  const cachedResponse = await cache.match(cacheKey)
+  if (cachedResponse != null) {
+    return cachedResponse
+  }
+
+  try {
+    const product = await fetchOpenFoodFactsProduct(
+      barcode,
+      { userAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT },
+      fetch,
+    )
+    const jsonResponse = cachedJSONResponse({ product })
+    c.executionCtx.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
+    return jsonResponse
+  } catch (error) {
+    if (error instanceof OpenFoodFactsClientError && error.status === 404) {
+      const jsonResponse = cachedJSONResponse({ product: null })
+      c.executionCtx.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
+      return jsonResponse
+    }
+
+    return handleSearchError(error, 'Open Food Facts product lookup is unavailable right now.')
   }
 })
 
