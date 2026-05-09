@@ -210,7 +210,11 @@ struct LogFoodScreen: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            BottomPinnedActionBar(title: "Log Food", systemImage: nil, isDisabled: !canSave) {
+            BottomPinnedActionBar(
+                title: "Log Food",
+                systemImage: nil,
+                isDisabled: !canSave
+            ) {
                 saveEntry()
             }
         }

@@ -154,6 +154,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Fixed text-only expanded bottom actions so shared buttons like `Log Food` and onboarding `Continue` render just their title instead of prefixing the title with the compact-mode fallback initial.
 - Fixed the shared bottom action hit target so the full visible capsule/circle triggers the button, including Dashboard Add Food's blue glass area in expanded mode and its compact icon-only state.
 - Fixed blue/accent Liquid Glass bottom action labels so shared buttons like onboarding `Continue` and Dashboard `Add Food` render with white text in light mode, preserving readability and accessibility contrast.
+- Increased the shared bottom action keyboard gap so the Log Food bottom button sits farther above the iOS keyboard edge while editing food fields; the native keyboard toolbar buttons were intentionally left on SwiftUI's default `.keyboard` toolbar after custom spacing attempts looked worse in simulator validation.
+- Reverted the attempted keyboard accessory toolbar padding/offset/custom-row changes after simulator review showed they moved labels/content incorrectly, preserving only the accepted bottom action spacing change.
+- A simplify review removed the unused per-call-site `keyboardGap` override API and kept the fix as one shared `BottomPinnedActionBarMetrics.keyboardGap` value.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the keyboard-spacing follow-up.
+- The keyboard-spacing follow-up passed formatter validation, iOS simulator build/run validation, and final diff review; the macOS CLI build remains blocked by the existing widget provisioning profile requirement.
 
 #### Bugs and implementation findings
 

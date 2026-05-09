@@ -143,7 +143,7 @@ extension View {
 
 enum BottomPinnedActionBarMetrics {
     static let bottomPadding: CGFloat = 8
-    static let keyboardGap: CGFloat = 20
+    static let keyboardGap: CGFloat = 44
 }
 
 struct AppAccentActionButton: View {
