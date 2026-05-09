@@ -1,4 +1,9 @@
-import { OpenFoodFactsClientError, OpenFoodFactsRequestBudget, searchOpenFoodFactsFoods } from './openFoodFacts'
+import {
+  OpenFoodFactsClientError,
+  searchOpenFoodFactsLegacyFoods,
+  searchOpenFoodFactsSearchALiciousFoods,
+} from './openFoodFacts'
+import type { OpenFoodFactsQuery, OpenFoodFactsRequestOptions } from './openFoodFacts'
 import type {
   HTTPFetcher,
   PackagedFoodSearchDegradedFallbackReason,
@@ -6,41 +11,45 @@ import type {
   PackagedFoodSearchResponse,
   ProviderPage,
   SearchProvider,
+  OpenFoodFactsProxyProduct,
 } from './types'
 import { searchUSDAFoods } from './usda'
 
 const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 const USDA_PROVIDER = 'usda' as const
 const REQUEST_TIMEOUT_MS = 2_500
-const MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS = 11
-const MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS = 3
-const BASE_RETRY_DELAY_MS = 750
-const MAX_BACKOFF_DELAY_MS = 4_000
-const MAX_TOTAL_RETRY_WAIT_MS = 6_000
-
-type RetryWait = (delayMs: number) => Promise<void>
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
   degradedFallbackReason?: PackagedFoodSearchDegradedFallbackReason
   openFoodFactsAttemptCount?: number
 }
 
-interface OpenFoodFactsSearchOutcome {
-  kind: 'response' | 'unavailable'
-  attempts: number
-  page?: ProviderPage<PackagedFoodSearchResponse['results'][number]>
-  error?: OpenFoodFactsClientError
-}
+type OpenFoodFactsSearchOutcome =
+  | {
+    kind: 'response'
+    attempts: number
+    page: ProviderPage<PackagedFoodSearchResponse['results'][number]>
+  }
+  | {
+    kind: 'unavailable'
+    attempts: number
+    error: OpenFoodFactsClientError
+  }
+
+type OpenFoodFactsSearcher = (
+  input: OpenFoodFactsQuery,
+  options: OpenFoodFactsRequestOptions,
+  fetcher: HTTPFetcher,
+) => Promise<ProviderPage<OpenFoodFactsProxyProduct>>
 
 export async function searchPackagedFoods(
   input: PackagedFoodSearchQuery,
   apiKey: string,
   openFoodFactsUserAgent: string,
   fetcher: HTTPFetcher = fetch,
-  retryWait: RetryWait = defaultRetryWait,
 ): Promise<PackagedFoodSearchExecution> {
   if (input.provider === OPEN_FOOD_FACTS_PROVIDER) {
-    return searchOpenFoodFactsPackagedFoods(input, openFoodFactsUserAgent, fetcher, retryWait)
+    return searchOpenFoodFactsPackagedFoods(input, openFoodFactsUserAgent, fetcher)
   }
 
   if (input.provider === USDA_PROVIDER) {
@@ -51,11 +60,11 @@ export async function searchPackagedFoods(
     input,
     openFoodFactsUserAgent,
     fetcher,
-    retryWait,
+    searchOpenFoodFactsSearchALiciousFoods,
   )
 
   if (outcome.kind === 'response') {
-    const openFoodFactsResult = outcome.page!
+    const openFoodFactsResult = outcome.page
     if (shouldUseOpenFoodFactsResult(input, openFoodFactsResult)) {
       return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, openFoodFactsResult, undefined, outcome.attempts)
     }
@@ -76,56 +85,35 @@ async function searchOpenFoodFactsWithOutcome(
   input: PackagedFoodSearchQuery,
   userAgent: string,
   fetcher: HTTPFetcher,
-  retryWait: RetryWait,
+  searcher: OpenFoodFactsSearcher,
 ): Promise<OpenFoodFactsSearchOutcome> {
-  let lastError: OpenFoodFactsClientError | null = null
-  let attemptsMade = 0
-  let totalRetryWaitMs = 0
-  const requestBudget = new OpenFoodFactsRequestBudget(MAX_OPEN_FOOD_FACTS_HTTP_REQUESTS)
   const openFoodFactsFetcher = withTimeout(fetcher, REQUEST_TIMEOUT_MS)
 
-  for (let attempt = 0; attempt < MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS; attempt += 1) {
-    attemptsMade = attempt + 1
-
-    try {
-      const result = await searchOpenFoodFactsFoods(
-        input,
-        { userAgent, requestBudget },
-        openFoodFactsFetcher,
-      )
-      return {
-        kind: 'response',
-        attempts: attemptsMade,
-        page: {
-          ...result,
-          results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
-        },
-      }
-    } catch (error) {
-      const normalizedError = normalizeOpenFoodFactsError(error)
-      if (normalizedError == null) {
-        throw error
-      }
-
-      lastError = normalizedError
-      if (shouldRetryOpenFoodFacts(lastError) === false || attempt + 1 >= MAX_OPEN_FOOD_FACTS_RETRY_ATTEMPTS) {
-        break
-      }
-
-      const retryDelayMs = nextRetryDelayMs(lastError, attempt, totalRetryWaitMs)
-      if (retryDelayMs == null) {
-        break
-      }
-
-      await retryWait(retryDelayMs)
-      totalRetryWaitMs += retryDelayMs
+  try {
+    const result = await searcher(
+      input,
+      { userAgent },
+      openFoodFactsFetcher,
+    )
+    return {
+      kind: 'response',
+      attempts: 1,
+      page: {
+        ...result,
+        results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
+      },
     }
-  }
+  } catch (error) {
+    const normalizedError = normalizeOpenFoodFactsError(error)
+    if (normalizedError == null) {
+      throw error
+    }
 
-  return {
-    kind: 'unavailable',
-    attempts: attemptsMade,
-    error: lastError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true),
+    return {
+      kind: 'unavailable',
+      attempts: 1,
+      error: normalizedError,
+    }
   }
 }
 
@@ -133,14 +121,30 @@ async function searchOpenFoodFactsPackagedFoods(
   input: PackagedFoodSearchQuery,
   userAgent: string,
   fetcher: HTTPFetcher,
-  retryWait: RetryWait,
 ): Promise<PackagedFoodSearchExecution> {
-  const outcome = await searchOpenFoodFactsWithOutcome(input, userAgent, fetcher, retryWait)
-  if (outcome.kind === 'unavailable') {
-    throw outcome.error
+  const searchALiciousOutcome = await searchOpenFoodFactsWithOutcome(
+    input,
+    userAgent,
+    fetcher,
+    searchOpenFoodFactsSearchALiciousFoods,
+  )
+  if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, undefined, searchALiciousOutcome.attempts)
   }
 
-  return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, outcome.page!, undefined, outcome.attempts)
+  const legacyOutcome = await searchOpenFoodFactsWithOutcome(
+    input,
+    userAgent,
+    fetcher,
+    searchOpenFoodFactsLegacyFoods,
+  )
+  const totalAttempts = searchALiciousOutcome.attempts + legacyOutcome.attempts
+
+  if (legacyOutcome.kind === 'unavailable') {
+    throw legacyOutcome.error
+  }
+
+  return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, undefined, totalAttempts)
 }
 
 async function searchUSDAPackagedFoods(
@@ -193,27 +197,6 @@ function makeResponse(
   }
 }
 
-function shouldRetryOpenFoodFacts(error: unknown): boolean {
-  if (error instanceof OpenFoodFactsClientError) {
-    return error.retryable
-  }
-
-  return error instanceof DOMException || error instanceof TypeError
-}
-
-export function nextRetryDelayMs(
-  error: OpenFoodFactsClientError,
-  attempt: number,
-  totalRetryWaitMs: number,
-  randomValue: number = Math.random(),
-): number | null {
-  const retryAfterMs = normalizedRetryAfterMs(error.retryAfterMs)
-  const backoffDelayMs = exponentialBackoffDelayMs(attempt, randomValue)
-  const delayMs = Math.max(backoffDelayMs, retryAfterMs ?? 0)
-
-  return totalRetryWaitMs + delayMs > MAX_TOTAL_RETRY_WAIT_MS ? null : delayMs
-}
-
 function normalizeOpenFoodFactsError(error: unknown): OpenFoodFactsClientError | null {
   if (error instanceof OpenFoodFactsClientError) {
     return error
@@ -226,32 +209,10 @@ function normalizeOpenFoodFactsError(error: unknown): OpenFoodFactsClientError |
   return null
 }
 
-function exponentialBackoffDelayMs(attempt: number, randomValue: number): number {
-  const jitterMs = Math.round(clampDelay(randomValue, 0, 1) * 250)
-  const delayMs = BASE_RETRY_DELAY_MS * (2 ** attempt) + jitterMs
-  return clampDelay(delayMs, 0, MAX_BACKOFF_DELAY_MS)
-}
-
-function normalizedRetryAfterMs(value: number | undefined): number | undefined {
-  if (value == null || Number.isFinite(value) === false) {
-    return undefined
-  }
-
-  return Math.max(0, Math.round(value))
-}
-
-function clampDelay(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
-}
-
 function withTimeout(fetcher: HTTPFetcher, timeoutMs: number): HTTPFetcher {
   return (input, init) => {
     const timeoutSignal = AbortSignal.timeout(timeoutMs)
     const signal = init?.signal == null ? timeoutSignal : AbortSignal.any([init.signal, timeoutSignal])
     return fetcher(input, { ...init, signal })
   }
-}
-
-async function defaultRetryWait(delayMs: number): Promise<void> {
-  await scheduler.wait(delayMs)
 }

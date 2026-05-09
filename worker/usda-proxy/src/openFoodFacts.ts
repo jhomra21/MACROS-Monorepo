@@ -5,7 +5,8 @@ import type {
   ProviderPage,
 } from './types'
 
-const OPEN_FOOD_FACTS_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
+const OPEN_FOOD_FACTS_LEGACY_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
+const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
 const SEARCH_FIELDS = [
   '_id',
   'code',
@@ -24,6 +25,15 @@ interface OpenFoodFactsSearchResponse {
   products?: OpenFoodFactsRawProduct[]
 }
 
+interface OpenFoodFactsSearchALiciousResponse {
+  hits?: unknown[]
+  page?: number
+  page_size?: number
+  page_count?: number
+  count?: number
+  timed_out?: boolean
+}
+
 interface OpenFoodFactsRawPage {
   totalCount: number
   products: OpenFoodFactsProxyProduct[]
@@ -33,7 +43,7 @@ interface OpenFoodFactsRawProduct {
   _id?: string
   code?: string
   product_name?: string
-  brands?: string
+  brands?: string | string[]
   serving_size?: string
   serving_quantity?: number
   serving_quantity_unit?: string
@@ -64,88 +74,67 @@ export interface OpenFoodFactsQuery {
 
 export interface OpenFoodFactsRequestOptions {
   userAgent: string
-  requestBudget?: OpenFoodFactsRequestBudget
 }
 
-export async function searchOpenFoodFactsFoods(
+export async function searchOpenFoodFactsSearchALiciousFoods(
   input: OpenFoodFactsQuery,
   options: OpenFoodFactsRequestOptions,
   fetcher: HTTPFetcher = fetch,
 ): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
   const requestedPage = Math.max(1, input.page)
   const requestedPageSize = Math.max(1, input.pageSize)
-  const requestedResultCount = requestedPage * requestedPageSize
-  const collectedProducts: OpenFoodFactsProxyProduct[] = []
+  const response = await fetcher(buildSearchALiciousURL({
+    query: input.query,
+    page: requestedPage,
+    pageSize: requestedPageSize,
+  }), {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': options.userAgent,
+    },
+  })
 
-  let currentRawPage = 1
-  let rawPageCount = 1
+  assertOpenFoodFactsResponseOK(response)
 
-  while (currentRawPage <= rawPageCount && collectedProducts.length < requestedResultCount) {
-    if (options.requestBudget != null && options.requestBudget.consume() === false) {
-      return partialBudgetResponse(input.query, requestedPage, requestedPageSize, collectedProducts)
-    }
-
-    const rawPage = await fetchOpenFoodFactsPage(
-      {
-        query: input.query,
-        page: currentRawPage,
-        pageSize: requestedPageSize,
-      },
-      options,
-      fetcher,
-    )
-
-    rawPageCount = pageCount(rawPage.totalCount, requestedPageSize)
-    collectedProducts.push(...rawPage.products)
-    currentRawPage += 1
+  const decoded = (await response.json()) as OpenFoodFactsSearchALiciousResponse
+  const products = (decoded.hits ?? []).filter(isOpenFoodFactsRawProduct).map(makeProxyProduct)
+  if (decoded.timed_out === true && products.length === 0) {
+    throw new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
   }
-
-  const startIndex = (requestedPage - 1) * requestedPageSize
-  const endIndex = startIndex + requestedPageSize
 
   return {
     query: input.query,
     page: requestedPage,
     pageSize: requestedPageSize,
-    results: collectedProducts.slice(startIndex, endIndex),
-    hasMore: collectedProducts.length > endIndex || currentRawPage <= rawPageCount,
+    results: products,
+    hasMore: (decoded.page_count ?? 0) > requestedPage,
   }
 }
 
-export class OpenFoodFactsRequestBudget {
-  private requestCount = 0
+export async function searchOpenFoodFactsLegacyFoods(
+  input: OpenFoodFactsQuery,
+  options: OpenFoodFactsRequestOptions,
+  fetcher: HTTPFetcher = fetch,
+): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
+  const requestedPage = Math.max(1, input.page)
+  const requestedPageSize = Math.max(1, input.pageSize)
 
-  constructor(private readonly maxRequests: number) {}
-
-  consume(): boolean {
-    if (this.requestCount >= this.maxRequests) {
-      return false
-    }
-
-    this.requestCount += 1
-    return true
-  }
-}
-
-function partialBudgetResponse(
-  query: string,
-  requestedPage: number,
-  requestedPageSize: number,
-  collectedProducts: OpenFoodFactsProxyProduct[],
-): ProviderPage<OpenFoodFactsProxyProduct> {
-  const startIndex = (requestedPage - 1) * requestedPageSize
-  const endIndex = startIndex + requestedPageSize
-  const results = collectedProducts.slice(startIndex, endIndex)
-  if (results.length === 0) {
-    throw new OpenFoodFactsClientError('Open Food Facts request budget was exhausted.', 503, false)
-  }
+  const rawPage = await fetchOpenFoodFactsPage(
+    {
+      query: input.query,
+      page: requestedPage,
+      pageSize: requestedPageSize,
+    },
+    options,
+    fetcher,
+  )
 
   return {
-    query,
+    query: input.query,
     page: requestedPage,
     pageSize: requestedPageSize,
-    results,
-    hasMore: false,
+    results: rawPage.products,
+    hasMore: requestedPage < pageCount(rawPage.totalCount, requestedPageSize),
   }
 }
 
@@ -161,6 +150,28 @@ async function fetchOpenFoodFactsPage(
     },
   })
 
+  assertOpenFoodFactsResponseOK(response)
+
+  const decoded = (await response.json()) as OpenFoodFactsSearchResponse
+  return {
+    totalCount: decoded.count ?? 0,
+    products: (decoded.products ?? []).map(makeProxyProduct),
+  }
+}
+
+function buildSearchURL(input: OpenFoodFactsQuery): string {
+  const url = new URL(OPEN_FOOD_FACTS_LEGACY_SEARCH_URL)
+  url.searchParams.set('search_terms', input.query)
+  url.searchParams.set('search_simple', '1')
+  url.searchParams.set('action', 'process')
+  url.searchParams.set('json', '1')
+  url.searchParams.set('fields', SEARCH_FIELDS)
+  url.searchParams.set('page', String(input.page))
+  url.searchParams.set('page_size', String(input.pageSize))
+  return url.toString()
+}
+
+function assertOpenFoodFactsResponseOK(response: Response): void {
   if (response.status === 429) {
     throw new OpenFoodFactsClientError(
       'Open Food Facts is temporarily busy. Please try again shortly.',
@@ -179,73 +190,16 @@ async function fetchOpenFoodFactsPage(
       retryAfterMs(response),
     )
   }
-
-  const decoded = (await response.json()) as OpenFoodFactsSearchResponse
-  return {
-    totalCount: decoded.count ?? 0,
-    products: (decoded.products ?? [])
-      .filter(hasUsableNutrition)
-      .map(makeProxyProduct),
-  }
 }
 
-function buildSearchURL(input: OpenFoodFactsQuery): string {
-  const url = new URL(OPEN_FOOD_FACTS_SEARCH_URL)
-  url.searchParams.set('search_terms', input.query)
-  url.searchParams.set('search_simple', '1')
-  url.searchParams.set('action', 'process')
-  url.searchParams.set('json', '1')
-  url.searchParams.set('fields', SEARCH_FIELDS)
+function buildSearchALiciousURL(input: OpenFoodFactsQuery): string {
+  const url = new URL(OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL)
+  url.searchParams.set('q', input.query)
   url.searchParams.set('page', String(input.page))
   url.searchParams.set('page_size', String(input.pageSize))
+  url.searchParams.set('fields', SEARCH_FIELDS)
+  url.searchParams.set('langs', 'en')
   return url.toString()
-}
-
-function hasUsableNutrition(product: OpenFoodFactsRawProduct): boolean {
-  const nutriments = product.nutriments ?? {}
-  const hasServingNutrition = [
-    nutriments['energy-kcal_serving'],
-    nutriments['proteins_serving'],
-    nutriments['fat_serving'],
-    nutriments['carbohydrates_serving'],
-  ].every(isFiniteNumber)
-
-  if (hasServingNutrition) {
-    return true
-  }
-
-  const servingGrams = gramsPerServing(product)
-  const hasScaledServingNutrition = servingGrams != null && [
-    nutriments['energy-kcal_100g'],
-    nutriments['proteins_100g'],
-    nutriments['fat_100g'],
-    nutriments['carbohydrates_100g'],
-  ].every(isFiniteNumber)
-
-  if (hasScaledServingNutrition) {
-    return true
-  }
-
-  return [
-    nutriments['energy-kcal_100g'],
-    nutriments['proteins_100g'],
-    nutriments['fat_100g'],
-    nutriments['carbohydrates_100g'],
-  ].every(isFiniteNumber)
-}
-
-function gramsPerServing(product: OpenFoodFactsRawProduct): number | undefined {
-  const servingQuantity = product.serving_quantity
-  const unit = product.serving_quantity_unit?.trim().toLowerCase()
-  if (typeof servingQuantity !== 'number' || Number.isFinite(servingQuantity) === false || servingQuantity <= 0) {
-    return undefined
-  }
-
-  return unit === 'g' ? servingQuantity : undefined
-}
-
-function isFiniteNumber(value: number | undefined): value is number {
-  return typeof value === 'number' && Number.isFinite(value)
 }
 
 function pageCount(totalCount: number, pageSize: number): number {
@@ -261,7 +215,7 @@ function makeProxyProduct(product: OpenFoodFactsRawProduct): OpenFoodFactsProxyP
     externalProductID: makeExternalProductID(product),
     code: trimmedText(product.code),
     product_name: trimmedText(product.product_name),
-    brands: trimmedText(product.brands),
+    brands: trimmedText(joinText(product.brands)),
     serving_size: trimmedText(product.serving_size),
     serving_quantity: product.serving_quantity,
     serving_quantity_unit: trimmedText(product.serving_quantity_unit),
@@ -269,6 +223,14 @@ function makeProxyProduct(product: OpenFoodFactsRawProduct): OpenFoodFactsProxyP
     nutriments: product.nutriments,
     url: trimmedText(product.url),
   }
+}
+
+function isOpenFoodFactsRawProduct(value: unknown): value is OpenFoodFactsRawProduct {
+  return value != null && typeof value === 'object'
+}
+
+function joinText(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value.join(', ') : value
 }
 
 function makeExternalProductID(product: OpenFoodFactsRawProduct): string | undefined {

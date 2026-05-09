@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 
 import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
-import { nextRetryDelayMs, searchPackagedFoods } from '../src/packagedFoods'
+import { searchPackagedFoods } from '../src/packagedFoods'
 import type { PackagedFoodSearchExecution } from '../src/packagedFoods'
-import { OpenFoodFactsClientError } from '../src/openFoodFacts'
 import type { PackagedFoodSearchQuery, PackagedFoodSearchResponse } from '../src/types'
 import { fetchUSDAFood, searchUSDAFoods } from '../src/usda'
 
@@ -17,10 +16,9 @@ const DEFAULT_QUERY: PackagedFoodSearchQuery = {
 const BASE_URL = 'https://example.com/v1/packaged-foods/search'
 
 describe('searchPackagedFoods', () => {
-  it('retries Open Food Facts before succeeding without falling back to USDA', async () => {
-    let openFoodFactsCallCount = 0
+  it('uses Search-a-licious before falling back to USDA for default search', async () => {
+    let searchALiciousCallCount = 0
     let usdaCallCount = 0
-    const waitedDelays: number[] = []
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
@@ -29,38 +27,26 @@ describe('searchPackagedFoods', () => {
       async (input) => {
         const url = requestURL(input)
 
-        if (url.includes('openfoodfacts.org')) {
-          openFoodFactsCallCount += 1
-          if (openFoodFactsCallCount === 1) {
-            return new Response(null, {
-              status: 429,
-              headers: { 'Retry-After': '1' },
-            })
-          }
-
-          return Response.json(openFoodFactsPayload())
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousPayload())
         }
 
         usdaCallCount += 1
         return Response.json(usdaPayload())
       },
-      async (delayMs) => {
-        waitedDelays.push(delayMs)
-      },
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
-    expect(response.openFoodFactsAttemptCount).toBe(2)
-    expect(openFoodFactsCallCount).toBe(2)
+    expect(response.openFoodFactsAttemptCount).toBe(1)
+    expect(searchALiciousCallCount).toBe(1)
     expect(usdaCallCount).toBe(0)
-    expect(waitedDelays).toEqual([1000])
     expect(response.results).toHaveLength(1)
   })
 
-  it('falls back to USDA after bounded Open Food Facts retries', async () => {
-    let openFoodFactsCallCount = 0
+  it('falls back to USDA when Search-a-licious is unavailable for default search', async () => {
+    let searchALiciousCallCount = 0
     let usdaCallCount = 0
-    const waitedDelays: number[] = []
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
@@ -69,31 +55,25 @@ describe('searchPackagedFoods', () => {
       async (input) => {
         const url = requestURL(input)
 
-        if (url.includes('openfoodfacts.org')) {
-          openFoodFactsCallCount += 1
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
           return new Response(null, { status: 503 })
         }
 
         usdaCallCount += 1
         return Response.json(usdaPayload())
       },
-      async (delayMs) => {
-        waitedDelays.push(delayMs)
-      },
     )
 
     expect(response.resolvedProvider).toBe('usda')
     expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
-    expect(response.openFoodFactsAttemptCount).toBe(3)
-    expect(openFoodFactsCallCount).toBe(3)
+    expect(response.openFoodFactsAttemptCount).toBe(1)
+    expect(searchALiciousCallCount).toBe(1)
     expect(usdaCallCount).toBe(1)
-    expect(waitedDelays).toHaveLength(2)
-    expect(waitedDelays[0]).toBeGreaterThanOrEqual(750)
-    expect(waitedDelays[1]).toBeGreaterThanOrEqual(1500)
   })
 
-  it('treats a real empty Open Food Facts response as unusable and falls back once', async () => {
-    let openFoodFactsCallCount = 0
+  it('falls back to USDA when Search-a-licious returns zero hits for default search', async () => {
+    let searchALiciousCallCount = 0
     let usdaCallCount = 0
 
     const response = await searchPackagedFoods(
@@ -103,9 +83,9 @@ describe('searchPackagedFoods', () => {
       async (input) => {
         const url = requestURL(input)
 
-        if (url.includes('openfoodfacts.org')) {
-          openFoodFactsCallCount += 1
-          return Response.json({ count: 0, products: [] })
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousEmptyPayload())
         }
 
         usdaCallCount += 1
@@ -116,12 +96,81 @@ describe('searchPackagedFoods', () => {
     expect(response.resolvedProvider).toBe('usda')
     expect(response.degradedFallbackReason).toBe('openFoodFactsNoUsableResults')
     expect(response.openFoodFactsAttemptCount).toBe(1)
-    expect(openFoodFactsCallCount).toBe(1)
+    expect(searchALiciousCallCount).toBe(1)
     expect(usdaCallCount).toBe(1)
   })
 
-  it('shares the Open Food Facts request budget across paginated page fetches', async () => {
-    let openFoodFactsCallCount = 0
+  it('uses legacy Open Food Facts when pinned Search-a-licious is unavailable', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
+    let usdaCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
+      'test-usda-key',
+      'cal-macro-tracker/1.0 (test@example.com)',
+      async (input) => {
+        const url = requestURL(input)
+
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return new Response(null, { status: 503 })
+        }
+
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyOpenFoodFactsCallCount += 1
+          return Response.json(openFoodFactsPayload())
+        }
+
+        usdaCallCount += 1
+        return Response.json(usdaPayload())
+      },
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.openFoodFactsAttemptCount).toBe(2)
+    expect(searchALiciousCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+    expect(usdaCallCount).toBe(0)
+  })
+
+  it('returns an empty Open Food Facts response when both pinned backends have zero hits', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
+    let usdaCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
+      'test-usda-key',
+      'cal-macro-tracker/1.0 (test@example.com)',
+      async (input) => {
+        const url = requestURL(input)
+
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousEmptyPayload())
+        }
+
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyOpenFoodFactsCallCount += 1
+          return Response.json({ count: 0, products: [] })
+        }
+
+        usdaCallCount += 1
+        return Response.json(usdaPayload())
+      },
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(response.openFoodFactsAttemptCount).toBe(2)
+    expect(searchALiciousCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+    expect(usdaCallCount).toBe(0)
+  })
+
+  it('returns incomplete Open Food Facts products instead of filtering them out', async () => {
+    let searchALiciousCallCount = 0
     let usdaCallCount = 0
 
     const response = await searchPackagedFoods(
@@ -131,9 +180,9 @@ describe('searchPackagedFoods', () => {
       async (input) => {
         const url = requestURL(input)
 
-        if (url.includes('openfoodfacts.org')) {
-          openFoodFactsCallCount += 1
-          return Response.json(unusableOpenFoodFactsPayload())
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousIncompleteNutritionPayload())
         }
 
         usdaCallCount += 1
@@ -141,57 +190,44 @@ describe('searchPackagedFoods', () => {
       },
     )
 
-    expect(response.resolvedProvider).toBe('usda')
-    expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
-    expect(openFoodFactsCallCount).toBe(11)
-    expect(usdaCallCount).toBe(1)
-  })
-
-  it('throws instead of falling back when pinned Open Food Facts exhausts the request budget', async () => {
-    let openFoodFactsCallCount = 0
-    let usdaCallCount = 0
-
-    await expect(
-      searchPackagedFoods(
-        { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
-        'test-usda-key',
-        'cal-macro-tracker/1.0 (test@example.com)',
-        async (input) => {
-          const url = requestURL(input)
-
-          if (url.includes('openfoodfacts.org')) {
-            openFoodFactsCallCount += 1
-            return Response.json(unusableOpenFoodFactsPayload())
-          }
-
-          usdaCallCount += 1
-          return Response.json(usdaPayload())
-        },
-      ),
-    ).rejects.toThrow('Open Food Facts request budget was exhausted.')
-
-    expect(openFoodFactsCallCount).toBe(11)
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(1)
+    expect(response.results[0]).toMatchObject({
+      provider: 'openFoodFacts',
+      item: {
+        product_name: 'Missing Nutrition',
+      },
+    })
+    expect(searchALiciousCallCount).toBe(1)
     expect(usdaCallCount).toBe(0)
   })
 
-  it('returns collected Open Food Facts results when pagination exhausts the request budget', async () => {
-    let openFoodFactsCallCount = 0
+  it('fetches only the requested legacy Open Food Facts page after Search-a-licious misses', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
       'test-usda-key',
       'cal-macro-tracker/1.0 (test@example.com)',
       async (input) => {
-        const page = Number(new URL(requestURL(input)).searchParams.get('page') ?? '1')
-        openFoodFactsCallCount += 1
+        const url = requestURL(input)
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousEmptyPayload())
+        }
+
+        const page = Number(new URL(url).searchParams.get('page') ?? '1')
+        legacyOpenFoodFactsCallCount += 1
         return Response.json(page <= 9 ? sparseUsableOpenFoodFactsPayload(page) : unusableOpenFoodFactsPayload())
       },
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
-    expect(response.results).toHaveLength(9)
-    expect(response.hasMore).toBe(false)
-    expect(openFoodFactsCallCount).toBe(11)
+    expect(response.results).toHaveLength(1)
+    expect(response.hasMore).toBe(true)
+    expect(searchALiciousCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
   })
 
   it('maps USDA secondary nutrients into the packaged food response contract', async () => {
@@ -222,7 +258,12 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, provider: 'openFoodFacts' },
       'test-usda-key',
       'cal-macro-tracker/1.0 (test@example.com)',
-      async () => Response.json(openFoodFactsPayload()),
+      async (input) => {
+        const url = requestURL(input)
+        return Response.json(isSearchALiciousRequest(url)
+          ? searchALiciousPayload()
+          : openFoodFactsPayload())
+      },
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -251,7 +292,7 @@ describe('searchPackagedFoods', () => {
         async (input) => {
           const url = requestURL(input)
 
-          if (url.includes('openfoodfacts.org')) {
+          if (isSearchALiciousRequest(url)) {
             throw new SyntaxError('broken payload')
           }
 
@@ -259,34 +300,6 @@ describe('searchPackagedFoods', () => {
         },
       ),
     ).rejects.toThrow('broken payload')
-  })
-})
-
-describe('nextRetryDelayMs', () => {
-  it('treats Retry-After as a lower bound instead of replacing backoff', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 1000)
-
-    expect(nextRetryDelayMs(error, 0, 0, 0)).toBe(1000)
-    expect(nextRetryDelayMs(error, 1, 0, 0)).toBe(1500)
-    expect(nextRetryDelayMs(error, 2, 0, 0)).toBe(3000)
-  })
-
-  it('preserves longer Retry-After delays when they still fit inside the retry budget', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 5000)
-
-    expect(nextRetryDelayMs(error, 0, 0, 0)).toBe(5000)
-  })
-
-  it('gives up instead of shortening Retry-After beyond the retry budget', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 10_000)
-
-    expect(nextRetryDelayMs(error, 0, 0, 0)).toBe(null)
-  })
-
-  it('still respects the total retry wait budget after combining delays', () => {
-    const error = new OpenFoodFactsClientError('busy', 503, true, 1000)
-
-    expect(nextRetryDelayMs(error, 2, 3500, 0)).toBe(null)
   })
 })
 
@@ -498,6 +511,14 @@ function requestURL(input: RequestInfo | URL): string {
   return input.url
 }
 
+function isSearchALiciousRequest(url: string): boolean {
+  return url.includes('search.openfoodfacts.org')
+}
+
+function isLegacyOpenFoodFactsRequest(url: string): boolean {
+  return url.includes('world.openfoodfacts.org')
+}
+
 function openFoodFactsPayload() {
   return {
     count: 1,
@@ -526,6 +547,67 @@ function openFoodFactsPayload() {
         },
       },
     ],
+  }
+}
+
+function searchALiciousPayload() {
+  return {
+    hits: [
+      {
+        code: '0123456789012',
+        product_name: 'Protein Bar',
+        brands: ['Macro Co'],
+        serving_size: '1 bar',
+        serving_quantity: 50,
+        serving_quantity_unit: 'g',
+        quantity: '50 g',
+        nutriments: {
+          'energy-kcal_serving': 210,
+          proteins_serving: 20,
+          fat_serving: 7,
+          carbohydrates_serving: 18,
+          'saturated-fat_serving': 2,
+          fiber_serving: 6,
+          sugars_serving: 5,
+          'added-sugars_serving': 4,
+          sodium_serving: 0.32,
+          cholesterol_serving: 0.015,
+        },
+      },
+    ],
+    page: 1,
+    page_size: 10,
+    page_count: 1,
+    count: 1,
+    timed_out: false,
+  }
+}
+
+function searchALiciousEmptyPayload() {
+  return {
+    hits: [],
+    page: 1,
+    page_size: 10,
+    page_count: 0,
+    count: 0,
+    timed_out: false,
+  }
+}
+
+function searchALiciousIncompleteNutritionPayload() {
+  return {
+    hits: [
+      {
+        code: '999',
+        product_name: 'Missing Nutrition',
+        brands: ['Sparse Co'],
+      },
+    ],
+    page: 1,
+    page_size: 10,
+    page_count: 1,
+    count: 1,
+    timed_out: false,
   }
 }
 

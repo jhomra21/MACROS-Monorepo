@@ -3,7 +3,7 @@ import SwiftUI
 
 extension AddFoodScreen {
     func searchOnline() {
-        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: .openFoodFacts)
+        startRemoteSearch(query: trimmedSearchText, page: 1, append: false, provider: nil)
     }
 
     func searchUSDA() {

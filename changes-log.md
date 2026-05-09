@@ -5,6 +5,7 @@
 Detailed implementation trackers live in `implementation-trackers/`:
 
 - [`implementation-trackers/insights-implementation-tracker.md`](implementation-trackers/insights-implementation-tracker.md)
+- [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
 
 ## App Store and TestFlight Release Prep
@@ -532,6 +533,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Moved packaged-food text search behind the Worker while leaving barcode lookup client-side.
 - Kept Open Food Facts as the primary provider and USDA as bounded fallback.
 - Added worker-side timeout, retry, fallback, and short-lived edge caching.
+- Split Open Food Facts retry behavior so default searches keep the fast USDA fallback path while provider-pinned Open Food Facts searches retry longer before surfacing unavailable.
 - Added a thin app-side `PackagedFoodSearchClient.swift`.
 - Reused a small shared `RemoteSearchResult` wrapper for OFF and USDA results.
 - Persisted selected USDA/OFF results using provider-qualified external IDs.
@@ -542,6 +544,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Declared `USDA_API_KEY` as a required Worker secret and kept it out of app code and repo files.
 - Normalized Worker responses to a small app-facing contract instead of shipping raw provider payloads.
 - Kept one app-level request path for remote packaged-food search so the app no longer owns OFF-vs-USDA branching.
+- Added explicit retry-policy configuration in `src/packagedFoods.ts` so unpinned searches use the bounded 3-attempt policy and `provider=openFoodFacts` searches use the longer 8-attempt policy.
+- Added Bun regression coverage for pinned Open Food Facts retry exhaustion and eventual success after the default retry window would have given up.
 - Stored the Worker base URL in one generated Info.plist key, `USDA_PROXY_BASE_URL`.
 
 ### Bugs and implementation findings
@@ -551,10 +555,17 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Cache typing did not behave as the first draft expected with `caches.default`, so the Worker now uses `caches.open("usda-proxy")`.
 - `secrets.required` works for this setup but still emits an experimental warning during `wrangler types`.
 - Page-2 empty Open Food Facts results originally widened to USDA, which would have created mixed-provider pagination; that regression was fixed so only the right request shapes widen.
+- Production reproduction confirmed the TestFlight-shaped `Mcdonalds` request with `provider=openFoodFacts` and `fallbackOnEmpty=0` returned `503` in about 4.5 seconds before this fix, matching the short default retry window rather than the intended pinned-provider behavior.
+- Production TestFlight searches pinned to `provider=openFoodFacts` could return `503` after the short default retry policy, despite the app intentionally requesting Open Food Facts-only results; the Worker now preserves fast fallback for default searches while honoring the longer pinned-provider retry contract.
+- The fix intentionally leaves the existing 2.5-second per-request timeout, Open Food Facts request budget, USDA fallback path, and provider-pinned pagination contract unchanged.
+- A simplify review replaced the added positional retry-delay parameter with an options object so tests can pass deterministic jitter without an `undefined` placeholder.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the pinned retry follow-up.
 
 ### Validation recorded during USDA proxy work
 
 - Worker type checks, representative endpoint checks, local Bun validation, iOS simulator builds, and repo quality checks passed.
+- The pinned Open Food Facts retry follow-up passed production endpoint reproduction, Bun tests, Worker type checks, whitespace diff validation, simplify review, defensive-code review, and final diff review.
+- The Worker was deployed with Wrangler as version `90cf5fb8-a1f6-4037-ba4d-20f6e2182841`; a post-deploy pinned `Mcdonalds` request still returned `503` because Open Food Facts was unavailable, but took about 24.6 seconds, confirming the deployed path now uses the longer pinned retry policy instead of the prior ~4.5-second default window.
 
 ### Still open operational follow-ups
 
@@ -562,6 +573,33 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Deploy the Worker.
 - Record the public `workers.dev` URL used by the app.
 - Validate deployed responses, cold-cache behavior, and public cache-hit behavior.
+
+### Follow-up: Search-a-licious reliability routing
+
+#### Delivered
+
+- Added Search-a-licious as the primary Open Food Facts-backed packaged-food search path in the Worker.
+- Changed default/unpinned packaged-food search to use Search-a-licious first and fall back to USDA when Search-a-licious fails or returns no hits.
+- Kept explicit `provider=openFoodFacts` OFF-only while allowing it to try Search-a-licious first and legacy `search.pl` once on failure or zero hits.
+- Removed the long pinned Open Food Facts retry behavior that could leave users waiting about 24 seconds before a `503`.
+- Relaxed OFF-backed result filtering so products with incomplete nutrition are returned instead of hidden; missing nutrition fields remain optional and are not fabricated.
+- Changed normal Swift “Search Online” to use the Worker default provider path, while “Search USDA” remains explicitly pinned to USDA and pagination remains pinned to the resolved provider.
+
+#### Bugs and implementation findings
+
+- Live Search-a-licious sampling confirmed `hits` contain direct product fields, `brands` can be an array, and some hits legitimately omit `nutriments`.
+- Live zero-hit Search-a-licious sampling returned `200` with `hits: []`, so zero hits are treated as a valid empty OFF-backed result rather than an outage.
+- The existing cache key plan did not need to change because Search-a-licious and legacy `search.pl` are both internal Open Food Facts-backed implementations behind the same public provider contract.
+- The stale OFF fallback idea was deferred because a durable stale-cache design likely needs KV/R2/D1 rather than stretching the existing Cache API path.
+- The OFF nutrition filter was removed because it could hide useful foods from users; the app/user can fill missing nutrition gaps, and the Worker preserves missing fields instead of assuming values.
+- Post-implementation simplify review tightened the OFF outcome type, removed obsolete legacy request-budget plumbing, and changed legacy OFF fallback to fetch only the requested page now that nutrition filtering no longer backfills around skipped products.
+- Post-implementation defensive-code review found no additional high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+
+#### Validation
+
+- Worker Bun tests, Worker type check, Swift format check, iOS simulator build, `git diff --check`, simplify review, defensive-code review, and final diff review passed; Wrangler still emits the existing experimental `secrets` warning.
+- Deployed Worker version `05d567cd-082e-4d4a-8dbd-ee2b6771d5bf`; production `Mcdonalds` checks returned 12 Open Food Facts results for unpinned search in about `1.43s` and pinned OFF search in about `0.15s`.
+- Simulator end-to-end validation passed with local Worker `wrangler dev` on `127.0.0.1:8787`: Add Food opened correctly, `Mcdonalds` online search resolved to Open Food Facts, results rendered with names/macros, the selected result prefilled the Log Food form, and logging it updated Today to `198.3 kcal` with one item.
 
 ## Settings and General UX Follow-ups
 
