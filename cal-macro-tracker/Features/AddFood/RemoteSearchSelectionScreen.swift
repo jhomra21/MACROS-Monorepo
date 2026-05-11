@@ -18,6 +18,7 @@ struct RemoteSearchSelectionScreen: View {
                     initialDraft: draft,
                     loggingDay: loggingDay,
                     reviewNotes: result.reviewNotes,
+                    requiredReviewNutrients: result.requiredReviewNutrients,
                     onFoodLogged: onFoodLogged
                 )
             } else if let errorMessage {

@@ -7,22 +7,28 @@ import {
 import type { OpenFoodFactsQuery, OpenFoodFactsRequestOptions } from './openFoodFacts'
 import type {
   HTTPFetcher,
-  PackagedFoodSearchDegradedFallbackReason,
   PackagedFoodSearchQuery,
   PackagedFoodSearchResponse,
   ProviderPage,
   SearchProvider,
   OpenFoodFactsProxyProduct,
 } from './types'
+import { isRestaurantLikeQuery } from './restaurantSearch'
 import { searchUSDAFoods } from './usda'
 
 const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 const USDA_PROVIDER = 'usda' as const
 const REQUEST_TIMEOUT_MS = 2_500
+const RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS = 6_000
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
-  degradedFallbackReason?: PackagedFoodSearchDegradedFallbackReason
   openFoodFactsAttemptCount?: number
+}
+
+export interface PackagedFoodSearchDependencies {
+  usdaApiKey: string
+  openFoodFactsUserAgent: string
+  fetcher?: HTTPFetcher
 }
 
 type OpenFoodFactsSearchOutcome =
@@ -45,41 +51,19 @@ type OpenFoodFactsSearcher = (
 
 export async function searchPackagedFoods(
   input: PackagedFoodSearchQuery,
-  apiKey: string,
-  openFoodFactsUserAgent: string,
-  fetcher: HTTPFetcher = fetch,
+  dependencies: PackagedFoodSearchDependencies,
 ): Promise<PackagedFoodSearchExecution> {
-  if (input.provider === OPEN_FOOD_FACTS_PROVIDER) {
-    return searchOpenFoodFactsPackagedFoods(input, openFoodFactsUserAgent, fetcher)
-  }
+  const fetcher = dependencies.fetcher ?? fetch
 
   if (input.provider === USDA_PROVIDER) {
-    return searchUSDAPackagedFoods(input, apiKey, fetcher)
+    return searchUSDAPackagedFoods(input, dependencies.usdaApiKey, fetcher)
   }
 
-  const outcome = await searchOpenFoodFactsWithOutcome(
-    input,
-    openFoodFactsUserAgent,
-    fetcher,
-    searchOpenFoodFactsSearchALiciousFoods,
-  )
-
-  if (outcome.kind === 'response') {
-    const openFoodFactsResult = outcome.page
-    if (shouldUseOpenFoodFactsResult(input, openFoodFactsResult)) {
-      return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, openFoodFactsResult, undefined, outcome.attempts)
-    }
-
-    return searchUSDAPackagedFoods(
-      input,
-      apiKey,
-      fetcher,
-      'openFoodFactsNoUsableResults',
-      outcome.attempts,
-    )
+  if (isRestaurantLikeQuery(input.query)) {
+    return searchRestaurantOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher)
   }
 
-  return searchUSDAPackagedFoods(input, apiKey, fetcher, 'openFoodFactsUnavailable', outcome.attempts)
+  return searchOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher)
 }
 
 async function searchOpenFoodFactsWithOutcome(
@@ -87,34 +71,46 @@ async function searchOpenFoodFactsWithOutcome(
   userAgent: string,
   fetcher: HTTPFetcher,
   searcher: OpenFoodFactsSearcher,
+  maxAttempts = 1,
+  timeoutMs = REQUEST_TIMEOUT_MS,
 ): Promise<OpenFoodFactsSearchOutcome> {
-  const openFoodFactsFetcher = withTimeout(fetcher, REQUEST_TIMEOUT_MS)
+  const openFoodFactsFetcher = withTimeout(fetcher, timeoutMs)
+  let lastError: OpenFoodFactsClientError | null = null
+  let attempts = 0
 
-  try {
-    const result = await searcher(
-      input,
-      { userAgent },
-      openFoodFactsFetcher,
-    )
-    return {
-      kind: 'response',
-      attempts: 1,
-      page: {
-        ...result,
-        results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
-      },
-    }
-  } catch (error) {
-    const normalizedError = normalizeOpenFoodFactsError(error)
-    if (normalizedError == null) {
-      throw error
-    }
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    attempts = attempt
+    try {
+      const result = await searcher(
+        input,
+        { userAgent },
+        openFoodFactsFetcher,
+      )
+      return {
+        kind: 'response',
+        attempts: attempt,
+        page: {
+          ...result,
+          results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
+        },
+      }
+    } catch (error) {
+      const normalizedError = normalizeOpenFoodFactsError(error)
+      if (normalizedError == null) {
+        throw error
+      }
 
-    return {
-      kind: 'unavailable',
-      attempts: 1,
-      error: normalizedError,
+      lastError = normalizedError
+      if (normalizedError.retryable === false || normalizedError.retryAfterMs != null) {
+        break
+      }
     }
+  }
+
+  return {
+    kind: 'unavailable',
+    attempts,
+    error: lastError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true),
   }
 }
 
@@ -130,7 +126,7 @@ async function searchOpenFoodFactsPackagedFoods(
     searchOpenFoodFactsSearchALiciousFoods,
   )
   if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
-    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, undefined, searchALiciousOutcome.attempts)
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, searchALiciousOutcome.attempts)
   }
 
   const legacyOutcome = await searchOpenFoodFactsWithOutcome(
@@ -142,28 +138,66 @@ async function searchOpenFoodFactsPackagedFoods(
   const totalAttempts = searchALiciousOutcome.attempts + legacyOutcome.attempts
 
   if (legacyOutcome.kind === 'unavailable') {
+    if (searchALiciousOutcome.kind === 'response') {
+      return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
+    }
+
     throw legacyOutcome.error
   }
 
-  return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, undefined, totalAttempts)
+  return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, totalAttempts)
+}
+
+async function searchRestaurantOpenFoodFactsPackagedFoods(
+  input: PackagedFoodSearchQuery,
+  userAgent: string,
+  fetcher: HTTPFetcher,
+): Promise<PackagedFoodSearchExecution> {
+  const legacyOutcome = await searchOpenFoodFactsWithOutcome(
+    input,
+    userAgent,
+    fetcher,
+    searchOpenFoodFactsLegacyFoods,
+    2,
+    RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS,
+  )
+  if (legacyOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(legacyOutcome.page)) {
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, legacyOutcome.attempts)
+  }
+
+  const searchALiciousOutcome = await searchOpenFoodFactsWithOutcome(
+    input,
+    userAgent,
+    fetcher,
+    searchOpenFoodFactsSearchALiciousFoods,
+  )
+  const totalAttempts = legacyOutcome.attempts + searchALiciousOutcome.attempts
+
+  if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
+  }
+
+  if (legacyOutcome.kind === 'response') {
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, totalAttempts)
+  }
+
+  if (searchALiciousOutcome.kind === 'response') {
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
+  }
+
+  throw legacyOutcome.error
 }
 
 async function searchUSDAPackagedFoods(
   input: PackagedFoodSearchQuery,
   apiKey: string,
   fetcher: HTTPFetcher,
-  degradedFallbackReason?: PackagedFoodSearchDegradedFallbackReason,
-  openFoodFactsAttemptCount?: number,
 ): Promise<PackagedFoodSearchExecution> {
   const result = await searchUSDAFoods(input, apiKey, withTimeout(fetcher, REQUEST_TIMEOUT_MS))
   return makeResponse(input, USDA_PROVIDER, {
     ...result,
     results: result.results.map((item) => ({ provider: USDA_PROVIDER, item })),
-  }, degradedFallbackReason, openFoodFactsAttemptCount)
-}
-
-function shouldFallbackOnEmpty(input: PackagedFoodSearchQuery): boolean {
-  return input.fallbackOnEmpty && input.page === 1
+  })
 }
 
 export function hasUsableOpenFoodFactsResult(
@@ -172,18 +206,10 @@ export function hasUsableOpenFoodFactsResult(
   return page.results.length > 0 || page.hasMore
 }
 
-export function shouldUseOpenFoodFactsResult(
-  input: PackagedFoodSearchQuery,
-  page: ProviderPage<PackagedFoodSearchResponse['results'][number]>,
-): boolean {
-  return hasUsableOpenFoodFactsResult(page) || shouldFallbackOnEmpty(input) === false
-}
-
 function makeResponse(
   input: PackagedFoodSearchQuery,
   provider: SearchProvider,
   page: ProviderPage<PackagedFoodSearchResponse['results'][number]>,
-  degradedFallbackReason?: PackagedFoodSearchDegradedFallbackReason,
   openFoodFactsAttemptCount?: number,
 ): PackagedFoodSearchExecution {
   return {
@@ -193,7 +219,6 @@ function makeResponse(
     resolvedProvider: provider,
     results: page.results,
     hasMore: page.hasMore,
-    degradedFallbackReason,
     openFoodFactsAttemptCount,
   }
 }

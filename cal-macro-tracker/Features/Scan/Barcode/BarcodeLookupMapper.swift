@@ -43,35 +43,63 @@ struct BarcodeLookupMapper {
         return nutritionBasis.perServingNutrition
     }
 
+    static func makeManualReviewDraft(from product: OpenFoodFactsProduct, source: FoodSource) -> FoodDraft {
+        return FoodDraft(
+            importedData: importedData(
+                from: product,
+                source: source,
+                servingDescription: FoodDraft.defaultServingDescription,
+                perServingNutrition: .zero
+            )
+        )
+    }
+
     static func makeDraft(
         from product: OpenFoodFactsProduct,
         source: FoodSource,
         barcode: String? = nil
     ) throws -> FoodDraft {
-        let name = product.productName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let nutritionBasis = try nutritionBasis(for: product)
+        return FoodDraft(
+            importedData: importedData(
+                from: product,
+                source: source,
+                barcode: barcode,
+                servingDescription: nutritionBasis.servingDescription,
+                gramsPerServing: nutritionBasis.gramsPerServing,
+                perServingNutrition: nutritionBasis.perServingNutrition
+            )
+        )
+    }
+
+    private static func importedData(
+        from product: OpenFoodFactsProduct,
+        source: FoodSource,
+        barcode: String? = nil,
+        servingDescription: String,
+        gramsPerServing: Double? = nil,
+        perServingNutrition: PerServingNutritionValues
+    ) -> FoodDraftImportedData {
         let resolvedBarcode =
             OpenFoodFactsIdentity.normalizedBarcode(
                 barcode: barcode ?? product.code,
                 externalProductID: product.externalProductID,
                 sourceURL: product.url
             ) ?? ""
-        return FoodDraft(
-            importedData: FoodDraftImportedData(
-                name: name,
-                brand: product.brands?.trimmingCharacters(in: .whitespacesAndNewlines),
-                source: source,
+        return FoodDraftImportedData(
+            name: product.productName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            brand: product.brands?.trimmingCharacters(in: .whitespacesAndNewlines),
+            source: source,
+            barcode: resolvedBarcode,
+            externalProductID: product.resolvedExternalProductID(preferredBarcode: resolvedBarcode),
+            sourceName: "Open Food Facts",
+            sourceURL: OpenFoodFactsIdentity.persistedProductURL(
                 barcode: resolvedBarcode,
-                externalProductID: product.resolvedExternalProductID(preferredBarcode: resolvedBarcode),
-                sourceName: "Open Food Facts",
-                sourceURL: OpenFoodFactsIdentity.persistedProductURL(
-                    barcode: resolvedBarcode,
-                    sourceURL: product.url
-                ),
-                servingDescription: nutritionBasis.servingDescription,
-                gramsPerServing: nutritionBasis.gramsPerServing,
-                perServingNutrition: nutritionBasis.perServingNutrition
-            )
+                sourceURL: product.url
+            ),
+            servingDescription: servingDescription,
+            gramsPerServing: gramsPerServing,
+            perServingNutrition: perServingNutrition
         )
     }
 
@@ -249,9 +277,7 @@ struct BarcodeLookupMapper {
         per100gValue: Double?
     ) -> Double? {
         switch requiredNutritionBasis.kind {
-        case .serving:
-            return servingValue ?? scaledValue(per100gValue, gramsPerServing: requiredNutritionBasis.gramsPerServing)
-        case .scaledServing:
+        case .serving, .scaledServing:
             return servingValue ?? scaledValue(per100gValue, gramsPerServing: requiredNutritionBasis.gramsPerServing)
         case .per100g:
             return per100gValue

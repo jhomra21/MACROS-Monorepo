@@ -64,10 +64,15 @@ struct RemoteFoodRow: View {
                 fat: nutrition.fat
             )
         } else {
-            Text(result.name)
-                .font(.headline)
-                .foregroundStyle(.primary)
-                .padding(.vertical, 16)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(result.name)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text("Nutrition missing — tap to fill manually")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 16)
         }
     }
 }

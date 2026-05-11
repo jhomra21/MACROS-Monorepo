@@ -4,6 +4,7 @@ import type {
   OpenFoodFactsProxyProduct,
   ProviderPage,
 } from './types'
+import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
 const OPEN_FOOD_FACTS_LEGACY_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
 const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
@@ -107,7 +108,11 @@ export async function searchOpenFoodFactsSearchALiciousFoods(
   assertOpenFoodFactsResponseOK(response)
 
   const decoded = (await response.json()) as OpenFoodFactsSearchALiciousResponse
-  const products = (decoded.hits ?? []).filter(isOpenFoodFactsRawProduct).map(makeProxyProduct)
+  const rawProducts = (decoded.hits ?? []).filter(isOpenFoodFactsRawProduct)
+  const products = usableMatchingUniqueProducts(
+    rawProducts.map(makeProxyProduct),
+    input.query,
+  )
   if (decoded.timed_out === true && products.length === 0) {
     throw new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
   }
@@ -206,7 +211,7 @@ async function fetchOpenFoodFactsPage(
   const decoded = (await response.json()) as OpenFoodFactsSearchResponse
   return {
     totalCount: decoded.count ?? 0,
-    products: (decoded.products ?? []).map(makeProxyProduct),
+    products: usableMatchingUniqueProducts((decoded.products ?? []).map(makeProxyProduct), input.query),
   }
 }
 
@@ -294,6 +299,107 @@ function makeProxyProduct(product: OpenFoodFactsRawProduct): OpenFoodFactsProxyP
     nutriments: product.nutriments,
     url: trimmedText(product.url),
   }
+}
+
+function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], query: string): OpenFoodFactsProxyProduct[] {
+  const nutritionallyCompleteProducts: OpenFoodFactsProxyProduct[] = []
+  const nutritionMissingProducts: OpenFoodFactsProxyProduct[] = []
+  const seen = new Set<string>()
+  const queryTokens = searchTokens(query)
+
+  for (const product of products) {
+    const keys = productDeduplicationKeys(product)
+    if (keys.some((key) => seen.has(key))) {
+      continue
+    }
+
+    for (const key of keys) {
+      seen.add(key)
+    }
+
+    if (hasCompleteMainNutrition(product)) {
+      nutritionallyCompleteProducts.push(product)
+    } else {
+      nutritionMissingProducts.push(product)
+    }
+  }
+
+  const completeMatches = relevantProducts(nutritionallyCompleteProducts, queryTokens)
+  return [
+    ...completeMatches,
+    ...nameTokenMatches(nutritionMissingProducts, queryTokens),
+  ]
+}
+
+function hasCompleteMainNutrition(product: OpenFoodFactsProxyProduct): boolean {
+  const nutriments = product.nutriments
+  if (nutriments == null) {
+    return false
+  }
+
+  return hasFiniteNumbers(
+    nutriments['energy-kcal_serving'],
+    nutriments.proteins_serving,
+    nutriments.fat_serving,
+    nutriments.carbohydrates_serving,
+  ) || hasFiniteNumbers(
+    nutriments['energy-kcal_100g'],
+    nutriments.proteins_100g,
+    nutriments.fat_100g,
+    nutriments.carbohydrates_100g,
+  )
+}
+
+function hasFiniteNumbers(...values: unknown[]): boolean {
+  return values.every((value) => typeof value === 'number' && Number.isFinite(value))
+}
+
+function relevantProducts(products: OpenFoodFactsProxyProduct[], queryTokens: string[]): OpenFoodFactsProxyProduct[] {
+  return products.filter((product) => matchesSearchTokens([product.product_name, product.brands], queryTokens))
+}
+
+function nameTokenMatches(products: OpenFoodFactsProxyProduct[], queryTokens: string[]): OpenFoodFactsProxyProduct[] {
+  if (queryTokens.length === 0) {
+    return []
+  }
+
+  return products.filter((product) => matchesSearchTokens([product.product_name], queryTokens))
+}
+
+function productDeduplicationKeys(product: OpenFoodFactsProxyProduct): string[] {
+  const keys: string[] = []
+  const identifier = product.code ?? product.externalProductID
+  if (identifier != null) {
+    keys.push(`id:${identifier.toLowerCase()}`)
+  }
+
+  keys.push([
+    'text',
+    normalizedKeyPart(product.product_name),
+    normalizedKeyPart(product.brands),
+    normalizedKeyPart(product.serving_size ?? product.quantity),
+    nutritionKeyPart(product),
+  ].join('|'))
+
+  return keys
+}
+
+function normalizedKeyPart(value: string | undefined): string {
+  return normalizedSearchText(value ?? '')
+}
+
+function nutritionKeyPart(product: OpenFoodFactsProxyProduct): string {
+  const nutriments = product.nutriments
+  if (nutriments == null) {
+    return ''
+  }
+
+  return [
+    nutriments['energy-kcal_serving'] ?? nutriments['energy-kcal_100g'],
+    nutriments.proteins_serving ?? nutriments.proteins_100g,
+    nutriments.fat_serving ?? nutriments.fat_100g,
+    nutriments.carbohydrates_serving ?? nutriments.carbohydrates_100g,
+  ].map((value) => typeof value === 'number' && Number.isFinite(value) ? value.toFixed(3) : '').join(':')
 }
 
 function isOpenFoodFactsRawProduct(value: unknown): value is OpenFoodFactsRawProduct {

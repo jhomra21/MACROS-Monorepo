@@ -147,7 +147,7 @@ struct FoodItemSearchQuery: Hashable {
     let normalizedText: String
     let tokens: Set<String>
 
-    nonisolated init(_ query: String) {
+    init(_ query: String) {
         let normalizedText = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         self.normalizedText = normalizedText
         tokens = Set(normalizedText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
@@ -164,7 +164,7 @@ enum FoodItemLocalSearch {
         let rank: Int
     }
 
-    nonisolated static func rankedFoods(_ foods: [FoodItem], matching query: String) -> [FoodItem] {
+    static func rankedFoods(_ foods: [FoodItem], matching query: String) -> [FoodItem] {
         let searchQuery = FoodItemSearchQuery(query)
         guard searchQuery.isEmpty == false else { return foods }
 
@@ -183,7 +183,7 @@ enum FoodItemLocalSearch {
         return rankedMatches.map { $0.food }
     }
 
-    nonisolated static func rank(for food: FoodItem, matching query: FoodItemSearchQuery) -> Int? {
+    static func rank(for food: FoodItem, matching query: FoodItemSearchQuery) -> Int? {
         let name = food.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         let brand = food.brand?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
 

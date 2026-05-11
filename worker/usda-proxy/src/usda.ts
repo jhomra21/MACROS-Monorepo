@@ -1,4 +1,5 @@
 import type { HTTPFetcher, USDAProxyFoodResult, USDAProxySearchResponse } from './types'
+import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
 const USDA_FOOD_DETAILS_URL = 'https://api.nal.usda.gov/fdc/v1/food'
@@ -83,6 +84,27 @@ export async function searchUSDAFoods(
   apiKey: string,
   fetcher: HTTPFetcher = fetch,
 ): Promise<USDAProxySearchResponse> {
+  let lastResponse: USDAProxySearchResponse | null = null
+
+  for (const query of usdaSearchQueries(input.query, input.page)) {
+    const response = await searchUSDAFoodsOnce({ ...input, query }, apiKey, fetcher)
+    if (response.results.length > 0 || input.page > 1) {
+      return response.query === input.query ? response : { ...response, query: input.query }
+    }
+
+    lastResponse = response
+  }
+
+  return lastResponse == null || lastResponse.query === input.query
+    ? (lastResponse ?? searchUSDAFoodsOnce(input, apiKey, fetcher))
+    : { ...lastResponse, query: input.query }
+}
+
+async function searchUSDAFoodsOnce(
+  input: USDAQuery,
+  apiKey: string,
+  fetcher: HTTPFetcher,
+): Promise<USDAProxySearchResponse> {
   const response = await fetcher(buildSearchURL(), {
     method: 'POST',
     headers: {
@@ -116,9 +138,11 @@ export async function searchUSDAFoods(
 
   const decoded = (await response.json()) as USDAFoodSearchResponse
   const foods = decoded.foods ?? []
+  const queryTokens = searchTokens(input.query, { removeApostrophes: true })
   const results = foods
     .map(makeProxyFoodResult)
     .filter((value): value is USDAProxyFoodResult => value != null)
+    .filter((food) => matchesSearchQuery(food, queryTokens))
   const totalHits = decoded.totalHits ?? 0
   const hasMore = input.page < MAX_PAGE && input.page * input.pageSize < totalHits
 
@@ -182,6 +206,23 @@ function buildFoodDetailsURL(fdcId: number): string {
   return `${USDA_FOOD_DETAILS_URL}/${fdcId}`
 }
 
+function usdaSearchQueries(query: string, page: number): string[] {
+  if (page > 1) {
+    return [query]
+  }
+
+  const normalizedQuery = normalizedSearchQuery(query)
+  return [...new Set([query, normalizedQuery].filter((value) => value.length > 0))]
+}
+
+function normalizedSearchQuery(query: string): string {
+  return normalizedSearchText(query, { removeApostrophes: true })
+}
+
+function matchesSearchQuery(food: USDAProxyFoodResult, tokens: string[]): boolean {
+  return matchesSearchTokens([food.name, food.brand], tokens, { removeApostrophes: true })
+}
+
 type USDAFood = USDASearchFood | USDAFoodDetails
 type USDAFoodNutrient = USDASearchFoodNutrient | USDAFoodDetailsNutrient
 
@@ -209,14 +250,9 @@ function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
     return null
   }
 
-  if ([calories, protein, fat, carbs].some((value) => value == null)) {
+  if (calories == null || protein == null || fat == null || carbs == null) {
     return null
   }
-
-  const safeCalories = calories!
-  const safeProtein = protein!
-  const safeFat = fat!
-  const safeCarbs = carbs!
 
   return {
     id: `usda:${fdcId}`,
@@ -225,10 +261,10 @@ function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
     brand: firstNonEmpty(food.brandOwner, food.brandName),
     servingDescription,
     gramsPerServing: gramsPerServing(food),
-    caloriesPerServing: safeCalories,
-    proteinPerServing: safeProtein,
-    fatPerServing: safeFat,
-    carbsPerServing: safeCarbs,
+    caloriesPerServing: calories,
+    proteinPerServing: protein,
+    fatPerServing: fat,
+    carbsPerServing: carbs,
     saturatedFatPerServing: saturatedFat ?? undefined,
     fiberPerServing: fiber ?? undefined,
     sugarsPerServing: sugars ?? undefined,

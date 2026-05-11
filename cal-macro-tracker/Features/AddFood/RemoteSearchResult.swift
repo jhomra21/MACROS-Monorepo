@@ -39,9 +39,9 @@ enum RemoteSearchResult: Identifiable, Hashable {
     var name: String {
         switch self {
         case let .openFoodFacts(product):
-            return product.productName?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty ?? "Unnamed product"
+            return TextNormalization.trimmedNonEmpty(product.productName) ?? "Unnamed product"
         case let .usda(food):
-            return food.name.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty ?? "Unnamed product"
+            return TextNormalization.trimmedNonEmpty(food.name) ?? "Unnamed product"
         }
     }
 
@@ -59,16 +59,28 @@ enum RemoteSearchResult: Identifiable, Hashable {
         case let .openFoodFacts(product):
             return product.normalizedBarcode
         case let .usda(food):
-            return food.barcode?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+            return TextNormalization.trimmedNonEmpty(food.barcode)
         }
     }
 
     var reviewNotes: [String] {
         switch self {
-        case .openFoodFacts:
+        case let .openFoodFacts(product):
+            if needsManualNutritionReview(product: product) {
+                return ["Open Food Facts has this item but no nutrition values. Fill in the calories and macros before logging."]
+            }
             return ["Selected from online packaged food search."]
         case .usda:
             return ["Selected from USDA packaged food search."]
+        }
+    }
+
+    var requiredReviewNutrients: [RequiredNutritionReviewNutrient] {
+        switch self {
+        case let .openFoodFacts(product) where needsManualNutritionReview(product: product):
+            return [.calories, .protein, .fat, .carbs]
+        case .openFoodFacts, .usda:
+            return []
         }
     }
 
@@ -81,19 +93,20 @@ enum RemoteSearchResult: Identifiable, Hashable {
         }
     }
 
+    private func needsManualNutritionReview(product: OpenFoodFactsProduct) -> Bool {
+        BarcodeLookupMapper.perServingNutritionPreview(from: product) == nil
+    }
+
     func makeDraft() throws -> FoodDraft {
         switch self {
         case let .openFoodFacts(product):
-            return try BarcodeLookupMapper.makeDraft(from: product, source: .searchLookup)
+            do {
+                return try BarcodeLookupMapper.makeDraft(from: product, source: .searchLookup)
+            } catch BarcodeLookupMapperError.missingNutrition {
+                return BarcodeLookupMapper.makeManualReviewDraft(from: product, source: .searchLookup)
+            }
         case let .usda(food):
             return USDAFoodDraftMapper.makeDraft(from: food)
         }
-    }
-}
-
-extension String {
-    var nilIfEmpty: String? {
-        let trimmedValue = trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmedValue.isEmpty ? nil : trimmedValue
     }
 }

@@ -1,14 +1,11 @@
 import type {
-  PackagedFoodSearchDegradedFallbackReason,
   PackagedFoodSearchQuery,
   PackagedFoodSearchResponse,
 } from './types'
 import { hasUsableOpenFoodFactsResult } from './packagedFoods'
+import { isRestaurantLikeQuery } from './restaurantSearch'
 
 export type PackagedFoodCacheKeyKind = 'default' | 'openFoodFacts' | 'openFoodFactsPinned' | 'usda'
-type PackagedFoodCacheableResponse = PackagedFoodSearchResponse & {
-  degradedFallbackReason?: PackagedFoodSearchDegradedFallbackReason
-}
 
 export interface NamedCacheKey {
   kind: PackagedFoodCacheKeyKind
@@ -30,6 +27,10 @@ export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): Named
   case 'usda':
     return [namedCacheKey(url, params, 'usda')]
   default:
+    if (isRestaurantLikeQuery(params.query)) {
+      return [namedCacheKey(url, params, 'openFoodFacts')]
+    }
+
     return [
       namedCacheKey(url, params, 'openFoodFacts'),
       namedCacheKey(url, params, 'default'),
@@ -37,7 +38,7 @@ export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): Named
   }
 }
 
-export function cacheWritePlan(url: URL, params: PackagedFoodSearchQuery, response: PackagedFoodCacheableResponse): NamedCacheKey[] {
+export function cacheWritePlan(url: URL, params: PackagedFoodSearchQuery, response: PackagedFoodSearchResponse): NamedCacheKey[] {
   switch (params.provider) {
   case 'openFoodFacts':
     if (response.resolvedProvider !== 'openFoodFacts') {
@@ -59,15 +60,15 @@ export function cacheWritePlan(url: URL, params: PackagedFoodSearchQuery, respon
   }
 }
 
-export function shouldPersistDefaultFallback(
-  degradedFallbackReason: PackagedFoodSearchDegradedFallbackReason | undefined,
-): boolean {
-  return degradedFallbackReason == null || degradedFallbackReason === 'openFoodFactsNoUsableResults'
-}
-
-function defaultCacheWritePlan(url: URL, params: PackagedFoodSearchQuery, response: PackagedFoodCacheableResponse): NamedCacheKey[] {
+function defaultCacheWritePlan(url: URL, params: PackagedFoodSearchQuery, response: PackagedFoodSearchResponse): NamedCacheKey[] {
   switch (response.resolvedProvider) {
   case 'openFoodFacts':
+    if (isRestaurantLikeQuery(params.query)) {
+      return shouldShareOpenFoodFactsResponse(params, response)
+        ? [namedCacheKey(url, params, 'openFoodFacts')]
+        : []
+    }
+
     return [
       ...(shouldShareOpenFoodFactsResponse(params, response)
         ? [namedCacheKey(url, params, 'openFoodFacts')]
@@ -75,13 +76,6 @@ function defaultCacheWritePlan(url: URL, params: PackagedFoodSearchQuery, respon
       namedCacheKey(url, params, 'default'),
     ]
   case 'usda':
-    if (shouldPersistDefaultFallback(response.degradedFallbackReason)) {
-      return [
-        namedCacheKey(url, params, 'usda'),
-        namedCacheKey(url, params, 'default'),
-      ]
-    }
-
     return [namedCacheKey(url, params, 'usda')]
   default:
     return []
@@ -133,7 +127,7 @@ export function buildCacheKey(url: URL, path: string, queryItems: Array<[string,
 
 function shouldShareOpenFoodFactsResponse(
   params: PackagedFoodSearchQuery,
-  response: PackagedFoodCacheableResponse,
+  response: PackagedFoodSearchResponse,
 ): boolean {
   return params.page === 1 && hasUsableOpenFoodFactsResult(response)
 }

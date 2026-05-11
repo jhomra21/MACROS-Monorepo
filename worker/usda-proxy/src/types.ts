@@ -65,10 +65,6 @@ export interface USDAProxyFoodResult {
   barcode?: string
 }
 
-export type PackagedFoodSearchDegradedFallbackReason =
-  | 'openFoodFactsNoUsableResults'
-  | 'openFoodFactsUnavailable'
-
 export type PackagedFoodSearchResult =
   | {
       provider: 'openFoodFacts'

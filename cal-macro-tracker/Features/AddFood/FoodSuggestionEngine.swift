@@ -6,6 +6,7 @@ struct FoodSuggestion: Identifiable {
     let sourceEntry: LogEntry
 }
 
+@MainActor
 enum FoodSuggestionEngine {
     private struct Candidate {
         let identity: FoodSuggestionIdentity

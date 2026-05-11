@@ -8,6 +8,37 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
 
+## Packaged Food Restaurant Search Routing
+
+### Delivered
+
+- Routed restaurant-like packaged food searches to legacy Open Food Facts first, with retry handling for legacy endpoint flakiness.
+- Kept normal packaged food searches on the newer Open Food Facts Search-a-licious API first, with legacy OFF only as a fallback.
+- Removed the Nutritionix trial integration, credentials, provider cases, cache keys, and Swift decoding/UI handling.
+- Confirmed legacy OFF can return relevant restaurant/menu rows for several chain queries where Search-a-licious ranking/indexing returns poor or unrelated rows.
+- Replaced the initial restaurant-chain allowlist with a deterministic query-shape classifier so menu-like searches such as burgers, nuggets, fries, bowls, tenders, and alfredo route legacy OFF first without enumerating every restaurant brand.
+- Fixed online search pagination so filtered-empty pages can still load later provider pages when `hasMore` is true.
+- Enforced required manual review for Open Food Facts search results that have no nutrition values so all-zero drafts cannot be logged without editing or explicitly confirming calories and macros.
+- Post-implementation review simplified manual-review nutrition defaults, shared Open Food Facts draft import and search-token matching helpers, clarified missing-nutrition review predicates, skipped redundant restaurant default cache writes, respected OFF retry backoff, and removed stale USDA fallback parameters.
+- Review validation restored USDA searches to the branded-food dataset so USDA label nutrients continue to match the packaged-food per-serving contract.
+- Review validation kept restaurant-like Open Food Facts pagination on the same legacy-first routing strategy as page one, avoiding mixed Search-a-licious/legacy result pages.
+- Review validation removed stale default-USDA fallback cache/type/log plumbing after default search stopped silently falling back to USDA.
+- Review validation preserved Search-a-licious timeout handling so timed-out empty responses remain retryable upstream failures instead of successful empty pages.
+- Review validation updated Open Food Facts filtering so matching missing-nutrition products are returned beside complete matches and can enter the manual-review flow.
+- Final review validation restored the shared Open Food Facts usability predicate to treat `hasMore` pages as usable, preserving filtered-empty pagination.
+- Post-implementation simplify reused the existing Swift `TextNormalization.trimmedNonEmpty` helper instead of a local `String` extension; broader fallback/cache-key suggestions were left unchanged to avoid public contract churn.
+- Post-implementation defensive-code review removed one proven redundant Worker provider predicate and kept external payload, cache, and review-flow guards intact.
+
+### Validation
+
+- Compared legacy OFF and Search-a-licious results for restaurant and normal packaged food queries.
+- iOS simulator search against a local dev Worker returned relevant Wendy's nugget rows from legacy OFF.
+- Hard-query validation confirmed `olive garden chicken alfredo` routes to legacy OFF and returns a relevant restaurant result, while normal packaged queries like `protein bar`, `greek yogurt`, `frozen pizza`, `kind bar`, and `cheerios` stay on the normal Search-a-licious path.
+- Worker tests and type checks passed.
+- Simplify and defensive-code reviews completed; the final defensive passes removed one dead Worker telemetry metadata field and one unreachable Swift review-predicate branch, with no additional high-confidence redundant guards or impossible branches found.
+- Follow-up code-review findings were validated and fixed for USDA branded filtering, restaurant pagination routing, stale degraded fallback plumbing, Search-a-licious timeout handling, and mixed complete/missing-nutrition OFF result inclusion; Worker tests/type checks and whitespace validation passed after each fix pass.
+- The final post-implementation cleanup passed Worker tests/type checks, Swift format validation, whitespace diff validation, simplify review, defensive-code review, and final diff review.
+
 ## App Store and TestFlight Release Prep
 
 ### Delivered

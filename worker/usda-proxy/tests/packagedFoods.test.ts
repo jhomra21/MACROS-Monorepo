@@ -3,7 +3,8 @@ import { describe, expect, it } from 'bun:test'
 import { fetchOpenFoodFactsProduct } from '../src/openFoodFacts'
 import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
 import { searchPackagedFoods } from '../src/packagedFoods'
-import type { PackagedFoodSearchExecution } from '../src/packagedFoods'
+import { isRestaurantLikeQuery } from '../src/restaurantSearch'
+import type { PackagedFoodSearchDependencies, PackagedFoodSearchExecution } from '../src/packagedFoods'
 import type { PackagedFoodSearchQuery, PackagedFoodSearchResponse } from '../src/types'
 import { fetchUSDAFood, searchUSDAFoods } from '../src/usda'
 
@@ -16,6 +17,14 @@ const DEFAULT_QUERY: PackagedFoodSearchQuery = {
 
 const BASE_URL = 'https://example.com/v1/packaged-foods/search'
 
+function searchDependencies(fetcher: PackagedFoodSearchDependencies['fetcher']): PackagedFoodSearchDependencies {
+  return {
+    usdaApiKey: 'test-usda-key',
+    openFoodFactsUserAgent: 'cal-macro-tracker/1.0 (test@example.com)',
+    fetcher,
+  }
+}
+
 describe('searchPackagedFoods', () => {
   it('uses Search-a-licious before falling back to USDA for default search', async () => {
     let searchALiciousCallCount = 0
@@ -23,9 +32,7 @@ describe('searchPackagedFoods', () => {
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -35,7 +42,7 @@ describe('searchPackagedFoods', () => {
 
         usdaCallCount += 1
         return Response.json(usdaPayload())
-      },
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -45,15 +52,13 @@ describe('searchPackagedFoods', () => {
     expect(response.results).toHaveLength(1)
   })
 
-  it('falls back to USDA when Search-a-licious is unavailable for default search', async () => {
+  it('uses legacy Open Food Facts when Search-a-licious is unavailable for default search', async () => {
     let searchALiciousCallCount = 0
-    let usdaCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -61,27 +66,39 @@ describe('searchPackagedFoods', () => {
           return new Response(null, { status: 503 })
         }
 
-        usdaCallCount += 1
-        return Response.json(usdaPayload())
-      },
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json({ count: 0, products: [] })
+      }),
     )
 
-    expect(response.resolvedProvider).toBe('usda')
-    expect(response.degradedFallbackReason).toBe('openFoodFactsUnavailable')
-    expect(response.openFoodFactsAttemptCount).toBe(1)
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(response.openFoodFactsAttemptCount).toBe(2)
     expect(searchALiciousCallCount).toBe(1)
-    expect(usdaCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
   })
 
-  it('falls back to USDA when Search-a-licious returns zero hits for default search', async () => {
+  it('treats timed out empty Search-a-licious responses as unavailable', async () => {
+    await expect(
+      searchPackagedFoods(
+        DEFAULT_QUERY,
+        searchDependencies(async (input) => {
+          const url = requestURL(input)
+          return isSearchALiciousRequest(url)
+            ? Response.json(searchALiciousTimedOutEmptyPayload())
+            : new Response(null, { status: 503 })
+        }),
+      ),
+    ).rejects.toThrow('Open Food Facts is unavailable right now.')
+  })
+
+  it('uses legacy Open Food Facts when Search-a-licious returns zero hits for default search', async () => {
     let searchALiciousCallCount = 0
-    let usdaCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -89,16 +106,16 @@ describe('searchPackagedFoods', () => {
           return Response.json(searchALiciousEmptyPayload())
         }
 
-        usdaCallCount += 1
-        return Response.json(usdaPayload())
-      },
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json({ count: 0, products: [] })
+      }),
     )
 
-    expect(response.resolvedProvider).toBe('usda')
-    expect(response.degradedFallbackReason).toBe('openFoodFactsNoUsableResults')
-    expect(response.openFoodFactsAttemptCount).toBe(1)
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(response.openFoodFactsAttemptCount).toBe(2)
     expect(searchALiciousCallCount).toBe(1)
-    expect(usdaCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
   })
 
   it('uses legacy Open Food Facts when pinned Search-a-licious is unavailable', async () => {
@@ -108,9 +125,7 @@ describe('searchPackagedFoods', () => {
 
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -125,7 +140,7 @@ describe('searchPackagedFoods', () => {
 
         usdaCallCount += 1
         return Response.json(usdaPayload())
-      },
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -142,9 +157,7 @@ describe('searchPackagedFoods', () => {
 
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -159,7 +172,7 @@ describe('searchPackagedFoods', () => {
 
         usdaCallCount += 1
         return Response.json(usdaPayload())
-      },
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -170,15 +183,13 @@ describe('searchPackagedFoods', () => {
     expect(usdaCallCount).toBe(0)
   })
 
-  it('returns incomplete Open Food Facts products instead of filtering them out', async () => {
+  it('stays on Open Food Facts when products are missing main nutrition', async () => {
     let searchALiciousCallCount = 0
-    let usdaCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
       DEFAULT_QUERY,
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
 
         if (isSearchALiciousRequest(url)) {
@@ -186,9 +197,31 @@ describe('searchPackagedFoods', () => {
           return Response.json(searchALiciousIncompleteNutritionPayload())
         }
 
-        usdaCallCount += 1
-        return Response.json(usdaPayload())
-      },
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json({ count: 0, products: [] })
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(searchALiciousCallCount).toBe(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+  })
+
+  it('returns exact Open Food Facts matches that need manual nutrition entry', async () => {
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'missing nutrition' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isSearchALiciousRequest(url)) {
+          return Response.json(searchALiciousIncompleteNutritionPayload())
+        }
+
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json({ count: 0, products: [] })
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -199,8 +232,87 @@ describe('searchPackagedFoods', () => {
         product_name: 'Missing Nutrition',
       },
     })
-    expect(searchALiciousCallCount).toBe(1)
-    expect(usdaCallCount).toBe(0)
+    expect(legacyOpenFoodFactsCallCount).toBe(0)
+  })
+
+  it('keeps matching Open Food Facts results that need nutrition review beside complete matches', async () => {
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'protein bar' },
+      searchDependencies(async (input) => Response.json(isSearchALiciousRequest(requestURL(input))
+        ? searchALiciousMixedNutritionPayload()
+        : { count: 0, products: [] })),
+    )
+
+    expect(response.results).toHaveLength(2)
+    expect(response.results.map((result) => result.provider)).toEqual(['openFoodFacts', 'openFoodFacts'])
+    const openFoodFactsNames = response.results.flatMap((result) => result.provider === 'openFoodFacts'
+      ? [result.item.product_name]
+      : [])
+    expect(openFoodFactsNames).toEqual([
+      'Protein Bar',
+      'Protein Bar Missing Nutrition',
+    ])
+  })
+
+  it('deduplicates repeated Open Food Facts search results', async () => {
+    const response = await searchPackagedFoods(
+      DEFAULT_QUERY,
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        return Response.json(isSearchALiciousRequest(url)
+          ? searchALiciousDuplicatePayload()
+          : usdaPayload())
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(1)
+    expect(response.results[0]).toMatchObject({
+      provider: 'openFoodFacts',
+      item: {
+        product_name: 'Protein Bar',
+      },
+    })
+  })
+
+  it('does not force USDA fallback for default Open Food Facts searches', async () => {
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'chick fil a sandwich' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        return Response.json(isSearchALiciousRequest(url)
+          ? searchALiciousChickFilASaucePayload()
+          : (legacyOpenFoodFactsCallCount += 1, { count: 0, products: [] }))
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+  })
+
+  it('preserves filtered-empty Open Food Facts pages when more pages are available', async () => {
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      DEFAULT_QUERY,
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isSearchALiciousRequest(url)) {
+          return Response.json(searchALiciousFilteredEmptyHasMorePayload())
+        }
+
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json({ count: 0, products: [] })
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(0)
+    expect(response.hasMore).toBe(true)
+    expect(legacyOpenFoodFactsCallCount).toBe(0)
   })
 
   it('fetches only the requested legacy Open Food Facts page after Search-a-licious misses', async () => {
@@ -209,9 +321,7 @@ describe('searchPackagedFoods', () => {
 
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
@@ -221,7 +331,7 @@ describe('searchPackagedFoods', () => {
         const page = Number(new URL(url).searchParams.get('page') ?? '1')
         legacyOpenFoodFactsCallCount += 1
         return Response.json(page <= 9 ? sparseUsableOpenFoodFactsPayload(page) : unusableOpenFoodFactsPayload())
-      },
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -234,9 +344,7 @@ describe('searchPackagedFoods', () => {
   it('maps USDA secondary nutrients into the packaged food response contract', async () => {
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'usda' },
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async () => Response.json(usdaPayload()),
+      searchDependencies(async () => Response.json(usdaPayload())),
     )
 
     expect(response.resolvedProvider).toBe('usda')
@@ -254,17 +362,99 @@ describe('searchPackagedFoods', () => {
     })
   })
 
+  it('routes restaurant-like default searches to legacy Open Food Facts first', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'Wendy nuggets' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isSearchALiciousRequest(url)) {
+          searchALiciousCallCount += 1
+          return Response.json(searchALiciousEmptyPayload())
+        }
+
+        legacyOpenFoodFactsCallCount += 1
+        return Response.json(legacyRestaurantPayload())
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(1)
+    expect(response.openFoodFactsAttemptCount).toBe(1)
+    expect(response.results[0]).toMatchObject({
+      provider: 'openFoodFacts',
+      item: {
+        product_name: "Wendy's, 4 Piece Chicken Nuggets",
+        brands: "Wendy's",
+      },
+    })
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+    expect(searchALiciousCallCount).toBe(0)
+  })
+
+  it('retries flaky legacy Open Food Facts restaurant searches before Search-a-licious', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'Wendy nuggets' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyOpenFoodFactsCallCount += 1
+          return legacyOpenFoodFactsCallCount === 1
+            ? new Response(null, { status: 503 })
+            : Response.json(legacyRestaurantPayload())
+        }
+
+        searchALiciousCallCount += 1
+        return Response.json(searchALiciousEmptyPayload())
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toHaveLength(1)
+    expect(response.openFoodFactsAttemptCount).toBe(2)
+    expect(legacyOpenFoodFactsCallCount).toBe(2)
+    expect(searchALiciousCallCount).toBe(0)
+  })
+
+  it('keeps restaurant-like pinned Open Food Facts pagination on legacy first', async () => {
+    let searchALiciousCallCount = 0
+    let legacyOpenFoodFactsCallCount = 0
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'Wendy nuggets', page: 2, provider: 'openFoodFacts', fallbackOnEmpty: false },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyOpenFoodFactsCallCount += 1
+          return Response.json(legacyRestaurantPayload())
+        }
+
+        searchALiciousCallCount += 1
+        return Response.json(searchALiciousEmptyPayload())
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.page).toBe(2)
+    expect(response.results).toHaveLength(1)
+    expect(legacyOpenFoodFactsCallCount).toBe(1)
+    expect(searchALiciousCallCount).toBe(0)
+  })
+
   it('preserves Open Food Facts secondary nutriments in search results', async () => {
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, provider: 'openFoodFacts' },
-      'test-usda-key',
-      'cal-macro-tracker/1.0 (test@example.com)',
-      async (input) => {
+      searchDependencies(async (input) => {
         const url = requestURL(input)
         return Response.json(isSearchALiciousRequest(url)
           ? searchALiciousPayload()
           : openFoodFactsPayload())
-      },
+      }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
@@ -288,9 +478,7 @@ describe('searchPackagedFoods', () => {
     await expect(
       searchPackagedFoods(
         DEFAULT_QUERY,
-        'test-usda-key',
-        'cal-macro-tracker/1.0 (test@example.com)',
-        async (input) => {
+        searchDependencies(async (input) => {
           const url = requestURL(input)
 
           if (isSearchALiciousRequest(url)) {
@@ -298,9 +486,30 @@ describe('searchPackagedFoods', () => {
           }
 
           return Response.json(usdaPayload())
-        },
+        }),
       ),
     ).rejects.toThrow('broken payload')
+  })
+})
+
+describe('isRestaurantLikeQuery', () => {
+  it('detects restaurant-shaped menu queries without a chain allowlist', () => {
+    expect(isRestaurantLikeQuery('local diner burger')).toBe(true)
+    expect(isRestaurantLikeQuery('in n out double double')).toBe(true)
+    expect(isRestaurantLikeQuery('shake shack fries')).toBe(true)
+    expect(isRestaurantLikeQuery('five guys cheeseburger')).toBe(true)
+    expect(isRestaurantLikeQuery('raising canes tenders')).toBe(true)
+    expect(isRestaurantLikeQuery('olive garden chicken alfredo')).toBe(true)
+    expect(isRestaurantLikeQuery('panda express orange chicken bowl')).toBe(true)
+  })
+
+  it('keeps generic packaged grocery queries on the normal OFF path', () => {
+    expect(isRestaurantLikeQuery('protein bar')).toBe(false)
+    expect(isRestaurantLikeQuery('greek yogurt')).toBe(false)
+    expect(isRestaurantLikeQuery('cheerios')).toBe(false)
+    expect(isRestaurantLikeQuery('kind bar')).toBe(false)
+    expect(isRestaurantLikeQuery('chobani yogurt')).toBe(false)
+    expect(isRestaurantLikeQuery('frozen pizza')).toBe(false)
   })
 })
 
@@ -383,12 +592,14 @@ describe('fetchOpenFoodFactsProduct', () => {
 
 describe('fetchUSDAFood', () => {
   it('sends USDA API keys in headers instead of traced URLs', async () => {
-    const seenRequests: Array<{ url: string, apiKey: string | null }> = []
+    const seenRequests: Array<{ url: string, apiKey: string | null, dataType?: string[] }> = []
 
     await searchUSDAFoods(DEFAULT_QUERY, 'test-usda-key', async (input, init) => {
+      const body = JSON.parse(String(init?.body ?? '{}')) as { dataType?: string[] }
       seenRequests.push({
         url: requestURL(input),
         apiKey: new Headers(init?.headers).get('X-Api-Key'),
+        dataType: body.dataType,
       })
       return Response.json(usdaPayload())
     })
@@ -405,12 +616,71 @@ describe('fetchUSDAFood', () => {
       {
         url: 'https://api.nal.usda.gov/fdc/v1/foods/search',
         apiKey: 'test-usda-key',
+        dataType: ['Branded'],
       },
       {
         url: 'https://api.nal.usda.gov/fdc/v1/food/123',
         apiKey: 'test-usda-key',
       },
     ])
+  })
+
+  it('retries page-one USDA searches with punctuation-normalized restaurant names', async () => {
+    const seenQueries: string[] = []
+
+    const response = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'Wendy’s nuggets' },
+      'test-usda-key',
+      async (_input, init) => {
+        const body = JSON.parse(String(init?.body ?? '{}')) as { query?: string }
+        seenQueries.push(body.query ?? '')
+
+        return Response.json(seenQueries.length === 1
+          ? { totalHits: 0, foods: [] }
+          : {
+              totalHits: 1,
+              foods: [
+                {
+                  ...usdaPayload().foods[0],
+                  description: 'WENDYS CHICKEN NUGGETS',
+                  brandOwner: 'WENDYS',
+                },
+              ],
+            })
+      },
+    )
+
+    expect(seenQueries).toEqual(['Wendy’s nuggets', 'wendys nuggets'])
+    expect(response.query).toBe('Wendy’s nuggets')
+    expect(response.results[0]).toMatchObject({
+      name: 'WENDYS CHICKEN NUGGETS',
+      brand: 'WENDYS',
+    })
+  })
+
+  it('filters USDA search results to foods matching all query terms', async () => {
+    const response = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'Wendy’s nuggets' },
+      'test-usda-key',
+      async () => Response.json({
+        totalHits: 2,
+        foods: [
+          {
+            ...usdaPayload().foods[0],
+            description: 'WENDYS CHICKEN NUGGETS',
+            brandOwner: 'WENDYS',
+          },
+          {
+            ...usdaPayload().foods[0],
+            fdcId: 124,
+            description: 'WENDYS FRENCH FRIES',
+            brandOwner: 'WENDYS',
+          },
+        ],
+      }),
+    )
+
+    expect(response.results.map((result) => result.name)).toEqual(['WENDYS CHICKEN NUGGETS'])
   })
 
   it('maps USDA food details into the proxy contract', async () => {
@@ -500,35 +770,7 @@ describe('packaged food cache policy', () => {
     )
   })
 
-  it('does not persist degraded default USDA fallback under the default cache key', () => {
-    const cacheKinds = cacheWritePlan(
-      new URL(BASE_URL),
-      DEFAULT_QUERY,
-      makeResponse('usda', {
-        degradedFallbackReason: 'openFoodFactsUnavailable',
-      }),
-    ).map((entry) => entry.kind)
-
-    expect(cacheKinds).toEqual(['usda'])
-    expect(cacheReadOrder(new URL(BASE_URL), DEFAULT_QUERY).map((entry) => entry.kind)).toEqual([
-      'openFoodFacts',
-      'default',
-    ])
-  })
-
-  it('persists default USDA fallback when Open Food Facts returned a real unusable response', () => {
-    const cacheKinds = cacheWritePlan(
-      new URL(BASE_URL),
-      DEFAULT_QUERY,
-      makeResponse('usda', {
-        degradedFallbackReason: 'openFoodFactsNoUsableResults',
-      }),
-    ).map((entry) => entry.kind)
-
-    expect(cacheKinds).toEqual(['usda', 'default'])
-  })
-
-  it('keeps page-specific fallback responses from locking later default retries onto USDA', () => {
+  it('keeps default USDA responses out of the default Open Food Facts cache key', () => {
     const pageTwoQuery: PackagedFoodSearchQuery = {
       ...DEFAULT_QUERY,
       page: 2,
@@ -539,7 +781,6 @@ describe('packaged food cache policy', () => {
       pageTwoQuery,
       makeResponse('usda', {
         page: 2,
-        degradedFallbackReason: 'openFoodFactsUnavailable',
       }),
     ).map((entry) => entry.kind)
 
@@ -628,6 +869,25 @@ function openFoodFactsPayload() {
   }
 }
 
+function legacyRestaurantPayload() {
+  return {
+    count: 1,
+    products: [
+      {
+        product_name: "Wendy's, 4 Piece Chicken Nuggets",
+        brands: "Wendy's",
+        serving_size: '100g',
+        nutriments: {
+          'energy-kcal_100g': 175,
+          proteins_100g: 10,
+          fat_100g: 12,
+          carbohydrates_100g: 10,
+        },
+      },
+    ],
+  }
+}
+
 function searchALiciousPayload() {
   return {
     hits: [
@@ -672,6 +932,13 @@ function searchALiciousEmptyPayload() {
   }
 }
 
+function searchALiciousTimedOutEmptyPayload() {
+  return {
+    ...searchALiciousEmptyPayload(),
+    timed_out: true,
+  }
+}
+
 function searchALiciousIncompleteNutritionPayload() {
   return {
     hits: [
@@ -686,6 +953,67 @@ function searchALiciousIncompleteNutritionPayload() {
     page_count: 1,
     count: 1,
     timed_out: false,
+  }
+}
+
+function searchALiciousMixedNutritionPayload() {
+  return {
+    ...searchALiciousPayload(),
+    hits: [
+      searchALiciousPayload().hits[0],
+      {
+        code: '999',
+        product_name: 'Protein Bar Missing Nutrition',
+        brands: ['Sparse Co'],
+      },
+    ],
+    count: 2,
+  }
+}
+
+function searchALiciousDuplicatePayload() {
+  const product = searchALiciousPayload().hits[0]
+  return {
+    hits: [
+      product,
+      { ...product },
+    ],
+    page: 1,
+    page_size: 10,
+    page_count: 1,
+    count: 2,
+    timed_out: false,
+  }
+}
+
+function searchALiciousChickFilASaucePayload() {
+  return {
+    hits: [
+      {
+        code: '070200856165',
+        product_name: 'Chick-fil-A Sauce',
+        brands: ['Chick-fil-A'],
+        nutriments: {
+          'energy-kcal_100g': 516,
+          proteins_100g: 0,
+          fat_100g: 45.2,
+          carbohydrates_100g: 22.6,
+        },
+      },
+    ],
+    page: 1,
+    page_size: 10,
+    page_count: 1,
+    count: 1,
+    timed_out: false,
+  }
+}
+
+function searchALiciousFilteredEmptyHasMorePayload() {
+  return {
+    ...searchALiciousChickFilASaucePayload(),
+    page_count: 2,
+    count: 20,
   }
 }
 

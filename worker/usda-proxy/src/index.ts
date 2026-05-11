@@ -39,8 +39,6 @@ interface PackagedFoodSearchLogMetadata {
   cacheKey?: PackagedFoodCacheKeyKind
   openFoodFactsAttemptCount?: number
   resolvedProvider?: SearchProvider
-  degradedFallbackReason?: PackagedFoodSearchExecution['degradedFallbackReason']
-  errorMessage?: string
 }
 
 app.get('/v1/packaged-foods/search', async (c) => {
@@ -66,14 +64,15 @@ app.get('/v1/packaged-foods/search', async (c) => {
   try {
     const response = await searchPackagedFoods(
       params,
-      c.env.USDA_API_KEY,
-      c.env.OPEN_FOOD_FACTS_USER_AGENT,
+      {
+        usdaApiKey: c.env.USDA_API_KEY,
+        openFoodFactsUserAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT,
+      },
     )
 
     logPackagedFoodSearch('cache-miss', logContext, {
       openFoodFactsAttemptCount: response.openFoodFactsAttemptCount,
       resolvedProvider: response.resolvedProvider,
-      degradedFallbackReason: response.degradedFallbackReason,
     })
 
     const cacheWrites = cacheWritePlan(requestURL, params, response)
@@ -204,10 +203,11 @@ function parseSearchParams(c: Context, allowedKeys: Set<string>, allowFallbackOn
     return jsonError(c, `Page size must be between 1 and ${MAX_PAGE_SIZE}.`, 400)
   }
 
-  const fallbackOnEmpty = allowFallbackOnEmpty ? parseBooleanFlag(c.req.query('fallbackOnEmpty') ?? '1') : false
-  if (allowFallbackOnEmpty && fallbackOnEmpty == null) {
+  const parsedFallbackOnEmpty = allowFallbackOnEmpty ? parseBooleanFlag(c.req.query('fallbackOnEmpty') ?? '1') : false
+  if (allowFallbackOnEmpty && parsedFallbackOnEmpty == null) {
     return jsonError(c, 'fallbackOnEmpty must be 0, 1, true, or false.', 400)
   }
+  const fallbackOnEmpty = parsedFallbackOnEmpty ?? false
 
   const provider = allowFallbackOnEmpty ? parseSearchProvider(c.req.query('provider')) : undefined
   if (allowFallbackOnEmpty && c.req.query('provider') != null && provider == null) {
@@ -222,7 +222,7 @@ function parseSearchParams(c: Context, allowedKeys: Set<string>, allowFallbackOn
     query,
     page,
     pageSize,
-    fallbackOnEmpty: fallbackOnEmpty ?? false,
+    fallbackOnEmpty,
     provider,
   }
 }

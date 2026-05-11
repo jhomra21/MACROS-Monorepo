@@ -40,7 +40,7 @@ enum DailyShareImageExporter {
             .environment(\.colorScheme, colorScheme)
 
         let renderer = ImageRenderer(content: content)
-        renderer.scale = UIScreen.main.scale
+        renderer.scale = UITraitCollection.current.displayScale
 
         return renderer.uiImage
     }

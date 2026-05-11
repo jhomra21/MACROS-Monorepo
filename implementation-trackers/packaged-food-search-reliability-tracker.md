@@ -10,6 +10,7 @@ Working tracker for improving packaged food search reliability across the Cloudf
   - Normal online search should use the Worker default/best-available path.
   - Explicit `provider=openFoodFacts` remains OFF-only, but can use both Search-a-licious and legacy Open Food Facts search.
   - Explicit `provider=usda` remains USDA-only.
+- Restaurant/menu-like default searches should route to legacy Open Food Facts first because it returns useful restaurant/menu rows that Search-a-licious often misses or ranks poorly.
 - Data quality: Do not invent missing nutrition values. Return available source fields and let the app/user fill gaps when data is incomplete.
 - Scope discipline: Keep the first pass focused on Worker routing, OFF filter simplification, the Swift caller change, tests, validation, deployment, and concise changelog documentation.
 
@@ -18,20 +19,27 @@ Working tracker for improving packaged food search reliability across the Cloudf
 ### Upstream Search Strategy
 
 - Add Search-a-licious as the primary Open Food Facts-backed search path.
-- Keep legacy `https://world.openfoodfacts.org/cgi/search.pl` as a fallback only for explicit pinned OFF requests.
+- Keep legacy `https://world.openfoodfacts.org/cgi/search.pl` for pinned OFF fallback and restaurant/menu-like default searches.
 - Do not batch duplicate legacy requests.
-- Do not retry legacy `search.pl` eight times.
+- Do not retry legacy `search.pl` eight times; restaurant/menu-like default searches may retry the legacy endpoint briefly because OFF frequently returns transient `503`.
 - Remove the long pinned retry policy that produced ~24s failed responses.
 - Target roughly an 8-second ceiling for pinned OFF before returning stale OFF data if cleanly available, otherwise `503`.
 
 ### Default / Best-Available Search
 
 - Default/unpinned Worker search flow:
-  - Try Search-a-licious first.
+  - For normal packaged-food queries, try Search-a-licious first.
+  - For restaurant/menu-like queries, try legacy OFF first with bounded retry handling, then Search-a-licious if legacy produces no usable response.
   - If Search-a-licious returns hits, return OFF-backed results.
-  - If Search-a-licious returns zero hits or fails, fallback to USDA.
-- Do not call legacy OFF in the default path.
+- Do not silently fallback to USDA from default OFF search; USDA remains explicit.
 - Keep existing USDA behavior unchanged.
+
+### Restaurant/Menu Query Classification
+
+- Replaced the initial restaurant-chain allowlist with a deterministic query-shape classifier in `worker/usda-proxy/src/restaurantSearch.ts`.
+- The classifier routes legacy OFF first when a query looks like a restaurant menu item, using menu terms such as `burger`, `sandwich`, `nuggets`, `fries`, `taco`, `latte`, `bowl`, `tenders`, `alfredo`, and restaurant-context terms such as `diner`, `restaurant`, `combo`, `meal`, and `pieces`.
+- Packaged-food terms such as `protein bar`, `greek yogurt`, `kind bar`, `cheerios`, and `frozen pizza` keep the query on the normal Search-a-licious path.
+- A small phrase list remains only for ambiguous restaurant-name patterns such as `in n out`, `shake shack`, `five guys`, and `raising canes`; it is not the primary routing mechanism.
 
 ### Pinned Open Food Facts Search
 
@@ -136,6 +144,9 @@ Add new Worker files only if `openFoodFacts.ts` becomes too large after the adap
 - [x] Keep `provider=openFoodFacts` from falling back to USDA.
 - [x] Keep `openFoodFactsAttemptCount` as total OFF backend attempts.
 - [x] Preserve public response shape.
+- [x] Route restaurant/menu-like default searches to legacy OFF first with bounded retry handling.
+- [x] Keep normal packaged-food default searches on Search-a-licious first.
+- [x] Remove the Nutritionix trial provider path after validating legacy OFF restaurant coverage.
 
 ### Milestone 4 — Cache Behavior
 
@@ -160,11 +171,14 @@ Add new Worker files only if `openFoodFacts.ts` becomes too large after the adap
 - [x] Add pinned Search-a-licious zero-hit then legacy OFF zero-hit empty response test.
 - [x] Update old pinned 8-attempt retry tests to match the new bounded behavior.
 - [x] Add test proving incomplete OFF nutrition products are no longer hidden.
+- [x] Add restaurant/menu classifier tests covering hard restaurant-shaped queries and packaged-food blockers.
+- [x] Add routing tests proving restaurant/menu-like default searches hit legacy OFF first and retry transient legacy failures.
 - [x] Keep cache read/write plan tests passing.
 
 ### Milestone 7 — Documentation and Validation
 
 - [x] Update `changes-log.md` with concise reasoning for Search-a-licious routing and OFF filter removal.
+- [x] Update `changes-log.md` with legacy OFF restaurant routing, Nutritionix removal, and query-shape classifier validation.
 - [x] Run Worker tests with `bun test`.
 - [x] Run Worker check with `bun run --cwd worker/usda-proxy check`.
 - [x] Run Swift formatting/build validation required by the touched Swift file.
@@ -208,6 +222,17 @@ Add new Worker files only if `openFoodFacts.ts` becomes too large after the adap
 - Production unpinned `Mcdonalds` request returned `200` in about `1.43s`, resolved to `openFoodFacts`, and returned 12 results.
 - Production pinned OFF `Mcdonalds` request returned `200` in about `0.15s`, resolved to `openFoodFacts`, and returned 12 results.
 - Simulator end-to-end flow passed after starting local `wrangler dev` for the simulator base URL. Visual checks confirmed the Add Food sheet, online search results, Log Food form prefill, and final Today summary all rendered correctly; logging `Wrap - Mcdonalds Grilled - Mcdonalds` updated Today to `198.3 kcal`, `13.6g` protein, `15.3g` carbs, `9.1g` fat, and one logged item.
+- Restaurant routing validation against local `wrangler dev` confirmed legacy OFF can return relevant rows for `Burger King whopper`, `Starbucks latte`, `McDonald nuggets`, and `olive garden chicken alfredo`.
+- Hard-query validation showed some restaurant-shaped queries correctly route legacy-first but still have no usable OFF rows, including `in n out double double`, `shake shack fries`, `five guys cheeseburger`, and `raising canes tenders`.
+- Packaged-food validation confirmed `protein bar`, `greek yogurt`, `frozen pizza`, `kind bar`, and `cheerios` stay on the normal Search-a-licious path.
+- Simulator validation confirmed `olive garden chicken alfredo` renders `Olive Garden, Chicken Alfredo, Dinner`, while `protein bar` renders normal packaged-food results.
+- Post-implementation review simplified zero-nutrition draft construction, avoided unread restaurant default cache writes, stopped retrying OFF responses with `Retry-After`, and removed stale USDA fallback parameters; defensive-code review found no additional Swift cleanup.
+- Follow-up review fixed the Swift Load More button to trust the Worker `hasMore` contract even when a filtered page has no visible results; the final defensive pass removed one unused Worker telemetry metadata field.
+- Follow-up review fixed missing-nutrition Open Food Facts search selections to pass required review nutrients into `LogFoodScreen`, preventing immediate logging of all-zero manual-review drafts.
+- The final cleanup review extracted shared Open Food Facts draft import mapping and shared token matching for OFF/USDA filters; broader OFF orchestration and retry timing changes were left unchanged to preserve the validated routing behavior.
+- A follow-up cleanup pass shared the Swift missing-nutrition review predicate and clarified OFF name-token matching terminology; stale fallback metadata plumbing was left unchanged to avoid broad cache/telemetry contract churn.
+- The final defensive-code review removed an unreachable Swift branch from the missing-nutrition review predicate and found no additional high-confidence redundant guards, duplicated validation, or impossible-state branches to remove.
+- The final repeat cleanup pass found LGTM from simplify reuse/quality/efficiency reviewers and LGTM from Swift/Worker defensive-code reviewers; validators and final diff review passed.
 
 ## Findings and Follow-Ups
 

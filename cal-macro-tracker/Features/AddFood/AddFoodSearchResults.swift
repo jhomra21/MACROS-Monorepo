@@ -109,7 +109,7 @@ struct SearchFoodListView: View {
                     Text(RemoteFoodSearchConfiguration.unavailableConfigurationMessage)
                         .foregroundStyle(.secondary)
                 } else {
-                    Button("Search Open Food Facts") {
+                    Button("Search Online") {
                         onSearchOnline()
                     }
 
@@ -303,7 +303,6 @@ struct SearchFoodListView: View {
     private var showsUSDASearchFallback: Bool {
         remoteSearch.provider == .openFoodFacts
             && remoteSearch.isLoading == false
-            && remoteSearch.results.isEmpty
             && remoteSearch.hasState
     }
 
