@@ -367,7 +367,7 @@ describe('searchPackagedFoods', () => {
     let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
-      { ...DEFAULT_QUERY, query: 'Wendy nuggets' },
+      { ...DEFAULT_QUERY, query: 'chicken nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
         if (isSearchALiciousRequest(url)) {
@@ -399,7 +399,7 @@ describe('searchPackagedFoods', () => {
     let legacyOpenFoodFactsCallCount = 0
 
     const response = await searchPackagedFoods(
-      { ...DEFAULT_QUERY, query: 'Wendy nuggets' },
+      { ...DEFAULT_QUERY, query: 'chicken nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
         if (isLegacyOpenFoodFactsRequest(url)) {
@@ -418,6 +418,35 @@ describe('searchPackagedFoods', () => {
     expect(response.results).toHaveLength(1)
     expect(response.openFoodFactsAttemptCount).toBe(2)
     expect(legacyOpenFoodFactsCallCount).toBe(2)
+    expect(searchALiciousCallCount).toBe(0)
+  })
+
+  it('keeps retrying empty restaurant legacy pages before falling back to Search-a-licious', async () => {
+    let searchALiciousCallCount = 0
+    const legacyPages: number[] = []
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'chicken nuggets' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          const page = Number(new URL(url).searchParams.get('page'))
+          legacyPages.push(page)
+          return page < 3
+            ? Response.json({ count: 72, products: [] })
+            : Response.json(legacyRestaurantPayload())
+        }
+
+        searchALiciousCallCount += 1
+        return Response.json(searchALiciousEmptyPayload())
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.page).toBe(3)
+    expect(response.results).toHaveLength(1)
+    expect(response.openFoodFactsAttemptCount).toBe(13)
+    expect(legacyPages).toEqual([1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3])
     expect(searchALiciousCallCount).toBe(0)
   })
 

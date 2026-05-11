@@ -16,6 +16,7 @@ const DEFAULT_CACHE_PATH = '/v1/packaged-foods/search/default'
 const OPEN_FOOD_FACTS_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts'
 const OPEN_FOOD_FACTS_PINNED_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts/pinned'
 const USDA_CACHE_PATH = '/v1/packaged-foods/search/usda'
+const RESTAURANT_RETRY_CACHE_VERSION = '2'
 
 export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): NamedCacheKey[] {
   switch (params.provider) {
@@ -113,6 +114,10 @@ function cacheQueryItems(kind: PackagedFoodCacheKeyKind, params: PackagedFoodSea
     items.push(['fallbackOnEmpty', params.fallbackOnEmpty ? '1' : '0'])
   }
 
+  if (isRestaurantLikeQuery(params.query) && (kind === 'openFoodFacts' || kind === 'openFoodFactsPinned')) {
+    items.push(['restaurantRetry', RESTAURANT_RETRY_CACHE_VERSION])
+  }
+
   return items
 }
 
@@ -129,5 +134,13 @@ function shouldShareOpenFoodFactsResponse(
   params: PackagedFoodSearchQuery,
   response: PackagedFoodSearchResponse,
 ): boolean {
-  return params.page === 1 && hasUsableOpenFoodFactsResult(response)
+  if (params.page !== 1) {
+    return false
+  }
+
+  if (isRestaurantLikeQuery(params.query)) {
+    return response.results.length > 0
+  }
+
+  return hasUsableOpenFoodFactsResult(response)
 }

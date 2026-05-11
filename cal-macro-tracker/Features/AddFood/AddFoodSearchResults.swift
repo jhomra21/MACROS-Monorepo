@@ -321,22 +321,20 @@ struct SearchFoodListView: View {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         isLocalSearchLoading = true
-        let container = modelContext.container
         let searchTerm = localFetchSearchTerm(for: trimmedQuery)
-        let searchTask = Task<[LocalFoodSearchResult], Never>.detached(priority: .userInitiated) {
+        let searchTask = Task<[LocalFoodSearchResult], Never>(priority: .userInitiated) { @MainActor in
             guard Task.isCancelled == false else { return [] }
 
-            let context = ModelContext(container)
             let normalizedQuery = FoodItemSearchQuery(trimmedQuery).normalizedText
             let fieldPrefixQuery = " \(normalizedQuery)"
 
             do {
                 guard trimmedQuery.isEmpty == false else {
-                    return try recentLocalFoods(in: context).map(LocalFoodSearchResult.init)
+                    return try recentLocalFoods(in: modelContext).map(LocalFoodSearchResult.init)
                 }
 
                 let foods = try localFoodCandidates(
-                    in: context,
+                    in: modelContext,
                     normalizedQuery: normalizedQuery,
                     fieldPrefixQuery: fieldPrefixQuery,
                     searchTerm: searchTerm

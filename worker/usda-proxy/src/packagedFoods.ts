@@ -20,6 +20,8 @@ const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 const USDA_PROVIDER = 'usda' as const
 const REQUEST_TIMEOUT_MS = 2_500
 const RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS = 6_000
+const RESTAURANT_LEGACY_MAX_ATTEMPTS = 6
+const RESTAURANT_LEGACY_MAX_PAGE_SCAN = 6
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
   openFoodFactsAttemptCount?: number
@@ -153,15 +155,12 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   userAgent: string,
   fetcher: HTTPFetcher,
 ): Promise<PackagedFoodSearchExecution> {
-  const legacyOutcome = await searchOpenFoodFactsWithOutcome(
+  const legacyOutcome = await searchRestaurantLegacyOpenFoodFactsWithOutcome(
     input,
     userAgent,
     fetcher,
-    searchOpenFoodFactsLegacyFoods,
-    2,
-    RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS,
   )
-  if (legacyOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(legacyOutcome.page)) {
+  if (legacyOutcome.kind === 'response' && legacyOutcome.page.results.length > 0) {
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, legacyOutcome.attempts)
   }
 
@@ -186,6 +185,61 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   }
 
   throw legacyOutcome.error
+}
+
+async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
+  input: PackagedFoodSearchQuery,
+  userAgent: string,
+  fetcher: HTTPFetcher,
+): Promise<OpenFoodFactsSearchOutcome> {
+  const openFoodFactsFetcher = withTimeout(fetcher, RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS)
+  let attempts = 0
+  let lastError: OpenFoodFactsClientError | null = null
+  let lastPage: ProviderPage<PackagedFoodSearchResponse['results'][number]> | null = null
+
+  for (let pageOffset = 0; pageOffset < RESTAURANT_LEGACY_MAX_PAGE_SCAN; pageOffset += 1) {
+    const pageInput = { ...input, page: input.page + pageOffset }
+
+    for (let attempt = 1; attempt <= RESTAURANT_LEGACY_MAX_ATTEMPTS; attempt += 1) {
+      attempts += 1
+      try {
+        const result = await searchOpenFoodFactsLegacyFoods(pageInput, { userAgent }, openFoodFactsFetcher)
+        const page = {
+          ...result,
+          results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
+        }
+
+        if (page.results.length > 0) {
+          return { kind: 'response', attempts, page }
+        }
+
+        lastPage = page
+        if (page.hasMore === false) {
+          return { kind: 'response', attempts, page }
+        }
+      } catch (error) {
+        const normalizedError = normalizeOpenFoodFactsError(error)
+        if (normalizedError == null) {
+          throw error
+        }
+
+        lastError = normalizedError
+        if (normalizedError.retryable === false || normalizedError.retryAfterMs != null) {
+          return { kind: 'unavailable', attempts, error: normalizedError }
+        }
+      }
+    }
+  }
+
+  if (lastPage != null) {
+    return { kind: 'response', attempts, page: lastPage }
+  }
+
+  return {
+    kind: 'unavailable',
+    attempts,
+    error: lastError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true),
+  }
 }
 
 async function searchUSDAPackagedFoods(

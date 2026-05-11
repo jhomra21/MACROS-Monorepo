@@ -85,7 +85,7 @@ extension AddFoodScreen {
             else { return }
 
             if append,
-                (remoteSearch.provider != provider || response.provider != provider || response.page != page)
+                (remoteSearch.provider != provider || response.provider != provider || response.page < page)
             {
                 remoteSearch.errorMessage = PackagedFoodSearchClientError.invalidResponse.localizedDescription
                 remoteSearch.isLoading = false

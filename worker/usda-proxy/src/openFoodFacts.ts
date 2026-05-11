@@ -305,7 +305,7 @@ function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], que
   const nutritionallyCompleteProducts: OpenFoodFactsProxyProduct[] = []
   const nutritionMissingProducts: OpenFoodFactsProxyProduct[] = []
   const seen = new Set<string>()
-  const queryTokens = searchTokens(query)
+  const queryTokens = searchTokens(query, { removeApostrophes: true })
 
   for (const product of products) {
     const keys = productDeduplicationKeys(product)
@@ -355,7 +355,7 @@ function hasFiniteNumbers(...values: unknown[]): boolean {
 }
 
 function relevantProducts(products: OpenFoodFactsProxyProduct[], queryTokens: string[]): OpenFoodFactsProxyProduct[] {
-  return products.filter((product) => matchesSearchTokens([product.product_name, product.brands], queryTokens))
+  return products.filter((product) => matchesSearchTokens([product.product_name, product.brands], queryTokens, { removeApostrophes: true }))
 }
 
 function nameTokenMatches(products: OpenFoodFactsProxyProduct[], queryTokens: string[]): OpenFoodFactsProxyProduct[] {
@@ -363,7 +363,7 @@ function nameTokenMatches(products: OpenFoodFactsProxyProduct[], queryTokens: st
     return []
   }
 
-  return products.filter((product) => matchesSearchTokens([product.product_name], queryTokens))
+  return products.filter((product) => matchesSearchTokens([product.product_name], queryTokens, { removeApostrophes: true }))
 }
 
 function productDeduplicationKeys(product: OpenFoodFactsProxyProduct): string[] {
