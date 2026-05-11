@@ -467,7 +467,7 @@ describe('searchPackagedFoods', () => {
     expect(searchALiciousCallCount).toBe(0)
   })
 
-  it('keeps retrying empty restaurant legacy pages before falling back to Search-a-licious', async () => {
+  it('scans empty restaurant legacy pages before falling back to Search-a-licious', async () => {
     let searchALiciousCallCount = 0
     const legacyPages: number[] = []
 
@@ -491,8 +491,8 @@ describe('searchPackagedFoods', () => {
     expect(response.resolvedProvider).toBe('openFoodFacts')
     expect(response.page).toBe(3)
     expect(response.results).toHaveLength(1)
-    expect(response.openFoodFactsAttemptCount).toBe(13)
-    expect(legacyPages).toEqual([1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3])
+    expect(response.openFoodFactsAttemptCount).toBe(3)
+    expect(legacyPages).toEqual([1, 2, 3])
     expect(searchALiciousCallCount).toBe(0)
   })
 

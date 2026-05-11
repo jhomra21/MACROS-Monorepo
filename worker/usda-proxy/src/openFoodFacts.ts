@@ -341,44 +341,40 @@ function makeProxyProduct(product: OpenFoodFactsRawProduct): OpenFoodFactsProxyP
 }
 
 function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], query: string): OpenFoodFactsProxyProduct[] {
-  const nutritionallyCompleteProducts: OpenFoodFactsProxyProduct[] = []
-  const nutritionMissingProducts: OpenFoodFactsProxyProduct[] = []
-  const seen = new Set<string>()
   const queryTokens = searchTokens(query, { removeApostrophes: true })
+  const { completeProducts, incompleteProducts } = partitionUniqueProducts(products, () => true)
 
-  for (const product of products) {
-    const keys = productDeduplicationKeys(product)
-    if (keys.some((key) => seen.has(key))) {
-      continue
-    }
-
-    for (const key of keys) {
-      seen.add(key)
-    }
-
-    if (hasCompleteMainNutrition(product)) {
-      nutritionallyCompleteProducts.push(product)
-    } else {
-      nutritionMissingProducts.push(product)
-    }
-  }
-
-  const completeMatches = relevantProducts(nutritionallyCompleteProducts, queryTokens)
+  const completeMatches = relevantProducts(completeProducts, queryTokens)
   return [
     ...completeMatches,
-    ...nameTokenMatches(nutritionMissingProducts, queryTokens),
+    ...nameTokenMatches(incompleteProducts, queryTokens),
   ]
 }
 
 function usableRestaurantUniqueProducts(products: OpenFoodFactsProxyProduct[], query: string): OpenFoodFactsProxyProduct[] {
+  const queryTokens = searchTokens(query, { removeApostrophes: true })
+  const { completeProducts, incompleteProducts } = partitionUniqueProducts(
+    products,
+    (product) => restaurantProductMatches(product, queryTokens),
+  )
+
+  return [
+    ...completeProducts,
+    ...incompleteProducts,
+  ]
+}
+
+function partitionUniqueProducts(
+  products: OpenFoodFactsProxyProduct[],
+  includeProduct: (product: OpenFoodFactsProxyProduct) => boolean,
+): { completeProducts: OpenFoodFactsProxyProduct[], incompleteProducts: OpenFoodFactsProxyProduct[] } {
   const completeProducts: OpenFoodFactsProxyProduct[] = []
   const incompleteProducts: OpenFoodFactsProxyProduct[] = []
   const seen = new Set<string>()
-  const queryTokens = searchTokens(query, { removeApostrophes: true })
 
   for (const product of products) {
     const keys = productDeduplicationKeys(product)
-    if (keys.some((key) => seen.has(key)) || restaurantProductMatches(product, queryTokens) === false) {
+    if (keys.some((key) => seen.has(key)) || includeProduct(product) === false) {
       continue
     }
 
@@ -393,10 +389,7 @@ function usableRestaurantUniqueProducts(products: OpenFoodFactsProxyProduct[], q
     }
   }
 
-  return [
-    ...completeProducts,
-    ...incompleteProducts,
-  ]
+  return { completeProducts, incompleteProducts }
 }
 
 function restaurantProductMatches(product: OpenFoodFactsProxyProduct, queryTokens: string[]): boolean {

@@ -28,6 +28,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Final review validation restored the shared Open Food Facts usability predicate to treat `hasMore` pages as usable, preserving filtered-empty pagination.
 - Post-implementation simplify reused the existing Swift `TextNormalization.trimmedNonEmpty` helper instead of a local `String` extension; broader fallback/cache-key suggestions were left unchanged to avoid public contract churn.
 - Post-implementation defensive-code review removed one proven redundant Worker provider predicate and kept external payload, cache, and review-flow guards intact.
+- Follow-up production trace review confirmed legacy `.org` failures were still slowing restaurant searches; the Worker now tries the more reliable `.net` legacy host first, versions restaurant cache keys again, and avoids caching empty restaurant OFF pages.
+- Follow-up restaurant matching now uses a restaurant-specific OFF product matcher so chain/menu queries can keep relevant results without requiring every query token in the product name, while side items such as sauces are filtered unless requested.
+- Post-implementation simplify shared Open Food Facts product dedupe/nutrition partitioning and changed empty restaurant legacy pages to advance to the next page immediately instead of retrying successful empty responses.
+- Post-implementation defensive-code review simplified terminal empty restaurant page handling; a fallback error guard for future retry-scan constant changes was intentionally kept.
 
 ### Validation
 
@@ -38,6 +42,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Simplify and defensive-code reviews completed; the final defensive passes removed one dead Worker telemetry metadata field and one unreachable Swift review-predicate branch, with no additional high-confidence redundant guards or impossible branches found.
 - Follow-up code-review findings were validated and fixed for USDA branded filtering, restaurant pagination routing, stale degraded fallback plumbing, Search-a-licious timeout handling, and mixed complete/missing-nutrition OFF result inclusion; Worker tests/type checks and whitespace validation passed after each fix pass.
 - The final post-implementation cleanup passed Worker tests/type checks, Swift format validation, whitespace diff validation, simplify review, defensive-code review, and final diff review.
+- The restaurant search fallback follow-up passed Worker Bun tests, Worker type checks, Swift format validation, whitespace diff validation, simplify review, defensive-code review, production endpoint probes, simulator search validation, and final diff review.
 
 ## App Store and TestFlight Release Prep
 

@@ -218,6 +218,8 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
         if (page.hasMore === false) {
           return { kind: 'response', attempts, page }
         }
+
+        break
       } catch (error) {
         const normalizedError = normalizeOpenFoodFactsError(error)
         if (normalizedError == null) {
@@ -246,9 +248,7 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
 function emptyTerminalRestaurantPage<Result>(
   page: ProviderPage<Result>,
 ): ProviderPage<Result> {
-  return page.results.length === 0
-    ? { ...page, hasMore: false }
-    : page
+  return { ...page, hasMore: false }
 }
 
 async function searchUSDAPackagedFoods(
