@@ -151,6 +151,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Updated Dashboard and History to share the same `CalendarDay.topBarTitle` formatting, including `Today, Apr 28, 2026` style titles for the current day.
 - Standardized Dashboard and History top-bar typography through `AppTopBarStyle`, keeping title and icon sizing tunable from one place.
 - Tuned top-bar icon sizing/weight separately from title weight so the toolbar can stay visually aligned with native iOS app conventions.
+- Added an optional compact leading top-bar title fallback so Dashboard and History can keep native trailing toolbar actions visible on smaller iPhones without truncating `Today` to an ellipsis.
 - Reduced the cold first-share delay on Dashboard by warming the share render and system share-controller setup after the app is ready.
 - Kept the Dashboard share preview image visible while avoiding generated PNG caching.
 - Updated the generated Dashboard share image and share-sheet metadata to use the selected date as the only title instead of `Daily Summary`.
@@ -165,8 +166,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - `DashboardScreen.swift` overlays the conditional `Today` return row above the dashboard list instead of inserting it into the scroll content, so the macro panel and logged-food content do not shift.
 - `CalendarDay.swift` now owns the shared top-bar title string used by both Dashboard and History.
 - `DashboardScreen.swift`, `DashboardShareSupport.swift`, and `HistoryScreen.swift` now use shared top-bar title/icon styling from `AppTopBarStyle.swift`.
+- `AppTopBarLeadingTitle` now uses `ViewThatFits` for screens that provide a compact title, trying the full date title first and falling back to the existing `CalendarDay.dayTitle` when the native toolbar needs room.
 - A simplify pass removed the informal top-bar style comment, centralized repeated title/icon modifiers, renamed the shared date title to the more specific `topBarTitle`, and removed an overly broad selected-day animation from the Dashboard container.
+- A follow-up simplify review removed a duplicated compact title property and reused `CalendarDay.dayTitle` for the compact toolbar fallback.
+- A second simplify review found no further scoped reuse, quality, or efficiency cleanup needed for the compact toolbar fallback.
 - A defensive-code review found no high-confidence redundant guards or impossible-state branches to remove.
+- A follow-up defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the compact toolbar title fallback.
+- A second defensive-code review found no additional redundant guards, duplicated validation, or impossible-state branches in the compact toolbar fallback.
 - Added `AppWarmupCoordinator` as a one-shot, after-ready warm-up path so Dashboard can prepay the cold `ImageRenderer` and `UIActivityViewController` setup cost without blocking app launch.
 - Updated Dashboard sharing to pass an in-memory image item through `UIActivityItemSource` with `LPLinkMetadata` and thumbnail support, restoring the share-sheet preview while avoiding temporary PNG-file sharing.
 - Renamed the share exporter API from PNG-specific wording to image-export wording after the implementation stopped writing temporary PNG files.
@@ -222,11 +228,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - The text-only bottom action label path was rechecked after the single-capsule refactor: fallback initials are useful only for compact icon mode without a system image, while expanded text-only actions should not duplicate their first letter before the full title.
 - The single-capsule Liquid Glass refactor left the visual surface wider than SwiftUI's inferred tappable label content; adding an explicit capsule/circle content shape restored the expected full-button hit target without widening compact-mode interception beyond the visible control.
 - The iOS 26 tinted glass path did not inherit the fallback button's white foreground styling, which made blue action buttons hard to read in light mode; the shared bottom action label now explicitly uses white foreground text for the glass button path.
+- The Dashboard leading title previously forced its full width, which starved the trailing toolbar on smaller iPhones and made iOS collapse the four actions into a native `...` overflow button. Allowing a compact `Today` / abbreviated-date fallback keeps the native action group visible without showing a truncated `T...` title.
 
 #### Validation
 
 - Formatter, macOS debug build, and focused SwiftUI visual validation passed.
 - Formatter validation and iOS simulator builds passed for the Dashboard/History toolbar follow-up.
+- The compact toolbar title fallback passed whitespace diff validation, formatter validation, iOS simulator build/run validation, focused simulator visual validation, simplify review, defensive-code review, and final diff review.
 - Simplify and defensive-code review follow-ups passed formatter validation, iOS simulator build, and `git diff --check`.
 - Share warm-up and item-source changes passed formatter validation, iOS simulator build, and `git diff --check`.
 - Date-only share title and final defensive-code cleanup passed formatter validation, iOS simulator build, and `git diff --check`.

@@ -50,7 +50,10 @@ struct HistoryScreen: View {
             daySelection.syncToday(from: oldToday, to: newToday)
         }
         .toolbar {
-            AppTopBarLeadingTitle(historyToolbarTitle)
+            AppTopBarLeadingTitle(
+                historyToolbarTitle,
+                compactTitle: daySelection.selectedDay.dayTitle
+            )
 
             ToolbarItem(placement: .appTopBarTrailing) {
                 calendarToolbarButton

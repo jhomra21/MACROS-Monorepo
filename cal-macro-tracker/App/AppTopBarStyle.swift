@@ -7,15 +7,29 @@ enum AppTopBarStyle {
 
 struct AppTopBarLeadingTitle: ToolbarContent {
     let title: String
+    let compactTitle: String?
 
-    init(_ title: String) {
+    init(_ title: String, compactTitle: String? = nil) {
         self.title = title
+        self.compactTitle = compactTitle
     }
 
     var body: some ToolbarContent {
         ToolbarItem(placement: .appTopBarLeading) {
-            Text(title)
-                .appTopBarTitleStyle()
+            if let compactTitle {
+                ViewThatFits(in: .horizontal) {
+                    Text(title)
+                        .appTopBarTitleStyle()
+                        .fixedSize(horizontal: true, vertical: false)
+
+                    Text(compactTitle)
+                        .appTopBarTitleStyle()
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+            } else {
+                Text(title)
+                    .appTopBarTitleStyle()
+            }
         }
         .sharedBackgroundVisibility(.hidden)
     }
@@ -25,7 +39,6 @@ extension View {
     func appTopBarTitleStyle() -> some View {
         font(AppTopBarStyle.titleFont)
             .lineLimit(1)
-            .fixedSize(horizontal: true, vertical: false)
             .transaction { $0.animation = nil }
             .accessibilityAddTraits(.isHeader)
     }

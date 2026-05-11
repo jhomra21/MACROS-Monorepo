@@ -86,7 +86,10 @@ struct DashboardScreen: View {
                 }
             }
             .toolbar {
-                AppTopBarLeadingTitle(daySelection.selectedDay.topBarTitle)
+                AppTopBarLeadingTitle(
+                    daySelection.selectedDay.topBarTitle,
+                    compactTitle: daySelection.selectedDay.dayTitle
+                )
                 dashboardToolbarTrailing(snapshot: snapshot)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
