@@ -7,8 +7,8 @@ import type {
 import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
 const OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS = [
-  'https://world.openfoodfacts.org/cgi/search.pl',
   'https://world.openfoodfacts.net/cgi/search.pl',
+  'https://world.openfoodfacts.org/cgi/search.pl',
 ]
 const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
 const OPEN_FOOD_FACTS_PRODUCT_URLS = [

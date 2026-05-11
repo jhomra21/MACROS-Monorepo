@@ -18,6 +18,10 @@ export function isRestaurantLikeQuery(query: string): boolean {
     return true
   }
 
+  if (tokens.some((token) => RESTAURANT_CHAIN_TOKENS.has(token)) && menuTokenCount > 0) {
+    return true
+  }
+
   return menuTokenCount > 0 && (packagedTokenCount === 0 || hasLikelyRestaurantQualifier(tokens, tokenSet))
 }
 
@@ -39,8 +43,29 @@ function hasLikelyRestaurantQualifier(tokens: string[], tokenSet: Set<string>): 
 }
 
 const RESTAURANT_PHRASES = [
+  'arbys',
+  'burger king',
+  'chick fil a',
+  'checkers',
+  'chipotle',
+  'dairy queen',
+  'dominos',
+  'dunkin',
+  'el pollo loco',
+  'firehouse subs',
+  'in and out',
   'in out',
+  'jack in the box',
+  'mcdonalds',
+  'panera',
+  'popeyes',
   'shake shack',
+  'sonic',
+  'starbucks',
+  'subway',
+  'taco bell',
+  'wendys',
+  'whataburger',
   'five guys',
   'raising canes',
   'olive garden',
@@ -48,7 +73,26 @@ const RESTAURANT_PHRASES = [
   'little caesars',
   'jersey mikes',
   'jimmy johns',
+  'white castle',
+  'wingstop',
 ]
+
+const RESTAURANT_CHAIN_TOKENS = [
+  'arbys',
+  'canes',
+  'checkers',
+  'chickfila',
+  'chipotle',
+  'dominos',
+  'dunkin',
+  'mcdonalds',
+  'popeyes',
+  'starbucks',
+  'subway',
+  'wendys',
+  'whataburger',
+  'wingstop',
+].reduce((set, token) => set.add(token), new Set<string>())
 
 const RESTAURANT_CONTEXT_TOKENS = [
   'restaurant',
@@ -97,6 +141,7 @@ const MENU_ITEM_TOKENS = [
   'quesadilla',
   'latte',
   'coffee',
+  'chicken',
   'pizza',
   'wings',
   'wing',

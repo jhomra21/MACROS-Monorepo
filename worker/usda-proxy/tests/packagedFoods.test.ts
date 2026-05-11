@@ -394,6 +394,26 @@ describe('searchPackagedFoods', () => {
     expect(searchALiciousCallCount).toBe(0)
   })
 
+  it('tries the more reliable Open Food Facts staging host before production legacy search', async () => {
+    const legacyHosts: string[] = []
+
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'wendys nuggets' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyHosts.push(new URL(url).host)
+          return Response.json(legacyRestaurantPayload())
+        }
+
+        return Response.json(searchALiciousEmptyPayload())
+      }),
+    )
+
+    expect(response.results).toHaveLength(1)
+    expect(legacyHosts).toEqual(['world.openfoodfacts.net'])
+  })
+
   it('retries flaky legacy Open Food Facts restaurant searches before Search-a-licious', async () => {
     let searchALiciousCallCount = 0
     let legacyOpenFoodFactsCallCount = 0
@@ -448,6 +468,22 @@ describe('searchPackagedFoods', () => {
     expect(response.openFoodFactsAttemptCount).toBe(13)
     expect(legacyPages).toEqual([1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3])
     expect(searchALiciousCallCount).toBe(0)
+  })
+
+  it('stops empty restaurant searches after scanned Open Food Facts pages miss', async () => {
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'Raising cane’s' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        return Response.json(isLegacyOpenFoodFactsRequest(url)
+          ? { count: 72, products: [] }
+          : { ...searchALiciousEmptyPayload(), page_count: 7 })
+      }),
+    )
+
+    expect(response.resolvedProvider).toBe('openFoodFacts')
+    expect(response.results).toEqual([])
+    expect(response.hasMore).toBe(false)
   })
 
   it('keeps restaurant-like pinned Open Food Facts pagination on legacy first', async () => {
@@ -524,10 +560,16 @@ describe('searchPackagedFoods', () => {
 describe('isRestaurantLikeQuery', () => {
   it('detects restaurant-shaped menu queries without a chain allowlist', () => {
     expect(isRestaurantLikeQuery('local diner burger')).toBe(true)
+    expect(isRestaurantLikeQuery('mcdonald’s cheeseburger')).toBe(true)
+    expect(isRestaurantLikeQuery('wendys nuggets')).toBe(true)
+    expect(isRestaurantLikeQuery('arbys sandwich')).toBe(true)
+    expect(isRestaurantLikeQuery('checkers fries')).toBe(true)
     expect(isRestaurantLikeQuery('in n out double double')).toBe(true)
+    expect(isRestaurantLikeQuery('in and out burger')).toBe(true)
     expect(isRestaurantLikeQuery('shake shack fries')).toBe(true)
     expect(isRestaurantLikeQuery('five guys cheeseburger')).toBe(true)
     expect(isRestaurantLikeQuery('raising canes tenders')).toBe(true)
+    expect(isRestaurantLikeQuery('raising cane’s')).toBe(true)
     expect(isRestaurantLikeQuery('olive garden chicken alfredo')).toBe(true)
     expect(isRestaurantLikeQuery('panda express orange chicken bowl')).toBe(true)
   })
@@ -779,6 +821,22 @@ describe('packaged food cache policy', () => {
     expect(pinnedCacheWrites[0]?.request.url).not.toBe(
       cacheReadOrder(new URL(BASE_URL), DEFAULT_QUERY)[0]?.request.url,
     )
+  })
+
+  it('does not cache empty restaurant pinned Open Food Facts pages', () => {
+    const cacheWrites = cacheWritePlan(
+      new URL(BASE_URL),
+      {
+        ...DEFAULT_QUERY,
+        query: 'Raising cane’s',
+        page: 3,
+        provider: 'openFoodFacts',
+        fallbackOnEmpty: false,
+      },
+      makeResponse('openFoodFacts', { page: 3 }),
+    )
+
+    expect(cacheWrites).toEqual([])
   })
 
   it('keeps empty default Open Food Facts responses scoped to their fallback mode', () => {

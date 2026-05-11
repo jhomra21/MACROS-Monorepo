@@ -16,7 +16,7 @@ const DEFAULT_CACHE_PATH = '/v1/packaged-foods/search/default'
 const OPEN_FOOD_FACTS_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts'
 const OPEN_FOOD_FACTS_PINNED_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts/pinned'
 const USDA_CACHE_PATH = '/v1/packaged-foods/search/usda'
-const RESTAURANT_RETRY_CACHE_VERSION = '2'
+const RESTAURANT_RETRY_CACHE_VERSION = '3'
 
 export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): NamedCacheKey[] {
   switch (params.provider) {
@@ -47,7 +47,9 @@ export function cacheWritePlan(url: URL, params: PackagedFoodSearchQuery, respon
     }
 
     return [
-      namedCacheKey(url, params, 'openFoodFactsPinned'),
+      ...(shouldCachePinnedOpenFoodFactsResponse(params, response)
+        ? [namedCacheKey(url, params, 'openFoodFactsPinned')]
+        : []),
       ...(shouldShareOpenFoodFactsResponse(params, response)
         ? [namedCacheKey(url, params, 'openFoodFacts')]
         : []),
@@ -143,4 +145,11 @@ function shouldShareOpenFoodFactsResponse(
   }
 
   return hasUsableOpenFoodFactsResult(response)
+}
+
+function shouldCachePinnedOpenFoodFactsResponse(
+  params: PackagedFoodSearchQuery,
+  response: PackagedFoodSearchResponse,
+): boolean {
+  return isRestaurantLikeQuery(params.query) === false || response.results.length > 0
 }

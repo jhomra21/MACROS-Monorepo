@@ -172,16 +172,16 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   )
   const totalAttempts = legacyOutcome.attempts + searchALiciousOutcome.attempts
 
-  if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
+  if (searchALiciousOutcome.kind === 'response' && searchALiciousOutcome.page.results.length > 0) {
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
   }
 
   if (legacyOutcome.kind === 'response') {
-    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, totalAttempts)
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(legacyOutcome.page), totalAttempts)
   }
 
   if (searchALiciousOutcome.kind === 'response') {
-    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
+    return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(searchALiciousOutcome.page), totalAttempts)
   }
 
   throw legacyOutcome.error
@@ -232,7 +232,7 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
   }
 
   if (lastPage != null) {
-    return { kind: 'response', attempts, page: lastPage }
+    return { kind: 'response', attempts, page: emptyTerminalRestaurantPage(lastPage) }
   }
 
   return {
@@ -240,6 +240,14 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
     attempts,
     error: lastError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true),
   }
+}
+
+function emptyTerminalRestaurantPage<Result>(
+  page: ProviderPage<Result>,
+): ProviderPage<Result> {
+  return page.results.length === 0
+    ? { ...page, hasMore: false }
+    : page
 }
 
 async function searchUSDAPackagedFoods(
