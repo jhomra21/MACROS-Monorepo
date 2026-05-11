@@ -416,7 +416,7 @@ describe('searchPackagedFoods', () => {
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
     expect(response.results).toHaveLength(1)
-    expect(response.openFoodFactsAttemptCount).toBe(2)
+    expect(response.openFoodFactsAttemptCount).toBe(1)
     expect(legacyOpenFoodFactsCallCount).toBe(2)
     expect(searchALiciousCallCount).toBe(0)
   })
@@ -864,7 +864,7 @@ function isSearchALiciousRequest(url: string): boolean {
 }
 
 function isLegacyOpenFoodFactsRequest(url: string): boolean {
-  return url.includes('world.openfoodfacts.org')
+  return url.includes('world.openfoodfacts.org') || url.includes('world.openfoodfacts.net')
 }
 
 function openFoodFactsPayload() {

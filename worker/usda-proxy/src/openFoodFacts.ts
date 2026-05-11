@@ -6,7 +6,10 @@ import type {
 } from './types'
 import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
-const OPEN_FOOD_FACTS_LEGACY_SEARCH_URL = 'https://world.openfoodfacts.org/cgi/search.pl'
+const OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS = [
+  'https://world.openfoodfacts.org/cgi/search.pl',
+  'https://world.openfoodfacts.net/cgi/search.pl',
+]
 const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
 const OPEN_FOOD_FACTS_PRODUCT_URLS = [
   'https://world.openfoodfacts.org/api/v2/product',
@@ -202,21 +205,38 @@ async function fetchOpenFoodFactsPage(
   options: OpenFoodFactsRequestOptions,
   fetcher: HTTPFetcher,
 ): Promise<OpenFoodFactsRawPage> {
-  const response = await fetcher(buildSearchURL(input), {
-    headers: openFoodFactsHeaders(options),
-  })
+  let lastRetryableError: OpenFoodFactsClientError | null = null
 
-  assertOpenFoodFactsResponseOK(response)
+  for (const searchURL of OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS) {
+    let response: Response
 
-  const decoded = (await response.json()) as OpenFoodFactsSearchResponse
-  return {
-    totalCount: decoded.count ?? 0,
-    products: usableMatchingUniqueProducts((decoded.products ?? []).map(makeProxyProduct), input.query),
+    try {
+      response = await fetcher(buildSearchURL(input, searchURL), {
+        headers: openFoodFactsHeaders(options),
+      })
+      assertOpenFoodFactsResponseOK(response)
+    } catch (error) {
+      const normalizedError = normalizeOpenFoodFactsError(error)
+      if (normalizedError != null && normalizedError.retryable) {
+        lastRetryableError = normalizedError
+        continue
+      }
+
+      throw error
+    }
+
+    const decoded = (await response.json()) as OpenFoodFactsSearchResponse
+    return {
+      totalCount: decoded.count ?? 0,
+      products: usableMatchingUniqueProducts((decoded.products ?? []).map(makeProxyProduct), input.query),
+    }
   }
+
+  throw lastRetryableError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
 }
 
-function buildSearchURL(input: OpenFoodFactsQuery): string {
-  const url = new URL(OPEN_FOOD_FACTS_LEGACY_SEARCH_URL)
+function buildSearchURL(input: OpenFoodFactsQuery, searchURL: string): string {
+  const url = new URL(searchURL)
   url.searchParams.set('search_terms', input.query)
   url.searchParams.set('search_simple', '1')
   url.searchParams.set('action', 'process')
