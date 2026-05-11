@@ -75,7 +75,7 @@ struct SearchFoodListView: View {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
 
-                if isLocalSearchLoading {
+                if isLocalSearchLoading && (searchText.isEmpty || localFoods.isEmpty == false) {
                     HStack {
                         ProgressView()
                         Text("Searching on-device foods…")
@@ -92,10 +92,12 @@ struct SearchFoodListView: View {
                     }
                 }
             } footer: {
-                Text(localResultsFooter)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .textCase(nil)
+                if let localResultsFooter {
+                    Text(localResultsFooter)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .textCase(nil)
+                }
             }
 
             Section {
@@ -288,16 +290,12 @@ struct SearchFoodListView: View {
         return "No on-device foods match this search yet."
     }
 
-    private var localResultsFooter: String {
+    private var localResultsFooter: String? {
         if searchText.isEmpty {
-            return localFoods.isEmpty ? "" : "\(localFoods.count) recent on-device foods shown"
+            return localFoods.isEmpty ? nil : "\(localFoods.count) recent on-device foods shown"
         }
 
-        if localFoods.isEmpty {
-            return "No foods available offline"
-        }
-
-        return "\(localFoods.count) on-device matches shown"
+        return localFoods.isEmpty ? nil : "\(localFoods.count) on-device matches shown"
     }
 
     private var showsUSDASearchFallback: Bool {

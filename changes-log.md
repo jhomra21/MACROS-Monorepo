@@ -545,8 +545,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added `LocalFoodSearchResult` and `LocalFoodSearchResultRow` so visible search rows do not retain full SwiftData models.
 - Marked the pure local ranking helpers as `nonisolated` so they can run from the detached search context under Swift 6 actor isolation.
 - Updated local search candidate fetching to include a bounded field-prefix priority bucket before the bounded fallback contains bucket, so the existing name/brand ranking contract is not defeated by an alphabetical pre-rank fetch cap.
+- Kept the Add Food local empty-state row mounted while non-empty searches refresh with no on-device matches, avoiding a loading-row flash on each keystroke.
+- Removed the redundant local empty footer under the already-present no-match row by making the footer optional instead of using an empty placeholder string.
 - A simplify review removed the now-unused full-model local row, clarified capped-result footer wording, and made detached local-search work cancel with SwiftUI `.task(id:)` cancellation.
+- A follow-up simplify review for the local empty-state UI found no scoped reuse, quality, or efficiency cleanup needed.
 - A defensive-code review removed a redundant empty-token guard from `FoodItemLocalSearch.rank`, leaving the query-empty boundary in `rankedFoods`.
+- A follow-up defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the local empty-state UI change.
 
 #### Bugs and implementation findings
 
@@ -562,6 +566,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - The local-search performance follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 - The ranking-aware candidate-fetch fix passed `git diff --check`, formatter validation, iOS simulator build, defensive-code review, and final diff review.
 - Final simulator sampling after the ranking-aware fetch fix measured empty Add Food at `0.0%` average CPU / `365.7 MB` average RSS and `performance 999` search at `0.0%` average CPU / `394.8 MB` average RSS.
+- The local empty-state UI follow-up passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 
 ## USDA Proxy and Unified Remote Search
 
