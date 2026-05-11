@@ -414,6 +414,32 @@ describe('searchPackagedFoods', () => {
     expect(legacyHosts).toEqual(['world.openfoodfacts.net'])
   })
 
+  it('keeps restaurant chain results that match the menu item without requiring every query token', async () => {
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'mcdonalds burger' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          return Response.json({
+            count: 3,
+            products: [
+              restaurantProduct('Big Mac Sauce', "McDonald's"),
+              restaurantProduct("McDonald's, Bacon McDouble", "McDonald's"),
+              restaurantProduct("McDonald's, Cheeseburger", "McDonald's"),
+            ],
+          })
+        }
+
+        return Response.json(searchALiciousEmptyPayload())
+      }),
+    )
+
+    expect(response.results.map((result) => result.provider === 'openFoodFacts' ? result.item.product_name : undefined)).toEqual([
+      "McDonald's, Bacon McDouble",
+      "McDonald's, Cheeseburger",
+    ])
+  })
+
   it('retries flaky legacy Open Food Facts restaurant searches before Search-a-licious', async () => {
     let searchALiciousCallCount = 0
     let legacyOpenFoodFactsCallCount = 0
@@ -972,6 +998,20 @@ function legacyRestaurantPayload() {
         },
       },
     ],
+  }
+}
+
+function restaurantProduct(productName: string, brands: string) {
+  return {
+    product_name: productName,
+    brands,
+    serving_size: '100g',
+    nutriments: {
+      'energy-kcal_100g': 250,
+      proteins_100g: 12,
+      fat_100g: 10,
+      carbohydrates_100g: 20,
+    },
   }
 }
 

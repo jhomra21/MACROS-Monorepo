@@ -2,6 +2,7 @@ import {
   OpenFoodFactsClientError,
   normalizeOpenFoodFactsError,
   searchOpenFoodFactsLegacyFoods,
+  searchOpenFoodFactsLegacyRestaurantFoods,
   searchOpenFoodFactsSearchALiciousFoods,
 } from './openFoodFacts'
 import type { OpenFoodFactsQuery, OpenFoodFactsRequestOptions } from './openFoodFacts'
@@ -203,7 +204,7 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
     for (let attempt = 1; attempt <= RESTAURANT_LEGACY_MAX_ATTEMPTS; attempt += 1) {
       attempts += 1
       try {
-        const result = await searchOpenFoodFactsLegacyFoods(pageInput, { userAgent }, openFoodFactsFetcher)
+        const result = await searchOpenFoodFactsLegacyRestaurantFoods(pageInput, { userAgent }, openFoodFactsFetcher)
         const page = {
           ...result,
           results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),

@@ -178,6 +178,23 @@ export async function searchOpenFoodFactsLegacyFoods(
   options: OpenFoodFactsRequestOptions,
   fetcher: HTTPFetcher = fetch,
 ): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
+  return searchOpenFoodFactsLegacyFoodsWithMatcher(input, options, fetcher, usableMatchingUniqueProducts)
+}
+
+export async function searchOpenFoodFactsLegacyRestaurantFoods(
+  input: OpenFoodFactsQuery,
+  options: OpenFoodFactsRequestOptions,
+  fetcher: HTTPFetcher = fetch,
+): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
+  return searchOpenFoodFactsLegacyFoodsWithMatcher(input, options, fetcher, usableRestaurantUniqueProducts)
+}
+
+async function searchOpenFoodFactsLegacyFoodsWithMatcher(
+  input: OpenFoodFactsQuery,
+  options: OpenFoodFactsRequestOptions,
+  fetcher: HTTPFetcher,
+  productMatcher: (products: OpenFoodFactsProxyProduct[], query: string) => OpenFoodFactsProxyProduct[],
+): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
   const requestedPage = Math.max(1, input.page)
   const requestedPageSize = Math.max(1, input.pageSize)
 
@@ -189,6 +206,7 @@ export async function searchOpenFoodFactsLegacyFoods(
     },
     options,
     fetcher,
+    productMatcher,
   )
 
   return {
@@ -204,6 +222,7 @@ async function fetchOpenFoodFactsPage(
   input: OpenFoodFactsQuery,
   options: OpenFoodFactsRequestOptions,
   fetcher: HTTPFetcher,
+  productMatcher: (products: OpenFoodFactsProxyProduct[], query: string) => OpenFoodFactsProxyProduct[],
 ): Promise<OpenFoodFactsRawPage> {
   let lastRetryableError: OpenFoodFactsClientError | null = null
 
@@ -228,7 +247,7 @@ async function fetchOpenFoodFactsPage(
     const decoded = (await response.json()) as OpenFoodFactsSearchResponse
     return {
       totalCount: decoded.count ?? 0,
-      products: usableMatchingUniqueProducts((decoded.products ?? []).map(makeProxyProduct), input.query),
+      products: productMatcher((decoded.products ?? []).map(makeProxyProduct), input.query),
     }
   }
 
@@ -350,6 +369,124 @@ function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], que
     ...nameTokenMatches(nutritionMissingProducts, queryTokens),
   ]
 }
+
+function usableRestaurantUniqueProducts(products: OpenFoodFactsProxyProduct[], query: string): OpenFoodFactsProxyProduct[] {
+  const completeProducts: OpenFoodFactsProxyProduct[] = []
+  const incompleteProducts: OpenFoodFactsProxyProduct[] = []
+  const seen = new Set<string>()
+  const queryTokens = searchTokens(query, { removeApostrophes: true })
+
+  for (const product of products) {
+    const keys = productDeduplicationKeys(product)
+    if (keys.some((key) => seen.has(key)) || restaurantProductMatches(product, queryTokens) === false) {
+      continue
+    }
+
+    for (const key of keys) {
+      seen.add(key)
+    }
+
+    if (hasCompleteMainNutrition(product)) {
+      completeProducts.push(product)
+    } else {
+      incompleteProducts.push(product)
+    }
+  }
+
+  return [
+    ...completeProducts,
+    ...incompleteProducts,
+  ]
+}
+
+function restaurantProductMatches(product: OpenFoodFactsProxyProduct, queryTokens: string[]): boolean {
+  const text = normalizedSearchText(
+    [product.product_name, product.brands].filter((value): value is string => value != null).join(' '),
+    { removeApostrophes: true },
+  )
+  if (text.length === 0) {
+    return false
+  }
+
+  if (queryTokens.includes('sauce') === false && RESTAURANT_SIDE_TOKENS.some((token) => text.includes(token))) {
+    return false
+  }
+
+  const chainTokens = queryTokens.filter((token) => RESTAURANT_CHAIN_TOKEN_ALIASES[token] != null)
+  const hasChainMatch = chainTokens.length === 0
+    || chainTokens.some((token) => RESTAURANT_CHAIN_TOKEN_ALIASES[token].some((alias) => text.includes(alias)))
+  if (hasChainMatch === false) {
+    return false
+  }
+
+  const menuTokens = queryTokens.filter((token) => RESTAURANT_MENU_TOKEN_ALIASES[token] != null)
+  return menuTokens.length === 0
+    || menuTokens.some((token) => RESTAURANT_MENU_TOKEN_ALIASES[token].some((alias) => text.includes(alias)))
+}
+
+const RESTAURANT_CHAIN_TOKEN_ALIASES: Record<string, string[]> = {
+  arbys: ['arbys'],
+  canes: ['raising canes', 'raising cane'],
+  checkers: ['checkers'],
+  chickfila: ['chick fil a', 'chickfila'],
+  chipotle: ['chipotle'],
+  dominos: ['dominos'],
+  dunkin: ['dunkin'],
+  five: ['five guys'],
+  guys: ['five guys'],
+  in: ['in n out', 'in out', 'in and out'],
+  king: ['burger king'],
+  mcdonalds: ['mcdonalds', 'mc donalds', 'mcdonald'],
+  out: ['in n out', 'in out', 'in and out'],
+  popeyes: ['popeyes'],
+  shack: ['shake shack'],
+  shake: ['shake shack'],
+  starbucks: ['starbucks'],
+  subway: ['subway'],
+  bell: ['taco bell'],
+  wendys: ['wendys', 'wendy'],
+  whataburger: ['whataburger'],
+  wingstop: ['wingstop'],
+}
+
+const RESTAURANT_MENU_TOKEN_ALIASES: Record<string, string[]> = {
+  alfredo: ['alfredo'],
+  baconator: ['baconator'],
+  bagel: ['bagel'],
+  bigmac: ['big mac'],
+  blizzard: ['blizzard'],
+  bowl: ['bowl'],
+  burger: ['burger', 'baconator', 'whopper', 'hamburger', 'cheeseburger', 'mcdouble', 'daves', 'double stack'],
+  burrito: ['burrito'],
+  cheeseburger: ['cheeseburger', 'burger'],
+  chicken: ['chicken', 'mcnugget', 'nugget', 'tender'],
+  coffee: ['coffee'],
+  combo: ['combo', 'meal'],
+  donut: ['donut'],
+  donuts: ['donut'],
+  fries: ['fries', 'fry'],
+  fry: ['fries', 'fry'],
+  mcflurry: ['mcflurry'],
+  nugget: ['nugget', 'mcnugget'],
+  nuggets: ['nugget', 'mcnugget'],
+  pasta: ['pasta'],
+  pizza: ['pizza'],
+  ramen: ['ramen'],
+  salad: ['salad'],
+  sandwich: ['sandwich', 'burger', 'po boy'],
+  shake: ['shake'],
+  smoothie: ['smoothie'],
+  sub: ['sub', 'sandwich'],
+  taco: ['taco'],
+  tender: ['tender', 'chicken'],
+  tenders: ['tender', 'chicken'],
+  whopper: ['whopper'],
+  wings: ['wing'],
+  wing: ['wing'],
+  wrap: ['wrap'],
+}
+
+const RESTAURANT_SIDE_TOKENS = ['sauce', 'dressing', 'dip']
 
 function hasCompleteMainNutrition(product: OpenFoodFactsProxyProduct): boolean {
   const nutriments = product.nutriments

@@ -16,7 +16,7 @@ const DEFAULT_CACHE_PATH = '/v1/packaged-foods/search/default'
 const OPEN_FOOD_FACTS_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts'
 const OPEN_FOOD_FACTS_PINNED_CACHE_PATH = '/v1/packaged-foods/search/openFoodFacts/pinned'
 const USDA_CACHE_PATH = '/v1/packaged-foods/search/usda'
-const RESTAURANT_RETRY_CACHE_VERSION = '3'
+const RESTAURANT_RETRY_CACHE_VERSION = '4'
 
 export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): NamedCacheKey[] {
   switch (params.provider) {
