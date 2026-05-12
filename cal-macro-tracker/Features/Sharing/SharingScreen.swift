@@ -130,11 +130,8 @@ struct SharingScreen: View {
                 )
             }
         }
-        .navigationTitle("")
+        .navigationTitle("Sharing")
         .inlineNavigationTitle()
-        .toolbar {
-            AppTopBarLeadingTitle("Sharing")
-        }
         .errorBanner(message: $errorMessage)
         .alert(
             destructiveAction?.title ?? "",

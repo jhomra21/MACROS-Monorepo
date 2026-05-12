@@ -40,7 +40,7 @@ struct HistoryScreen: View {
             .padding(.bottom, 40)
         }
         .background(PlatformColors.groupedBackground)
-        .navigationTitle("")
+        .navigationTitle(daySelection.selectedDay.topBarTitle)
         .inlineNavigationTitle()
         .onAppear {
             guard daySelection.followsCurrentDay else { return }
@@ -50,11 +50,6 @@ struct HistoryScreen: View {
             daySelection.syncToday(from: oldToday, to: newToday)
         }
         .toolbar {
-            AppTopBarLeadingTitle(
-                historyToolbarTitle,
-                compactTitle: daySelection.selectedDay.dayTitle
-            )
-
             ToolbarItem(placement: .appTopBarTrailing) {
                 calendarToolbarButton
                     .padding(.horizontal, 4)
@@ -73,10 +68,6 @@ struct HistoryScreen: View {
             get: { daySelection.selectedDay },
             set: { updateSelectedDay($0) }
         )
-    }
-
-    private var historyToolbarTitle: String {
-        daySelection.selectedDay.topBarTitle
     }
 
     private func updateSelectedDay(_ newDay: CalendarDay) {

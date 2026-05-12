@@ -14,11 +14,8 @@ struct InsightsScreen: View {
             InsightsLockedPreview(isPresentingFullUnlock: $isPresentingFullUnlock)
         }
         .background(PlatformColors.groupedBackground)
-        .navigationTitle("")
+        .navigationTitle("Insights")
         .inlineNavigationTitle()
-        .toolbar {
-            AppTopBarLeadingTitle("Insights")
-        }
         .sheet(isPresented: $isPresentingFullUnlock) {
             FullUnlockPaywallSheet()
                 .presentationDetents([.medium, .large])

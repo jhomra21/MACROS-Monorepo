@@ -64,11 +64,8 @@ struct SettingsScreen: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
-        .navigationTitle("")
+        .navigationTitle("Settings")
         .inlineNavigationTitle()
-        .toolbar {
-            AppTopBarLeadingTitle("Settings")
-        }
         .onDisappear {
             dismissKeyboard($focusedField)
         }

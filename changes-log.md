@@ -217,6 +217,9 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - A simplify review removed the unused per-call-site `keyboardGap` override API and kept the fix as one shared `BottomPinnedActionBarMetrics.keyboardGap` value.
 - A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the keyboard-spacing follow-up.
 - The keyboard-spacing follow-up passed formatter validation, iOS simulator build/run validation, and final diff review; the macOS CLI build remains blocked by the existing widget provisioning profile requirement.
+- Fixed pushed-page title truncation introduced by reusing the custom leading top-bar title outside Dashboard/History: Settings, Insights, Sharing settings, Sharing dashboard, and History now use native centered inline navigation titles while keeping Dashboard's leading date title and trailing action group behavior.
+- A simplify review inlined History's now single-use toolbar title helper after the screen moved back to native navigation titles.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the pushed-page title follow-up.
 
 #### Bugs and implementation findings
 
@@ -245,6 +248,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - The single-capsule Liquid Glass refactor left the visual surface wider than SwiftUI's inferred tappable label content; adding an explicit capsule/circle content shape restored the expected full-button hit target without widening compact-mode interception beyond the visible control.
 - The iOS 26 tinted glass path did not inherit the fallback button's white foreground styling, which made blue action buttons hard to read in light mode; the shared bottom action label now explicitly uses white foreground text for the glass button path.
 - The Dashboard leading title previously forced its full width, which starved the trailing toolbar on smaller iPhones and made iOS collapse the four actions into a native `...` overflow button. Allowing a compact `Today` / abbreviated-date fallback keeps the native action group visible without showing a truncated `T...` title.
+- The custom leading toolbar title is intentionally limited to Dashboard now; normal pushed screens rely on SwiftUI's native centered title layout so back buttons and trailing toolbar items do not starve title width or produce `S...`-style truncation.
 
 #### Validation
 
@@ -264,6 +268,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - The text-only bottom action label fix passed `git diff --check`, formatter validation, and iOS simulator build.
 - The bottom action hit-target fix passed `git diff --check`, formatter validation, and iOS simulator build.
 - The blue button contrast fix passed formatter validation, iOS simulator build, and focused visual validation of the Dashboard `Add Food` button.
+- The pushed-page title follow-up passed formatter validation, whitespace diff validation, iOS simulator build/run validation, simplify review, defensive-code review, final diff review, and focused XcodeBuildMCP simulator verification for Settings, Insights, Sharing settings, Sharing dashboard, and History.
 
 ### Follow-up: Dashboard macro swipe vs tap gestures
 

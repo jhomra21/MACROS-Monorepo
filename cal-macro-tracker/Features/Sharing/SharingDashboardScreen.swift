@@ -41,10 +41,9 @@ struct SharingDashboardScreen: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .background(PlatformColors.groupedBackground)
-        .navigationTitle("")
+        .navigationTitle("Sharing")
         .inlineNavigationTitle()
         .toolbar {
-            AppTopBarLeadingTitle("Sharing")
             ToolbarItem(placement: .appTopBarTrailing) {
                 Button(action: onOpenSharingSettings) {
                     Image(systemName: "gearshape")
