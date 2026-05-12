@@ -252,7 +252,9 @@ private struct FullUnlockSettingsSection: View {
                     await purchaseStore.restorePurchases()
                 }
             }
-            .disabled(purchaseStore.isPurchasing)
+            .disabled(purchaseStore.isPurchasing || purchaseStore.isRestoring)
+
+            PurchaseFeedbackText(feedback: purchaseStore.feedback)
 
             #if DEBUG
             Button(purchaseStore.hasFullUnlock ? "Revoke Debug Unlock" : "Grant Debug Unlock") {

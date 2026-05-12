@@ -31,12 +31,8 @@ struct FullUnlockPaywallSheet: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
-                if let errorMessage = purchaseStore.errorMessage {
-                    Text(errorMessage)
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
+                PurchaseFeedbackText(feedback: purchaseStore.feedback)
+                    .multilineTextAlignment(.center)
 
                 VStack(spacing: 12) {
                     GlassEffectContainer(spacing: 12) {
@@ -45,7 +41,8 @@ struct FullUnlockPaywallSheet: View {
                                 dismiss()
                             }
                         } else {
-                            let isPurchaseDisabled = purchaseStore.isPurchasing || purchaseStore.isLoadingProducts
+                            let isPurchaseDisabled =
+                                purchaseStore.isPurchasing || purchaseStore.isLoadingProducts || purchaseStore.isRestoring
 
                             AppAccentActionButton(
                                 title: purchaseButtonTitle,
@@ -66,7 +63,7 @@ struct FullUnlockPaywallSheet: View {
                         }
                     }
                     .buttonStyle(.borderless)
-                    .disabled(purchaseStore.isPurchasing)
+                    .disabled(purchaseStore.isPurchasing || purchaseStore.isRestoring)
 
                     #if DEBUG
                     if !purchaseStore.hasFullUnlock {
@@ -112,5 +109,24 @@ struct FullUnlockPaywallSheet: View {
         }
 
         return "Unlock"
+    }
+}
+
+struct PurchaseFeedbackText: View {
+    let feedback: PurchaseStore.Feedback?
+
+    var body: some View {
+        switch feedback {
+        case let .error(message):
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.red)
+        case let .status(message):
+            Text(message)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        case nil:
+            EmptyView()
+        }
     }
 }

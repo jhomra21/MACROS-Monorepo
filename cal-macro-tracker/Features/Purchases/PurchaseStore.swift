@@ -7,13 +7,19 @@ import StoreKit
 final class PurchaseStore {
     static let fullUnlockProductID = "fullunlock001"
 
+    enum Feedback {
+        case error(String)
+        case status(String)
+    }
+
     private let entitlements: AppEntitlements
     private var transactionUpdatesTask: Task<Void, Never>?
 
     private(set) var fullUnlockProduct: Product?
     private(set) var isLoadingProducts = false
     private(set) var isPurchasing = false
-    private(set) var errorMessage: String?
+    private(set) var isRestoring = false
+    private(set) var feedback: Feedback?
 
     var hasFullUnlock: Bool {
         entitlements.hasFullUnlock
@@ -43,24 +49,28 @@ final class PurchaseStore {
 
         do {
             fullUnlockProduct = try await Product.products(for: [Self.fullUnlockProductID]).first
-            errorMessage = nil
+            if case .error = feedback {
+                feedback = nil
+            }
         } catch {
-            errorMessage = "Unable to load purchase options."
+            feedback = .error("Unable to load purchase options.")
         }
     }
 
     func purchaseFullUnlock() async {
+        guard !isPurchasing, !isRestoring else { return }
+
+        isPurchasing = true
+        defer { isPurchasing = false }
+
         if fullUnlockProduct == nil {
             await loadProducts()
         }
 
         guard let fullUnlockProduct else {
-            errorMessage = "Purchase is currently unavailable."
+            feedback = .error("Purchase is currently unavailable.")
             return
         }
-
-        isPurchasing = true
-        defer { isPurchasing = false }
 
         do {
             let result = try await fullUnlockProduct.purchase()
@@ -73,17 +83,26 @@ final class PurchaseStore {
                 break
             }
         } catch {
-            errorMessage = "Purchase could not be completed."
+            feedback = .error("Purchase could not be completed.")
         }
     }
 
     func restorePurchases() async {
+        guard !isPurchasing, !isRestoring else { return }
+
+        isRestoring = true
+        defer { isRestoring = false }
+
         do {
             try await AppStore.sync()
             await refreshEntitlements()
-            errorMessage = nil
+            if hasFullUnlock {
+                feedback = .status("Purchases restored.")
+            } else {
+                feedback = .status("No full app unlock purchase was found for this Apple Account.")
+            }
         } catch {
-            errorMessage = "Restore could not be completed."
+            feedback = .error("Restore could not be completed.")
         }
     }
 
@@ -104,7 +123,7 @@ final class PurchaseStore {
     #if DEBUG
     func setDebugFullUnlock(_ isUnlocked: Bool) {
         entitlements.update(fullUnlock: isUnlocked)
-        errorMessage = nil
+        feedback = nil
     }
     #endif
 
@@ -116,13 +135,13 @@ final class PurchaseStore {
 
     private func applyPurchasedTransaction(from result: VerificationResult<Transaction>) async {
         guard case let .verified(transaction) = result else {
-            errorMessage = "Purchase could not be verified."
+            feedback = .error("Purchase could not be verified.")
             return
         }
 
         applyFullUnlock(from: transaction)
         await transaction.finish()
-        errorMessage = nil
+        feedback = hasFullUnlock ? .status("Purchase complete.") : nil
     }
 
     private func applyFullUnlock(from transaction: Transaction) {

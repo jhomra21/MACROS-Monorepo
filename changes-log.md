@@ -70,6 +70,9 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Fixed the shared Xcode scheme's local StoreKit configuration reference so Xcode-launched StoreKit testing resolves `FullUnlock.storekit` correctly.
 - Updated the StoreKit quality guardrail to validate the production product ID and the scheme-relative StoreKit file path.
 - Created App Store Connect review/marketing screenshots for the paywall, home screen, and Add Food screen.
+- Improved Full Unlock purchase feedback so purchase/restore success, missing-purchase restore results, and StoreKit errors are shown consistently from both Settings and the paywall while restore/purchase actions are mutually disabled.
+- Post-implementation simplify consolidated purchase feedback into one typed store state, reused a shared inline feedback view, and added guards against overlapping StoreKit purchase/restore work.
+- Post-implementation defensive-code review removed unused compatibility feedback accessors and found no other high-confidence redundant guards or impossible branches.
 
 ### Main implementation steps
 
@@ -91,6 +94,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - StoreKit config validation passed.
 - iOS simulator build passed.
 - Manual Xcode local StoreKit purchase testing passed.
+- The purchase feedback follow-up passed Swift format validation, whitespace diff validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 - Final commit validation passed formatter, secrets, and StoreKit checks; full `make quality` remained blocked by existing Periphery/test-module and dependency-inventory guardrails unrelated to this release-prep diff.
 
 ## History and Calendar
