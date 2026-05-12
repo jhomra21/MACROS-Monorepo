@@ -42,7 +42,37 @@ enum DailyShareImageExporter {
         let renderer = ImageRenderer(content: content)
         renderer.scale = UITraitCollection.current.displayScale
 
-        return renderer.uiImage
+        guard let image = renderer.uiImage else { return nil }
+
+        return opaqueImage(from: image, colorScheme: colorScheme)
+    }
+
+    private static func opaqueImage(from image: UIImage, colorScheme: ColorScheme) -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        format.opaque = true
+        let backgroundColor = UIColor.systemGroupedBackground.resolvedColor(
+            with: UITraitCollection(userInterfaceStyle: colorScheme.userInterfaceStyle)
+        )
+
+        return UIGraphicsImageRenderer(size: image.size, format: format).image { context in
+            backgroundColor.setFill()
+            context.fill(CGRect(origin: .zero, size: image.size))
+            image.draw(in: CGRect(origin: .zero, size: image.size))
+        }
+    }
+}
+
+private extension ColorScheme {
+    var userInterfaceStyle: UIUserInterfaceStyle {
+        switch self {
+        case .dark:
+            .dark
+        case .light:
+            .light
+        @unknown default:
+            .unspecified
+        }
     }
 }
 
@@ -108,6 +138,7 @@ final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
         let thumbnailSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
         let format = UIGraphicsImageRendererFormat()
         format.scale = image.scale
+        format.opaque = true
 
         return UIGraphicsImageRenderer(size: thumbnailSize, format: format).image { _ in
             image.draw(in: CGRect(origin: .zero, size: thumbnailSize))

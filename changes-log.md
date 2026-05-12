@@ -172,6 +172,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Kept the Dashboard share preview image visible while avoiding generated PNG caching.
 - Updated the generated Dashboard share image and share-sheet metadata to use the selected date as the only title instead of `Daily Summary`.
 - Fixed the Dashboard Save Photo payload so Photos receives JPEG data instead of an alpha-bearing `UIImage`.
+- Flattened Dashboard share renders and thumbnails onto an opaque background so system share/save image handling no longer sees unnecessary alpha while preserving the original render scale and dimensions.
 - Shared JPEG encoding between Dashboard sharing and label-scan preview generation.
 - Removed temporary Dashboard share/save timing diagnostics after the Save Photo issue was isolated.
 - Added a scroll-responsive compact Add Food control on Dashboard: the full-width bottom action morphs into a bottom-right circular iOS 26 Liquid Glass plus button once the user scrolls.
@@ -196,10 +197,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added `Shared/ImageJPEGEncoder.swift` as the shared iOS JPEG encoding utility.
 - Replaced the scan-only `ScanPreviewImageEncoder` wrapper with `ImageJPEGEncoder` in `LabelScanScreen.swift`.
 - Updated `DashboardShareImageItemSource` so `.saveToCameraRoll` receives direct JPEG data while other share activities still receive the original image.
+- Updated `DailyShareImageExporter` to return an opaque share image and opaque share thumbnails, avoiding alpha-channel image encoder warnings for an already-solid share card.
 - Cached the encoded Save Photo JPEG data per Dashboard share item source to avoid repeated compression if UIKit asks for the item more than once.
 - Added `Shared/ImageJPEGEncoder.swift` to the Xcode synchronized-group exception list so the file is not compiled twice through both the app root and shared groups.
 - Overlapped label OCR and preview JPEG encoding with `async let` so scan preview preparation no longer waits until OCR finishes.
 - Validated and fixed the review finding that returning a nested `UIActivityItemProvider` from another `UIActivityItemSource` was the wrong UIKit share contract; the Save Photo branch now returns the final cached JPEG `Data` directly.
+- Post-implementation simplify review kept the opaque flattening path but fixed it to resolve the fill color from the requested share `ColorScheme`, avoiding light/dark background mismatches behind transparent pixels.
+- A defensive-code review found no high-confidence redundant guards, duplicated validation, or impossible-state branches in the opaque share image follow-up.
 - Updated `BottomPinnedActionBar.swift` with an expanded/compact display mode, native `GlassEffectContainer` / `glassEffectID` morphing, explicit circular compact button shape, and a non-glass fallback.
 - Updated `DashboardScreen.swift` to drive the compact Add Food state from existing scroll geometry with a small hysteresis threshold, while keeping the transition animation owned by the state mutation.
 - Removed the bottom bar's full-width hit shape and day-swipe gesture so compact mode only intercepts taps on the circular plus button and logged-food rows beside it remain editable.
@@ -228,6 +232,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Sharing a raw `UIImage` fixed file-provider / LaunchServices file URL work but temporarily caused the share sheet to show the app icon; using `UIActivityItemSource` plus `LPLinkMetadata` restored the image preview.
 - Device logs showed the post-reload Save Photo delay was no longer in Dashboard image export or share-sheet presentation; the remaining cost was in the system Save Photo path.
 - Photos emitted alpha-channel warnings for the share image (`AlphaPremulLast` / `AlphaLast`), so the Save Photo activity now receives JPEG data to avoid alpha-bearing image payloads.
+- Share-sheet logs could still warn that an opaque image was being saved with `AlphaPremulLast`; the fix flattens the rendered share image over the same grouped background rather than changing compression quality or image dimensions.
 - Eagerly preparing JPEG data before presenting the share sheet improved Save Photo readiness but made every share action pay the Save Photo cost; the final implementation scopes JPEG work to `.saveToCameraRoll`.
 - Returning a `UIActivityItemProvider` from `itemForActivityType` would rely on undocumented recursive provider resolution; the corrected root fix keeps `DashboardShareImageItemSource` as the single owner of activity-specific payload selection.
 - A temporary logging pass helped isolate the issue but was removed before the final cleanup so production sharing has no extra lifecycle logging/context plumbing.
@@ -259,6 +264,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Share warm-up and item-source changes passed formatter validation, iOS simulator build, and `git diff --check`.
 - Date-only share title and final defensive-code cleanup passed formatter validation, iOS simulator build, and `git diff --check`.
 - Save Photo JPEG payload and cleanup passes passed `git diff --check`, formatter validation, repeated simplify review, and iOS simulator builds.
+- Opaque share image flattening passed whitespace diff validation, formatter validation, iOS simulator build, simplify review, defensive-code review, and final diff review.
 - The nested-provider review fix passed `git diff --check`, formatter validation, iOS simulator build, and a final focused diff review.
 - The compact Add Food Liquid Glass follow-up passed `git diff --check`, formatter validation, iOS simulator build, simplify review, and defensive-code review.
 - The Add Food compaction animation follow-up passed `git diff --check`, formatter validation, and iOS simulator build; visual acceptance came from interactive review of the compacting animation.
