@@ -165,7 +165,11 @@ private struct EditLogEntrySheetContent: View {
 
     var body: some View {
         if let entry = modelContext.model(for: entryID) as? LogEntry {
-            EditLogEntryScreen(entry: entry)
+            if entry.isMealLog {
+                LoggedMealDetailScreen(entry: entry)
+            } else {
+                EditLogEntryScreen(entry: entry)
+            }
         } else {
             ContentUnavailableView(
                 "Entry unavailable",

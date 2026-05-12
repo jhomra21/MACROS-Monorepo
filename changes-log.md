@@ -5,8 +5,24 @@
 Detailed implementation trackers live in `implementation-trackers/`:
 
 - [`implementation-trackers/insights-implementation-tracker.md`](implementation-trackers/insights-implementation-tracker.md)
+- [`implementation-trackers/meals-implementation-tracker.md`](implementation-trackers/meals-implementation-tracker.md)
 - [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
+
+## Saved Meals
+
+### Delivered
+
+- Implemented local saved meals with linked food components, aggregate nutrition, Add Food search results, meal review/logging, logged meal snapshots, edit/delete handling, online component resolution, and multi-select saved-food component picking.
+- Preserved key design decisions in the meals tracker: local-only SwiftData storage, snapshot-based historical logs, native disabled `Save Meal`, and the native circular `.borderedProminent` accent-tinted checkmark picker confirmation action.
+- Post-implementation cleanup batched meal component food fetches, sorted mixed food/meal local results without artificial meal priority, reused shared quantity-state conversion, and removed one redundant filtered-row disabled check.
+- A second post-implementation review batched meal search summaries and referenced-food searchable-text refreshes, shared cached remote food lookup and quantity summary formatting, removed unused model helpers, and simplified proven unreachable defensive branches.
+- Final repeated review passes returned LGTM after single-pass nutrient summing, hiding `Log Again` for meal rows until meal-preserving re-log is supported, and removing the last duplicated quantity formatting path.
+- Broader shared local/remote search extraction remains deferred to avoid widening the first-version meals cleanup.
+
+### Validation
+
+- Meals implementation and cleanup passed Swift format validation, whitespace diff validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ## Packaged Food Restaurant Search Routing
 

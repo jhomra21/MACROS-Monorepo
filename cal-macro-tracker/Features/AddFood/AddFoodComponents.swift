@@ -31,6 +31,12 @@ struct ManualFoodEntryScreen: View {
         } footerSections: {
             Section {
                 NavigationLink {
+                    MealEditorScreen(loggingDay: loggingDay, onMealLogged: onFoodLogged)
+                } label: {
+                    Label("Create Meal", systemImage: "fork.knife")
+                }
+
+                NavigationLink {
                     LogFoodScreen(
                         initialDraft: numericText.finalizedDraft(from: draft) ?? draft,
                         loggingDay: loggingDay,

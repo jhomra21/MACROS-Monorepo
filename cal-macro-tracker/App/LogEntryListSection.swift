@@ -171,7 +171,11 @@ struct LogEntryListSection: View {
         case .stackedCards:
             interactiveEntryRow(
                 NavigationLink {
-                    EditLogEntryScreen(entry: entry)
+                    if entry.isMealLog {
+                        LoggedMealDetailScreen(entry: entry)
+                    } else {
+                        EditLogEntryScreen(entry: entry)
+                    }
                 } label: {
                     LogEntryRow(entry: entry)
                 },
@@ -207,7 +211,7 @@ struct LogEntryListSection: View {
                     .tint(.gray)
                 }
 
-                if let onLogAgain {
+                if let onLogAgain, entry.isMealLog == false {
                     Button("Log Again") {
                         onLogAgain(entry)
                     }

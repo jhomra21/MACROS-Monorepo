@@ -10,12 +10,17 @@ extension FoodItemRepository {
         secondaryNutrientBackfillStateOverride: SecondaryNutrientBackfillState? = nil
     ) throws -> FoodItem {
         let savedFoodID = try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
-            try upsertReusableFood(
+            let savedFood = try upsertReusableFood(
                 from: draft,
                 in: isolatedContext,
                 sourceOverride: sourceOverride,
                 secondaryNutrientBackfillStateOverride: secondaryNutrientBackfillStateOverride
-            ).id
+            )
+            try MealRepository(modelContext: isolatedContext).refreshSearchableTextForMealsReferencingFood(
+                id: savedFood.id,
+                in: isolatedContext
+            )
+            return savedFood.id
         }
 
         guard let savedFood = try fetchReusableFood(id: savedFoodID) else {
@@ -37,6 +42,21 @@ extension FoodItemRepository {
             guard isolatedFood.sourceKind != .common else {
                 throw NSError(
                     domain: "FoodItemRepository", code: 3, userInfo: [NSLocalizedDescriptionKey: "Common foods cannot be deleted."])
+            }
+
+            let referencingMealCount = try MealRepository(modelContext: isolatedContext).mealCountReferencingFood(
+                id: isolatedFood.id,
+                in: isolatedContext
+            )
+            guard referencingMealCount == 0 else {
+                throw NSError(
+                    domain: "FoodItemRepository",
+                    code: 4,
+                    userInfo: [
+                        NSLocalizedDescriptionKey:
+                            "This food is used by \(referencingMealCount) meal\(referencingMealCount == 1 ? "" : "s") and cannot be deleted."
+                    ]
+                )
             }
 
             isolatedContext.delete(isolatedFood)

@@ -5,6 +5,7 @@ import SwiftData
 final class LogEntry {
     var id: UUID
     var foodItemID: UUID?
+    var mealID: UUID?
     var dateLogged: Date
     var foodName: String
     var brand: String?
@@ -45,6 +46,7 @@ final class LogEntry {
     init(
         id: UUID = UUID(),
         foodItemID: UUID? = nil,
+        mealID: UUID? = nil,
         dateLogged: Date,
         foodName: String,
         brand: String? = nil,
@@ -84,6 +86,7 @@ final class LogEntry {
     ) {
         self.id = id
         self.foodItemID = foodItemID
+        self.mealID = mealID
         self.dateLogged = dateLogged
         self.foodName = foodName
         self.brand = brand
@@ -124,6 +127,10 @@ final class LogEntry {
 
     var sourceKind: FoodSource {
         FoodSource(rawValue: source) ?? .custom
+    }
+
+    var isMealLog: Bool {
+        mealID != nil
     }
 
     var barcodeOrNil: String? {
@@ -175,12 +182,13 @@ final class LogEntry {
     }
 
     var quantitySummary: String {
-        switch quantityModeKind {
-        case .servings:
-            return "\((servingsConsumed ?? 0).roundedForDisplay) servings"
-        case .grams:
-            return "\((gramsConsumed ?? 0).roundedForDisplay) g"
+        if isMealLog {
+            let amount = servingsConsumed ?? 0
+            return "\(amount.roundedForDisplay) meal\(amount == 1 ? "" : "s")"
         }
+
+        let amount = quantityModeKind == .servings ? (servingsConsumed ?? 0) : (gramsConsumed ?? 0)
+        return quantityModeKind.formattedSummary(amount: amount)
     }
 
     private static func trimmedText(from value: String?) -> String? {

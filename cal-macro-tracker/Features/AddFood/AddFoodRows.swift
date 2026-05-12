@@ -50,6 +50,28 @@ struct LocalFoodSearchResultRow: View {
     }
 }
 
+struct LocalMealSearchResultRow: View {
+    let result: LocalMealSearchResult
+
+    var body: some View {
+        FoodNutritionRow(
+            name: result.name,
+            subtitle: mealSubtitle,
+            calories: result.calories,
+            protein: result.protein,
+            carbs: result.carbs,
+            fat: result.fat
+        )
+        .accessibilityLabel(
+            "Meal, \(result.name), \(result.calories.roundedForDisplay) calories"
+        )
+    }
+
+    private var mealSubtitle: String {
+        result.componentPreview.isEmpty ? "Meal" : "Meal • \(result.componentPreview)"
+    }
+}
+
 struct RemoteFoodRow: View {
     let result: RemoteSearchResult
 

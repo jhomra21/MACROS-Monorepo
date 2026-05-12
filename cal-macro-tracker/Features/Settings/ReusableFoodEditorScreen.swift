@@ -13,6 +13,7 @@ struct ReusableFoodEditorScreen: View {
     @State private var saveFeedbackToken = 0
     @State private var deleteFeedbackToken = 0
     @State private var isRefreshingNutrients = false
+    @State private var referencingMealCount = 0
     @FocusState private var focusedField: FoodDraftField?
 
     init(food: FoodItem) {
@@ -86,6 +87,10 @@ struct ReusableFoodEditorScreen: View {
             )
     }
 
+    private var isUsedByMeals: Bool {
+        referencingMealCount > 0
+    }
+
     private var nutrientRefreshMessage: String {
         return "Extra nutrients are missing for this saved food. Refresh from the source, then save to keep the new values."
     }
@@ -119,6 +124,14 @@ struct ReusableFoodEditorScreen: View {
                 sourceAction: sourceSectionAction
             )
         } footerSections: {
+            if isUsedByMeals {
+                Section {
+                    Label(mealReferenceMessage, systemImage: "fork.knife")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             Section {
                 Button("Save") {
                     saveFood()
@@ -130,7 +143,7 @@ struct ReusableFoodEditorScreen: View {
                 Button("Delete Food", role: .destructive) {
                     deleteFood()
                 }
-                .disabled(isRefreshingNutrients)
+                .disabled(isRefreshingNutrients || isUsedByMeals)
             }
         }
         .navigationTitle(navigationTitle)
@@ -138,6 +151,14 @@ struct ReusableFoodEditorScreen: View {
         .disabled(isRefreshingNutrients)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
         .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+        .task(id: food.id) {
+            refreshMealReferenceCount()
+        }
+    }
+
+    private var mealReferenceMessage: String {
+        "Used by \(referencingMealCount) meal\(referencingMealCount == 1 ? "" : "s"). "
+            + "Saving updates future meal totals; past logged meals stay unchanged. Delete is blocked while this food is in a meal."
     }
 
     private func saveFood() {
@@ -166,6 +187,7 @@ struct ReusableFoodEditorScreen: View {
         do {
             let persistedFood = try foodRepository.saveReusableFood(from: finalizedDraft, operation: saveOperationName)
             draft = FoodDraft(foodItem: persistedFood, saveAsCustomFood: true)
+            refreshMealReferenceCount()
             errorMessage = nil
             saveFeedbackToken += 1
             dismiss()
@@ -200,6 +222,17 @@ struct ReusableFoodEditorScreen: View {
             }
 
             isRefreshingNutrients = false
+        }
+    }
+
+    private func refreshMealReferenceCount() {
+        do {
+            referencingMealCount = try MealRepository(modelContext: modelContext).mealCountReferencingFood(
+                id: food.id,
+                in: modelContext
+            )
+        } catch {
+            referencingMealCount = 0
         }
     }
 }

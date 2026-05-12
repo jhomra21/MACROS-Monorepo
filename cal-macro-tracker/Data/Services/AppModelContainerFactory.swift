@@ -12,6 +12,9 @@ enum AppModelContainerFactory {
         let container = try ModelContainer(
             for: DailyGoals.self,
             FoodItem.self,
+            Meal.self,
+            MealComponent.self,
+            LoggedMealComponentSnapshot.self,
             LogEntry.self,
             configurations: configuration
         )

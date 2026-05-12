@@ -49,7 +49,7 @@ struct RemoteSearchSelectionScreen: View {
         guard draft == nil, errorMessage == nil else { return }
 
         do {
-            if let cachedFood = try cachedFood() {
+            if let cachedFood = try result.cachedFood(using: foodRepository) {
                 draft = FoodDraft(foodItem: cachedFood, saveAsCustomFood: true)
                 return
             }
@@ -59,19 +59,26 @@ struct RemoteSearchSelectionScreen: View {
             errorMessage = error.localizedDescription
         }
     }
-
-    private func cachedFood() throws -> FoodItem? {
-        for externalProductID in result.cacheLookupExternalProductIDs {
-            if let cachedFood = try foodRepository.fetchReusableFood(source: .searchLookup, externalProductID: externalProductID) {
+}
+extension RemoteSearchResult {
+    func cachedFood(using foodRepository: FoodItemRepository) throws -> FoodItem? {
+        for externalProductID in cacheLookupExternalProductIDs {
+            if let cachedFood = try foodRepository.fetchReusableFood(
+                source: .searchLookup,
+                externalProductID: externalProductID
+            ) {
                 return cachedFood
             }
 
-            if let cachedFood = try foodRepository.fetchReusableFood(source: .barcodeLookup, externalProductID: externalProductID) {
+            if let cachedFood = try foodRepository.fetchReusableFood(
+                source: .barcodeLookup,
+                externalProductID: externalProductID
+            ) {
                 return cachedFood
             }
         }
 
-        guard let barcode = result.barcode else { return nil }
+        guard let barcode else { return nil }
         return try foodRepository.fetchBarcodeLookupFood(barcode: barcode)
     }
 }

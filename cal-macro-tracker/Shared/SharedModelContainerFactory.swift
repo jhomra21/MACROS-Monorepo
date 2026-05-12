@@ -34,6 +34,9 @@ enum SharedModelContainerFactory {
         let container = try ModelContainer(
             for: DailyGoals.self,
             FoodItem.self,
+            Meal.self,
+            MealComponent.self,
+            LoggedMealComponentSnapshot.self,
             LogEntry.self,
             configurations: sharedWritableConfiguration
         )
@@ -49,6 +52,9 @@ enum SharedModelContainerFactory {
         return try ModelContainer(
             for: DailyGoals.self,
             FoodItem.self,
+            Meal.self,
+            MealComponent.self,
+            LoggedMealComponentSnapshot.self,
             LogEntry.self,
             configurations: sharedReadOnlyConfiguration
         )

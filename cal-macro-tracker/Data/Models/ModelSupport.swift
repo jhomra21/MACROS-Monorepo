@@ -11,6 +11,15 @@ enum FoodSource: String, Codable, CaseIterable {
 enum QuantityMode: String, Codable, CaseIterable {
     case servings
     case grams
+
+    func formattedSummary(amount: Double) -> String {
+        switch self {
+        case .servings:
+            return "\(amount.roundedForDisplay) servings"
+        case .grams:
+            return "\(amount.roundedForDisplay) g"
+        }
+    }
 }
 
 enum SecondaryNutrientBackfillState: String, Codable {
