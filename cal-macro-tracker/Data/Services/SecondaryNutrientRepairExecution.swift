@@ -102,10 +102,7 @@ extension SecondaryNutrientRepairService {
         let entries = try logEntriesNeedingSecondaryNutrientRepair(modelContext: modelContext)
         guard entries.isEmpty == false else { return }
 
-        let foodsByID = try Dictionary(
-            uniqueKeysWithValues: fetchAllFoods(modelContext: modelContext).map { ($0.id, $0) }
-        )
-        let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
+        let lookup = try historicalRepairLookup(modelContext: modelContext)
         let repairDraftsByKey = commonRepairDraftsByKey(records: commonFoodRecords)
         var externalDraftsByTarget: [SecondaryNutrientRepairTarget: FoodDraft?] = [:]
         var repairs: [LogEntrySecondaryNutrientRepair] = []
@@ -114,8 +111,8 @@ extension SecondaryNutrientRepairService {
         for entry in entries {
             let repairDraftResolution = try await historicalRepairDraftResolution(
                 for: entry,
-                foodsByID: foodsByID,
-                externalTargetsByKey: externalTargetsByKey,
+                foodsByID: lookup.foodsByID,
+                externalTargetsByKey: lookup.externalTargetsByKey,
                 commonDraftsByKey: repairDraftsByKey,
                 externalDraftsByTarget: &externalDraftsByTarget
             )

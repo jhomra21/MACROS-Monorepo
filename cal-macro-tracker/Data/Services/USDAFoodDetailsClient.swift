@@ -36,12 +36,10 @@ struct USDAFoodDetailsClient {
             throw USDAFoodDetailsClientError.invalidFoodID
         }
 
-        guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
-            throw USDAFoodDetailsClientError.unavailableConfiguration
-        }
-
-        let url = baseURL.appendingPathComponent("v1/usda/foods/\(id)")
-        let request = jsonClient.makeRequest(url: url, acceptJSON: true)
+        let request = try jsonClient.makeProxyRequest(
+            pathComponents: ["v1", "usda", "foods", String(id)],
+            unavailableConfigurationError: USDAFoodDetailsClientError.unavailableConfiguration
+        )
         return try await jsonClient.proxyResponse(
             for: request,
             responseType: USDAProxyFood.self,

@@ -65,27 +65,36 @@ struct LogFoodScreen: View {
         numericText.finalizedDraft(from: draft) ?? draft
     }
 
+    private var loggingAction: FoodDraftLoggingAction? {
+        numericText.finalizedDraft(from: draft)?.loggingAction(
+            initialDraft: initialDraft,
+            quantityMode: quantityMode,
+            quantityAmount: activeAmount
+        )
+    }
+
+    private var previewLoggingAction: FoodDraftLoggingAction {
+        previewDraft.loggingAction(
+            initialDraft: initialDraft,
+            quantityMode: quantityMode,
+            quantityAmount: activeAmount
+        )
+    }
+
     private var nutritionPresentation: FoodDraftNutritionPresentation? {
-        guard
-            let multiplier = NutritionMath.quantityMultiplier(
-                mode: quantityMode,
-                amount: activeAmount,
-                gramsPerServing: previewDraft.gramsPerServing
-            )
-        else {
-            return nil
-        }
+        guard let multiplier = previewLoggingAction.quantityMultiplier else { return nil }
 
         return FoodDraftNutritionPresentation(title: "Nutrition", multiplier: multiplier)
     }
 
     private var reusableFoodPersistenceMode: ReusableFoodPersistenceMode {
-        FoodDraft.reusableFoodPersistenceMode(initialDraft: initialDraft, currentDraft: draft)
+        loggingAction?.reusableFoodPersistenceMode
+            ?? FoodDraft.reusableFoodPersistenceMode(initialDraft: initialDraft, currentDraft: draft)
     }
 
     private var canSave: Bool {
-        guard let finalizedDraft = numericText.finalizedDraft(from: draft) else { return false }
-        return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: activeAmount)
+        guard let loggingAction else { return false }
+        return loggingAction.canLog
             && unresolvedRequiredReviewNutrients.isEmpty
     }
 
@@ -254,23 +263,20 @@ struct LogFoodScreen: View {
     }
 
     private func saveEntry() {
-        guard let finalizedDraft = numericText.finalizedDraft(from: draft) else {
+        guard let loggingAction else {
             errorMessage = "Please fix invalid numeric values before logging food."
             return
         }
 
         dismissKeyboard($focusedField)
-        persistEntry(finalizedDraft)
+        persistEntry(loggingAction)
     }
 
-    private func persistEntry(_ finalizedDraft: FoodDraft) {
+    private func persistEntry(_ loggingAction: FoodDraftLoggingAction) {
         do {
             try logEntryRepository.logFood(
-                draft: finalizedDraft,
-                reusableFoodPersistenceMode: reusableFoodPersistenceMode,
+                action: loggingAction,
                 loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now,
-                quantityMode: quantityMode,
-                quantityAmount: activeAmount,
                 operation: "Log food"
             )
             errorMessage = nil

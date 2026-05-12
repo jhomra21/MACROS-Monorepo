@@ -193,8 +193,10 @@ struct OpenFoodFactsClient {
             throw OpenFoodFactsClientError.invalidBarcode
         }
 
-        let url = try productLookupURL(for: normalizedBarcode)
-        let request = jsonClient.makeRequest(url: url, acceptJSON: true)
+        let request = try jsonClient.makeProxyRequest(
+            pathComponents: ["v1", "packaged-foods", "barcodes", normalizedBarcode],
+            unavailableConfigurationError: OpenFoodFactsClientError.unavailableConfiguration
+        )
         let decodedResponse = try await jsonClient.proxyResponse(
             for: request,
             responseType: OpenFoodFactsResponse.self,
@@ -209,16 +211,5 @@ struct OpenFoodFactsClient {
         }
 
         return product
-    }
-
-    private func productLookupURL(for barcode: String) throws -> URL {
-        guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
-            throw OpenFoodFactsClientError.unavailableConfiguration
-        }
-
-        return
-            baseURL
-            .appendingPathComponent("v1/packaged-foods/barcodes")
-            .appendingPathComponent(barcode)
     }
 }

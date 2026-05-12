@@ -191,14 +191,26 @@ extension SecondaryNutrientRepairService {
         for entry: LogEntry,
         modelContext: ModelContext
     ) throws -> SecondaryNutrientRepairTarget? {
+        let lookup = try historicalRepairLookup(modelContext: modelContext)
+        return historicalRepairTarget(
+            for: entry,
+            foodsByID: lookup.foodsByID,
+            externalTargetsByKey: lookup.externalTargetsByKey
+        )
+    }
+
+    static func historicalRepairLookup(
+        modelContext: ModelContext
+    ) throws -> (
+        foodsByID: [UUID: FoodItem],
+        externalTargetsByKey: [SecondaryNutrientRepairKey: SecondaryNutrientRepairTarget]
+    ) {
         let foodsByID = try Dictionary(
             uniqueKeysWithValues: fetchAllFoods(modelContext: modelContext).map { ($0.id, $0) }
         )
-        let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
-        return historicalRepairTarget(
-            for: entry,
+        return (
             foodsByID: foodsByID,
-            externalTargetsByKey: externalTargetsByKey
+            externalTargetsByKey: repairableExternalTargetsByKey(foodsByID: foodsByID)
         )
     }
 

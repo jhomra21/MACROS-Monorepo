@@ -25,9 +25,16 @@ struct MealComponentRemoteSelectionScreen: View {
         return numericText.finalizedDraft(from: draft)
     }
 
+    private var loggingAction: FoodDraftLoggingAction? {
+        finalizedDraft?.loggingAction(
+            quantityMode: quantityMode,
+            quantityAmount: activeQuantityAmount
+        )
+    }
+
     private var canSave: Bool {
-        guard let finalizedDraft else { return false }
-        return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: activeQuantityAmount)
+        guard let loggingAction else { return false }
+        return loggingAction.canLog
             && unresolvedRequiredReviewNutrients.isEmpty
     }
 

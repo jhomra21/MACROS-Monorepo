@@ -67,6 +67,50 @@ enum ReusableFoodPersistenceMode: Equatable {
     }
 }
 
+struct FoodDraftLoggingAction {
+    let draft: FoodDraft
+    let quantityMode: QuantityMode
+    let quantityAmount: Double
+    let reusableFoodPersistenceMode: ReusableFoodPersistenceMode
+
+    init(
+        draft: FoodDraft,
+        quantityMode: QuantityMode,
+        quantityAmount: Double,
+        reusableFoodPersistenceMode: ReusableFoodPersistenceMode
+    ) {
+        self.draft = draft.normalized()
+        self.quantityMode = quantityMode
+        self.quantityAmount = quantityAmount
+        self.reusableFoodPersistenceMode = reusableFoodPersistenceMode
+    }
+
+    var validationError: FoodDraftValidationError? {
+        draft.validationErrorForLogging(
+            quantityMode: quantityMode,
+            quantityAmount: quantityAmount
+        )
+    }
+
+    var canLog: Bool {
+        validationError == nil
+    }
+
+    var quantityMultiplier: Double? {
+        guard quantityAmount.isFinite, quantityAmount > 0 else { return nil }
+
+        switch quantityMode {
+        case .servings:
+            return quantityAmount
+        case .grams:
+            guard let gramsPerServing = draft.gramsPerServing, gramsPerServing.isFinite, gramsPerServing > 0 else {
+                return nil
+            }
+            return quantityAmount / gramsPerServing
+        }
+    }
+}
+
 extension FoodDraft {
     var brandOrNil: String? {
         Self.trimmedText(from: brand)
@@ -143,8 +187,19 @@ extension FoodDraft {
         }
     }
 
-    func canLog(quantityMode: QuantityMode, quantityAmount: Double) -> Bool {
-        validationErrorForLogging(quantityMode: quantityMode, quantityAmount: quantityAmount) == nil
+    func loggingAction(
+        initialDraft: FoodDraft? = nil,
+        quantityMode: QuantityMode,
+        quantityAmount: Double
+    ) -> FoodDraftLoggingAction {
+        FoodDraftLoggingAction(
+            draft: self,
+            quantityMode: quantityMode,
+            quantityAmount: quantityAmount,
+            reusableFoodPersistenceMode: initialDraft.map {
+                FoodDraft.reusableFoodPersistenceMode(initialDraft: $0, currentDraft: self)
+            } ?? .none
+        )
     }
 
     func validationErrorForSaving() -> FoodDraftValidationError? {

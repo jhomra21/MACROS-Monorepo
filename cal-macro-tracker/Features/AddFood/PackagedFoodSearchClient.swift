@@ -96,24 +96,17 @@ struct PackagedFoodSearchClient {
             throw PackagedFoodSearchClientError.invalidQuery
         }
 
-        guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
-            throw PackagedFoodSearchClientError.unavailableConfiguration
-        }
-
-        var components = URLComponents(url: baseURL.appendingPathComponent("v1/packaged-foods/search"), resolvingAgainstBaseURL: false)
-        components?.queryItems = [
-            URLQueryItem(name: "q", value: normalizedQuery),
-            URLQueryItem(name: "page", value: String(max(1, page))),
-            URLQueryItem(name: "pageSize", value: String(max(1, pageSize))),
-            URLQueryItem(name: "fallbackOnEmpty", value: fallbackOnEmpty ? "1" : "0"),
-            provider.map { URLQueryItem(name: "provider", value: $0.rawValue) }
-        ].compactMap { $0 }
-
-        guard let url = components?.url else {
-            throw PackagedFoodSearchClientError.invalidResponse
-        }
-
-        let request = jsonClient.makeRequest(url: url, acceptJSON: true)
+        let request = try jsonClient.makeProxyRequest(
+            pathComponents: ["v1", "packaged-foods", "search"],
+            queryItems: [
+                URLQueryItem(name: "q", value: normalizedQuery),
+                URLQueryItem(name: "page", value: String(max(1, page))),
+                URLQueryItem(name: "pageSize", value: String(max(1, pageSize))),
+                URLQueryItem(name: "fallbackOnEmpty", value: fallbackOnEmpty ? "1" : "0"),
+                provider.map { URLQueryItem(name: "provider", value: $0.rawValue) }
+            ],
+            unavailableConfigurationError: PackagedFoodSearchClientError.unavailableConfiguration
+        )
         let decodedResponse = try await jsonClient.proxyResponse(
             for: request,
             responseType: PackagedFoodSearchResponse.self,

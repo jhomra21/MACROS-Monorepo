@@ -8,6 +8,25 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/meals-implementation-tracker.md`](implementation-trackers/meals-implementation-tracker.md)
 - [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
+- [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
+
+## Architecture Refactor
+
+### Delivered
+
+- Deepened food draft editing by moving nutrient numeric text presentation and edit state into `FoodDraftNumericText`, then removed the shallow nutrient-editing bridge.
+- Added `FoodDraftLoggingAction` so log, edit, meal-component, and repository call sites share validation, quantity, multiplier, and reusable-food persistence intent.
+- Shared secondary nutrient repair lookup construction across refresh, execution, classification, and normalization paths.
+- Centralized remote-food proxy request construction in `HTTPJSONClient` while preserving provider-specific configuration failures.
+- Split repository and sharing sync responsibilities into focused files for food logging, meal logging, entry mapping, local sharing state, remote sharing calls, and sharing DTO/payload logic.
+- Updated the documented build workflow to use the iOS `make quality-build` path while deferring macOS builds unless explicitly requested.
+- Post-implementation simplify normalized `FoodDraftLoggingAction` at construction, removed an unused sharing import, avoided unnecessary secondary-repair lookup work for food-only normalization, and reused one meal repository inside meal logging; a widget-target-only reuse suggestion was intentionally skipped.
+- Post-implementation defensive-code review removed redundant pre-normalization before `FoodDraftLoggingAction` construction and simplified the now-proven non-optional secondary-repair lookup path.
+- A repeat post-implementation simplify and defensive-code review, run with the architecture tracker and changelog context, found no further scoped cleanup or high-confidence redundant guards.
+
+### Validation
+
+- The architecture refactor follow-up passed repeated whitespace diff validation, Swift format validation, iOS simulator build validation, simplify review, defensive-code review, and final diff review.
 
 ## Saved Meals
 

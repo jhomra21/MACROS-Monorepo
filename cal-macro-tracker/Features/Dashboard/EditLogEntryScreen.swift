@@ -35,6 +35,20 @@ struct EditLogEntryScreen: View {
         numericText.finalizedDraft(from: draft)
     }
 
+    private var loggingAction: FoodDraftLoggingAction? {
+        finalizedDraft?.loggingAction(
+            quantityMode: quantityMode,
+            quantityAmount: activeQuantityAmount
+        )
+    }
+
+    private var previewLoggingAction: FoodDraftLoggingAction {
+        previewDraft.loggingAction(
+            quantityMode: quantityMode,
+            quantityAmount: activeQuantityAmount
+        )
+    }
+
     private var activeQuantityAmount: Double {
         quantityMode == .servings ? servingsAmount : gramsAmount
     }
@@ -44,22 +58,13 @@ struct EditLogEntryScreen: View {
     }
 
     private var nutritionPresentation: FoodDraftNutritionPresentation? {
-        guard
-            let multiplier = NutritionMath.quantityMultiplier(
-                mode: quantityMode,
-                amount: activeQuantityAmount,
-                gramsPerServing: previewDraft.gramsPerServing
-            )
-        else {
-            return nil
-        }
+        guard let multiplier = previewLoggingAction.quantityMultiplier else { return nil }
 
         return FoodDraftNutritionPresentation(title: "Nutrition", multiplier: multiplier)
     }
 
     private var canSave: Bool {
-        guard let finalizedDraft else { return false }
-        return finalizedDraft.canLog(quantityMode: quantityMode, quantityAmount: activeQuantityAmount)
+        loggingAction?.canLog == true
     }
 
     private var sourceURL: URL? {
@@ -153,13 +158,13 @@ struct EditLogEntryScreen: View {
     }
 
     private func saveChanges() {
-        guard let finalizedDraft else {
+        guard let loggingAction else {
             errorMessage = "Please fix invalid numeric values before saving changes."
             return
         }
 
         dismissKeyboard($focusedField)
-        persistChanges(finalizedDraft)
+        persistChanges(loggingAction)
     }
 
     private func deleteEntry() {
@@ -174,13 +179,11 @@ struct EditLogEntryScreen: View {
         }
     }
 
-    private func persistChanges(_ finalizedDraft: FoodDraft) {
+    private func persistChanges(_ loggingAction: FoodDraftLoggingAction) {
         do {
             try logEntryRepository.saveEdits(
                 entry: entry,
-                draft: finalizedDraft,
-                quantityMode: quantityMode,
-                quantityAmount: activeQuantityAmount,
+                action: loggingAction,
                 operation: "Save entry changes"
             )
             errorMessage = nil

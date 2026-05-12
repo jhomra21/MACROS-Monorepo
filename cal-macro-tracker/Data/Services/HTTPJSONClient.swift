@@ -24,6 +24,32 @@ struct HTTPJSONClient {
         return request
     }
 
+    func makeProxyRequest(
+        pathComponents: [String],
+        queryItems: [URLQueryItem?] = [],
+        unavailableConfigurationError: @autoclosure () -> Error
+    ) throws -> URLRequest {
+        guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
+            throw unavailableConfigurationError()
+        }
+
+        var url = baseURL
+        for pathComponent in pathComponents {
+            url.appendPathComponent(pathComponent)
+        }
+
+        if queryItems.isEmpty == false {
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            components?.queryItems = queryItems.compactMap { $0 }
+            guard let queryURL = components?.url else {
+                throw HTTPJSONClientError.invalidResponse
+            }
+            url = queryURL
+        }
+
+        return makeRequest(url: url, acceptJSON: true)
+    }
+
     func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {

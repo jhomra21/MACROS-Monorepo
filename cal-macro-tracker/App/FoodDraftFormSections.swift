@@ -61,6 +61,7 @@ struct FoodDraftNumericText: Equatable {
     var addedSugars: String
     var sodium: String
     var cholesterol: String
+    private var presentedNutrientValues: [FoodDraftField: String] = [:]
 
     init(draft: FoodDraft) {
         gramsPerServing = NumericText.editingDisplay(for: draft.gramsPerServing)
@@ -102,6 +103,50 @@ struct FoodDraftNumericText: Equatable {
         return editingDraft
     }
 
+    func displayedNutrientText(
+        for field: FoodDraftField,
+        configuration: FoodDraftNutrientTextConfiguration,
+        nutritionPresentation: FoodDraftNutritionPresentation?,
+        focusedField: FoodDraftField?
+    ) -> String {
+        if focusedField == field, let presentedValue = presentedNutrientValues[field] {
+            return presentedValue
+        }
+
+        let storedValue = self[keyPath: configuration.keyPath]
+        guard let nutritionPresentation else { return storedValue }
+        return nutritionPresentation.displayValue(
+            from: storedValue,
+            emptyWhenZero: configuration.emptyWhenZero
+        )
+    }
+
+    mutating func updateNutrientText(
+        _ newValue: String,
+        for field: FoodDraftField,
+        configuration: FoodDraftNutrientTextConfiguration,
+        draft: inout FoodDraft,
+        nutritionPresentation: FoodDraftNutritionPresentation?
+    ) {
+        presentedNutrientValues[field] = newValue
+        self[keyPath: configuration.keyPath] =
+            nutritionPresentation?.storedValue(from: newValue, emptyWhenZero: configuration.emptyWhenZero) ?? newValue
+        draft = editingDraft(from: draft)
+    }
+
+    mutating func syncPresentedNutrientValues(with focusedField: FoodDraftField?) {
+        guard let focusedField else {
+            presentedNutrientValues.removeAll()
+            return
+        }
+
+        presentedNutrientValues = presentedNutrientValues.filter { $0.key == focusedField }
+    }
+
+    mutating func invalidatePresentedNutrientValues() {
+        presentedNutrientValues.removeAll()
+    }
+
     func finalizedDraft(from draft: FoodDraft) -> FoodDraft? {
         guard !hasInvalidValues else { return nil }
         return editingDraft(from: draft)
@@ -132,7 +177,6 @@ struct FoodDraftFormSections: View {
     let focusedField: FocusState<FoodDraftField?>.Binding
     @Binding var showsAdditionalNutrition: Bool
     @Binding private var numericText: FoodDraftNumericText
-    @State private var nutrientEditingBridge = FoodDraftNutrientEditingBridge()
 
     init(
         draft: Binding<FoodDraft>,
@@ -198,10 +242,10 @@ struct FoodDraftFormSections: View {
             }
         }
         .onChange(of: focusedField.wrappedValue) { _, focusedField in
-            nutrientEditingBridge.syncPresentedValues(with: focusedField)
+            numericText.syncPresentedNutrientValues(with: focusedField)
         }
         .onChange(of: configuration.nutritionPresentation?.multiplier) { _, _ in
-            nutrientEditingBridge.invalidatePresentedValues()
+            numericText.invalidatePresentedNutrientValues()
         }
     }
 
@@ -259,20 +303,18 @@ struct FoodDraftFormSections: View {
 
         return Binding(
             get: {
-                nutrientEditingBridge.displayedText(
+                numericText.displayedNutrientText(
                     for: field,
                     configuration: configuration,
-                    numericText: numericText,
                     nutritionPresentation: self.configuration.nutritionPresentation,
                     focusedField: focusedField.wrappedValue
                 )
             },
             set: { newValue in
-                nutrientEditingBridge.update(
+                numericText.updateNutrientText(
                     newValue,
                     for: field,
                     configuration: configuration,
-                    numericText: &numericText,
                     draft: &draft,
                     nutritionPresentation: self.configuration.nutritionPresentation
                 )

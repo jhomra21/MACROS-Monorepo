@@ -56,7 +56,8 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
 - Build the app from the CLI:
-  - `xcodebuild -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'platform=macOS' build`
+  - `make quality-build`
+  - macOS builds are intentionally deferred until the iOS app is complete; do not use `-destination 'platform=macOS'` unless explicitly requested.
 - Run the full test suite:
   - No test target exists yet in the Xcode project, so there is currently no CLI test command to run.
 - Run a single test:

@@ -48,9 +48,9 @@ extension SecondaryNutrientRepairService {
             foodsByID = [:]
             externalTargetsByKey = [:]
         } else {
-            let foods = try fetchAllFoods(modelContext: modelContext)
-            foodsByID = Dictionary(uniqueKeysWithValues: foods.map { ($0.id, $0) })
-            externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
+            let lookup = try historicalRepairLookup(modelContext: modelContext)
+            foodsByID = lookup.foodsByID
+            externalTargetsByKey = lookup.externalTargetsByKey
         }
 
         try PersistenceReporter.persist(modelContext: modelContext, operation: "Classify secondary nutrient backfill state") {
@@ -78,10 +78,6 @@ extension SecondaryNutrientRepairService {
             return
         }
 
-        let allFoods = try fetchAllFoods(modelContext: modelContext)
-        let foodsByID = Dictionary(uniqueKeysWithValues: allFoods.map { ($0.id, $0) })
-        let externalTargetsByKey = repairableExternalTargetsByKey(foodsByID: foodsByID)
-
         let foodIDsToMarkNotRepairable =
             foods
             .filter { food in
@@ -90,17 +86,23 @@ extension SecondaryNutrientRepairService {
             }
             .map(\.persistentModelID)
 
-        let entryIDsToMarkNotRepairable =
-            entries
-            .filter { entry in
-                entry.sourceKind != .common
-                    && historicalRepairTarget(
-                        for: entry,
-                        foodsByID: foodsByID,
-                        externalTargetsByKey: externalTargetsByKey
-                    ) == nil
-            }
-            .map(\.persistentModelID)
+        let entryIDsToMarkNotRepairable: [PersistentIdentifier]
+        if entries.isEmpty {
+            entryIDsToMarkNotRepairable = []
+        } else {
+            let lookup = try historicalRepairLookup(modelContext: modelContext)
+            entryIDsToMarkNotRepairable =
+                entries
+                .filter { entry in
+                    entry.sourceKind != .common
+                        && historicalRepairTarget(
+                            for: entry,
+                            foodsByID: lookup.foodsByID,
+                            externalTargetsByKey: lookup.externalTargetsByKey
+                        ) == nil
+                }
+                .map(\.persistentModelID)
+        }
 
         guard foodIDsToMarkNotRepairable.isEmpty == false || entryIDsToMarkNotRepairable.isEmpty == false else {
             return
