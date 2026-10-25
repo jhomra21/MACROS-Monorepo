@@ -17,11 +17,64 @@ type AssetsBinding = {
 
 type SupportDatabase = {
 	prepare(query: string): {
-		bind(...values: string[]): {
-			run(): Promise<{ meta: { changes?: number } }>;
-		};
+		bind(...values: (string | number)[]): PreparedStatement;
 	};
+	batch(statements: PreparedStatement[]): Promise<Array<{ meta: { changes?: number } }>>;
 };
+
+type PreparedStatement = {
+	run(): Promise<{ meta: { changes?: number } }>;
+};
+
+const FORM_RETENTION_DAYS = 365;
+
+const FORM_RETENTION_BATCH_SIZE = 500;
+
+const FORM_RETENTION_MAX_ITERATIONS = 100;
+
+const FORM_TABLES = ['support_requests', 'waitlist_entries'] as const;
+
+function retentionCutoff(scheduledTime: number): string {
+	const cutoff = new Date(scheduledTime);
+	cutoff.setUTCDate(cutoff.getUTCDate() - FORM_RETENTION_DAYS);
+
+	return cutoff.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+async function purgeExpiredForms(database: SupportDatabase, scheduledTime: number): Promise<void> {
+	const cutoff = retentionCutoff(scheduledTime);
+	const counts = { support_requests: 0, waitlist_entries: 0 };
+	let iterations = 0;
+	let lastDeleted = 0;
+
+	while (iterations < FORM_RETENTION_MAX_ITERATIONS) {
+		const statements = FORM_TABLES.map((table) =>
+			database.prepare(
+				`DELETE FROM ${table} WHERE rowid IN (SELECT rowid FROM ${table} WHERE created_at < ? LIMIT ${FORM_RETENTION_BATCH_SIZE})`,
+			).bind(cutoff),
+		);
+
+		const results = await database.batch(statements);
+		iterations += 1;
+		lastDeleted = 0;
+
+		for (const [index, table] of FORM_TABLES.entries()) {
+			const deleted = Number(results[index]?.meta.changes ?? 0);
+			counts[table] += deleted;
+			lastDeleted += deleted;
+		}
+
+		if (lastDeleted === 0) break;
+	}
+
+	console.log(JSON.stringify({
+		event: 'form-retention-purge',
+		supportRequests: counts.support_requests,
+		waitlistEntries: counts.waitlist_entries,
+		iterations,
+		capped: iterations === FORM_RETENTION_MAX_ITERATIONS && lastDeleted > 0,
+	}));
+}
 
 export type WorkerEnv = {
 	ASSETS: AssetsBinding;
@@ -187,6 +240,9 @@ export default {
 		}
 
 		return env.ASSETS.fetch(request);
+	},
+	async scheduled(controller: Pick<ScheduledController, 'scheduledTime'>, env: WorkerEnv): Promise<void> {
+		await purgeExpiredForms(env.SUPPORT_DB, controller.scheduledTime);
 	},
 };
 

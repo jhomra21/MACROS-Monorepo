@@ -4,6 +4,9 @@
   "main": "./src/worker.ts",
   "compatibility_date": "2026-04-15",
   "compatibility_flags": ["nodejs_compat"],
+  "triggers": {
+    "crons": ["17 3 * * *"],
+  },
   "ratelimits": [
     { "name": "SUPPORT_LIMITER", "namespace_id": "1301", "simple": { "limit": 5, "period": 60 } },
     { "name": "WAITLIST_LIMITER", "namespace_id": "1302", "simple": { "limit": 5, "period": 60 } }

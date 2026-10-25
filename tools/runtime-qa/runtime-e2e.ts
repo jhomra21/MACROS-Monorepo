@@ -548,7 +548,12 @@ try {
     pass(`bootstrap ${phase} deadline and recovery`);
   }
 
-  const web = await runtime("web/src/worker.ts", { d1Databases: { SUPPORT_DB: "qa-isolated" }, serviceBindings: { ASSETS: () => new Response("not found", { status: 404 }) } });
+  const web = await runtime("web/src/worker.ts", {
+    d1Databases: { SUPPORT_DB: "qa-isolated" },
+    serviceBindings: { ASSETS: () => new Response("not found", { status: 404 }) },
+    crons: ["17 3 * * *"],
+  });
+
   const db = await web.mf.getD1Database("SUPPORT_DB");
 
   for (const name of ["0000_create_support_requests.sql", "0001_create_waitlist_entries.sql"]) {
@@ -584,6 +589,27 @@ try {
   pass("waitlist honeypot returns success without inserting a row");
   assert.equal((await request(web.url, "/api/waitlist", { method: "POST", headers: { "content-type": "application/json" }, body: "{" })).status, 400);
   pass("real waitlist form normalization/duplicate and malformed JSON");
+
+  await db.prepare("INSERT INTO support_requests (name, email, message, created_at) VALUES (?, ?, ?, datetime('now', '-366 days'))")
+    .bind("Old QA", "old-qa@example.com", "Synthetic expired message.").run();
+  await db.prepare("INSERT INTO waitlist_entries (email, created_at) VALUES (?, datetime('now', '-366 days'))")
+    .bind("old-qa@example.com").run();
+  await db.prepare("INSERT INTO waitlist_entries (email, created_at) VALUES (?, datetime('now'))")
+    .bind("new-qa@example.com").run();
+  const scheduledWorker = await web.mf.getWorker();
+
+  // SAFETY: Miniflare exposes scheduled() on its Worker binding when cron triggers are configured.
+  const scheduledDispatch = scheduledWorker as typeof scheduledWorker & {
+    scheduled(options: { cron: string; scheduledTime: number }): Promise<void>;
+  };
+
+  await scheduledDispatch.scheduled({ cron: "17 3 * * *", scheduledTime: Date.now() });
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM support_requests WHERE email = ?").bind("old-qa@example.com").first<{ n: number }>())?.n, 0);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM support_requests").first<{ n: number }>())?.n, 1);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM waitlist_entries WHERE email = ?").bind("old-qa@example.com").first<{ n: number }>())?.n, 0);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM waitlist_entries WHERE email = ?").bind("new-qa@example.com").first<{ n: number }>())?.n, 1);
+  pass("Miniflare scheduled event purges old D1 rows and retains recent submissions");
+
   const broken = await runtime("web/src/worker.ts", { d1Databases: { SUPPORT_DB: "qa-isolated-broken" }, serviceBindings: { ASSETS: () => new Response("not found", { status: 404 }) } });
 
   for (const path of ["/api/support", "/api/waitlist"]) {
