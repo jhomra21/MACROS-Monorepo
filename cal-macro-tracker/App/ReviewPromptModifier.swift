@@ -8,7 +8,7 @@ extension Notification.Name {
 }
 
 struct ReviewPromptModifier: ViewModifier {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "MACROS", category: "AppReview")
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "cal-macro-tracker", category: "AppReview")
     @Environment(\.modelContext) private var modelContext
     @Environment(AppDayContext.self) private var dayContext
     @Environment(\.requestReview) private var requestReview
