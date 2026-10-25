@@ -7,7 +7,7 @@ import { z } from "zod";
 import { createHash } from "node:crypto";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { resolve } from "node:path";
+import { resolve, sep } from "node:path";
 import { serve, type LocalServer } from "./native-http.ts";
 import { assertIncompleteOpenFoodFactsItem, assertNoResponseLeak, readRuntimeResponse, responseBody, responseResults } from "./response-contract.ts";
 
@@ -17,7 +17,7 @@ const outputDir = resolve(process.env.QA_OUTPUT_DIR ?? `${root}/build/runtime-qa
 
 const buildDir = resolve(root, "build");
 
-if (outputDir !== buildDir && !outputDir.startsWith(`${buildDir}/`)) {
+if (outputDir !== buildDir && !outputDir.startsWith(`${buildDir}${sep}`)) {
   throw new Error("QA_OUTPUT_DIR must be under the repository's ignored build directory.");
 }
 
@@ -374,6 +374,8 @@ try {
       const elapsed = performance.now() - start;
       const failedAttemptCount = upstreamAttempts;
       timingDiagnostics.push({ label: `${path.split("?")[0]} ${phase} (${failedAttemptCount} attempts)`, elapsedMs: Math.round(elapsed) });
+
+      assert(elapsed < 8_500, `${path} ${phase} exceeded the 8.5-second request budget`);
       assert.equal(failed.status, 503);
 
       const expectedMessage = path.includes("/v1/usda/search")
@@ -428,9 +430,24 @@ try {
   assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM support_requests").first<{ n: number }>())?.n, 1);
   const invalid = await request(web.url, "/api/support", form({})); assert.equal(invalid.status, 303); assert(invalid.headers.get("location")!.includes("invalid"));
   pass("real support form insert and fixed same-origin success/invalid redirects");
+
+  const supportHoneypot = await request(web.url, "/api/support", form({
+    name: "Bot",
+    email: "bot@example.com",
+    message: "Synthetic honeypot submission.",
+    website: "filled",
+  }));
+
+  assert.equal(supportHoneypot.status, 303);
+  assert(supportHoneypot.headers.get("location")!.includes("submitted"));
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM support_requests").first<{ n: number }>())?.n, 1);
+  pass("support honeypot returns success without inserting a row");
   assert.equal((await request(web.url, "/api/waitlist", form({ email: " QA@EXAMPLE.COM " }))).status, 200);
   assert.equal((await request(web.url, "/api/waitlist", form({ email: "qa@example.com" }))).status, 200);
   assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM waitlist_entries").first<{ n: number }>())?.n, 1);
+  assert.equal((await request(web.url, "/api/waitlist", form({ email: "bot@example.com", website: "filled" }))).status, 200);
+  assert.equal((await db.prepare("SELECT COUNT(*) AS n FROM waitlist_entries").first<{ n: number }>())?.n, 1);
+  pass("waitlist honeypot returns success without inserting a row");
   assert.equal((await request(web.url, "/api/waitlist", { method: "POST", headers: { "content-type": "application/json" }, body: "{" })).status, 400);
   pass("real waitlist form normalization/duplicate and malformed JSON");
   const broken = await runtime("web/src/worker.ts", { d1Databases: { SUPPORT_DB: "qa-isolated-broken" }, serviceBindings: { ASSETS: () => new Response("not found", { status: 404 }) } });

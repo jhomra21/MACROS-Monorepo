@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import {
 	getSupportRedirectPath,
 	supportStatusMessages,
@@ -14,9 +15,19 @@ type AssetsBinding = {
 	fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
 };
 
-type Env = {
+type SupportDatabase = {
+	prepare(query: string): {
+		bind(...values: string[]): {
+			run(): Promise<{ meta: { changes?: number } }>;
+		};
+	};
+};
+
+export type WorkerEnv = {
 	ASSETS: AssetsBinding;
-	SUPPORT_DB: D1Database;
+	SUPPORT_DB: SupportDatabase;
+	SUPPORT_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
+	WAITLIST_LIMITER?: { limit(options: { key: string }): Promise<{ success: boolean }> };
 };
 
 type WaitlistInsertResult = 'inserted' | 'existing';
@@ -40,7 +51,7 @@ async function insertSupportRequest(
 		email: string;
 		message: string;
 	},
-	env: Env,
+	env: WorkerEnv,
 ): Promise<void> {
 	await env.SUPPORT_DB.prepare(
 		`INSERT INTO support_requests (name, email, message) VALUES (?, ?, ?)`,
@@ -51,7 +62,7 @@ async function insertSupportRequest(
 
 async function insertWaitlistEntry(
 	input: WaitlistRequestInput,
-	env: Env,
+	env: WorkerEnv,
 ): Promise<WaitlistInsertResult> {
 	const result = await env.SUPPORT_DB.prepare(
 		`INSERT OR IGNORE INTO waitlist_entries (email) VALUES (?)`,
@@ -62,8 +73,16 @@ async function insertWaitlistEntry(
 	return Number(result.meta.changes ?? 0) > 0 ? 'inserted' : 'existing';
 }
 
-async function handleSupportRequest(request: Request, env: Env): Promise<Response> {
-	const parsed = validateSupportRequest(await parseRequest(request));
+async function handleSupportRequest(request: Request, env: WorkerEnv): Promise<Response> {
+	const body = await parseRequest(request);
+
+	if (hasHoneypotValue(body)) {
+		return isJsonRequest(request)
+			? jsonResponse(200, { message: supportStatusMessages.submitted })
+			: redirectResponse(request, getSupportRedirectPath('submitted'));
+	}
+
+	const parsed = validateSupportRequest(body);
 
 	if (!parsed.success) {
 		if (isJsonRequest(request)) {
@@ -97,8 +116,16 @@ async function handleSupportRequest(request: Request, env: Env): Promise<Respons
 	return redirectResponse(request, getSupportRedirectPath('submitted'));
 }
 
-async function handleWaitlistRequest(request: Request, env: Env): Promise<Response> {
-	const parsed = validateWaitlistRequest(await parseRequest(request));
+async function handleWaitlistRequest(request: Request, env: WorkerEnv): Promise<Response> {
+	const body = await parseRequest(request);
+
+	if (hasHoneypotValue(body)) {
+		return isJsonRequest(request)
+			? jsonResponse(200, { message: waitlistStatusMessages.submitted })
+			: textResponse(200, waitlistStatusMessages.submitted);
+	}
+
+	const parsed = validateWaitlistRequest(body);
 
 	if (!parsed.success) {
 		if (isJsonRequest(request)) {
@@ -136,17 +163,56 @@ async function handleWaitlistRequest(request: Request, env: Env): Promise<Respon
 }
 
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(request: Request, env: WorkerEnv): Promise<Response> {
 		const url = new URL(request.url);
 
 		if (request.method === 'POST' && url.pathname === '/api/support') {
+			const limited = await enforceFormLimit(request, env.SUPPORT_LIMITER);
+
+			if (limited != null) {
+				return limited;
+			}
+
 			return handleSupportRequest(request, env);
 		}
 
 		if (request.method === 'POST' && url.pathname === '/api/waitlist') {
+			const limited = await enforceFormLimit(request, env.WAITLIST_LIMITER);
+
+			if (limited != null) {
+				return limited;
+			}
+
 			return handleWaitlistRequest(request, env);
 		}
 
 		return env.ASSETS.fetch(request);
 	},
 };
+
+function hasHoneypotValue(body: Awaited<ReturnType<typeof parseRequest>>): boolean {
+	const parsed = honeypotSchema.safeParse(body);
+
+	return parsed.success && (parsed.data.website?.trim().length ?? 0) > 0;
+}
+
+const honeypotSchema = z.object({ website: z.string().optional() }).loose();
+
+async function enforceFormLimit(
+	request: Request,
+	limiter: WorkerEnv['SUPPORT_LIMITER'],
+): Promise<Response | null> {
+	if (limiter == null) return null;
+
+	const ip = request.headers.get('cf-connecting-ip')?.trim() || 'unknown-client';
+	const { success } = await limiter.limit({ key: ip });
+
+	return success ? null : new Response(JSON.stringify({ message: 'Too many requests. Please try again in a minute.' }), {
+		status: 429,
+		headers: {
+			'Cache-Control': 'no-store',
+			'Content-Type': 'application/json; charset=utf-8',
+			'Retry-After': '60',
+		},
+	});
+}

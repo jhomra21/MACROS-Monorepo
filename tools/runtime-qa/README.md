@@ -44,9 +44,9 @@ For isolated diagnosis, `QA_SECTION=deadlines` skips malformed-bootstrap checks;
 single food route, and `QA_PHASE=headers|body|hang-headers|hang-body` selects its
 fixture phase. Default invocation runs every contract.
 
-Deadline budgets are per upstream attempt: 2.5 seconds for interactive food and
-bootstrap requests. OFF search and barcode retain their original provider
-fallback attempts, so total route latency can exceed one deadline. Restaurant
-search retains its original 6-second attempts/retry/page-scan policy. The harness
-has a separate 12-second client guard to fail a stuck route, not to simulate a
-production deadline.
+Food routes have an 8-second total upstream deadline, threaded through each
+fetch. Ordinary food attempts remain capped at 2.5 seconds, while bootstrap
+keeps its existing 2.5-second deadline. Restaurant legacy requests are capped
+at 4 seconds, with at most 3 attempts across 3 pages, and scanning stops when
+less than 1.5 seconds remain. The harness has a separate 12-second client guard
+to fail a stuck route, not to simulate the production deadline.

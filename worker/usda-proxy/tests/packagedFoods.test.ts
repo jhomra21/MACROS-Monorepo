@@ -589,20 +589,27 @@ describe('searchPackagedFoods', () => {
   })
 
   it('stops empty restaurant searches after scanned Open Food Facts pages miss', async () => {
+    let legacyPageCount = 0
+
     const response = await searchPackagedFoods(
       { ...DEFAULT_QUERY, query: 'Raising cane’s' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
 
-        return Response.json(isLegacyOpenFoodFactsRequest(url)
-          ? { count: 72, products: [] }
-          : { ...searchALiciousEmptyPayload(), page_count: 7 })
+        if (isLegacyOpenFoodFactsRequest(url)) {
+          legacyPageCount += 1
+
+          return Response.json({ count: 72, products: [] })
+        }
+
+        return Response.json({ ...searchALiciousEmptyPayload(), page_count: 7 })
       }),
     )
 
     expect(response.resolvedProvider).toBe('openFoodFacts')
     expect(response.results).toEqual([])
     expect(response.hasMore).toBe(false)
+    expect(legacyPageCount).toBe(3)
   })
 
   it('keeps restaurant-like pinned Open Food Facts pagination on legacy first', async () => {

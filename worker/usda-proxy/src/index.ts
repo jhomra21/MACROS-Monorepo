@@ -21,6 +21,7 @@ import type {
 } from './types'
 import { fetchUSDAFood, USDAClientError, searchUSDAFoods } from './usda'
 import { withTimeout } from './http'
+import { clientKey, enforceRateLimit } from './rateLimit'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -35,6 +36,8 @@ const MIN_QUERY_LENGTH = 2
 const SEARCH_QUERY_KEYS = new Set(['q', 'page', 'pageSize'])
 
 const PACKAGED_SEARCH_QUERY_KEYS = new Set([...SEARCH_QUERY_KEYS, 'fallbackOnEmpty', 'provider'])
+
+const REQUEST_DEADLINE_MS = 8_000
 
 interface PackagedFoodSearchLogContext {
   page: number
@@ -71,12 +74,22 @@ app.get('/v1/packaged-foods/search', async (c) => {
     }
   }
 
+  const rateLimitResponse = await enforceRateLimit(c.env.PACKAGED_SEARCH_LIMITER, clientKey(c.req.raw))
+
+  if (rateLimitResponse != null) {
+    return rateLimitResponse
+  }
+
+  const requestDeadline = { signal: AbortSignal.timeout(REQUEST_DEADLINE_MS), expiresAt: Date.now() + REQUEST_DEADLINE_MS }
+
   try {
     const response = await searchPackagedFoods(
       params,
       {
         usdaApiKey: c.env.USDA_API_KEY,
         openFoodFactsUserAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT,
+        requestDeadline,
+        allowUSDA: () => checkGlobalUSDABudget(c.env.USDA_BUDGET_LIMITER),
       },
     )
 
@@ -117,11 +130,19 @@ app.get('/v1/packaged-foods/barcodes/:barcode', async (c) => {
     return cachedResponse
   }
 
+  const rateLimitResponse = await enforceRateLimit(c.env.BARCODE_LIMITER, clientKey(c.req.raw))
+
+  if (rateLimitResponse != null) {
+    return rateLimitResponse
+  }
+
+  const requestDeadline = AbortSignal.timeout(REQUEST_DEADLINE_MS)
+
   try {
     const product = await fetchOpenFoodFactsProduct(
       barcode,
       { userAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT },
-      withTimeout(fetch),
+      withTimeout(fetch, undefined, requestDeadline),
     )
 
     const jsonResponse = cachedJSONResponse({ product })
@@ -161,8 +182,22 @@ app.get('/v1/usda/search', async (c) => {
     return cachedResponse
   }
 
+  const rateLimitResponse = await enforceRateLimit(c.env.USDA_SEARCH_LIMITER, clientKey(c.req.raw))
+
+  if (rateLimitResponse != null) {
+    return rateLimitResponse
+  }
+
+  const requestDeadline = AbortSignal.timeout(REQUEST_DEADLINE_MS)
+
   try {
-    const response = await searchUSDAFoods(params, c.env.USDA_API_KEY, withTimeout(fetch))
+    const response = await searchUSDAFoods(
+      params,
+      c.env.USDA_API_KEY,
+      withTimeout(fetch, undefined, requestDeadline),
+      () => checkGlobalUSDABudget(c.env.USDA_BUDGET_LIMITER),
+    )
+
     const jsonResponse = c.json(response)
     jsonResponse.headers.set('Cache-Control', `public, s-maxage=${CACHE_TTL_SECONDS}`)
     c.executionCtx.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
@@ -188,8 +223,14 @@ app.get('/v1/usda/foods/:fdcId', async (c) => {
     return cachedResponse
   }
 
+  if (!(await checkGlobalUSDABudget(c.env.USDA_BUDGET_LIMITER))) {
+    return jsonError(c, 'USDA food details are unavailable right now.', 503)
+  }
+
+  const requestDeadline = AbortSignal.timeout(REQUEST_DEADLINE_MS)
+
   try {
-    const response = await fetchUSDAFood(fdcId, c.env.USDA_API_KEY, withTimeout(fetch))
+    const response = await fetchUSDAFood(fdcId, c.env.USDA_API_KEY, withTimeout(fetch, undefined, requestDeadline))
     const jsonResponse = c.json(response)
     jsonResponse.headers.set('Cache-Control', `public, s-maxage=${CACHE_TTL_SECONDS}`)
     c.executionCtx.waitUntil(cache.put(cacheKey, jsonResponse.clone()))
@@ -203,6 +244,10 @@ app.get('/v1/usda/foods/:fdcId', async (c) => {
 app.notFound((c) => jsonError(c, 'Not found.', 404))
 
 app.onError((error) => handleSearchError(error, 'Packaged food search is unavailable right now.'))
+
+async function checkGlobalUSDABudget(limiter: Env['USDA_BUDGET_LIMITER'] | undefined): Promise<boolean> {
+  return limiter == null || (await limiter.limit({ key: 'usda-global' })).success
+}
 
 function parseSearchParams(c: Context, allowedKeys: Set<string>, allowFallbackOnEmpty: boolean) {
   const url = new URL(c.req.url)

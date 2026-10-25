@@ -2,6 +2,7 @@ import { mutation, query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
+import { consumeProfileQuota } from "./quotas";
 import { requireCurrentProfile } from "./authHelpers";
 import {
   assertCurrentDayKey,
@@ -22,6 +23,7 @@ export const updateDisplayName = mutation({
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     const displayName = normalizeDisplayName(args.displayName);
+    await consumeProfileQuota(ctx, profile._id, "displayNameUpdates");
     await ctx.db.patch(profile._id, { displayName, updatedAt: Date.now() });
 
     return { ok: true };
@@ -51,6 +53,8 @@ export const createInvite = mutation({
 
       return { inviteId: existing._id, expiresAt: existing.expiresAt };
     }
+
+    await consumeProfileQuota(ctx, profile._id, "invitesCreated");
 
     const pending = await ctx.db
       .query("shareInvites")
@@ -253,6 +257,7 @@ export const upsertMyDailySnapshot = mutation({
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     assertValidSnapshot(args);
+    await consumeProfileQuota(ctx, profile._id, "snapshotUpserts");
     const now = Date.now();
 
     const existing = await ctx.db

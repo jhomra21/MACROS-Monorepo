@@ -27,6 +27,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Expanded the website with privacy and terms pages, launch pricing and feature details, FAQ, and App Store placeholder; drafted App Store listing, privacy labels, and screenshot plans.
 
+## 2026-10-25 Services Hardening
+
+- Added Cloudflare Worker per-IP request limits, a shared USDA budget, 8-second food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public service contracts remain unchanged.
+- Validation and repeatable loopback QA are recorded in `build/ws1-qa-2026-10-25/QA.md`.
+
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
 - Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.

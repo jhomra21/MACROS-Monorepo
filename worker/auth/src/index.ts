@@ -33,6 +33,22 @@ const bootstrapResponseSchema = z.object({
 });
 
 app.post("/v1/token", async (c) => {
+  if (c.env.TOKEN_LIMITER != null) {
+    const ip = c.req.header("cf-connecting-ip")?.trim() || "unknown-client";
+    const { success } = await c.env.TOKEN_LIMITER.limit({ key: ip });
+
+    if (!success) {
+      return new Response(JSON.stringify({ error: "Too many requests. Please try again in a minute." }), {
+        status: 429,
+        headers: {
+          "cache-control": "no-store",
+          "content-type": "application/json; charset=utf-8",
+          "retry-after": "60",
+        },
+      });
+    }
+  }
+
   const parsedBody = tokenRequestSchema.safeParse(await c.req.json().catch(() => null));
 
   if (!parsedBody.success) {
