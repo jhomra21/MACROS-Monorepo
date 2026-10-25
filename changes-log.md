@@ -29,7 +29,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-25 Services Hardening
 
-- Added Cloudflare Worker per-IP request limits, a shared USDA budget, 8-second food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public service contracts remain unchanged.
+- Added Cloudflare Worker per-IP request limits, a strict SQLite Durable Object-backed shared USDA budget, non-cacheable degraded empty results, configurable food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas with profile-deletion cleanup, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public success response contracts remain unchanged.
 - Validation and repeatable loopback QA are recorded in `build/ws1-qa-2026-10-25/QA.md`.
 
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling

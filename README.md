@@ -191,7 +191,7 @@ bun run check
 
 ### Worker API
 
-The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that keeps provider lookups outside the app and uses Open Food Facts with a budgeted USDA lookup. Search requests are limited to 30/minute per client IP, barcode requests to 60/minute, and direct USDA searches to 10/minute. USDA usage also shares a 14/minute budget; uncached upstream work has an 8-second total deadline.
+The app searches packaged foods through `worker/usda-proxy/`, a Cloudflare Worker that keeps provider lookups outside the app and uses Open Food Facts with a budgeted USDA lookup. Search requests are limited to 30/minute per client IP, barcode requests to 60/minute, and direct USDA searches to 10/minute. USDA usage shares a strict 14/minute budget coordinated by a single SQLite-backed Durable Object (configurable with `USDA_BUDGET_PER_MINUTE`); uncached upstream work has an 8-second total deadline (configurable with `REQUEST_DEADLINE_MS`). If the USDA budget or deadline prevents any results, the unchanged empty-result JSON carries `Cache-Control: no-store` and an `X-MACROS-Degraded` reason so transient failures are not cached as successful empty searches.
 
 ```sh
 cd worker/usda-proxy
