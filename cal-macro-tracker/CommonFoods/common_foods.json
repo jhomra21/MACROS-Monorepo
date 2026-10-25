@@ -162,8 +162,8 @@
     "name": "Chicken Breast",
     "aliases": [
       "Chicken breast, baked or broiled, skin not eaten, from pre-cooked",
-      "chicken",
-      "chicken breast"
+      "chicken breast",
+      "chicken"
     ],
     "servingDescription": "3 oz cooked",
     "gramsPerServing": 85,
@@ -3822,7 +3822,8 @@
   {
     "name": "Beef, Ground",
     "aliases": [
-      "Beef, ground"
+      "Beef, ground",
+      "ground beef"
     ],
     "servingDescription": "1 oz yields",
     "gramsPerServing": 20,
@@ -3840,7 +3841,8 @@
   {
     "name": "Beef, Ground, Raw",
     "aliases": [
-      "Beef, ground, raw"
+      "Beef, ground, raw",
+      "ground beef"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 225,
@@ -11364,7 +11366,8 @@
   {
     "name": "Chicken Breast, Baked",
     "aliases": [
-      "Chicken breast, baked, coated, skin / coating eaten"
+      "Chicken breast, baked, coated, skin / coating eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium breast",
     "gramsPerServing": 175,
@@ -11382,7 +11385,8 @@
   {
     "name": "Chicken Breast, Baked Or Broiled, Skin Eaten",
     "aliases": [
-      "Chicken breast, baked or broiled, skin eaten, from pre-cooked"
+      "Chicken breast, baked or broiled, skin eaten, from pre-cooked",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11400,7 +11404,8 @@
   {
     "name": "Chicken Breast, Baked, Broiled, Skin Eaten",
     "aliases": [
-      "Chicken breast, baked, broiled, or roasted, skin eaten, from raw"
+      "Chicken breast, baked, broiled, or roasted, skin eaten, from raw",
+      "chicken breast"
     ],
     "servingDescription": "1 medium breast",
     "gramsPerServing": 130,
@@ -11418,7 +11423,8 @@
   {
     "name": "Chicken Breast, Baked, Broiled, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, baked, broiled, or roasted, skin not eaten, from raw"
+      "Chicken breast, baked, broiled, or roasted, skin not eaten, from raw",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11436,7 +11442,8 @@
   {
     "name": "Chicken Breast, Fried",
     "aliases": [
-      "Chicken breast, fried, coated, skin / coating eaten, from raw"
+      "Chicken breast, fried, coated, skin / coating eaten, from raw",
+      "chicken breast"
     ],
     "servingDescription": "1 medium breast",
     "gramsPerServing": 175,
@@ -11454,7 +11461,8 @@
   {
     "name": "Chicken Breast, Grilled With Sauce, Skin Eaten",
     "aliases": [
-      "Chicken breast, grilled with sauce, skin eaten"
+      "Chicken breast, grilled with sauce, skin eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium breast",
     "gramsPerServing": 175,
@@ -11472,7 +11480,8 @@
   {
     "name": "Chicken Breast, Grilled With Sauce, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, grilled with sauce, skin not eaten"
+      "Chicken breast, grilled with sauce, skin not eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11490,7 +11499,8 @@
   {
     "name": "Chicken Breast, Grilled Without Sauce, Skin Eaten",
     "aliases": [
-      "Chicken breast, grilled without sauce, skin eaten"
+      "Chicken breast, grilled without sauce, skin eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11508,7 +11518,8 @@
   {
     "name": "Chicken Breast, Grilled Without Sauce, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, grilled without sauce, skin not eaten"
+      "Chicken breast, grilled without sauce, skin not eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11526,7 +11537,8 @@
   {
     "name": "Chicken Breast, Rotisserie, Skin Eaten",
     "aliases": [
-      "Chicken breast, rotisserie, skin eaten"
+      "Chicken breast, rotisserie, skin eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11544,7 +11556,8 @@
   {
     "name": "Chicken Breast, Rotisserie, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, rotisserie, skin not eaten"
+      "Chicken breast, rotisserie, skin not eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11562,7 +11575,8 @@
   {
     "name": "Chicken Breast, Sauteed, Skin Eaten",
     "aliases": [
-      "Chicken breast, sauteed, skin eaten"
+      "Chicken breast, sauteed, skin eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11580,7 +11594,8 @@
   {
     "name": "Chicken Breast, Sauteed, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, sauteed, skin not eaten"
+      "Chicken breast, sauteed, skin not eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium breast",
     "gramsPerServing": 120,
@@ -11598,7 +11613,8 @@
   {
     "name": "Chicken Breast, Stewed, Skin Eaten",
     "aliases": [
-      "Chicken breast, stewed, skin eaten"
+      "Chicken breast, stewed, skin eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -11616,7 +11632,8 @@
   {
     "name": "Chicken Breast, Stewed, Skin Not Eaten",
     "aliases": [
-      "Chicken breast, stewed, skin not eaten"
+      "Chicken breast, stewed, skin not eaten",
+      "chicken breast"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -14118,7 +14135,9 @@
   {
     "name": "Chickpeas",
     "aliases": [
-      "Chickpeas, from canned, reduced sodium"
+      "Chickpeas, from canned, reduced sodium",
+      "garbanzo",
+      "chickpea"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 185,
@@ -14136,7 +14155,9 @@
   {
     "name": "Chickpeas, From Canned, Fat Added",
     "aliases": [
-      "Chickpeas, from canned, fat added"
+      "Chickpeas, from canned, fat added",
+      "garbanzo",
+      "chickpea"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 185,
@@ -14154,7 +14175,9 @@
   {
     "name": "Chickpeas, From Canned, No Added Fat",
     "aliases": [
-      "Chickpeas, from canned, no added fat"
+      "Chickpeas, from canned, no added fat",
+      "garbanzo",
+      "chickpea"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 180,
@@ -14172,7 +14195,9 @@
   {
     "name": "Chickpeas, From Dried, Fat Added",
     "aliases": [
-      "Chickpeas, from dried, fat added"
+      "Chickpeas, from dried, fat added",
+      "garbanzo",
+      "chickpea"
     ],
     "servingDescription": "1 oz dry, yield after cooking",
     "gramsPerServing": 72,
@@ -14190,7 +14215,9 @@
   {
     "name": "Chickpeas, From Dried, No Added Fat",
     "aliases": [
-      "Chickpeas, from dried, no added fat"
+      "Chickpeas, from dried, no added fat",
+      "garbanzo",
+      "chickpea"
     ],
     "servingDescription": "1 oz dry, yield after cooking",
     "gramsPerServing": 70,
@@ -15396,7 +15423,9 @@
   {
     "name": "Cilantro, Raw",
     "aliases": [
-      "Cilantro, raw"
+      "Cilantro, raw",
+      "cilantro",
+      "coriander"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 16,
@@ -21984,7 +22013,9 @@
   {
     "name": "Eggplant And Meat Casserole",
     "aliases": [
-      "Eggplant and meat casserole"
+      "Eggplant and meat casserole",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 203,
@@ -22002,7 +22033,9 @@
   {
     "name": "Eggplant Dip",
     "aliases": [
-      "Eggplant dip"
+      "Eggplant dip",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 15,
@@ -22020,7 +22053,9 @@
   {
     "name": "Eggplant Parmesan Casserole, Regular",
     "aliases": [
-      "Eggplant parmesan casserole, regular"
+      "Eggplant parmesan casserole, regular",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 198,
@@ -22038,7 +22073,9 @@
   {
     "name": "Eggplant With Cheese And Tomato Sauce",
     "aliases": [
-      "Eggplant with cheese and tomato sauce"
+      "Eggplant with cheese and tomato sauce",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 198,
@@ -22056,7 +22093,9 @@
   {
     "name": "Eggplant, Cooked",
     "aliases": [
-      "Eggplant, cooked, as ingredient"
+      "Eggplant, cooked, as ingredient",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -22074,7 +22113,9 @@
   {
     "name": "Eggplant, Cooked, Fat Added",
     "aliases": [
-      "Eggplant, cooked, fat added"
+      "Eggplant, cooked, fat added",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 100,
@@ -22092,7 +22133,9 @@
   {
     "name": "Eggplant, Cooked, No Added Fat",
     "aliases": [
-      "Eggplant, cooked, no added fat"
+      "Eggplant, cooked, no added fat",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 95,
@@ -22110,7 +22153,9 @@
   {
     "name": "Eggplant, Pickled",
     "aliases": [
-      "Eggplant, pickled"
+      "Eggplant, pickled",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 95,
@@ -22128,7 +22173,9 @@
   {
     "name": "Eggplant, Raw",
     "aliases": [
-      "Eggplant, raw"
+      "Eggplant, raw",
+      "eggplant",
+      "aubergine"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 80,
@@ -28608,7 +28655,8 @@
   {
     "name": "Hamburger",
     "aliases": [
-      "Hamburger, from fast food, 1 small patty"
+      "Hamburger, from fast food, 1 small patty",
+      "burger"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -28626,7 +28674,8 @@
   {
     "name": "Hamburger Slider",
     "aliases": [
-      "Hamburger slider, from fast food"
+      "Hamburger slider, from fast food",
+      "burger"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -28644,7 +28693,8 @@
   {
     "name": "Hamburger Wrap Sandwich",
     "aliases": [
-      "Hamburger wrap sandwich, from fast food"
+      "Hamburger wrap sandwich, from fast food",
+      "burger"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -28662,7 +28712,8 @@
   {
     "name": "Hamburger, On Wheat Bun",
     "aliases": [
-      "Hamburger, on wheat bun, 1 small patty"
+      "Hamburger, on wheat bun, 1 small patty",
+      "burger"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -28680,7 +28731,8 @@
   {
     "name": "Hamburger, On White Bun",
     "aliases": [
-      "Hamburger, on white bun, 1 small patty"
+      "Hamburger, on white bun, 1 small patty",
+      "burger"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -34260,7 +34312,8 @@
   {
     "name": "Mixed Salad Greens, Raw",
     "aliases": [
-      "Mixed salad greens, raw"
+      "Mixed salad greens, raw",
+      "salad"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 35,
@@ -36168,7 +36221,9 @@
   {
     "name": "Onions, Green, Cooked",
     "aliases": [
-      "Onions, green, cooked"
+      "Onions, green, cooked",
+      "scallion",
+      "green onion"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 225,
@@ -36186,7 +36241,9 @@
   {
     "name": "Onions, Green, Raw",
     "aliases": [
-      "Onions, green, raw"
+      "Onions, green, raw",
+      "scallion",
+      "green onion"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 100,
@@ -39138,7 +39195,9 @@
   {
     "name": "Peppers, Sweet",
     "aliases": [
-      "Peppers, sweet, pickled"
+      "Peppers, sweet, pickled",
+      "bell pepper",
+      "sweet pepper"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 150,
@@ -39156,7 +39215,9 @@
   {
     "name": "Peppers, Sweet, Raw",
     "aliases": [
-      "Peppers, sweet, green, raw"
+      "Peppers, sweet, green, raw",
+      "bell pepper",
+      "sweet pepper"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 150,
@@ -42594,7 +42655,9 @@
   {
     "name": "Potato, French Fries",
     "aliases": [
-      "Potato, french fries, fast food"
+      "Potato, french fries, fast food",
+      "fries",
+      "french fries"
     ],
     "servingDescription": "1 medium fast food order",
     "gramsPerServing": 145,
@@ -42612,7 +42675,9 @@
   {
     "name": "Potato, French Fries, Baked",
     "aliases": [
-      "Potato, french fries, from frozen, baked"
+      "Potato, french fries, from frozen, baked",
+      "fries",
+      "french fries"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 60,
@@ -42630,7 +42695,9 @@
   {
     "name": "Potato, French Fries, Fried",
     "aliases": [
-      "Potato, french fries, from frozen, fried"
+      "Potato, french fries, from frozen, fried",
+      "fries",
+      "french fries"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 60,
@@ -42648,7 +42715,9 @@
   {
     "name": "Potato, French Fries, From Fresh, Baked",
     "aliases": [
-      "Potato, french fries, from fresh, baked"
+      "Potato, french fries, from fresh, baked",
+      "fries",
+      "french fries"
     ],
     "servingDescription": "1 medium, raw, yields",
     "gramsPerServing": 70,
@@ -42666,7 +42735,9 @@
   {
     "name": "Potato, French Fries, From Fresh, Fried",
     "aliases": [
-      "Potato, french fries, from fresh, fried"
+      "Potato, french fries, from fresh, fried",
+      "fries",
+      "french fries"
     ],
     "servingDescription": "1 medium, raw, yields",
     "gramsPerServing": 70,
@@ -47436,7 +47507,9 @@
   {
     "name": "Soft Drink, Chocolate Flavored",
     "aliases": [
-      "Soft drink, chocolate flavored"
+      "Soft drink, chocolate flavored",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47454,7 +47527,9 @@
   {
     "name": "Soft Drink, Cola",
     "aliases": [
-      "Soft drink, cola"
+      "Soft drink, cola",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47472,7 +47547,9 @@
   {
     "name": "Soft Drink, Cream Soda",
     "aliases": [
-      "Soft drink, cream soda"
+      "Soft drink, cream soda",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47490,7 +47567,9 @@
   {
     "name": "Soft Drink, Fruit Flavored",
     "aliases": [
-      "Soft drink, fruit flavored, caffeine free"
+      "Soft drink, fruit flavored, caffeine free",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47508,7 +47587,9 @@
   {
     "name": "Soft Drink, Ginger Ale",
     "aliases": [
-      "Soft drink, ginger ale"
+      "Soft drink, ginger ale",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47526,7 +47607,9 @@
   {
     "name": "Soft Drink, Pepper Type",
     "aliases": [
-      "Soft drink, pepper type"
+      "Soft drink, pepper type",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 512,
@@ -47544,7 +47627,9 @@
   {
     "name": "Soft Drink, Root Beer",
     "aliases": [
-      "Soft drink, root beer, diet"
+      "Soft drink, root beer, diet",
+      "soda",
+      "soft drink"
     ],
     "servingDescription": "1 medium drink",
     "gramsPerServing": 495,
@@ -57570,7 +57655,9 @@
   {
     "name": "Zucchini, Pickled",
     "aliases": [
-      "Zucchini, pickled"
+      "Zucchini, pickled",
+      "zucchini",
+      "courgette"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 170,

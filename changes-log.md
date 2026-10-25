@@ -22,6 +22,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Centralized the display brand, added a calendar-aware dashboard logging streak and eligible post-save App Store review request, made barcode 429 responses non-retryable with bounded `Retry-After` feedback, and aligned current Insights and ring-color Pro entry copy. Deferred WS4/WS5/WS6 follow-ups are listed in the tracker.
 
+## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
+
+- Expanded the USDA FNDDS bundle to 3,199 foods (October 2024 release; public domain, 17 U.S.C. § 105), preserving legacy serving/nutrient values and recording source archive provenance. Added deterministic common-name aliases and plural-insensitive, phrase-aware local ranking with explicit match tiers and stable ordering.
+- Validation: food pipeline tests (6/57 assertions), JS lint, Swift format, N+1 smoke, quality build, and focused local-search (6/6) and log-query (3/3) tests passed. The qualitative 50-query audit scored 43/50; see ignored `build/ws4-qa-2026-10-25/final-build/QA.md` for all misses and top-three results. Five-launch bootstrap-ready median 0.5896 s; local search update medians 0.0169–0.0296 s. Two simulator `LocalConfidenceTests` cases failed due Vision/inference behavior; see QA for details.
+
 ## 2026-10-25 MACROS Pro (WS2)
 
 - Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.

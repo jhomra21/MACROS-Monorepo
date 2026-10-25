@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { choosePortion, friendlyName, selectFoods, type FoodRow } from "../src/select";
+import { choosePortion, friendlyName, householdAliases, selectFoods, type FoodRow } from "../src/select";
 import { z } from "zod";
 
 const servingFields = [
@@ -148,5 +148,28 @@ describe("FNDDS food selection", () => {
       "Lentils, From Dried, Fat Added",
       "Lentils, From Dried, No Added Fat",
     ]);
+  });
+
+  test("adds deterministic household aliases to matching source descriptions", () => {
+    const cases: [string, string[]][] = [
+      ["Peppers, sweet, green, raw", ["bell pepper", "sweet pepper"]],
+      ["Onions, green, raw", ["scallion", "green onion"]],
+      ["Cilantro, raw", ["cilantro", "coriander"]],
+      ["Chickpeas, from canned, reduced sodium", ["garbanzo", "chickpea"]],
+      ["Zucchini, pickled", ["zucchini", "courgette"]],
+      ["Eggplant, raw", ["eggplant", "aubergine"]],
+      ["Soft drink, cola", ["soda", "soft drink"]],
+      ["Potato, french fries, fast food", ["fries", "french fries"]],
+      ["Beef, ground, raw", ["ground beef"]],
+      ["Chicken breast, grilled without sauce, skin not eaten", ["chicken breast"]],
+    ];
+
+    for (const [description, aliases] of cases) {
+      expect(householdAliases(description), description).toEqual(aliases);
+    }
+
+    expect(householdAliases("green pepper, cooked")).toEqual([]);
+    expect(selectFoods([baseFood({ description: "Peppers, sweet, green, raw" })], 0)[0]?.aliases)
+      .toContain("bell pepper");
   });
 });

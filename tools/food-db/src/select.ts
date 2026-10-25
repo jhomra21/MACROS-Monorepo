@@ -64,6 +64,31 @@ const alcoholName = /\b(?:alcoholic|vodka|whiskey|whisky|rum|gin|tequila|liqueur
 
 const nutritionQualifier = /^(?:as purchased|baked|boiled|broiled|cooked|fat added|fat not added|from dried|from fresh|fried|grilled|ground|made with|microwaved|no added fat|no fat added|raw|roasted|skin eaten|skin not eaten|steamed|sweetened|unsweetened|with skin|without skin)$/i;
 
+const householdAliasRules = [
+  { sources: ["pepper sweet"], aliases: ["bell pepper", "sweet pepper"] },
+  { sources: ["onion green"], aliases: ["scallion", "green onion"] },
+  { sources: ["cilantro", "coriander"], aliases: ["cilantro", "coriander"] },
+  { sources: ["chickpea", "garbanzo"], aliases: ["garbanzo", "chickpea"] },
+  { sources: ["zucchini", "courgette"], aliases: ["zucchini", "courgette"] },
+  { sources: ["eggplant", "aubergine"], aliases: ["eggplant", "aubergine"] },
+  { sources: ["soft drink"], aliases: ["soda", "soft drink"] },
+  { sources: ["potato french fries"], aliases: ["fries", "french fries"] },
+  { sources: ["beef ground", "ground beef"], aliases: ["ground beef"] },
+  { sources: ["chicken breast"], aliases: ["chicken breast"] },
+  { sources: ["hamburger"], aliases: ["burger"] },
+  { sources: ["mixed salad greens"], aliases: ["salad"] },
+];
+
+export function householdAliases(description: string): string[] {
+  const sourceWords = normalizeAliasText(description);
+
+  const aliases = householdAliasRules.flatMap(({ sources, aliases }) =>
+    sources.some((source) => startsWithPhrase(sourceWords, normalizeAliasText(source))) ? aliases : []
+  );
+
+  return [...new Set(aliases)];
+}
+
 export function choosePortion(
   portions: PortionRow[],
 ): { description: string; grams: number; usedFallbackPortion: boolean } {
@@ -150,7 +175,7 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
       fdcId: row.fdcId,
       usedFallbackPortion: portion.usedFallbackPortion,
       name,
-      aliases: [row.description],
+      aliases: [row.description, ...householdAliases(row.description)],
       servingDescription: portion.description,
       gramsPerServing: round(portion.grams),
       caloriesPerServing: per100g(nutrientIds.caloriesPerServing),
@@ -175,4 +200,14 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
 function round(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+function normalizeAliasText(value: string): string[] {
+  return value.toLowerCase().normalize("NFKD").replace(/\p{M}/gu, "").split(/[^\p{L}\p{N}]+/u)
+    .filter(Boolean)
+    .map((word) => word.endsWith("s") && !word.endsWith("ss") ? word.slice(0, -1) : word);
+}
+
+function startsWithPhrase(words: string[], phrase: string[]): boolean {
+  return phrase.length <= words.length && phrase.every((word, index) => words[index] === word);
 }
