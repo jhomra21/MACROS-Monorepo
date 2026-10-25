@@ -58,22 +58,53 @@ final class BodyProfileDraftTests: XCTestCase {
     func testNumericFieldsParseThroughNumericTextIncludingFractionalInches() throws {
         var draft = BodyProfileDraft()
         draft.ageText = "34.0"
-        draft.heightText = "172"
-        draft.weightText = "70.5"
+        draft.setHeightText("172")
+        draft.setWeightText("70.5")
 
         XCTAssertEqual(draft.age, 34)
         XCTAssertEqual(draft.heightCm, 172)
         XCTAssertEqual(draft.weightKg, 70.5)
 
         draft.ageText = "34.5"
-        draft.weightText = "heavy"
+        draft.setWeightText("heavy")
         XCTAssertNil(draft.age)
         XCTAssertNil(draft.weightKg)
 
         draft.changeUnitSystem(to: .imperial)
-        draft.heightText = "5"
-        draft.heightInchesText = "7.5"
+        draft.setHeightText("5")
+        draft.setHeightInchesText("7.5")
         XCTAssertEqual(try XCTUnwrap(draft.heightCm), try GoalCalculator.cm(fromFeet: 5, inches: 7.5), accuracy: 0.000_1)
+    }
+
+    func testUnitToggleKeepsCanonicalMetricValuesAndRoundsOnlyForDisplay() {
+        var draft = BodyProfileDraft()
+        draft.setHeightText("170.4")
+        draft.setWeightText("70.04")
+
+        draft.changeUnitSystem(to: .imperial)
+        XCTAssertEqual(draft.heightText, "5")
+        XCTAssertEqual(draft.heightInchesText, "7")
+        XCTAssertEqual(draft.weightText, "154")
+
+        draft.changeUnitSystem(to: .metric)
+        draft.changeUnitSystem(to: .imperial)
+        draft.changeUnitSystem(to: .metric)
+
+        XCTAssertEqual(draft.heightCm, 170.4)
+        XCTAssertEqual(draft.weightKg, 70.04)
+        XCTAssertEqual(draft.heightText, "170")
+        XCTAssertEqual(draft.weightText, "70")
+    }
+
+    func testImperialInputStoresFullPrecisionMetricValues() throws {
+        var draft = BodyProfileDraft()
+        draft.changeUnitSystem(to: .imperial)
+        draft.setHeightText("5")
+        draft.setHeightInchesText("7.25")
+        draft.setWeightText("154.5")
+
+        XCTAssertEqual(try XCTUnwrap(draft.heightCm), (5 * 12 + 7.25) * 2.54, accuracy: 1e-9)
+        XCTAssertEqual(try XCTUnwrap(draft.weightKg), 154.5 * 0.45359237, accuracy: 1e-9)
     }
 
     @MainActor
@@ -85,8 +116,8 @@ final class BodyProfileDraftTests: XCTestCase {
         let repository = BodyProfileRepository(modelContext: container.mainContext)
         var draft = BodyProfileDraft()
         draft.ageText = "34"
-        draft.heightText = "172"
-        draft.weightText = "70"
+        draft.setHeightText("172")
+        draft.setWeightText("70")
         draft.goalDirection = .lose
 
         try repository.save(draft.makeProfile(preset: .highProtein), operation: "Save body profile")

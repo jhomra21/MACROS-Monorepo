@@ -88,6 +88,17 @@ final class GoalCalculatorTests: XCTestCase {
         }
     }
 
+    func testUnitConversionsUseExactConstantsWithoutIntermediateRounding() throws {
+        XCTAssertEqual(try GoalCalculator.kg(fromPounds: 100), 100 * 0.45359237, accuracy: 1e-12)
+        XCTAssertEqual(GoalCalculator.pounds(fromKg: 45.359237), 100, accuracy: 1e-12)
+        XCTAssertEqual(try GoalCalculator.cm(fromFeet: 5, inches: 7.25), 170.815, accuracy: 1e-12)
+
+        for pounds in [1.0, 154.3, 201.37] {
+            let kilograms = try GoalCalculator.kg(fromPounds: pounds)
+            XCTAssertEqual(GoalCalculator.pounds(fromKg: kilograms), pounds, accuracy: 1e-12)
+        }
+    }
+
     func testImperialConversionsRoundTrip() throws {
         let kilograms = try GoalCalculator.kg(fromPounds: 154)
         let pounds = GoalCalculator.pounds(fromKg: kilograms)

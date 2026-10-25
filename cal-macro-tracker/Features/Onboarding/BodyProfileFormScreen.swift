@@ -4,9 +4,12 @@ import SwiftUI
 struct BodyProfileDraft {
     var sex: GoalSex = .unspecified
     var ageText = "30"
-    var heightText = ""
-    var heightInchesText = ""
-    var weightText = ""
+    private(set) var heightText = ""
+    private(set) var heightInchesText = ""
+    private(set) var weightText = ""
+    /// Canonical metric measurements at full precision. Text is an editing buffer; it never feeds back into these.
+    private(set) var heightCm: Double?
+    private(set) var weightKg: Double?
     var unitSystem: GoalUnitSystem = .metric
     var activity: GoalActivityLevel = .moderate
     var goalDirection = GoalDirection.maintain {
@@ -34,14 +37,14 @@ struct BodyProfileDraft {
         }
     }
 
-    var heightCm: Double? {
+    private var measuredHeightCm: Double? {
         guard let height = Self.number(from: heightText) else { return nil }
         if unitSystem == .metric { return height > 0 ? height : nil }
         guard let feet = Int(exactly: height), let inches = Self.number(from: heightInchesText) else { return nil }
         return try? GoalCalculator.cm(fromFeet: feet, inches: inches)
     }
 
-    var weightKg: Double? {
+    private var measuredWeightKg: Double? {
         guard let weight = Self.number(from: weightText), weight > 0 else { return nil }
         return unitSystem == .metric ? weight : try? GoalCalculator.kg(fromPounds: weight)
     }
@@ -58,18 +61,9 @@ struct BodyProfileDraft {
             ageText = String(max(1, Calendar.current.component(.year, from: .now) - birthYear))
         }
         unitSystem = profile.unitSystem
-        if let heightCm = profile.heightCm {
-            if unitSystem == .metric {
-                heightText = String(Int(heightCm.rounded()))
-            } else {
-                let (feet, inches) = GoalCalculator.feetAndInches(fromCm: heightCm)
-                heightText = String(feet)
-                heightInchesText = String(Int(inches))
-            }
-        }
-        if let weightKg = profile.weightKg {
-            weightText = unitSystem == .metric ? String(format: "%.1f", weightKg) : String(GoalCalculator.pounds(fromKg: weightKg))
-        }
+        heightCm = profile.heightCm
+        weightKg = profile.weightKg
+        refreshDisplayText()
         activity = profile.activityLevel
         let offset = profile.goalCalorieOffset
         goalDirection = offset < 0 ? .lose : offset > 0 ? .gain : .maintain
@@ -91,20 +85,44 @@ struct BodyProfileDraft {
 
     mutating func changeUnitSystem(to newSystem: GoalUnitSystem) {
         guard newSystem != unitSystem else { return }
-        if let weightKg, newSystem == .imperial {
-            weightText = String(GoalCalculator.pounds(fromKg: weightKg))
-        } else if let weightKg, newSystem == .metric {
-            weightText = String(format: "%.1f", weightKg)
-        }
-        if let heightCm, newSystem == .imperial {
-            let (feet, inches) = GoalCalculator.feetAndInches(fromCm: heightCm)
-            heightText = String(feet)
-            heightInchesText = String(Int(inches))
-        } else if let heightCm, newSystem == .metric {
-            heightText = String(Int(heightCm.rounded()))
-            heightInchesText = ""
-        }
         unitSystem = newSystem
+        refreshDisplayText()
+    }
+
+    mutating func setHeightText(_ text: String) {
+        heightText = text
+        heightCm = measuredHeightCm
+    }
+
+    mutating func setHeightInchesText(_ text: String) {
+        heightInchesText = text
+        heightCm = measuredHeightCm
+    }
+
+    mutating func setWeightText(_ text: String) {
+        weightText = text
+        weightKg = measuredWeightKg
+    }
+
+    /// Rebuilds editable text from the canonical metric values. Rounding happens here, for display only.
+    private mutating func refreshDisplayText() {
+        if let heightCm {
+            (heightText, heightInchesText) = Self.heightTexts(cm: heightCm, unit: unitSystem)
+        }
+        if let weightKg {
+            weightText = Self.weightText(kg: weightKg, unit: unitSystem)
+        }
+    }
+
+    private static func heightTexts(cm: Double, unit: GoalUnitSystem) -> (String, String) {
+        guard unit == .imperial else { return (NumericText.editingDisplay(for: cm.rounded()), "") }
+        let (feet, inches) = GoalCalculator.feetAndInches(fromCm: cm)
+        return (NumericText.editingDisplay(for: Double(feet)), NumericText.editingDisplay(for: inches))
+    }
+
+    private static func weightText(kg: Double, unit: GoalUnitSystem) -> String {
+        guard unit == .imperial else { return NumericText.editingDisplay(for: (kg * 10).rounded() / 10) }
+        return NumericText.editingDisplay(for: GoalCalculator.pounds(fromKg: kg).rounded())
     }
 }
 
@@ -151,6 +169,18 @@ struct BodyProfileFormScreen: View {
             let weight = profile.weightKg
         else { return false }
         return (1...120).contains(age) && height.isFinite && weight.isFinite && height > 0 && weight > 0
+    }
+
+    private var heightBinding: Binding<String> {
+        Binding(get: { profile.heightText }, set: { profile.setHeightText($0) })
+    }
+
+    private var heightInchesBinding: Binding<String> {
+        Binding(get: { profile.heightInchesText }, set: { profile.setHeightInchesText($0) })
+    }
+
+    private var weightBinding: Binding<String> {
+        Binding(get: { profile.weightText }, set: { profile.setWeightText($0) })
     }
 
     var body: some View {
@@ -236,17 +266,17 @@ struct BodyProfileFormScreen: View {
                     .foregroundStyle(.secondary)
             }
             if profile.unitSystem == .metric {
-                profileNumericRow("Height", value: $profile.heightText, suffix: "cm", field: .height)
+                profileNumericRow("Height", value: heightBinding, suffix: "cm", field: .height)
             } else {
                 HStack {
                     Text("Height")
                     Spacer()
-                    AppNumericTextField("Feet", text: $profile.heightText, focusedField: $focusedField, field: .height)
+                    AppNumericTextField("Feet", text: heightBinding, focusedField: $focusedField, field: .height)
                         .frame(width: 58)
                         .accessibilityLabel("Height, feet")
                     Text("ft").foregroundStyle(.secondary)
                     AppNumericTextField(
-                        "Inches", text: $profile.heightInchesText, focusedField: $focusedField, field: .height
+                        "Inches", text: heightInchesBinding, focusedField: $focusedField, field: .height
                     )
                     .frame(width: 58)
                     .accessibilityLabel("Height, inches")
@@ -258,7 +288,7 @@ struct BodyProfileFormScreen: View {
             }
             profileNumericRow(
                 "Weight",
-                value: $profile.weightText,
+                value: weightBinding,
                 suffix: profile.unitSystem == .metric ? "kg" : "lb",
                 field: .weight
             )
@@ -307,7 +337,7 @@ struct BodyProfileFormScreen: View {
     }
 
     private func rateLabel(_ rate: Double) -> String {
-        let amount = profile.unitSystem == .metric ? rate : rate * 2.20462
+        let amount = profile.unitSystem == .metric ? rate : GoalCalculator.pounds(fromKg: rate)
         return "\(amount.formatted(.number.precision(.fractionLength(1)))) \(profile.unitSystem == .metric ? "kg" : "lb")/week"
     }
 }

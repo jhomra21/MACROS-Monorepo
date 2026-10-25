@@ -166,18 +166,18 @@ enum GoalCalculator {
 
     static func kg(fromPounds pounds: Double) throws -> Double {
         guard pounds.isFinite, pounds > 0 else { throw GoalCalculatorError.invalidMeasurement }
-        return (pounds / 2.20462 * 10).rounded() / 10
+        return pounds * 0.45359237
     }
 
     static func pounds(fromKg kilograms: Double) -> Double {
-        (kilograms * 2.20462).rounded()
+        kilograms / 0.45359237
     }
 
     static func cm(fromFeet feet: Int, inches: Double) throws -> Double {
         guard feet >= 0, inches.isFinite, inches >= 0, inches < 12, feet > 0 || inches > 0 else {
             throw GoalCalculatorError.invalidMeasurement
         }
-        return ((Double(feet * 12) + inches) * 2.54).rounded()
+        return (Double(feet * 12) + inches) * 2.54
     }
 
     static func feetAndInches(fromCm centimeters: Double) -> (feet: Int, inches: Double) {
