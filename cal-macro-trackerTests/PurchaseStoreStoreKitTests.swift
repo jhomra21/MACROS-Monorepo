@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 import StoreKit
 import StoreKitTest
 import XCTest
@@ -20,7 +21,10 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         guard catalog.count == ProPlan.allCases.count else {
             throw NSError(
                 domain: "WS2.StoreKitSetup", code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "StoreKitTest did not expose all three plans. Check local catalog activation and simulator development signing."]
+                userInfo: [
+                    NSLocalizedDescriptionKey:
+                        "StoreKitTest did not expose all three plans. Check local catalog activation and simulator development signing."
+                ]
             )
         }
         entitlements = AppEntitlements()
@@ -28,6 +32,7 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     override func tearDown() {
+        store?.stop()
         session?.clearTransactions()
         session?.resetToDefaultState()
         store = nil
@@ -76,15 +81,19 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     func testTrialGrantsProWithExpirationAndExpiryRemovesIt() async throws {
-        await store.purchase(.yearly)
+        await store.start()
+        try await expectChange("Trial grants Pro", until: { self.store.hasPro }) {
+            await self.store.purchase(.yearly)
+        }
         XCTAssertTrue(store.hasPro)
         XCTAssertEqual(entitlements.proSource, .yearly)
         XCTAssertNotNil(entitlements.proExpirationDate)
         let latest = await Transaction.latest(for: ProPlan.yearly.productID)
         guard case let .verified(transaction) = latest else { return XCTFail("Expected verified trial.") }
         XCTAssertEqual(transaction.offer?.type, .introductory)
-        try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
-        await store.refreshEntitlements()
+        try await expectChange("Expiry listener removes Pro", until: { !self.store.hasPro }) {
+            try self.session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
+        }
         XCTAssertFalse(store.hasPro)
         XCTAssertNil(entitlements.proExpirationDate)
         XCTAssertNil(entitlements.proSource)
@@ -98,13 +107,60 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     func testRefundRevokesLifetime() async throws {
-        let transaction = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
-        await store.refreshEntitlements()
+        await store.start()
+        try await expectChange("Transaction listener grants lifetime", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.lifetime.productID)
+        }
         XCTAssertEqual(entitlements.proSource, .lifetime)
         XCTAssertNil(entitlements.proExpirationDate)
-        try session.refundTransaction(identifier: UInt(transaction.id))
-        await store.refreshEntitlements()
+        let transaction = try XCTUnwrap(session.allTransactions().first { $0.productIdentifier == ProPlan.lifetime.productID })
+        try await expectChange("Refund listener removes Pro", until: { !self.store.hasPro }) {
+            try self.session.refundTransaction(identifier: transaction.identifier)
+        }
         XCTAssertFalse(store.hasPro)
+    }
+
+    func testAskToBuyApprovalUnlocksThroughListener() async throws {
+        await store.start()
+        session.askToBuyEnabled = true
+        await store.purchase(.monthly)
+        XCTAssertFalse(store.hasPro)
+        let pending = try XCTUnwrap(session.allTransactions().first(where: \.pendingAskToBuyConfirmation))
+        try await expectChange("Approval listener grants Pro", until: { self.store.hasPro }) {
+            try self.session.approveAskToBuyTransaction(identifier: pending.identifier)
+        }
+        XCTAssertEqual(entitlements.proSource, .monthly)
+    }
+
+    func testRenewalUpdatesExpirationThroughListener() async throws {
+        await store.start()
+        try await expectChange("Transaction listener grants monthly Pro", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.monthly.productID)
+        }
+        let previousExpiration = try XCTUnwrap(entitlements.proExpirationDate)
+        try await expectChange(
+            "Renewal listener advances expiration",
+            until: { self.entitlements.proExpirationDate.map { $0 > previousExpiration } ?? false }
+        ) {
+            try self.session.forceRenewalOfSubscription(productIdentifier: ProPlan.monthly.productID)
+        }
+        XCTAssertTrue(store.hasPro)
+    }
+
+    func testCancellationUpdatesStatusWithoutRemovingAccess() async throws {
+        await store.start()
+        try await expectChange("Transaction listener grants monthly Pro", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.monthly.productID)
+        }
+        let transaction = try XCTUnwrap(session.allTransactions().first { $0.productIdentifier == ProPlan.monthly.productID })
+        let expiration = try XCTUnwrap(entitlements.proExpirationDate)
+        try await expectChange(
+            "Status listener reports cancellation",
+            until: { self.store.subscriptionStatuses[ProPlan.monthly.productID] == .expires(expiration) }
+        ) {
+            try self.session.disableAutoRenewForTransaction(identifier: transaction.identifier)
+        }
+        XCTAssertTrue(store.hasPro)
     }
 
     func testLegacyGrantsLifetime() async throws {
@@ -152,5 +208,31 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
         await store.refreshEntitlements()
         XCTAssertFalse(store.isEligibleForIntroOffer)
+    }
+
+    private func expectChange(
+        _ description: String,
+        until predicate: @escaping @MainActor () -> Bool,
+        performing action: () async throws -> Void
+    ) async throws {
+        let changed = expectation(description: description)
+        var isObserving = true
+        func observe() {
+            guard isObserving else { return }
+            let satisfied = withObservationTracking {
+                predicate()
+            } onChange: {
+                // Observation fires before mutation; recheck on the next main-actor turn.
+                Task { @MainActor in observe() }
+            }
+            if satisfied {
+                isObserving = false
+                changed.fulfill()
+            }
+        }
+        observe()
+        defer { isObserving = false }
+        try await action()
+        await fulfillment(of: [changed], timeout: 5)
     }
 }
