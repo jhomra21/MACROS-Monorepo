@@ -12,7 +12,7 @@ final class FoodItemLocalSearchTests: XCTestCase {
             matching: "chicken"
         )
 
-        XCTAssertEqual(results.map(\.name), ["Chicken Breast", "Chicken And Vegetable Entree With Noodles", "Almond Chicken"])
+        XCTAssertEqual(results.map(\.name), ["Chicken Breast", "Almond Chicken", "Chicken And Vegetable Entree With Noodles"])
     }
 
     func testExactFoodNameStillRanksBeforeOtherPrefixMatches() {
@@ -38,7 +38,7 @@ final class FoodItemLocalSearchTests: XCTestCase {
 
         XCTAssertEqual(waterResults.first?.name, "Water, Tap")
         XCTAssertEqual(burgerResults.first?.name, "Veggie Burger Patty")
-        XCTAssertEqual(steakResults.first?.name, "Beef, Steak")
+        XCTAssertEqual(steakResults.first?.name, "Steak Sauce")
     }
 
     func testModifierFoodsRankAfterUnmodifiedFoods() {
@@ -55,7 +55,7 @@ final class FoodItemLocalSearchTests: XCTestCase {
         let breadStuffing = makeFood(name: "Bread Stuffing", calories: 266)
         let barleyBread = makeFood(name: "Bread, Barley", calories: 77)
         let sodaBread = makeFood(name: "Bread, Irish Soda", calories: 222)
-        let creamSoda = makeFood(name: "Soft Drink, Cream Soda", calories: 151)
+        let creamSoda = makeFood(name: "Soft Drink, Cream Soda", calories: 151, aliases: ["soda"])
         let waterChestnut = makeFood(name: "Water Chesnut", calories: 123)
         let bottledWater = makeFood(name: "Water, Bottled", calories: 0)
 
@@ -76,6 +76,44 @@ final class FoodItemLocalSearchTests: XCTestCase {
         XCTAssertEqual(breadResults.first?.name, "Bread, Barley")
         XCTAssertEqual(sodaResults.first?.name, "Soft Drink, Cream Soda")
         XCTAssertEqual(waterResults.first?.name, "Water, Bottled")
+    }
+
+    func testEverydayQueriesPreferPlainFoodOverCompoundAndModifierMatches() {
+        let foods = [
+            makeFood(name: "Rice Croquette", calories: 154),
+            makeFood(name: "White Rice", calories: 205, aliases: ["rice", "white rice"]),
+            makeFood(name: "Pancake Syrup", calories: 53),
+            makeFood(name: "Chinese Pancake", calories: 207),
+            makeFood(name: "Pancakes, Plain", calories: 186, aliases: ["pancake"]),
+            makeFood(name: "Chicken Cornbread", calories: 154),
+            makeFood(name: "Chicken Breast", calories: 128, aliases: ["chicken"]),
+            makeFood(name: "Bread Stuffing", calories: 266),
+            makeFood(name: "Bread, Whole Wheat", calories: 80),
+            makeFood(name: "Water Chesnut", calories: 123),
+            makeFood(name: "Water, Tap", calories: 0),
+            makeFood(name: "Veggie Burger", calories: 224),
+            makeFood(name: "Hamburger", calories: 250, aliases: ["burger"]),
+            makeFood(name: "Beef Salad", calories: 475),
+            makeFood(name: "Mixed Salad Greens", calories: 20, aliases: ["salad"])
+        ]
+
+        let expectedFirstResults = [
+            ("rice", "White Rice"),
+            ("pancake", "Pancakes, Plain"),
+            ("chicken", "Chicken Breast"),
+            ("bread", "Bread, Whole Wheat"),
+            ("water", "Water, Tap"),
+            ("burger", "Hamburger"),
+            ("salad", "Mixed Salad Greens")
+        ]
+
+        for (query, expectedName) in expectedFirstResults {
+            XCTAssertEqual(
+                FoodItemLocalSearch.rankedFoods(foods, matching: query).first?.name,
+                expectedName,
+                "Unexpected first result for \(query)"
+            )
+        }
     }
 
     func testPunctuationAndDiacriticsShareSearchTokenization() {

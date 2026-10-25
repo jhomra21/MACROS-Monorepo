@@ -511,7 +511,13 @@ private extension Array where Element == RankedLocalAddFoodSearchResult {
     func sortedForSearchResults() -> [RankedLocalAddFoodSearchResult] {
         sorted { lhs, rhs in
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
-            return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            let nameOrder = lhs.name.compare(
+                rhs.name,
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
+            if nameOrder != .orderedSame { return nameOrder == .orderedAscending }
+            return lhs.result.id.uuidString < rhs.result.id.uuidString
         }
     }
 }

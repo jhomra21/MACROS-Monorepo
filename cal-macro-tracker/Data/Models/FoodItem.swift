@@ -135,7 +135,7 @@ final class FoodItem {
         return ([name, brand, barcode] + aliases)
             .compactMap(normalizedSearchValue)
             .filter { seen.insert($0).inserted }
-            .joined(separator: " ")
+            .joined(separator: FoodItemLocalSearch.searchableValueSeparator)
     }
 
     private static func normalizedSearchValue(_ value: String?) -> String? {
@@ -162,12 +162,12 @@ struct FoodItemSearchQuery: Hashable {
             ?? normalizedText
     }
 
-    static func normalize(_ value: String) -> String {
+    nonisolated static func normalize(_ value: String) -> String {
         value.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
             .lowercased()
     }
 
-    static func tokenize(_ value: String) -> [String] {
+    nonisolated static func tokenize(_ value: String) -> [String] {
         normalize(value)
             .split(whereSeparator: { !$0.isLetter && !$0.isNumber })
             .map(String.init)
@@ -179,13 +179,7 @@ struct FoodItemSearchQuery: Hashable {
 }
 
 enum FoodItemLocalSearch {
-    private static let secondaryFoodModifiers: Set<String> = [
-        "baby", "bread", "bubble", "cake", "chip", "chips", "chocolate", "cinnamon", "cookie", "condensed",
-        "chestnut", "chesnut", "dressing", "dry", "evaporated", "franks", "fruit", "ginger", "malted", "parfait",
-        "patty",
-        "pancake", "rice", "salad", "sauce", "stuffing", "substitute", "syrup", "tartare", "teriyaki", "tomato",
-        "tube"
-    ]
+    static let searchableValueSeparator = "\n"
 
     private struct SearchMatch {
         let food: FoodItem
@@ -204,70 +198,99 @@ enum FoodItemLocalSearch {
         }
 
         let rankedMatches = searchMatches.sorted { lhs, rhs in
+            let nameOrder = lhs.food.name.compare(
+                rhs.food.name,
+                options: [.caseInsensitive, .diacriticInsensitive],
+                locale: Locale(identifier: "en_US_POSIX")
+            )
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
-            if lhs.food.name.count != rhs.food.name.count {
-                return lhs.food.name.count < rhs.food.name.count
-            }
-            return lhs.food.name.localizedCaseInsensitiveCompare(rhs.food.name) == .orderedAscending
+            if nameOrder != .orderedSame { return nameOrder == .orderedAscending }
+            return lhs.food.id.uuidString < rhs.food.id.uuidString
         }
 
         return rankedMatches.map { $0.food }
     }
 
     static func rank(for food: FoodItem, matching query: FoodItemSearchQuery) -> Int? {
-        let name = FoodItemSearchQuery.normalize(food.name.trimmingCharacters(in: .whitespacesAndNewlines))
-        let brand = FoodItemSearchQuery.normalize(food.brand?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
+        let queryWords = comparableWords(query.normalizedText)
+        guard queryWords.isEmpty == false else { return nil }
 
-        if name == query.normalizedText || (brand.isEmpty == false && brand == query.normalizedText) {
-            return 0
-        }
-
-        let nameTokens = Set(FoodItemSearchQuery.tokenize(name))
-        if query.tokens.isSubset(of: nameTokens) {
-            if hasSecondaryModifier(in: nameTokens, query: query.tokens) {
-                return 300 + nameTokens.count
+        let nameSegments = food.name.split(separator: ",").map(String.init)
+        let firstNameSegment = nameSegments.first ?? food.name
+        let firstNameWords = comparableWords(firstNameSegment)
+        let prefixValues = [food.name, food.brand, food.barcode]
+            .compactMap { TextNormalization.trimmedNonEmpty($0).map(FoodItemSearchQuery.normalize) }
+            .reduce(into: [String]()) { values, value in
+                if values.contains(value) == false {
+                    values.append(value)
+                }
             }
-            if hasWordPrefix(name, query: query.normalizedText) {
-                return 1 + nameTokens.count
+        let searchableComponents = food.searchableText.components(separatedBy: Self.searchableValueSeparator)
+        let aliasWords: [[String]]
+        if searchableComponents.count > 1 {
+            aliasWords = Array(searchableComponents.dropFirst(prefixValues.count)).map(comparableWords)
+        } else {
+            let prefixWordCount = prefixValues.reduce(into: 0) { count, value in
+                count += comparableWords(value).count
             }
-            return 20 + nameTokens.count
+            aliasWords = [Array(comparableWords(food.searchableText).dropFirst(prefixWordCount))]
+        }
+        let brandWords = food.brand.map(comparableWords) ?? []
+        let tier: Int
+        if phraseEquals(firstNameWords, queryWords)
+            || phraseEquals(brandWords, queryWords)
+            || aliasWords.contains(where: { phraseEquals($0, queryWords) })
+        {
+            tier = 0
+        } else if headNounMatches(firstNameWords, queryWords) {
+            tier = 1
+        } else if containsWords(firstNameWords, queryWords, allowingPrefix: true) {
+            tier = 2
+        } else {
+            let laterNameSegments = nameSegments.dropFirst().map { comparableWords($0) }
+            guard
+                laterNameSegments.contains(where: { containsWords($0, queryWords, allowingPrefix: true) })
+                    || aliasWords.contains(where: { containsWords($0, queryWords, allowingPrefix: true) })
+            else { return nil }
+            tier = 3
         }
 
-        if hasWordPrefix(name, query: query.normalizedText) {
-            return 50 + nameTokens.count
-        }
-
-        let hasTokenPrefixMatch = query.tokens.allSatisfy { queryToken in
-            nameTokens.contains(where: { $0.hasPrefix(queryToken) })
-        }
-        if hasTokenPrefixMatch {
-            return 100 + nameTokens.count
-        }
-
-        if name.hasPrefix(query.normalizedText) {
-            return 150 + nameTokens.count
-        }
-
-        if hasWordPrefix(brand, query: query.normalizedText) {
-            return 150
-        }
-
-        let searchableTokens = Set(FoodItemSearchQuery.tokenize(food.searchableText))
-        if query.tokens.isSubset(of: searchableTokens) {
-            return 200
-        }
-
-        return nil
+        let commaSegmentPenalty = min(nameSegments.count, 99) * 100_000
+        let nameLengthPenalty = min(food.name.count, 99_999)
+        return tier * 10_000_000 + commaSegmentPenalty + nameLengthPenalty
     }
 
-    private static func hasSecondaryModifier(in nameTokens: Set<String>, query: Set<String>) -> Bool {
-        !secondaryFoodModifiers.isDisjoint(with: nameTokens.subtracting(query))
+    nonisolated private static func comparableWords(_ value: String) -> [String] {
+        FoodItemSearchQuery.tokenize(value).map(singularize)
     }
 
-    private static func hasWordPrefix(_ value: String, query: String) -> Bool {
-        guard value.hasPrefix(query) else { return false }
-        guard let nextCharacter = value.dropFirst(query.count).first else { return true }
-        return !nextCharacter.isLetter && !nextCharacter.isNumber
+    nonisolated private static func singularize(_ word: String) -> String {
+        if word.count > 4, word.hasSuffix("ies") {
+            return String(word.dropLast(3)) + "y"
+        }
+        if word.count > 4, ["ches", "shes", "xes", "zes"].contains(where: word.hasSuffix) {
+            return String(word.dropLast(2))
+        }
+        if word.count > 3, word.hasSuffix("s"), word.hasSuffix("ss") == false {
+            return String(word.dropLast())
+        }
+        return word
     }
 
+    nonisolated private static func phraseEquals(_ lhs: [String], _ rhs: [String]) -> Bool {
+        lhs == rhs
+    }
+
+    nonisolated private static func headNounMatches(_ words: [String], _ query: [String]) -> Bool {
+        query.count <= words.count && Array(words.suffix(query.count)) == query
+    }
+
+    nonisolated private static func containsWords(_ words: [String], _ query: [String], allowingPrefix: Bool) -> Bool {
+        guard query.count <= words.count else { return false }
+        return (0...(words.count - query.count)).contains { start in
+            zip(words[start..<(start + query.count)], query).allSatisfy { word, queryWord in
+                allowingPrefix ? word.hasPrefix(queryWord) : word == queryWord
+            }
+        }
+    }
 }
