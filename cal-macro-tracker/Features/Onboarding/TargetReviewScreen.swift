@@ -39,6 +39,12 @@ struct TargetReviewScreen: View {
             ScrollView {
                 VStack(spacing: 24) {
                     if let calculatedTarget, let calculatedGoals {
+                        let proposedGoals = MacroGoalsSnapshot(
+                            calorieGoal: calculatedGoals.calorieGoal,
+                            proteinGoalGrams: calculatedGoals.proteinGoalGrams,
+                            fatGoalGrams: calculatedGoals.fatGoalGrams,
+                            carbGoalGrams: calculatedGoals.carbGoalGrams
+                        )
                         VStack(spacing: 4) {
                             Text("Daily calorie target")
                                 .font(.headline)
@@ -51,20 +57,19 @@ struct TargetReviewScreen: View {
                         }
                         .padding(.top, 28)
 
-                        MacroRingSetView(
-                            totals: .zero,
-                            goals: MacroGoalsSnapshot(
-                                calorieGoal: calculatedGoals.calorieGoal,
-                                proteinGoalGrams: calculatedGoals.proteinGoalGrams,
-                                fatGoalGrams: calculatedGoals.fatGoalGrams,
-                                carbGoalGrams: calculatedGoals.carbGoalGrams
-                            ),
-                            ringDiameter: 76,
-                            centerValueFontSize: nil,
-                            minimumLineWidth: 8,
-                            showsGoalSubtitle: false
-                        )
-                        .frame(maxWidth: .infinity)
+                        HStack(spacing: 8) {
+                            ForEach(MacroMetric.allCases) { metric in
+                                MacroSummaryColumnView(
+                                    metric: metric,
+                                    totals: .zero,
+                                    goals: proposedGoals,
+                                    titleStyle: .full,
+                                    style: .dashboardCard
+                                )
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .accessibilityElement(children: .ignore)
                         .accessibilityLabel(
                             "Proposed goals: \(Int(calculatedGoals.calorieGoal)) calories, "
                                 + "\(Int(calculatedGoals.proteinGoalGrams)) grams protein, "
