@@ -69,5 +69,6 @@ Phase 1 runs in parallel. The parent merges Phase 1 branches into `main` in the 
 
 ## Status log
 
+- 2026-10-25: WS2 local StoreKit repair remains blocked by a pre-existing setup failure. Fresh iOS 26.4 (23E244) simulator, shutdown-all/erase retry with live `storekitd` logging, and a minimal XCUITest launch all failed to activate local products on Xcode 26.4 (17E192), macOS 27.0.1 (26A434). Error: `SKInternalErrorDomain Code=3`; `OctaneSaveConfigurationRequest` not entitled. T3 screenshot confirms all three plans unavailable under XCUITest. No payment assertions waived or production signing changed. Apple references FB22237318 / FB22500243; newer matching toolchain/runtime or WS9 device sandbox/TestFlight remains required. Full commands and evidence: `build/ws2-qa-2026-10-25/QA.md`; WS2 tracker updated.
 - 2026-10-25: Program created. Decisions locked. Phase 1 dispatch pending.
 - 2026-10-25: Launch decisions applied: `macros.pro.lifetime` is $49.99 (was $39.99); Apple Health split, with writing nutrition free and weight import from Apple Health Pro (`PaidFeature.healthWeightImport`); Terms of Use governed by the State of Texas, USA, and applicable US federal law. `docs/research/monetization-market-validation.md` informed these decisions.
