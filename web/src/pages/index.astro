@@ -30,7 +30,69 @@ import {
 		</div>
 	</section>
 
-	<!-- Section 2: Waitlist -->
+	<section class="section">
+		<div class="container">
+			<div class="section-heading">
+				<h2>Why MACROS</h2>
+				<p>Useful tracking without an account or unnecessary friction.</p>
+			</div>
+			<div class="detail-grid">
+				{site.whyMacros.map((reason) => (
+					<article class="detail-card"><h3>{reason}</h3></article>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<section class="section section--plans">
+		<div class="container">
+			<div class="section-heading">
+				<h2>Free vs Pro</h2>
+				<p>Keep the everyday essentials free. Upgrade when you want more insight and control.</p>
+			</div>
+			<div class="table-wrap">
+				<table class="feature-table">
+					<thead>
+						<tr><th scope="col">Feature</th><th scope="col">Free</th><th scope="col">MACROS Pro</th></tr>
+					</thead>
+					<tbody>
+						{site.freeFeatures.map((feature) => (
+							<tr><th scope="row">{feature}</th><td>Included</td><td>Included</td></tr>
+						))}
+						{site.proFeatures.map((feature) => (
+							<tr><th scope="row">{feature}</th><td>—</td><td>Included</td></tr>
+						))}
+						<tr><th scope="row">Price</th><td>Free</td><td>{site.proPricing}</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-heading">
+				<h2>Frequently asked questions</h2>
+			</div>
+			<div class="faq-list">
+				{site.faq.map((item) => (
+					<details class="faq-item">
+						<summary>{item.question}</summary>
+						<p>{item.answer}</p>
+					</details>
+				))}
+			</div>
+			<div class="store-badge">
+				{site.appStoreURL ? (
+					<a class="button" href={site.appStoreURL}>Download on the App Store</a>
+				) : (
+					<span class="button-secondary" aria-label="App Store link coming soon">App Store link coming soon</span>
+				)}
+			</div>
+		</div>
+	</section>
+
+	<!-- Waitlist remains available before launch. -->
 	<section class="section section--waitlist">
 		<div class="container container--waitlist">
 			<div class="waitlist-form-container">

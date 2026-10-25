@@ -1,5 +1,4 @@
 import appAddFoodImage from '../assets/app-images/app-add-food.png';
-import appCalendarImage from '../assets/app-images/app-calendar.png';
 import appHistoryImage from '../assets/app-images/app-history.png';
 import appHomeImage from '../assets/app-images/app-home.png';
 import appInsightsImage from '../assets/app-images/app-insights.png';
@@ -13,11 +12,52 @@ export const site = {
 	tagline: 'Track calories and macros without creating an account.',
 	description:
 		'MACROS is a local-first iPhone app for logging calories, protein, carbs, and fat with barcode scans, nutrition label photos, and fast manual entry.',
+	appStoreURL: '',
 	navItems: [
 		{ href: '/', label: 'Home' },
 		{ href: '/about', label: 'About' },
 		{ href: '/privacy', label: 'Privacy' },
+		{ href: '/terms', label: 'Terms' },
 		{ href: '/support', label: 'Support' },
+	],
+	whyMacros: [
+		'No account required',
+		'Free barcode and nutrition label scanning',
+		'Your food logs stay on your phone',
+		'Share daily totals only with people you choose',
+	],
+	freeFeatures: [
+		'All food logging, barcode scanning, label scanning, and online packaged-food search',
+		'Saved foods and meals, history, and widgets',
+		'Daily share card and sharing circle',
+		'Goal calculator and basic weight log',
+		'One daily reminder',
+	],
+	proFeatures: [
+		'Insights charts and weight trends',
+		'Apple Health sync',
+		'Backup export and import',
+		'Custom macro ring colors',
+		'Multiple and smart reminders',
+	],
+	proPricing: '$2.99/month, $19.99/year with a 7-day free trial, or $39.99 once',
+	faq: [
+		{
+			question: 'Do I need an account?',
+			answer: 'No. Food logging works without an account. Sharing is optional and uses a separate sharing profile.',
+		},
+		{
+			question: 'What is MACROS Pro?',
+			answer: 'Pro unlocks Insights charts, weight trends, Apple Health sync, backup export and import, custom ring colors, and more reminder options.',
+		},
+		{
+			question: 'Does it work offline?',
+			answer: 'Your on-device logs and manual entry are available offline. Online packaged-food search needs a connection.',
+		},
+		{
+			question: 'What leaves my phone?',
+			answer: 'Search terms or barcodes go to our food-search service. If you turn on sharing, only your chosen display name and daily nutrition totals are shared, never individual foods.',
+		},
 	],
 	heroShowcase: {
 		src: appHomeImage,
@@ -48,11 +88,6 @@ export const site = {
 			src: appHistoryImage,
 			alt: 'MACROS history screen with a full week of logged food progress',
 			title: 'Weekly history',
-		},
-		{
-			src: appCalendarImage,
-			alt: 'MACROS expanded calendar history view with macro progress',
-			title: 'Calendar overview',
 		},
 		{
 			src: appSharingSettingsImage,

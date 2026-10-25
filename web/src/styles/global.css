@@ -136,6 +136,99 @@ main,
 	padding: 4rem 0;
 }
 
+.section-heading {
+	max-width: 42rem;
+	margin: 0 auto 2rem;
+	text-align: center;
+}
+
+.section-heading h2 {
+	font-size: clamp(2rem, 5vw, 3rem);
+	margin-bottom: 0.75rem;
+}
+
+.section-heading p {
+	color: var(--text-muted);
+	font-size: 1.1rem;
+}
+
+.detail-card h3 {
+	font-size: 1.3rem;
+	margin: 0;
+}
+
+.table-wrap {
+	overflow-x: auto;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--surface-strong);
+	box-shadow: var(--shadow-bento);
+}
+
+.feature-table {
+	width: 100%;
+	min-width: 36rem;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.feature-table th,
+.feature-table td {
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid var(--border);
+	vertical-align: top;
+}
+
+.feature-table thead th {
+	background: var(--surface-muted);
+	font-size: 1.05rem;
+}
+
+.feature-table tbody th {
+	width: 55%;
+	font-weight: 550;
+}
+
+.feature-table tbody td {
+	color: var(--text-muted);
+}
+
+.feature-table tbody tr:last-child > * {
+	border-bottom: 0;
+	font-weight: 700;
+	color: var(--text);
+}
+
+.faq-list {
+	display: grid;
+	gap: 0.8rem;
+	max-width: 48rem;
+	margin: 0 auto;
+}
+
+.faq-item {
+	padding: 1.25rem 1.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--surface-strong);
+}
+
+.faq-item summary {
+	font-weight: 650;
+	cursor: pointer;
+}
+
+.faq-item p {
+	margin: 0.8rem 0 0;
+	color: var(--text-muted);
+}
+
+.store-badge {
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+}
+
 /* Typography Overrides */
 h1, h2, h3 {
 	font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
