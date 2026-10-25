@@ -5,19 +5,42 @@ import SwiftUI
 struct InsightsScreen: View {
     @Environment(AppDayContext.self) private var dayContext
 
-    @State private var isPresentingFullUnlock = false
+    @State private var isPresentingPro = false
 
     var body: some View {
         PaidFeatureGate(.nutritionInsights) {
             InsightsUnlockedContent(today: dayContext.today)
         } locked: {
-            InsightsLockedPreview(isPresentingFullUnlock: $isPresentingFullUnlock)
+            VStack(spacing: 0) {
+                HStack(spacing: 4) {
+                    ForEach(InsightsRange.allCases) { range in
+                        Button {
+                        } label: {
+                            Label(range.title, systemImage: range == .sevenDays ? "checkmark" : "lock.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .padding(.vertical, 8)
+                        .background(
+                            range == .sevenDays ? PlatformColors.cardBackground : Color.clear,
+                            in: RoundedRectangle(cornerRadius: 8)
+                        )
+                        .disabled(range != .sevenDays)
+                        .accessibilityLabel("\(range.title), \(range == .sevenDays ? "selected" : "requires Pro")")
+                    }
+                }
+                .buttonStyle(.plain)
+                .padding(4)
+                .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                InsightsRangeQueryContent(range: .sevenDays, today: dayContext.today, isPresentingPro: $isPresentingPro)
+            }
         }
         .background(PlatformColors.groupedBackground)
         .navigationTitle("Insights")
         .inlineNavigationTitle()
-        .sheet(isPresented: $isPresentingFullUnlock) {
-            FullUnlockPaywallSheet()
+        .sheet(isPresented: $isPresentingPro) {
+            ProPaywallSheet(context: .insights)
                 .presentationDetents([.medium, .large])
         }
     }
@@ -57,8 +80,10 @@ private struct InsightsRangeQueryContent: View {
 
     let range: InsightsRange
     let today: CalendarDay
+    var isPresentingPro: Binding<Bool>?
 
-    init(range: InsightsRange, today: CalendarDay) {
+    init(range: InsightsRange, today: CalendarDay, isPresentingPro: Binding<Bool>? = nil) {
+        self.isPresentingPro = isPresentingPro
         self.range = range
         self.today = today
 
@@ -92,22 +117,44 @@ private struct InsightsRangeQueryContent: View {
                     previousPoints: previousPoints
                 )
 
-                InsightsCaloriesCard(
-                    points: currentPoints,
-                    previousPoints: previousPoints,
-                    goals: currentGoals
-                )
+                ZStack(alignment: .top) {
+                    VStack(spacing: 16) {
+                        InsightsCaloriesCard(
+                            points: currentPoints,
+                            previousPoints: previousPoints,
+                            goals: currentGoals
+                        )
 
-                InsightsMacrosCard(
-                    points: currentPoints,
-                    previousPoints: previousPoints,
-                    goals: currentGoals
-                )
+                        InsightsMacrosCard(
+                            points: currentPoints,
+                            previousPoints: previousPoints,
+                            goals: currentGoals
+                        )
 
-                InsightsNutrientsCard(
-                    points: currentPoints,
-                    previousPoints: previousPoints
-                )
+                        InsightsNutrientsCard(
+                            points: currentPoints,
+                            previousPoints: previousPoints
+                        )
+                    }
+                    .blur(radius: isPresentingPro == nil ? 0 : 6)
+                    .allowsHitTesting(isPresentingPro == nil)
+                    .accessibilityHidden(isPresentingPro != nil)
+
+                    if let isPresentingPro {
+                        VStack(spacing: 12) {
+                            Text("Unlock Insights")
+                                .font(.title2.bold())
+                            Text("Explore your calorie, macro, and nutrient trends.")
+                                .multilineTextAlignment(.center)
+                            AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
+                                isPresentingPro.wrappedValue = true
+                            }
+                        }
+                        .padding(24)
+                        .background(PlatformColors.groupedBackground, in: RoundedRectangle(cornerRadius: 24))
+                        .padding(.top, 40)
+                    }
+                }
             }
             .padding(20)
             .padding(.bottom, 32)
@@ -557,64 +604,6 @@ private struct InsightsSelectedValueLabel: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(Color.primary.opacity(0.08), in: Capsule())
-    }
-}
-
-private struct InsightsLockedPreview: View {
-    @Binding var isPresentingFullUnlock: Bool
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 18) {
-                VStack(spacing: 10) {
-                    Image(systemName: "chart.xyaxis.line")
-                        .font(.system(size: 44, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
-                    Text("Unlock Nutrition Insights")
-                        .font(.title2.weight(.bold))
-                    Text("See monthly calorie, macro, and nutrient trends with goal adherence and previous-period comparisons.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .padding(.top, 28)
-
-                VStack(spacing: 12) {
-                    InsightsPreviewChart(title: "Calories", color: .accentColor)
-                    InsightsPreviewChart(title: "Macros", color: .orange)
-                    InsightsPreviewChart(title: "Nutrients", color: .green)
-                }
-                .blur(radius: 1.5)
-                .allowsHitTesting(false)
-                .accessibilityHidden(true)
-
-                AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
-                    isPresentingFullUnlock = true
-                }
-            }
-            .padding(20)
-            .padding(.bottom, 32)
-        }
-    }
-}
-
-private struct InsightsPreviewChart: View {
-    let title: String
-    let color: Color
-
-    private let values: [Double] = [0.35, 0.62, 0.48, 0.78, 0.57, 0.86, 0.66]
-
-    var body: some View {
-        InsightsCard(title: title, subtitle: "Premium trend preview") {
-            HStack(alignment: .bottom, spacing: 8) {
-                ForEach(Array(values.enumerated()), id: \.offset) { _, value in
-                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                        .fill(color.gradient)
-                        .frame(height: 110 * value)
-                }
-            }
-            .frame(maxWidth: .infinity, minHeight: 120, alignment: .bottom)
-        }
     }
 }
 

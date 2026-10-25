@@ -1,7 +1,7 @@
+import Foundation
 import StoreKit
 import StoreKitTest
 import XCTest
-import Foundation
 @testable import cal_macro_tracker
 
 @MainActor
@@ -11,17 +11,16 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     private var store: PurchaseStore!
 
     override func setUp() async throws {
-        let configurationURL = try XCTUnwrap(
-            Bundle(for: Self.self).url(forResource: "FullUnlock", withExtension: "storekit")
-        )
-        session = try SKTestSession(contentsOf: configurationURL)
+        let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "MACROSPro", withExtension: "storekit"))
+        session = try SKTestSession(contentsOf: url)
         session.resetToDefaultState()
+        session.clearTransactions()
         session.disableDialogs = true
-        let products = try await Product.products(for: [PurchaseStore.fullUnlockProductID])
-        guard products.contains(where: { $0.id == PurchaseStore.fullUnlockProductID }) else {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        guard catalog.count == ProPlan.allCases.count else {
             throw NSError(
-                domain: "AppleQA.StoreKitSetup", code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "StoreKitTest did not expose the catalog product; no purchase assertion is valid."]
+                domain: "WS2.StoreKitSetup", code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "StoreKitTest did not expose all three plans. Check local catalog activation and simulator development signing."]
             )
         }
         entitlements = AppEntitlements()
@@ -29,63 +28,129 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     override func tearDown() {
+        session?.clearTransactions()
         session?.resetToDefaultState()
-        session = nil
         store = nil
         entitlements = nil
+        session = nil
     }
 
     func testProductLoadFailureCanRetrySuccessfully() async throws {
         try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .loadProducts)
-
         await store.loadProducts()
-
-        XCTAssertNil(store.fullUnlockProduct)
+        XCTAssertTrue(store.products.isEmpty)
         XCTAssertFalse(store.isLoadingProducts)
-        XCTAssertFalse(store.hasFullUnlock)
         XCTAssertNotNil(store.feedback)
-
         try await session.setSimulatedError(nil, forAPI: .loadProducts)
         await store.loadProducts()
-
-        XCTAssertEqual(store.fullUnlockProduct?.id, PurchaseStore.fullUnlockProductID)
-        XCTAssertFalse(store.isLoadingProducts)
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
         XCTAssertNil(store.feedback)
-        XCTAssertFalse(store.hasFullUnlock)
+        XCTAssertTrue(store.isEligibleForIntroOffer)
     }
 
-    func testPurchaseFailureDoesNotUnlock() async throws {
+    func testPurchaseFailureDoesNotGrantPro() async throws {
         await store.loadProducts()
-        _ = try XCTUnwrap(store.fullUnlockProduct)
+        _ = try XCTUnwrap(store.products[.yearly])
         try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .purchase)
-
-        await store.purchaseFullUnlock()
-
+        await store.purchase(.yearly)
+        XCTAssertFalse(store.hasPro)
         XCTAssertFalse(store.isPurchasing)
-        XCTAssertFalse(store.hasFullUnlock)
         XCTAssertNotNil(store.feedback)
     }
 
-    func testRestoreFailurePreservesLockedState() async throws {
-        try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .appStoreSync)
-
-        await store.restorePurchases()
-
-        XCTAssertFalse(store.isRestoring)
-        XCTAssertFalse(store.hasFullUnlock)
-        XCTAssertNotNil(store.feedback)
+    func testCancellationDoesNotGrantPro() async throws {
+        await store.loadProducts()
+        try await session.setSimulatedError(.generic(.userCancelled), forAPI: .purchase)
+        await store.purchase(.yearly)
+        XCTAssertFalse(store.hasPro)
+        XCTAssertFalse(store.isPurchasing)
+        XCTAssertNil(store.feedback)
     }
 
-    func testVerifiedTransactionUpdateUnlocksAndRefundRelocks() async throws {
-        XCTAssertFalse(store.hasFullUnlock)
+    func testPendingDoesNotGrantPro() async {
+        session.askToBuyEnabled = true
+        await store.purchase(.yearly)
+        XCTAssertFalse(store.hasPro)
+        XCTAssertFalse(store.isPurchasing)
+        guard case .status = store.feedback else { return XCTFail("Pending purchase must explain approval is needed.") }
+    }
 
-        let transaction = try await session.buyProduct(identifier: PurchaseStore.fullUnlockProductID)
+    func testTrialGrantsProWithExpirationAndExpiryRemovesIt() async throws {
+        await store.purchase(.yearly)
+        XCTAssertTrue(store.hasPro)
+        XCTAssertEqual(entitlements.proSource, .yearly)
+        XCTAssertNotNil(entitlements.proExpirationDate)
+        let latest = await Transaction.latest(for: ProPlan.yearly.productID)
+        guard case let .verified(transaction) = latest else { return XCTFail("Expected verified trial.") }
+        XCTAssertEqual(transaction.offer?.type, .introductory)
+        try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
         await store.refreshEntitlements()
-        XCTAssertTrue(store.hasFullUnlock)
+        XCTAssertFalse(store.hasPro)
+        XCTAssertNil(entitlements.proExpirationDate)
+        XCTAssertNil(entitlements.proSource)
+    }
 
+    func testMonthlyGrantsPro() async {
+        await store.purchase(.monthly)
+        XCTAssertTrue(store.hasPro)
+        XCTAssertEqual(entitlements.proSource, .monthly)
+        XCTAssertNotNil(entitlements.proExpirationDate)
+    }
+
+    func testRefundRevokesLifetime() async throws {
+        let transaction = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
+        await store.refreshEntitlements()
+        XCTAssertEqual(entitlements.proSource, .lifetime)
+        XCTAssertNil(entitlements.proExpirationDate)
         try session.refundTransaction(identifier: UInt(transaction.id))
         await store.refreshEntitlements()
+        XCTAssertFalse(store.hasPro)
+    }
 
-        XCTAssertFalse(store.hasFullUnlock)
+    func testLegacyGrantsLifetime() async throws {
+        _ = try await session.buyProduct(identifier: PurchaseStore.legacyFullUnlockProductID)
+        await store.refreshEntitlements()
+        XCTAssertTrue(store.hasPro)
+        XCTAssertEqual(entitlements.proSource, .legacyFullUnlock)
+        XCTAssertNil(entitlements.proExpirationDate)
+    }
+
+    func testLifetimeBeatsSubscription() async throws {
+        _ = try await session.buyProduct(identifier: ProPlan.yearly.productID)
+        _ = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
+        await store.refreshEntitlements()
+        XCTAssertEqual(entitlements.proSource, .lifetime)
+        XCTAssertNil(entitlements.proExpirationDate)
+        try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
+        await store.refreshEntitlements()
+        XCTAssertTrue(store.hasPro)
+        XCTAssertEqual(entitlements.proSource, .lifetime)
+    }
+
+    func testRestoreWithNothingReportsStatus() async {
+        await store.restorePurchases()
+        XCTAssertFalse(store.hasPro)
+        XCTAssertFalse(store.isRestoring)
+        guard case let .status(message) = store.feedback else { return XCTFail("Expected empty restore status.") }
+        XCTAssertTrue(message.contains("No"))
+    }
+
+    func testRestoreFailurePreservesEntitlement() async throws {
+        _ = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
+        await store.refreshEntitlements()
+        try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .appStoreSync)
+        await store.restorePurchases()
+        XCTAssertTrue(store.hasPro)
+        XCTAssertFalse(store.isRestoring)
+        guard case .error = store.feedback else { return XCTFail("Expected restore error.") }
+    }
+
+    func testIntroEligibilityAfterPriorSubscription() async throws {
+        await store.loadProducts()
+        XCTAssertTrue(store.isEligibleForIntroOffer)
+        _ = try await session.buyProduct(identifier: ProPlan.yearly.productID)
+        try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
+        await store.refreshEntitlements()
+        XCTAssertFalse(store.isEligibleForIntroOffer)
     }
 }

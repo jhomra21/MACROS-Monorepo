@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1A1111111111111111111113 /* CalMacroWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 1A1111111111111111111111 /* CalMacroWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2C0000000000000000000002 /* ConvexMobile in Frameworks */ = {isa = PBXBuildFile; productRef = 2C0000000000000000000001 /* ConvexMobile */; };
-		2C0000000000000000000003 /* FullUnlock.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2B000000000000000000000C /* FullUnlock.storekit */; };
+		2C0000000000000000000003 /* MACROSPro.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2B000000000000000000000C /* MACROSPro.storekit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,7 @@
 /* Begin PBXFileReference section */
 		0D8B87CD2F7D86E700453C64 /* cal-macro-tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cal-macro-tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1111111111111111111111 /* CalMacroWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CalMacroWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B000000000000000000000C /* FullUnlock.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = FullUnlock.storekit; sourceTree = "<group>"; };
+		2B000000000000000000000C /* MACROSPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MACROSPro.storekit; sourceTree = "<group>"; };
 		3D0000000000000000000001 /* cal-macro-trackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "cal-macro-trackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -137,7 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				0D8B87CF2F7D86E700453C64 /* cal-macro-tracker */,
-				2B000000000000000000000C /* FullUnlock.storekit */,
+				2B000000000000000000000C /* MACROSPro.storekit */,
 				1A1111111111111111111115 /* cal-macro-tracker/Shared */,
 				1A1111111111111111111116 /* cal-macro-tracker/CalMacroWidget */,
 				1A1111111111111111111117 /* cal-macro-tracker/Data/Models */,
@@ -302,7 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C0000000000000000000003 /* FullUnlock.storekit in Resources */,
+				2C0000000000000000000003 /* MACROSPro.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

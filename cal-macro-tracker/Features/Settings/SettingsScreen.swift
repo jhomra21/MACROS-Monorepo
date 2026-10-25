@@ -18,7 +18,7 @@ struct SettingsScreen: View {
     @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
         MacroRingColorStorage.defaultFatHex
     @FocusState private var focusedField: DailyGoalsField?
-    @State private var isPresentingFullUnlock = false
+    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         Form {
@@ -32,7 +32,7 @@ struct SettingsScreen: View {
                 Text("Suggest foods from your on-device logging history.")
             }
 
-            FullUnlockSettingsSection(isPresentingFullUnlock: $isPresentingFullUnlock)
+            ProSettingsSection(paywallContext: $paywallContext)
 
             Section {
                 NavigationLink {
@@ -48,7 +48,7 @@ struct SettingsScreen: View {
                 proteinHex: $customProteinRingColor,
                 carbHex: $customCarbRingColor,
                 fatHex: $customFatRingColor,
-                isPresentingFullUnlock: $isPresentingFullUnlock
+                paywallContext: $paywallContext
             )
 
             SavedFoodsSection(
@@ -69,8 +69,8 @@ struct SettingsScreen: View {
         .onDisappear {
             dismissKeyboard($focusedField)
         }
-        .sheet(isPresented: $isPresentingFullUnlock) {
-            FullUnlockPaywallSheet()
+        .sheet(item: $paywallContext) { context in
+            ProPaywallSheet(context: context)
                 .presentationDetents([.medium, .large])
         }
     }
@@ -109,7 +109,7 @@ private struct MacroRingColorSettingsSection: View {
     @Binding var proteinHex: String
     @Binding var carbHex: String
     @Binding var fatHex: String
-    @Binding var isPresentingFullUnlock: Bool
+    @Binding var paywallContext: ProPaywallContext?
 
     var body: some View {
         let changedMetrics = changedMetrics
@@ -130,13 +130,13 @@ private struct MacroRingColorSettingsSection: View {
                 }
             } locked: {
                 Button {
-                    isPresentingFullUnlock = true
+                    paywallContext = .ringColors
                 } label: {
                     HStack(spacing: 12) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Customize Macro Ring Colors")
                                 .foregroundStyle(Color.accentColor)
-                            Text("Unlock Full App to personalize dashboard rings.")
+                            Text("Included with \(ProBrand.name).")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -157,7 +157,7 @@ private struct MacroRingColorSettingsSection: View {
             Text(
                 entitlements.canUse(.customMacroRingColors)
                     ? "Color changes update the dashboard rings immediately."
-                    : "Custom macro ring colors are included with Full App Unlock."
+                    : "Included with \(ProBrand.name)."
             )
         }
     }
@@ -236,66 +236,6 @@ private struct MacroRingColorSettingsSection: View {
         #if os(iOS)
         MacroRingColorPickerPresenter.present(for: metric, hex: hex(for: metric))
         #endif
-    }
-}
-
-private struct FullUnlockSettingsSection: View {
-    @Environment(PurchaseStore.self) private var purchaseStore
-    @Binding var isPresentingFullUnlock: Bool
-
-    var body: some View {
-        Section {
-            fullUnlockStatusButton(isUnlocked: purchaseStore.hasFullUnlock)
-
-            Button("Restore Purchases") {
-                Task {
-                    await purchaseStore.restorePurchases()
-                }
-            }
-            .disabled(purchaseStore.isPurchasing || purchaseStore.isRestoring)
-
-            PurchaseFeedbackText(feedback: purchaseStore.feedback)
-
-            #if DEBUG
-            Button(purchaseStore.hasFullUnlock ? "Revoke Debug Unlock" : "Grant Debug Unlock") {
-                purchaseStore.setDebugFullUnlock(!purchaseStore.hasFullUnlock)
-            }
-            #endif
-        } footer: {
-            Text("Purchases are processed by Apple. Restore anytime with the same Apple ID.")
-        }
-        .task {
-            await purchaseStore.loadProducts()
-        }
-    }
-
-    private func fullUnlockStatusButton(isUnlocked: Bool) -> some View {
-        Button {
-            isPresentingFullUnlock = true
-        } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(isUnlocked ? "Full App Unlocked" : "Unlock Full App")
-                        .foregroundStyle(isUnlocked ? Color.primary : Color.accentColor)
-                    Text(isUnlocked ? "All paid features are available." : "Unlock all features with one purchase.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                if purchaseStore.isLoadingProducts {
-                    ProgressView()
-                } else if !isUnlocked, let product = purchaseStore.fullUnlockProduct {
-                    Text(product.displayPrice)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color.accentColor)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
     }
 }
 
