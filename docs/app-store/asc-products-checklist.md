@@ -45,7 +45,7 @@ Apple Help: [Manage pricing for auto-renewable subscriptions](https://developer.
 1. Open `macros.pro.yearly` and go to **Subscription Prices > View all Subscription Pricing**.
 2. Select **Set up Introductory Offer**.
 3. Select **all available countries or regions**, then click **Next**.
-4. Set the start date to the intended launch date and configure no end date, if App Store Connect offers that choice. Apple's current Help page instructs users to select both start and end dates but does not document a no-end-date option. If the form requires an end date, stop and escalate; do not invent a date or alter the locked offer term.
+4. Set the start date to the intended launch date and choose **No End Date** for the end date. The Help page only describes picking start and end dates; if the form does not offer a no-end-date choice, stop and ask before saving. Do not invent an end date.
 5. Choose **Free**, duration **1 Week**, then proceed.
 6. Keep Apple's generated storefront prices unchanged. Confirm the offer.
 7. Do not create an introductory offer for `macros.pro.monthly`.
@@ -60,10 +60,10 @@ Use **Display Name and Description > Add**, select **English (U.S.) / en-US**, a
 | Item | Display name | Description |
 | --- | --- | --- |
 | Group | `MACROS Pro` | — |
-| Yearly | `MACROS Pro (Yearly)` | `Insights, weight trends, Apple Health sync, backup, custom colors, smart reminders.` |
-| Monthly | `MACROS Pro (Monthly)` | `Insights, weight trends, Apple Health sync, backup, custom colors, smart reminders.` |
+| Yearly | `MACROS Pro (Yearly)` | `Insights, weight trends, backup, reminders` |
+| Monthly | `MACROS Pro (Monthly)` | `Insights, weight trends, backup, reminders` |
 
-Apple's current Help reference specifies 2–30 characters for an In-App Purchase display name and 45 characters maximum for its description. The WS2 subscription description is longer than 45 characters; enter it as specified and follow the limit shown by the subscription localization form if it differs. Apple's subscription Help page does not publish separate character limits for these subscription localization fields. Do not silently rewrite the spec.
+Apple limits display names to 2–30 characters and descriptions to 45 characters; the texts above are 19–20 and 42 characters. Health is not mentioned because only weight import from Apple Health is a Pro feature.
 
 Apple Help: [Offer auto-renewable subscriptions](https://developer.apple.com/help/app-store-connect/manage-subscriptions/offer-auto-renewable-subscriptions); [In-App Purchase information](https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/in-app-purchase-information); [Auto-renewable subscription information](https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/auto-renewable-subscription-information)
 
@@ -72,8 +72,8 @@ Apple Help: [Offer auto-renewable subscriptions](https://developer.apple.com/hel
 1. In the app sidebar, open **Monetization > In-App Purchases** and click **+**.
 2. Choose **Non-Consumable**.
 3. Enter reference name `MACROS Pro Lifetime` and product ID `macros.pro.lifetime`; click **Create**.
-4. In **Price Schedule**, click **Add Pricing**. Select **United States**, choose **$39.99 USD**, click **Next**, keep Apple's generated storefront prices unchanged, then confirm.
-5. Add en-US localization with display name `MACROS Pro (Lifetime)`. The WS9 product spec does not provide a lifetime description; do not substitute invented marketing copy. If App Store Connect requires a description before save, get approved wording from the owner.
+4. In **Price Schedule**, click **Add Pricing**. Select **United States**, choose **$49.99 USD**, click **Next**, keep Apple's generated storefront prices unchanged, then confirm.
+5. Add en-US localization with display name `MACROS Pro (Lifetime)` and description `All Pro features, one-time purchase` (35 characters).
 6. In **Family Sharing**, click **Turn On**, review the terms, and confirm. **This cannot be turned off later.**
 
 Apple Help: [Create consumable or non-consumable In-App Purchases](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/create-consumable-or-non-consumable-in-app-purchases); [Set a price for an In-App Purchase](https://developer.apple.com/help/app-store-connect/manage-in-app-purchases/set-a-price-for-an-in-app-purchase); [Turn on Family Sharing for In-App Purchases](https://developer.apple.com/help/app-store-connect/configure-in-app-purchase-settings/turn-on-family-sharing-for-in-app-purchases); [In-App Purchase information](https://developer.apple.com/help/app-store-connect/reference/in-app-purchases-and-subscriptions/in-app-purchase-information)
