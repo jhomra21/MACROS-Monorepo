@@ -7,10 +7,10 @@ Owner: parent orchestration thread. Workers: delegated subagents, one per workst
 - Monetization: free core + **MACROS Pro**.
   - `macros.pro.yearly` — $19.99/year, 7-day free introductory trial.
   - `macros.pro.monthly` — $2.99/month, no trial.
-  - `macros.pro.lifetime` — $39.99 one-time non-consumable, Family Sharing on.
+  - `macros.pro.lifetime` — $49.99 one-time non-consumable, Family Sharing on.
   - Legacy `fullunlock001` stays recognized as a lifetime entitlement (never sold, but harmless and protects sandbox testers).
-- Free forever (no caps on local data): all logging paths (manual, bundled foods, saved foods, saved meals, barcode, label OCR, online packaged search), History and calendar, widgets, daily share card, sharing circle, goal calculator, basic weight log entry, one daily log reminder.
-- Pro: Insights charts (7/14/30 day), weight trend charts, Apple Health sync, backup export/import, custom macro ring colors, multiple/smart reminders.
+- Free forever (no caps on local data): all logging paths (manual, bundled foods, saved foods, saved meals, barcode, label OCR, online packaged search), History and calendar, widgets, daily share card, sharing circle, goal calculator, basic weight log entry, writing nutrition to Apple Health, one daily log reminder.
+- Pro: Insights charts (7/14/30 day), weight trend charts, weight import from Apple Health, backup export/import, custom macro ring colors, multiple/smart reminders.
 - Lean launch scope. Deferred post-launch: AI photo logging, Apple Watch, iCloud sync, adaptive target suggestions, meal slots, alternate app icons.
 - Bundle identifier stays `juan-test.cal-macro-tracker` (registered in App Store Connect). App group, URL scheme, and quick-action types stay as they are.
 - Service URLs stay on `workers.dev` and `convex.cloud` for launch. The App Store name "MACROS" is taken; the marketing name will change later, so the in-app brand string must be centralized (WS7) and never hardcoded in new code.
@@ -70,3 +70,4 @@ Phase 1 runs in parallel. The parent merges Phase 1 branches into `main` in the 
 ## Status log
 
 - 2026-10-25: Program created. Decisions locked. Phase 1 dispatch pending.
+- 2026-10-25: Launch decisions applied: `macros.pro.lifetime` is $49.99 (was $39.99); Apple Health split, with writing nutrition free and weight import from Apple Health Pro (`PaidFeature.healthWeightImport`); Terms of Use governed by the State of Texas, USA, and applicable US federal law. `docs/research/monetization-market-validation.md` informed these decisions.

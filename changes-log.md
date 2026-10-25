@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 Launch Decisions Update
+
+- Applied three owner decisions: `macros.pro.lifetime` is $49.99; writing nutrition to Apple Health is free and importing weight from Apple Health is Pro (`PaidFeature.healthWeightImport`); Terms of Use are governed by the State of Texas, USA. Trackers, website, and App Store drafts now match.
+
 ## 2026-10-25 App Store Connect Product Checklist
 
 - Chose manual App Store Connect setup for WS9 and dropped the API script path; added the [product creation checklist](docs/app-store/asc-products-checklist.md) with Apple Help references.

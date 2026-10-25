@@ -16,7 +16,7 @@ Cover, in plain language, each data flow with fields, purpose, provider, retenti
 - On-device data: food logs, saved foods and meals, goals, body profile, weight entries; stored in the app's protected container; deleted by deleting the app or using in-app controls; never uploaded except as described below.
 - Packaged-food search and barcode lookup: query text or barcode plus standard request metadata (IP address) go to the developer's Cloudflare Worker, which queries Open Food Facts and USDA FoodData Central; responses are cached up to 24 hours; no account identifier is sent.
 - Sharing circle (optional, off by default): a random device-generated profile key, a display name you choose, and per-day totals (calories, protein, carbs, fat, entry count, day, time zone) are stored in the developer's Convex backend to show them to people you invited; individual foods never leave the device; you can remove people, stop sharing, or delete the sharing profile in Settings, which deletes the stored totals and tombstones the profile key.
-- Apple Health (optional, Pro): nutrition written to Health and weight read from Health stay within Apple Health on your device; the app never transmits Health data.
+- Apple Health (optional): writing nutrition to Health is free; importing weight from Apple Health requires Pro. Health data stays within Apple Health on your device; the app never transmits Health data.
 - Purchases: handled by Apple; the app only receives entitlement status.
 - Reminders: local notifications only.
 - Website: support form (name, email, message) and waitlist (email) stored in Cloudflare D1 for 12 months; Cloudflare request logs; no analytics SDKs or advertising.
@@ -24,12 +24,12 @@ Cover, in plain language, each data flow with fields, purpose, provider, retenti
 
 ### Terms page (`/terms`)
 
-Short Terms of Use: not medical advice; subscription terms (auto-renewal, cancel in App Store settings, trial converts unless cancelled 24 hours before the end); lifetime purchase scope; acceptable use of sharing; reference to Apple's standard EULA where it governs; governing law placeholder for the owner to confirm.
+Short Terms of Use: not medical advice; subscription terms (auto-renewal, cancel in App Store settings, trial converts unless cancelled 24 hours before the end); lifetime purchase scope; acceptable use of sharing; reference to Apple's standard EULA where it governs; governing law: State of Texas, USA, and applicable United States federal law (decided 2026-10-25).
 
 ### Home page
 
 - Replace the duplicate calendar screenshot with the sharing dashboard screenshot or drop the card until a new screenshot exists.
-- Add sections in this order under the hero: "Why MACROS" (No account, Free barcode and label scanning, Your data stays on your phone, Share totals with people you choose), "Free vs Pro" table (Free column and Pro column matching the locked decisions; prices "$2.99/month, $19.99/year with a 7-day free trial, or $39.99 once"), and a short FAQ (Do I need an account? What is Pro? Does it work offline? What leaves my phone?). Keep the waitlist until launch; add an App Store badge placeholder component wired to a `site.appStoreURL` that is empty until release.
+- Add sections in this order under the hero: "Why MACROS" (No account, Free barcode and label scanning, Your data stays on your phone, Share totals with people you choose), "Free vs Pro" table (Free column and Pro column matching the locked decisions; prices "$2.99/month, $19.99/year with a 7-day free trial, or $49.99 once"), and a short FAQ (Do I need an account? What is Pro? Does it work offline? What leaves my phone?). Keep the waitlist until launch; add an App Store badge placeholder component wired to a `site.appStoreURL` that is empty until release.
 - Keep `site.ts` as the single data source; keep styling consistent with `global.css`; no new dependencies.
 
 ### App Store metadata draft

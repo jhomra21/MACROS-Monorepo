@@ -1,11 +1,11 @@
 # Weight Log, Apple Health, and Reminders Tracker (WS5)
 
-Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2 (Pro entitlements, `PaidFeature.weightTrends`, `.healthSync`, `.multipleReminders`) and WS3 (`BodyProfile`) are merged into `main`. Read `AGENTS.md`, `swift-dev.mdc`, the WS2 and WS3 trackers, `Features/Insights/InsightsScreen.swift` and `InsightsAnalytics.swift`, `Data/Services/LogEntryRepository*.swift` (post-mutation notification used by sharing sync), `App/HomeScreenQuickActionSupport.swift`, `Shared/AppOpenRequest.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swift-concurrency-expert`, `swiftui-liquid-glass`, and `write-swift` skills if available.
+Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2 (Pro entitlements, `PaidFeature.weightTrends`, `.healthWeightImport`, `.multipleReminders`) and WS3 (`BodyProfile`) are merged into `main`. Read `AGENTS.md`, `swift-dev.mdc`, the WS2 and WS3 trackers, `Features/Insights/InsightsScreen.swift` and `InsightsAnalytics.swift`, `Data/Services/LogEntryRepository*.swift` (post-mutation notification used by sharing sync), `App/HomeScreenQuickActionSupport.swift`, `Shared/AppOpenRequest.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swift-concurrency-expert`, `swiftui-liquid-glass`, and `write-swift` skills if available.
 
 ## Shared Understanding
 
 - The app has no weight tracking, no HealthKit, and no notifications. `BodyProfile.weightKg` (WS3) holds the latest weight used by the calculator. Post-mutation hooks already exist for log entries (used by `SharingSyncService`); Health writes attach to the same hooks.
-- Free: basic weight entry and one daily reminder. Pro: weight trend charts, Apple Health sync, multiple or smart reminders.
+- Free: basic weight entry, one daily reminder, and writing nutrition to Apple Health. Pro: weight trend charts, weight import from Apple Health, multiple or smart reminders.
 
 ## Core Decisions
 
@@ -17,14 +17,14 @@ Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2
 - Insights weight card (`InsightsWeightCard` in `Features/Insights/`): free state shows latest weight and change versus 7 days ago; Pro state (`PaidFeatureGate(.weightTrends)`) adds a Swift Charts line of daily weights with a 7-day moving average and a weekly rate label for the selected range, matching the existing card style and Reduce Motion handling. Locked state uses the same blurred-real-data pattern as WS2's Insights lock with a CTA to `ProPaywallSheet(context: .weightTrends)`.
 - Pure analytics in `Features/Weight/WeightAnalytics.swift` (moving average, weekly rate, missing-day handling); failure list first, then `WeightAnalyticsTests`.
 
-### Apple Health (Pro)
+### Apple Health (nutrition write free; weight import Pro)
 
 - Entitlement `com.apple.developer.healthkit` in `cal-macro-tracker.entitlements`; `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` in `Info-iOS.plist`; the Xcode target capability. Note for the owner: the App ID capability must exist in the developer portal (automatic signing adds it).
 - `Features/Health/HealthKitService.swift` (`@MainActor @Observable`, HealthKit calls on background tasks): `isAvailable`, `authorizationStatus`, `requestAuthorization()`, `writeNutrition(for entry:)`, `deleteNutrition(for entryID:)`, `backfill(days: 30)`, `startWeightObservation()`.
 - Write types: dietaryEnergyConsumed, dietaryProtein, dietaryCarbohydrates, dietaryFatTotal, dietaryFatSaturated, dietaryFiber, dietarySugar, dietarySodium, dietaryCholesterol. Each sample carries `HKMetadataKeySyncIdentifier = entry.id.uuidString` and `HKMetadataKeySyncVersion = Int(updatedAt.timeIntervalSince1970)` so edits replace in place; deletions remove by sync identifier. Nil nutrients write no sample.
-- Read: `HKAnchoredObjectQuery` on bodyMass with a persisted anchor; new samples become `WeightEntry(source: .healthKit)`.
-- Hook: subscribe to the existing post-mutation notification in `LogEntryRepository` (same seam sharing uses) so Health writes never block local persistence and only run when `entitlements.canUse(.healthSync)` and the toggle is on.
-- Settings section "Apple Health" (new file `Features/Health/HealthSettingsSection.swift`): toggles "Write nutrition to Health" and "Read weight from Health", status line, "Sync last 30 days" button, and a locked row opening `ProPaywallSheet(context: .healthSync)` when not Pro. Denied authorization shows guidance to open the Health app's Sources settings.
+- Read (Pro, gated by `PaidFeature.healthWeightImport`): `HKAnchoredObjectQuery` on bodyMass with a persisted anchor; new samples become `WeightEntry(source: .healthKit)`.
+- Hook: subscribe to the existing post-mutation notification in `LogEntryRepository` (same seam sharing uses) so Health writes never block local persistence and run when the "Write nutrition to Health" toggle is on. Writes are free and skip the entitlement check; only weight import checks `canUse(.healthWeightImport)`.
+- Settings section "Apple Health" (new file `Features/Health/HealthSettingsSection.swift`): toggles "Write nutrition to Health" (free) and "Read weight from Health" (Pro, gated by `.healthWeightImport`), status line, "Sync last 30 days" button (nutrition backfill, free), and a locked row on the "Read weight from Health" toggle opening `ProPaywallSheet(context: .healthWeightImport)` when not Pro. Denied authorization shows guidance to open the Health app's Sources settings.
 
 ### Reminders
 

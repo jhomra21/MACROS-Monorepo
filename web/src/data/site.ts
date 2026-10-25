@@ -31,16 +31,17 @@ export const site = {
 		'Saved foods and meals, history, and widgets',
 		'Daily share card and sharing circle',
 		'Goal calculator and basic weight log',
+		'Write nutrition to Apple Health',
 		'One daily reminder',
 	],
 	proFeatures: [
 		'Insights charts and weight trends',
-		'Apple Health sync',
+		'Weight import from Apple Health',
 		'Backup export and import',
 		'Custom macro ring colors',
 		'Multiple and smart reminders',
 	],
-	proPricing: '$2.99/month, $19.99/year with a 7-day free trial, or $39.99 once',
+	proPricing: '$2.99/month, $19.99/year with a 7-day free trial, or $49.99 once',
 	faq: [
 		{
 			question: 'Do I need an account?',
@@ -48,7 +49,7 @@ export const site = {
 		},
 		{
 			question: 'What is MACROS Pro?',
-			answer: 'Pro unlocks Insights charts, weight trends, Apple Health sync, backup export and import, custom ring colors, and more reminder options.',
+			answer: 'Pro unlocks Insights charts, weight trends, weight import from Apple Health, backup export and import, custom ring colors, and more reminder options.',
 		},
 		{
 			question: 'Does it work offline?',

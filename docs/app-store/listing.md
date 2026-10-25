@@ -28,9 +28,9 @@ Confirm the final name and legal owner details before submission.
   • Sharing with a circle is optional and shares daily totals, not individual foods.
 
   MACROS PRO
-  Pro adds Insights charts, weight trends, Apple Health sync, backup export and import, custom macro ring colors, and multiple or smart reminders.
+  Pro adds Insights charts, weight trends, weight import from Apple Health, backup export and import, custom macro ring colors, and multiple or smart reminders. Writing nutrition to Apple Health is free.
 
-  Choose a monthly subscription ($2.99), a yearly subscription ($19.99, including a 7-day free trial), or a $39.99 one-time lifetime purchase. Subscriptions renew automatically unless cancelled. Manage or cancel in your Apple Account subscription settings.
+  Choose a monthly subscription ($2.99), a yearly subscription ($19.99, including a 7-day free trial), or a $49.99 one-time lifetime purchase. Subscriptions renew automatically unless cancelled. Manage or cancel in your Apple Account subscription settings.
 
   MACROS is a tracking tool, not medical advice. Nutrition information may be incomplete; review entries and consult a qualified health professional for health decisions.
 
@@ -46,7 +46,7 @@ Confirm the final name and legal owner details before submission.
 - Food logging works without an account.
 - To review sharing, install the app on two sandbox devices, enable Sharing on device A, create an invitation, then accept it on device B. Sharing is optional and sends daily totals rather than individual foods.
 - Pro gates are visible in Settings. Review them without purchasing; paid products and subscription behavior are configured separately in App Store Connect.
-- Apple Health sync requires user permission and a device with Health available.
+- Apple Health requires user permission and a device with Health available. Writing nutrition is free; importing weight from Apple Health is a Pro feature. Reviewers can test the free path without purchasing.
 
 ## Age rating questionnaire draft
 
