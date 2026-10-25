@@ -106,3 +106,17 @@ test("daily snapshot and display-name caps are enforced", async () => {
   expect(quota?.displayNameUpdates).toBe(20);
   expect(quota?.snapshotUpserts).toBe(200);
 });
+
+test("profile deletion removes that profile's quota rows", async () => {
+  const t = convexTest(schema, modules);
+  const profileKey = "U".repeat(32);
+  await t.run(async (ctx) => ctx.db.insert("profiles", {
+    profileKey, displayName: "QA", secretHash: "e".repeat(64), createdAt: Date.now(), updatedAt: Date.now(),
+  }));
+  const owner = t.withIdentity({ subject: profileKey });
+
+  await owner.mutation(api.sharing.createInvite, { tokenHash: "c".repeat(64) });
+  expect(await t.run(async (ctx) => ctx.db.query("profileQuotas").take(10))).toHaveLength(1);
+  await owner.mutation(api.sharing.deleteMySharingProfile, {});
+  expect(await t.run(async (ctx) => ctx.db.query("profileQuotas").take(10))).toHaveLength(0);
+});
