@@ -22,20 +22,26 @@ const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
 
 const USDA_PROVIDER = 'usda' as const
 
-const RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS = 6_000
+const RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS = 4_000
 
-const RESTAURANT_LEGACY_MAX_ATTEMPTS = 6
+const RESTAURANT_LEGACY_MAX_ATTEMPTS = 3
 
-const RESTAURANT_LEGACY_MAX_PAGE_SCAN = 6
+const RESTAURANT_LEGACY_MAX_PAGE_SCAN = 3
+
+const RESTAURANT_DEADLINE_BUFFER_MS = 1_500
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
   openFoodFactsAttemptCount?: number
+  cacheable?: false
+  degradedReason?: 'usda-budget-exhausted' | 'request-deadline-expired'
 }
 
 export interface PackagedFoodSearchDependencies {
   usdaApiKey: string
   openFoodFactsUserAgent: string
   fetcher?: HTTPFetcher
+  requestDeadline?: { signal: AbortSignal; expiresAt: number }
+  allowUSDA?: () => Promise<boolean>
 }
 
 type OpenFoodFactsSearchOutcome =
@@ -63,14 +69,14 @@ export async function searchPackagedFoods(
   const fetcher = dependencies.fetcher ?? fetch
 
   if (input.provider === USDA_PROVIDER) {
-    return searchUSDAPackagedFoods(input, dependencies.usdaApiKey, fetcher)
+    return searchUSDAPackagedFoods(input, dependencies.usdaApiKey, fetcher, dependencies)
   }
 
-  if (isRestaurantLikeQuery(input.query)) {
-    return searchRestaurantOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher)
-  }
+  const result = isRestaurantLikeQuery(input.query)
+    ? await searchRestaurantOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher, dependencies)
+    : await searchOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher, dependencies)
 
-  return searchOpenFoodFactsPackagedFoods(input, dependencies.openFoodFactsUserAgent, fetcher)
+  return result
 }
 
 async function searchOpenFoodFactsWithOutcome(
@@ -80,8 +86,9 @@ async function searchOpenFoodFactsWithOutcome(
   searcher: OpenFoodFactsSearcher,
   maxAttempts = 1,
   timeoutMs = REQUEST_TIMEOUT_MS,
+  deadlineSignal?: AbortSignal,
 ): Promise<OpenFoodFactsSearchOutcome> {
-  const openFoodFactsFetcher = withTimeout(fetcher, timeoutMs)
+  const openFoodFactsFetcher = withTimeout(fetcher, timeoutMs, deadlineSignal)
   let lastError: OpenFoodFactsClientError | null = null
   let attempts = 0
 
@@ -129,12 +136,16 @@ async function searchOpenFoodFactsPackagedFoods(
   input: PackagedFoodSearchQuery,
   userAgent: string,
   fetcher: HTTPFetcher,
+  dependencies: PackagedFoodSearchDependencies,
 ): Promise<PackagedFoodSearchExecution> {
   const searchALiciousOutcome = await searchOpenFoodFactsWithOutcome(
     input,
     userAgent,
     fetcher,
     searchOpenFoodFactsSearchALiciousFoods,
+    1,
+    REQUEST_TIMEOUT_MS,
+    dependencies.requestDeadline?.signal,
   )
 
   if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
@@ -146,13 +157,28 @@ async function searchOpenFoodFactsPackagedFoods(
     userAgent,
     fetcher,
     searchOpenFoodFactsLegacyFoods,
+    1,
+    REQUEST_TIMEOUT_MS,
+    dependencies.requestDeadline?.signal,
   )
 
   const totalAttempts = searchALiciousOutcome.attempts + legacyOutcome.attempts
 
+  if (
+    dependencies.requestDeadline?.signal.aborted &&
+    searchALiciousOutcome.kind === 'response' &&
+    searchALiciousOutcome.page.results.length === 0
+  ) {
+    return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+  }
+
   if (legacyOutcome.kind === 'unavailable') {
     if (searchALiciousOutcome.kind === 'response') {
       return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
+    }
+
+    if (dependencies.requestDeadline?.signal.aborted) {
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
     }
 
     throw legacyOutcome.error
@@ -165,11 +191,13 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   input: PackagedFoodSearchQuery,
   userAgent: string,
   fetcher: HTTPFetcher,
+  dependencies: PackagedFoodSearchDependencies,
 ): Promise<PackagedFoodSearchExecution> {
   const legacyOutcome = await searchRestaurantLegacyOpenFoodFactsWithOutcome(
     input,
     userAgent,
     fetcher,
+    dependencies.requestDeadline,
   )
 
   if (legacyOutcome.kind === 'response' && legacyOutcome.page.results.length > 0) {
@@ -181,6 +209,9 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
     userAgent,
     fetcher,
     searchOpenFoodFactsSearchALiciousFoods,
+    1,
+    REQUEST_TIMEOUT_MS,
+    dependencies.requestDeadline?.signal,
   )
 
   const totalAttempts = legacyOutcome.attempts + searchALiciousOutcome.attempts
@@ -190,11 +221,23 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   }
 
   if (legacyOutcome.kind === 'response') {
+    if (dependencies.requestDeadline?.signal.aborted && legacyOutcome.page.results.length === 0) {
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+    }
+
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(legacyOutcome.page), totalAttempts)
   }
 
   if (searchALiciousOutcome.kind === 'response') {
+    if (dependencies.requestDeadline?.signal.aborted && searchALiciousOutcome.page.results.length === 0) {
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+    }
+
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(searchALiciousOutcome.page), totalAttempts)
+  }
+
+  if (dependencies.requestDeadline?.signal.aborted) {
+    return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
   }
 
   throw legacyOutcome.error
@@ -204,16 +247,25 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
   input: PackagedFoodSearchQuery,
   userAgent: string,
   fetcher: HTTPFetcher,
+  requestDeadline?: PackagedFoodSearchDependencies['requestDeadline'],
 ): Promise<OpenFoodFactsSearchOutcome> {
-  const openFoodFactsFetcher = withTimeout(fetcher, RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS)
+  const openFoodFactsFetcher = withTimeout(fetcher, RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS, requestDeadline?.signal)
   let attempts = 0
   let lastError: OpenFoodFactsClientError | null = null
   let lastPage: ProviderPage<PackagedFoodSearchResponse['results'][number]> | null = null
 
   for (let pageOffset = 0; pageOffset < RESTAURANT_LEGACY_MAX_PAGE_SCAN; pageOffset += 1) {
+    if (requestDeadline != null && requestDeadline.expiresAt - Date.now() <= RESTAURANT_DEADLINE_BUFFER_MS) {
+      break
+    }
+
     const pageInput = { ...input, page: input.page + pageOffset }
 
-    for (let attempt = 1; attempt <= RESTAURANT_LEGACY_MAX_ATTEMPTS; attempt += 1) {
+    for (let attempt = 1; attempt <= RESTAURANT_LEGACY_MAX_ATTEMPTS && attempts < RESTAURANT_LEGACY_MAX_ATTEMPTS; attempt += 1) {
+      if (requestDeadline != null && requestDeadline.expiresAt - Date.now() <= RESTAURANT_DEADLINE_BUFFER_MS) {
+        break
+      }
+
       attempts += 1
 
       try {
@@ -272,13 +324,67 @@ async function searchUSDAPackagedFoods(
   input: PackagedFoodSearchQuery,
   apiKey: string,
   fetcher: HTTPFetcher,
+  dependencies: PackagedFoodSearchDependencies,
 ): Promise<PackagedFoodSearchExecution> {
-  const result = await searchUSDAFoods(input, apiKey, withTimeout(fetcher, REQUEST_TIMEOUT_MS))
+  let budgetExhausted = false
 
-  return makeResponse(input, USDA_PROVIDER, {
-    ...result,
-    results: result.results.map((item) => ({ provider: USDA_PROVIDER, item })),
-  })
+  const allowUSDA = async () => {
+    const allowed = dependencies.allowUSDA == null || await dependencies.allowUSDA()
+    budgetExhausted ||= !allowed
+
+    return allowed
+  }
+
+  try {
+    const result = await searchUSDAFoods(
+      input,
+      apiKey,
+      withTimeout(fetcher, REQUEST_TIMEOUT_MS, dependencies.requestDeadline?.signal),
+      allowUSDA,
+    )
+
+    const response = makeResponse(input, USDA_PROVIDER, {
+      ...result,
+      results: result.results.map((item) => ({ provider: USDA_PROVIDER, item })),
+    })
+
+    return budgetExhausted && response.results.length === 0
+      ? { ...response, cacheable: false, degradedReason: 'usda-budget-exhausted' }
+      : response
+  } catch (error) {
+    if (budgetExhausted) {
+      return emptyUnavailableResponse(input, USDA_PROVIDER, 'usda-budget-exhausted')
+    }
+
+    if (dependencies.requestDeadline?.signal.aborted) {
+      return emptyUnavailableResponse(input, USDA_PROVIDER, 'request-deadline-expired')
+    }
+
+    throw error
+  }
+}
+
+function emptyUnavailableResponse(
+  input: PackagedFoodSearchQuery,
+  provider: SearchProvider = OPEN_FOOD_FACTS_PROVIDER,
+  degradedReason?: PackagedFoodSearchExecution['degradedReason'],
+): PackagedFoodSearchExecution {
+  const response: PackagedFoodSearchExecution = {
+    query: input.query,
+    page: input.page,
+    pageSize: input.pageSize,
+    resolvedProvider: provider,
+    results: [],
+    hasMore: false,
+    openFoodFactsAttemptCount: 0,
+  }
+
+  if (degradedReason != null) {
+    response.cacheable = false
+    response.degradedReason = degradedReason
+  }
+
+  return response
 }
 
 export function hasUsableOpenFoodFactsResult(

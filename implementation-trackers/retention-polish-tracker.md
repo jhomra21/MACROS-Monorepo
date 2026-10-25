@@ -1,5 +1,9 @@
 # Retention and Polish Tracker (WS7)
 
+## Follow-ups from WS1 review
+
+- Treat USDA-proxy `429` as non-retryable in the iOS barcode client, show “Too many lookups, try again in a minute” (using `Retry-After` when present), and stop the immediate retry.
+
 Branch `launch/ws7-retention-polish`. Mac only. Phase 2: starts after WS2 and WS4 are merged. Read `AGENTS.md`, `swift-dev.mdc`, `Features/Dashboard/DashboardScreen.swift`, `Features/Dashboard/DailyShareCardView.swift`, `Features/Onboarding/*`, `cal_macro_trackerApp.swift`, `Features/Insights/InsightsAnalytics.swift` (consistency helpers), and `implementation-trackers/launch-program-tracker.md`. Activate `swiftui-liquid-glass` and `apple-design` skills if available.
 
 ## Core Decisions

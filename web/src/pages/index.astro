@@ -112,6 +112,10 @@ import {
 					data-waitlist-form
 					data-astro-reload
 				>
+					<label style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+						Leave this field empty
+						<input type="text" name="website" tabindex="-1" autocomplete="off" />
+					</label>
 					<input
 						type="email"
 						name="email"
@@ -444,6 +448,7 @@ import {
 						},
 						body: JSON.stringify({
 							email: emailControl?.value ?? '',
+							website: new FormData(form).get('website') ?? '',
 						}),
 					});
 

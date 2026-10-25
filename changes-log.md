@@ -35,6 +35,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Repair follow-up reproduced the pre-existing rejection on a fresh iOS 26.4 simulator, after shutdown/erase, and through a visible XCUITest launch; documented Apple FB22237318 / FB22500243 and retained no signing workaround. Payment validation remains blocked.
 - Payments review fixes add status/foreground access refresh, independent subscription management visibility, verified renewal/grace copy, listener-driven integration coverage, and a directly tested deterministic entitlement reducer. Pure tests pass; local purchase QA remains blocked at catalog activation.
 
+## 2026-10-25 Services Hardening
+
+- Added Cloudflare Worker per-IP request limits, a strict SQLite Durable Object-backed shared USDA budget, non-cacheable degraded empty results, configurable food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas with profile-deletion cleanup, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public success response contracts remain unchanged.
+- Validation and repeatable loopback QA are recorded in `build/ws1-qa-2026-10-25/QA.md`.
+
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
 - Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.

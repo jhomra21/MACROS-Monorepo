@@ -11,6 +11,14 @@ export default defineSchema({
     deletedAt: v.optional(v.number()),
   }).index("by_profile_key", ["profileKey"]),
 
+  profileQuotas: defineTable({
+    profileId: v.id("profiles"),
+    dayKey: v.string(),
+    invitesCreated: v.number(),
+    snapshotUpserts: v.number(),
+    displayNameUpdates: v.number(),
+  }).index("by_profile_id_and_day_key", ["profileId", "dayKey"]),
+
   dailySnapshots: defineTable({
     ownerProfileId: v.id("profiles"),
     day: v.string(),

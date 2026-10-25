@@ -1,7 +1,9 @@
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
+import { consumeProfileQuota } from "./quotas";
+import { internal } from "./_generated/api";
 import { requireCurrentProfile } from "./authHelpers";
 import {
   assertCurrentDayKey,
@@ -17,11 +19,30 @@ import {
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
+const QUOTA_DELETE_BATCH_SIZE = 100;
+
+export const deleteProfileQuotaBatch = internalMutation({
+  args: { profileId: v.id("profiles") },
+  handler: async (ctx, args) => {
+    const quotas = await ctx.db
+      .query("profileQuotas")
+      .withIndex("by_profile_id_and_day_key", (q) => q.eq("profileId", args.profileId))
+      .take(QUOTA_DELETE_BATCH_SIZE);
+
+    await Promise.all(quotas.map((quota) => ctx.db.delete(quota._id)));
+
+    if (quotas.length === QUOTA_DELETE_BATCH_SIZE) {
+      await ctx.scheduler.runAfter(0, internal.sharing.deleteProfileQuotaBatch, args);
+    }
+  },
+});
+
 export const updateDisplayName = mutation({
   args: { displayName: v.string() },
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     const displayName = normalizeDisplayName(args.displayName);
+    await consumeProfileQuota(ctx, profile._id, "displayNameUpdates");
     await ctx.db.patch(profile._id, { displayName, updatedAt: Date.now() });
 
     return { ok: true };
@@ -51,6 +72,8 @@ export const createInvite = mutation({
 
       return { inviteId: existing._id, expiresAt: existing.expiresAt };
     }
+
+    await consumeProfileQuota(ctx, profile._id, "invitesCreated");
 
     const pending = await ctx.db
       .query("shareInvites")
@@ -253,6 +276,7 @@ export const upsertMyDailySnapshot = mutation({
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     assertValidSnapshot(args);
+    await consumeProfileQuota(ctx, profile._id, "snapshotUpserts");
     const now = Date.now();
 
     const existing = await ctx.db
@@ -299,6 +323,11 @@ export const deleteMySharingProfile = mutation({
       .withIndex("by_owner_day", (q) => q.eq("ownerProfileId", profile._id))
       .collect();
 
+    const quotas = await ctx.db
+      .query("profileQuotas")
+      .withIndex("by_profile_id_and_day_key", (q) => q.eq("profileId", profile._id))
+      .take(100);
+
     const outgoing = await ctx.db
       .query("shareGrantIntervals")
       .withIndex("by_from_to", (q) => q.eq("fromProfileId", profile._id))
@@ -328,9 +357,14 @@ export const deleteMySharingProfile = mutation({
     await Promise.all([
       ...invites.map((invite) => ctx.db.delete(invite._id)),
       ...ownedSnapshots.map((snapshot) => ctx.db.delete(snapshot._id)),
+      ...quotas.map((quota) => ctx.db.delete(quota._id)),
       ...grants.map((grant) => ctx.db.delete(grant._id)),
       ...relationships.map((relationship) => ctx.db.delete(relationship._id)),
     ]);
+
+    if (quotas.length === 100) {
+      await ctx.scheduler.runAfter(0, internal.sharing.deleteProfileQuotaBatch, { profileId: profile._id });
+    }
 
     await ctx.db.patch(profile._id, {
       displayName: "Deleted sharing profile",

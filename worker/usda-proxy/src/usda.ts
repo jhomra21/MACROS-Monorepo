@@ -103,10 +103,19 @@ export async function searchUSDAFoods(
   input: USDAQuery,
   apiKey: string,
   fetcher: HTTPFetcher = fetch,
+  allowRequest?: () => Promise<boolean>,
 ): Promise<USDAProxySearchResponse> {
   let lastResponse: USDAProxySearchResponse | null = null
 
   for (const query of usdaSearchQueries(input.query, input.page)) {
+    if (allowRequest != null && !(await allowRequest())) {
+      if (lastResponse != null) {
+        return lastResponse
+      }
+
+      throw new USDAClientError('USDA search is unavailable right now.', 503)
+    }
+
     const response = await searchUSDAFoodsOnce({ ...input, query }, apiKey, fetcher)
 
     if (response.results.length > 0 || input.page > 1) {

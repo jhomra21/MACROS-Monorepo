@@ -15,7 +15,7 @@ Branch `launch/ws1-services-hardening`. TypeScript only; no Xcode. Read `AGENTS.
 - Use the Cloudflare Workers Rate Limiting binding. Verify the current config key against `node_modules/wrangler/config-schema.json` in each package (top-level `ratelimits` array with `name`, `namespace_id`, `simple: { limit, period }`; `period` must be 10 or 60). If the installed Wrangler only supports the `unsafe.bindings` form, use that and note it.
 - Client key: `cf-connecting-ip` request header. Fall back to a constant key when absent (local dev).
 - Limits (per key, per 60 s): search 30, barcode 60, USDA direct search 10, auth token exchange 10, support form 5, waitlist form 5.
-- Global USDA budget: one limiter keyed by the constant `usda-global` with limit 14 per 60 s (about 840/hour, under the 1,000/hour key quota). When the budget is exhausted, skip the USDA fallback and return Open Food Facts results or an empty result with the existing unavailable semantics; never 500.
+- Global USDA budget: a single SQLite-backed Durable Object named `usda` enforces a fixed 60-second window and limit 14 (about 840/hour, under the 1,000/hour key quota). On a binding failure, fail open and emit a sampled log; on budget exhaustion, skip USDA and do not cache a degraded empty result.
 - On a per-client limit hit respond `429` with `Retry-After: 60` and the existing JSON error shape from `src/http.ts` / `jsonError`.
 - Dependency injection: the handlers receive the limiter through `env`; tests inject a fake `{ limit: async () => ({ success }) }` so no Cloudflare runtime is needed.
 
@@ -86,3 +86,9 @@ Branch `launch/ws1-services-hardening`. TypeScript only; no Xcode. Read `AGENTS.
 ## Open Questions / Blockers
 
 - Rate Limiting binding availability on the account's plan (free plan supports it). If `wrangler dev` rejects the binding locally, note the fallback used.
+
+## Status log — WS1 review remediation (2026-10-25)
+
+- Replaced the approximate per-location USDA budget with the `UsdaBudget` SQLite Durable Object; added route-level rate-limit/cache checks, fail-open coverage, configurable deadlines, and degraded-response cache protection.
+- Added bounded quota-row cleanup during sharing-profile deletion and documented the remaining iOS 429 handling as a WS7 follow-up.
+- Validated all package checks, Wrangler type generation, runtime Miniflare integration, Convex integrations, and a local Wrangler loopback budget run; no deployment was performed.
