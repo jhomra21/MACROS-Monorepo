@@ -2,6 +2,10 @@
 
 Branch `launch/ws8-website-legal`. Astro/TypeScript and copy only; no Xcode. Read `AGENTS.md`, `README.md`, `web/src/pages/*.astro`, `web/src/data/site.ts`, `web/src/worker.ts`, `web/src/lib/*.ts`, `convex-backend/convex/schema.ts` (to describe sharing data accurately), `worker/usda-proxy/src/index.ts` (search data flow), and `implementation-trackers/launch-program-tracker.md`.
 
+## Status
+
+- Implemented daily D1 purge of support requests and waitlist entries older than 365 days.
+
 ## Shared Understanding
 
 - The site is hero + waitlist + screenshot carousel, an About page, a Privacy page that only covers the website and support form, and a Support form. There is no Terms page, no pricing, no feature explanation, and the History and Calendar carousel cards use the same image.

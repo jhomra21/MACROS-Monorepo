@@ -216,7 +216,7 @@ The Convex sharing backend also caps profiles at 20 new invites, 200 daily snaps
 
 ### Astro web app
 
-The Astro site in `web/` powers the product landing page, waitlist, privacy/about pages, and support flow. Support requests and waitlist entries post into D1-backed API routes.
+The Astro site in `web/` powers the product landing page, waitlist, privacy/about pages, and support flow. Support requests and waitlist entries post into D1-backed API routes and are automatically purged after 365 days.
 
 ```sh
 cd web
