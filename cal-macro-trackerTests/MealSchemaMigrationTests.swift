@@ -34,6 +34,7 @@ final class MealSchemaMigrationTests: XCTestCase {
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<Meal>()), 0)
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<MealComponent>()), 0)
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<LoggedMealComponentSnapshot>()), 0)
+            XCTAssertEqual(try context.fetchCount(FetchDescriptor<BodyProfile>()), 0)
 
             let meal = Meal(
                 id: newMealID,
@@ -134,6 +135,7 @@ final class MealSchemaMigrationTests: XCTestCase {
     private var currentSchema: Schema {
         Schema([
             DailyGoals.self,
+            BodyProfile.self,
             FoodItem.self,
             Meal.self,
             MealComponent.self,

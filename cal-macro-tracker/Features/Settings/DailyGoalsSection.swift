@@ -214,6 +214,7 @@ struct SettingsGoalsEditorSection: View {
                 canSave: canSave,
                 onSave: saveGoals
             )
+            SettingsRecalculateTargetsSection()
         }
         .errorBanner(message: $errorMessage)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
@@ -248,6 +249,65 @@ struct SettingsGoalsEditorSection: View {
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
+        }
+    }
+}
+
+private struct SettingsRecalculateTargetsSection: View {
+    @State private var isPresentingRecalculation = false
+
+    var body: some View {
+        Section {
+            Button("Recalculate targets", systemImage: "arrow.clockwise") {
+                isPresentingRecalculation = true
+            }
+        } footer: {
+            Text("Update your profile and recalculate your daily targets.")
+        }
+        .sheet(isPresented: $isPresentingRecalculation) {
+            RecalculateTargetsSheet {
+                isPresentingRecalculation = false
+            }
+        }
+    }
+}
+
+private struct RecalculateTargetsSheet: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var profile: BodyProfileDraft
+    @State private var showsTargets = false
+
+    init(onComplete: @escaping () -> Void) {
+        _profile = State(initialValue: BodyProfileDraft())
+        self.onComplete = onComplete
+    }
+
+    let onComplete: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if showsTargets {
+                    TargetReviewScreen(profile: $profile) {
+                        dismiss()
+                        onComplete()
+                    }
+                } else {
+                    BodyProfileFormScreen(profile: $profile) {
+                        showsTargets = true
+                    }
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+            }
+        }
+        .task {
+            guard let savedProfile = try? BodyProfileRepository.activeProfile(modelContext: modelContext) else { return }
+            profile = BodyProfileDraft(profile: savedProfile)
         }
     }
 }

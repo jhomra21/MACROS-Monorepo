@@ -7,13 +7,33 @@ struct GoalSetupScreen: View {
     @FocusState private var focusedField: DailyGoalsField?
 
     let onComplete: () -> Void
+    let initialDraft: DailyGoalsDraft?
+    let bodyProfile: BodyProfile?
 
-    @State private var numericText = DailyGoalsNumericText()
+    @State private var numericText: DailyGoalsNumericText
     @State private var hasLoadedGoals = false
     @State private var errorMessage: String?
     @State private var continueFeedbackToken = 0
 
     private let fieldOrder: [DailyGoalsField] = [.calories, .protein, .carbs, .fat]
+
+    init(
+        initialDraft: DailyGoalsDraft? = nil,
+        bodyProfile: BodyProfile? = nil,
+        onComplete: @escaping () -> Void
+    ) {
+        self.initialDraft = initialDraft
+        self.bodyProfile = bodyProfile
+        self.onComplete = onComplete
+        var numericText = DailyGoalsNumericText()
+        if let initialDraft {
+            numericText.calories = NumericText.editingDisplay(for: initialDraft.calorieGoal)
+            numericText.protein = NumericText.editingDisplay(for: initialDraft.proteinGoalGrams)
+            numericText.carbs = NumericText.editingDisplay(for: initialDraft.carbGoalGrams)
+            numericText.fat = NumericText.editingDisplay(for: initialDraft.fatGoalGrams)
+        }
+        _numericText = State(initialValue: numericText)
+    }
 
     private var activeGoals: DailyGoals? {
         DailyGoals.activeRecord(from: goals)
@@ -134,8 +154,10 @@ struct GoalSetupScreen: View {
     }
 
     private func loadGoalsIfNeeded() {
-        guard !hasLoadedGoals, let activeGoals else { return }
-        numericText = DailyGoalsNumericText(goals: activeGoals)
+        guard !hasLoadedGoals else { return }
+        if initialDraft == nil, let activeGoals {
+            numericText = DailyGoalsNumericText(goals: activeGoals)
+        }
         hasLoadedGoals = true
     }
 
@@ -148,6 +170,8 @@ struct GoalSetupScreen: View {
         dismissKeyboard($focusedField)
 
         do {
+            try BodyProfileRepository(modelContext: modelContext)
+                .save(bodyProfile ?? BodyProfile(), operation: "Save body profile")
             try goalsRepository.saveGoals(from: finalizedDraft, to: activeGoals, operation: "Complete goal setup")
             errorMessage = nil
             continueFeedbackToken += 1

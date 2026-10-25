@@ -67,6 +67,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Two-device development sharing QA passed actual invite acceptance, one-way/reciprocal grants, live aggregate updates without refresh, pause/resume, named removal confirmation and Cancel, removal/reconnect, global stop, device off/on, foreground recovery, and profile deletion without deleting local logs. Both temporary cloud profiles were deleted. Evidence: `build/sharing-qa-2026-10-13/QA.md`.
 - No confirmed product failures or implementation changes resulted from these passes. Day rollover, network failure/retry, invite replay, exact subscription counts, advanced StoreKit transactions, and physical-phone TestFlight purchases remain unverified. The last observed Paid Apps Agreement status was Pending User Info; sandbox-payment readiness requires confirming Active status.
 
+## 2026-10-25 Goal Calculator and Onboarding
+
+- Added a deterministic Mifflin-St Jeor goal calculator, persisted body profile, guided first-run onboarding, and Settings recalculation flow while preserving manual goal entry and the existing first-run completion flag.
+- Added calculator failure-mode coverage and verified the existing meal migration fixture opens with the additive body-profile model.
+
 ## StoreKit Validator Path Correction
 
 - At `HEAD`, the scheme referenced `../../../FullUnlock.storekit` and the old validator passed, but Xcode launched Sandbox instead of the local `XcodeTest` configuration. The prior validator was a false positive: it accepted a reference Xcode could not resolve. Corrected both the scheme to `../../FullUnlock.storekit` and the validator to resolve paths from `xcshareddata`.

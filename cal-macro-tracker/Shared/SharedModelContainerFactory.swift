@@ -33,6 +33,7 @@ enum SharedModelContainerFactory {
         try migrateLegacyStoreIfNeeded()
         let container = try ModelContainer(
             for: DailyGoals.self,
+            BodyProfile.self,
             FoodItem.self,
             Meal.self,
             MealComponent.self,
@@ -51,6 +52,7 @@ enum SharedModelContainerFactory {
 
         return try ModelContainer(
             for: DailyGoals.self,
+            BodyProfile.self,
             FoodItem.self,
             Meal.self,
             MealComponent.self,

@@ -64,7 +64,7 @@ struct cal_macro_trackerApp: App {
                                 .transition(.opacity.animation(.easeOut(duration: 0.2).delay(0.12)))
                                 .zIndex(0)
                         } else {
-                            GoalSetupScreen {
+                            OnboardingFlow {
                                 completeGoalSetup()
                             }
                             .modelContainer(modelContainer)

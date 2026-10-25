@@ -11,6 +11,7 @@ enum AppModelContainerFactory {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
             for: DailyGoals.self,
+            BodyProfile.self,
             FoodItem.self,
             Meal.self,
             MealComponent.self,
