@@ -25,6 +25,9 @@ final class HealthKitService {
     private let store = HKHealthStore()
     private var observerQuery: HKObserverQuery?
     private var isObservingWeight = false
+    private var backfillTask: Task<Void, Never>?
+    private var backfillGeneration = 0
+    private(set) var isBackfilling = false
 
     var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
@@ -120,6 +123,26 @@ final class HealthKitService {
             if Task.isCancelled { return }
             await writeNutrition(for: entry)
         }
+    }
+
+    func startBackfill(days: Int, container: ModelContainer) {
+        guard !isBackfilling else { return }
+        backfillGeneration += 1
+        let generation = backfillGeneration
+        isBackfilling = true
+        backfillTask = Task { [weak self] in
+            await self?.backfill(days: days, container: container)
+            guard let self, self.backfillGeneration == generation else { return }
+            self.isBackfilling = false
+            self.backfillTask = nil
+        }
+    }
+
+    func cancelBackfill() {
+        backfillGeneration += 1
+        backfillTask?.cancel()
+        backfillTask = nil
+        isBackfilling = false
     }
 
     func startWeightObservation(container: ModelContainer) {

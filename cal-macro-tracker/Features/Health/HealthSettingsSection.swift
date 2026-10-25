@@ -14,6 +14,7 @@ struct HealthSettingsSection: View {
             Toggle("Write nutrition to Health", isOn: $writeNutrition)
                 .onChange(of: writeNutrition) { _, enabled in
                     NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
+                    if !enabled { health.cancelBackfill() }
                     if enabled {
                         Task { try? await health.requestAuthorization(readWeight: readWeight && entitlements.canUse(.healthWeightImport)) }
                     }
@@ -36,11 +37,18 @@ struct HealthSettingsSection: View {
             Text(health.statusText)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-            Button("Sync last 30 days") {
-                Task { await health.backfill(days: 30, container: modelContext.container) }
+            Button {
+                health.startBackfill(days: 30, container: modelContext.container)
+            } label: {
+                if health.isBackfilling {
+                    Label("Syncing last 30 days", systemImage: "arrow.triangle.2.circlepath")
+                } else {
+                    Text("Sync last 30 days")
+                }
             }
-            .disabled(!writeNutrition)
+            .disabled(!writeNutrition || health.isBackfilling)
         }
+        .onDisappear { health.cancelBackfill() }
         .sheet(item: $paywallContext) { context in
             ProPaywallSheet(context: context).presentationDetents([.medium, .large])
         }
