@@ -72,12 +72,17 @@ describe("FNDDS food selection", () => {
       { description: "100 g", gramWeight: 100 },
     ]);
 
-    expect(portion).toEqual({ description: "1 medium", grams: 118 });
+    expect(portion).toEqual({ description: "1 medium", grams: 118, usedFallbackPortion: false });
     expect(choosePortion([{ description: "1 cup", gramWeight: 240 }, { description: "1 oz", gramWeight: 28.3495 }]))
-      .toEqual({ description: "1 oz", grams: 28.3495 });
+      .toEqual({ description: "1 oz", grams: 28.3495, usedFallbackPortion: false });
     expect(choosePortion([{ description: "1 cup, mashed", gramWeight: 225 }, { description: "1 banana", gramWeight: 126 }]))
-      .toEqual({ description: "1 banana", grams: 126 });
-    expect(choosePortion([])).toEqual({ description: "100 g", grams: 100 });
+      .toEqual({ description: "1 banana", grams: 126, usedFallbackPortion: false });
+    expect(choosePortion([{ description: "Quantity not specified", gramWeight: 60 }]))
+      .toEqual({ description: "100 g", grams: 100, usedFallbackPortion: true });
+    expect(choosePortion([])).toEqual({ description: "100 g", grams: 100, usedFallbackPortion: true });
+    expect(selectFoods([baseFood({
+      portions: [{ description: "Quantity not specified", gramWeight: 60 }],
+    })], 0)[0]).toMatchObject({ servingDescription: "100 g", gramsPerServing: 100 });
   });
 
   test("excludes NFS duplicates, infants, and alcohol-only foods", () => {

@@ -13,6 +13,7 @@ export type FoodRow = {
 
 export type SelectedFood = {
   fdcId: number;
+  usedFallbackPortion: boolean;
   name: string;
   aliases: string[];
   servingDescription: string;
@@ -50,7 +51,7 @@ const preferredPortions = [
   /\begg\b/i,
   /\bfillet\b/i,
   /\bsteak\b/i,
-  /\b\d+(?:\.\d+)?\s+oz\b/i,
+  /\b\d+(?:\.\d+)?\s+(?:fl\s+)?oz\b/i,
   /\btablespoon\b/i,
   /\bteaspoon\b/i,
   /\bcup\b/i,
@@ -61,7 +62,9 @@ const preferredPortions = [
 
 const alcoholName = /\b(?:alcoholic|vodka|whiskey|whisky|rum|gin|tequila|liqueur|wine|beer)\b/i;
 
-export function choosePortion(portions: PortionRow[]): { description: string; grams: number } {
+export function choosePortion(
+  portions: PortionRow[],
+): { description: string; grams: number; usedFallbackPortion: boolean } {
   const eligible = portions.filter(({ gramWeight }) =>
     Number.isFinite(gramWeight) && gramWeight > 0 && gramWeight <= 1000
   );
@@ -71,11 +74,11 @@ export function choosePortion(portions: PortionRow[]): { description: string; gr
       const matching = eligible.find(({ description }) => preference.test(description));
 
       return matching ? [matching] : [];
-    })[0] ?? eligible[0];
+    })[0];
 
   return selected
-    ? { description: selected.description.trim(), grams: selected.gramWeight }
-    : { description: "100 g", grams: 100 };
+    ? { description: selected.description.trim(), grams: selected.gramWeight, usedFallbackPortion: false }
+    : { description: "100 g", grams: 100, usedFallbackPortion: true };
 }
 
 export function friendlyName(description: string): string {
@@ -138,6 +141,7 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
     return {
       fdcId: row.fdcId,
+      usedFallbackPortion: portion.usedFallbackPortion,
       name,
       aliases: [row.description],
       servingDescription: portion.description,

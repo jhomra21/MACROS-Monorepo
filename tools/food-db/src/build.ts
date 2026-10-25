@@ -126,4 +126,9 @@ await writeFile(resolve(outputDirectory, "common_foods.json"), json);
 
 await writeFile(resolve(outputDirectory, "common_foods_manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
 
-console.info(`Wrote ${foods.length} foods (${Buffer.byteLength(json)} bytes) from ${release.release}.`);
+const fallbackPortionCount = selectedFoods.filter(({ usedFallbackPortion }) => usedFallbackPortion).length;
+
+console.info(
+  `Wrote ${foods.length} foods (${Buffer.byteLength(json)} bytes) from ${release.release}; `
+  + `${fallbackPortionCount} use the 100 g fallback.`,
+);
