@@ -4,11 +4,15 @@ import XCTest
 final class FoodItemLocalSearchTests: XCTestCase {
     func testGenericQueryRanksShortCanonicalFoodBeforeLongPreparedDishNames() {
         let preparedDish = makeFood(name: "Chicken And Vegetable Entree With Noodles", calories: 352)
+        let chickenAlmonds = makeFood(name: "Almond Chicken", calories: 471)
         let chickenBreast = makeFood(name: "Chicken Breast", calories: 173, aliases: ["chicken", "chicken breast"])
 
-        let results = FoodItemLocalSearch.rankedFoods([preparedDish, chickenBreast], matching: "chicken")
+        let results = FoodItemLocalSearch.rankedFoods(
+            [preparedDish, chickenAlmonds, chickenBreast],
+            matching: "chicken"
+        )
 
-        XCTAssertEqual(results.map(\.name), ["Chicken Breast", "Chicken And Vegetable Entree With Noodles"])
+        XCTAssertEqual(results.map(\.name), ["Chicken Breast", "Chicken And Vegetable Entree With Noodles", "Almond Chicken"])
     }
 
     func testExactFoodNameStillRanksBeforeOtherPrefixMatches() {
