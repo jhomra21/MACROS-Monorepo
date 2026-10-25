@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { choosePortion, friendlyName, selectFoods, type FoodRow } from "../src/select";
+import { z } from "zod";
 
 const servingFields = [
   "servingDescription",
@@ -16,9 +17,25 @@ const servingFields = [
   "cholesterolPerServing",
 ] as const;
 
-type LegacyFoodFixture = {
-  name: string;
-} & Record<typeof servingFields[number], string | number | null>;
+const legacyFoodFixtureSchema = z.object({
+  name: z.string(),
+  servingDescription: z.string(),
+  gramsPerServing: z.number(),
+  caloriesPerServing: z.number(),
+  proteinPerServing: z.number(),
+  fatPerServing: z.number(),
+  carbsPerServing: z.number(),
+  saturatedFatPerServing: z.number().nullable(),
+  fiberPerServing: z.number().nullable(),
+  sugarsPerServing: z.number().nullable(),
+  addedSugarsPerServing: z.number().nullable(),
+  sodiumPerServing: z.number().nullable(),
+  cholesterolPerServing: z.number().nullable(),
+});
+
+const bundledFoodFixtureSchema = legacyFoodFixtureSchema.extend({
+  aliases: z.array(z.string()),
+});
 
 const baseFood = (overrides: Partial<FoodRow> = {}): FoodRow => ({
   fdcId: 1,
@@ -31,13 +48,18 @@ const baseFood = (overrides: Partial<FoodRow> = {}): FoodRow => ({
 
 describe("FNDDS food selection", () => {
   test("bundled legacy foods retain exact serving fields from the legacy fixture", async () => {
-    const legacyFoods = await Bun.file(new URL("../legacy-foods.json", import.meta.url)).json() as LegacyFoodFixture[];
-    const bundledFoods = await Bun.file(
-      new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url),
-    ).json() as LegacyFoodFixture[];
+    const legacyFoods = z.array(legacyFoodFixtureSchema).parse(
+      await Bun.file(new URL("../legacy-foods.json", import.meta.url)).json(),
+    );
+
+    const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
+      await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
+    );
+
     const bundledByName = new Map(bundledFoods.map((food) => [food.name, food]));
 
     expect(legacyFoods).toHaveLength(12);
+
     for (const legacyFood of legacyFoods) {
       const bundledFood = bundledByName.get(legacyFood.name);
 

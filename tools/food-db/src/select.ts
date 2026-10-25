@@ -61,6 +61,7 @@ const preferredPortions = [
 ];
 
 const alcoholName = /\b(?:alcoholic|vodka|whiskey|whisky|rum|gin|tequila|liqueur|wine|beer)\b/i;
+
 const nutritionQualifier = /^(?:as purchased|baked|boiled|broiled|cooked|fat added|fat not added|from dried|from fresh|fried|grilled|ground|made with|microwaved|no added fat|no fat added|raw|roasted|skin eaten|skin not eaten|steamed|sweetened|unsweetened|with skin|without skin)$/i;
 
 export function choosePortion(
@@ -97,6 +98,7 @@ export function friendlyName(description: string): string {
 
   const significantQualifiers = parts.slice(1).filter((part) => nutritionQualifier.test(part));
   const retainedDescriptor = parts[1] && !nutritionQualifier.test(parts[1]) ? [parts[1]] : [];
+
   const name = significantQualifiers.length > 0
     ? [parts[0], ...retainedDescriptor, ...significantQualifiers].join(", ")
     : secondPart && preparation.test(secondPart) && genericFood.test(parts[0] ?? "")

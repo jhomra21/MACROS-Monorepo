@@ -29,6 +29,7 @@ type SeedFood = z.infer<typeof seedFoodSchema>;
 const root = resolve(import.meta.dir, "../../..");
 
 const outputDirectory = resolve(root, "cal-macro-tracker/CommonFoods");
+
 const manifestPath = resolve(outputDirectory, "common_foods_manifest.json");
 
 const legacyFoods = z.array(z.object({
@@ -52,20 +53,24 @@ const legacyFoods = z.array(z.object({
 ));
 
 const buildArguments = process.argv.slice(2);
+
 const releaseArgumentIndex = buildArguments.indexOf("--release");
+
 const requestedRelease = releaseArgumentIndex < 0 ? undefined : buildArguments[releaseArgumentIndex + 1];
 
 if (releaseArgumentIndex >= 0 && (!requestedRelease || buildArguments.indexOf("--release", releaseArgumentIndex + 1) >= 0)) {
   throw new Error("Usage: bun run build -- --release <recorded release name>");
 }
 
+const recordedManifestSchema = z.object({
+  source: z.string(),
+  sourceRelease: z.string(),
+  generatedAt: z.string(),
+  sourceArchiveSha256: z.string().optional(),
+});
+
 const existingManifest = await Bun.file(manifestPath).exists()
-  ? JSON.parse(await readFile(manifestPath, "utf8")) as {
-      source: string;
-      sourceRelease: string;
-      generatedAt: string;
-      sourceArchiveSha256?: string;
-    }
+  ? recordedManifestSchema.parse(JSON.parse(await readFile(manifestPath, "utf8")))
   : undefined;
 
 const release = requestedRelease
@@ -73,6 +78,7 @@ const release = requestedRelease
       if (existingManifest?.sourceRelease !== requestedRelease || !existingManifest.sourceArchiveSha256) {
         throw new Error(`Release "${requestedRelease}" is not recorded in ${manifestPath}.`);
       }
+
       return {
         url: existingManifest.source,
         release: existingManifest.sourceRelease,
@@ -82,6 +88,7 @@ const release = requestedRelease
   : await discoverLatestRelease();
 
 const archivePath = await downloadArchive(release);
+
 const sourceArchiveSha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
 
 if (requestedRelease && existingManifest?.sourceArchiveSha256 !== sourceArchiveSha256) {
