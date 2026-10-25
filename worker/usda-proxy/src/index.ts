@@ -78,6 +78,7 @@ app.get('/v1/packaged-foods/search', async (c) => {
 
   const requestDeadlineMs = positiveEnvInteger(c.env.REQUEST_DEADLINE_MS, DEFAULT_REQUEST_DEADLINE_MS)
   const requestDeadline = { signal: AbortSignal.timeout(requestDeadlineMs), expiresAt: Date.now() + requestDeadlineMs }
+  const budgetTimeoutMs = usdaBudgetTimeoutMs(c.env)
 
   try {
     const response = await searchPackagedFoods(
@@ -86,7 +87,7 @@ app.get('/v1/packaged-foods/search', async (c) => {
         usdaApiKey: c.env.USDA_API_KEY,
         openFoodFactsUserAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT,
         requestDeadline,
-        allowUSDA: () => checkGlobalUSDABudget(c.env.USDA_BUDGET),
+        allowUSDA: () => checkGlobalUSDABudget(c.env.USDA_BUDGET, budgetTimeoutMs, requestDeadline.signal),
       },
     )
 
@@ -191,6 +192,7 @@ app.get('/v1/usda/search', async (c) => {
   }
 
   const requestDeadline = AbortSignal.timeout(positiveEnvInteger(c.env.REQUEST_DEADLINE_MS, DEFAULT_REQUEST_DEADLINE_MS))
+  const budgetTimeoutMs = usdaBudgetTimeoutMs(c.env)
 
   let budgetExhausted = false
 
@@ -200,7 +202,7 @@ app.get('/v1/usda/search', async (c) => {
       c.env.USDA_API_KEY,
       withTimeout(fetch, undefined, requestDeadline),
       async () => {
-        const allowed = await checkGlobalUSDABudget(c.env.USDA_BUDGET)
+        const allowed = await checkGlobalUSDABudget(c.env.USDA_BUDGET, budgetTimeoutMs, requestDeadline)
         budgetExhausted ||= !allowed
 
         return allowed
@@ -253,11 +255,7 @@ app.get('/v1/usda/foods/:fdcId', async (c) => {
     return degradedUSDADetailResponse(c, 'request-deadline-expired')
   }
 
-  const budgetAllowed = await checkGlobalUSDABudget(
-    c.env.USDA_BUDGET,
-    positiveEnvInteger(c.env.USDA_BUDGET_TIMEOUT_MS, DEFAULT_USDA_BUDGET_TIMEOUT_MS),
-    requestDeadline,
-  )
+  const budgetAllowed = await checkGlobalUSDABudget(c.env.USDA_BUDGET, usdaBudgetTimeoutMs(c.env), requestDeadline)
 
   if (requestDeadline.aborted) {
     return degradedUSDADetailResponse(c, 'request-deadline-expired')
@@ -294,9 +292,13 @@ function degradedUSDADetailResponse(
   return response
 }
 
+function usdaBudgetTimeoutMs(env: Env): number {
+  return positiveEnvInteger(env.USDA_BUDGET_TIMEOUT_MS, DEFAULT_USDA_BUDGET_TIMEOUT_MS)
+}
+
 async function checkGlobalUSDABudget(
   budget: Env['USDA_BUDGET'] | undefined,
-  timeoutMs = DEFAULT_USDA_BUDGET_TIMEOUT_MS,
+  timeoutMs: number,
   deadlineSignal?: AbortSignal,
 ): Promise<boolean> {
   if (budget == null) return true
