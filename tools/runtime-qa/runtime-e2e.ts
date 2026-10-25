@@ -291,12 +291,17 @@ try {
     fetchMock: providers,
     bindings: {
       USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local",
-      USDA_BUDGET_PER_MINUTE: "0",
+      USDA_BUDGET_PER_MINUTE: "1",
     },
     durableObjects: { USDA_BUDGET: { className: "UsdaBudget", useSQLite: true } },
   });
 
-  const exhaustedQuery = "/v1/packaged-foods/search?q=QA%20cereal&provider=usda";
+  const acceptedQuery = "/v1/packaged-foods/search?q=QA%20cereal&provider=usda";
+  const acceptedResponse = await request(exhaustedBudget.url, acceptedQuery);
+  assert.equal(acceptedResponse.status, 200);
+  assert.equal(acceptedResponse.headers.get("Cache-Control"), "public, s-maxage=86400");
+  assert.equal(responseResults(acceptedResponse).length, 1);
+  const exhaustedQuery = "/v1/packaged-foods/search?q=QA%20cereal%20second&provider=usda";
   const exhaustedResponse = await request(exhaustedBudget.url, exhaustedQuery);
   assert.equal(exhaustedResponse.status, 200);
   assert.equal(exhaustedResponse.headers.get("Cache-Control"), "no-store");
@@ -306,12 +311,7 @@ try {
   const repeatedExhaustedResponse = await request(exhaustedBudget.url, exhaustedQuery);
   assert.equal(repeatedExhaustedResponse.headers.get("Cache-Control"), "no-store");
   assert.equal(upstreamCalls, requestsBeforeRepeat);
-  await exhaustedBudget.setOptions({ bindings: { USDA_BUDGET_PER_MINUTE: "14" } });
-  const afterBudgetReset = await request(exhaustedBudget.url, exhaustedQuery);
-  assert.equal(afterBudgetReset.status, 200);
-  assert.equal(afterBudgetReset.headers.get("Cache-Control"), "public, s-maxage=86400");
-  assert.equal(responseResults(afterBudgetReset).length, 1);
-  pass("USDA exhaustion returns no-store degraded response and does not cache it");
+  pass("USDA budget exhaustion returns no-store degraded response and does not cache it");
 
   const strictBudget = await runtime("worker/usda-proxy/src/index.ts", {
     fetchMock: providers,

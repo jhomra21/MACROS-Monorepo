@@ -1,10 +1,10 @@
 import { DurableObject } from 'cloudflare:workers'
-import { decideUsdaBudget } from './usdaBudgetLogic'
+import { decideUsdaBudget, parseUsdaBudgetPerMinute } from './usdaBudgetLogic'
 
 export class UsdaBudget extends DurableObject<Env> {
   async acquire(): Promise<{ allowed: boolean; retryAfterSeconds: number }> {
     const now = Date.now()
-    const limit = Number.parseInt(this.env.USDA_BUDGET_PER_MINUTE ?? '14', 10)
+    const limit = parseUsdaBudgetPerMinute(this.env.USDA_BUDGET_PER_MINUTE)
 
     return this.ctx.storage.transactionSync(() => {
       const record = this.ctx.storage.sql

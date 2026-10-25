@@ -1,5 +1,13 @@
 export const USDA_BUDGET_WINDOW_MS = 60_000
 
+export const DEFAULT_USDA_BUDGET_PER_MINUTE = 14
+
+export function parseUsdaBudgetPerMinute(value: string | undefined): number {
+  const parsed = Number(value)
+
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : DEFAULT_USDA_BUDGET_PER_MINUTE
+}
+
 export interface UsdaBudgetDecision {
   allowed: boolean
   retryAfterSeconds: number
