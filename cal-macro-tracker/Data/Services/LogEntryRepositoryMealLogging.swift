@@ -13,6 +13,7 @@ extension LogEntryRepository {
         }
 
         let mealID = meal.id
+        var loggedEntryID: UUID?
 
         try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
             let mealRepository = MealRepository(modelContext: isolatedContext)
@@ -27,6 +28,7 @@ extension LogEntryRepository {
             let summary = try mealRepository.nutritionSummary(for: isolatedMeal)
             let consumedNutrients = NutritionMath.scaledNutrients(for: summary.nutrients, multiplier: servingsAmount)
             let entryID = UUID()
+            loggedEntryID = entryID
             let entry = LogEntry(
                 id: entryID,
                 mealID: isolatedMeal.id,
@@ -90,5 +92,6 @@ extension LogEntryRepository {
         WidgetTimelineReloader.reloadMacroWidgets()
         onDailyTotalsChanged?(modelContext.container)
         NotificationCenter.default.post(name: .didSuccessfullyLogFood, object: nil)
+        NotificationCenter.default.post(name: .logEntryDidMutate, object: loggedEntryID?.uuidString)
     }
 }

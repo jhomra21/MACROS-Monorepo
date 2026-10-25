@@ -248,6 +248,9 @@
 							com.apple.InAppPurchase = {
 								enabled = 1;
 							};
+							com.apple.HealthKit = {
+								enabled = 1;
+							};
 						};
 					};
 					1A111111111111111111111B = {

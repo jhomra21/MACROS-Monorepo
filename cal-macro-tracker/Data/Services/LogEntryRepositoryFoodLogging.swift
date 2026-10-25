@@ -52,6 +52,7 @@ extension LogEntryRepository {
 
         WidgetTimelineReloader.reloadMacroWidgets()
         onDailyTotalsChanged?(modelContext.container)
+        NotificationCenter.default.post(name: .logEntryDidMutate, object: entry.id.uuidString)
     }
 
     func delete(entry: LogEntry, operation: String) throws {
@@ -73,6 +74,7 @@ extension LogEntryRepository {
 
         WidgetTimelineReloader.reloadMacroWidgets()
         onDailyTotalsChanged?(modelContext.container)
+        NotificationCenter.default.post(name: .logEntryDidDelete, object: entry.id.uuidString)
     }
 
     func logAgain(entry: LogEntry, loggedAt: Date = .now, operation: String) throws {
@@ -119,6 +121,7 @@ extension LogEntryRepository {
             throw validationError
         }
 
+        var loggedEntryID: UUID?
         try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
             let resolvedDraft = try resolvedLoggedFoodDraft(
                 from: action.draft,
@@ -134,11 +137,13 @@ extension LogEntryRepository {
             )
 
             isolatedContext.insert(entry)
+            loggedEntryID = entry.id
         }
 
         WidgetTimelineReloader.reloadMacroWidgets()
         onDailyTotalsChanged?(modelContext.container)
         NotificationCenter.default.post(name: .didSuccessfullyLogFood, object: nil)
+        NotificationCenter.default.post(name: .logEntryDidMutate, object: loggedEntryID?.uuidString)
     }
 
     private func resolvedLoggedFoodDraft(

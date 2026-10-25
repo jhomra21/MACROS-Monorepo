@@ -39,6 +39,7 @@ enum SharedModelContainerFactory {
             MealComponent.self,
             LoggedMealComponentSnapshot.self,
             LogEntry.self,
+            WeightEntry.self,
             configurations: sharedWritableConfiguration
         )
         try applySharedStoreFileProtectionIfNeeded()
@@ -58,6 +59,7 @@ enum SharedModelContainerFactory {
             MealComponent.self,
             LoggedMealComponentSnapshot.self,
             LogEntry.self,
+            WeightEntry.self,
             configurations: sharedReadOnlyConfiguration
         )
     }

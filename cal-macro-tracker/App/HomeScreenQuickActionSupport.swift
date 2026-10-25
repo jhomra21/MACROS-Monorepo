@@ -1,12 +1,21 @@
 #if os(iOS)
 import Combine
 import UIKit
+import UserNotifications
 
 @MainActor
-final class HomeScreenQuickActionAppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
+final class HomeScreenQuickActionAppDelegate: NSObject, UIApplicationDelegate, ObservableObject, UNUserNotificationCenterDelegate {
     @Published private(set) var requestToken = 0
 
     private var pendingRequest: AppOpenRequest?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
 
     func consumePendingRequest() -> AppOpenRequest? {
         defer { pendingRequest = nil }
@@ -25,6 +34,17 @@ final class HomeScreenQuickActionAppDelegate: NSObject, UIApplicationDelegate, O
         let configuration = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
         configuration.delegateClass = HomeScreenQuickActionSceneDelegate.self
         return configuration
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        if response.notification.request.content.userInfo["openRequest"] as? String == "add-food" {
+            queue(.addFood(.addFood))
+        }
+        completionHandler()
     }
 
     private func queue(_ request: AppOpenRequest) {

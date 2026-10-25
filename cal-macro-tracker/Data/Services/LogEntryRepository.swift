@@ -11,3 +11,8 @@ struct LogEntryRepository {
         self.onDailyTotalsChanged = onDailyTotalsChanged
     }
 }
+
+extension Notification.Name {
+    static let logEntryDidMutate = Notification.Name("logEntryDidMutate")
+    static let logEntryDidDelete = Notification.Name("logEntryDidDelete")
+}

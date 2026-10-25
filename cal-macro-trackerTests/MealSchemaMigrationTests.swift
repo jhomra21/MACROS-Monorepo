@@ -35,6 +35,7 @@ final class MealSchemaMigrationTests: XCTestCase {
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<MealComponent>()), 0)
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<LoggedMealComponentSnapshot>()), 0)
             XCTAssertEqual(try context.fetchCount(FetchDescriptor<BodyProfile>()), 0)
+            XCTAssertEqual(try context.fetchCount(FetchDescriptor<WeightEntry>()), 0)
 
             let meal = Meal(
                 id: newMealID,
@@ -140,7 +141,8 @@ final class MealSchemaMigrationTests: XCTestCase {
             Meal.self,
             MealComponent.self,
             LoggedMealComponentSnapshot.self,
-            LogEntry.self
+            LogEntry.self,
+            WeightEntry.self
         ])
     }
 

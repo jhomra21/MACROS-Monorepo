@@ -46,6 +46,10 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Scan barcodes and capture nutrition labels to log food.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Import your body weight from Apple Health when you enable weight sync.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Save the nutrition you log to Apple Health when you enable nutrition sync.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Import nutrition label photos to extract calories and macros.</string>
 	<key>UIApplicationSceneManifest</key>
