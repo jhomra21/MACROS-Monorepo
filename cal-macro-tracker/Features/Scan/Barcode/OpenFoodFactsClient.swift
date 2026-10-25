@@ -175,6 +175,10 @@ enum OpenFoodFactsClientError: LocalizedError {
             }
             if statusCode == 429 {
                 guard let retryAfterSeconds else { return "Too many lookups, try again in a minute." }
+                if retryAfterSeconds >= 90 {
+                    let minutes = (retryAfterSeconds / 60) + (retryAfterSeconds % 60 == 0 ? 0 : 1)
+                    return "Too many lookups, try again in \(minutes) minutes."
+                }
                 return "Too many lookups, try again in \(retryAfterSeconds) seconds."
             }
 
@@ -207,10 +211,12 @@ struct OpenFoodFactsClient {
             errorResponseType: OpenFoodFactsErrorResponse.self,
             invalidResponseError: OpenFoodFactsClientError.invalidResponse
         ) { statusCode, _, response in
-            let retryAfter = response.value(forHTTPHeaderField: "Retry-After").flatMap(Int.init)
+            let retryAfter = response.value(forHTTPHeaderField: "Retry-After")
+                .flatMap(Int.init)
+                .flatMap { $0 >= 0 ? $0 : nil }
             return OpenFoodFactsClientError.requestFailed(
                 statusCode: statusCode,
-                retryAfterSeconds: retryAfter.map { min(max($0, 0), 60) }
+                retryAfterSeconds: retryAfter
             )
         }
 
