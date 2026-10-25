@@ -17,6 +17,26 @@ enum HealthNutritionAuthorization {
     }
 }
 
+struct HealthQueryLifecycle {
+    private(set) var generation = 0
+    private(set) var isActive = false
+
+    mutating func start() -> Int {
+        generation += 1
+        isActive = true
+        return generation
+    }
+
+    mutating func stop() {
+        generation += 1
+        isActive = false
+    }
+
+    func accepts(_ candidate: Int) -> Bool {
+        isActive && candidate == generation
+    }
+}
+
 @MainActor
 @Observable
 final class HealthKitService {
@@ -25,6 +45,11 @@ final class HealthKitService {
     private let store = HKHealthStore()
     private var observerQuery: HKObserverQuery?
     private var isObservingWeight = false
+    private var weightLifecycle = HealthQueryLifecycle()
+    private var weightImportQuery: HKAnchoredObjectQuery?
+    private var weightImportContinuation: CheckedContinuation<Void, Never>?
+    private var pendingWeightImport = false
+    private var weightContainer: ModelContainer?
     private var backfillTask: Task<Void, Never>?
     private var backfillGeneration = 0
     private(set) var isBackfilling = false
@@ -150,9 +175,15 @@ final class HealthKitService {
             let type = HKObjectType.quantityType(forIdentifier: .bodyMass)
         else { return }
         isObservingWeight = true
+        weightContainer = container
+        let generation = weightLifecycle.start()
         let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] _, completion, _ in
             Task { @MainActor in
-                await self?.importWeights(into: container, type: type)
+                guard let self, self.weightLifecycle.accepts(generation) else {
+                    completion()
+                    return
+                }
+                await self.importWeights(into: container, type: type)
                 completion()
             }
         }
@@ -163,22 +194,44 @@ final class HealthKitService {
 
     func stopWeightObservation() {
         isObservingWeight = false
-        guard let observerQuery else { return }
-        store.stop(observerQuery)
-        self.observerQuery = nil
+        weightLifecycle.stop()
+        pendingWeightImport = false
+        weightContainer = nil
+        if let observerQuery {
+            store.stop(observerQuery)
+            self.observerQuery = nil
+        }
+        if let weightImportQuery {
+            store.stop(weightImportQuery)
+            self.weightImportQuery = nil
+            let continuation = weightImportContinuation
+            weightImportContinuation = nil
+            continuation?.resume()
+        }
     }
 
     private func importWeights(into container: ModelContainer, type: HKQuantityType) async {
-        guard isObservingWeight, UserDefaults.standard.bool(forKey: AppStorageKeys.healthWeightReadEnabled) else { return }
+        guard
+            isObservingWeight,
+            weightLifecycle.isActive,
+            UserDefaults.standard.bool(forKey: AppStorageKeys.healthWeightReadEnabled)
+        else { return }
+        guard weightImportQuery == nil else {
+            pendingWeightImport = true
+            return
+        }
+        let generation = weightLifecycle.generation
         let anchor = UserDefaults.standard.data(forKey: "healthWeightAnchor")
             .flatMap { try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: $0) }
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            weightImportContinuation = continuation
             let query = HKAnchoredObjectQuery(type: type, predicate: nil, anchor: anchor, limit: HKObjectQueryNoLimit) {
-                _, samples, deletedObjects, newAnchor, error in
+                completedQuery, samples, deletedObjects, newAnchor, error in
                 guard error == nil else {
                     Task { @MainActor in
+                        guard self.weightImportQuery === completedQuery else { return }
                         self.statusText = "Could not import weight from Apple Health."
-                        continuation.resume()
+                        self.finishWeightImport(continuation: continuation)
                     }
                     return
                 }
@@ -189,7 +242,8 @@ final class HealthKitService {
                     } ?? []
                 let deletedUUIDs = (deletedObjects ?? []).map { $0.uuid.uuidString }
                 Task { @MainActor in
-                    if self.isObservingWeight,
+                    guard self.weightImportQuery === completedQuery else { return }
+                    if self.weightLifecycle.accepts(generation),
                         UserDefaults.standard.bool(forKey: AppStorageKeys.healthWeightReadEnabled)
                     {
                         do {
@@ -204,11 +258,25 @@ final class HealthKitService {
                             self.statusText = "Could not import weight from Apple Health."
                         }
                     }
-                    continuation.resume()
+                    self.finishWeightImport(continuation: continuation)
                 }
             }
+            weightImportQuery = query
             store.execute(query)
         }
+    }
+
+    private func finishWeightImport(continuation: CheckedContinuation<Void, Never>) {
+        weightImportQuery = nil
+        weightImportContinuation = nil
+        continuation.resume()
+        guard pendingWeightImport, isObservingWeight, weightLifecycle.isActive else { return }
+        pendingWeightImport = false
+        guard
+            let container = weightContainer,
+            let type = HKObjectType.quantityType(forIdentifier: .bodyMass)
+        else { return }
+        Task { await importWeights(into: container, type: type) }
     }
 
     private var nutritionTypes: Set<HKSampleType> {
