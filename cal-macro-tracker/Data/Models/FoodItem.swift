@@ -159,6 +159,14 @@ struct FoodItemSearchQuery: Hashable {
 }
 
 enum FoodItemLocalSearch {
+    private static let secondaryFoodModifiers: Set<String> = [
+        "baby", "bread", "bubble", "cake", "chip", "chips", "chocolate", "cinnamon", "cookie", "condensed",
+        "chestnut", "chesnut", "dressing", "dry", "evaporated", "franks", "fruit", "ginger", "malted", "parfait",
+        "patty",
+        "pancake", "rice", "salad", "sauce", "stuffing", "substitute", "syrup", "tartare", "teriyaki", "tomato",
+        "tube"
+    ]
+
     private struct SearchMatch {
         let food: FoodItem
         let rank: Int
@@ -177,6 +185,9 @@ enum FoodItemLocalSearch {
 
         let rankedMatches = searchMatches.sorted { lhs, rhs in
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            if lhs.food.name.count != rhs.food.name.count {
+                return lhs.food.name.count < rhs.food.name.count
+            }
             return lhs.food.name.localizedCaseInsensitiveCompare(rhs.food.name) == .orderedAscending
         }
 
@@ -191,25 +202,58 @@ enum FoodItemLocalSearch {
             return 0
         }
 
-        let nameTokens = Set(name.split(whereSeparator: { $0.isWhitespace }).map(String.init))
-        if name.hasPrefix(query.normalizedText) {
-            return 1 + nameTokens.count
-        }
-
-        if brand.isEmpty == false && brand.hasPrefix(query.normalizedText) {
-            return 50
-        }
-
+        let nameTokens = tokens(in: name)
         if query.tokens.isSubset(of: nameTokens) {
+            if hasSecondaryModifier(in: nameTokens, query: query.tokens) {
+                return 300 + nameTokens.count
+            }
+            if hasWordPrefix(name, query: query.normalizedText) {
+                return 1 + nameTokens.count
+            }
+            return 20 + nameTokens.count
+        }
+
+        if hasWordPrefix(name, query: query.normalizedText) {
+            return 50 + nameTokens.count
+        }
+
+        let hasTokenPrefixMatch = query.tokens.allSatisfy { queryToken in
+            nameTokens.contains(where: { $0.hasPrefix(queryToken) })
+        }
+        if hasTokenPrefixMatch {
             return 100 + nameTokens.count
         }
 
-        let isTextMatch = food.searchableText.contains(query.normalizedText)
-        let searchableTokens = Set(food.searchableText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
+        if name.hasPrefix(query.normalizedText) {
+            return 150 + nameTokens.count
+        }
+
+        if hasWordPrefix(brand, query: query.normalizedText) {
+            return 150
+        }
+
+        let searchableTokens = Set(
+            food.searchableText.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init)
+        )
         if query.tokens.isSubset(of: searchableTokens) {
             return 200
         }
 
-        return isTextMatch ? 201 : nil
+        return nil
     }
+
+    private static func tokens(in value: String) -> Set<String> {
+        Set(value.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
+    }
+
+    private static func hasSecondaryModifier(in nameTokens: Set<String>, query: Set<String>) -> Bool {
+        !secondaryFoodModifiers.isDisjoint(with: nameTokens.subtracting(query))
+    }
+
+    private static func hasWordPrefix(_ value: String, query: String) -> Bool {
+        guard value.hasPrefix(query) else { return false }
+        guard let nextCharacter = value.dropFirst(query.count).first else { return true }
+        return !nextCharacter.isLetter && !nextCharacter.isNumber
+    }
+
 }
