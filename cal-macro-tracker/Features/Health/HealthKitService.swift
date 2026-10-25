@@ -11,9 +11,10 @@ enum HealthNutritionAuthorization {
     static func authorizedIdentifiers(
         statuses: [HKQuantityTypeIdentifier: HKAuthorizationStatus]
     ) -> Set<HKQuantityTypeIdentifier> {
-        Set(statuses.compactMap { identifier, status in
-            isAuthorized(status) ? identifier : nil
-        })
+        Set(
+            statuses.compactMap { identifier, status in
+                isAuthorized(status) ? identifier : nil
+            })
     }
 }
 
@@ -111,21 +112,24 @@ final class HealthKitService {
                     metadata: metadata))
         }
         guard !samples.isEmpty else {
-            statusText = deletionFailed
+            statusText =
+                deletionFailed
                 ? "Could not update nutrition in Apple Health."
-                : hasUnauthorizedTypes ? "No enabled Health nutrition categories to update. Review access in the Health app."
-                : "Nutrition updated in Apple Health."
+                : hasUnauthorizedTypes
+                    ? "No enabled Health nutrition categories to update. Review access in the Health app."
+                    : "Nutrition updated in Apple Health."
             return
         }
         do {
             try await store.save(samples)
-            statusText = if deletionFailed {
-                "Some nutrition could not be updated in Apple Health."
-            } else if hasUnauthorizedTypes {
-                "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
-            } else {
-                "Nutrition saved to Apple Health."
-            }
+            statusText =
+                if deletionFailed {
+                    "Some nutrition could not be updated in Apple Health."
+                } else if hasUnauthorizedTypes {
+                    "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
+                } else {
+                    "Nutrition saved to Apple Health."
+                }
         } catch {
             statusText = "Could not save nutrition to Apple Health."
         }
@@ -223,9 +227,11 @@ final class HealthKitService {
         let generation = weightLifecycle.generation
         let anchor = UserDefaults.standard.data(forKey: "healthWeightAnchor")
             .flatMap { try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: $0) }
+        let importStartDate = Calendar.current.date(byAdding: .day, value: -365, to: .now) ?? .now
+        let predicate = HKQuery.predicateForSamples(withStart: importStartDate, end: nil)
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             weightImportContinuation = continuation
-            let query = HKAnchoredObjectQuery(type: type, predicate: nil, anchor: anchor, limit: HKObjectQueryNoLimit) {
+            let query = HKAnchoredObjectQuery(type: type, predicate: predicate, anchor: anchor, limit: HKObjectQueryNoLimit) {
                 completedQuery, samples, deletedObjects, newAnchor, error in
                 guard error == nil else {
                     Task { @MainActor in

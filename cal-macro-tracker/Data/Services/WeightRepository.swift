@@ -55,8 +55,32 @@ struct WeightRepository {
         try PersistenceReporter.persist(modelContext: modelContext, operation: "weight.health.import") {
             let entries = try modelContext.fetch(FetchDescriptor<WeightEntry>())
             let deletedIDs = Set(deletedUUIDs)
+            let healthEntries = entries.filter { $0.source == .healthKit }
+            let entriesByCalendarDay = Dictionary(grouping: healthEntries, by: \.day)
+            for sameDay in entriesByCalendarDay.values where sameDay.count > 1 {
+                guard let latest = sameDay.max(by: { $0.recordedAt < $1.recordedAt }) else { continue }
+                for entry in sameDay where entry !== latest {
+                    modelContext.delete(entry)
+                }
+            }
+            var entriesByUUID: [String: WeightEntry] = [:]
+            var entriesByDay: [String: WeightEntry] = [:]
+            for entry in healthEntries where !deletedIDs.contains(entry.healthKitUUID ?? "") {
+                if let uuid = entry.healthKitUUID {
+                    if entriesByUUID[uuid].map({ $0.recordedAt < entry.recordedAt }) ?? true {
+                        entriesByUUID[uuid] = entry
+                    }
+                }
+                if let current = entriesByDay[entry.day], current.recordedAt >= entry.recordedAt {
+                    continue
+                } else {
+                    entriesByDay[entry.day] = entry
+                }
+            }
             for entry in entries where entry.source == .healthKit && entry.healthKitUUID.map(deletedIDs.contains) == true {
                 modelContext.delete(entry)
+                if let uuid = entry.healthKitUUID, entriesByUUID[uuid] === entry { entriesByUUID[uuid] = nil }
+                if entriesByDay[entry.day] === entry { entriesByDay[entry.day] = nil }
             }
 
             let latestSamples = Dictionary(grouping: samples.filter { $0.kilograms.isFinite && $0.kilograms > 0 }) {
@@ -69,41 +93,31 @@ struct WeightRepository {
             }
             for sample in latestSamples {
                 let day = CalendarDay(date: sample.date).sharingDayKey
-                let existing =
-                    entries.first {
-                        $0.source == .healthKit && $0.healthKitUUID == sample.uuid && !deletedIDs.contains(sample.uuid)
-                    }
-                    ?? entries.first {
-                        $0.source == .healthKit && $0.day == day && $0.healthKitUUID.map { !deletedIDs.contains($0) } == true
-                    }
+                let existing = entriesByUUID[sample.uuid] ?? entriesByDay[day]
                 if let existing {
                     guard sample.uuid == existing.healthKitUUID || sample.date >= existing.recordedAt else { continue }
+                    if entriesByDay[existing.day] === existing { entriesByDay[existing.day] = nil }
                     existing.day = day
                     existing.recordedAt = sample.date
                     existing.weightKg = sample.kilograms
                     existing.healthKitUUID = sample.uuid
                     existing.updatedAt = .now
+                    entriesByUUID[sample.uuid] = existing
+                    entriesByDay[day] = existing
                 } else {
-                    modelContext.insert(
-                        WeightEntry(
-                            day: day,
-                            recordedAt: sample.date,
-                            weightKg: sample.kilograms,
-                            source: .healthKit,
-                            healthKitUUID: sample.uuid
-                        )
+                    let entry = WeightEntry(
+                        day: day,
+                        recordedAt: sample.date,
+                        weightKg: sample.kilograms,
+                        source: .healthKit,
+                        healthKitUUID: sample.uuid
                     )
+                    modelContext.insert(entry)
+                    entriesByUUID[sample.uuid] = entry
+                    entriesByDay[day] = entry
                 }
             }
 
-            let healthEntries = try modelContext.fetch(FetchDescriptor<WeightEntry>())
-                .filter { $0.source == .healthKit }
-            for sameDay in Dictionary(grouping: healthEntries, by: \.day).values where sameDay.count > 1 {
-                let latest = sameDay.max { $0.recordedAt < $1.recordedAt }
-                for entry in sameDay where entry !== latest {
-                    modelContext.delete(entry)
-                }
-            }
         }
     }
 }

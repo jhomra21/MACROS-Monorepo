@@ -12,6 +12,12 @@ struct WeightMovingAveragePoint: Identifiable {
     var id: Date { day }
 }
 
+struct WeightChangeComparison {
+    let changeKg: Double
+    let baselineDay: Date
+    let matchedTargetDay: Bool
+}
+
 enum WeightAnalytics {
     static func latest(from points: [WeightAnalyticsPoint]) -> WeightAnalyticsPoint? {
         valid(points).max {
@@ -31,14 +37,24 @@ enum WeightAnalytics {
             guard let latest = byDay[day]?.max(by: { $0.recordedAt < $1.recordedAt }) else { return nil }
             return (day, latest.weightKg)
         }
-        return daily.indices.map { index in
+        var result: [WeightMovingAveragePoint] = []
+        var windowStart = 0
+        var windowTotal = 0.0
+        for index in daily.indices {
             let day = daily[index].0
             let startDay = calendar.date(byAdding: .day, value: 1 - windowDays, to: day) ?? day
-            let values = daily[...index]
-                .filter { $0.0 >= startDay }
-                .map(\.1)
-            return WeightMovingAveragePoint(day: day, averageKg: values.reduce(0, +) / Double(values.count))
+            while windowStart < index, daily[windowStart].0 < startDay {
+                windowTotal -= daily[windowStart].1
+                windowStart += 1
+            }
+            windowTotal += daily[index].1
+            result.append(
+                WeightMovingAveragePoint(
+                    day: day,
+                    averageKg: windowTotal / Double(index - windowStart + 1)
+                ))
         }
+        return result
     }
 
     static func weeklyRate(from points: [WeightAnalyticsPoint], calendar: Calendar = .current) -> Double? {
@@ -47,6 +63,44 @@ enum WeightAnalytics {
         let elapsedDays = calendar.dateComponents([.day], from: first.day, to: last.day).day ?? 0
         guard elapsedDays > 0 else { return nil }
         return (last.averageKg - first.averageKg) * 7 / Double(elapsedDays)
+    }
+
+    static func changeFromSevenDaysAgo(
+        in points: [WeightAnalyticsPoint],
+        endingOn date: Date,
+        calendar: Calendar = .current
+    ) -> Double? {
+        comparisonFromSevenDaysAgo(in: points, endingOn: date, calendar: calendar)?.changeKg
+    }
+
+    static func comparisonFromSevenDaysAgo(
+        in points: [WeightAnalyticsPoint],
+        endingOn date: Date,
+        calendar: Calendar = .current
+    ) -> WeightChangeComparison? {
+        let endingDay = calendar.startOfDay(for: date)
+        guard let targetDay = calendar.date(byAdding: .day, value: -7, to: endingDay),
+            let latest = latest(from: points.filter({ calendar.startOfDay(for: $0.day) == endingDay }))
+        else { return nil }
+
+        let candidates = valid(points).filter { point in
+            let day = calendar.startOfDay(for: point.day)
+            let distance = abs(calendar.dateComponents([.day], from: targetDay, to: day).day ?? Int.max)
+            return distance <= 1
+        }
+        guard
+            let prior = candidates.min(by: {
+                let leftDistance = abs(calendar.dateComponents([.day], from: targetDay, to: $0.day).day ?? Int.max)
+                let rightDistance = abs(calendar.dateComponents([.day], from: targetDay, to: $1.day).day ?? Int.max)
+                if leftDistance != rightDistance { return leftDistance < rightDistance }
+                return $0.recordedAt > $1.recordedAt
+            })
+        else { return nil }
+        return WeightChangeComparison(
+            changeKg: latest.weightKg - prior.weightKg,
+            baselineDay: calendar.startOfDay(for: prior.day),
+            matchedTargetDay: calendar.startOfDay(for: prior.day) == targetDay
+        )
     }
 
     private static func valid(_ points: [WeightAnalyticsPoint]) -> [WeightAnalyticsPoint] {
