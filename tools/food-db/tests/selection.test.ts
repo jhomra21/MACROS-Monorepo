@@ -104,7 +104,27 @@ describe("FNDDS food selection", () => {
 
     expect(selected).toHaveLength(1);
     expect(selected[0]?.aliases).toContain("Crème brûlée");
-    expect(friendlyName("chicken breast, grilled")).toBe("Chicken Breast");
-    expect(friendlyName("rice, white, cooked, no added fat")).toBe("Rice, White");
+    expect(friendlyName("chicken breast, grilled")).toBe("Chicken Breast, Grilled");
+    expect(friendlyName("rice, white, cooked, no added fat")).toBe("Rice, White, Cooked, No Added Fat");
+    expect(friendlyName("beef, ground, raw")).toBe("Beef, Ground, Raw");
+    expect(friendlyName("lentils, from dried, fat added")).toBe("Lentils, From Dried, Fat Added");
+    expect(friendlyName("chicken, with skin")).toBe("Chicken, With Skin");
+    expect(friendlyName("chicken, without skin")).toBe("Chicken, Without Skin");
+    expect(friendlyName("tea, sweetened")).toBe("Tea, Sweetened");
+    expect(friendlyName("tea, unsweetened")).toBe("Tea, Unsweetened");
+
+    const variants = selectFoods([
+      baseFood({ fdcId: 1, description: "Beef, ground, raw" }),
+      baseFood({ fdcId: 2, description: "Beef, ground, cooked" }),
+      baseFood({ fdcId: 3, description: "Lentils, from dried, fat added" }),
+      baseFood({ fdcId: 4, description: "Lentils, from dried, no added fat" }),
+    ], 0);
+
+    expect(variants.map(({ name }) => name)).toEqual([
+      "Beef, Ground, Cooked",
+      "Beef, Ground, Raw",
+      "Lentils, From Dried, Fat Added",
+      "Lentils, From Dried, No Added Fat",
+    ]);
   });
 });
