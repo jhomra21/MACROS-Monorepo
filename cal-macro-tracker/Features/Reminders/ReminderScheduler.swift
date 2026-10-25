@@ -2,7 +2,29 @@ import Foundation
 import SwiftData
 import UserNotifications
 
+struct ReminderDefinition: Equatable {
+    let title: String
+    let hour: Int
+    let minute: Int
+    let onlyIfNothingLogged: Bool
+}
+
 enum ReminderScheduler {
+    static func resolveReminders(
+        free: ReminderDefinition?,
+        pro: [ReminderDefinition],
+        hasPro: Bool
+    ) -> [ReminderDefinition] {
+        let candidates = hasPro ? pro + [free].compactMap { $0 } : [free].compactMap { $0 }
+        var scheduledTimes: Set<Int> = []
+        return candidates.filter { reminder in
+            let minuteOfDay = reminder.hour * 60 + reminder.minute
+            return scheduledTimes.insert(minuteOfDay).inserted
+        }
+        .prefix(hasPro ? 3 : 1)
+        .map { $0 }
+    }
+
     static func upcomingDays(
         from date: Date,
         count: Int,
@@ -34,53 +56,60 @@ enum ReminderScheduler {
         guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else { return }
         let context = container.mainContext
         let entries = (try? context.fetch(FetchDescriptor<LogEntry>())) ?? []
-        let days = Self.upcomingDays(from: .now, count: 7, loggedDates: entries.map(\.dateLogged), calendar: calendar)
-        let hour = defaults.object(forKey: AppStorageKeys.reminderHour) as? Int ?? 20
-        let minute = defaults.object(forKey: AppStorageKeys.reminderMinute) as? Int ?? 0
-        if defaults.bool(forKey: AppStorageKeys.reminderEnabled) {
-            for day in days {
-                var components = calendar.dateComponents([.year, .month, .day], from: day)
-                components.hour = hour
-                components.minute = minute
-                guard let fireDate = calendar.date(from: components), fireDate > .now else { continue }
-                let content = UNMutableNotificationContent()
-                content.title = "Log today's meals"
-                content.body = "Take a moment to add what you ate today."
-                content.sound = .default
-                content.userInfo = ["openRequest": "add-food"]
-                let request = UNNotificationRequest(
-                    identifier: "reminder.daily.\(CalendarDay(date: day, calendar: calendar).sharingDayKey)",
-                    content: content,
-                    trigger: UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-                )
-                try? await center.add(request)
-            }
-        }
-        guard hasPro else { return }
-        let namedReminders: [(String, String, Int, Int)] = [
-            (
-                "Breakfast", AppStorageKeys.reminderBreakfastEnabled,
-                Self.hour(forKey: AppStorageKeys.reminderBreakfastHour, default: 8),
-                Self.minute(forKey: AppStorageKeys.reminderBreakfastMinute)
-            ),
-            (
-                "Lunch", AppStorageKeys.reminderLunchEnabled, Self.hour(forKey: AppStorageKeys.reminderLunchHour, default: 12),
-                Self.minute(forKey: AppStorageKeys.reminderLunchMinute)
-            ),
-            (
-                "Dinner", AppStorageKeys.reminderDinnerEnabled, Self.hour(forKey: AppStorageKeys.reminderDinnerHour, default: 18),
-                Self.minute(forKey: AppStorageKeys.reminderDinnerMinute)
+        let days = Self.upcomingDays(from: .now, count: 7, loggedDates: [], calendar: calendar)
+        let unloggedDays = Self.upcomingDays(
+            from: .now,
+            count: 7,
+            loggedDates: entries.map(\.dateLogged),
+            calendar: calendar
+        )
+        let freeReminder =
+            defaults.bool(forKey: AppStorageKeys.reminderEnabled)
+            ? ReminderDefinition(
+                title: "Log today's meals",
+                hour: Self.hour(forKey: AppStorageKeys.reminderHour, default: 20),
+                minute: Self.minute(forKey: AppStorageKeys.reminderMinute),
+                onlyIfNothingLogged: true
             )
-        ]
-        for (title, enabledKey, hour, minute) in namedReminders where defaults.bool(forKey: enabledKey) {
+            : nil
+        let proReminders = [
+            defaults.bool(forKey: AppStorageKeys.reminderBreakfastEnabled)
+                ? ReminderDefinition(
+                    title: "Breakfast",
+                    hour: Self.hour(forKey: AppStorageKeys.reminderBreakfastHour, default: 8),
+                    minute: Self.minute(forKey: AppStorageKeys.reminderBreakfastMinute),
+                    onlyIfNothingLogged: false
+                ) : nil,
+            defaults.bool(forKey: AppStorageKeys.reminderLunchEnabled)
+                ? ReminderDefinition(
+                    title: "Lunch",
+                    hour: Self.hour(forKey: AppStorageKeys.reminderLunchHour, default: 12),
+                    minute: Self.minute(forKey: AppStorageKeys.reminderLunchMinute),
+                    onlyIfNothingLogged: false
+                ) : nil,
+            defaults.bool(forKey: AppStorageKeys.reminderDinnerEnabled)
+                ? ReminderDefinition(
+                    title: "Dinner",
+                    hour: Self.hour(forKey: AppStorageKeys.reminderDinnerHour, default: 18),
+                    minute: Self.minute(forKey: AppStorageKeys.reminderDinnerMinute),
+                    onlyIfNothingLogged: false
+                ) : nil,
+            defaults.bool(forKey: AppStorageKeys.reminderSmartEveningEnabled)
+                ? ReminderDefinition(title: "Evening check-in", hour: 20, minute: 0, onlyIfNothingLogged: true)
+                : nil
+        ].compactMap { $0 }
+
+        let reminders = Self.resolveReminders(free: freeReminder, pro: proReminders, hasPro: hasPro)
+        for reminder in reminders {
+            let scheduledDays = reminder.onlyIfNothingLogged ? unloggedDays : days
             await schedule(
-                title: title, hour: hour, minute: minute, prefix: "reminder.pro.\(title.lowercased())",
-                days: days, calendar: calendar, center: center)
-        }
-        if defaults.bool(forKey: AppStorageKeys.reminderSmartEveningEnabled) {
-            await schedule(
-                title: "Evening check-in", hour: 20, minute: 0, prefix: "reminder.pro.evening",
-                days: days, calendar: calendar, center: center)
+                title: reminder.title,
+                hour: reminder.hour,
+                minute: reminder.minute,
+                prefix: hasPro ? "reminder.pro.\(reminder.title.lowercased())" : "reminder.daily",
+                days: scheduledDays,
+                calendar: calendar,
+                center: center)
         }
     }
 
