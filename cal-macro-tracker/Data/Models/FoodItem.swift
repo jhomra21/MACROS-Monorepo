@@ -191,16 +191,25 @@ enum FoodItemLocalSearch {
             return 0
         }
 
-        if name.hasPrefix(query.normalizedText) || (brand.isEmpty == false && brand.hasPrefix(query.normalizedText)) {
+        let nameTokens = Set(name.split(whereSeparator: { $0.isWhitespace }).map(String.init))
+        if query.tokens.isSubset(of: nameTokens) {
+            return 1 + nameTokens.count
+        }
+
+        if brand.isEmpty == false && brand.hasPrefix(query.normalizedText) {
             return 1
+        }
+
+        if name.hasPrefix(query.normalizedText) {
+            return 1 + nameTokens.count
         }
 
         let isTextMatch = food.searchableText.contains(query.normalizedText)
         let searchableTokens = Set(food.searchableText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
         if query.tokens.isSubset(of: searchableTokens) {
-            return 2
+            return 100
         }
 
-        return isTextMatch ? 3 : nil
+        return isTextMatch ? 101 : nil
     }
 }
