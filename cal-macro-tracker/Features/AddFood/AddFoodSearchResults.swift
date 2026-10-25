@@ -491,8 +491,7 @@ struct SearchFoodListView: View {
     }
 
     private func localFetchSearchTerm(for query: String) -> String {
-        let tokens = query.lowercased().split(whereSeparator: { $0.isWhitespace }).map(String.init)
-        return tokens.first(where: { $0.allSatisfy(\.isNumber) }) ?? tokens.max(by: { $0.count < $1.count }) ?? query
+        FoodItemSearchQuery(query).searchTerm
     }
 }
 

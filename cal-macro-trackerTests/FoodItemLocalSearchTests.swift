@@ -78,6 +78,18 @@ final class FoodItemLocalSearchTests: XCTestCase {
         XCTAssertEqual(waterResults.first?.name, "Water, Bottled")
     }
 
+    func testPunctuationAndDiacriticsShareSearchTokenization() {
+        let farmersCheese = makeFood(name: "Cottage Cheese, Farmer's", calories: 98)
+        let soyBasedFood = makeFood(name: "Soy-based beverage", calories: 41)
+        let cafe = makeFood(name: "Café Latte", calories: 130)
+
+        XCTAssertEqual(FoodItemLocalSearch.rankedFoods([farmersCheese], matching: "farmer's").first?.name, farmersCheese.name)
+        XCTAssertEqual(FoodItemLocalSearch.rankedFoods([soyBasedFood], matching: "soy-based").first?.name, soyBasedFood.name)
+        XCTAssertEqual(FoodItemLocalSearch.rankedFoods([cafe], matching: "cafe").first?.name, cafe.name)
+        XCTAssertEqual(FoodItemSearchQuery("soy-based").tokens, ["soy", "based"])
+        XCTAssertEqual(FoodItemSearchQuery("farmer's").tokens, ["farmer", "s"])
+    }
+
     private func makeFood(name: String, calories: Double, aliases: [String] = []) -> FoodItem {
         FoodItem(
             name: name,

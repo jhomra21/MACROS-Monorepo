@@ -286,8 +286,7 @@ private func pickerRecentLocalFoods(in context: ModelContext) throws -> [FoodIte
 private func pickerLocalFoodCandidates(in context: ModelContext, query: String) throws -> [FoodItem] {
     let normalizedQuery = FoodItemSearchQuery(query).normalizedText
     let fieldPrefixQuery = " \(normalizedQuery)"
-    let tokens = query.lowercased().split(whereSeparator: { $0.isWhitespace }).map(String.init)
-    let searchTerm = tokens.first(where: { $0.allSatisfy(\.isNumber) }) ?? tokens.max(by: { $0.count < $1.count }) ?? query
+    let searchTerm = FoodItemSearchQuery(query).searchTerm
 
     var candidates: [FoodItem] = []
     var seen = Set<UUID>()

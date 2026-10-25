@@ -139,7 +139,8 @@ final class FoodItem {
     }
 
     private static func normalizedSearchValue(_ value: String?) -> String? {
-        TextNormalization.normalizedSearchText(value)
+        guard let value = TextNormalization.trimmedNonEmpty(value) else { return nil }
+        return FoodItemSearchQuery.normalize(value)
     }
 }
 
@@ -148,9 +149,28 @@ struct FoodItemSearchQuery: Hashable {
     let tokens: Set<String>
 
     init(_ query: String) {
-        let normalizedText = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let normalizedText = Self.normalize(query.trimmingCharacters(in: .whitespacesAndNewlines))
         self.normalizedText = normalizedText
-        tokens = Set(normalizedText.split(whereSeparator: { $0.isWhitespace }).map(String.init))
+        tokens = Set(Self.tokenize(normalizedText))
+    }
+
+    var searchTerm: String {
+        tokens.sorted().first(where: { $0.allSatisfy(\.isNumber) })
+            ?? tokens.sorted {
+                $0.count == $1.count ? $0 < $1 : $0.count > $1.count
+            }.first
+            ?? normalizedText
+    }
+
+    static func normalize(_ value: String) -> String {
+        value.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+            .lowercased()
+    }
+
+    static func tokenize(_ value: String) -> [String] {
+        normalize(value)
+            .split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+            .map(String.init)
     }
 
     var isEmpty: Bool {
@@ -195,14 +215,14 @@ enum FoodItemLocalSearch {
     }
 
     static func rank(for food: FoodItem, matching query: FoodItemSearchQuery) -> Int? {
-        let name = food.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        let brand = food.brand?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() ?? ""
+        let name = FoodItemSearchQuery.normalize(food.name.trimmingCharacters(in: .whitespacesAndNewlines))
+        let brand = FoodItemSearchQuery.normalize(food.brand?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
 
         if name == query.normalizedText || (brand.isEmpty == false && brand == query.normalizedText) {
             return 0
         }
 
-        let nameTokens = tokens(in: name)
+        let nameTokens = Set(FoodItemSearchQuery.tokenize(name))
         if query.tokens.isSubset(of: nameTokens) {
             if hasSecondaryModifier(in: nameTokens, query: query.tokens) {
                 return 300 + nameTokens.count
@@ -232,18 +252,12 @@ enum FoodItemLocalSearch {
             return 150
         }
 
-        let searchableTokens = Set(
-            food.searchableText.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init)
-        )
+        let searchableTokens = Set(FoodItemSearchQuery.tokenize(food.searchableText))
         if query.tokens.isSubset(of: searchableTokens) {
             return 200
         }
 
         return nil
-    }
-
-    private static func tokens(in value: String) -> Set<String> {
-        Set(value.split(whereSeparator: { !$0.isLetter && !$0.isNumber }).map(String.init))
     }
 
     private static func hasSecondaryModifier(in nameTokens: Set<String>, query: Set<String>) -> Bool {
