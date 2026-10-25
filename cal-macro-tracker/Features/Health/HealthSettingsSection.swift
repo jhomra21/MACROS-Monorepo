@@ -16,7 +16,10 @@ struct HealthSettingsSection: View {
                     NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
                     if !enabled { health.cancelBackfill() }
                     if enabled {
-                        Task { try? await health.requestAuthorization(readWeight: readWeight && entitlements.canUse(.healthWeightImport)) }
+                        Task {
+                            try? await health.requestAuthorization(readWeight: readWeight && entitlements.canUse(.healthWeightImport))
+                            NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
+                        }
                     }
                 }
             if entitlements.canUse(.healthWeightImport) {
@@ -24,7 +27,10 @@ struct HealthSettingsSection: View {
                     .onChange(of: readWeight) { _, enabled in
                         NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
                         if enabled {
-                            Task { try? await health.requestAuthorization(readWeight: true) }
+                            Task {
+                                try? await health.requestAuthorization(readWeight: true)
+                                NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
+                            }
                         }
                     }
             } else {
