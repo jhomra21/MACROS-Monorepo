@@ -11,6 +11,19 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 MACROS Pro (WS2)
+
+- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.
+- Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
+- Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
+- Repair follow-up reproduced the pre-existing rejection on a fresh iOS 26.4 simulator, after shutdown/erase, and through a visible XCUITest launch; documented Apple FB22237318 / FB22500243 and retained no signing workaround. Payment validation remains blocked.
+- Payments review fixes add status/foreground access refresh, independent subscription management visibility, verified renewal/grace copy, listener-driven integration coverage, and a directly tested deterministic entitlement reducer. Pure tests pass; local purchase QA remains blocked at catalog activation.
+- Re-review fix coalesces entitlement refreshes and awaits a final committed result before purchase/restore feedback; deterministic listener-free concurrency regressions pass without StoreKit catalog activation.
+## 2026-10-25 Goal Calculator and Onboarding (WS3)
+
+- Added a deterministic Mifflin-St Jeor goal calculator, persisted body profile, guided first-run onboarding, and Settings recalculation flow while preserving manual goal entry and the existing first-run completion flag.
+- Added calculator failure-mode coverage and verified the existing meal migration fixture opens with the additive body-profile model.
+- Review fixes keep macro calories at or above the safe minimum after rounding, parse localized decimal input, keep metric measurements at full precision across unit toggles, push target review from Settings recalculation so Back preserves the draft, show the proposed macro grams, give imperial height fields distinct focus, and add independent Mifflin-St Jeor reference tests.
 ## 2026-10-25 Launch Decisions Update
 
 - Applied three owner decisions: `macros.pro.lifetime` is $49.99; writing nutrition to Apple Health is free and importing weight from Apple Health is Pro (`PaidFeature.healthWeightImport`); Terms of Use are governed by the State of Texas, USA. Trackers, website, and App Store drafts now match.
@@ -31,14 +44,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Expanded the website with privacy and terms pages, launch pricing and feature details, FAQ, and App Store placeholder; drafted App Store listing, privacy labels, and screenshot plans.
 
-## 2026-10-25 MACROS Pro (WS2)
-
-- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.
-- Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
-- Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
-- Repair follow-up reproduced the pre-existing rejection on a fresh iOS 26.4 simulator, after shutdown/erase, and through a visible XCUITest launch; documented Apple FB22237318 / FB22500243 and retained no signing workaround. Payment validation remains blocked.
-- Payments review fixes add status/foreground access refresh, independent subscription management visibility, verified renewal/grace copy, listener-driven integration coverage, and a directly tested deterministic entitlement reducer. Pure tests pass; local purchase QA remains blocked at catalog activation.
-- Re-review fix coalesces entitlement refreshes and awaits a final committed result before purchase/restore feedback; deterministic listener-free concurrency regressions pass without StoreKit catalog activation.
 
 ## 2026-10-25 Services Hardening
 
@@ -76,10 +81,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Two-device development sharing QA passed actual invite acceptance, one-way/reciprocal grants, live aggregate updates without refresh, pause/resume, named removal confirmation and Cancel, removal/reconnect, global stop, device off/on, foreground recovery, and profile deletion without deleting local logs. Both temporary cloud profiles were deleted. Evidence: `build/sharing-qa-2026-10-13/QA.md`.
 - No confirmed product failures or implementation changes resulted from these passes. Day rollover, network failure/retry, invite replay, exact subscription counts, advanced StoreKit transactions, and physical-phone TestFlight purchases remain unverified. The last observed Paid Apps Agreement status was Pending User Info; sandbox-payment readiness requires confirming Active status.
 
-## 2026-10-25 Goal Calculator and Onboarding
-
-- Added a deterministic Mifflin-St Jeor goal calculator, persisted body profile, guided first-run onboarding, and Settings recalculation flow while preserving manual goal entry and the existing first-run completion flag.
-- Added calculator failure-mode coverage and verified the existing meal migration fixture opens with the additive body-profile model.
 
 ## StoreKit Validator Path Correction
 
