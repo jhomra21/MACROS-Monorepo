@@ -2,7 +2,7 @@ import StoreKit
 import SwiftUI
 
 enum ProPaywallContext: String, CaseIterable, Identifiable {
-    case insights, ringColors, weightTrends, healthSync, backup, reminders, general
+    case insights, ringColors, weightTrends, healthWeightImport, backup, reminders, general
 
     var id: Self { self }
 
@@ -11,7 +11,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .insights: "Nutrition insights"
         case .ringColors: "Custom macro ring colors"
         case .weightTrends: "Weight trends"
-        case .healthSync: "Apple Health sync"
+        case .healthWeightImport: "Weight import from Apple Health"
         case .backup: "Backup export and import"
         case .reminders: "Multiple reminders"
         case .general: ProBrand.name
@@ -23,7 +23,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .insights: "chart.xyaxis.line"
         case .ringColors: "paintpalette"
         case .weightTrends: "scalemass"
-        case .healthSync: "heart.text.square"
+        case .healthWeightImport: "heart.text.square"
         case .backup: "arrow.down.doc"
         case .reminders: "bell.badge"
         case .general: "sparkles"
@@ -31,7 +31,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
     }
 
     var benefits: [Self] {
-        let all: [Self] = [.insights, .weightTrends, .healthSync, .backup, .ringColors, .reminders]
+        let all: [Self] = [.insights, .weightTrends, .healthWeightImport, .backup, .ringColors, .reminders]
         return self == .general ? all : [self] + all.filter { $0 != self }
     }
 }

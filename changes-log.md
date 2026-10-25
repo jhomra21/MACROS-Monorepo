@@ -29,7 +29,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-25 MACROS Pro (WS2)
 
-- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates.
+- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.
 - Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
 - Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
 

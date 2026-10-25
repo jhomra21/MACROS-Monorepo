@@ -88,6 +88,8 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`, `
 
 ## Open Questions / Blockers
 
+- Rebase picked up the owner-approved $49.99 lifetime price and `healthWeightImport` gate. Implemented those updated tracker decisions instead of the original dispatch's $39.99 and broad `healthSync`; writing nutrition to Apple Health is not a Pro benefit.
+
 - 2026-10-25 WS2 implementation is in place. Build/format/catalog checks pass and native UI QA confirms real summary values and debug grant/revoke gates. Payment validation is **not complete**: the dedicated iOS 26.4 simulator rejects `SKTestSession` catalog activation (`SKInternalErrorDomain Code=3`; `storekitd`: not entitled for `OctaneSaveConfigurationRequest`). Xcode Run and both installed toolchains were attempted. Tests fail at catalog setup rather than silently passing purchase assertions. See `build/ws2-qa-2026-10-25/QA.md` for exact attempts and pending paths.
 
 - Real sandbox testing on a device needs WS9 products in App Store Connect; the simulator path works with the local configuration file.
