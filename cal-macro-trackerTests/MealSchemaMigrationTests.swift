@@ -58,7 +58,6 @@ final class MealSchemaMigrationTests: XCTestCase {
             context.insert(
                 LogEntry(
                     id: newMealLogID,
-                    healthSyncVersion: 3,
                     mealID: newMealID,
                     dateLogged: fixtureDate,
                     foodName: meal.name,
@@ -74,6 +73,7 @@ final class MealSchemaMigrationTests: XCTestCase {
                     proteinConsumed: 12.25,
                     fatConsumed: 5.75,
                     carbsConsumed: 49.5,
+                    healthSyncVersion: 3,
                     createdAt: fixtureDate,
                     updatedAt: fixtureDate
                 )
