@@ -16,12 +16,16 @@ import type {
 } from './types'
 import { isRestaurantLikeQuery } from './restaurantSearch'
 import { searchUSDAFoods } from './usda'
+import { REQUEST_TIMEOUT_MS, withTimeout } from './http'
 
 const OPEN_FOOD_FACTS_PROVIDER = 'openFoodFacts' as const
+
 const USDA_PROVIDER = 'usda' as const
-const REQUEST_TIMEOUT_MS = 2_500
+
 const RESTAURANT_LEGACY_REQUEST_TIMEOUT_MS = 6_000
+
 const RESTAURANT_LEGACY_MAX_ATTEMPTS = 6
+
 const RESTAURANT_LEGACY_MAX_PAGE_SCAN = 6
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
@@ -83,12 +87,14 @@ async function searchOpenFoodFactsWithOutcome(
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     attempts = attempt
+
     try {
       const result = await searcher(
         input,
         { userAgent },
         openFoodFactsFetcher,
       )
+
       return {
         kind: 'response',
         attempts: attempt,
@@ -99,11 +105,13 @@ async function searchOpenFoodFactsWithOutcome(
       }
     } catch (error) {
       const normalizedError = normalizeOpenFoodFactsError(error)
+
       if (normalizedError == null) {
         throw error
       }
 
       lastError = normalizedError
+
       if (normalizedError.retryable === false || normalizedError.retryAfterMs != null) {
         break
       }
@@ -128,6 +136,7 @@ async function searchOpenFoodFactsPackagedFoods(
     fetcher,
     searchOpenFoodFactsSearchALiciousFoods,
   )
+
   if (searchALiciousOutcome.kind === 'response' && hasUsableOpenFoodFactsResult(searchALiciousOutcome.page)) {
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, searchALiciousOutcome.attempts)
   }
@@ -138,6 +147,7 @@ async function searchOpenFoodFactsPackagedFoods(
     fetcher,
     searchOpenFoodFactsLegacyFoods,
   )
+
   const totalAttempts = searchALiciousOutcome.attempts + legacyOutcome.attempts
 
   if (legacyOutcome.kind === 'unavailable') {
@@ -161,6 +171,7 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
     userAgent,
     fetcher,
   )
+
   if (legacyOutcome.kind === 'response' && legacyOutcome.page.results.length > 0) {
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, legacyOutcome.page, legacyOutcome.attempts)
   }
@@ -171,6 +182,7 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
     fetcher,
     searchOpenFoodFactsSearchALiciousFoods,
   )
+
   const totalAttempts = legacyOutcome.attempts + searchALiciousOutcome.attempts
 
   if (searchALiciousOutcome.kind === 'response' && searchALiciousOutcome.page.results.length > 0) {
@@ -203,8 +215,10 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
 
     for (let attempt = 1; attempt <= RESTAURANT_LEGACY_MAX_ATTEMPTS; attempt += 1) {
       attempts += 1
+
       try {
         const result = await searchOpenFoodFactsLegacyRestaurantFoods(pageInput, { userAgent }, openFoodFactsFetcher)
+
         const page = {
           ...result,
           results: result.results.map((item) => ({ provider: OPEN_FOOD_FACTS_PROVIDER, item })),
@@ -215,6 +229,7 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
         }
 
         lastPage = page
+
         if (page.hasMore === false) {
           return { kind: 'response', attempts, page }
         }
@@ -222,11 +237,13 @@ async function searchRestaurantLegacyOpenFoodFactsWithOutcome(
         break
       } catch (error) {
         const normalizedError = normalizeOpenFoodFactsError(error)
+
         if (normalizedError == null) {
           throw error
         }
 
         lastError = normalizedError
+
         if (normalizedError.retryable === false || normalizedError.retryAfterMs != null) {
           return { kind: 'unavailable', attempts, error: normalizedError }
         }
@@ -257,6 +274,7 @@ async function searchUSDAPackagedFoods(
   fetcher: HTTPFetcher,
 ): Promise<PackagedFoodSearchExecution> {
   const result = await searchUSDAFoods(input, apiKey, withTimeout(fetcher, REQUEST_TIMEOUT_MS))
+
   return makeResponse(input, USDA_PROVIDER, {
     ...result,
     results: result.results.map((item) => ({ provider: USDA_PROVIDER, item })),
@@ -283,13 +301,5 @@ function makeResponse(
     results: page.results,
     hasMore: page.hasMore,
     openFoodFactsAttemptCount,
-  }
-}
-
-function withTimeout(fetcher: HTTPFetcher, timeoutMs: number): HTTPFetcher {
-  return (input, init) => {
-    const timeoutSignal = AbortSignal.timeout(timeoutMs)
-    const signal = init?.signal == null ? timeoutSignal : AbortSignal.any([init.signal, timeoutSignal])
-    return fetcher(input, { ...init, signal })
   }
 }

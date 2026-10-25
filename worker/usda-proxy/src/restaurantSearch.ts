@@ -2,6 +2,7 @@ import { searchTokens } from './searchText'
 
 export function isRestaurantLikeQuery(query: string): boolean {
   const tokens = searchTokens(query, { removeApostrophes: true })
+
   if (tokens.length < 2 || tokens.every((token) => /^\d+$/.test(token))) {
     return false
   }
@@ -27,6 +28,7 @@ export function isRestaurantLikeQuery(query: string): boolean {
 
 function hasRestaurantPhrase(tokens: string[]): boolean {
   const normalized = tokens.join(' ')
+
   return RESTAURANT_PHRASES.some((phrase) => normalized.includes(phrase))
 }
 

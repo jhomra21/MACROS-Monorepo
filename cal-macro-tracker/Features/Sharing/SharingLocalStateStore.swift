@@ -1,79 +1,112 @@
 import Foundation
 
 struct SharingLocalStateStore {
+    let defaults: UserDefaults
+    let tokenStore: any SharingInviteTokenStorage
+
+    init(defaults: UserDefaults = .standard, tokenStore: (any SharingInviteTokenStorage)? = nil) {
+        self.defaults = defaults
+        self.tokenStore = tokenStore ?? SharingInviteTokenStore()
+    }
     var isDeviceSharingEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
-        nonmutating set { UserDefaults.standard.set(newValue, forKey: AppStorageKeys.isSharingDeviceEnabled) }
+        get { defaults.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
+        nonmutating set { defaults.set(newValue, forKey: AppStorageKeys.isSharingDeviceEnabled) }
     }
 
     var displayName: String {
-        get { normalizedDisplayName(UserDefaults.standard.string(forKey: AppStorageKeys.sharingDisplayName) ?? "Me") }
-        nonmutating set { UserDefaults.standard.set(normalizedDisplayName(newValue), forKey: AppStorageKeys.sharingDisplayName) }
+        get { normalizedDisplayName(defaults.string(forKey: AppStorageKeys.sharingDisplayName) ?? "Me") }
+        nonmutating set { defaults.set(normalizedDisplayName(newValue), forKey: AppStorageKeys.sharingDisplayName) }
     }
 
     var lastUploadStatus: SharingUploadStatus {
         get {
-            UserDefaults.standard.string(forKey: AppStorageKeys.sharingLastUploadStatus)
+            defaults.string(forKey: AppStorageKeys.sharingLastUploadStatus)
                 .flatMap(SharingUploadStatus.init(rawValue:)) ?? .idle
         }
-        nonmutating set { UserDefaults.standard.set(newValue.rawValue, forKey: AppStorageKeys.sharingLastUploadStatus) }
+        nonmutating set { defaults.set(newValue.rawValue, forKey: AppStorageKeys.sharingLastUploadStatus) }
     }
 
     var lastUploadDate: Date? {
         get {
-            let timeInterval = UserDefaults.standard.double(forKey: AppStorageKeys.sharingLastUploadDate)
+            let timeInterval = defaults.double(forKey: AppStorageKeys.sharingLastUploadDate)
             return timeInterval > 0 ? Date(timeIntervalSince1970: timeInterval) : nil
         }
         nonmutating set {
             if let newValue {
-                UserDefaults.standard.set(newValue.timeIntervalSince1970, forKey: AppStorageKeys.sharingLastUploadDate)
+                defaults.set(newValue.timeIntervalSince1970, forKey: AppStorageKeys.sharingLastUploadDate)
             } else {
-                UserDefaults.standard.removeObject(forKey: AppStorageKeys.sharingLastUploadDate)
+                defaults.removeObject(forKey: AppStorageKeys.sharingLastUploadDate)
             }
         }
     }
 
     var lastUploadedSnapshotHash: String? {
-        get { UserDefaults.standard.string(forKey: AppStorageKeys.sharingLastUploadedSnapshotHash) }
+        get { defaults.string(forKey: AppStorageKeys.sharingLastUploadedSnapshotHash) }
         nonmutating set {
             if let newValue {
-                UserDefaults.standard.set(newValue, forKey: AppStorageKeys.sharingLastUploadedSnapshotHash)
+                defaults.set(newValue, forKey: AppStorageKeys.sharingLastUploadedSnapshotHash)
             } else {
-                UserDefaults.standard.removeObject(forKey: AppStorageKeys.sharingLastUploadedSnapshotHash)
+                defaults.removeObject(forKey: AppStorageKeys.sharingLastUploadedSnapshotHash)
             }
         }
     }
 
-    func pendingInvite() -> SharingInvite? {
-        let defaults = UserDefaults.standard
+    var isCredentialCleanupPending: Bool {
+        get { defaults.bool(forKey: "sharingCredentialCleanupPending") }
+        nonmutating set { defaults.set(newValue, forKey: "sharingCredentialCleanupPending") }
+    }
+
+    var isInviteCleanupPending: Bool {
+        get { defaults.bool(forKey: "sharingInviteCleanupPending") }
+        nonmutating set { defaults.set(newValue, forKey: "sharingInviteCleanupPending") }
+    }
+
+    func pendingInvite() throws -> SharingInvite? {
+        guard !isCredentialCleanupPending else { return nil }
+        if isInviteCleanupPending {
+            try clearPendingInvite()
+            return nil
+        }
         guard
-            let inviteId = defaults.string(forKey: AppStorageKeys.sharingPendingInviteId),
-            let token = defaults.string(forKey: AppStorageKeys.sharingPendingInviteToken)
+            let inviteId = defaults.string(forKey: AppStorageKeys.sharingPendingInviteId)
         else {
             return nil
         }
 
         let expiresAt = Date(timeIntervalSince1970: defaults.double(forKey: AppStorageKeys.sharingPendingInviteExpiresAt))
         guard expiresAt > .now else {
-            clearPendingInvite()
+            try clearPendingInvite()
             return nil
         }
 
+        let token: String
+        if let secureToken = try tokenStore.loadToken() {
+            token = secureToken
+        } else if let legacyToken = defaults.string(forKey: AppStorageKeys.sharingPendingInviteToken) {
+            try tokenStore.saveToken(legacyToken)
+            token = legacyToken
+        } else {
+            return nil
+        }
+        defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteToken)
         return makeInvite(inviteId: inviteId, token: token, expiresAt: expiresAt)
     }
 
-    func savePendingInvite(_ invite: SharingInvite) {
-        let defaults = UserDefaults.standard
+    func savePendingInvite(_ invite: SharingInvite) throws {
+        try tokenStore.saveToken(invite.token)
         defaults.set(invite.inviteId, forKey: AppStorageKeys.sharingPendingInviteId)
-        defaults.set(invite.token, forKey: AppStorageKeys.sharingPendingInviteToken)
+        defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteToken)
         defaults.set(invite.expiresAt.timeIntervalSince1970, forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
+        isInviteCleanupPending = false
     }
 
-    func clearPendingInvite() {
-        let defaults = UserDefaults.standard
+    func clearPendingInvite() throws {
+        isInviteCleanupPending = true
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteId)
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteToken)
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
+        try tokenStore.deleteToken()
+        isInviteCleanupPending = false
     }
 
     func clearUploadMetadata() {

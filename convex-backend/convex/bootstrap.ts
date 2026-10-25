@@ -10,6 +10,7 @@ export const registerOrVerifyProfile = internalMutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
+
     const existing = await ctx.db
       .query("profiles")
       .withIndex("by_profile_key", (q) => q.eq("profileKey", args.profileKey))
@@ -19,6 +20,7 @@ export const registerOrVerifyProfile = internalMutation({
       if (existing.deletedAt != null || existing.secretHash !== args.secretHash) {
         throw new Error("Profile credentials are invalid.");
       }
+
       return {
         profileKey: existing.profileKey,
         displayName: existing.displayName,

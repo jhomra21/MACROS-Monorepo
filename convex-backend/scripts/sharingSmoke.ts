@@ -1,9 +1,11 @@
 import { ConvexHttpClient } from "convex/browser";
+import type { FunctionReturnType } from "convex/server";
 import { api } from "../convex/_generated/api";
-import type { Id } from "../convex/_generated/dataModel";
 
 const authBaseUrl = process.env.MACROS_AUTH_URL ?? "https://macros-auth.jhonra121.workers.dev";
+
 const convexUrl = process.env.CONVEX_URL;
+
 const day = new Date().toISOString().slice(0, 10);
 
 if (convexUrl == null) {
@@ -64,7 +66,7 @@ async function main() {
   assert(bFromA.snapshot == null, "B's snapshot should be hidden before reciprocal sharing is enabled.");
 
   await userB.client.mutation(api.sharing.setOutgoingSharingForPerson, {
-    toProfileId: aFromB.profileId as Id<"profiles">,
+    toProfileId: aFromB.profileId,
     enabled: true,
     ownerDay: day,
   });
@@ -81,7 +83,7 @@ async function main() {
   assert(disabledAFromB.snapshot == null, "A's same-day snapshot should be hidden after sharing is stopped.");
 
   await userA.client.mutation(api.sharing.setOutgoingSharingForPerson, {
-    toProfileId: bFromA.profileId as Id<"profiles">,
+    toProfileId: bFromA.profileId,
     enabled: true,
     ownerDay: day,
   });
@@ -92,7 +94,7 @@ async function main() {
   );
 
   await userA.client.mutation(api.sharing.removePerson, {
-    otherProfileId: bFromA.profileId as Id<"profiles">,
+    otherProfileId: bFromA.profileId,
     ownerDay: day,
   });
   const reconnectInviteToken = crypto.randomUUID().replaceAll("-", "");
@@ -106,7 +108,7 @@ async function main() {
   assert(!reconnectedBFromA.incomingActive, "Reconnect should not preserve B's previous reciprocal sharing.");
   assert(reconnectedBFromA.snapshot == null, "Reconnect should not expose B's previous reciprocal snapshot.");
   await userB.client.mutation(api.sharing.setOutgoingSharingForPerson, {
-    toProfileId: reconnectedAFromB.profileId as Id<"profiles">,
+    toProfileId: reconnectedAFromB.profileId,
     enabled: true,
     ownerDay: day,
   });
@@ -134,6 +136,7 @@ async function createUser(displayName: string): Promise<SmokeUser> {
   const token = await exchangeToken({ profileKey, profileSecret, displayName });
   const client = new ConvexHttpClient(convexUrl!);
   client.setAuth(token.token);
+
   return { displayName, profileKey, profileSecret, client };
 }
 
@@ -146,9 +149,11 @@ async function exchangeToken(args: { profileKey: string; profileSecret: string; 
     },
     body: JSON.stringify(args),
   });
+
   if (!response.ok) {
     throw new Error(`Token exchange failed: ${response.status} ${await response.text()}`);
   }
+
   return await response.json();
 }
 
@@ -163,24 +168,29 @@ async function uploadSnapshot(
   });
 }
 
-function expectPerson(dashboard: { people: Array<any> }, displayName: string) {
+function expectPerson(
+  dashboard: FunctionReturnType<typeof api.sharing.sharingDashboard>,
+  displayName: string,
+): FunctionReturnType<typeof api.sharing.sharingDashboard>["people"][number] {
   const person = dashboard.people.find((value) => value.displayName === displayName);
   assert(person != null, `Expected dashboard person ${displayName}.`);
+
   return person;
 }
 
-function assert(condition: unknown, message: string): asserts condition {
+function assert(condition: boolean, message: string): asserts condition {
   if (!condition) {
     throw new Error(message);
   }
 }
 
-async function expectQueryFailure(query: () => Promise<unknown>, message: string) {
+async function expectQueryFailure(query: () => Promise<FunctionReturnType<typeof api.sharing.sharingDashboard>>, message: string) {
   try {
     await query();
   } catch {
     return;
   }
+
   throw new Error(message);
 }
 
@@ -190,18 +200,21 @@ async function expectTokenExchangeFailure(user: SmokeUser, message: string) {
   } catch {
     return;
   }
+
   throw new Error(message);
 }
 
 async function sha256Hex(value: string) {
   const data = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", data);
+
   return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function previousDay(dayKey: string) {
   const date = new Date(`${dayKey}T00:00:00.000Z`);
   date.setUTCDate(date.getUTCDate() - 1);
+
   return date.toISOString().slice(0, 10);
 }
 

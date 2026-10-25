@@ -48,11 +48,6 @@ struct SharingInvite: Equatable {
     let expiresAt: Date
 }
 
-struct SharingDashboardSubscriptionKey: Equatable {
-    let isDeviceSharingEnabled: Bool
-    let day: CalendarDay
-}
-
 struct SharingDailySnapshotPayload {
     let day: String
     let timeZoneId: String

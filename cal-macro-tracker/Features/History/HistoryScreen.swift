@@ -148,15 +148,12 @@ private struct HistoryWeekStrip: View {
         self.goals = goals
         self.maximumDay = maximumDay
 
-        let weekDays = selectedDay.wrappedValue.weekDays
-        let weekStart = weekDays.first?.startDate ?? selectedDay.wrappedValue.startDate
-        let weekEnd =
-            Calendar.current.date(
-                byAdding: .day,
-                value: 1,
-                to: weekDays.last?.startDate ?? selectedDay.wrappedValue.startDate
-            ) ?? selectedDay.wrappedValue.startDate
-        _entries = Query(LogEntryQuery.descriptor(start: weekStart, end: weekEnd))
+        _entries = Query(
+            LogEntryQuery.descriptor(
+                for: selectedDay.wrappedValue.weekDays,
+                fallbackDay: selectedDay.wrappedValue
+            )
+        )
     }
 
     private var weekDays: [CalendarDay] {

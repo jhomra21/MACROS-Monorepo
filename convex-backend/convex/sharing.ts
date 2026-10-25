@@ -23,6 +23,7 @@ export const updateDisplayName = mutation({
     const profile = await requireCurrentProfile(ctx);
     const displayName = normalizeDisplayName(args.displayName);
     await ctx.db.patch(profile._id, { displayName, updatedAt: Date.now() });
+
     return { ok: true };
   },
 });
@@ -33,6 +34,24 @@ export const createInvite = mutation({
     assertTokenHash(args.tokenHash);
     const profile = await requireCurrentProfile(ctx);
     const now = Date.now();
+
+    const matches = await ctx.db
+      .query("shareInvites")
+      .withIndex("by_token_hash", (q) => q.eq("tokenHash", args.tokenHash))
+      .collect();
+
+    if (matches.length > 0) {
+      const [existing] = matches;
+
+      // A hash is never reassigned or revived. Retry only its single live issuance.
+      if (matches.length !== 1 || existing.ownerProfileId !== profile._id ||
+        existing.status !== "pending" || existing.expiresAt <= now) {
+        throw new Error("Invite is unavailable.");
+      }
+
+      return { inviteId: existing._id, expiresAt: existing.expiresAt };
+    }
+
     const pending = await ctx.db
       .query("shareInvites")
       .withIndex("by_owner_status", (q) => q.eq("ownerProfileId", profile._id).eq("status", "pending"))
@@ -57,10 +76,13 @@ export const revokePendingInvite = mutation({
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     const invite = await ctx.db.get(args.inviteId);
+
     if (invite == null || invite.ownerProfileId !== profile._id || invite.status !== "pending") {
       throw new Error("Invite is unavailable.");
     }
+
     await ctx.db.patch(invite._id, { status: "revoked" });
+
     return { ok: true };
   },
 });
@@ -71,16 +93,23 @@ export const acceptInvite = mutation({
     assertDayKey(args.ownerDay);
     assertTokenHash(args.tokenHash);
     const viewer = await requireCurrentProfile(ctx);
-    const invite = await ctx.db
+
+    const matches = await ctx.db
       .query("shareInvites")
       .withIndex("by_token_hash", (q) => q.eq("tokenHash", args.tokenHash))
-      .unique();
+      .collect();
 
-    if (invite == null || invite.status !== "pending" || invite.expiresAt <= Date.now()) {
+    const live = matches.filter((invite) => invite.status === "pending" && invite.expiresAt > Date.now());
+    const [invite] = live;
+
+    // A consumed hash never authorizes again, even if a pending duplicate exists.
+    if (live.length !== 1 || matches.some((row) =>
+      row.status === "accepted" || row.ownerProfileId !== invite.ownerProfileId)) {
       throw new Error("Invite is unavailable.");
     }
 
     const owner = await ctx.db.get(invite.ownerProfileId);
+
     if (owner == null || owner.deletedAt != null || owner._id === viewer._id) {
       throw new Error("Invite is unavailable.");
     }
@@ -89,10 +118,13 @@ export const acceptInvite = mutation({
     const relationship = await consolidatedRelationshipForPairKey(ctx, pairKey);
 
     const now = Date.now();
+
     const [profileAId, profileBId] = owner.profileKey < viewer.profileKey
       ? [owner._id, viewer._id]
       : [viewer._id, owner._id];
+
     let relationshipId: Id<"shareRelationships">;
+
     if (relationship == null) {
       relationshipId = await ctx.db.insert("shareRelationships", { profileAId, profileBId, pairKey, createdAt: now });
     } else if (relationship.removedAt != null) {
@@ -103,6 +135,7 @@ export const acceptInvite = mutation({
     }
 
     const openGrant = await openGrantBetween(ctx, owner._id, viewer._id);
+
     if (openGrant == null) {
       await ctx.db.insert("shareGrantIntervals", {
         relationshipId,
@@ -130,6 +163,7 @@ export const setOutgoingSharingForPerson = mutation({
     assertDayKey(args.ownerDay);
     const profile = await requireCurrentProfile(ctx);
     const relationship = await relationshipForPair(ctx, profile._id, args.toProfileId);
+
     if (relationship == null || relationship.removedAt != null) {
       throw new Error("Relationship unavailable.");
     }
@@ -148,6 +182,7 @@ export const setOutgoingSharingForPerson = mutation({
     } else {
       await closeOpenGrants(ctx, profile._id, args.toProfileId, args.ownerDay);
     }
+
     return { ok: true };
   },
 });
@@ -157,10 +192,12 @@ export const stopSharingMyData = mutation({
   handler: async (ctx, args) => {
     assertDayKey(args.ownerDay);
     const profile = await requireCurrentProfile(ctx);
+
     const open = await ctx.db
       .query("shareGrantIntervals")
       .withIndex("by_from_to", (q) => q.eq("fromProfileId", profile._id))
       .collect();
+
     await Promise.all(
       open
         .filter((grant) => grant.endedAt == null)
@@ -171,6 +208,7 @@ export const stopSharingMyData = mutation({
           }),
         ),
     );
+
     return { ok: true };
   },
 });
@@ -181,19 +219,23 @@ export const removePerson = mutation({
     assertDayKey(args.ownerDay);
     const profile = await requireCurrentProfile(ctx);
     const relationship = await relationshipForPair(ctx, profile._id, args.otherProfileId);
+
     if (relationship == null || relationship.removedAt != null) {
       throw new Error("Relationship unavailable.");
     }
 
     const now = Date.now();
+
     const grants = await ctx.db
       .query("shareGrantIntervals")
       .withIndex("by_relationship", (q) => q.eq("relationshipId", relationship._id))
       .collect();
+
     await Promise.all([
       ...grants.map((grant) => ctx.db.delete(grant._id)),
       ctx.db.patch(relationship._id, { removedAt: now }),
     ]);
+
     return { ok: true };
   },
 });
@@ -212,15 +254,20 @@ export const upsertMyDailySnapshot = mutation({
     const profile = await requireCurrentProfile(ctx);
     assertValidSnapshot(args);
     const now = Date.now();
+
     const existing = await ctx.db
       .query("dailySnapshots")
       .withIndex("by_owner_day", (q) => q.eq("ownerProfileId", profile._id).eq("day", args.day))
       .unique();
+
     const snapshot = { ownerProfileId: profile._id, ...args, updatedAt: now };
+
     if (existing != null) {
       await ctx.db.patch(existing._id, snapshot);
+
       return { snapshotId: existing._id };
     }
+
     return { snapshotId: await ctx.db.insert("dailySnapshots", snapshot) };
   },
 });
@@ -230,6 +277,7 @@ export const deleteMySharingProfile = mutation({
   handler: async (ctx) => {
     const profile = await requireCurrentProfile(ctx);
     const now = Date.now();
+
     const ownedInvites = (
       await Promise.all(
         (["pending", "accepted", "revoked"] as const).map((status) =>
@@ -240,26 +288,32 @@ export const deleteMySharingProfile = mutation({
         ),
       )
     ).flat();
+
     const acceptedInvites = await ctx.db
       .query("shareInvites")
       .withIndex("by_accepted_by", (q) => q.eq("acceptedByProfileId", profile._id))
       .collect();
+
     const ownedSnapshots = await ctx.db
       .query("dailySnapshots")
       .withIndex("by_owner_day", (q) => q.eq("ownerProfileId", profile._id))
       .collect();
+
     const outgoing = await ctx.db
       .query("shareGrantIntervals")
       .withIndex("by_from_to", (q) => q.eq("fromProfileId", profile._id))
       .collect();
+
     const incoming = await ctx.db
       .query("shareGrantIntervals")
       .withIndex("by_to_from", (q) => q.eq("toProfileId", profile._id))
       .collect();
+
     const relationships = [
       ...(await ctx.db.query("shareRelationships").withIndex("by_profile_a", (q) => q.eq("profileAId", profile._id)).collect()),
       ...(await ctx.db.query("shareRelationships").withIndex("by_profile_b", (q) => q.eq("profileBId", profile._id)).collect()),
     ];
+
     const relationshipGrants = (
       await Promise.all(
         relationships.map((relationship) =>
@@ -267,6 +321,7 @@ export const deleteMySharingProfile = mutation({
         ),
       )
     ).flat();
+
     const grants = uniqueById([...outgoing, ...incoming, ...relationshipGrants]);
     const invites = uniqueById([...ownedInvites, ...acceptedInvites]);
 
@@ -283,6 +338,7 @@ export const deleteMySharingProfile = mutation({
       deletedAt: now,
       updatedAt: now,
     });
+
     return { ok: true };
   },
 });
@@ -292,11 +348,14 @@ export const sharingDashboard = query({
   handler: async (ctx, args) => {
     assertDayKey(args.day);
     assertDayKey(args.ownerToday);
+
     if (args.day !== args.ownerToday) {
       throw new Error("Dashboard is current-day only.");
     }
+
     assertCurrentDayKey(args.day);
     const viewer = await requireCurrentProfile(ctx);
+
     const relationships = [
       ...(await ctx.db.query("shareRelationships").withIndex("by_profile_a", (q) => q.eq("profileAId", viewer._id)).collect()),
       ...(await ctx.db.query("shareRelationships").withIndex("by_profile_b", (q) => q.eq("profileBId", viewer._id)).collect()),
@@ -306,6 +365,7 @@ export const sharingDashboard = query({
       relationships.map(async (relationship) => {
         const otherId = relationship.profileAId === viewer._id ? relationship.profileBId : relationship.profileAId;
         const other = await ctx.db.get(otherId);
+
         if (other == null || other.deletedAt != null) {
           return null;
         }
@@ -314,11 +374,14 @@ export const sharingDashboard = query({
           .query("shareGrantIntervals")
           .withIndex("by_from_to", (q) => q.eq("fromProfileId", otherId).eq("toProfileId", viewer._id))
           .collect();
+
         const outgoing = await ctx.db
           .query("shareGrantIntervals")
           .withIndex("by_from_to", (q) => q.eq("fromProfileId", viewer._id).eq("toProfileId", otherId))
           .collect();
+
         const visible = isDayVisibleFromIntervals(args.day, args.ownerToday, incoming);
+
         const snapshot = visible
           ? await ctx.db
               .query("dailySnapshots")
@@ -356,15 +419,19 @@ export const sharingDashboard = query({
 async function relationshipForPair(ctx: MutationCtx, profileAId: Id<"profiles">, profileBId: Id<"profiles">) {
   const profileA = await ctx.db.get(profileAId);
   const profileB = await ctx.db.get(profileBId);
+
   if (profileA == null || profileB == null) {
     return null;
   }
+
   const pairKey = canonicalPairKey(profileA.profileKey, profileB.profileKey);
+
   return await consolidatedRelationshipForPairKey(ctx, pairKey);
 }
 
 async function consolidatedRelationshipForPairKey(ctx: MutationCtx, pairKey: string) {
   const relationships = await ctx.db.query("shareRelationships").withIndex("by_pair_key", (q) => q.eq("pairKey", pairKey)).collect();
+
   if (relationships.length <= 1) {
     return relationships[0] ?? null;
   }
@@ -372,6 +439,7 @@ async function consolidatedRelationshipForPairKey(ctx: MutationCtx, pairKey: str
   const sorted = [...relationships].sort((a, b) => a.createdAt - b.createdAt);
   const primary = sorted.find((relationship) => relationship.removedAt == null) ?? sorted[0];
   const duplicates = sorted.filter((relationship) => relationship._id !== primary._id);
+
   const duplicateGrants = (
     await Promise.all(
       duplicates.map((relationship) =>
@@ -384,6 +452,7 @@ async function consolidatedRelationshipForPairKey(ctx: MutationCtx, pairKey: str
     ...duplicateGrants.map((grant) => ctx.db.patch(grant._id, { relationshipId: primary._id })),
     ...duplicates.map((relationship) => ctx.db.delete(relationship._id)),
   ]);
+
   return primary;
 }
 
@@ -392,6 +461,7 @@ async function openGrantBetween(ctx: MutationCtx, fromProfileId: Id<"profiles">,
     .query("shareGrantIntervals")
     .withIndex("by_from_to", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId))
     .collect();
+
   return grants.find((grant) => grant.endedAt == null) ?? null;
 }
 
@@ -400,6 +470,7 @@ async function closeOpenGrants(ctx: MutationCtx, fromProfileId: Id<"profiles">, 
     .query("shareGrantIntervals")
     .withIndex("by_from_to", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId))
     .collect();
+
   const now = Date.now();
   await Promise.all(
     grants

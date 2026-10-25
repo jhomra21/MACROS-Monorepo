@@ -10,8 +10,9 @@ const waitlistKnownTlds = new Set(
 		.split(/\s+/)
 		.filter((value) => value.length > 0),
 );
+
 const waitlistEmailSyntaxRegex =
-	/^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z0-9-]{2,63}$/i;
+	/^(?!\.)(?!.*\.\.)([A-Z0-9_'+.-]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9-]*\.)+[A-Z0-9-]{2,63}$/i;
 
 export const waitlistFieldAttributes = {
 	email: {

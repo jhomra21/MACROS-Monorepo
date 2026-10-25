@@ -132,7 +132,40 @@ xcodebuild -project "cal-macro-tracker.xcodeproj" \
   build
 ```
 
-The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme. Local StoreKit testing uses `FullUnlock.storekit`.
+The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme. Local StoreKit testing uses the shared scheme's `../../FullUnlock.storekit` reference to `FullUnlock.storekit`; `make quality-storekit` validates the reference and product identifier.
+
+### Apple tests
+
+The shared `cal-macro-tracker` scheme includes the `cal-macro-trackerTests` XCTest target. Run tests on an available iOS Simulator by replacing `<IOS_SIMULATOR_UDID>` with its UUID. The suite runs serially and enables a 30-second default, 45-second maximum per-test execution allowance:
+
+```sh
+xcodebuild \
+  -project "cal-macro-tracker.xcodeproj" \
+  -scheme "cal-macro-tracker" \
+  -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
+  -parallel-testing-enabled NO \
+  -test-timeouts-enabled YES \
+  -default-test-execution-time-allowance 30 \
+  -maximum-test-execution-time-allowance 45 \
+  test
+```
+
+To run one supported test class, use a class selector:
+
+```sh
+xcodebuild \
+  -project "cal-macro-tracker.xcodeproj" \
+  -scheme "cal-macro-tracker" \
+  -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
+  -parallel-testing-enabled NO \
+  -test-timeouts-enabled YES \
+  -default-test-execution-time-allowance 30 \
+  -maximum-test-execution-time-allowance 45 \
+  -only-testing:cal-macro-trackerTests/InsightsAnalyticsTests \
+  test
+```
+
+Migration fixtures and other test resources stay in the test bundle; they are not app-bundle resources. Build commands compile targets but do not execute tests.
 
 ### Convex sharing backend
 
@@ -205,6 +238,8 @@ Apple app quality commands:
 make quality
 ```
 
+`make quality-build` builds the Xcode scheme; it does not run XCTest. Run the Apple tests separately using the command above.
+
 App-specific targets:
 
 | Target | What it does |
@@ -219,6 +254,10 @@ App-specific targets:
 | `make quality-n1` | Heuristic SwiftData N+1 query detection |
 | `make quality-secrets` | Validates no real secrets leak into example env files |
 
+### JavaScript and TypeScript lint
+
+Install the isolated Bun tooling package once with `cd tools/oxlint && bun install --frozen-lockfile`, then run `make lint-js` from the repository root. Oxlint applies vendored anti-slop rules, `oxc/no-accumulating-spread`, and classic `eslint/complexity` with a maximum of 20. Its scope is supported JavaScript and TypeScript, including script regions in Astro inputs, not Astro template semantics or Swift. The owned source currently passes with zero lint errors and warnings. See [`tools/oxlint/README.md`](tools/oxlint/README.md) for typecheck, smoke, and provenance instructions.
+
 Type checks outside the Xcode project:
 
 | Package | Command |
@@ -227,6 +266,23 @@ Type checks outside the Xcode project:
 | `worker/auth` | `bun run check` |
 | `worker/usda-proxy` | `bun run check` |
 | `web` | `bun run check` |
+
+### Runtime QA
+
+`make qa-network` runs the Node-native loopback HTTP/Miniflare checks against the original worker entry points, then the registered Convex integration tests. Install each package's dependencies first; the root has no `package.json`:
+
+```sh
+cd tools/runtime-qa
+bun install
+bun run check
+bun run test
+
+cd ../../convex-backend
+bun install
+bun run test:integration
+```
+
+Runtime QA requires Node.js 22.18+. See [`tools/runtime-qa/README.md`](tools/runtime-qa/README.md) for isolation, coverage limits, and generated report locations.
 
 ### Optional tooling
 

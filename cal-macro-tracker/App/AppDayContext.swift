@@ -38,8 +38,8 @@ struct AppDaySelection: Equatable {
 final class AppDayContext {
     private(set) var today = CalendarDay(date: .now)
 
-    func refresh(using date: Date = .now) {
-        let refreshedDay = CalendarDay(date: date)
+    func refresh(using date: Date = .now, calendar: Calendar = .current) {
+        let refreshedDay = CalendarDay(date: date, calendar: calendar)
         guard refreshedDay != today else { return }
 
         today = refreshedDay

@@ -113,6 +113,7 @@ async function handleWaitlistRequest(request: Request, env: Env): Promise<Respon
 
 	try {
 		const insertResult = await insertWaitlistEntry(parsed.data, env);
+
 		const message =
 			insertResult === 'inserted'
 				? waitlistStatusMessages.submitted

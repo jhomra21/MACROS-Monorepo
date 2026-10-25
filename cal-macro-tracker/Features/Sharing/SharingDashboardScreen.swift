@@ -16,7 +16,14 @@ struct SharingDashboardScreen: View {
 
     @Query private var goals: [DailyGoals]
     @State private var expandedSharingPersonId: String?
+    @State private var personPendingRemoval: SharingPerson?
     @State private var errorMessage: String?
+    @State private var errorSource: ErrorSource?
+
+    private enum ErrorSource: Equatable {
+        case dashboardSubscription
+        case mutation
+    }
 
     private var currentGoals: MacroGoalsSnapshot {
         MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
@@ -53,18 +60,44 @@ struct SharingDashboardScreen: View {
                 .accessibilityLabel("Open sharing settings")
             }
         }
-        .errorBanner(message: $errorMessage)
-        .task(
-            id: SharingDashboardSubscriptionKey(
-                isDeviceSharingEnabled: sharingSyncService.isDeviceSharingEnabled,
-                day: dayContext.today
-            )
-        ) {
-            sharingSyncService.startDashboardSubscription(for: dayContext.today)
-        }
+        .errorBanner(
+            message: $errorMessage,
+            retryTitle: errorSource == .dashboardSubscription ? "Retry" : nil,
+            onRetry: retryDashboardSubscription
+        )
         .onChange(of: sharingSyncService.dashboardErrorMessage) { _, message in
-            errorMessage = message
+            if let message {
+                errorMessage = message
+                errorSource = .dashboardSubscription
+            } else if errorSource == .dashboardSubscription {
+                errorMessage = nil
+                errorSource = nil
+            }
         }
+        .onAppear {
+            errorMessage = sharingSyncService.dashboardErrorMessage
+            errorSource = sharingSyncService.dashboardErrorMessage == nil ? nil : .dashboardSubscription
+        }
+        .alert(
+            "Remove \(personPendingRemoval?.displayName ?? "Person")?",
+            isPresented: personPendingRemovalBinding
+        ) {
+            if let person = personPendingRemoval {
+                Button("Remove Person", role: .destructive) {
+                    removePerson(person)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes the relationship for both people. Reconnecting requires a new invite.")
+        }
+    }
+
+    private var personPendingRemovalBinding: Binding<Bool> {
+        Binding(
+            get: { personPendingRemoval != nil },
+            set: { if !$0 { personPendingRemoval = nil } }
+        )
     }
 
     private var sharingPreviewRows: some View {
@@ -91,6 +124,9 @@ struct SharingDashboardScreen: View {
                         },
                         onOutgoingChanged: { enabled in
                             setOutgoingSharing(for: person, enabled: enabled)
+                        },
+                        onRemove: {
+                            personPendingRemoval = person
                         }
                     )
                 }
@@ -141,10 +177,31 @@ struct SharingDashboardScreen: View {
             do {
                 try await sharingSyncService.setOutgoingSharing(to: person.profileId, enabled: enabled, ownerDay: dayContext.today)
                 errorMessage = nil
+                errorSource = nil
             } catch {
                 errorMessage = error.localizedDescription
+                errorSource = .mutation
             }
         }
+    }
+
+    private func removePerson(_ person: SharingPerson) {
+        Task {
+            do {
+                try await sharingSyncService.removePerson(person.profileId, ownerDay: dayContext.today)
+                errorMessage = nil
+                errorSource = nil
+            } catch {
+                errorMessage = error.localizedDescription
+                errorSource = .mutation
+            }
+        }
+    }
+
+    private func retryDashboardSubscription() {
+        errorMessage = nil
+        errorSource = nil
+        sharingSyncService.startDashboardSubscription(for: dayContext.today)
     }
 }
 
@@ -156,6 +213,7 @@ private struct SharingPreviewPersonRow: View {
     let isExpanded: Bool
     let onToggleExpansion: () -> Void
     let onOutgoingChanged: (Bool) -> Void
+    let onRemove: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hasAppeared = false
@@ -196,7 +254,7 @@ private struct SharingPreviewPersonRow: View {
             .accessibilityHint(isExpanded ? "Collapse sharing controls" : "Expand sharing controls")
 
             if isExpanded {
-                SharingPreviewExpandedSettings(person: person, onOutgoingChanged: onOutgoingChanged)
+                SharingPreviewExpandedSettings(person: person, onOutgoingChanged: onOutgoingChanged, onRemove: onRemove)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
@@ -235,6 +293,7 @@ private struct SharingPreviewPersonRow: View {
 private struct SharingPreviewExpandedSettings: View {
     let person: SharingPerson
     let onOutgoingChanged: (Bool) -> Void
+    let onRemove: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -249,6 +308,9 @@ private struct SharingPreviewExpandedSettings: View {
                 .font(.subheadline.weight(.semibold))
                 .toggleStyle(.switch)
                 .padding(.top, 2)
+
+            Button("Remove Person", role: .destructive, action: onRemove)
+                .font(.subheadline.weight(.semibold))
         }
     }
 

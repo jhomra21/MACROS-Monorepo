@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 EXPECTED_PRODUCT_ID = "fullunlock001"
-EXPECTED_SCHEME_IDENTIFIER = "../../../FullUnlock.storekit"
+EXPECTED_SCHEME_IDENTIFIER = "../../FullUnlock.storekit"
 
 
 def fail(message: str) -> None:
@@ -37,7 +37,8 @@ def main() -> None:
     if identifier != EXPECTED_SCHEME_IDENTIFIER:
         fail(f"scheme StoreKit identifier must be {EXPECTED_SCHEME_IDENTIFIER}, got {identifier}")
 
-    storekit_path = (scheme_path.parent / identifier).resolve()
+    # Runtime-confirmed: Xcode resolves shared-scheme identifiers from xcshareddata.
+    storekit_path = (scheme_path.parent.parent / identifier).resolve()
     try:
         with storekit_path.open() as file:
             storekit_config = json.load(file)

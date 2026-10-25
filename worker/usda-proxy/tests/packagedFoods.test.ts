@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import { z } from 'zod'
 
 import { fetchOpenFoodFactsProduct } from '../src/openFoodFacts'
 import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
@@ -37,10 +38,12 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousPayload())
         }
 
         usdaCallCount += 1
+
         return Response.json(usdaPayload())
       }),
     )
@@ -50,6 +53,59 @@ describe('searchPackagedFoods', () => {
     expect(searchALiciousCallCount).toBe(1)
     expect(usdaCallCount).toBe(0)
     expect(response.results).toHaveLength(1)
+  })
+
+  it('keeps valid Search-a-licious hits beside malformed siblings, including timed-out pages', async () => {
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'QA cereal' },
+      searchDependencies(async (input) => Response.json(isSearchALiciousRequest(requestURL(input))
+        ? {
+          hits: [searchALiciousCereal(), null, 'invalid', []],
+          page_count: 1,
+          timed_out: true,
+        }
+        : { count: 0, products: [] })),
+    )
+
+    expect(response.results).toHaveLength(1)
+    expect(response.results[0].item).toMatchObject({ code: '1234567890123', product_name: 'QA cereal' })
+    expect(response.hasMore).toBe(false)
+  })
+
+  it('keeps valid legacy products beside malformed siblings', async () => {
+    const response = await searchPackagedFoods(
+      { ...DEFAULT_QUERY, query: 'QA cereal' },
+      searchDependencies(async (input) => {
+        const url = requestURL(input)
+
+        return isSearchALiciousRequest(url)
+          ? new Response(null, { status: 503 })
+          : Response.json({ products: [searchALiciousCereal(), null, 'invalid'], count: 1 })
+      }),
+    )
+
+    expect(response.results).toHaveLength(1)
+    expect(response.results[0].item).toMatchObject({ code: '1234567890123', product_name: 'QA cereal' })
+  })
+
+  it('rejects invalid Open Food Facts collection containers after all providers fail', async () => {
+    await expect(
+      searchPackagedFoods(
+        { ...DEFAULT_QUERY, query: 'QA cereal', provider: 'openFoodFacts', fallbackOnEmpty: false },
+        searchDependencies(async (input) => Response.json(isSearchALiciousRequest(requestURL(input))
+          ? { hits: {}, timed_out: false }
+          : { products: {}, count: 1 })),
+      ),
+    ).rejects.toThrow('Open Food Facts is unavailable right now.')
+  })
+
+  it('rejects invalid USDA collection containers', async () => {
+    await expect(
+      searchPackagedFoods(
+        { ...DEFAULT_QUERY, query: 'QA cereal', provider: 'usda', page: 2 },
+        searchDependencies(async () => Response.json({ foods: {}, totalHits: 100 })),
+      ),
+    ).rejects.toThrow('USDA search is unavailable right now.')
   })
 
   it('uses legacy Open Food Facts when Search-a-licious is unavailable for default search', async () => {
@@ -63,10 +119,12 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return new Response(null, { status: 503 })
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json({ count: 0, products: [] })
       }),
     )
@@ -84,6 +142,7 @@ describe('searchPackagedFoods', () => {
         DEFAULT_QUERY,
         searchDependencies(async (input) => {
           const url = requestURL(input)
+
           return isSearchALiciousRequest(url)
             ? Response.json(searchALiciousTimedOutEmptyPayload())
             : new Response(null, { status: 503 })
@@ -103,10 +162,12 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousEmptyPayload())
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json({ count: 0, products: [] })
       }),
     )
@@ -130,15 +191,18 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return new Response(null, { status: 503 })
         }
 
         if (isLegacyOpenFoodFactsRequest(url)) {
           legacyOpenFoodFactsCallCount += 1
+
           return Response.json(openFoodFactsPayload())
         }
 
         usdaCallCount += 1
+
         return Response.json(usdaPayload())
       }),
     )
@@ -162,15 +226,18 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousEmptyPayload())
         }
 
         if (isLegacyOpenFoodFactsRequest(url)) {
           legacyOpenFoodFactsCallCount += 1
+
           return Response.json({ count: 0, products: [] })
         }
 
         usdaCallCount += 1
+
         return Response.json(usdaPayload())
       }),
     )
@@ -194,10 +261,12 @@ describe('searchPackagedFoods', () => {
 
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousIncompleteNutritionPayload())
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json({ count: 0, products: [] })
       }),
     )
@@ -215,11 +284,13 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'missing nutrition' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isSearchALiciousRequest(url)) {
           return Response.json(searchALiciousIncompleteNutritionPayload())
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json({ count: 0, products: [] })
       }),
     )
@@ -245,9 +316,11 @@ describe('searchPackagedFoods', () => {
 
     expect(response.results).toHaveLength(2)
     expect(response.results.map((result) => result.provider)).toEqual(['openFoodFacts', 'openFoodFacts'])
+
     const openFoodFactsNames = response.results.flatMap((result) => result.provider === 'openFoodFacts'
       ? [result.item.product_name]
       : [])
+
     expect(openFoodFactsNames).toEqual([
       'Protein Bar',
       'Protein Bar Missing Nutrition',
@@ -259,6 +332,7 @@ describe('searchPackagedFoods', () => {
       DEFAULT_QUERY,
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         return Response.json(isSearchALiciousRequest(url)
           ? searchALiciousDuplicatePayload()
           : usdaPayload())
@@ -282,6 +356,7 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'chick fil a sandwich' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         return Response.json(isSearchALiciousRequest(url)
           ? searchALiciousChickFilASaucePayload()
           : (legacyOpenFoodFactsCallCount += 1, { count: 0, products: [] }))
@@ -300,11 +375,13 @@ describe('searchPackagedFoods', () => {
       DEFAULT_QUERY,
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isSearchALiciousRequest(url)) {
           return Response.json(searchALiciousFilteredEmptyHasMorePayload())
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json({ count: 0, products: [] })
       }),
     )
@@ -323,13 +400,16 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, provider: 'openFoodFacts', fallbackOnEmpty: false },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousEmptyPayload())
         }
 
         const page = Number(new URL(url).searchParams.get('page') ?? '1')
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json(page <= 9 ? sparseUsableOpenFoodFactsPayload(page) : unusableOpenFoodFactsPayload())
       }),
     )
@@ -370,12 +450,15 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'chicken nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isSearchALiciousRequest(url)) {
           searchALiciousCallCount += 1
+
           return Response.json(searchALiciousEmptyPayload())
         }
 
         legacyOpenFoodFactsCallCount += 1
+
         return Response.json(legacyRestaurantPayload())
       }),
     )
@@ -401,8 +484,10 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'wendys nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isLegacyOpenFoodFactsRequest(url)) {
           legacyHosts.push(new URL(url).host)
+
           return Response.json(legacyRestaurantPayload())
         }
 
@@ -419,6 +504,7 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'mcdonalds burger' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isLegacyOpenFoodFactsRequest(url)) {
           return Response.json({
             count: 3,
@@ -448,14 +534,17 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'chicken nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isLegacyOpenFoodFactsRequest(url)) {
           legacyOpenFoodFactsCallCount += 1
+
           return legacyOpenFoodFactsCallCount === 1
             ? new Response(null, { status: 503 })
             : Response.json(legacyRestaurantPayload())
         }
 
         searchALiciousCallCount += 1
+
         return Response.json(searchALiciousEmptyPayload())
       }),
     )
@@ -475,15 +564,18 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'chicken nuggets' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isLegacyOpenFoodFactsRequest(url)) {
           const page = Number(new URL(url).searchParams.get('page'))
           legacyPages.push(page)
+
           return page < 3
             ? Response.json({ count: 72, products: [] })
             : Response.json(legacyRestaurantPayload())
         }
 
         searchALiciousCallCount += 1
+
         return Response.json(searchALiciousEmptyPayload())
       }),
     )
@@ -501,6 +593,7 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'Raising cane’s' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         return Response.json(isLegacyOpenFoodFactsRequest(url)
           ? { count: 72, products: [] }
           : { ...searchALiciousEmptyPayload(), page_count: 7 })
@@ -520,12 +613,15 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, query: 'Wendy nuggets', page: 2, provider: 'openFoodFacts', fallbackOnEmpty: false },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         if (isLegacyOpenFoodFactsRequest(url)) {
           legacyOpenFoodFactsCallCount += 1
+
           return Response.json(legacyRestaurantPayload())
         }
 
         searchALiciousCallCount += 1
+
         return Response.json(searchALiciousEmptyPayload())
       }),
     )
@@ -542,6 +638,7 @@ describe('searchPackagedFoods', () => {
       { ...DEFAULT_QUERY, provider: 'openFoodFacts' },
       searchDependencies(async (input) => {
         const url = requestURL(input)
+
         return Response.json(isSearchALiciousRequest(url)
           ? searchALiciousPayload()
           : openFoodFactsPayload())
@@ -630,6 +727,7 @@ describe('fetchOpenFoodFactsProduct', () => {
       { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
       async (input) => {
         requestedURLs.push(requestURL(input))
+
         return requestedURLs.length === 1
           ? Response.json({})
           : Response.json({ product: openFoodFactsPayload().products[0] })
@@ -650,6 +748,7 @@ describe('fetchOpenFoodFactsProduct', () => {
       { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
       async (input) => {
         requestedURLs.push(requestURL(input))
+
         return requestedURLs.length === 1
           ? new Response('SSL handshake failed', { status: 525 })
           : Response.json({ product: openFoodFactsPayload().products[0] })
@@ -671,6 +770,7 @@ describe('fetchOpenFoodFactsProduct', () => {
       { userAgent: 'cal-macro-tracker/1.0 (test@example.com)' },
       async (input) => {
         requestedURLs.push(requestURL(input))
+
         if (requestedURLs.length === 1) {
           throw new TypeError('fetch failed')
         }
@@ -692,12 +792,13 @@ describe('fetchUSDAFood', () => {
     const seenRequests: Array<{ url: string, apiKey: string | null, dataType?: string[] }> = []
 
     await searchUSDAFoods(DEFAULT_QUERY, 'test-usda-key', async (input, init) => {
-      const body = JSON.parse(String(init?.body ?? '{}')) as { dataType?: string[] }
+      const body = parseUSDARequestBody(init?.body)
       seenRequests.push({
         url: requestURL(input),
         apiKey: new Headers(init?.headers).get('X-Api-Key'),
         dataType: body.dataType,
       })
+
       return Response.json(usdaPayload())
     })
 
@@ -706,6 +807,7 @@ describe('fetchUSDAFood', () => {
         url: requestURL(input),
         apiKey: new Headers(init?.headers).get('X-Api-Key'),
       })
+
       return Response.json(usdaDetailsPayload())
     })
 
@@ -729,7 +831,7 @@ describe('fetchUSDAFood', () => {
       { ...DEFAULT_QUERY, query: 'Wendy’s nuggets' },
       'test-usda-key',
       async (_input, init) => {
-        const body = JSON.parse(String(init?.body ?? '{}')) as { query?: string }
+        const body = parseUSDARequestBody(init?.body)
         seenQueries.push(body.query ?? '')
 
         return Response.json(seenQueries.length === 1
@@ -910,16 +1012,19 @@ describe('packaged food cache policy', () => {
       provider: 'openFoodFacts',
       fallbackOnEmpty: true,
     })[0]
+
     const pinnedOpenFoodFactsWithoutFallback = cacheReadOrder(new URL(BASE_URL), {
       ...DEFAULT_QUERY,
       provider: 'openFoodFacts',
       fallbackOnEmpty: false,
     })[0]
+
     const pinnedUSDAWithFallback = cacheReadOrder(new URL(BASE_URL), {
       ...DEFAULT_QUERY,
       provider: 'usda',
       fallbackOnEmpty: true,
     })[0]
+
     const pinnedUSDAWithoutFallback = cacheReadOrder(new URL(BASE_URL), {
       ...DEFAULT_QUERY,
       provider: 'usda',
@@ -932,15 +1037,14 @@ describe('packaged food cache policy', () => {
 })
 
 function requestURL(input: RequestInfo | URL): string {
-  if (typeof input === 'string') {
-    return input
-  }
+  return input instanceof Request ? input.url : new URL(input).toString()
+}
 
-  if (input instanceof URL) {
-    return input.toString()
-  }
-
-  return input.url
+function parseUSDARequestBody(body: BodyInit | null | undefined) {
+  return z.object({
+    dataType: z.array(z.string()).optional(),
+    query: z.string().optional(),
+  }).parse(JSON.parse(String(body ?? '{}')))
 }
 
 function isSearchALiciousRequest(url: string): boolean {
@@ -1048,6 +1152,19 @@ function searchALiciousPayload() {
   }
 }
 
+function searchALiciousCereal() {
+  return {
+    code: '1234567890123',
+    product_name: 'QA cereal',
+    nutriments: {
+      'energy-kcal_100g': 100,
+      proteins_100g: 10,
+      fat_100g: 2,
+      carbohydrates_100g: 20,
+    },
+  }
+}
+
 function searchALiciousEmptyPayload() {
   return {
     hits: [],
@@ -1100,6 +1217,7 @@ function searchALiciousMixedNutritionPayload() {
 
 function searchALiciousDuplicatePayload() {
   const product = searchALiciousPayload().hits[0]
+
   return {
     hits: [
       product,

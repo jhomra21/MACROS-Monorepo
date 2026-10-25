@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { ParsedRequestBody } from './json';
 import {
 	getWaitlistEmailValidationMessage,
 	normalizeWaitlistEmail,
@@ -16,7 +17,11 @@ export {
 
 export const waitlistRequestInput = z.object({
 	email: z.preprocess(
-		(value) => (typeof value === 'string' ? normalizeWaitlistEmail(value) : value),
+		(value) => {
+			const parsed = z.string().safeParse(value);
+
+			return parsed.success ? normalizeWaitlistEmail(parsed.data) : value;
+		},
 		z
 			.string()
 			.max(waitlistEntryLimits.emailMaxLength, 'Email is too long.')
@@ -36,7 +41,9 @@ export const waitlistRequestInput = z.object({
 });
 
 export type WaitlistRequestInput = z.infer<typeof waitlistRequestInput>;
+
 export type WaitlistRequestFieldName = keyof WaitlistRequestInput;
+
 export type WaitlistRequestFieldErrors = Partial<Record<WaitlistRequestFieldName, string>>;
 
 function collectWaitlistFieldErrors(
@@ -47,17 +54,21 @@ function collectWaitlistFieldErrors(
 	for (const issue of issues) {
 		const fieldName = issue.path[0];
 
-		if (typeof fieldName !== 'string' || fieldName in fieldErrors) {
+		if (!isWaitlistRequestFieldName(fieldName) || fieldName in fieldErrors) {
 			continue;
 		}
 
-		fieldErrors[fieldName as WaitlistRequestFieldName] = issue.message;
+		fieldErrors[fieldName] = issue.message;
 	}
 
 	return fieldErrors;
 }
 
-export function validateWaitlistRequest(input: unknown):
+function isWaitlistRequestFieldName(value: PropertyKey | undefined): value is WaitlistRequestFieldName {
+	return value != null && Object.hasOwn(waitlistRequestInput.shape, value);
+}
+
+export function validateWaitlistRequest(input: ParsedRequestBody):
 	| { success: true; data: WaitlistRequestInput }
 	| {
 			success: false;
@@ -71,6 +82,7 @@ export function validateWaitlistRequest(input: unknown):
 	}
 
 	const fieldErrors = collectWaitlistFieldErrors(parsed.error.issues);
+
 	const message =
 		Object.values(fieldErrors).find((value) => value !== undefined) ??
 		waitlistStatusMessages.invalid;

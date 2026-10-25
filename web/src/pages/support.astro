@@ -112,27 +112,31 @@ import {
 	</section>
 
 	<script>
-		type SupportFormResponse = {
-			message?: string;
-			fieldErrors?: Record<string, unknown>;
-		} | null;
+		import { formResponseSchema, stringValueSchema, type FormResponse, type JsonValue } from '../lib/json';
+
+		type SupportFormResponse = FormResponse | null;
 
 		function initSupportPage() {
 			const form = document.querySelector('[data-support-form]');
 			const success = document.querySelector('[data-support-success]');
 			const invalid = document.querySelector('[data-support-invalid]');
 			const error = document.querySelector('[data-support-error]');
+
 			const defaultSuccessMessage =
 				success instanceof HTMLElement ? success.dataset.defaultMessage ?? success.textContent ?? '' : '';
+
 			const defaultInvalidMessage =
 				invalid instanceof HTMLElement ? invalid.dataset.defaultMessage ?? invalid.textContent ?? '' : '';
+
 			const defaultErrorMessage =
 				error instanceof HTMLElement ? error.dataset.defaultMessage ?? error.textContent ?? '' : '';
+
 			const statusElements = {
 				submitted: success,
 				invalid,
 				error,
 			} as const;
+
 			let supportStatusTimeout: number | null = null;
 
 			function hideStatusElement(element: Element | null) {
@@ -264,8 +268,8 @@ import {
 				}
 			}
 
-			function applyFieldErrors(fieldErrors: Record<string, unknown> | undefined) {
-				if (!fieldErrors || typeof fieldErrors !== 'object') {
+			function applyFieldErrors(fieldErrors: Record<string, JsonValue> | undefined) {
+				if (!fieldErrors) {
 					return false;
 				}
 
@@ -273,7 +277,9 @@ import {
 				let firstInvalidControl = null;
 
 				for (const [fieldName, message] of Object.entries(fieldErrors)) {
-					if (typeof message !== 'string' || message.length === 0) {
+					const parsedMessage = stringValueSchema.safeParse(message);
+
+					if (!parsedMessage.success || parsedMessage.data.length === 0) {
 						continue;
 					}
 
@@ -283,7 +289,7 @@ import {
 						continue;
 					}
 
-					control.setCustomValidity(message);
+					control.setCustomValidity(parsedMessage.data);
 					hasFieldErrors = true;
 					firstInvalidControl ??= control;
 				}
@@ -294,13 +300,9 @@ import {
 			}
 
 			async function parseSupportResponse(response: Response): Promise<SupportFormResponse> {
-				const result = await response.json().catch(() => null);
+				const parsed = formResponseSchema.safeParse(await response.json().catch(() => null));
 
-				if (!result || typeof result !== 'object') {
-					return null;
-				}
-
-				return result as SupportFormResponse;
+				return parsed.success ? parsed.data : null;
 			}
 
 			if (!(form instanceof HTMLFormElement)) {
@@ -343,22 +345,24 @@ import {
 						},
 						body: JSON.stringify(payload),
 					});
+
 					const result = await parseSupportResponse(response);
 
 					if (response.ok) {
 						form.reset();
-						showStatusSubmitted(
-							typeof result?.message === 'string' ? result.message : defaultSuccessMessage,
-						);
+						showStatusSubmitted(result?.message ?? defaultSuccessMessage);
+
 						return;
 					}
 
 					const isValidationFailure = response.status >= 400 && response.status < 500;
-					const message = typeof result?.message === 'string'
+
+					const message = result?.message != null
 						? result.message
 						: isValidationFailure
 							? defaultInvalidMessage
 							: defaultErrorMessage;
+
 					const hasFieldErrors = applyFieldErrors(result?.fieldErrors);
 
 					if (isValidationFailure) {
@@ -377,6 +381,7 @@ import {
 		}
 
 		document.addEventListener('astro:page-load', initSupportPage);
+
 		initSupportPage();
 	</script>
 </SiteLayout>

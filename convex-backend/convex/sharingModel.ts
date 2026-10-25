@@ -1,8 +1,11 @@
 export const MACROS_SCOPE = { macros: true } as const;
 
 const DAY_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
 const SHA256_HEX_PATTERN = /^[a-f0-9]{64}$/;
+
 const MIN_VISIBLE_DISPLAY_NAME_LENGTH = 1;
+
 const MAX_DISPLAY_NAME_LENGTH = 40;
 
 export interface ShareGrantInterval {
@@ -22,6 +25,7 @@ export interface SnapshotInput {
 
 export function normalizeDisplayName(name: string): string {
   const normalized = name.trim().replace(/\s+/g, " ");
+
   if (
     normalized.length < MIN_VISIBLE_DISPLAY_NAME_LENGTH ||
     normalized.length > MAX_DISPLAY_NAME_LENGTH ||
@@ -29,6 +33,7 @@ export function normalizeDisplayName(name: string): string {
   ) {
     throw new Error("Display name must be 1–40 visible characters.");
   }
+
   return normalized;
 }
 
@@ -44,6 +49,7 @@ export function assertValidSnapshot(input: SnapshotInput): void {
 
 export function assertDayKey(day: string): void {
   const validCalendarDay = parseDayKey(day) === day;
+
   if (DAY_KEY_PATTERN.test(day) === false || validCalendarDay === false) {
     throw new Error("Day must be yyyy-MM-dd.");
   }
@@ -54,6 +60,7 @@ export function assertCurrentDayKey(day: string, now: Date = new Date()): void {
   const currentDay = now.toISOString().slice(0, 10);
   const previousDay = offsetDayKey(currentDay, -1);
   const nextDay = offsetDayKey(currentDay, 1);
+
   if (day !== previousDay && day !== currentDay && day !== nextDay) {
     throw new Error("Dashboard is current-day only.");
   }
@@ -69,6 +76,7 @@ export function canonicalPairKey(profileKeyA: string, profileKeyB: string): stri
   if (profileKeyA === profileKeyB) {
     throw new Error("Cannot share with the same profile.");
   }
+
   return [profileKeyA, profileKeyB].sort().join(":");
 }
 
@@ -87,27 +95,34 @@ export function isDayVisibleFromIntervals(
     if (day < interval.startDay) {
       return false;
     }
+
     if (interval.endDay != null && day > interval.endDay) {
       return false;
     }
+
     if (day === ownerToday) {
       return interval.endDay == null;
     }
+
     return true;
   });
 }
 
 export function closeIntervalEndDay(disableDay: string): string {
   assertDayKey(disableDay);
+
   return offsetDayKey(disableDay, -1);
 }
 
 function parseDayKey(day: string): string | null {
   const match = DAY_KEY_PATTERN.exec(day);
+
   if (match == null) {
     return null;
   }
+
   const [year, month, date] = day.split("-").map(Number);
+
   return new Date(Date.UTC(year, month - 1, date)).toISOString().slice(0, 10);
 }
 
@@ -115,6 +130,7 @@ function offsetDayKey(day: string, offset: number): string {
   const [year, month, date] = day.split("-").map(Number);
   const value = new Date(Date.UTC(year, month - 1, date));
   value.setUTCDate(value.getUTCDate() + offset);
+
   return value.toISOString().slice(0, 10);
 }
 
@@ -122,6 +138,7 @@ function assertTimeZoneId(timeZoneId: string): void {
   if (timeZoneId.length < 1 || timeZoneId.length > 128) {
     throw new Error("timeZoneId is invalid.");
   }
+
   try {
     Intl.DateTimeFormat("en-US", { timeZone: timeZoneId }).format(new Date());
   } catch {

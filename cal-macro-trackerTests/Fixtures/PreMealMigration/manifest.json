@@ -1,0 +1,14 @@
+{
+  "caloriesConsumed" : 307.5,
+  "carbsConsumed" : 49.5,
+  "expectedMealID" : null,
+  "fatConsumed" : 5.75,
+  "foodItemID" : "57BA5F1A-1A65-41B8-9AE5-CA8B5CA48192",
+  "foodName" : "QA Fixture Oats",
+  "goalsID" : "26591B13-968F-41AA-A037-F72AB3A6A794",
+  "logEntryID" : "A9C6E2A4-C583-4BD0-AD7D-BB7F03670E31",
+  "loggedAt" : "2026-10-12T12:00:00Z",
+  "proteinConsumed" : 12.25,
+  "provenance" : "4fca192079ed098ec4b80d2dbcd9aed815afa53e",
+  "storeFilename" : "PreMeal.sqlite"
+}

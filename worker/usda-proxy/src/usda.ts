@@ -1,12 +1,20 @@
+import { z } from 'zod'
 import type { HTTPFetcher, USDAProxyFoodResult, USDAProxySearchResponse } from './types'
 import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
+
 const USDA_FOOD_DETAILS_URL = 'https://api.nal.usda.gov/fdc/v1/food'
+
 const USDA_PROVIDER_NAME = 'USDA FoodData Central' as const
+
 const BRANDED_DATA_TYPE = 'Branded'
+
 const MAX_PAGE = 10
+
 const CACHE_TTL_SECONDS = 300
+
+const jsonValueSchema = z.json()
 
 const NUTRIENT_IDS = {
   calories: 1008,
@@ -21,47 +29,59 @@ const NUTRIENT_IDS = {
   saturatedFat: 1258,
 } as const
 
-interface USDAFoodSearchResponse {
-  foods?: USDASearchFood[]
-  totalHits?: number
-}
+const optionalNumber = z.number().optional().catch(undefined)
 
-interface USDASearchFood {
-  fdcId?: number
-  description?: string
-  brandName?: string
-  brandOwner?: string
-  gtinUpc?: string
-  servingSize?: number
-  servingSizeUnit?: string
-  householdServingFullText?: string
-  foodNutrients?: USDASearchFoodNutrient[]
-}
+const optionalString = z.string().optional().catch(undefined)
 
-interface USDAFoodDetails {
-  fdcId?: number
-  description?: string
-  brandName?: string
-  brandOwner?: string
-  gtinUpc?: string
-  servingSize?: number
-  servingSizeUnit?: string
-  householdServingFullText?: string
-  foodNutrients?: USDAFoodDetailsNutrient[]
-}
+const searchNutrientSchema = z.object({
+  nutrientId: optionalNumber,
+  value: optionalNumber,
+})
 
-interface USDASearchFoodNutrient {
-  nutrientId?: number
-  value?: number
-}
+const detailsNutrientSchema = z.object({
+  amount: optionalNumber,
+  nutrient: z.object({
+    id: optionalNumber,
+    number: optionalString,
+  }).optional().catch(undefined),
+})
 
-interface USDAFoodDetailsNutrient {
-  amount?: number
-  nutrient?: {
-    id?: number
-    number?: string
-  }
-}
+const searchFoodSchema = z.object({
+  fdcId: optionalNumber,
+  description: optionalString,
+  brandName: optionalString,
+  brandOwner: optionalString,
+  gtinUpc: optionalString,
+  servingSize: optionalNumber,
+  servingSizeUnit: optionalString,
+  householdServingFullText: optionalString,
+  foodNutrients: z.array(searchNutrientSchema).optional().catch(undefined),
+})
+
+const detailsFoodSchema = z.object({
+  fdcId: optionalNumber,
+  description: optionalString,
+  brandName: optionalString,
+  brandOwner: optionalString,
+  gtinUpc: optionalString,
+  servingSize: optionalNumber,
+  servingSizeUnit: optionalString,
+  householdServingFullText: optionalString,
+  foodNutrients: z.array(detailsNutrientSchema).optional().catch(undefined),
+})
+
+const searchResponseSchema = z.object({
+  foods: z.array(z.json()).nullable().optional(),
+  totalHits: optionalNumber,
+})
+
+type USDASearchFood = z.infer<typeof searchFoodSchema>
+
+type USDAFoodDetails = z.infer<typeof detailsFoodSchema>
+
+type USDASearchFoodNutrient = z.infer<typeof searchNutrientSchema>
+
+type USDAFoodDetailsNutrient = z.infer<typeof detailsNutrientSchema>
 
 export class USDAClientError extends Error {
   readonly status: number
@@ -88,6 +108,7 @@ export async function searchUSDAFoods(
 
   for (const query of usdaSearchQueries(input.query, input.page)) {
     const response = await searchUSDAFoodsOnce({ ...input, query }, apiKey, fetcher)
+
     if (response.results.length > 0 || input.page > 1) {
       return response.query === input.query ? response : { ...response, query: input.query }
     }
@@ -136,13 +157,21 @@ async function searchUSDAFoodsOnce(
     throw new USDAClientError('USDA search is unavailable right now.', 503)
   }
 
-  const decoded = (await response.json()) as USDAFoodSearchResponse
-  const foods = decoded.foods ?? []
+  const decoded = parseSearchResponse(jsonValueSchema.parse(await response.json()))
+
+  const foods = (decoded.foods ?? []).flatMap((food) => {
+    const parsed = searchFoodSchema.safeParse(food)
+
+    return parsed.success ? [parsed.data] : []
+  })
+
   const queryTokens = searchTokens(input.query, { removeApostrophes: true })
+
   const results = foods
     .map(makeProxyFoodResult)
     .filter((value): value is USDAProxyFoodResult => value != null)
     .filter((food) => matchesSearchQuery(food, queryTokens))
+
   const totalHits = decoded.totalHits ?? 0
   const hasMore = input.page < MAX_PAGE && input.page * input.pageSize < totalHits
 
@@ -153,6 +182,14 @@ async function searchUSDAFoodsOnce(
     provider: USDA_PROVIDER_NAME,
     results,
     hasMore,
+  }
+}
+
+function parseSearchResponse(payload: z.infer<typeof jsonValueSchema>): z.infer<typeof searchResponseSchema> {
+  try {
+    return searchResponseSchema.parse(payload)
+  } catch {
+    throw new USDAClientError('USDA search is unavailable right now.', 503)
   }
 }
 
@@ -189,8 +226,9 @@ export async function fetchUSDAFood(
     throw new USDAClientError('USDA food details are unavailable right now.', 503)
   }
 
-  const decoded = (await response.json()) as USDAFoodDetails
+  const decoded = detailsFoodSchema.parse(await response.json())
   const result = makeProxyFoodResult(decoded)
+
   if (result == null) {
     throw new USDAClientError('USDA food details are unavailable right now.', 503)
   }
@@ -212,6 +250,7 @@ function usdaSearchQueries(query: string, page: number): string[] {
   }
 
   const normalizedQuery = normalizedSearchQuery(query)
+
   return [...new Set([query, normalizedQuery].filter((value) => value.length > 0))]
 }
 
@@ -224,6 +263,7 @@ function matchesSearchQuery(food: USDAProxyFoodResult, tokens: string[]): boolea
 }
 
 type USDAFood = USDASearchFood | USDAFoodDetails
+
 type USDAFoodNutrient = USDASearchFoodNutrient | USDAFoodDetailsNutrient
 
 function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
@@ -242,29 +282,24 @@ function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
   const sodium = nutrientValues.get(NUTRIENT_IDS.sodium) ?? null
   const cholesterol = nutrientValues.get(NUTRIENT_IDS.cholesterol) ?? null
 
-  if (fdcId == null || Number.isFinite(fdcId) === false) {
-    return null
-  }
+  const mainNutrition = { calories, protein, fat, carbs }
+  const foodData = { fdcId, name, mainNutrition }
 
-  if (name == null || name.length === 0) {
-    return null
-  }
-
-  if (calories == null || protein == null || fat == null || carbs == null) {
+  if (!hasRequiredFoodData(foodData)) {
     return null
   }
 
   return {
-    id: `usda:${fdcId}`,
-    fdcId,
-    name,
+    id: `usda:${foodData.fdcId}`,
+    fdcId: foodData.fdcId,
+    name: foodData.name,
     brand: firstNonEmpty(food.brandOwner, food.brandName),
     servingDescription,
     gramsPerServing: gramsPerServing(food),
-    caloriesPerServing: calories,
-    proteinPerServing: protein,
-    fatPerServing: fat,
-    carbsPerServing: carbs,
+    caloriesPerServing: foodData.mainNutrition.calories,
+    proteinPerServing: foodData.mainNutrition.protein,
+    fatPerServing: foodData.mainNutrition.fat,
+    carbsPerServing: foodData.mainNutrition.carbs,
     saturatedFatPerServing: saturatedFat ?? undefined,
     fiberPerServing: fiber ?? undefined,
     sugarsPerServing: sugars ?? undefined,
@@ -277,15 +312,42 @@ function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
   }
 }
 
+function hasRequiredFoodData(foodData: {
+  fdcId: number | undefined
+  name: string | undefined
+  mainNutrition: { calories: number | null; protein: number | null; fat: number | null; carbs: number | null }
+}): foodData is {
+  fdcId: number
+  name: string
+  mainNutrition: { calories: number; protein: number; fat: number; carbs: number }
+} {
+  return foodData.fdcId != null
+    && Number.isFinite(foodData.fdcId)
+    && foodData.name != null
+    && foodData.name.length > 0
+    && hasCompleteMainNutrition(foodData.mainNutrition)
+}
+
+function hasCompleteMainNutrition(values: {
+  calories: number | null
+  protein: number | null
+  fat: number | null
+  carbs: number | null
+}): values is { calories: number; protein: number; fat: number; carbs: number } {
+  return values.calories != null && values.protein != null && values.fat != null && values.carbs != null
+}
+
 function makeServingDescription(food: USDAFood): string {
   const householdServing = normalizedText(food.householdServingFullText)
+
   if (householdServing != null) {
     return householdServing
   }
 
   const servingSize = food.servingSize
   const servingSizeUnit = normalizedText(food.servingSizeUnit)
-  if (typeof servingSize === 'number' && Number.isFinite(servingSize) && servingSize > 0 && servingSizeUnit != null) {
+
+  if (servingSize != null && Number.isFinite(servingSize) && servingSize > 0 && servingSizeUnit != null) {
     return `${roundForDisplay(servingSize)} ${servingSizeUnit}`
   }
 
@@ -295,7 +357,8 @@ function makeServingDescription(food: USDAFood): string {
 function gramsPerServing(food: USDAFood): number | undefined {
   const servingSize = food.servingSize
   const servingSizeUnit = normalizedText(food.servingSizeUnit)?.toLowerCase()
-  if (typeof servingSize !== 'number' || Number.isFinite(servingSize) === false || servingSize <= 0) {
+
+  if (servingSize == null || Number.isFinite(servingSize) === false || servingSize <= 0) {
     return undefined
   }
 
@@ -308,6 +371,7 @@ function gramsPerServing(food: USDAFood): number | undefined {
 
 function normalizedText(value: string | undefined): string | undefined {
   const trimmed = value?.trim()
+
   return trimmed == null || trimmed.length === 0 ? undefined : trimmed
 }
 
@@ -325,11 +389,12 @@ function nutrientValueMap(food: USDAFood): Map<number, number> {
   for (const nutrient of food.foodNutrients ?? []) {
     const nutrientId = nutrientID(nutrient)
     const value = nutrientValue(nutrient)
-    if (typeof nutrientId !== 'number' || Number.isFinite(nutrientId) === false) {
+
+    if (nutrientId == null || Number.isFinite(nutrientId) === false) {
       continue
     }
 
-    if (typeof value !== 'number' || Number.isFinite(value) === false) {
+    if (value == null || Number.isFinite(value) === false) {
       continue
     }
 
@@ -342,7 +407,8 @@ function nutrientValueMap(food: USDAFood): Map<number, number> {
 function nutrientID(nutrient: USDAFoodNutrient): number | undefined {
   if (isUSDAFoodDetailsNutrient(nutrient)) {
     const value = nutrient.nutrient?.id
-    return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+
+    return value != null && Number.isFinite(value) ? value : undefined
   }
 
   return nutrient.nutrientId
@@ -350,7 +416,8 @@ function nutrientID(nutrient: USDAFoodNutrient): number | undefined {
 
 function nutrientValue(nutrient: USDAFoodNutrient): number | undefined {
   const value = isUSDAFoodDetailsNutrient(nutrient) ? nutrient.amount : nutrient.value
-  return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+
+  return value != null && Number.isFinite(value) ? value : undefined
 }
 
 function isUSDAFoodDetailsNutrient(nutrient: USDAFoodNutrient): nutrient is USDAFoodDetailsNutrient {

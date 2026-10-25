@@ -10,6 +10,58 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 
+## 2026-10-13 JavaScript and TypeScript Lint Tooling
+
+- Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.
+- Validation: plugin typecheck and controlled CLI smoke checks passed; Convex (8 unit + 18 integration), auth (2), runtime QA (93 requests/46 groups), and USDA/web type checks passed. Final lint reports 500 errors and 2 warnings across 44 files, including one complexity-26 function. Findings remain unsuppressed. Evidence and exact scope are under `build/nonphone-confidence-2026-10-13/`.
+- Follow-up cleanup migrated owned JS/TS/Astro findings to schema-validated boundary parsing, precise owner types, and small focused helpers without changing lint configuration, severities, or coverage. Final `make lint-js`: zero errors and warnings; regression suites and package checks are recorded in `build/lint-cleanup-2026-10-13/`.
+
+## 2026-10-13 Swift Sharing Reliability and Calendar Timezones
+
+- Give sharing one upload owner that drains current local totals, joins manual/automatic requests, suppresses unchanged writes, and settles failures for explicit recovery. Ready-launch, foreground, day/clock/timezone events now request that same sync.
+- Service-owned device disable cancels subscriptions/uploads and clears metadata. Committed profile deletion disables immediately; a persisted nonsecret cleanup marker supports local-only retries and blocks reuse of a tombstoned identity. Auth clears its session before secure deletion and prevents stale login completion.
+- Move pending invite bearer tokens into the existing device-only Keychain policy, sharing only SecItem I/O with unchanged identity encoding/account. Preference migration removes the legacy token only after secure save; failed deletion remains explicitly recoverable.
+- Preserve CalendarDay's supplied timezone and use its calendar for history/analytics grouping. CalendarDay remains a nonpersisted value, with no model/schema migration.
+- Validation: pre-fix RED, then 34/34 capability-supported tests passed; full suite 34/40 passed with the same four StoreKit setup and two barcode runtime failures. Debug/Release app + widget, production/test format, StoreKit config and whitespace checks passed. Focused ownership/seam cleanup reviewed; evidence and remaining limits: `build/nonphone-confidence-2026-10-13/swift-reliability/QA.md`.
+- Reviewed follow-up: joined pending credential cleanup, guarded stale device-disable responses, and formatted CalendarDay titles with its captured calendar/timezone. Regression tests failed before fixes; supported selection passed 39/39 including the migration fixture. Full suite had 39 passes, six failures, and zero skipped tests: four StoreKit setup cases and two Vision barcode cases. Debug/Release, formatter, StoreKit and whitespace checks passed.
+- Defensive-review follow-up: removed redundant credential-cleanup task identity and fixed History's captured-timezone DST query boundary. New SwiftData query regressions passed in the 42/42 supported selection; details and known full-suite baseline limits: `build/nonphone-confidence-2026-10-13/DEFENSIVE-FOLLOWUP.md`.
+
+## 2026-10-13 Local Auth, Invitation and Upstream Contract Fixes
+
+- Validate bootstrap identity, normalized visible display name and active-profile state at the auth I/O boundary before issuing tokens; unusable responses remain generic failures.
+- Make live same-owner invite retries write-free with unchanged expiry. Reject hash reuse before revoking other invitations; acceptance rejects any hash with accepted history, while revoked/expired same-owner history may coexist only with one live candidate. No history migration/deletion.
+- Extract the existing food deadline adapter and reuse it for direct USDA and barcode routes, covering response bodies while preserving OFF fallback/retry/restaurant budgets. Bootstrap uses its own platform timeout signal.
+- Promote original-entry native HTTP/Miniflare QA into dev-only `tools/runtime-qa`, discoverable with `make qa-network`; registered Convex QA remains excluded from function discovery by its multi-dot basename.
+- Validation: RED reproductions followed by GREEN, 93 local HTTP requests/46 groups, 18 registered Convex scenarios and all 50 existing tests; affected package checks passed. Evidence: `build/nonphone-confidence-2026-10-13/network/`.
+- Replay regression follow-up: a seeded accepted invite plus same-owner pending duplicate reproduced a cross-viewer grant on RED; acceptance now rejects before writes. GREEN evidence and all final counts are recorded in `build/nonphone-confidence-2026-10-13/network/replay-green/`.
+
+## 2026-10-13 Simulator Regression Follow-up
+
+- Isolated local-data QA and all six existing analytics tests passed: fractional food and meal scaling, edit/delete total refresh, immutable historical meal snapshots, referenced-food deletion protection, Insights totals, and cold-launch persistence. Final QA totals were 1,275 kcal, P72.5/C184.5/F25.5 across six entries. Repeatable evidence: `build/qa-regression-2026-10-13/QA.md`.
+- Two-device development sharing QA passed actual invite acceptance, one-way/reciprocal grants, live aggregate updates without refresh, pause/resume, named removal confirmation and Cancel, removal/reconnect, global stop, device off/on, foreground recovery, and profile deletion without deleting local logs. Both temporary cloud profiles were deleted. Evidence: `build/sharing-qa-2026-10-13/QA.md`.
+- No confirmed product failures or implementation changes resulted from these passes. Day rollover, network failure/retry, invite replay, exact subscription counts, advanced StoreKit transactions, and physical-phone TestFlight purchases remain unverified. The last observed Paid Apps Agreement status was Pending User Info; sandbox-payment readiness requires confirming Active status.
+
+## StoreKit Validator Path Correction
+
+- At `HEAD`, the scheme referenced `../../../FullUnlock.storekit` and the old validator passed, but Xcode launched Sandbox instead of the local `XcodeTest` configuration. The prior validator was a false positive: it accepted a reference Xcode could not resolve. Corrected both the scheme to `../../FullUnlock.storekit` and the validator to resolve paths from `xcshareddata`.
+- Isolated local StoreKit QA passed product loading, empty restore, cancellation, purchase, restore after purchase, cold relaunch, and unlocked Insights/ring controls. Debug and Release simulator builds and normal validators passed; Release omits debug unlock controls and the local catalog. Evidence and remaining TestFlight/account-side checks: `build/purchase-qa-2026-10-13/QA.md`.
+
+## Sharing Person Management Relocation
+
+### Delivered
+
+- Moved per-person sharing management to the Home-reached Sharing dashboard only: expanded person cards now include Remove Person with a native destructive confirmation that names the person and warns that reconnecting requires a new invite. Failures surface in the dashboard error banner.
+- Removed the duplicate People list, `SharingPersonRow`, and the dashboard-only subscription and error observers from Settings > Sharing. The app root still owns the dashboard subscription lifecycle. Profile, invite, device, and global sharing controls in Settings are unchanged.
+
+### Validation
+
+- Swift formatting, whitespace validation, iOS simulator build/run, and Settings-to-Sharing and Home-to-Sharing navigation passed. The initial isolated profile had no connected people and T3 device access was disabled; the later 2026-10-13 two-device pass above verified per-person mutations through the live Device panel.
+
+## Sharing Dashboard Subscription Lifecycle
+
+- Moved dashboard subscription ownership to the app root, preserving a healthy subscription across navigation and profile/invite mutations. Device disable clears it, day changes restart it, and the dashboard error alert offers explicit retry. Cancelled or superseded attempts cannot update or clear newer attempt state.
+- Validation: sharing source review confirmed the app-owned query lifecycle and retry behavior. Later two-device E2E verified live updates across navigation and foreground recovery; backend subscription counts, day rollover, and failure retry remain unverified.
+
 ## Architecture Refactor
 
 ### Delivered

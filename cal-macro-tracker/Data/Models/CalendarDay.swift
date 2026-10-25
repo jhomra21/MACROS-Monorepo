@@ -7,6 +7,7 @@ struct DayInterval: Hashable {
 
 struct CalendarDay: Hashable, Sendable {
     let calendarIdentifier: Calendar.Identifier
+    let timeZone: TimeZone
     let era: Int?
     let year: Int
     let month: Int
@@ -14,6 +15,7 @@ struct CalendarDay: Hashable, Sendable {
 
     init(date: Date, calendar: Calendar = .current) {
         calendarIdentifier = calendar.identifier
+        timeZone = calendar.timeZone
         let components = calendar.dateComponents([.era, .year, .month, .day], from: date)
         era = components.era
         year = Self.required(components.year, component: "year")
@@ -74,30 +76,54 @@ struct CalendarDay: Hashable, Sendable {
     }
 
     var dayTitle: String {
+        dayTitle(locale: .current)
+    }
+
+    func dayTitle(locale: Locale) -> String {
         if isToday {
             return "Today"
         }
 
-        return startDate.formatted(date: .abbreviated, time: .omitted)
+        let style = Date.FormatStyle(
+            date: .abbreviated,
+            time: .omitted,
+            locale: locale,
+            calendar: resolvedCalendar,
+            timeZone: timeZone
+        )
+        return startDate.formatted(style)
     }
 
     var weekdayNarrowTitle: String {
-        startDate.formatted(.dateTime.weekday(.narrow))
+        weekdayNarrowTitle(locale: .current)
+    }
+
+    func weekdayNarrowTitle(locale: Locale) -> String {
+        startDate.formatted(dateTimeStyle(locale: locale).weekday(.narrow))
     }
 
     var weekdayAccessibilityTitle: String {
-        startDate.formatted(.dateTime.weekday(.wide).month(.wide).day())
+        weekdayAccessibilityTitle(locale: .current)
+    }
+
+    func weekdayAccessibilityTitle(locale: Locale) -> String {
+        startDate.formatted(dateTimeStyle(locale: locale).weekday(.wide).month(.wide).day())
     }
 
     var topBarTitle: String {
+        topBarTitle(locale: .current)
+    }
+
+    func topBarTitle(locale: Locale) -> String {
         let start = startDate
-        let dateTitle = start.formatted(.dateTime.month(.abbreviated).day().year())
+        let style = dateTimeStyle(locale: locale)
+        let dateTitle = start.formatted(style.month(.abbreviated).day().year())
 
         if isToday {
             return "Today, \(dateTitle)"
         }
 
-        return "\(start.formatted(.dateTime.weekday(.wide))), \(dateTitle)"
+        return "\(start.formatted(style.weekday(.wide))), \(dateTitle)"
     }
 
     var isToday: Bool {
@@ -113,11 +139,21 @@ struct CalendarDay: Hashable, Sendable {
         return components
     }
 
-    private var resolvedCalendar: Calendar {
+    var resolvedCalendar: Calendar {
         var calendar = Calendar(identifier: calendarIdentifier)
         calendar.locale = .current
-        calendar.timeZone = .current
+        calendar.timeZone = timeZone
         return calendar
+    }
+
+    private func dateTimeStyle(locale: Locale) -> Date.FormatStyle {
+        Date.FormatStyle(
+            date: .omitted,
+            time: .omitted,
+            locale: locale,
+            calendar: resolvedCalendar,
+            timeZone: timeZone
+        )
     }
 
     private static func required(_ value: Int?, component: String) -> Int {

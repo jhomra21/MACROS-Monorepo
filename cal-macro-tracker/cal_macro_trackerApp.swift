@@ -23,6 +23,7 @@ struct cal_macro_trackerApp: App {
     private let goalSetupDisplayMode: GoalSetupDisplayMode = .normal
 
     @AppStorage("hasCompletedGoalSetup") private var hasCompletedGoalSetup = false
+    @AppStorage(AppStorageKeys.isSharingDeviceEnabled) private var isSharingDeviceEnabled = false
     @State private var entitlements: AppEntitlements
     @State private var purchaseStore: PurchaseStore
     @State private var sharingAuthService: SharingAuthService
@@ -99,6 +100,9 @@ struct cal_macro_trackerApp: App {
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
             }
+            .onChange(of: isSharingDeviceEnabled) { _, _ in
+                sharingSyncService.startDashboardSubscription(for: dayContext.today)
+            }
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
                 refreshDayAndStartSharingDashboardSubscription()
             }
@@ -141,6 +145,9 @@ struct cal_macro_trackerApp: App {
     private func refreshDayAndStartSharingDashboardSubscription() {
         dayContext.refresh()
         sharingSyncService.startDashboardSubscription(for: dayContext.today)
+        if case let .ready(container) = launchState.phase {
+            sharingSyncService.syncAfterDailyTotalsChange(container: container)
+        }
     }
 
     #if os(iOS)

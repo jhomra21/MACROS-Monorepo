@@ -87,34 +87,6 @@ struct SharingScreen: View {
                 Text("If an invite is expired, revoked, or invalid, this invite is unavailable.")
             }
 
-            Section("People") {
-                if sharingSyncService.shouldShowDashboardLoading {
-                    HStack {
-                        Spacer()
-                        ProgressView("Loading sharing…")
-                        Spacer()
-                    }
-                } else if sharingSyncService.dashboard.people.isEmpty {
-                    ContentUnavailableView(
-                        "No shared data available for today.",
-                        systemImage: "person.2",
-                        description: Text("Invite someone or accept an invite to start sharing current-day macro totals.")
-                    )
-                } else {
-                    ForEach(sharingSyncService.dashboard.people) { person in
-                        SharingPersonRow(
-                            person: person,
-                            onOutgoingChanged: { enabled in
-                                setOutgoingSharing(for: person, enabled: enabled)
-                            },
-                            onRemove: {
-                                destructiveAction = .removePerson(person)
-                            }
-                        )
-                    }
-                }
-            }
-
             Section {
                 Button("Stop Sharing My Data", role: .destructive) {
                     destructiveAction = .stopSharing
@@ -167,14 +139,15 @@ struct SharingScreen: View {
                     : "Enable sharing on this device before accepting this invite."
             )
         }
-        .task(id: SharingDashboardSubscriptionKey(isDeviceSharingEnabled: isSharingDeviceEnabled, day: dayContext.today)) {
-            sharingSyncService.startDashboardSubscription(for: dayContext.today)
-        }
-        .onChange(of: sharingSyncService.dashboardErrorMessage) { _, message in
-            errorMessage = message
-        }
         .task {
-            invite = sharingSyncService.pendingInvite()
+            do {
+                invite = try sharingSyncService.pendingInvite()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+        .onChange(of: isSharingDeviceEnabled) { _, enabled in
+            if !enabled { invite = nil }
         }
     }
 
@@ -216,6 +189,7 @@ struct SharingScreen: View {
     private func syncNow() {
         Task {
             await sharingSyncService.syncTodayIfConfigured(container: modelContext.container)
+            errorMessage = sharingSyncService.uploadErrorMessage
         }
     }
 
@@ -230,7 +204,6 @@ struct SharingScreen: View {
                     try await sharingSyncService.enableSharing(displayName: displayName, container: modelContext.container)
                 }
                 sharingDisplayName = displayName
-                sharingSyncService.refreshDashboardSubscription(for: dayContext.today)
                 errorMessage = nil
             } catch {
                 errorMessage = error.localizedDescription
@@ -279,23 +252,11 @@ struct SharingScreen: View {
                 try await sharingSyncService.acceptInvite(input: token, ownerDay: dayContext.today)
                 inviteToken = ""
                 inviteConfirmationInput = nil
-                sharingSyncService.refreshDashboardSubscription(for: dayContext.today)
                 errorMessage = nil
             } catch {
                 errorMessage = "This invite is unavailable."
             }
             isAcceptingInvite = false
-        }
-    }
-
-    private func setOutgoingSharing(for person: SharingPerson, enabled: Bool) {
-        Task {
-            do {
-                try await sharingSyncService.setOutgoingSharing(to: person.profileId, enabled: enabled, ownerDay: dayContext.today)
-                errorMessage = nil
-            } catch {
-                errorMessage = error.localizedDescription
-            }
         }
     }
 
@@ -306,19 +267,16 @@ struct SharingScreen: View {
                 case let .revokeInvite(invite):
                     try await revokeInviteAndClear(invite)
                 case .turnOffDevice:
-                    try await sharingSyncService.stopSharingMyData(ownerDay: dayContext.today)
-                    isSharingDeviceEnabled = false
-                    sharingSyncService.stopDashboardSubscription(clearDashboard: true)
+                    try await sharingSyncService.disableSharingOnDevice(ownerDay: dayContext.today)
                 case .stopSharing:
                     try await sharingSyncService.stopSharingMyData(ownerDay: dayContext.today)
-                case let .removePerson(person):
-                    try await sharingSyncService.removePerson(person.profileId, ownerDay: dayContext.today)
                 case .deleteProfile:
                     try await sharingSyncService.deleteSharingProfile()
                     invite = nil
                 }
                 errorMessage = nil
             } catch {
+                if !sharingSyncService.isDeviceSharingEnabled { invite = nil }
                 errorMessage = error.localizedDescription
             }
             destructiveAction = nil
@@ -326,115 +284,12 @@ struct SharingScreen: View {
     }
 
     private func revokeInviteAndClear(_ invite: SharingInvite) async throws {
-        try await sharingSyncService.revokeInvite(invite)
-        self.invite = nil
-    }
-}
-
-private struct SharingPersonRow: View {
-    let person: SharingPerson
-    let onOutgoingChanged: (Bool) -> Void
-    let onRemove: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(person.displayName)
-                        .font(.headline)
-                    Text(statusText)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-            }
-
-            if let snapshot = person.snapshot {
-                sharedMacroSummary(snapshot)
-                Text(updatedText(for: snapshot))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("No shared data available for today.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            Toggle("Share my totals with \(person.displayName)", isOn: outgoingBinding)
-
-            Button("Remove Person", role: .destructive) {
-                onRemove()
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    private var outgoingBinding: Binding<Bool> {
-        Binding(
-            get: { person.outgoingActive },
-            set: { onOutgoingChanged($0) }
-        )
-    }
-
-    private func updatedText(for snapshot: SharedDailySnapshot) -> String {
-        let updatedAt = Date(timeIntervalSince1970: snapshot.updatedAt / 1000)
-            .formatted(.relative(presentation: .named))
-        return "Owner timezone: \(snapshot.timeZoneId) • Updated \(updatedAt)"
-    }
-
-    private func sharedMacroSummary(_ snapshot: SharedDailySnapshot) -> some View {
-        let totals = NutritionSnapshot(
-            calories: snapshot.calories,
-            protein: snapshot.protein,
-            fat: snapshot.fat,
-            carbs: snapshot.carbs
-        )
-
-        return HStack(spacing: 8) {
-            VStack(spacing: 4) {
-                Text("\(snapshot.calories.roundedForDisplay)")
-                    .font(.headline.weight(.semibold))
-                Text("kcal")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity)
-
-            MacroSummaryColumnView(
-                metric: .protein,
-                totals: totals,
-                goals: .default,
-                titleStyle: .short,
-                style: .compact
-            )
-            MacroSummaryColumnView(
-                metric: .carbs,
-                totals: totals,
-                goals: .default,
-                titleStyle: .short,
-                style: .compact
-            )
-            MacroSummaryColumnView(
-                metric: .fat,
-                totals: totals,
-                goals: .default,
-                titleStyle: .short,
-                style: .compact
-            )
-        }
-    }
-
-    private var statusText: String {
-        switch (person.incomingActive, person.outgoingActive) {
-        case (true, true):
-            "Sharing both ways"
-        case (true, false):
-            "Sharing with you"
-        case (false, true):
-            "You are sharing"
-        case (false, false):
-            "Sharing paused"
+        do {
+            try await sharingSyncService.revokeInvite(invite)
+            self.invite = nil
+        } catch {
+            self.invite = try? sharingSyncService.pendingInvite()
+            throw error
         }
     }
 }
@@ -443,7 +298,6 @@ private enum SharingDestructiveAction: Identifiable {
     case revokeInvite(SharingInvite)
     case turnOffDevice
     case stopSharing
-    case removePerson(SharingPerson)
     case deleteProfile
 
     var id: String {
@@ -454,8 +308,6 @@ private enum SharingDestructiveAction: Identifiable {
             "turn-off-device"
         case .stopSharing:
             "stop-sharing"
-        case let .removePerson(person):
-            "remove-\(person.id)"
         case .deleteProfile:
             "delete-profile"
         }
@@ -469,8 +321,6 @@ private enum SharingDestructiveAction: Identifiable {
             "Turn off sharing on this device?"
         case .stopSharing:
             "Stop sharing your data?"
-        case let .removePerson(person):
-            "Remove \(person.displayName)?"
         case .deleteProfile:
             "Delete sharing profile?"
         }
@@ -484,8 +334,6 @@ private enum SharingDestructiveAction: Identifiable {
             "Turn Off Sharing"
         case .stopSharing:
             "Stop Sharing"
-        case .removePerson:
-            "Remove Person"
         case .deleteProfile:
             "Delete Sharing Profile"
         }
@@ -499,8 +347,6 @@ private enum SharingDestructiveAction: Identifiable {
             "This stops uploads and closes outgoing sharing grants. You can re-enable sharing later with this device identity."
         case .stopSharing:
             "This closes all outgoing sharing grants. Existing people remain connected, but your totals will not be shared until you re-enable a person."
-        case .removePerson:
-            "This removes the relationship for both people. Reconnecting requires a new invite."
         case .deleteProfile:
             "This permanently removes cloud sharing identity, relationships, invites, and uploaded snapshots. Your local food and log data remains on this device."
         }

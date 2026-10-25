@@ -19,8 +19,9 @@ enum LogEntryDaySummary {
     }
 
     static func snapshotsByDay(for entries: [LogEntry], matching days: [CalendarDay]) -> [CalendarDay: LogEntryDaySnapshot] {
+        guard let calendar = days.first?.resolvedCalendar else { return [:] }
         let entriesByDay = Dictionary(grouping: entries) { entry in
-            entry.dateLogged.calendarDay
+            CalendarDay(date: entry.dateLogged, calendar: calendar)
         }
 
         return days.reduce(into: [CalendarDay: LogEntryDaySnapshot]()) { snapshots, day in

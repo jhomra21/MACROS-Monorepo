@@ -2,6 +2,7 @@ import type { QueryCtx } from "./_generated/server";
 
 export async function requireCurrentProfile(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
+
   if (identity == null) {
     throw new Error("Authentication required.");
   }

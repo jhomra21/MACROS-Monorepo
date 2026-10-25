@@ -2,8 +2,9 @@ PROJECT := cal-macro-tracker.xcodeproj
 SCHEME := cal-macro-tracker
 DESTINATION := generic/platform=iOS Simulator
 QUALITY_DIR := tools/quality
+OXLINT := tools/oxlint/node_modules/oxlint/bin/oxlint
 
-.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit
+.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit lint-js
 
 quality: quality-build quality-format-check quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit
 
@@ -37,3 +38,11 @@ quality-secrets:
 
 quality-storekit:
 	python3 "$(QUALITY_DIR)/validate_storekit_config.py"
+
+lint-js:
+	"$(OXLINT)" --config .oxlintrc.json
+
+.PHONY: qa-network
+qa-network:
+	cd tools/runtime-qa && bun run check && bun run test
+	cd convex-backend && bun run test:integration

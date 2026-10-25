@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { ParsedRequestBody } from './json';
 
 export const supportRequestLimits = {
 	nameMinLength: 2,
@@ -45,9 +46,13 @@ export const supportRequestInput = z.object({
 });
 
 export type SupportRequestInput = z.infer<typeof supportRequestInput>;
+
 export type SupportRequestFieldName = keyof SupportRequestInput;
+
 export type SupportRequestFieldErrors = Partial<Record<SupportRequestFieldName, string>>;
+
 export type SupportPageStatus = keyof typeof supportStatusMessages;
+
 export const supportStatusElementIDs: Record<SupportPageStatus, string> = {
 	submitted: 'support-status-submitted',
 	invalid: 'support-status-invalid',
@@ -62,17 +67,21 @@ function collectSupportRequestFieldErrors(
 	for (const issue of issues) {
 		const fieldName = issue.path[0];
 
-		if (typeof fieldName !== 'string' || fieldName in fieldErrors) {
+		if (!isSupportRequestFieldName(fieldName) || fieldName in fieldErrors) {
 			continue;
 		}
 
-		fieldErrors[fieldName as SupportRequestFieldName] = issue.message;
+		fieldErrors[fieldName] = issue.message;
 	}
 
 	return fieldErrors;
 }
 
-export function validateSupportRequest(input: unknown):
+function isSupportRequestFieldName(value: PropertyKey | undefined): value is SupportRequestFieldName {
+	return value != null && Object.hasOwn(supportRequestInput.shape, value);
+}
+
+export function validateSupportRequest(input: ParsedRequestBody):
 	| { success: true; data: SupportRequestInput }
 	| {
 			success: false;
@@ -86,6 +95,7 @@ export function validateSupportRequest(input: unknown):
 	}
 
 	const fieldErrors = collectSupportRequestFieldErrors(parsed.error.issues);
+
 	const message =
 		Object.values(fieldErrors).find((value) => value !== undefined) ??
 		supportStatusMessages.invalid;

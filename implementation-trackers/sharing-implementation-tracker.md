@@ -56,7 +56,7 @@ Working tracker for the no-account sharing feature. Update this file as implemen
 - Accepting someone else’s invite does not revoke the accepter’s own pending outgoing invite.
 - Invite acceptance requires the accepter to be online and authenticated via Worker-issued Convex JWT.
 - Pending invite status may show creation/expiry, but not recipient/open metadata.
-- No push notifications for invite acceptance in MVP; refresh state when opening sharing UI, manual sync, and after sharing actions.
+- No push notifications for invite acceptance in MVP. The app-owned live dashboard query remains active across navigation and sharing mutations. Foreground activation uses the guarded start path without replacing a healthy same-day query; day changes resubscribe, and failures offer explicit retry. Do not force a refresh just because the Sharing screen opens.
 
 ### Relationships and Grants
 
@@ -153,8 +153,8 @@ Working tracker for the no-account sharing feature. Update this file as implemen
   - today’s allowed remote snapshots
 - Convex queries return only other people’s snapshots; Swift merges the local user’s own current totals from SwiftData.
 - Mutations return small statuses/IDs and rely on the live dashboard query/subscription to refresh.
-- Live subscriptions are Sharing-screen scoped only; start on screen appearance and cancel when leaving.
-- No global/app-wide remote snapshot subscription in MVP.
+- One app-owned live dashboard subscription serves all people. It remains active across navigation and sharing-setting/invite mutations, stops and clears when device sharing is disabled, and restarts for a new owner-local day or explicit retry after failure. Mutations flow into the same reactive query; there is no polling or timer retry.
+- The app-wide live dashboard subscription is limited to the single `sharingDashboard` query; it is not a global remote-snapshot cache.
 
 ### Swift Service Shape
 
@@ -163,7 +163,7 @@ Working tracker for the no-account sharing feature. Update this file as implemen
   - `SharingSyncService`: snapshot upload, sharing dashboard subscription, invites, sharing mutations.
 - Wrap Keychain in a small `SharingIdentityStore` adapter/protocol.
 - Use app-wide environment dependencies for auth/sync services.
-- Sharing screen explicitly starts/stops live subscriptions.
+- The app root owns live subscription lifecycle; Sharing screens only display dashboard state and offer an explicit retry when the subscription fails.
 - Automatic uploads trigger from a higher-level “daily totals changed” path after local save succeeds, not directly from SwiftData persistence internals.
 
 ### User-Facing Copy
@@ -257,7 +257,7 @@ Milestone 1 smoke criteria:
 - [x] Revoke invite flow.
 - [x] Accept invite flow.
 - [ ] Accept invite flow with valid-invite name confirmation.
-- [x] Sharing dashboard live subscription scoped to screen.
+- [x] Sharing dashboard live subscription app-owned across navigation, with disable/day-change cleanup and explicit failure retry.
 - [x] Show relationships sorted by display name.
 - [x] Show remote today snapshots and neutral no-data states.
 - [x] Show owner timezone and display-only local conversion affordance.
@@ -342,7 +342,7 @@ Milestone 1 smoke criteria:
   - Settings includes an MVP “Sharing on This Device” toggle and “Sync Shared Totals Now” action.
 - Milestone 3 UI foundation:
   - Added `Features/Sharing/SharingScreen.swift` and linked it from Settings.
-  - Sharing screen starts a Convex dashboard subscription only while visible and device sharing is enabled.
+  - The app root starts one Convex dashboard subscription while device sharing is enabled. Navigation, profile changes, and invite mutations preserve a healthy subscription; disable clears it, day changes resubscribe, and dashboard errors offer explicit retry.
   - Screen supports device toggle, manual sync, create invite link, paste/accept invite token, remote today totals, neutral no-data state, owner timezone, coarse updated text, and per-person outgoing/reciprocal sharing toggle.
   - Invite acceptance currently uses a pasted raw token because app-link token extraction is not wired yet and the Worker browser redirect intentionally drops tokens.
 - Milestone 3 destructive controls:
@@ -359,6 +359,9 @@ Milestone 1 smoke criteria:
 - Optional polish: valid-invite name confirmation means the recipient would see a confirmation screen like “Accept invite from Juan?” after the app verifies the invite token but before creating the relationship. This is intentionally separate from the current MVP because invalid/expired invite responses must stay neutral, and adding preview metadata requires a new privacy-safe backend endpoint that reveals inviter name only for a valid pending invite.
 
 ## Validation Notes
+
+- 2026-10-13 initial sharing scope check: source review confirmed one app-owned dashboard query shared across people, no screen-open subscription start or forced refresh, and retry only for a displayed subscription error. That initial isolated profile had sharing disabled and no people.
+- 2026-10-13 two-device follow-up: actual invite acceptance, one-way/reciprocal grants, live totals changing from 100/P10/C10/F2 to 125/P12.5/C12.5/F2.5 without recipient navigation or forced refresh, outgoing pause/resume, named removal confirmation and Cancel, bilateral removal/reconnect, global stop, device off/on, foreground recovery, and profile deletion passed. Both temporary development profiles were deleted; local QA logs remained. Evidence: `build/sharing-qa-2026-10-13/QA.md`. Exact subscription counts, day rollover, network failure/retry, and invalid/expired/replayed invites remain NOT RUN.
 
 - `convex-backend`: `bun run check` passed.
 - `worker/auth`: `bun run check` passed.

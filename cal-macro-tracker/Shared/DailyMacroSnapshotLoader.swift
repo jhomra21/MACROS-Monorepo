@@ -25,9 +25,11 @@ enum DailyMacroSnapshotLoader {
         )
     }
 
-    static func loadNutrition(for date: Date = .now, in container: ModelContainer) throws -> DailyNutritionSnapshot {
+    static func loadNutrition(for date: Date = .now, in container: ModelContainer, calendar: Calendar = .current) throws
+        -> DailyNutritionSnapshot
+    {
         let modelContext = ModelContext(container)
-        let entries: [LogEntry] = try modelContext.fetch(LogEntryQuery.descriptor(for: CalendarDay(date: date)))
+        let entries: [LogEntry] = try modelContext.fetch(LogEntryQuery.descriptor(for: CalendarDay(date: date, calendar: calendar)))
         return DailyNutritionSnapshot(totals: NutritionSnapshot.totals(for: entries), entryCount: entries.count)
     }
 }

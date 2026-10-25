@@ -1,0 +1,15 @@
+{
+  "name": "macros-oxlint",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "cd ../.. && bun tools/oxlint/node_modules/oxlint/bin/oxlint --config .oxlintrc.json",
+    "typecheck": "tsc --noEmit",
+    "smoke": "bun smoke.mjs"
+  },
+  "devDependencies": {
+    "@oxlint/plugins": "1.88.0",
+    "oxlint": "1.88.0",
+    "typescript": "5.9.3"
+  }
+}

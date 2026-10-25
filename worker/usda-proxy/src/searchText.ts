@@ -30,5 +30,6 @@ export function matchesSearchTokens(
   }
 
   const searchableText = normalizedSearchText(values.filter((value): value is string => value != null).join(' '), options)
+
   return searchableText.length > 0 && tokens.every((token) => searchableText.includes(token))
 }

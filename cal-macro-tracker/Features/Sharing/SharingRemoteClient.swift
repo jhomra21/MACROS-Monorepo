@@ -16,7 +16,27 @@ private struct UpsertDailySnapshotResponse: Decodable {
 }
 
 @MainActor
-struct SharingRemoteClient {
+protocol SharingRemote {
+    func authenticate(displayName: String) async throws
+    func updateDisplayName(_ displayName: String) async throws
+    func upsertDailySnapshot(_ payload: SharingDailySnapshotPayload) async throws
+    func dashboard(for day: CalendarDay) -> AnyPublisher<SharingDashboard, Error>
+    func createInvite(tokenHash: String) async throws -> (inviteId: String, expiresAt: Date)
+    func revokeInvite(id: String) async throws
+    func acceptInvite(tokenHash: String, ownerDay: CalendarDay) async throws
+    func setOutgoingSharing(to profileId: String, enabled: Bool, ownerDay: CalendarDay) async throws
+    func stopSharingMyData(ownerDay: CalendarDay) async throws
+    func removePerson(_ profileId: String, ownerDay: CalendarDay) async throws
+    func deleteSharingProfile() async throws
+}
+
+@MainActor
+protocol SharingCredentialCleanup {
+    func clearLocalIdentity() async throws
+}
+
+@MainActor
+struct SharingRemoteClient: SharingRemote {
     let authService: SharingAuthService
 
     func authenticate(displayName: String) async throws {
@@ -94,6 +114,5 @@ struct SharingRemoteClient {
 
     func deleteSharingProfile() async throws {
         let _: SharingMutationStatus = try await authService.client.mutation("sharing:deleteMySharingProfile")
-        try await authService.clearLocalIdentity()
     }
 }

@@ -55,24 +55,46 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
-- Build the app from the CLI:
+- Build the app from the CLI (a build is not a test run):
   - `make quality-build`
-  - macOS builds are intentionally deferred until the iOS app is complete; do not use `-destination 'platform=macOS'` unless explicitly requested.
-- Run the full test suite:
-  - No test target exists yet in the Xcode project, so there is currently no CLI test command to run.
-- Run a single test:
-  - Not available until a test target is added.
+- Run the full iOS Simulator test suite serially with a bounded per-test allowance. Replace the placeholder with an available simulator UUID; never use simulator `39FE5E39-17CE-4395-B141-9E70EBA594BC`:
+  ```sh
+  xcodebuild \
+    -project "cal-macro-tracker.xcodeproj" \
+    -scheme "cal-macro-tracker" \
+    -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
+    -parallel-testing-enabled NO \
+    -test-timeouts-enabled YES \
+    -default-test-execution-time-allowance 30 \
+    -maximum-test-execution-time-allowance 45 \
+    test
+  ```
+- Run one supported test class using the same options and a real class selector, for example:
+  ```sh
+  xcodebuild \
+    -project "cal-macro-tracker.xcodeproj" \
+    -scheme "cal-macro-tracker" \
+    -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
+    -parallel-testing-enabled NO \
+    -test-timeouts-enabled YES \
+    -default-test-execution-time-allowance 30 \
+    -maximum-test-execution-time-allowance 45 \
+    -only-testing:cal-macro-trackerTests/InsightsAnalyticsTests \
+    test
+  ```
+  The shared `cal-macro-tracker` scheme includes the `cal-macro-trackerTests` target. Test resources, including migration fixtures, belong to the test bundle, not the app bundle.
+- macOS builds are intentionally deferred; do not use `-destination 'platform=macOS'` unless explicitly requested.
 - Lint / formatting:
   - The repository formatter is the official `swift-format` tool, wired through `make quality-format-check` and `make format` with the root `.swift-format` configuration.
-  - No Apple/Swift-official linter is part of the documented repository workflow today.
+  - `make lint-js` runs the isolated Bun/Oxlint package against owned JavaScript and TypeScript sources. It enables vendored anti-slop rules and classic `eslint/complexity` at error with a maximum of 20. Keep the rules, severities, and source coverage intact; fix findings in owned source rather than adding suppressions.
+  - Astro documents may be selected as Oxlint inputs, but this does not validate Astro template or markup semantics. Swift formatting remains separate and unchanged.
+  - Do not document or assume an additional linter unless it is added to the repository workflow.
 
 ## Current Codebase Shape
 
-- This repository is currently a minimal single-target SwiftUI app defined by `cal-macro-tracker.xcodeproj`.
-- App startup lives in `cal-macro-tracker/cal_macro_trackerApp.swift`, which currently renders `ContentView` in a single `WindowGroup`.
-- `cal-macro-tracker/ContentView.swift` is still template-level placeholder UI.
-- Source files currently sit directly under `cal-macro-tracker/`; as the app grows, organize by feature rather than by technical layer.
-- The project is configured for multiple Apple platforms in build settings, but the product direction for this repository is a native iPhone calorie/macro tracker. Optimize implementation decisions for iPhone-first workflows.
+- `cal-macro-tracker.xcodeproj` contains the `cal-macro-tracker` app, `CalMacroWidget` extension, and `cal-macro-trackerTests` test target. The shared `cal-macro-tracker` scheme runs the app's XCTest target.
+- Native code is organized under app, data, shared, widget, and feature directories. The iPhone-first SwiftUI app uses SwiftData for local storage and includes food logging, scanning, history, insights, optional sharing, and StoreKit purchase flows.
+- The repository also includes the optional Convex sharing backend, Cloudflare workers, and an Astro site. These supporting packages have their own scripts and are not part of an Xcode app build.
 - Root-level [`swift-dev.mdc`](./swift-dev.mdc) is the main local coding guidance: prefer idiomatic modern SwiftUI, keep state close to where it is used, use `async/await`, and avoid unnecessary view-model or UIKit-style abstraction layers.
 
 Design for ambiguity explicitly: missing database items, OCR mistakes, incomplete nutrition values, and odd serving sizes are expected and must route through review/edit UX rather than silent assumptions.
@@ -107,7 +129,8 @@ Design for ambiguity explicitly: missing database items, OCR mistakes, incomplet
 - Build offline-first behavior into every feature: local persistence, cached lookups, graceful network absence, and editable fallbacks.
 - Keep the app usable with zero account setup.
 - Treat scanning/OCR/network resolution as separate steps so each can fail independently without blocking manual logging.
-- Do not assume tests, linting, or persistence infrastructure already exist in this repository; the codebase is still at template scale and will need those pieces added deliberately.
+- Use the existing XCTest target and isolated fixtures for app behavior; keep test resources in the test bundle and avoid real user stores, production services, and unrelated simulators.
+- `make quality-build` compiles the app and is not test evidence. `make qa-network` runs the Node-native loopback HTTP/Miniflare runtime QA and registered Convex integration tests; install dependencies in `tools/runtime-qa/` and `convex-backend/` first. There is no root `package.json`.
 
 # Changes Log
 

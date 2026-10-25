@@ -1,20 +1,23 @@
 import type {
   HTTPFetcher,
-  OpenFoodFactsProxyNutriments,
   OpenFoodFactsProxyProduct,
   ProviderPage,
 } from './types'
+import { z } from 'zod'
 import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
 
 const OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS = [
   'https://world.openfoodfacts.net/cgi/search.pl',
   'https://world.openfoodfacts.org/cgi/search.pl',
 ]
+
 const OPEN_FOOD_FACTS_SEARCH_A_LICIOUS_URL = 'https://search.openfoodfacts.org/search'
+
 const OPEN_FOOD_FACTS_PRODUCT_URLS = [
   'https://world.openfoodfacts.org/api/v2/product',
   'https://world.openfoodfacts.net/api/v2/product',
 ]
+
 const SEARCH_FIELDS = [
   '_id',
   'code',
@@ -28,41 +31,78 @@ const SEARCH_FIELDS = [
   'nutriments',
 ].join(',')
 
-interface OpenFoodFactsSearchResponse {
-  count?: number
-  products?: OpenFoodFactsRawProduct[]
-}
-
-interface OpenFoodFactsSearchALiciousResponse {
-  hits?: unknown[]
-  page?: number
-  page_size?: number
-  page_count?: number
-  count?: number
-  timed_out?: boolean
-}
-
 interface OpenFoodFactsRawPage {
   totalCount: number
   products: OpenFoodFactsProxyProduct[]
 }
 
-interface OpenFoodFactsRawProduct {
-  _id?: string
-  code?: string
-  product_name?: string
-  brands?: string | string[]
-  serving_size?: string
-  serving_quantity?: number
-  serving_quantity_unit?: string
-  quantity?: string
-  nutriments?: OpenFoodFactsProxyNutriments
-  url?: string
-}
+const optionalString = z.string().optional().catch(undefined)
 
-interface OpenFoodFactsProductResponse {
-  product?: OpenFoodFactsRawProduct
-}
+const optionalNumber = z.number().optional().catch(undefined)
+
+const optionalStringOrStrings = z.union([z.string(), z.array(z.string())]).optional().catch(undefined)
+
+const rawProductCollectionSchema = z.array(z.json()).nullable().optional()
+
+const jsonValueSchema = z.json()
+
+const nutrimentsSchema = z.object({
+  'energy-kcal_serving': optionalNumber,
+  proteins_serving: optionalNumber,
+  fat_serving: optionalNumber,
+  carbohydrates_serving: optionalNumber,
+  'saturated-fat_serving': optionalNumber,
+  fiber_serving: optionalNumber,
+  sugars_serving: optionalNumber,
+  'added-sugars_serving': optionalNumber,
+  sodium_serving: optionalNumber,
+  cholesterol_serving: optionalNumber,
+  salt_serving: optionalNumber,
+  'energy-kcal_100g': optionalNumber,
+  proteins_100g: optionalNumber,
+  fat_100g: optionalNumber,
+  carbohydrates_100g: optionalNumber,
+  'saturated-fat_100g': optionalNumber,
+  fiber_100g: optionalNumber,
+  sugars_100g: optionalNumber,
+  'added-sugars_100g': optionalNumber,
+  sodium_100g: optionalNumber,
+  cholesterol_100g: optionalNumber,
+  salt_100g: optionalNumber,
+})
+
+const rawProductSchema = z.object({
+  _id: optionalString,
+  code: optionalString,
+  product_name: optionalString,
+  brands: optionalStringOrStrings,
+  serving_size: optionalString,
+  serving_quantity: optionalNumber,
+  serving_quantity_unit: optionalString,
+  quantity: optionalString,
+  nutriments: nutrimentsSchema.optional().catch(undefined),
+  url: optionalString,
+})
+
+const legacySearchResponseSchema = z.object({
+  count: optionalNumber,
+  products: rawProductCollectionSchema,
+})
+
+const searchALiciousResponseSchema = z.object({
+  hits: rawProductCollectionSchema,
+  page: optionalNumber,
+  page_size: optionalNumber,
+  page_count: optionalNumber,
+  count: optionalNumber,
+  timed_out: z.boolean().optional().catch(undefined),
+})
+
+const productResponseSchema = z.object({
+  product: rawProductSchema.optional().catch(undefined),
+})
+
+type OpenFoodFactsRawProduct = z.infer<typeof rawProductSchema>
 
 export class OpenFoodFactsClientError extends Error {
   readonly status: number
@@ -90,6 +130,7 @@ export interface OpenFoodFactsRequestOptions {
 
 export function normalizedOpenFoodFactsBarcode(value: string): string | null {
   const barcode = trimmedText(value)
+
   return barcode != null && /^\d+$/.test(barcode) ? barcode : null
 }
 
@@ -100,6 +141,7 @@ export async function searchOpenFoodFactsSearchALiciousFoods(
 ): Promise<ProviderPage<OpenFoodFactsProxyProduct>> {
   const requestedPage = Math.max(1, input.page)
   const requestedPageSize = Math.max(1, input.pageSize)
+
   const response = await fetcher(buildSearchALiciousURL({
     query: input.query,
     page: requestedPage,
@@ -110,12 +152,14 @@ export async function searchOpenFoodFactsSearchALiciousFoods(
 
   assertOpenFoodFactsResponseOK(response)
 
-  const decoded = (await response.json()) as OpenFoodFactsSearchALiciousResponse
-  const rawProducts = (decoded.hits ?? []).filter(isOpenFoodFactsRawProduct)
+  const decoded = parseSearchALiciousResponse(jsonValueSchema.parse(await response.json()))
+  const rawProducts = parseRawProducts(decoded.hits)
+
   const products = usableMatchingUniqueProducts(
     rawProducts.map(makeProxyProduct),
     input.query,
   )
+
   if (decoded.timed_out === true && products.length === 0) {
     throw new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
   }
@@ -148,6 +192,7 @@ export async function fetchOpenFoodFactsProduct(
         assertOpenFoodFactsResponseOK(response)
       } catch (error) {
         const normalizedError = normalizeOpenFoodFactsError(error)
+
         if (normalizedError != null && normalizedError.retryable) {
           lastRetryableError = normalizedError
           continue
@@ -157,7 +202,8 @@ export async function fetchOpenFoodFactsProduct(
       }
 
       sawProductResponse = true
-      const decoded = (await response.json()) as OpenFoodFactsProductResponse
+      const decoded = productResponseSchema.parse(await response.json())
+
       if (decoded.product != null) {
         return makeProxyProduct(decoded.product)
       }
@@ -236,6 +282,7 @@ async function fetchOpenFoodFactsPage(
       assertOpenFoodFactsResponseOK(response)
     } catch (error) {
       const normalizedError = normalizeOpenFoodFactsError(error)
+
       if (normalizedError != null && normalizedError.retryable) {
         lastRetryableError = normalizedError
         continue
@@ -244,14 +291,39 @@ async function fetchOpenFoodFactsPage(
       throw error
     }
 
-    const decoded = (await response.json()) as OpenFoodFactsSearchResponse
+    const decoded = parseLegacySearchResponse(jsonValueSchema.parse(await response.json()))
+
     return {
       totalCount: decoded.count ?? 0,
-      products: productMatcher((decoded.products ?? []).map(makeProxyProduct), input.query),
+      products: productMatcher(parseRawProducts(decoded.products).map(makeProxyProduct), input.query),
     }
   }
 
   throw lastRetryableError ?? new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
+}
+
+function parseSearchALiciousResponse(payload: z.infer<typeof jsonValueSchema>): z.infer<typeof searchALiciousResponseSchema> {
+  try {
+    return searchALiciousResponseSchema.parse(payload)
+  } catch {
+    throw new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
+  }
+}
+
+function parseLegacySearchResponse(payload: z.infer<typeof jsonValueSchema>): z.infer<typeof legacySearchResponseSchema> {
+  try {
+    return legacySearchResponseSchema.parse(payload)
+  } catch {
+    throw new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
+  }
+}
+
+function parseRawProducts(products: z.infer<typeof rawProductCollectionSchema>): OpenFoodFactsRawProduct[] {
+  return (products ?? []).flatMap((product) => {
+    const parsed = rawProductSchema.safeParse(product)
+
+    return parsed.success ? [parsed.data] : []
+  })
 }
 
 function buildSearchURL(input: OpenFoodFactsQuery, searchURL: string): string {
@@ -263,6 +335,7 @@ function buildSearchURL(input: OpenFoodFactsQuery, searchURL: string): string {
   url.searchParams.set('fields', SEARCH_FIELDS)
   url.searchParams.set('page', String(input.page))
   url.searchParams.set('page_size', String(input.pageSize))
+
   return url.toString()
 }
 
@@ -287,12 +360,12 @@ function assertOpenFoodFactsResponseOK(response: Response): void {
   }
 }
 
-export function normalizeOpenFoodFactsError(error: unknown): OpenFoodFactsClientError | null {
-  if (error instanceof OpenFoodFactsClientError) {
-    return error
+export function normalizeOpenFoodFactsError(cause: unknown): OpenFoodFactsClientError | null {
+  if (cause instanceof OpenFoodFactsClientError) {
+    return cause
   }
 
-  if (error instanceof DOMException || error instanceof TypeError) {
+  if (cause instanceof DOMException || cause instanceof TypeError) {
     return new OpenFoodFactsClientError('Open Food Facts is unavailable right now.', 503, true)
   }
 
@@ -314,6 +387,7 @@ function buildSearchALiciousURL(input: OpenFoodFactsQuery): string {
   url.searchParams.set('page_size', String(input.pageSize))
   url.searchParams.set('fields', SEARCH_FIELDS)
   url.searchParams.set('langs', 'en')
+
   return url.toString()
 }
 
@@ -345,6 +419,7 @@ function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], que
   const { completeProducts, incompleteProducts } = partitionUniqueProducts(products, () => true)
 
   const completeMatches = relevantProducts(completeProducts, queryTokens)
+
   return [
     ...completeMatches,
     ...nameTokenMatches(incompleteProducts, queryTokens),
@@ -353,6 +428,7 @@ function usableMatchingUniqueProducts(products: OpenFoodFactsProxyProduct[], que
 
 function usableRestaurantUniqueProducts(products: OpenFoodFactsProxyProduct[], query: string): OpenFoodFactsProxyProduct[] {
   const queryTokens = searchTokens(query, { removeApostrophes: true })
+
   const { completeProducts, incompleteProducts } = partitionUniqueProducts(
     products,
     (product) => restaurantProductMatches(product, queryTokens),
@@ -367,13 +443,14 @@ function usableRestaurantUniqueProducts(products: OpenFoodFactsProxyProduct[], q
 function partitionUniqueProducts(
   products: OpenFoodFactsProxyProduct[],
   includeProduct: (product: OpenFoodFactsProxyProduct) => boolean,
-): { completeProducts: OpenFoodFactsProxyProduct[], incompleteProducts: OpenFoodFactsProxyProduct[] } {
+): ProductPartition {
   const completeProducts: OpenFoodFactsProxyProduct[] = []
   const incompleteProducts: OpenFoodFactsProxyProduct[] = []
   const seen = new Set<string>()
 
   for (const product of products) {
     const keys = productDeduplicationKeys(product)
+
     if (keys.some((key) => seen.has(key)) || includeProduct(product) === false) {
       continue
     }
@@ -389,7 +466,12 @@ function partitionUniqueProducts(
     }
   }
 
-  return { completeProducts, incompleteProducts }
+  return { completeProducts, incompleteProducts } satisfies ProductPartition
+}
+
+interface ProductPartition {
+  completeProducts: OpenFoodFactsProxyProduct[]
+  incompleteProducts: OpenFoodFactsProxyProduct[]
 }
 
 function restaurantProductMatches(product: OpenFoodFactsProxyProduct, queryTokens: string[]): boolean {
@@ -397,6 +479,7 @@ function restaurantProductMatches(product: OpenFoodFactsProxyProduct, queryToken
     [product.product_name, product.brands].filter((value): value is string => value != null).join(' '),
     { removeApostrophes: true },
   )
+
   if (text.length === 0) {
     return false
   }
@@ -405,19 +488,22 @@ function restaurantProductMatches(product: OpenFoodFactsProxyProduct, queryToken
     return false
   }
 
-  const chainTokens = queryTokens.filter((token) => RESTAURANT_CHAIN_TOKEN_ALIASES[token] != null)
+  const chainTokens = queryTokens.filter((token) => RESTAURANT_CHAIN_TOKEN_ALIASES.has(token))
+
   const hasChainMatch = chainTokens.length === 0
-    || chainTokens.some((token) => RESTAURANT_CHAIN_TOKEN_ALIASES[token].some((alias) => text.includes(alias)))
+    || chainTokens.some((token) => RESTAURANT_CHAIN_TOKEN_ALIASES.get(token)?.some((alias) => text.includes(alias)))
+
   if (hasChainMatch === false) {
     return false
   }
 
-  const menuTokens = queryTokens.filter((token) => RESTAURANT_MENU_TOKEN_ALIASES[token] != null)
+  const menuTokens = queryTokens.filter((token) => RESTAURANT_MENU_TOKEN_ALIASES.has(token))
+
   return menuTokens.length === 0
-    || menuTokens.some((token) => RESTAURANT_MENU_TOKEN_ALIASES[token].some((alias) => text.includes(alias)))
+    || menuTokens.some((token) => RESTAURANT_MENU_TOKEN_ALIASES.get(token)?.some((alias) => text.includes(alias)))
 }
 
-const RESTAURANT_CHAIN_TOKEN_ALIASES: Record<string, string[]> = {
+const RESTAURANT_CHAIN_TOKEN_ALIASES = new Map(Object.entries({
   arbys: ['arbys'],
   canes: ['raising canes', 'raising cane'],
   checkers: ['checkers'],
@@ -440,9 +526,9 @@ const RESTAURANT_CHAIN_TOKEN_ALIASES: Record<string, string[]> = {
   wendys: ['wendys', 'wendy'],
   whataburger: ['whataburger'],
   wingstop: ['wingstop'],
-}
+}))
 
-const RESTAURANT_MENU_TOKEN_ALIASES: Record<string, string[]> = {
+const RESTAURANT_MENU_TOKEN_ALIASES = new Map(Object.entries({
   alfredo: ['alfredo'],
   baconator: ['baconator'],
   bagel: ['bagel'],
@@ -477,12 +563,13 @@ const RESTAURANT_MENU_TOKEN_ALIASES: Record<string, string[]> = {
   wings: ['wing'],
   wing: ['wing'],
   wrap: ['wrap'],
-}
+}))
 
 const RESTAURANT_SIDE_TOKENS = ['sauce', 'dressing', 'dip']
 
 function hasCompleteMainNutrition(product: OpenFoodFactsProxyProduct): boolean {
   const nutriments = product.nutriments
+
   if (nutriments == null) {
     return false
   }
@@ -500,8 +587,8 @@ function hasCompleteMainNutrition(product: OpenFoodFactsProxyProduct): boolean {
   )
 }
 
-function hasFiniteNumbers(...values: unknown[]): boolean {
-  return values.every((value) => typeof value === 'number' && Number.isFinite(value))
+function hasFiniteNumbers(...values: Array<number | undefined>): boolean {
+  return values.every((value) => value != null && Number.isFinite(value))
 }
 
 function relevantProducts(products: OpenFoodFactsProxyProduct[], queryTokens: string[]): OpenFoodFactsProxyProduct[] {
@@ -519,6 +606,7 @@ function nameTokenMatches(products: OpenFoodFactsProxyProduct[], queryTokens: st
 function productDeduplicationKeys(product: OpenFoodFactsProxyProduct): string[] {
   const keys: string[] = []
   const identifier = product.code ?? product.externalProductID
+
   if (identifier != null) {
     keys.push(`id:${identifier.toLowerCase()}`)
   }
@@ -540,6 +628,7 @@ function normalizedKeyPart(value: string | undefined): string {
 
 function nutritionKeyPart(product: OpenFoodFactsProxyProduct): string {
   const nutriments = product.nutriments
+
   if (nutriments == null) {
     return ''
   }
@@ -549,11 +638,7 @@ function nutritionKeyPart(product: OpenFoodFactsProxyProduct): string {
     nutriments.proteins_serving ?? nutriments.proteins_100g,
     nutriments.fat_serving ?? nutriments.fat_100g,
     nutriments.carbohydrates_serving ?? nutriments.carbohydrates_100g,
-  ].map((value) => typeof value === 'number' && Number.isFinite(value) ? value.toFixed(3) : '').join(':')
-}
-
-function isOpenFoodFactsRawProduct(value: unknown): value is OpenFoodFactsRawProduct {
-  return value != null && typeof value === 'object'
+  ].map((value) => value != null && Number.isFinite(value) ? value.toFixed(3) : '').join(':')
 }
 
 function joinText(value: string | string[] | undefined): string | undefined {
@@ -562,6 +647,7 @@ function joinText(value: string | string[] | undefined): string | undefined {
 
 function makeExternalProductID(product: OpenFoodFactsRawProduct): string | undefined {
   const identifier = barcodeAliases(product.code)[0] ?? trimmedText(product._id)
+
   return identifier == null ? undefined : `openfoodfacts:${identifier}`
 }
 
@@ -571,11 +657,13 @@ function trimmedText(value: string | undefined): string | undefined {
   }
 
   const trimmedValue = value.trim()
+
   return trimmedValue.length > 0 ? trimmedValue : undefined
 }
 
 function barcodeAliases(value: string | undefined): string[] {
   const barcode = trimmedText(value)
+
   if (barcode == null) {
     return []
   }
@@ -595,16 +683,19 @@ function barcodeAliases(value: string | undefined): string[] {
 
 function retryAfterMs(response: Response): number | undefined {
   const headerValue = response.headers.get('Retry-After')
+
   if (headerValue == null) {
     return undefined
   }
 
   const seconds = Number.parseFloat(headerValue)
+
   if (Number.isFinite(seconds) && seconds >= 0) {
     return Math.round(seconds * 1000)
   }
 
   const timestamp = Date.parse(headerValue)
+
   if (Number.isNaN(timestamp)) {
     return undefined
   }

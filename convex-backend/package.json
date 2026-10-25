@@ -8,14 +8,19 @@
     "dev": "convex dev",
     "codegen": "convex codegen",
     "test": "bun test",
+    "test:integration": "vitest run --config vitest.qa.config.ts",
     "check": "tsc --noEmit && bun test",
     "smoke:sharing": "bun --env-file=.env.local scripts/sharingSmoke.ts"
   },
   "dependencies": {
-    "convex": "^1.37.0"
+    "convex": "^1.37.0",
+    "zod": "4.1.12"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
     "@types/bun": "^1.3.12",
-    "typescript": "^5.9.3"
+    "convex-test": "0.0.54",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.4"
   }
 }

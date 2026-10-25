@@ -11,6 +11,7 @@ describe("auth crypto", () => {
   it("issues Convex JWTs with expected claims", async () => {
     const { privateKeyPkcs8, publicKeySpki } = await generateRsaKeyPair();
     const now = Math.floor(Date.now() / 1000);
+
     const token = await issueConvexToken("profile_key_123", now, {
       issuer: "https://macros-auth.workers.dev",
       audience: "macros-convex-dev",
@@ -48,13 +49,16 @@ async function generateRsaKeyPair() {
     true,
     ["sign", "verify"],
   );
+
   const privateKeyPkcs8 = pem("PRIVATE KEY", await crypto.subtle.exportKey("pkcs8", keyPair.privateKey));
   const publicKeySpki = pem("PUBLIC KEY", await crypto.subtle.exportKey("spki", keyPair.publicKey));
+
   return { privateKeyPkcs8, publicKeySpki };
 }
 
 function pem(label: string, key: ArrayBuffer): string {
   const base64 = Buffer.from(key).toString("base64");
   const lines = base64.match(/.{1,64}/g) ?? [];
+
   return `-----BEGIN ${label}-----\n${lines.join("\n")}\n-----END ${label}-----`;
 }
