@@ -11,30 +11,32 @@ struct InsightsScreen: View {
         PaidFeatureGate(.nutritionInsights) {
             InsightsUnlockedContent(today: dayContext.today)
         } locked: {
-            VStack(spacing: 0) {
-                InsightsWeightCard(range: .sevenDays, today: dayContext.today)
-                HStack(spacing: 4) {
-                    ForEach(InsightsRange.allCases) { range in
-                        Button {
-                        } label: {
-                            Label(range.title, systemImage: range == .sevenDays ? "checkmark" : "lock.fill")
-                                .frame(maxWidth: .infinity)
+            ScrollView {
+                VStack(spacing: 0) {
+                    InsightsWeightCard(range: .sevenDays, today: dayContext.today)
+                    HStack(spacing: 4) {
+                        ForEach(InsightsRange.allCases) { range in
+                            Button {
+                            } label: {
+                                Label(range.title, systemImage: range == .sevenDays ? "checkmark" : "lock.fill")
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .padding(.vertical, 8)
+                            .background(
+                                range == .sevenDays ? PlatformColors.cardBackground : Color.clear,
+                                in: RoundedRectangle(cornerRadius: 8)
+                            )
+                            .disabled(range != .sevenDays)
+                            .accessibilityLabel("\(range.title), \(range == .sevenDays ? "selected" : "requires Pro")")
                         }
-                        .padding(.vertical, 8)
-                        .background(
-                            range == .sevenDays ? PlatformColors.cardBackground : Color.clear,
-                            in: RoundedRectangle(cornerRadius: 8)
-                        )
-                        .disabled(range != .sevenDays)
-                        .accessibilityLabel("\(range.title), \(range == .sevenDays ? "selected" : "requires Pro")")
                     }
+                    .buttonStyle(.plain)
+                    .padding(4)
+                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    InsightsRangeQueryContent(range: .sevenDays, today: dayContext.today, isPresentingPro: $isPresentingPro)
                 }
-                .buttonStyle(.plain)
-                .padding(4)
-                .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
-                .padding(.horizontal, 20)
-                .padding(.vertical, 12)
-                InsightsRangeQueryContent(range: .sevenDays, today: dayContext.today, isPresentingPro: $isPresentingPro)
             }
         }
         .background(PlatformColors.groupedBackground)
@@ -53,14 +55,16 @@ private struct InsightsUnlockedContent: View {
     @State private var selectedRange = InsightsRange.thirtyDays
 
     var body: some View {
-        VStack(spacing: 0) {
-            rangePicker
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
-                .padding(.bottom, 8)
+        ScrollView {
+            VStack(spacing: 0) {
+                rangePicker
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
 
-            InsightsWeightCard(range: selectedRange, today: today)
-            InsightsRangeQueryContent(range: selectedRange, today: today)
+                InsightsWeightCard(range: selectedRange, today: today)
+                InsightsRangeQueryContent(range: selectedRange, today: today)
+            }
         }
     }
 
@@ -112,59 +116,55 @@ private struct InsightsRangeQueryContent: View {
         let currentPoints = currentPoints
         let previousPoints = previousPoints
 
-        ScrollView {
-            VStack(spacing: 16) {
-                InsightsSummaryTiles(
-                    points: currentPoints,
-                    previousPoints: previousPoints
-                )
+        VStack(spacing: 16) {
+            InsightsSummaryTiles(
+                points: currentPoints,
+                previousPoints: previousPoints
+            )
 
-                ZStack(alignment: .top) {
-                    VStack(spacing: 16) {
-                        InsightsCaloriesCard(
-                            points: currentPoints,
-                            previousPoints: previousPoints,
-                            goals: currentGoals
-                        )
+            ZStack(alignment: .top) {
+                VStack(spacing: 16) {
+                    InsightsCaloriesCard(
+                        points: currentPoints,
+                        previousPoints: previousPoints,
+                        goals: currentGoals
+                    )
 
-                        InsightsMacrosCard(
-                            points: currentPoints,
-                            previousPoints: previousPoints,
-                            goals: currentGoals
-                        )
+                    InsightsMacrosCard(
+                        points: currentPoints,
+                        previousPoints: previousPoints,
+                        goals: currentGoals
+                    )
 
-                        InsightsNutrientsCard(
-                            points: currentPoints,
-                            previousPoints: previousPoints
-                        )
+                    InsightsNutrientsCard(
+                        points: currentPoints,
+                        previousPoints: previousPoints
+                    )
+                }
+                .blur(radius: isPresentingPro == nil ? 0 : 6)
+                .allowsHitTesting(isPresentingPro == nil)
+                .accessibilityHidden(isPresentingPro != nil)
+
+                if let isPresentingPro {
+                    VStack(spacing: 12) {
+                        Text("Unlock Insights")
+                            .font(.title2.bold())
+                        Text("Explore your calorie, macro, and nutrient trends.")
+                            .multilineTextAlignment(.center)
+                        Text("Included with \(AppBrand.displayName) Pro")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
+                            isPresentingPro.wrappedValue = true
                     }
-                    .blur(radius: isPresentingPro == nil ? 0 : 6)
-                    .allowsHitTesting(isPresentingPro == nil)
-                    .accessibilityHidden(isPresentingPro != nil)
-
-                    if let isPresentingPro {
-                        VStack(spacing: 12) {
-                            Text("Unlock Insights")
-                                .font(.title2.bold())
-                            Text("Explore your calorie, macro, and nutrient trends.")
-                                .multilineTextAlignment(.center)
-                            Text("Included with \(AppBrand.displayName) Pro")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                            AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
-                                isPresentingPro.wrappedValue = true
-                            }
-                        }
-                        .padding(24)
-                        .background(PlatformColors.groupedBackground, in: RoundedRectangle(cornerRadius: 24))
-                        .padding(.top, 40)
-                    }
+                    .padding(24)
+                    .background(PlatformColors.groupedBackground, in: RoundedRectangle(cornerRadius: 24))
+                    .padding(.top, 40)
                 }
             }
-            .padding(20)
-            .padding(.bottom, 32)
         }
-        .scrollBounceBehavior(.basedOnSize)
+        .padding(20)
+        .padding(.bottom, 32)
     }
 }
 

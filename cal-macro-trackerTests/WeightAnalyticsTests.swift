@@ -51,6 +51,42 @@ final class WeightAnalyticsTests: XCTestCase {
         XCTAssertNil(WeightAnalytics.weeklyRate(from: [entries[0]], calendar: calendar))
     }
 
+    func testSevenDayChangeRequiresMatchingCalendarDay() {
+        let latestDate = date(2026, 10, 8)
+        let points = [
+            entry(day: date(2026, 10, 1), recordedAt: date(2026, 10, 1), kg: 70),
+            entry(day: date(2026, 10, 8), recordedAt: date(2026, 10, 8), kg: 69)
+        ]
+
+        XCTAssertEqual(
+            WeightAnalytics.changeFromSevenDaysAgo(in: points, endingOn: latestDate, calendar: calendar),
+            -1
+        )
+    }
+
+    func testSevenDayChangeDoesNotUseAnArbitrarilyOldEntry() {
+        let latestDate = date(2026, 10, 30)
+        let points = [
+            entry(day: date(2026, 10, 1), recordedAt: date(2026, 10, 1), kg: 70),
+            entry(day: latestDate, recordedAt: latestDate, kg: 69)
+        ]
+
+        XCTAssertNil(WeightAnalytics.changeFromSevenDaysAgo(in: points, endingOn: latestDate, calendar: calendar))
+    }
+
+    func testMovingAverageUsesSlidingWindowAcrossLongHistory() {
+        let points = (0..<30).map { offset in
+            let day = date(2026, 10, 1).addingTimeInterval(Double(offset) * 86_400)
+            return entry(day: day, recordedAt: day, kg: Double(offset + 1))
+        }
+
+        let averages = WeightAnalytics.movingAverages(from: points, calendar: calendar)
+
+        XCTAssertEqual(averages.count, 30)
+        XCTAssertEqual(averages[6].averageKg, 4)
+        XCTAssertEqual(averages[29].averageKg, 27)
+    }
+
     private var calendar: Calendar {
         var value = Calendar(identifier: .gregorian)
         value.timeZone = TimeZone(secondsFromGMT: 0)!

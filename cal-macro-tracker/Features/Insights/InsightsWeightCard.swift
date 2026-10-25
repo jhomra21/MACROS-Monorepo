@@ -42,34 +42,34 @@ struct InsightsWeightCard: View {
                     Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                } else if let latestInRange, let change = weeklyChange(endingAt: latestInRange) {
-                    Text("\(change >= 0 ? "+" : "")\(displayWeight(change), specifier: "%.1f") \(unitLabel) in 7 days")
+                } else if let latestInRange {
+                    if let comparison = WeightAnalytics.comparisonFromSevenDaysAgo(
+                        in: allPoints,
+                        endingOn: latestInRange.day
+                    ) {
+                        let label =
+                            comparison.matchedTargetDay
+                            ? "in 7 days" : "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
+                        Text(
+                            "\(comparison.changeKg >= 0 ? "+" : "")\(displayWeight(comparison.changeKg), specifier: "%.1f") \(unitLabel) \(label)"
+                        )
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    } else {
+                        Text("No weight 7 days ago")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 if points.count > 1 {
                     ZStack {
-                        Chart {
-                            ForEach(points, id: \.recordedAt) { point in
-                                PointMark(
-                                    x: .value("Date", point.day),
-                                    y: .value("Weight", displayWeight(point.weightKg))
-                                )
-                                .foregroundStyle(.secondary)
-                            }
-                            ForEach(WeightAnalytics.movingAverages(from: points)) { point in
-                                LineMark(
-                                    x: .value("Date", point.day),
-                                    y: .value("7-day average", displayWeight(point.averageKg))
-                                )
-                                .foregroundStyle(Color.accentColor)
-                                .interpolationMethod(.catmullRom)
-                            }
+                        PaidFeatureGate(.weightTrends) {
+                            trendChart
+                        } locked: {
+                            trendChart
+                                .blur(radius: 6)
+                                .accessibilityHidden(true)
                         }
-                        .frame(height: 150)
-                        .blur(radius: entitlements.canUse(.weightTrends) ? 0 : 6)
-                        .allowsHitTesting(entitlements.canUse(.weightTrends))
-                        .accessibilityLabel("Weight trend chart")
                         if !entitlements.canUse(.weightTrends) {
                             Button {
                                 isPresentingPro = true
@@ -104,10 +104,25 @@ struct InsightsWeightCard: View {
         isMetric ? kilograms : GoalCalculator.pounds(fromKg: kilograms)
     }
 
-    private func weeklyChange(endingAt latest: WeightAnalyticsPoint) -> Double? {
-        guard let targetDate = Calendar.current.date(byAdding: .day, value: -7, to: latest.day),
-            let prior = allPoints.filter({ $0.day <= targetDate }).max(by: { $0.day < $1.day })
-        else { return nil }
-        return latest.weightKg - prior.weightKg
+    private var trendChart: some View {
+        Chart {
+            ForEach(points, id: \.recordedAt) { point in
+                PointMark(
+                    x: .value("Date", point.day),
+                    y: .value("Weight", displayWeight(point.weightKg))
+                )
+                .foregroundStyle(.secondary)
+            }
+            ForEach(WeightAnalytics.movingAverages(from: points)) { point in
+                LineMark(
+                    x: .value("Date", point.day),
+                    y: .value("7-day average", displayWeight(point.averageKg))
+                )
+                .foregroundStyle(Color.accentColor)
+                .interpolationMethod(.catmullRom)
+            }
+        }
+        .frame(height: 150)
+        .accessibilityLabel("Weight trend chart")
     }
 }
