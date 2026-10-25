@@ -1,23 +1,37 @@
 import Foundation
+import OSLog
 import SwiftData
 
 @MainActor
 enum AppBootstrap {
+    private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "AppBootstrap")
+
     struct Plan: Sendable {
         let shouldNormalizeGoals: Bool
         let shouldRepairReusableFoodSearchIndexes: Bool
     }
 
-    static func bootstrapIfNeeded(in container: ModelContainer) async throws {
+    static func bootstrapIfNeeded(in container: ModelContainer, seedManifestURL: URL? = nil) async throws {
         let planningContext = ModelContext(container)
         let plan = try makePlan(modelContext: planningContext)
-        let manifest = try await CommonFoodSeedLoader.commonFoodSeedManifest()
         let writeContext = ModelContext(container)
 
-        if UserDefaults.standard.string(forKey: AppStorageKeys.commonFoodSeedVersion) != manifest.version {
-            let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
-            try CommonFoodSeedLoader.reconcile(modelContext: writeContext, records: commonFoodRecords)
-            UserDefaults.standard.set(manifest.version, forKey: AppStorageKeys.commonFoodSeedVersion)
+        do {
+            let manifest: CommonFoodSeedManifest
+            if let seedManifestURL {
+                manifest = try await CommonFoodSeedLoader.commonFoodSeedManifest(from: seedManifestURL)
+            } else {
+                manifest = try await CommonFoodSeedLoader.commonFoodSeedManifest()
+            }
+
+            if UserDefaults.standard.string(forKey: AppStorageKeys.commonFoodSeedVersion) != manifest.version {
+                let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
+                try CommonFoodSeedLoader.reconcile(modelContext: writeContext, records: commonFoodRecords)
+                UserDefaults.standard.set(manifest.version, forKey: AppStorageKeys.commonFoodSeedVersion)
+            }
+        } catch {
+            UserDefaults.standard.removeObject(forKey: AppStorageKeys.commonFoodSeedVersion)
+            logger.error("Common food seed resources unavailable: \(error.localizedDescription, privacy: .public)")
         }
 
         if plan.shouldNormalizeGoals {

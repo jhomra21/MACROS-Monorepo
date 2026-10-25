@@ -41,6 +41,32 @@ final class LocalConfidenceTests: XCTestCase {
         XCTAssertFalse(NutritionLabelParser.reviewRequiredNutrientsMessage(result.missingRequiredNutrients).isEmpty)
     }
 
+    func testCorruptCommonFoodManifestDoesNotBlockContainerBootstrap() async throws {
+        let manifestURL = try XCTUnwrap(
+            Bundle(for: Self.self).url(
+                forResource: "CorruptCommonFoodManifest",
+                withExtension: "json"
+            )
+        )
+        let previousVersion = UserDefaults.standard.string(forKey: AppStorageKeys.commonFoodSeedVersion)
+        UserDefaults.standard.removeObject(forKey: AppStorageKeys.commonFoodSeedVersion)
+        defer {
+            if let previousVersion {
+                UserDefaults.standard.set(previousVersion, forKey: AppStorageKeys.commonFoodSeedVersion)
+            } else {
+                UserDefaults.standard.removeObject(forKey: AppStorageKeys.commonFoodSeedVersion)
+            }
+        }
+
+        let container = try makeContainer(
+            ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        try await AppBootstrap.bootstrapIfNeeded(in: container, seedManifestURL: manifestURL)
+
+        XCTAssertEqual(try ModelContext(container).fetchCount(FetchDescriptor<DailyGoals>()), 1)
+        XCTAssertNil(UserDefaults.standard.string(forKey: AppStorageKeys.commonFoodSeedVersion))
+    }
+
     func testBarcodeImageThroughVision() async throws {
         // Fixed EAN-13 fixture, 4006381333931, including its supplied check digit.
         let bits = "10100011010100111010111101111010001001011001101010100001010000101000010111010010000101100110101"

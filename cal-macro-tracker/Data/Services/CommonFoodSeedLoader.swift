@@ -29,6 +29,10 @@ struct CommonFoodSeedManifest: Decodable, Sendable {
 enum CommonFoodSeedLoader {
     static func commonFoodSeedManifest() async throws -> CommonFoodSeedManifest {
         let url = try commonFoodSeedManifestURL()
+        return try await commonFoodSeedManifest(from: url)
+    }
+
+    static func commonFoodSeedManifest(from url: URL) async throws -> CommonFoodSeedManifest {
         return try await Task.detached(priority: .userInitiated) {
             let data = try Data(contentsOf: url)
             return try JSONDecoder().decode(CommonFoodSeedManifest.self, from: data)
