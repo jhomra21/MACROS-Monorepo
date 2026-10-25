@@ -29,6 +29,7 @@ type SeedFood = z.infer<typeof seedFoodSchema>;
 const root = resolve(import.meta.dir, "../../..");
 
 const outputDirectory = resolve(root, "cal-macro-tracker/CommonFoods");
+const manifestPath = resolve(outputDirectory, "common_foods_manifest.json");
 
 const legacyFoods = z.array(z.object({
   name: z.string(),
@@ -50,9 +51,42 @@ const legacyFoods = z.array(z.object({
   await readFile(resolve(import.meta.dir, "../legacy-foods.json"), "utf8"),
 ));
 
-const release = await discoverLatestRelease();
+const buildArguments = process.argv.slice(2);
+const releaseArgumentIndex = buildArguments.indexOf("--release");
+const requestedRelease = releaseArgumentIndex < 0 ? undefined : buildArguments[releaseArgumentIndex + 1];
+
+if (releaseArgumentIndex >= 0 && (!requestedRelease || buildArguments.indexOf("--release", releaseArgumentIndex + 1) >= 0)) {
+  throw new Error("Usage: bun run build -- --release <recorded release name>");
+}
+
+const existingManifest = await Bun.file(manifestPath).exists()
+  ? JSON.parse(await readFile(manifestPath, "utf8")) as {
+      source: string;
+      sourceRelease: string;
+      generatedAt: string;
+      sourceArchiveSha256?: string;
+    }
+  : undefined;
+
+const release = requestedRelease
+  ? (() => {
+      if (existingManifest?.sourceRelease !== requestedRelease || !existingManifest.sourceArchiveSha256) {
+        throw new Error(`Release "${requestedRelease}" is not recorded in ${manifestPath}.`);
+      }
+      return {
+        url: existingManifest.source,
+        release: existingManifest.sourceRelease,
+        date: existingManifest.generatedAt,
+      };
+    })()
+  : await discoverLatestRelease();
 
 const archivePath = await downloadArchive(release);
+const sourceArchiveSha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
+
+if (requestedRelease && existingManifest?.sourceArchiveSha256 !== sourceArchiveSha256) {
+  throw new Error(`Cached archive for ${requestedRelease} does not match its recorded SHA-256.`);
+}
 
 const rawFoods = await loadFoods(archivePath);
 
@@ -116,6 +150,7 @@ const manifest = {
   version: `fndds-${release.date}-${createHash("sha256").update(json).digest("hex").slice(0, 12)}`,
   source: release.url,
   sourceRelease: release.release,
+  sourceArchiveSha256,
   count: foods.length,
   generatedAt: release.date,
 };
@@ -124,7 +159,7 @@ await mkdir(outputDirectory, { recursive: true });
 
 await writeFile(resolve(outputDirectory, "common_foods.json"), json);
 
-await writeFile(resolve(outputDirectory, "common_foods_manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 const fallbackPortionCount = selectedFoods.filter(({ usedFallbackPortion }) => usedFallbackPortion).length;
 
