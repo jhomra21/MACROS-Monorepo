@@ -31,6 +31,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Expanded the website with privacy and terms pages, launch pricing and feature details, FAQ, and App Store placeholder; drafted App Store listing, privacy labels, and screenshot plans.
 
+## 2026-10-25 MACROS Pro (WS2)
+
+- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates.
+- Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
+- Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
+
 ## 2026-10-25 Services Hardening
 
 - Added Cloudflare Worker per-IP request limits, a strict SQLite Durable Object-backed shared USDA budget, non-cacheable degraded empty results, configurable food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas with profile-deletion cleanup, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public success response contracts remain unchanged.

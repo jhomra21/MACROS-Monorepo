@@ -50,6 +50,18 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`, `
 
 ## Milestones and Tasks
 
+### WS2 failure inventory (2026-10-25, before implementation)
+
+- Catalog network failure must leave all plans unavailable and allow a successful retry.
+- Purchase network failure, cancellation, and Ask to Buy pending must never grant Pro.
+- Verified yearly trial must grant yearly Pro with an expiration; expiry must remove it.
+- Refunded lifetime must revoke Pro; legacy lifetime must remain recognized.
+- Lifetime must outrank a subscription regardless of enumeration order.
+- Empty restore must report no purchases; failed restore must preserve the current entitlement.
+- Intro eligibility must be read from StoreKit, and become false after prior subscription use.
+- All six features must follow Pro; revocation must clear source and expiration.
+- Unverified, revoked, and unrelated transactions must not grant access.
+
 ### Milestone 1 — Failure list and tests first
 
 - Enumerate failure modes before touching code: products fail to load then retry; purchase network failure; user cancels; purchase pending (Ask to Buy); yearly trial purchase grants Pro with expiration; subscription expiry removes Pro (use `SKTestSession.timeRate` or `expireSubscription`); refund of lifetime revokes; legacy `fullunlock001` grants `legacyFullUnlock`; lifetime beats an expiring subscription when both exist; restore with no purchases reports status; intro-offer eligibility false after a prior subscription.
@@ -75,5 +87,7 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`, `
 - Do not gate anything new that was free before except custom ring colors (already gated).
 
 ## Open Questions / Blockers
+
+- 2026-10-25 WS2 implementation is in place. Build/format/catalog checks pass and native UI QA confirms real summary values and debug grant/revoke gates. Payment validation is **not complete**: the dedicated iOS 26.4 simulator rejects `SKTestSession` catalog activation (`SKInternalErrorDomain Code=3`; `storekitd`: not entitled for `OctaneSaveConfigurationRequest`). Xcode Run and both installed toolchains were attempted. Tests fail at catalog setup rather than silently passing purchase assertions. See `build/ws2-qa-2026-10-25/QA.md` for exact attempts and pending paths.
 
 - Real sandbox testing on a device needs WS9 products in App Store Connect; the simulator path works with the local configuration file.
