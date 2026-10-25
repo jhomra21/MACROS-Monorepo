@@ -23,7 +23,7 @@ Branch `launch/ws3-goal-calculator`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`
   - `tdee(bmr:activity:)` multipliers 1.2, 1.375, 1.55, 1.725, 1.9.
   - `targetCalories(tdee:offset:sex:)` returns the value and `isBelowSafeMinimum` when under 1,200 (female/unspecified) or 1,500 (male); clamp to the minimum.
   - `macroGrams(calories:preset:)` using 4/4/9 kcal per gram; presets as protein/carb/fat percentages: balanced 30/40/30, highProtein 40/30/30, lowCarb 35/20/45. Round grams to the nearest 5; recompute calories from the rounded grams so the displayed numbers add up; return `DailyGoalsDraft`.
-  - Unit helpers: `kg(fromPounds:)`, `cm(fromFeet:inches:)` and inverses, rounded for display.
+  - Unit helpers: `kg(fromPounds:)`, `cm(fromFeet:inches:)` and inverses use exact constants with no rounding; `BodyProfileDraft` rounds only when it builds display text.
 - Failure modes to list and test first (in `cal-macro-trackerTests/GoalCalculatorTests.swift`): zero or negative height/weight/age; age over 120; NaN/infinite input; below-minimum clamp for each sex; preset percentages sum to 100; grams rounding keeps calories within 2% of target; imperial round-trip stability; `unspecified` sex midpoint.
 
 ### Onboarding flow
@@ -56,3 +56,7 @@ Branch `launch/ws3-goal-calculator`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`
 - Existing users (goal setup already completed) never see the new onboarding; the Settings entry is their path.
 - Age unknown: allow blank age with a default of 30 and a note; do not block.
 - Keyboard covering the pinned action bar: reuse the fix already in `BottomPinnedActionBar`.
+
+## Status
+
+- WS3 review fixes: seven scoped commits on `launch/ws3-goal-calculator` (macro calorie floor, localized body profile parsing, full-precision unit toggles, recalculation target push, visible proposed macro values, imperial height focus fields, independent BMR references). Validation complete: `make quality-format-check`, `make quality-build`, `git diff --check`, 10 `GoalCalculatorTests`, 8 `BodyProfileDraftTests`, and decimal-comma, macro-review, safe-floor, settings-back, and relaunch E2E checks passed. Screenshots are in `build/ws3-qa-2026-10-25/`.

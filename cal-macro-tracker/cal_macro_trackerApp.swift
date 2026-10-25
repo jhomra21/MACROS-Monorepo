@@ -22,7 +22,7 @@ struct cal_macro_trackerApp: App {
 
     private let goalSetupDisplayMode: GoalSetupDisplayMode = .normal
 
-    @AppStorage("hasCompletedGoalSetup") private var hasCompletedGoalSetup = false
+    @AppStorage(AppStorageKeys.hasCompletedGoalSetup) private var hasCompletedGoalSetup = false
     @AppStorage(AppStorageKeys.isSharingDeviceEnabled) private var isSharingDeviceEnabled = false
     @State private var entitlements: AppEntitlements
     @State private var purchaseStore: PurchaseStore

@@ -25,6 +25,30 @@ final class GoalCalculatorTests: XCTestCase {
         XCTAssertEqual(unspecified, (female + male) / 2, accuracy: 0.0001)
     }
 
+    func testBmrMatchesHandCalculatedMifflinStJeorReferences() throws {
+        // Mifflin-St Jeor: BMR = 10 * kg + 6.25 * cm - 5 * years + s
+        // s = +5 male, -161 female, -78 unspecified (midpoint of +5 and -161).
+
+        // Female, 60 kg, 165 cm, 30 y: 600 + 1031.25 - 150 - 161 = 1320.25
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .female, ageYears: 30, heightCm: 165, weightKg: 60), 1_320.25, accuracy: 0.5)
+        // Female, 72 kg, 170 cm, 45 y: 720 + 1062.5 - 225 - 161 = 1396.5
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .female, ageYears: 45, heightCm: 170, weightKg: 72), 1_396.5, accuracy: 0.5)
+        // Male, 80 kg, 180 cm, 35 y: 800 + 1125 - 175 + 5 = 1755
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .male, ageYears: 35, heightCm: 180, weightKg: 80), 1_755, accuracy: 0.5)
+        // Male, 65 kg, 175 cm, 50 y: 650 + 1093.75 - 250 + 5 = 1498.75
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .male, ageYears: 50, heightCm: 175, weightKg: 65), 1_498.75, accuracy: 0.5)
+        // Unspecified, 70 kg, 170 cm, 30 y: 700 + 1062.5 - 150 - 78 = 1534.5
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .unspecified, ageYears: 30, heightCm: 170, weightKg: 70), 1_534.5, accuracy: 0.5)
+        // Unspecified, 55 kg, 160 cm, 25 y: 550 + 1000 - 125 - 78 = 1347
+        XCTAssertEqual(
+            try GoalCalculator.bmr(sex: .unspecified, ageYears: 25, heightCm: 160, weightKg: 55), 1_347, accuracy: 0.5)
+    }
+
     func testClampsBelowSafeMinimumForEachSex() throws {
         let female = try GoalCalculator.targetCalories(tdee: 1_000, offset: -750, sex: .female)
         let male = try GoalCalculator.targetCalories(tdee: 1_000, offset: -750, sex: .male)
