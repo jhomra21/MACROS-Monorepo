@@ -29,14 +29,8 @@ struct InsightsWeightCard: View {
                 HStack {
                     Text("Weight").font(.headline)
                     Spacer()
-                    Text(
-                        Measurement(
-                            value: displayWeight(latest.weightKg),
-                            unit: isMetric ? UnitMass.kilograms : UnitMass.pounds
-                        )
-                        .formatted(.measurement(width: .narrow, usage: .asProvided).precision(.fractionLength(1)))
-                    )
-                    .font(.title3.bold().monospacedDigit())
+                    Text("\(displayWeight(latest.weightKg), specifier: "%.1f") \(unitLabel)")
+                        .font(.title3.bold().monospacedDigit())
                 }
                 if entitlements.canUse(.weightTrends), let rate = WeightAnalytics.weeklyRate(from: points) {
                     Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")

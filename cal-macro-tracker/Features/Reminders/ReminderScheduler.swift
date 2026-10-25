@@ -16,18 +16,13 @@ enum ReminderScheduler {
         hasPro: Bool
     ) -> [ReminderDefinition] {
         var scheduledTimes: Set<Int> = []
-        let paidReminders =
-            hasPro
-            ? pro.filter { reminder in
-                let minuteOfDay = reminder.hour * 60 + reminder.minute
-                return scheduledTimes.insert(minuteOfDay).inserted
-            }.prefix(3)
-            : []
-        let freeReminders = [free].compactMap { $0 }.filter { reminder in
+        let candidates = hasPro ? pro + [free].compactMap { $0 } : [free].compactMap { $0 }
+        return candidates.filter { reminder in
             let minuteOfDay = reminder.hour * 60 + reminder.minute
             return scheduledTimes.insert(minuteOfDay).inserted
         }
-        return Array(paidReminders) + freeReminders
+        .prefix(hasPro ? 3 : 1)
+        .map { $0 }
     }
 
     static func upcomingDays(

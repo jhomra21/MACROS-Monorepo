@@ -8,7 +8,7 @@ struct WeightScreen: View {
     @State private var isPresentingEntry = false
 
     private var unitSystem: GoalUnitSystem { BodyProfile.activeRecord(from: profiles)?.unitSystem ?? .metric }
-    private var unit: UnitMass { unitSystem == .metric ? .kilograms : .pounds }
+    private var unitLabel: String { unitSystem == .metric ? "kg" : "lb" }
 
     var body: some View {
         List {
@@ -27,13 +27,8 @@ struct WeightScreen: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Text(
-                                    Measurement(value: displayWeight(entry.weightKg), unit: unit).formatted(
-                                        .measurement(width: .narrow, usage: .asProvided)
-                                            .precision(.fractionLength(1))
-                                    )
-                                )
-                                .font(.headline.monospacedDigit())
+                                Text("\(displayWeight(entry.weightKg), specifier: "%.1f") \(unitLabel)")
+                                    .font(.headline.monospacedDigit())
                             }
                         }
                         .onDelete { offsets in delete(group.entries, offsets: offsets) }

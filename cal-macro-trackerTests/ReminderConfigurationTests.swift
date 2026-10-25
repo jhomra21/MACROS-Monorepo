@@ -27,8 +27,7 @@ final class ReminderConfigurationTests: XCTestCase {
         XCTAssertEqual(reminders, [
             reminder("Breakfast", hour: 8, minute: 0),
             reminder("Lunch", hour: 12, minute: 30),
-            reminder("Dinner", hour: 18, minute: 0),
-            reminder("Daily", hour: 20, minute: 0)
+            reminder("Dinner", hour: 18, minute: 0)
         ])
     }
 
