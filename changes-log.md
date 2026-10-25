@@ -9,6 +9,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
 - [`implementation-trackers/sharing-implementation-tracker.md`](implementation-trackers/sharing-implementation-tracker.md)
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
+- [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
