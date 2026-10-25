@@ -35,6 +35,7 @@ struct cal_macro_trackerApp: App {
     @State private var sharingAuthService: SharingAuthService
     @State private var sharingSyncService: SharingSyncService
     @State private var healthKitService = HealthKitService()
+    @State private var reminderRefreshCoordinator = ReminderRefreshCoordinator()
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
     @State private var pendingOpenRequest: AppOpenRequest?
@@ -103,16 +104,16 @@ struct cal_macro_trackerApp: App {
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
                 await purchaseStore.start()
-                await refreshReminders()
+                requestServiceRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
                 Task { await purchaseStore.refreshEntitlements() }
-                Task { await refreshReminders() }
+                requestServiceRefresh()
             }
             .onChange(of: proServiceEntitlements) { _, _ in
-                Task { await refreshReminders() }
+                requestServiceRefresh()
             }
             .onChange(of: isSharingDeviceEnabled) { _, _ in
                 sharingSyncService.startDashboardSubscription(for: dayContext.today)
@@ -137,7 +138,7 @@ struct cal_macro_trackerApp: App {
                     {
                         await healthKitService.writeNutrition(for: entry)
                     }
-                    await refreshReminders()
+                    requestServiceRefresh()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .logEntryDidDelete)) { notification in
@@ -145,14 +146,14 @@ struct cal_macro_trackerApp: App {
                     if let id = notification.object as? String, let uuid = UUID(uuidString: id) {
                         await healthKitService.deleteNutrition(for: uuid)
                     }
-                    await refreshReminders()
+                    requestServiceRefresh()
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .remindersDidChange)) { _ in
-                Task { await refreshReminders() }
+                requestServiceRefresh()
             }
             .onReceive(NotificationCenter.default.publisher(for: .healthSettingsDidChange)) { _ in
-                Task { await refreshReminders() }
+                requestServiceRefresh()
             }
             .onOpenURL { url in
                 pendingOpenRequest = nil
@@ -209,6 +210,10 @@ struct cal_macro_trackerApp: App {
         } else {
             healthKitService.stopWeightObservation()
         }
+    }
+
+    private func requestServiceRefresh() {
+        reminderRefreshCoordinator.request { await refreshReminders() }
     }
 
     #if os(iOS)
