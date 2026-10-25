@@ -20,6 +20,11 @@ enum ProPlan: String, CaseIterable, Identifiable {
     }
 }
 
+struct EntitlementSnapshot {
+    let resolution: EntitlementResolution
+    var subscriptionStatuses: [String: ProSubscriptionStatus] = [:]
+}
+
 @MainActor
 @Observable
 final class PurchaseStore {
@@ -31,9 +36,11 @@ final class PurchaseStore {
     }
 
     private let entitlements: AppEntitlements
+    private let entitlementSource: @MainActor () async -> EntitlementSnapshot
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
-    @ObservationIgnored private var entitlementRefreshID = 0
+    @ObservationIgnored private var refreshTask: Task<EntitlementResolution, Never>?
+    @ObservationIgnored private var needsAnotherRefresh = false
 
     private(set) var products: [ProPlan: Product] = [:]
     private(set) var isEligibleForIntroOffer = false
@@ -45,13 +52,24 @@ final class PurchaseStore {
 
     var hasPro: Bool { entitlements.hasPro }
 
-    init(entitlements: AppEntitlements) {
+    private var committedResolution: EntitlementResolution {
+        EntitlementResolution(
+            source: entitlements.proSource, expiration: entitlements.proExpirationDate,
+            hasActiveSubscription: entitlements.hasActiveSubscription)
+    }
+
+    init(
+        entitlements: AppEntitlements,
+        entitlementSource: @escaping @MainActor () async -> EntitlementSnapshot = PurchaseStore.readStoreKitEntitlements
+    ) {
         self.entitlements = entitlements
+        self.entitlementSource = entitlementSource
     }
 
     deinit {
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
+        refreshTask?.cancel()
     }
 
     func start() async {
@@ -72,7 +90,9 @@ final class PurchaseStore {
     }
 
     func stop() {
-        entitlementRefreshID += 1
+        refreshTask?.cancel()
+        refreshTask = nil
+        needsAnotherRefresh = false
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         transactionUpdatesTask = nil
@@ -117,9 +137,10 @@ final class PurchaseStore {
                     feedback = .error("Purchase could not be verified.")
                     return
                 }
-                await refreshEntitlements()
+                let resolution = await refreshEntitlements()
                 await transaction.finish()
-                feedback = hasPro ? .status("Purchase complete.") : .error("Purchase has not granted access. Please restore purchases.")
+                feedback =
+                    resolution.hasPro ? .status("Purchase complete.") : .error("Purchase has not granted access. Please restore purchases.")
             case .userCancelled:
                 break
             case .pending:
@@ -141,16 +162,43 @@ final class PurchaseStore {
         defer { isRestoring = false }
         do {
             try await AppStore.sync()
-            await refreshEntitlements()
-            feedback = .status(hasPro ? "Purchases restored." : "No Pro purchases were found for this Apple Account.")
+            let resolution = await refreshEntitlements()
+            feedback = .status(resolution.hasPro ? "Purchases restored." : "No Pro purchases were found for this Apple Account.")
         } catch {
             feedback = .error("Restore could not be completed.")
         }
     }
 
-    func refreshEntitlements() async {
-        entitlementRefreshID += 1
-        let refreshID = entitlementRefreshID
+    @discardableResult
+    func refreshEntitlements() async -> EntitlementResolution {
+        if let refreshTask {
+            needsAnotherRefresh = true
+            return await refreshTask.value
+        }
+        let task = Task { await drainEntitlementRefreshes() }
+        refreshTask = task
+        return await task.value
+    }
+
+    private func drainEntitlementRefreshes() async -> EntitlementResolution {
+        // Requests arriving during a read dirty the shared task rather than
+        // starting a competing scan. Every waiter receives the final commit.
+        repeat {
+            needsAnotherRefresh = false
+            let snapshot = await entitlementSource()
+            guard !Task.isCancelled else { return committedResolution }
+            let introEligibility = await products[.yearly]?.subscription?.isEligibleForIntroOffer ?? false
+            guard !Task.isCancelled else { return committedResolution }
+            if needsAnotherRefresh { continue }
+            subscriptionStatuses = snapshot.subscriptionStatuses
+            entitlements.update(snapshot.resolution)
+            isEligibleForIntroOffer = introEligibility
+            refreshTask = nil
+            return snapshot.resolution
+        } while true
+    }
+
+    private static func readStoreKitEntitlements() async -> EntitlementSnapshot {
         var currentTransactions: [(transaction: Transaction, isVerified: Bool)] = []
         for await result in Transaction.currentEntitlements {
             switch result {
@@ -193,10 +241,7 @@ final class PurchaseStore {
                 expirationDate: transaction.expirationDate, isUpgraded: transaction.isUpgraded,
                 renewalState: renewalStates[transaction.originalID])
         }
-        guard !Task.isCancelled, refreshID == entitlementRefreshID else { return }
-        subscriptionStatuses = statuses
-        entitlements.update(AppEntitlements.resolve(from: facts))
-        await refreshIntroEligibility()
+        return EntitlementSnapshot(resolution: AppEntitlements.resolve(from: facts), subscriptionStatuses: statuses)
     }
 
     #if DEBUG

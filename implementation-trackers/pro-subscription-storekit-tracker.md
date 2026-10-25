@@ -68,6 +68,13 @@ Review fix 1: `PurchaseStore` now observes both `Transaction.updates` and `Produ
 
 Additional Apple APIs checked: https://developer.apple.com/documentation/storekit/product/subscriptioninfo/status-swift.struct/all, https://developer.apple.com/documentation/storekit/product/subscriptioninfo/renewalstate, https://developer.apple.com/documentation/storekit/product/subscriptioninfo/renewalinfo/graceperiodexpirationdate, https://developer.apple.com/documentation/storekittest/sktestsession/forcerenewalofsubscription(productidentifier:), https://developer.apple.com/documentation/storekittest/sktestsession/approveasktobuytransaction(identifier:), and https://developer.apple.com/documentation/observation/withobservationtracking(_:onchange:).
 
+### Refresh-coalescing re-review fix (2026-10-25)
+
+- Replaced competing generation-guarded refreshes with one shared `Task<EntitlementResolution, Never>`. Requests during its source read or intro-eligibility read set a dirty flag; the task rereads until clean, then publishes one final snapshot and returns that immutable result to every waiter. Purchase/restore feedback uses the returned result, not a potentially stale shared `hasPro`.
+- Extracted a StoreKit snapshot source closure for listener-free testing. Before implementation, tests enumerated superseded early returns, overlapping scans, events during the dirty reread, completed-task reuse, and late cancelled publication. Three continuation-gated tests exercise those paths deterministically, without SKTestSession, sleeps, polling, or new production listeners.
+- `stop()` cancels/clears the shared task. A cancelled source returning late cannot publish or clear a newer task. Cancellation results derive from the actual committed observable entitlement, avoiding duplicate cached state. Normal concurrent refreshes perform no competing reads.
+- Validation: 18 `ProEntitlementTests` + 6 `InsightsAnalyticsTests` pass (24 total); format/build/catalog/diff checks pass. Catalog activation probe still fails setup, exit 65 (`SKInternalErrorDomain Code=3`, `WS2.StoreKitSetup Code=1`), so the full StoreKit suite and purchase-path E2E remain blocked. Evidence: `build/ws2-qa-2026-10-25/coalescing-*.log` / `.xcresult` and `QA.md`. Swift Task awaiting/cancellation semantics verified against https://developer.apple.com/documentation/swift/task.
+
 ### WS2 failure inventory (2026-10-25, before implementation)
 
 - Catalog network failure must leave all plans unavailable and allow a successful retry.
