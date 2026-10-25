@@ -159,7 +159,15 @@ struct BodyProfileFormScreen: View {
     private enum ProfileField: Hashable {
         case age
         case height
+        case heightFeet
+        case heightInches
         case weight
+    }
+
+    private var keyboardFields: [ProfileField] {
+        profile.unitSystem == .metric
+            ? [.age, .height, .weight]
+            : [.age, .heightFeet, .heightInches, .weight]
     }
 
     private var isValid: Bool {
@@ -243,7 +251,7 @@ struct BodyProfileFormScreen: View {
         .navigationTitle("About you")
         .inlineNavigationTitle()
         .scrollDismissesKeyboard(.interactively)
-        .keyboardNavigationToolbar(focusedField: $focusedField, fields: [.age, .height, .weight])
+        .keyboardNavigationToolbar(focusedField: $focusedField, fields: keyboardFields)
     }
 
     @ViewBuilder
@@ -271,12 +279,12 @@ struct BodyProfileFormScreen: View {
                 HStack {
                     Text("Height")
                     Spacer()
-                    AppNumericTextField("Feet", text: heightBinding, focusedField: $focusedField, field: .height)
+                    AppNumericTextField("Feet", text: heightBinding, focusedField: $focusedField, field: .heightFeet)
                         .frame(width: 58)
                         .accessibilityLabel("Height, feet")
                     Text("ft").foregroundStyle(.secondary)
                     AppNumericTextField(
-                        "Inches", text: heightInchesBinding, focusedField: $focusedField, field: .height
+                        "Inches", text: heightInchesBinding, focusedField: $focusedField, field: .heightInches
                     )
                     .frame(width: 58)
                     .accessibilityLabel("Height, inches")
