@@ -34,7 +34,7 @@ struct InsightsWeightCard: View {
                             value: displayWeight(latest.weightKg),
                             unit: isMetric ? UnitMass.kilograms : UnitMass.pounds
                         )
-                        .formatted(.measurement(width: .narrow, usage: .asProvided))
+                        .formatted(.measurement(width: .narrow, usage: .asProvided).precision(.fractionLength(1)))
                     )
                     .font(.title3.bold().monospacedDigit())
                 }

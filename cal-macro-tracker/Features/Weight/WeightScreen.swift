@@ -29,7 +29,9 @@ struct WeightScreen: View {
                                 Spacer()
                                 Text(
                                     Measurement(value: displayWeight(entry.weightKg), unit: unit).formatted(
-                                        .measurement(width: .narrow, usage: .asProvided))
+                                        .measurement(width: .narrow, usage: .asProvided)
+                                            .precision(.fractionLength(1))
+                                    )
                                 )
                                 .font(.headline.monospacedDigit())
                             }
