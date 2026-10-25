@@ -73,10 +73,10 @@ def main() -> None:
     if by_id["macros.pro.monthly"].get("introductoryOffer") is not None:
         fail("monthly must not have an introductory offer")
     lifetime = by_id["macros.pro.lifetime"]
-    if (lifetime.get("displayPrice") != "39.99"
+    if (lifetime.get("displayPrice") != "49.99"
             or lifetime.get("type") != "NonConsumable"
             or lifetime.get("familyShareable") is not True):
-        fail("lifetime must be a family-shareable $39.99 non-consumable")
+        fail("lifetime must be a family-shareable $49.99 non-consumable")
     if by_id["fullunlock001"].get("type") != "NonConsumable":
         fail("legacy unlock must remain a non-consumable")
 

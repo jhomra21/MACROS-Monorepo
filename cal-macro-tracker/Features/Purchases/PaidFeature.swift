@@ -6,7 +6,7 @@ enum PaidFeature: CaseIterable {
     case customMacroRingColors
     case nutritionInsights
     case weightTrends
-    case healthSync
+    case healthWeightImport
     case backup
     case multipleReminders
 
