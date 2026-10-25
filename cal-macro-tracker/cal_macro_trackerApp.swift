@@ -8,10 +8,16 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import UserNotifications
 #if os(iOS)
 import Combine
 import UIKit
 #endif
+
+private struct ProServiceEntitlements: Equatable {
+    let canImportHealthWeight: Bool
+    let canUseMultipleReminders: Bool
+}
 
 @main
 struct cal_macro_trackerApp: App {
@@ -28,6 +34,7 @@ struct cal_macro_trackerApp: App {
     @State private var purchaseStore: PurchaseStore
     @State private var sharingAuthService: SharingAuthService
     @State private var sharingSyncService: SharingSyncService
+    @State private var healthKitService = HealthKitService()
     @State private var launchState = AppLaunchState()
     @State private var dayContext = AppDayContext()
     @State private var pendingOpenRequest: AppOpenRequest?
@@ -88,6 +95,7 @@ struct cal_macro_trackerApp: App {
             .environment(purchaseStore)
             .environment(sharingAuthService)
             .environment(sharingSyncService)
+            .environment(healthKitService)
             .task {
                 #if os(iOS)
                 consumePendingQuickActionIfNeeded()
@@ -95,11 +103,16 @@ struct cal_macro_trackerApp: App {
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
                 await purchaseStore.start()
+                await refreshReminders()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
                 Task { await purchaseStore.refreshEntitlements() }
+                Task { await refreshReminders() }
+            }
+            .onChange(of: proServiceEntitlements) { _, _ in
+                Task { await refreshReminders() }
             }
             .onChange(of: isSharingDeviceEnabled) { _, _ in
                 sharingSyncService.startDashboardSubscription(for: dayContext.today)
@@ -112,6 +125,34 @@ struct cal_macro_trackerApp: App {
             }
             .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
                 refreshDayAndStartSharingDashboardSubscription()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .logEntryDidMutate)) { notification in
+                Task {
+                    if UserDefaults.standard.bool(forKey: AppStorageKeys.healthNutritionWriteEnabled),
+                        case let .ready(container) = launchState.phase,
+                        let id = notification.object as? String,
+                        let uuid = UUID(uuidString: id),
+                        let entries = try? container.mainContext.fetch(FetchDescriptor<LogEntry>()),
+                        let entry = entries.first(where: { $0.id == uuid })
+                    {
+                        await healthKitService.writeNutrition(for: entry)
+                    }
+                    await refreshReminders()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .logEntryDidDelete)) { notification in
+                Task {
+                    if let id = notification.object as? String, let uuid = UUID(uuidString: id) {
+                        await healthKitService.deleteNutrition(for: uuid)
+                    }
+                    await refreshReminders()
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .remindersDidChange)) { _ in
+                Task { await refreshReminders() }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .healthSettingsDidChange)) { _ in
+                Task { await refreshReminders() }
             }
             .onOpenURL { url in
                 pendingOpenRequest = nil
@@ -136,6 +177,13 @@ struct cal_macro_trackerApp: App {
         }
     }
 
+    private var proServiceEntitlements: ProServiceEntitlements {
+        ProServiceEntitlements(
+            canImportHealthWeight: entitlements.canUse(.healthWeightImport),
+            canUseMultipleReminders: entitlements.canUse(.multipleReminders)
+        )
+    }
+
     private func completeGoalSetup() {
         withAnimation(.easeOut(duration: 0.22)) {
             hasCompletedGoalSetup = true
@@ -148,6 +196,18 @@ struct cal_macro_trackerApp: App {
         sharingSyncService.startDashboardSubscription(for: dayContext.today)
         if case let .ready(container) = launchState.phase {
             sharingSyncService.syncAfterDailyTotalsChange(container: container)
+        }
+    }
+
+    private func refreshReminders() async {
+        guard case let .ready(container) = launchState.phase else { return }
+        await ReminderScheduler.refresh(container: container, hasPro: entitlements.canUse(.multipleReminders), calendar: .current)
+        if entitlements.canUse(.healthWeightImport),
+            UserDefaults.standard.bool(forKey: AppStorageKeys.healthWeightReadEnabled)
+        {
+            healthKitService.startWeightObservation(container: container)
+        } else {
+            healthKitService.stopWeightObservation()
         }
     }
 

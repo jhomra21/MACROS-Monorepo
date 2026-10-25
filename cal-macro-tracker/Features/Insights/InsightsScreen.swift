@@ -12,6 +12,7 @@ struct InsightsScreen: View {
             InsightsUnlockedContent(today: dayContext.today)
         } locked: {
             VStack(spacing: 0) {
+                InsightsWeightCard(range: .sevenDays, today: dayContext.today)
                 HStack(spacing: 4) {
                     ForEach(InsightsRange.allCases) { range in
                         Button {
@@ -58,6 +59,7 @@ private struct InsightsUnlockedContent: View {
                 .padding(.top, 12)
                 .padding(.bottom, 8)
 
+            InsightsWeightCard(range: selectedRange, today: today)
             InsightsRangeQueryContent(range: selectedRange, today: today)
         }
     }

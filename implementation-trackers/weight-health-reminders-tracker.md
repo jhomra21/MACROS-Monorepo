@@ -51,8 +51,29 @@ Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2
 4. Reminders scheduler, delegate routing, settings.
 5. Validation: format, build, targeted tests, `git diff --check`; E2E in a simulator with the Health app: log a food and confirm Dietary Energy appears in Health; add a weight in Health and confirm it appears in the app; schedule a reminder, verify pending requests, and tap it from the simulator notification; all screenshots and steps in `build/ws5-qa-<date>/QA.md`. Changes-log entry.
 
+### Failure modes (2026-10-25, before tests)
+
+Weight analytics:
+- Empty history returns no latest value or trend.
+- Out-of-order and duplicate-day entries resolve deterministically to the latest recorded sample.
+- Seven-day moving averages include available observations without inventing values for missing days.
+- Weekly rate compares endpoints using elapsed calendar days and handles missing endpoints or insufficient dates.
+- Non-finite and non-positive weights do not contaminate calculations.
+
+Reminder day selection:
+- Logged days are skipped in the app calendar/time zone.
+- Missing days are selected in chronological order through the requested horizon.
+- A day with any log is skipped even when multiple reminders are configured.
+- Day boundaries and DST changes use calendar addition rather than fixed 24-hour intervals.
+- A zero-length horizon produces no dates.
+
 ## Edge Cases
 
 - Health authorization is per type; partially granted sets must still work.
 - Backfill must not duplicate samples (sync identifier) and must be cancellable.
 - Reminder skip logic uses the app's `AppDayContext` calendar and time zone.
+
+## Status (2026-10-25)
+
+- Implementation and focused validation are in place. Formatting and app build pass; the original 32-test selection and an 8-test selection after review fixes pass.
+- Simulator QA verified onboarding, manual weight persistence, the free Insights weight card and locked Pro trend state, a food log, and the daily-reminder permission/setup UI. Health sample write/readback and delivered-notification interaction were not verified; see `build/ws5-qa-2026-10-25/QA.md`.

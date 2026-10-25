@@ -35,6 +35,14 @@ struct SettingsScreen: View {
             ProSettingsSection(paywallContext: $paywallContext)
 
             Section {
+                NavigationLink("Weight") { WeightScreen() }
+            }
+
+            HealthSettingsSection()
+
+            ReminderSettingsSection()
+
+            Section {
                 NavigationLink {
                     SharingScreen()
                 } label: {

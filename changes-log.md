@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 Weight, Apple Health, and Reminders (WS5)
+
+- Added an on-device weight log linked to `BodyProfile`, a free latest-weight Insights summary with Pro-gated trends and Apple Health import, free nutrition write support, and one free daily reminder with Pro named/smart reminder scheduling.
+- Added additive SwiftData registration, HealthKit and notification setup, notification-to-Add-Food routing, and focused failure-mode coverage for weight analytics and reminder day selection.
+- Validation: `make quality-format-check`, `make quality-build`, and targeted XCTest selections passed (32 tests before review fixes; the review-fix pass covered 8 tests). UI QA verified saving 75.4 kg, the Insights weight card and locked chart, a logged 100 kcal yogurt entry, and the notification permission flow. HealthKit sample visibility/readback and actual notification delivery remain unverified on the simulator; evidence and exact limits: `build/ws5-qa-2026-10-25/QA.md`.
+
 ## 2026-10-25 MACROS Pro (WS2)
 
 - Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.

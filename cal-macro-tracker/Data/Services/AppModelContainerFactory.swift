@@ -17,6 +17,7 @@ enum AppModelContainerFactory {
             MealComponent.self,
             LoggedMealComponentSnapshot.self,
             LogEntry.self,
+            WeightEntry.self,
             configurations: configuration
         )
         try AppBootstrap.bootstrapPreview(modelContext: container.mainContext)
