@@ -99,6 +99,7 @@ struct cal_macro_trackerApp: App {
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
+                Task { await purchaseStore.refreshEntitlements() }
             }
             .onChange(of: isSharingDeviceEnabled) { _, _ in
                 sharingSyncService.startDashboardSubscription(for: dayContext.today)

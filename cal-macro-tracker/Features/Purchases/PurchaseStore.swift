@@ -32,6 +32,7 @@ final class PurchaseStore {
 
     private let entitlements: AppEntitlements
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
+    @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
 
     private(set) var products: [ProPlan: Product] = [:]
     private(set) var isEligibleForIntroOffer = false
@@ -48,6 +49,7 @@ final class PurchaseStore {
 
     deinit {
         transactionUpdatesTask?.cancel()
+        subscriptionStatusUpdatesTask?.cancel()
     }
 
     func start() async {
@@ -58,7 +60,20 @@ final class PurchaseStore {
                 await self?.handle(transactionResult: result)
             }
         }
+        subscriptionStatusUpdatesTask = Task { [weak self] in
+            for await _ in Product.SubscriptionInfo.Status.updates {
+                guard !Task.isCancelled else { return }
+                await self?.refreshEntitlements()
+            }
+        }
         await refreshEntitlements()
+    }
+
+    func stop() {
+        transactionUpdatesTask?.cancel()
+        subscriptionStatusUpdatesTask?.cancel()
+        transactionUpdatesTask = nil
+        subscriptionStatusUpdatesTask = nil
     }
 
     func loadProducts() async {
@@ -146,6 +161,7 @@ final class PurchaseStore {
                 expiration = candidate.isSubscription ? transaction.expirationDate : nil
             }
         }
+        guard !Task.isCancelled else { return }
         entitlements.update(pro: source != nil, source: source, expiration: expiration)
         await refreshIntroEligibility()
     }
