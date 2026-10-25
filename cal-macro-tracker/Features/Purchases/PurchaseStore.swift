@@ -148,6 +148,7 @@ final class PurchaseStore {
     func refreshEntitlements() async {
         var source: ProSource?
         var expiration: Date?
+        var hasActiveSubscription = false
         // StoreKit includes billing grace periods and excludes expired/refunded access.
         // Do not replace its entitlement decision with an expiration-date comparison.
         for await result in Transaction.currentEntitlements {
@@ -156,13 +157,14 @@ final class PurchaseStore {
                 !transaction.isUpgraded,
                 let candidate = ProSource(productID: transaction.productID)
             else { continue }
+            hasActiveSubscription = hasActiveSubscription || transaction.productType == .autoRenewable
             if candidate.priority > (source?.priority ?? -1) {
                 source = candidate
                 expiration = candidate.isSubscription ? transaction.expirationDate : nil
             }
         }
         guard !Task.isCancelled else { return }
-        entitlements.update(pro: source != nil, source: source, expiration: expiration)
+        entitlements.update(pro: source != nil, source: source, expiration: expiration, hasActiveSubscription: hasActiveSubscription)
         await refreshIntroEligibility()
     }
 

@@ -22,6 +22,17 @@ final class ProEntitlementTests: XCTestCase {
         XCTAssertFalse(entitlements.hasPro)
         XCTAssertNil(entitlements.proSource)
         XCTAssertNil(entitlements.proExpirationDate)
+        XCTAssertFalse(entitlements.hasActiveSubscription)
+    }
+
+    func testLifetimeDoesNotHideActiveSubscription() {
+        let entitlements = AppEntitlements()
+        entitlements.update(pro: true, source: .lifetime, expiration: nil, hasActiveSubscription: true)
+        XCTAssertEqual(entitlements.proSource, .lifetime)
+        XCTAssertTrue(entitlements.hasActiveSubscription)
+        entitlements.update(pro: true, source: .lifetime, expiration: nil, hasActiveSubscription: false)
+        XCTAssertTrue(entitlements.hasPro)
+        XCTAssertFalse(entitlements.hasActiveSubscription)
     }
 
     func testProductMappingExcludesUnknownProducts() {

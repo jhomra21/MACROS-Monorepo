@@ -33,6 +33,7 @@ final class AppEntitlements {
     private(set) var hasPro = false
     private(set) var proSource: ProSource?
     private(set) var proExpirationDate: Date?
+    private(set) var hasActiveSubscription = false
 
     func canUse(_ feature: PaidFeature) -> Bool {
         switch feature.requiredEntitlement {
@@ -41,9 +42,10 @@ final class AppEntitlements {
         }
     }
 
-    func update(pro: Bool, source: ProSource?, expiration: Date?) {
+    func update(pro: Bool, source: ProSource?, expiration: Date?, hasActiveSubscription: Bool = false) {
         hasPro = pro
         proSource = pro ? source : nil
         proExpirationDate = pro ? expiration : nil
+        self.hasActiveSubscription = pro && hasActiveSubscription
     }
 }

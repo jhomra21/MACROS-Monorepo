@@ -26,7 +26,7 @@ struct ProSettingsSection: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            if entitlements.proSource?.isSubscription == true {
+            if entitlements.hasActiveSubscription {
                 Button("Manage Subscription") { isManaging = true }
             }
             Button("Restore Purchases") {
