@@ -64,6 +64,7 @@ extension LogEntryRepository {
         entry.apply(values)
         entry.secondaryNutrientBackfillState = secondaryNutrientBackfillState
         entry.updatedAt = .now
+        entry.healthSyncVersion += 1
     }
 
     func makeLogEntry(

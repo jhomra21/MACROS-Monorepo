@@ -58,6 +58,7 @@ final class MealSchemaMigrationTests: XCTestCase {
             context.insert(
                 LogEntry(
                     id: newMealLogID,
+                    healthSyncVersion: 3,
                     mealID: newMealID,
                     dateLogged: fixtureDate,
                     foodName: meal.name,
@@ -75,6 +76,13 @@ final class MealSchemaMigrationTests: XCTestCase {
                     carbsConsumed: 49.5,
                     createdAt: fixtureDate,
                     updatedAt: fixtureDate
+                )
+            )
+            context.insert(
+                WeightEntry(
+                    day: "2026-10-12",
+                    recordedAt: fixtureDate,
+                    weightKg: 75.4
                 )
             )
             context.insert(
@@ -113,6 +121,7 @@ final class MealSchemaMigrationTests: XCTestCase {
             context.fetch(FetchDescriptor<LogEntry>()).first(where: { $0.id == newMealLogID })
         )
         XCTAssertEqual(mealLog.mealID, newMealID)
+        XCTAssertEqual(mealLog.healthSyncVersion, 3)
         XCTAssertEqual(mealLog.dateLogged, fixtureDate)
         XCTAssertEqual(mealLog.servingsConsumed, 1)
         XCTAssertEqual(mealLog.caloriesConsumed, 307.5)
@@ -131,6 +140,9 @@ final class MealSchemaMigrationTests: XCTestCase {
         XCTAssertEqual(snapshot.fatConsumed, 5.75)
         XCTAssertEqual(snapshot.carbsConsumed, 49.5)
         XCTAssertEqual(snapshot.fiberConsumed, 8)
+        let weightEntry = try XCTUnwrap(context.fetch(FetchDescriptor<WeightEntry>()).first)
+        XCTAssertEqual(weightEntry.day, "2026-10-12")
+        XCTAssertEqual(weightEntry.weightKg, 75.4)
     }
 
     private var currentSchema: Schema {

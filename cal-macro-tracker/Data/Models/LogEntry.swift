@@ -40,6 +40,7 @@ final class LogEntry {
     var sodiumConsumed: Double?
     var cholesterolConsumed: Double?
     var secondaryNutrientBackfillStateRaw: String?
+    var healthSyncVersion: Int = 0
     var createdAt: Date
     var updatedAt: Date
 
@@ -81,6 +82,7 @@ final class LogEntry {
         sodiumConsumed: Double? = nil,
         cholesterolConsumed: Double? = nil,
         secondaryNutrientBackfillState: SecondaryNutrientBackfillState? = .current,
+        healthSyncVersion: Int = 0,
         createdAt: Date = .now,
         updatedAt: Date = .now
     ) {
@@ -121,6 +123,7 @@ final class LogEntry {
         self.sodiumConsumed = sodiumConsumed
         self.cholesterolConsumed = cholesterolConsumed
         self.secondaryNutrientBackfillStateRaw = secondaryNutrientBackfillState?.rawValue
+        self.healthSyncVersion = healthSyncVersion
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }

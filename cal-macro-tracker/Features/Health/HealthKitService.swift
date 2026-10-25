@@ -75,7 +75,7 @@ final class HealthKitService {
             }
             let metadata: [String: Any] = [
                 HKMetadataKeySyncIdentifier: syncIdentifier,
-                HKMetadataKeySyncVersion: Int(entry.updatedAt.timeIntervalSince1970)
+                HKMetadataKeySyncVersion: entry.healthSyncVersion
             ]
             samples.append(
                 HKQuantitySample(
