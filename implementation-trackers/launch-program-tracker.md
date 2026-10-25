@@ -18,17 +18,19 @@ Owner: parent orchestration thread. Workers: delegated subagents, one per workst
 
 ## Workstreams
 
+Environment rule (2026-10-25): the Mac runs only work that needs Xcode or a simulator (Swift builds, XCTest, simulator QA, archive/TestFlight). TypeScript, Astro, data pipelines, and documentation run on Windows. A workstream that mixes both (for example WS4) runs on the Mac as one unit.
+
 | ID | Tracker | Branch | Environment | Model / effort | Depends on | Phase |
 |---|---|---|---|---|---|---|
-| WS1 | [services-hardening-tracker.md](services-hardening-tracker.md) | `launch/ws1-services-hardening` | Windows or Mac (TypeScript only) | Luna high, Sol 6.1 medium review | none | 1 |
+| WS1 | [services-hardening-tracker.md](services-hardening-tracker.md) | `launch/ws1-services-hardening` | Windows (TypeScript only) | Luna high, Sol 6.1 medium review | none | 1 |
 | WS2 | [pro-subscription-storekit-tracker.md](pro-subscription-storekit-tracker.md) | `launch/ws2-pro-storekit` | Mac | Sol 6.1 medium (payments), Sol review | none | 1 |
 | WS3 | [goal-calculator-onboarding-tracker.md](goal-calculator-onboarding-tracker.md) | `launch/ws3-goal-calculator` | Mac | Luna high | none | 1 |
 | WS4 | [bundled-food-database-tracker.md](bundled-food-database-tracker.md) | `launch/ws4-food-database` | Mac | Luna high | none | 1 |
-| WS8 | [website-legal-metadata-tracker.md](website-legal-metadata-tracker.md) | `launch/ws8-website-legal` | Windows or Mac (Astro only) | Luna high | none | 1 |
+| WS8 | [website-legal-metadata-tracker.md](website-legal-metadata-tracker.md) | `launch/ws8-website-legal` | Windows (Astro only) | Luna high | none | 1 |
 | WS5 | [weight-health-reminders-tracker.md](weight-health-reminders-tracker.md) | `launch/ws5-weight-health-reminders` | Mac | Luna high, Sol review | WS2, WS3 merged | 2 |
 | WS6 | [backup-export-import-tracker.md](backup-export-import-tracker.md) | `launch/ws6-backup` | Mac | Luna high | WS2, WS3, WS5 merged | 2 |
 | WS7 | [retention-polish-tracker.md](retention-polish-tracker.md) | `launch/ws7-retention-polish` | Mac | Haiku high or Luna high | WS2, WS4 merged | 2 |
-| WS9 | [app-store-connect-products-tracker.md](app-store-connect-products-tracker.md) | `launch/ws9-asc-products` | Mac | Sol 6.1 medium | user-provided ASC API key | any |
+| WS9 | [app-store-connect-products-tracker.md](app-store-connect-products-tracker.md) | `launch/ws9-asc-products` | Windows (docs only) | Luna high | none (manual ASC entry by the owner) | any |
 | WS10 | [testflight-release-tracker.md](testflight-release-tracker.md) | n/a (main) | Mac | Luna high + Sol review | all of the above merged | 3 |
 
 Phase 1 runs in parallel. The parent merges Phase 1 branches into `main` in the order WS1, WS8, WS2, WS3, WS4, then starts Phase 2 from the merged `main`.
