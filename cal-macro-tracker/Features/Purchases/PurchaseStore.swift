@@ -151,10 +151,14 @@ final class PurchaseStore {
     func refreshEntitlements() async {
         entitlementRefreshID += 1
         let refreshID = entitlementRefreshID
-        var currentTransactions: [Transaction] = []
+        var currentTransactions: [(transaction: Transaction, isVerified: Bool)] = []
         for await result in Transaction.currentEntitlements {
-            guard case let .verified(transaction) = result else { continue }
-            currentTransactions.append(transaction)
+            switch result {
+            case let .verified(transaction):
+                currentTransactions.append((transaction, true))
+            case let .unverified(transaction, _):
+                currentTransactions.append((transaction, false))
+            }
         }
         var renewalStates: [UInt64: Product.SubscriptionInfo.RenewalState] = [:]
         var statuses: [String: ProSubscriptionStatus] = [:]
@@ -182,37 +186,22 @@ final class PurchaseStore {
                 statusAccess[productID] = grantsAccess
             }
         }
-        var source: ProSource?
-        var expiration: Date?
-        var hasActiveSubscription = false
-        // StoreKit includes billing grace periods and excludes expired/refunded access.
-        // Do not replace its entitlement decision with an expiration-date comparison.
-        for transaction in currentTransactions {
-            guard transaction.revocationDate == nil,
-                !transaction.isUpgraded,
-                let candidate = ProSource(productID: transaction.productID)
-            else { continue }
-            if transaction.productType == .autoRenewable,
-                let state = renewalStates[transaction.originalID],
-                state != .subscribed && state != .inGracePeriod
-            {
-                continue
-            }
-            hasActiveSubscription = hasActiveSubscription || transaction.productType == .autoRenewable
-            if candidate.priority > (source?.priority ?? -1) {
-                source = candidate
-                expiration = candidate.isSubscription ? transaction.expirationDate : nil
-            }
+        let facts = currentTransactions.map { transaction, isVerified in
+            EntitlementFact(
+                productID: transaction.productID, productType: transaction.productType,
+                isVerified: isVerified, revocationDate: transaction.revocationDate,
+                expirationDate: transaction.expirationDate, isUpgraded: transaction.isUpgraded,
+                renewalState: renewalStates[transaction.originalID])
         }
         guard !Task.isCancelled, refreshID == entitlementRefreshID else { return }
         subscriptionStatuses = statuses
-        entitlements.update(pro: source != nil, source: source, expiration: expiration, hasActiveSubscription: hasActiveSubscription)
+        entitlements.update(AppEntitlements.resolve(from: facts))
         await refreshIntroEligibility()
     }
 
     #if DEBUG
     func setDebugPro(_ isUnlocked: Bool) {
-        entitlements.update(pro: isUnlocked, source: isUnlocked ? .lifetime : nil, expiration: nil)
+        entitlements.update(EntitlementResolution(source: isUnlocked ? .lifetime : nil, expiration: nil, hasActiveSubscription: false))
         feedback = nil
     }
     #endif

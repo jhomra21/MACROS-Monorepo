@@ -33,6 +33,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
 - Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
 - Repair follow-up reproduced the pre-existing rejection on a fresh iOS 26.4 simulator, after shutdown/erase, and through a visible XCUITest launch; documented Apple FB22237318 / FB22500243 and retained no signing workaround. Payment validation remains blocked.
+- Payments review fixes add status/foreground access refresh, independent subscription management visibility, verified renewal/grace copy, listener-driven integration coverage, and a directly tested deterministic entitlement reducer. Pure tests pass; local purchase QA remains blocked at catalog activation.
 
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
