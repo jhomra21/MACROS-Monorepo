@@ -54,11 +54,9 @@ struct ProSettingsSection: View {
     private var status: String {
         switch entitlements.proSource {
         case .yearly, .monthly:
-            let plan = entitlements.proSource == .yearly ? "Yearly" : "Monthly"
-            if let expiration = entitlements.proExpirationDate {
-                return "Pro \(plan) · renews \(expiration.formatted(date: .abbreviated, time: .omitted))"
-            }
-            return "Pro \(plan)"
+            let plan: ProPlan = entitlements.proSource == .yearly ? .yearly : .monthly
+            let renewal = store.subscriptionStatuses[plan.productID] ?? .active
+            return "Pro \(plan.title) · \(renewal.text)"
         case .lifetime: return "Pro Lifetime"
         case .legacyFullUnlock: return "Full Unlock (legacy)"
         case nil: return "Free"

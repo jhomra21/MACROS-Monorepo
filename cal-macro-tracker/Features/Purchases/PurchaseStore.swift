@@ -33,6 +33,7 @@ final class PurchaseStore {
     private let entitlements: AppEntitlements
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
+    @ObservationIgnored private var entitlementRefreshID = 0
 
     private(set) var products: [ProPlan: Product] = [:]
     private(set) var isEligibleForIntroOffer = false
@@ -40,6 +41,7 @@ final class PurchaseStore {
     private(set) var isPurchasing = false
     private(set) var isRestoring = false
     private(set) var feedback: Feedback?
+    private(set) var subscriptionStatuses: [String: ProSubscriptionStatus] = [:]
 
     var hasPro: Bool { entitlements.hasPro }
 
@@ -70,6 +72,7 @@ final class PurchaseStore {
     }
 
     func stop() {
+        entitlementRefreshID += 1
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         transactionUpdatesTask = nil
@@ -146,24 +149,63 @@ final class PurchaseStore {
     }
 
     func refreshEntitlements() async {
+        entitlementRefreshID += 1
+        let refreshID = entitlementRefreshID
+        var currentTransactions: [Transaction] = []
+        for await result in Transaction.currentEntitlements {
+            guard case let .verified(transaction) = result else { continue }
+            currentTransactions.append(transaction)
+        }
+        var renewalStates: [UInt64: Product.SubscriptionInfo.RenewalState] = [:]
+        var statuses: [String: ProSubscriptionStatus] = [:]
+        var statusDates: [String: Date] = [:]
+        var statusAccess: [String: Bool] = [:]
+        for await group in Product.SubscriptionInfo.Status.all {
+            for status in group.statuses {
+                guard case let .verified(transaction) = status.transaction,
+                    case let .verified(renewal) = status.renewalInfo,
+                    transaction.productType == .autoRenewable,
+                    ProSource(productID: transaction.productID)?.isSubscription == true
+                else { continue }
+                renewalStates[transaction.originalID] = status.state
+                let grantsAccess = status.state == .subscribed || status.state == .inGracePeriod
+                let productID = transaction.productID
+                // A family-shared active status outranks an expired personal status.
+                if let existingAccess = statusAccess[productID] {
+                    if existingAccess && !grantsAccess { continue }
+                    if existingAccess == grantsAccess, let date = statusDates[productID], date >= renewal.signedDate { continue }
+                }
+                statuses[productID] = .resolve(
+                    state: status.state, willAutoRenew: renewal.willAutoRenew,
+                    expiration: transaction.expirationDate, graceExpiration: renewal.gracePeriodExpirationDate)
+                statusDates[productID] = renewal.signedDate
+                statusAccess[productID] = grantsAccess
+            }
+        }
         var source: ProSource?
         var expiration: Date?
         var hasActiveSubscription = false
         // StoreKit includes billing grace periods and excludes expired/refunded access.
         // Do not replace its entitlement decision with an expiration-date comparison.
-        for await result in Transaction.currentEntitlements {
-            guard case let .verified(transaction) = result,
-                transaction.revocationDate == nil,
+        for transaction in currentTransactions {
+            guard transaction.revocationDate == nil,
                 !transaction.isUpgraded,
                 let candidate = ProSource(productID: transaction.productID)
             else { continue }
+            if transaction.productType == .autoRenewable,
+                let state = renewalStates[transaction.originalID],
+                state != .subscribed && state != .inGracePeriod
+            {
+                continue
+            }
             hasActiveSubscription = hasActiveSubscription || transaction.productType == .autoRenewable
             if candidate.priority > (source?.priority ?? -1) {
                 source = candidate
                 expiration = candidate.isSubscription ? transaction.expirationDate : nil
             }
         }
-        guard !Task.isCancelled else { return }
+        guard !Task.isCancelled, refreshID == entitlementRefreshID else { return }
+        subscriptionStatuses = statuses
         entitlements.update(pro: source != nil, source: source, expiration: expiration, hasActiveSubscription: hasActiveSubscription)
         await refreshIntroEligibility()
     }
