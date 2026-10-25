@@ -45,6 +45,8 @@ const PACKAGED_SEARCH_QUERY_KEYS = new Set([...SEARCH_QUERY_KEYS, 'fallbackOnEmp
 
 const DEFAULT_REQUEST_DEADLINE_MS = 8_000
 
+const DEFAULT_USDA_BUDGET_TIMEOUT_MS = 500
+
 app.get('/v1/packaged-foods/search', async (c) => {
   const params = parseSearchParams(c, PACKAGED_SEARCH_QUERY_KEYS, true)
 
@@ -244,11 +246,26 @@ app.get('/v1/usda/foods/:fdcId', async (c) => {
     return cachedResponse
   }
 
-  if (!(await checkGlobalUSDABudget(c.env.USDA_BUDGET))) {
-    return jsonError(c, 'USDA food details are unavailable right now.', 503)
+  const deadlineMs = positiveEnvInteger(c.env.REQUEST_DEADLINE_MS, DEFAULT_REQUEST_DEADLINE_MS)
+  const requestDeadline = AbortSignal.timeout(deadlineMs)
+
+  if (requestDeadline.aborted) {
+    return degradedUSDADetailResponse(c, 'request-deadline-expired')
   }
 
-  const requestDeadline = AbortSignal.timeout(positiveEnvInteger(c.env.REQUEST_DEADLINE_MS, DEFAULT_REQUEST_DEADLINE_MS))
+  const budgetAllowed = await checkGlobalUSDABudget(
+    c.env.USDA_BUDGET,
+    positiveEnvInteger(c.env.USDA_BUDGET_TIMEOUT_MS, DEFAULT_USDA_BUDGET_TIMEOUT_MS),
+    requestDeadline,
+  )
+
+  if (requestDeadline.aborted) {
+    return degradedUSDADetailResponse(c, 'request-deadline-expired')
+  }
+
+  if (!budgetAllowed) {
+    return jsonError(c, 'USDA food details are unavailable right now.', 503)
+  }
 
   try {
     const response = await fetchUSDAFood(fdcId, c.env.USDA_API_KEY, withTimeout(fetch, undefined, requestDeadline))
@@ -266,11 +283,54 @@ app.notFound((c) => jsonError(c, 'Not found.', 404))
 
 app.onError((error) => handleSearchError(error, 'Packaged food search is unavailable right now.'))
 
-async function checkGlobalUSDABudget(budget: Env['USDA_BUDGET'] | undefined): Promise<boolean> {
+function degradedUSDADetailResponse(
+  c: Context,
+  reason: 'request-deadline-expired' | 'usda-budget-exhausted',
+): Response {
+  const response = jsonError(c, 'USDA food details are unavailable right now.', 503)
+  response.headers.set('Cache-Control', 'no-store')
+  response.headers.set('X-MACROS-Degraded', reason)
+
+  return response
+}
+
+async function checkGlobalUSDABudget(
+  budget: Env['USDA_BUDGET'] | undefined,
+  timeoutMs = DEFAULT_USDA_BUDGET_TIMEOUT_MS,
+  deadlineSignal?: AbortSignal,
+): Promise<boolean> {
   if (budget == null) return true
 
+  if (deadlineSignal?.aborted) return true
+
   try {
-    return (await budget.get(budget.idFromName('usda')).acquire()).allowed
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+    let abortListener: (() => void) | undefined
+    const acquire = budget.get(budget.idFromName('usda')).acquire()
+
+    const timedOut = new Promise<never>((_resolve, reject) => {
+      // A native timer bounds the RPC independently of the request's abort signal.
+      timeoutId = setTimeout(() => reject(new Error('USDA budget coordination timed out')), timeoutMs)
+    })
+
+    const deadlineExpired = deadlineSignal == null
+      ? undefined
+      : new Promise<never>((_resolve, reject) => {
+        abortListener = () => reject(deadlineSignal.reason)
+        deadlineSignal.addEventListener('abort', abortListener, { once: true })
+
+        if (deadlineSignal.aborted) abortListener()
+      })
+
+    try {
+      return (await Promise.race(deadlineExpired == null
+        ? [acquire, timedOut]
+        : [acquire, timedOut, deadlineExpired])).allowed
+    } finally {
+      if (timeoutId != null) clearTimeout(timeoutId)
+
+      if (abortListener != null) deadlineSignal?.removeEventListener('abort', abortListener)
+    }
   } catch {
     // Keep USDA lookups available during a temporary coordination failure. Sample one line per invocation.
     if (Math.random() < 0.01) {

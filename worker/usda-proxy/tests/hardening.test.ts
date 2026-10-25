@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it, mock, spyOn } from 'bun:test'
 import { clientKey, enforceRateLimit, RATE_LIMIT_ERROR } from '../src/rateLimit'
 import { searchPackagedFoods } from '../src/packagedFoods'
 import { decideUsdaBudget, USDA_BUDGET_WINDOW_MS } from '../src/usdaBudgetLogic'
@@ -37,6 +37,62 @@ describe('service hardening failure cases', () => {
 
     await expect(fetcher('https://example.test')).rejects.toBeDefined()
     expect(observedSignal?.aborted).toBe(true)
+  })
+
+  it('returns a degraded response by the deadline when budget acquisition never resolves', async () => {
+    mock.module('cloudflare:workers', () => ({
+      DurableObject: class {
+      }
+    }))
+    const { default: app } = await import('../src/index')
+    const previousCaches = globalThis.caches
+    Object.defineProperty(globalThis, 'caches', {
+      configurable: true,
+      value: { open: async () => ({ match: async () => undefined }) },
+    })
+    const fetchMock = spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({}))
+    const startedAt = Date.now()
+
+    // SAFETY: The fake namespace implements the exact ID and acquire operations this route invokes.
+    const budgetBinding = {
+      idFromName: () => 'usda',
+      get: () => ({ acquire: () => new Promise(() => undefined) }),
+    } as never
+
+    const env: Env = {
+      PACKAGED_SEARCH_LIMITER: { limit: async () => ({ success: true }) },
+      BARCODE_LIMITER: { limit: async () => ({ success: true }) },
+      USDA_SEARCH_LIMITER: { limit: async () => ({ success: true }) },
+      USDA_BUDGET_PER_MINUTE: '14',
+      USDA_BUDGET_TIMEOUT_MS: '500',
+      REQUEST_DEADLINE_MS: '8000',
+      USDA_API_KEY: 'test',
+      OPEN_FOOD_FACTS_USER_AGENT: 'test',
+      USDA_BUDGET: budgetBinding,
+    }
+
+    // SAFETY: Exercise the runtime-configurable deadline despite Wrangler's generated literal type.
+    Object.defineProperty(env, 'REQUEST_DEADLINE_MS', { value: '50' })
+
+    try {
+      const response = await app.request(
+        'https://example.test/v1/usda/foods/123',
+        {},
+        env,
+      )
+
+      expect(response.status).toBe(503)
+      expect(response.headers.get('Cache-Control')).toBe('no-store')
+      expect(response.headers.get('X-MACROS-Degraded')).toBe('request-deadline-expired')
+      expect(Date.now() - startedAt).toBeLessThan(300)
+      expect(fetchMock).not.toHaveBeenCalled()
+    } finally {
+      fetchMock.mockRestore()
+      Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        value: previousCaches,
+      })
+    }
   })
 
   it('stops cumulative upstream attempts at the deadline and recovers on retry', async () => {

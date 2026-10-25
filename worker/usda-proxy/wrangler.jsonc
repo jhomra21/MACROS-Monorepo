@@ -29,6 +29,7 @@
   },
   "vars": {
     "USDA_BUDGET_PER_MINUTE": "14",
+    "USDA_BUDGET_TIMEOUT_MS": "500",
     "REQUEST_DEADLINE_MS": "8000"
   }
 }
