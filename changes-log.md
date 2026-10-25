@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 App Store Connect Product Checklist
+
+- Chose manual App Store Connect setup for WS9 and dropped the API script path; added the [product creation checklist](docs/app-store/asc-products-checklist.md) with Apple Help references.
+
 ## 2026-10-25 Monetization Market Validation
 
 - Added a sourced market-validation report for the locked monetization offer; no product prices, identifiers, or feature gates changed.

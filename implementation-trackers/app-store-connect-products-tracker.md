@@ -1,6 +1,6 @@
 # App Store Connect Products Tracker (WS9)
 
-Branch `launch/ws9-asc-products` (only if the API script is written). Mac. Consequential external action: run only in dry-run first, then live with the owner's explicit go-ahead.
+Branch `launch/ws9-asc-products`. Manual App Store Connect setup selected 2026-10-25; the API script path is dropped. See the [click-by-click product checklist](../docs/app-store/asc-products-checklist.md).
 
 ## Products to create (must match WS2 exactly)
 
@@ -11,12 +11,7 @@ Branch `launch/ws9-asc-products` (only if the API script is written). Mac. Conse
 - Non-consumable `macros.pro.lifetime`: reference name "MACROS Pro Lifetime", US $39.99, Family Sharing on, localization "MACROS Pro (Lifetime)".
 - Each product needs a review screenshot (use the paywall screenshot from WS2's QA artifact) and review notes before submission. The first subscription must be submitted together with a new app version.
 
-## Manual path (15 minutes, no code)
+## Decision (2026-10-25)
 
-App Store Connect > Apps > MACROS > Monetization > Subscriptions > Create Subscription Group > add the two subscriptions, set prices (Subscription Pricing > Add Subscription Price), add the yearly introductory offer (Subscription Prices > Introductory Offers), add localizations. Then In-App Purchases > Create > Non-Consumable for lifetime, price, localization, Family Sharing. Finally App Privacy and the product review information.
-
-## API path (optional)
-
-- Prerequisite from the owner: an App Store Connect API key with the App Manager role: Key ID, Issuer ID, and the `.p8` file placed at `~/.private_keys/AuthKey_<KEYID>.p8` on the Mac. Never commit or print the key.
-- `tools/asc/` (Bun + TypeScript, isolated package): ES256 JWT (20-minute expiry) and a thin client; verify every endpoint against the official OpenAPI spec downloaded from Apple's App Store Connect API page at run time. Expected resources: `apps` (filter by bundle id), `subscriptionGroups`, `subscriptions`, `subscriptionPricePoints`, `subscriptionPrices`, `subscriptionIntroductoryOffers`, `subscriptionLocalizations`, `subscriptionGroupLocalizations`, `inAppPurchases` (v2), `inAppPurchasePriceSchedules`, `inAppPurchaseLocalizations`.
-- Idempotent: look up existing resources by product id before creating; `--dry-run` prints the plan; `--apply` executes and prints resulting ids. Report everything created.
+- Manual App Store Connect setup is the chosen path. The API script path is dropped; no API key or API automation is needed.
+- Follow [docs/app-store/asc-products-checklist.md](../docs/app-store/asc-products-checklist.md) for verified navigation, fields, pricing, localization, review, sandbox, and final product-ID checks.
