@@ -61,6 +61,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added Cloudflare Worker per-IP request limits, a strict SQLite Durable Object-backed shared USDA budget, non-cacheable degraded empty results, configurable food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas with profile-deletion cleanup, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public success response contracts remain unchanged.
 - Validation and repeatable loopback QA are recorded in `build/ws1-qa-2026-10-25/QA.md`.
 
+## 2026-10-25 Bundled Common Food Database
+
+- Bundled 2,865 generic foods from the latest USDA FNDDS CSV release (2021–2023, October 2024; public domain, 17 U.S.C. § 105), with deterministic nutrient/portion mapping, content-versioned bootstrap updates, and an online-search prompt for sparse local results.
+- Follow-up QA improved local search ranking for whole-word matches and selected preparation modifiers; regression coverage protects canonical matches and avoids substring collisions.
+
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
 - Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.

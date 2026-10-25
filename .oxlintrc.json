@@ -22,6 +22,8 @@
     "web/.astro/**",
     "web/.wrangler/**",
     "worker/**/.wrangler/**",
+    "tools/food-db/node_modules/**",
+    "tools/food-db/bun.lock",
     "tools/oxlint/anti-slop/**",
     "tools/oxlint/node_modules/**",
     "tools/oxlint/bun.lock"

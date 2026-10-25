@@ -1,0 +1,20 @@
+{
+  "name": "macros-food-db",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun src/build.ts",
+    "check": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "csv-parse": "^6.1.0",
+    "yauzl": "^3.2.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/yauzl": "^2.10.3",
+    "typescript": "^5.7.3"
+  }
+}

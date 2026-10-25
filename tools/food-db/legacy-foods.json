@@ -1,0 +1,14 @@
+[
+  { "name": "Banana", "aliases": ["banana", "yellow banana"], "sourcePrefix": "banana, raw" },
+  { "name": "Apple", "aliases": ["apple", "red apple", "green apple"], "sourcePrefix": "apple, raw" },
+  { "name": "Blueberries", "aliases": ["blueberries", "blueberry"], "sourcePrefix": "blueberries, raw" },
+  { "name": "Strawberries", "aliases": ["strawberries", "strawberry"], "sourcePrefix": "strawberries, raw" },
+  { "name": "Broccoli", "aliases": ["broccoli"], "sourcePrefix": "broccoli, raw" },
+  { "name": "Carrots", "aliases": ["carrot", "carrots"], "sourcePrefix": "carrots, raw" },
+  { "name": "Avocado", "aliases": ["avocado"], "sourcePrefix": "avocado, raw" },
+  { "name": "White Rice", "aliases": ["rice", "white rice"], "sourcePrefix": "rice, white, cooked, no added fat" },
+  { "name": "Chicken Breast", "aliases": ["chicken", "chicken breast"], "sourcePrefix": "chicken breast, baked or broiled, skin not eaten" },
+  { "name": "Salmon", "aliases": ["salmon"], "sourcePrefix": "fish, salmon, baked or broiled" },
+  { "name": "Egg", "aliases": ["egg", "eggs"], "sourcePrefix": "egg, whole, raw" },
+  { "name": "Greek Yogurt", "aliases": ["greek yogurt", "yogurt"], "sourcePrefix": "yogurt, greek, nonfat milk, plain" }
+]

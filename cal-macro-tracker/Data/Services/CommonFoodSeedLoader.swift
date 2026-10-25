@@ -18,13 +18,40 @@ struct CommonFoodSeedRecord: Decodable, Sendable {
     let cholesterolPerServing: Double?
 }
 
+struct CommonFoodSeedManifest: Decodable, Sendable {
+    let version: String
+    let source: String
+    let sourceRelease: String
+    let count: Int
+    let generatedAt: String
+}
+
 enum CommonFoodSeedLoader {
+    static func commonFoodSeedManifest() async throws -> CommonFoodSeedManifest {
+        let url = try commonFoodSeedManifestURL()
+        return try await Task.detached(priority: .userInitiated) {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode(CommonFoodSeedManifest.self, from: data)
+        }.value
+    }
+
     static func commonFoodSeedRecords() async throws -> [CommonFoodSeedRecord] {
         let url = try commonFoodSeedURL()
         return try await Task.detached(priority: .userInitiated) {
             let data = try Data(contentsOf: url)
             return try JSONDecoder().decode([CommonFoodSeedRecord].self, from: data)
         }.value
+    }
+
+    private static func commonFoodSeedManifestURL() throws -> URL {
+        guard let url = Bundle.main.url(forResource: "common_foods_manifest", withExtension: "json") else {
+            throw NSError(
+                domain: "CommonFoodSeedLoader",
+                code: 2,
+                userInfo: [NSLocalizedDescriptionKey: "Missing common_foods_manifest.json resource."]
+            )
+        }
+        return url
     }
 
     static func commonFoodSeedURL() throws -> URL {

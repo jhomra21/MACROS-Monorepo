@@ -11,10 +11,14 @@ enum AppBootstrap {
     static func bootstrapIfNeeded(in container: ModelContainer) async throws {
         let planningContext = ModelContext(container)
         let plan = try makePlan(modelContext: planningContext)
-        let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
+        let manifest = try await CommonFoodSeedLoader.commonFoodSeedManifest()
         let writeContext = ModelContext(container)
 
-        try CommonFoodSeedLoader.reconcile(modelContext: writeContext, records: commonFoodRecords)
+        if UserDefaults.standard.string(forKey: AppStorageKeys.commonFoodSeedVersion) != manifest.version {
+            let commonFoodRecords = try await CommonFoodSeedLoader.commonFoodSeedRecords()
+            try CommonFoodSeedLoader.reconcile(modelContext: writeContext, records: commonFoodRecords)
+            UserDefaults.standard.set(manifest.version, forKey: AppStorageKeys.commonFoodSeedVersion)
+        }
 
         if plan.shouldNormalizeGoals {
             try normalizeGoalsIfNeeded(modelContext: writeContext)
