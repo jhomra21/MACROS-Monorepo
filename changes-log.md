@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 App Store Connect Product Checklist
+
+- Chose manual App Store Connect setup for WS9 and dropped the API script path; added the [product creation checklist](docs/app-store/asc-products-checklist.md) with Apple Help references.
+
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
 - Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.
