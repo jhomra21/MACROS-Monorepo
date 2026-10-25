@@ -32,6 +32,8 @@ const RESTAURANT_DEADLINE_BUFFER_MS = 1_500
 
 export interface PackagedFoodSearchExecution extends PackagedFoodSearchResponse {
   openFoodFactsAttemptCount?: number
+  cacheable?: false
+  degradedReason?: 'usda-budget-exhausted' | 'request-deadline-expired'
 }
 
 export interface PackagedFoodSearchDependencies {
@@ -162,13 +164,21 @@ async function searchOpenFoodFactsPackagedFoods(
 
   const totalAttempts = searchALiciousOutcome.attempts + legacyOutcome.attempts
 
+  if (
+    dependencies.requestDeadline?.signal.aborted &&
+    searchALiciousOutcome.kind === 'response' &&
+    searchALiciousOutcome.page.results.length === 0
+  ) {
+    return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+  }
+
   if (legacyOutcome.kind === 'unavailable') {
     if (searchALiciousOutcome.kind === 'response') {
       return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, searchALiciousOutcome.page, totalAttempts)
     }
 
     if (dependencies.requestDeadline?.signal.aborted) {
-      return emptyUnavailableResponse(input)
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
     }
 
     throw legacyOutcome.error
@@ -211,15 +221,23 @@ async function searchRestaurantOpenFoodFactsPackagedFoods(
   }
 
   if (legacyOutcome.kind === 'response') {
+    if (dependencies.requestDeadline?.signal.aborted && legacyOutcome.page.results.length === 0) {
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+    }
+
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(legacyOutcome.page), totalAttempts)
   }
 
   if (searchALiciousOutcome.kind === 'response') {
+    if (dependencies.requestDeadline?.signal.aborted && searchALiciousOutcome.page.results.length === 0) {
+      return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
+    }
+
     return makeResponse(input, OPEN_FOOD_FACTS_PROVIDER, emptyTerminalRestaurantPage(searchALiciousOutcome.page), totalAttempts)
   }
 
   if (dependencies.requestDeadline?.signal.aborted) {
-    return emptyUnavailableResponse(input)
+    return emptyUnavailableResponse(input, OPEN_FOOD_FACTS_PROVIDER, 'request-deadline-expired')
   }
 
   throw legacyOutcome.error
@@ -325,13 +343,21 @@ async function searchUSDAPackagedFoods(
       allowUSDA,
     )
 
-    return makeResponse(input, USDA_PROVIDER, {
+    const response = makeResponse(input, USDA_PROVIDER, {
       ...result,
       results: result.results.map((item) => ({ provider: USDA_PROVIDER, item })),
     })
+
+    return budgetExhausted && response.results.length === 0
+      ? { ...response, cacheable: false, degradedReason: 'usda-budget-exhausted' }
+      : response
   } catch (error) {
     if (budgetExhausted) {
-      return emptyUnavailableResponse(input, USDA_PROVIDER)
+      return emptyUnavailableResponse(input, USDA_PROVIDER, 'usda-budget-exhausted')
+    }
+
+    if (dependencies.requestDeadline?.signal.aborted) {
+      return emptyUnavailableResponse(input, USDA_PROVIDER, 'request-deadline-expired')
     }
 
     throw error
@@ -341,8 +367,9 @@ async function searchUSDAPackagedFoods(
 function emptyUnavailableResponse(
   input: PackagedFoodSearchQuery,
   provider: SearchProvider = OPEN_FOOD_FACTS_PROVIDER,
+  degradedReason?: PackagedFoodSearchExecution['degradedReason'],
 ): PackagedFoodSearchExecution {
-  return {
+  const response: PackagedFoodSearchExecution = {
     query: input.query,
     page: input.page,
     pageSize: input.pageSize,
@@ -351,6 +378,13 @@ function emptyUnavailableResponse(
     hasMore: false,
     openFoodFactsAttemptCount: 0,
   }
+
+  if (degradedReason != null) {
+    response.cacheable = false
+    response.degradedReason = degradedReason
+  }
+
+  return response
 }
 
 export function hasUsableOpenFoodFactsResult(

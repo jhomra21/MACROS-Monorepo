@@ -17,9 +17,9 @@ export function withTimeout(
     )
 
     const signal = signals.length === 1 ? signals[0] : AbortSignal.any(signals)
-    const response = await fetcher(input, { ...init, signal })
+    const response = await awaitWithAbort(fetcher(input, { ...init, signal }), signal)
     // Consume the body under the same deadline, before returning to JSON decoding.
-    const body = await response.arrayBuffer()
+    const body = await awaitWithAbort(response.arrayBuffer(), signal)
 
     return new Response(response.body == null ? null : body, {
       status: response.status,
@@ -27,4 +27,31 @@ export function withTimeout(
       headers: response.headers,
     })
   }
+}
+
+function awaitWithAbort<Value>(operation: Promise<Value>, signal: AbortSignal): Promise<Value> {
+  if (signal.aborted) {
+    return Promise.reject(signal.reason)
+  }
+
+  return new Promise((resolve, reject) => {
+    const cleanup = () => signal.removeEventListener('abort', abort)
+
+    const abort = () => {
+      cleanup()
+      reject(signal.reason)
+    }
+
+    signal.addEventListener('abort', abort, { once: true })
+    operation.then(
+      (value) => {
+        cleanup()
+        resolve(value)
+      },
+      (error: Error) => {
+        cleanup()
+        reject(error)
+      },
+    )
+  })
 }
