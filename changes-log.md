@@ -34,6 +34,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
 - Repair follow-up reproduced the pre-existing rejection on a fresh iOS 26.4 simulator, after shutdown/erase, and through a visible XCUITest launch; documented Apple FB22237318 / FB22500243 and retained no signing workaround. Payment validation remains blocked.
 - Payments review fixes add status/foreground access refresh, independent subscription management visibility, verified renewal/grace copy, listener-driven integration coverage, and a directly tested deterministic entitlement reducer. Pure tests pass; local purchase QA remains blocked at catalog activation.
+- Re-review fix coalesces entitlement refreshes and awaits a final committed result before purchase/restore feedback; deterministic listener-free concurrency regressions pass without StoreKit catalog activation.
 
 ## 2026-10-25 Services Hardening
 

@@ -5,6 +5,97 @@ import XCTest
 
 @MainActor
 final class ProEntitlementTests: XCTestCase {
+    // Failure inventory: a superseded purchase/restore caller must not return
+    // before the dirty reread commits; repeated requests must not overlap scans;
+    // events during a reread must drain too; stopped scans must never publish late.
+    func testConcurrentRefreshCallersAwaitTheSameCommittedReread() async {
+        let firstRead = expectation(description: "First read started")
+        let secondRead = expectation(description: "Dirty reread started")
+        let nextRead = expectation(description: "Next independent refresh started")
+        let source = GatedEntitlementSource(reads: [firstRead, secondRead, nextRead])
+        let entitlements = AppEntitlements()
+        let store = PurchaseStore(entitlements: entitlements, entitlementSource: source.read)
+        let first = Task { await store.refreshEntitlements() }
+        await fulfillment(of: [firstRead], timeout: 2)
+        let joined = expectation(description: "Two more callers requested refresh")
+        joined.expectedFulfillmentCount = 2
+        let second = Task {
+            joined.fulfill()
+            return await store.refreshEntitlements()
+        }
+        let third = Task {
+            joined.fulfill()
+            return await store.refreshEntitlements()
+        }
+        await fulfillment(of: [joined], timeout: 2)
+        source.release(1, with: .free)
+        await fulfillment(of: [secondRead], timeout: 2)
+        XCTAssertFalse(entitlements.hasPro, "An obsolete intermediate snapshot must not publish.")
+        XCTAssertEqual(source.maximumConcurrentReads, 1)
+        source.release(2, with: .lifetime)
+        let results = await [first.value, second.value, third.value]
+        XCTAssertTrue(results.allSatisfy(\.hasPro))
+        XCTAssertEqual(results, Array(repeating: EntitlementSnapshot.lifetime.resolution, count: 3))
+        XCTAssertTrue(entitlements.hasPro, "Publication must precede returning to every caller.")
+        XCTAssertEqual(source.readCount, 2)
+
+        let next = Task { await store.refreshEntitlements() }
+        await fulfillment(of: [nextRead], timeout: 2)
+        source.release(3, with: .free)
+        let nextResult = await next.value
+        XCTAssertFalse(nextResult.hasPro, "A completed refresh task must not be reused.")
+        XCTAssertFalse(entitlements.hasPro)
+    }
+
+    func testRequestsDuringDirtyRereadDrainBeforeAnyCallerReturns() async {
+        let reads = (1...3).map { expectation(description: "Read \($0) started") }
+        let source = GatedEntitlementSource(reads: reads)
+        let entitlements = AppEntitlements()
+        let store = PurchaseStore(entitlements: entitlements, entitlementSource: source.read)
+        let first = Task { await store.refreshEntitlements() }
+        await fulfillment(of: [reads[0]], timeout: 2)
+        let secondJoined = expectation(description: "Second caller joined")
+        let second = Task {
+            secondJoined.fulfill()
+            return await store.refreshEntitlements()
+        }
+        await fulfillment(of: [secondJoined], timeout: 2)
+        source.release(1, with: .free)
+        await fulfillment(of: [reads[1]], timeout: 2)
+        let thirdJoined = expectation(description: "Third caller joined during reread")
+        let third = Task {
+            thirdJoined.fulfill()
+            return await store.refreshEntitlements()
+        }
+        await fulfillment(of: [thirdJoined], timeout: 2)
+        source.release(2, with: .lifetime)
+        await fulfillment(of: [reads[2]], timeout: 2)
+        XCTAssertFalse(entitlements.hasPro, "Dirty lifetime snapshot must not publish before the latest revocation.")
+        source.release(3, with: .free)
+        let results = await [first.value, second.value, third.value]
+        XCTAssertTrue(results.allSatisfy { !$0.hasPro })
+        XCTAssertFalse(entitlements.hasPro)
+        XCTAssertEqual(source.maximumConcurrentReads, 1)
+    }
+
+    func testStoppedRefreshCannotOverwriteNewerCommittedSnapshot() async {
+        let reads = (1...2).map { expectation(description: "Read \($0) started") }
+        let source = GatedEntitlementSource(reads: reads)
+        let entitlements = AppEntitlements()
+        let store = PurchaseStore(entitlements: entitlements, entitlementSource: source.read)
+        let stopped = Task { await store.refreshEntitlements() }
+        await fulfillment(of: [reads[0]], timeout: 2)
+        store.stop()
+        let latest = Task { await store.refreshEntitlements() }
+        await fulfillment(of: [reads[1]], timeout: 2)
+        source.release(2, with: .lifetime)
+        let latestResult = await latest.value
+        XCTAssertTrue(latestResult.hasPro)
+        source.release(1, with: .free)
+        _ = await stopped.value
+        XCTAssertTrue(entitlements.hasPro, "A cancelled scan returning late must not publish or clear a newer task.")
+    }
+
     func testSubscriptionStatusDistinguishesRenewalAndCancellation() {
         let expiration = Date(timeIntervalSince1970: 2_000_000_000)
         XCTAssertEqual(
@@ -174,5 +265,47 @@ final class ProEntitlementTests: XCTestCase {
         EntitlementFact(
             productID: plan.productID, productType: plan == .lifetime ? .nonConsumable : .autoRenewable,
             expirationDate: plan == .lifetime ? nil : expiration)
+    }
+}
+
+@MainActor
+private final class GatedEntitlementSource {
+    private let reads: [XCTestExpectation]
+    private var pending: [Int: CheckedContinuation<EntitlementSnapshot, Never>] = [:]
+    private var concurrentReads = 0
+    private(set) var readCount = 0
+    private(set) var maximumConcurrentReads = 0
+
+    init(reads: [XCTestExpectation]) {
+        self.reads = reads
+    }
+
+    func read() async -> EntitlementSnapshot {
+        readCount += 1
+        let index = readCount
+        concurrentReads += 1
+        maximumConcurrentReads = max(maximumConcurrentReads, concurrentReads)
+        defer { concurrentReads -= 1 }
+        return await withCheckedContinuation { continuation in
+            pending[index] = continuation
+            reads[index - 1].fulfill()
+        }
+    }
+
+    func release(_ index: Int, with snapshot: EntitlementSnapshot) {
+        pending.removeValue(forKey: index)?.resume(returning: snapshot)
+    }
+}
+
+private extension EntitlementSnapshot {
+    static var free: Self {
+        Self(resolution: AppEntitlements.resolve(from: []))
+    }
+
+    static var lifetime: Self {
+        Self(
+            resolution: AppEntitlements.resolve(from: [
+                EntitlementFact(productID: ProPlan.lifetime.productID, productType: .nonConsumable)
+            ]))
     }
 }
