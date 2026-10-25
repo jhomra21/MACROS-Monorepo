@@ -149,8 +149,12 @@ enum GoalCalculator {
         guard preset != .custom else { throw GoalCalculatorError.unsupportedMacroPreset }
 
         let protein = roundedToFive(calories * preset.proteinPercent / 100 / 4)
-        let carbs = roundedToFive(calories * preset.carbPercent / 100 / 4)
         let fat = roundedToFive(calories * preset.fatPercent / 100 / 9)
+        let carbs = carbGrams(
+            calories: calories,
+            initialCarbs: roundedToFive(calories * preset.carbPercent / 100 / 4),
+            proteinAndFatCalories: protein * 4 + fat * 9
+        )
         guard protein.isFinite, carbs.isFinite, fat.isFinite else { throw GoalCalculatorError.invalidCalories }
         var draft = DailyGoalsDraft()
         draft.proteinGoalGrams = protein
@@ -184,5 +188,17 @@ enum GoalCalculator {
 
     private static func roundedToFive(_ value: Double) -> Double {
         (value / 5).rounded() * 5
+    }
+
+    /// Keeps the 4/4/9 total within [calories, calories + 2%]. Carbs move in 5 g steps (20 kcal), which fits
+    /// inside the 2% window for targets of 1,000 kcal and up, so the smallest step at or above the target always lands.
+    private static func carbGrams(calories: Double, initialCarbs: Double, proteinAndFatCalories: Double) -> Double {
+        let carbCaloriesNeeded = calories - proteinAndFatCalories
+        let initialCarbCalories = initialCarbs * 4
+        let isWithinWindow =
+            initialCarbCalories >= carbCaloriesNeeded
+            && initialCarbCalories <= carbCaloriesNeeded + calories * 0.02
+        guard !isWithinWindow else { return initialCarbs }
+        return (carbCaloriesNeeded / 20).rounded(.up) * 5
     }
 }

@@ -66,6 +66,28 @@ final class GoalCalculatorTests: XCTestCase {
         }
     }
 
+    func testMacroCaloriesStayAtOrAboveClampedTargetWithinTwoPercent() throws {
+        let safeMinimums = [
+            try GoalCalculator.targetCalories(tdee: 1_000, offset: -750, sex: .female).calories,
+            try GoalCalculator.targetCalories(tdee: 1_000, offset: -750, sex: .unspecified).calories,
+            try GoalCalculator.targetCalories(tdee: 1_000, offset: -750, sex: .male).calories,
+        ]
+        let typicalTargets = [1_437.5, 1_673, 1_872, 2_137, 2_463, 3_011]
+
+        for calories in safeMinimums + typicalTargets {
+            for preset in GoalMacroPreset.allCases where preset != .custom {
+                let draft = try GoalCalculator.macroGrams(calories: calories, preset: preset)
+                let recomputedCalories = draft.proteinGoalGrams * 4
+                    + draft.carbGoalGrams * 4
+                    + draft.fatGoalGrams * 9
+
+                XCTAssertEqual(draft.calorieGoal, recomputedCalories)
+                XCTAssertGreaterThanOrEqual(recomputedCalories, calories, "\(preset) at \(calories) kcal")
+                XCTAssertLessThanOrEqual(recomputedCalories, calories * 1.02, "\(preset) at \(calories) kcal")
+            }
+        }
+    }
+
     func testImperialConversionsRoundTrip() throws {
         let kilograms = try GoalCalculator.kg(fromPounds: 154)
         let pounds = GoalCalculator.pounds(fromKg: kilograms)
