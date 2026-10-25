@@ -45,7 +45,7 @@ struct USDAFoodDetailsClient {
             responseType: USDAProxyFood.self,
             errorResponseType: USDAFoodDetailsErrorResponse.self,
             invalidResponseError: USDAFoodDetailsClientError.invalidResponse
-        ) { statusCode, errorResponse in
+        ) { statusCode, errorResponse, _ in
             USDAFoodDetailsClientError.requestFailed(
                 statusCode: statusCode,
                 message: errorResponse?.error

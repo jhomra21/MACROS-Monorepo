@@ -215,6 +215,8 @@ struct DashboardScreen: View {
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
 
+        LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights).dashboardListRow(bottom: 8)
+
         if isMacroRingExpanded {
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
                 .padding(.top, 4)

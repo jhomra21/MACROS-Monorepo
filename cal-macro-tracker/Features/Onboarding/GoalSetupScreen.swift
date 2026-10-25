@@ -81,7 +81,7 @@ struct GoalSetupScreen: View {
 
     private var header: some View {
         VStack(spacing: 10) {
-            Text("Macros")
+            Text(AppBrand.displayName)
                 .font(.system(size: 36, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
 

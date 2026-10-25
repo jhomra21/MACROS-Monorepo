@@ -46,7 +46,7 @@ struct DailyShareCardView: View {
         HStack {
             Spacer()
 
-            Text("MACROS")
+            Text(AppBrand.displayName)
                 .font(.caption.weight(.semibold))
                 .tracking(1.6)
                 .foregroundStyle(.secondary.opacity(0.72))

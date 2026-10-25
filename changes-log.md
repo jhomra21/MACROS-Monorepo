@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 Retention and Polish (WS7)
+
+- Centralized the display brand, added a calendar-aware dashboard logging streak and eligible post-save App Store review request, made barcode 429 responses non-retryable with bounded `Retry-After` feedback, and aligned current Insights and ring-color Pro entry copy. Deferred WS4/WS5/WS6 follow-ups are listed in the tracker.
+
 ## 2026-10-25 MACROS Pro (WS2)
 
 - Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.

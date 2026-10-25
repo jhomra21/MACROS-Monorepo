@@ -136,7 +136,7 @@ private struct MacroRingColorSettingsSection: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Customize Macro Ring Colors")
                                 .foregroundStyle(Color.accentColor)
-                            Text("Included with \(ProBrand.name).")
+                            Text("Included with \(AppBrand.displayName) Pro")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
@@ -157,7 +157,7 @@ private struct MacroRingColorSettingsSection: View {
             Text(
                 entitlements.canUse(.customMacroRingColors)
                     ? "Color changes update the dashboard rings immediately."
-                    : "Included with \(ProBrand.name)."
+                    : "Included with \(AppBrand.displayName) Pro"
             )
         }
     }

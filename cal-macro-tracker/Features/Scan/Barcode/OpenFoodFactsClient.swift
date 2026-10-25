@@ -147,7 +147,7 @@ enum OpenFoodFactsClientError: LocalizedError {
     case unavailableConfiguration
     case invalidBarcode
     case invalidResponse
-    case requestFailed(statusCode: Int)
+    case requestFailed(statusCode: Int, retryAfterSeconds: Int?)
     case productNotFound
 
     var isRetryable: Bool {
@@ -156,8 +156,8 @@ enum OpenFoodFactsClientError: LocalizedError {
             return false
         case .invalidResponse:
             return true
-        case let .requestFailed(statusCode):
-            return statusCode == 429 || statusCode >= 500
+        case let .requestFailed(statusCode, _):
+            return statusCode >= 500
         }
     }
 
@@ -169,9 +169,13 @@ enum OpenFoodFactsClientError: LocalizedError {
             return "The scanned barcode is invalid."
         case .invalidResponse:
             return "The food lookup service returned an invalid response."
-        case let .requestFailed(statusCode):
+        case let .requestFailed(statusCode, retryAfterSeconds):
             if statusCode == 503 {
                 return "Open Food Facts is temporarily unavailable. You can still use on-device results or manual entry."
+            }
+            if statusCode == 429 {
+                guard let retryAfterSeconds else { return "Too many lookups, try again in a minute." }
+                return "Too many lookups, try again in \(retryAfterSeconds) seconds."
             }
 
             return "The food lookup service returned an error (\(statusCode))."
@@ -202,8 +206,12 @@ struct OpenFoodFactsClient {
             responseType: OpenFoodFactsResponse.self,
             errorResponseType: OpenFoodFactsErrorResponse.self,
             invalidResponseError: OpenFoodFactsClientError.invalidResponse
-        ) { statusCode, _ in
-            OpenFoodFactsClientError.requestFailed(statusCode: statusCode)
+        ) { statusCode, _, response in
+            let retryAfter = response.value(forHTTPHeaderField: "Retry-After").flatMap(Int.init)
+            return OpenFoodFactsClientError.requestFailed(
+                statusCode: statusCode,
+                retryAfterSeconds: retryAfter.map { min(max($0, 0), 60) }
+            )
         }
 
         guard let product = decodedResponse.product else {

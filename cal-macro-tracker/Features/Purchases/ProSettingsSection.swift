@@ -15,7 +15,7 @@ struct ProSettingsSection: View {
             } label: {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(ProBrand.name)
+                        Text(ProLegalLinks.name)
                         Text(status).font(.footnote).foregroundStyle(.secondary)
                     }
                     Spacer()

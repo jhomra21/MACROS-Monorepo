@@ -82,7 +82,7 @@ private final class SharingAuthProvider: AuthProvider {
                 responseType: SharingAuthSession.self,
                 errorResponseType: SharingTokenErrorResponse.self,
                 invalidResponseError: HTTPJSONClientError.invalidResponse,
-                requestFailedError: { _, _ in HTTPJSONClientError.invalidResponse }
+                requestFailedError: { _, _, _ in HTTPJSONClientError.invalidResponse }
             )
             guard identityGeneration == generation else { throw CancellationError() }
             onIdToken(authSession.token)

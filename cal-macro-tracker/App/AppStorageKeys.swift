@@ -12,4 +12,6 @@ enum AppStorageKeys {
     static let sharingLastUploadStatus = "sharingLastUploadStatus"
     static let sharingLastUploadDate = "sharingLastUploadDate"
     static let sharingLastUploadedSnapshotHash = "sharingLastUploadedSnapshotHash"
+    static let reviewPromptedAppVersion = "reviewPromptedAppVersion"
+    static let isProPaywallPresented = "isProPaywallPresented"
 }

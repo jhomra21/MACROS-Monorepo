@@ -146,6 +146,9 @@ private struct InsightsRangeQueryContent: View {
                                 .font(.title2.bold())
                             Text("Explore your calorie, macro, and nutrient trends.")
                                 .multilineTextAlignment(.center)
+                            Text("Included with \(AppBrand.displayName) Pro")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
                             AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
                                 isPresentingPro.wrappedValue = true
                             }

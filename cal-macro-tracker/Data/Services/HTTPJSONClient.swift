@@ -71,7 +71,7 @@ struct HTTPJSONClient {
         responseType: Response.Type,
         errorResponseType: ErrorResponse.Type,
         invalidResponseError: @autoclosure () -> Error,
-        requestFailedError: (Int, ErrorResponse?) -> Error
+        requestFailedError: (Int, ErrorResponse?, HTTPURLResponse) -> Error
     ) async throws -> Response {
         let data: Data
         let httpResponse: HTTPURLResponse
@@ -83,7 +83,7 @@ struct HTTPJSONClient {
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            throw requestFailedError(httpResponse.statusCode, decodeIfPresent(errorResponseType, from: data))
+            throw requestFailedError(httpResponse.statusCode, decodeIfPresent(errorResponseType, from: data), httpResponse)
         }
 
         return try decode(responseType, from: data)

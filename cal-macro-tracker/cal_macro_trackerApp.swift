@@ -54,7 +54,7 @@ struct cal_macro_trackerApp: App {
                 case .launching:
                     Text("💪")
                         .font(.system(size: 72))
-                        .accessibilityLabel("MACROS")
+                        .accessibilityLabel(AppBrand.displayName)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case let .ready(modelContainer):
                     ZStack {

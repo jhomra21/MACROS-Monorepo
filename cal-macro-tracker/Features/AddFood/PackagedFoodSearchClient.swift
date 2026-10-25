@@ -112,7 +112,7 @@ struct PackagedFoodSearchClient {
             responseType: PackagedFoodSearchResponse.self,
             errorResponseType: PackagedFoodSearchErrorResponse.self,
             invalidResponseError: PackagedFoodSearchClientError.invalidResponse
-        ) { statusCode, errorResponse in
+        ) { statusCode, errorResponse, _ in
             PackagedFoodSearchClientError.requestFailed(statusCode: statusCode, message: errorResponse?.error)
         }
         return decodedResponse.pageResults(requestedProvider: provider)

@@ -2,6 +2,44 @@ import XCTest
 @testable import cal_macro_tracker
 
 final class InsightsAnalyticsTests: XCTestCase {
+    // Streak failure cases: no entries; a gap before today; yesterday-only logging;
+    // and dates straddling UTC midnight in the app calendar's time zone.
+    func testCurrentStreakIsZeroWithoutEntries() {
+        let today = day(0)
+
+        XCTAssertEqual(InsightsAnalytics.currentStreak(days: [], today: today), 0)
+    }
+
+    func testCurrentStreakStopsAtGapBeforeToday() {
+        let today = day(0)
+        let points = [day(-2), today]
+
+        XCTAssertEqual(InsightsAnalytics.currentStreak(days: points, today: today), 1)
+    }
+
+    func testCurrentStreakIncludesYesterdayWhenTodayIsEmpty() {
+        let today = day(0)
+        let points = [today.advanced(byDays: -1)!]
+
+        XCTAssertEqual(InsightsAnalytics.currentStreak(days: points, today: today), 1)
+    }
+
+    func testCurrentStreakUsesAppCalendarTimeZoneAtDateBoundary() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: -8 * 60 * 60)!
+        let beforeLocalMidnight = CalendarDay(
+            date: date(year: 2026, month: 5, day: 7).addingTimeInterval(7.5 * 60 * 60),
+            calendar: calendar
+        )
+        let afterLocalMidnight = CalendarDay(
+            date: date(year: 2026, month: 5, day: 7).addingTimeInterval(8.5 * 60 * 60),
+            calendar: calendar
+        )
+
+        XCTAssertNotEqual(beforeLocalMidnight, afterLocalMidnight)
+        XCTAssertEqual(InsightsAnalytics.currentStreak(days: [beforeLocalMidnight, afterLocalMidnight], today: afterLocalMidnight), 2)
+    }
+
     func testRangeBuildsRollingDaysEndingToday() {
         let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
 

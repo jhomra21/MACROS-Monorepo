@@ -14,7 +14,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .healthWeightImport: "Weight import from Apple Health"
         case .backup: "Backup export and import"
         case .reminders: "Multiple reminders"
-        case .general: ProBrand.name
+        case .general: ProLegalLinks.name
         }
     }
 
@@ -39,6 +39,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
 struct ProPaywallSheet: View {
     let context: ProPaywallContext
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(AppStorageKeys.isProPaywallPresented) private var isProPaywallPresented = false
     @Environment(PurchaseStore.self) private var store
     @State private var selectedPlan = ProPlan.yearly
     @State private var isRedeeming = false
@@ -51,7 +52,7 @@ struct ProPaywallSheet: View {
                         .font(.system(size: 44, weight: .semibold))
                         .foregroundStyle(Color.accentColor)
                         .accessibilityHidden(true)
-                    Text(ProBrand.name)
+                    Text(ProLegalLinks.name)
                         .font(.title.bold())
                     Text(store.hasPro ? "Your Pro features are ready." : "See your progress. Make it yours.")
                         .foregroundStyle(.secondary)
@@ -112,6 +113,8 @@ struct ProPaywallSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .onAppear { isProPaywallPresented = true }
+        .onDisappear { isProPaywallPresented = false }
     }
 
     private var isBusy: Bool { store.isPurchasing || store.isRestoring }

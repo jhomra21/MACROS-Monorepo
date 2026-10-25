@@ -155,6 +155,20 @@ struct InsightsGoalAdherence: Hashable {
 }
 
 enum InsightsAnalytics {
+    static func currentStreak(days: [CalendarDay], today: CalendarDay) -> Int {
+        let loggedDays = Set(days)
+        let calendar = today.resolvedCalendar
+        let yesterday = today.advanced(byDays: -1)
+        var day = loggedDays.contains(today) ? today : (yesterday ?? today)
+        var streak = 0
+        while loggedDays.contains(day) {
+            streak += 1
+            guard let previousDate = calendar.date(byAdding: .day, value: -1, to: day.startDate) else { break }
+            day = CalendarDay(date: previousDate, calendar: calendar)
+        }
+        return streak
+    }
+
     static func points(for entries: [LogEntry], days: [CalendarDay]) -> [InsightsDayPoint] {
         let snapshotsByDay = LogEntryDaySummary.snapshotsByDay(for: entries, matching: days)
         return days.map { day in

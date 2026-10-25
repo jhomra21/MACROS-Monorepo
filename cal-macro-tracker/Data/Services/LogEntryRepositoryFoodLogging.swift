@@ -138,6 +138,7 @@ extension LogEntryRepository {
 
         WidgetTimelineReloader.reloadMacroWidgets()
         onDailyTotalsChanged?(modelContext.container)
+        NotificationCenter.default.post(name: .didSuccessfullyLogFood, object: nil)
     }
 
     private func resolvedLoggedFoodDraft(

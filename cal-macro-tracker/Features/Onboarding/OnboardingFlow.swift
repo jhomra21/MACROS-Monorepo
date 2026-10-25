@@ -43,7 +43,7 @@ private struct OnboardingWelcomeScreen: View {
                 .font(.system(size: 56, weight: .medium))
                 .foregroundStyle(.tint)
                 .accessibilityHidden(true)
-            Text(Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Calorie Tracker")
+            Text(AppBrand.displayName)
                 .font(.largeTitle.bold())
                 .multilineTextAlignment(.center)
             VStack(spacing: 12) {

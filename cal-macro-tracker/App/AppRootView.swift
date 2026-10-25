@@ -79,6 +79,7 @@ struct AppRootView: View {
             applyPendingOpenRequest(pendingOpenRequest)
             await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
+        .modifier(ReviewPromptModifier())
     }
 
     private func open(_ route: Route) {
