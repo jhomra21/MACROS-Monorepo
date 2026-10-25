@@ -4,9 +4,18 @@ Branch `launch/ws4-food-database`. Mac (pipeline is Bun; app side needs Xcode). 
 
 ## Shared Understanding
 
-- `cal-macro-tracker/CommonFoods/common_foods.json` contains 12 foods. `CommonFoodSeedLoader.reconcile` upserts by normalized name on bootstrap and never deletes. Local search ranks in memory with `FoodItemLocalSearch.rankedFoods`.
+- `cal-macro-tracker/CommonFoods/common_foods.json` currently contains 3,199 foods. `CommonFoodSeedLoader.reconcile` upserts by normalized name on bootstrap and never deletes. Local search ranks in memory with `FoodItemLocalSearch.rankedFoods`.
 - Online search requires an explicit "Search Online" tap or keyboard submit; it goes through the Worker to Open Food Facts and USDA.
 - Goal: a user with no network can find common generic foods instantly, and the first search results look sane for everyday queries.
+
+## Current Status
+
+- Bundled source is USDA FNDDS 2021–2023, October 2024 archive. The manifest records the archive URL and SHA-256; a named, recorded release can be rebuilt with `bun run build -- --release "<sourceRelease>"`.
+- Current bundle has 3,199 foods, including nutrition-relevant preparation variants. 428 foods use the explicit `100 g` fallback because no eligible gram-backed household portion is available. The 12 original generic entries retain their exact shipped serving descriptions, gram sizes, and per-serving nutrients; future releases must preserve those fields because saved meal components store serving counts.
+- Cold-launch timing from the earlier 2,865-food build on iPhone 17 Pro / iOS 26.4: three clean-install runs had median 0.578 s; second launch 0.113 s. This timing predates the current 3,199-food bundle and should not be treated as a measurement of its exact size.
+- Search update completion from the earlier 2,865-food build was 0.020464 s for `egg` and 0.020598 s for `chicken`; these measure local-update completion, not full keypress-to-render latency.
+- Earlier in-app 50-query results and representative screenshots are stored under ignored `build/ws4-qa-2026-10-25/`. That sweep predates the latest ranking, serving, and qualifier-preservation changes; refresh it before using it as final-build evidence.
+- Local search uses the same case/diacritic folding and punctuation tokenizer for query and candidate tokens. Regression coverage includes apostrophe, hyphen, and diacritic queries.
 
 ## Core Decisions
 
