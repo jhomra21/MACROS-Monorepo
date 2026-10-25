@@ -27,19 +27,28 @@ struct BodyProfileDraft {
     }
 
     var age: Int? {
-        ageText.isEmpty ? 30 : Int(ageText)
+        switch NumericText.state(for: ageText) {
+        case .empty: 30
+        case let .valid(value): Int(exactly: value)
+        case .invalid: nil
+        }
     }
 
     var heightCm: Double? {
-        guard let height = Double(heightText), height.isFinite, height > 0 else { return nil }
-        if unitSystem == .metric { return height }
-        guard let feet = Int(heightText), let inches = Double(heightInchesText) else { return nil }
+        guard let height = Self.number(from: heightText) else { return nil }
+        if unitSystem == .metric { return height > 0 ? height : nil }
+        guard let feet = Int(exactly: height), let inches = Self.number(from: heightInchesText) else { return nil }
         return try? GoalCalculator.cm(fromFeet: feet, inches: inches)
     }
 
     var weightKg: Double? {
-        guard let weight = Double(weightText), weight.isFinite, weight > 0 else { return nil }
+        guard let weight = Self.number(from: weightText), weight > 0 else { return nil }
         return unitSystem == .metric ? weight : try? GoalCalculator.kg(fromPounds: weight)
+    }
+
+    private static func number(from text: String) -> Double? {
+        guard case let .valid(value) = NumericText.state(for: text) else { return nil }
+        return value
     }
 
     init(profile: BodyProfile? = nil) {

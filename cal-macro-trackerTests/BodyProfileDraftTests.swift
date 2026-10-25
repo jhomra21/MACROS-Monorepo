@@ -55,6 +55,27 @@ final class BodyProfileDraftTests: XCTestCase {
         }
     }
 
+    func testNumericFieldsParseThroughNumericTextIncludingFractionalInches() throws {
+        var draft = BodyProfileDraft()
+        draft.ageText = "34.0"
+        draft.heightText = "172"
+        draft.weightText = "70.5"
+
+        XCTAssertEqual(draft.age, 34)
+        XCTAssertEqual(draft.heightCm, 172)
+        XCTAssertEqual(draft.weightKg, 70.5)
+
+        draft.ageText = "34.5"
+        draft.weightText = "heavy"
+        XCTAssertNil(draft.age)
+        XCTAssertNil(draft.weightKg)
+
+        draft.changeUnitSystem(to: .imperial)
+        draft.heightText = "5"
+        draft.heightInchesText = "7.5"
+        XCTAssertEqual(try XCTUnwrap(draft.heightCm), try GoalCalculator.cm(fromFeet: 5, inches: 7.5), accuracy: 0.000_1)
+    }
+
     @MainActor
     func testManualSaveUpdatesSingleActiveBodyProfileAndKeepsPreset() throws {
         let container = try ModelContainer(
