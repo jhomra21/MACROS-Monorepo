@@ -276,7 +276,7 @@ private struct RecalculateTargetsSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var profile: BodyProfileDraft
-    @State private var showsTargets = false
+    @State private var isShowingTargets = false
 
     init(onComplete: @escaping () -> Void) {
         _profile = State(initialValue: BodyProfileDraft())
@@ -287,16 +287,13 @@ private struct RecalculateTargetsSheet: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if showsTargets {
-                    TargetReviewScreen(profile: $profile) {
-                        dismiss()
-                        onComplete()
-                    }
-                } else {
-                    BodyProfileFormScreen(profile: $profile) {
-                        showsTargets = true
-                    }
+            BodyProfileFormScreen(profile: $profile) {
+                isShowingTargets = true
+            }
+            .navigationDestination(isPresented: $isShowingTargets) {
+                TargetReviewScreen(profile: $profile) {
+                    dismiss()
+                    onComplete()
                 }
             }
             .toolbar {
