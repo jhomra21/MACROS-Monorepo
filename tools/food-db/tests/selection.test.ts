@@ -1,6 +1,25 @@
 import { describe, expect, test } from "bun:test";
 import { choosePortion, friendlyName, selectFoods, type FoodRow } from "../src/select";
 
+const servingFields = [
+  "servingDescription",
+  "gramsPerServing",
+  "caloriesPerServing",
+  "proteinPerServing",
+  "fatPerServing",
+  "carbsPerServing",
+  "saturatedFatPerServing",
+  "fiberPerServing",
+  "sugarsPerServing",
+  "addedSugarsPerServing",
+  "sodiumPerServing",
+  "cholesterolPerServing",
+] as const;
+
+type LegacyFoodFixture = {
+  name: string;
+} & Record<typeof servingFields[number], string | number | null>;
+
 const baseFood = (overrides: Partial<FoodRow> = {}): FoodRow => ({
   fdcId: 1,
   description: "Chicken breast, grilled",
@@ -11,6 +30,25 @@ const baseFood = (overrides: Partial<FoodRow> = {}): FoodRow => ({
 });
 
 describe("FNDDS food selection", () => {
+  test("bundled legacy foods retain exact serving fields from the legacy fixture", async () => {
+    const legacyFoods = await Bun.file(new URL("../legacy-foods.json", import.meta.url)).json() as LegacyFoodFixture[];
+    const bundledFoods = await Bun.file(
+      new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url),
+    ).json() as LegacyFoodFixture[];
+    const bundledByName = new Map(bundledFoods.map((food) => [food.name, food]));
+
+    expect(legacyFoods).toHaveLength(12);
+    for (const legacyFood of legacyFoods) {
+      const bundledFood = bundledByName.get(legacyFood.name);
+
+      expect(bundledFood, legacyFood.name).toBeDefined();
+      expect(
+        JSON.stringify(Object.fromEntries(servingFields.map((field) => [field, bundledFood?.[field]]))),
+        legacyFood.name,
+      ).toBe(JSON.stringify(Object.fromEntries(servingFields.map((field) => [field, legacyFood[field]]))));
+    }
+  });
+
   test("preserves missing nutrients as null and keeps zero-calorie foods", () => {
     const foods = selectFoods([
       baseFood({

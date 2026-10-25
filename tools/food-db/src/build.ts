@@ -34,6 +34,18 @@ const legacyFoods = z.array(z.object({
   name: z.string(),
   aliases: z.array(z.string()),
   sourcePrefix: z.string(),
+  servingDescription: z.string(),
+  gramsPerServing: z.number().nullable(),
+  caloriesPerServing: z.number(),
+  proteinPerServing: z.number(),
+  fatPerServing: z.number(),
+  carbsPerServing: z.number(),
+  saturatedFatPerServing: z.number().nullable(),
+  fiberPerServing: z.number().nullable(),
+  sugarsPerServing: z.number().nullable(),
+  addedSugarsPerServing: z.number().nullable(),
+  sodiumPerServing: z.number().nullable(),
+  cholesterolPerServing: z.number().nullable(),
 })).parse(JSON.parse(
   await readFile(resolve(import.meta.dir, "../legacy-foods.json"), "utf8"),
 ));
@@ -61,6 +73,18 @@ const retainedFoods = legacyFoods.map((legacyFood) => {
     ...matching,
     name: String(legacyFood.name),
     aliases: [...new Set([...matching.aliases, ...legacyFood.aliases])],
+    servingDescription: legacyFood.servingDescription,
+    gramsPerServing: legacyFood.gramsPerServing,
+    caloriesPerServing: legacyFood.caloriesPerServing,
+    proteinPerServing: legacyFood.proteinPerServing,
+    fatPerServing: legacyFood.fatPerServing,
+    carbsPerServing: legacyFood.carbsPerServing,
+    saturatedFatPerServing: legacyFood.saturatedFatPerServing,
+    fiberPerServing: legacyFood.fiberPerServing,
+    sugarsPerServing: legacyFood.sugarsPerServing,
+    addedSugarsPerServing: legacyFood.addedSugarsPerServing,
+    sodiumPerServing: legacyFood.sodiumPerServing,
+    cholesterolPerServing: legacyFood.cholesterolPerServing,
   };
 });
 
