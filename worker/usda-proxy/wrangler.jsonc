@@ -7,9 +7,12 @@
   "ratelimits": [
     { "name": "PACKAGED_SEARCH_LIMITER", "namespace_id": "1101", "simple": { "limit": 30, "period": 60 } },
     { "name": "BARCODE_LIMITER", "namespace_id": "1102", "simple": { "limit": 60, "period": 60 } },
-    { "name": "USDA_SEARCH_LIMITER", "namespace_id": "1103", "simple": { "limit": 10, "period": 60 } },
-    { "name": "USDA_BUDGET_LIMITER", "namespace_id": "1104", "simple": { "limit": 14, "period": 60 } }
+    { "name": "USDA_SEARCH_LIMITER", "namespace_id": "1103", "simple": { "limit": 10, "period": 60 } }
   ],
+  "durable_objects": {
+    "bindings": [{ "name": "USDA_BUDGET", "class_name": "UsdaBudget" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["UsdaBudget"] }],
   "observability": {
     "enabled": true,
     "logs": {
@@ -23,5 +26,9 @@
   },
   "secrets": {
     "required": ["USDA_API_KEY", "OPEN_FOOD_FACTS_USER_AGENT"]
+  },
+  "vars": {
+    "USDA_BUDGET_PER_MINUTE": "14",
+    "REQUEST_DEADLINE_MS": "8000"
   }
 }

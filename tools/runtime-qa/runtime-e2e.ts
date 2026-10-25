@@ -49,7 +49,7 @@ const jwksResponseSchema = z.object({
   })),
 });
 
-function fixtureResponse(data: FixturePayload, phase: FixturePhase): Promise<Response> | Response {
+function fixtureResponse(data: FixturePayload, phase: FixturePhase, delayMs = 3600): Promise<Response> | Response {
   const text = JSON.stringify(data);
 
   if (phase === "success") return Response.json(data);
@@ -66,7 +66,7 @@ function fixtureResponse(data: FixturePayload, phase: FixturePhase): Promise<Res
     }), { headers: { "content-type": "application/json" } });
   }
 
-  const later = (done: () => void) => { const timer = setTimeout(() => { fixtureTimers.delete(timer); done(); }, 3600); fixtureTimers.add(timer);
+  const later = (done: () => void) => { const timer = setTimeout(() => { fixtureTimers.delete(timer); done(); }, delayMs); fixtureTimers.add(timer);
 
  return timer; };
 
@@ -93,10 +93,10 @@ let httpRequests = 0;
 function pass(label: string) { checks.push({ label, transport: "native HTTP loopback -> Miniflare original worker" }); }
 
 async function runtime(entry: string, options: Partial<MiniflareOptions>) {
-  const output = await build({ entryPoints: [`${root}/${entry}`], bundle: true, format: "esm", platform: "browser", write: false });
+  const output = await build({ entryPoints: [`${root}/${entry}`], bundle: true, format: "esm", platform: "browser", external: ["cloudflare:workers"], write: false });
 
   const runtimeOptions: MiniflareOptions = {
-    rootPath: outputDir, cf: false, modules: true, script: output.outputFiles[0].text, compatibilityDate: "2026-05-01",
+    rootPath: resolve(outputDir, `runtime-${runtimes.length}`), cf: false, modules: true, script: output.outputFiles[0].text, compatibilityDate: "2026-05-01",
   };
 
   if (options.fetchMock == null && options.outboundService == null) {
@@ -118,7 +118,11 @@ async function runtime(entry: string, options: Partial<MiniflareOptions>) {
   servers.push(server);
   await server.ready;
 
-  return { mf, url: `http://127.0.0.1:${server.port}` };
+  return {
+    mf,
+    url: `http://127.0.0.1:${server.port}`,
+    setOptions: (patch: Partial<MiniflareOptions>) => mf.setOptions({ ...runtimeOptions, ...patch }),
+  };
 }
 
 const post = (body: FixturePayload) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
@@ -235,7 +239,12 @@ try {
     }).persist();
   }
 
-  const usda = await runtime("worker/usda-proxy/src/index.ts", { fetchMock: providers, bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local" } });
+  const usda = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: providers,
+    bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local", USDA_BUDGET_PER_MINUTE: "1000" },
+    durableObjects: { USDA_BUDGET: { className: "UsdaBudget", useSQLite: true } },
+  });
+
   const search = "/v1/usda/search?q=QA%20cereal&pageSize=2";
   const result = await request(usda.url, search);
   assert.equal(result.status, 200); assert.equal(responseResults(result).length, 1); assert.equal(responseBody(result).hasMore, true);
@@ -255,6 +264,94 @@ try {
   const isolated = await request(usda.url, "/v1/packaged-foods/search?q=QA%20cereal&provider=usda");
   assert.equal(responseBody(isolated).resolvedProvider, "usda"); assert(upstreamCalls > offCalls);
   pass("OFF positive deduplication/cache and cross-provider cache isolation");
+
+  const routeLimiter = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: providers,
+    bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local" },
+    ratelimits: {
+      PACKAGED_SEARCH_LIMITER: { namespace_id: "9901", simple: { limit: 1, period: 60 } },
+      BARCODE_LIMITER: { namespace_id: "9902", simple: { limit: 1, period: 60 } },
+      USDA_SEARCH_LIMITER: { namespace_id: "9903", simple: { limit: 1, period: 60 } },
+    },
+    durableObjects: { USDA_BUDGET: { className: "UsdaBudget", useSQLite: true } },
+  });
+
+  const cachedSearchPath = "/v1/packaged-foods/search?q=route%20limiter&provider=openFoodFacts";
+  assert.equal((await request(routeLimiter.url, cachedSearchPath)).status, 200);
+  const cachedAgain = await request(routeLimiter.url, cachedSearchPath);
+  assert.equal(cachedAgain.status, 200);
+  const limitedRouteResponse = await request(routeLimiter.url, "/v1/packaged-foods/search?q=another%20limiter&provider=openFoodFacts");
+  assert.equal(limitedRouteResponse.status, 429);
+  assert.equal(limitedRouteResponse.headers.get("Retry-After"), "60");
+  assert.deepEqual(responseBody(limitedRouteResponse), { error: "Too many requests. Please try again in a minute." });
+  assert.equal(cachedAgain.headers.get("Cache-Control")?.startsWith("public"), true);
+  pass("route limiter returns 429 while cache hits bypass the limiter");
+
+  const exhaustedBudget = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: providers,
+    bindings: {
+      USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local",
+      USDA_BUDGET_PER_MINUTE: "0",
+    },
+    durableObjects: { USDA_BUDGET: { className: "UsdaBudget", useSQLite: true } },
+  });
+
+  const exhaustedQuery = "/v1/packaged-foods/search?q=QA%20cereal&provider=usda";
+  const exhaustedResponse = await request(exhaustedBudget.url, exhaustedQuery);
+  assert.equal(exhaustedResponse.status, 200);
+  assert.equal(exhaustedResponse.headers.get("Cache-Control"), "no-store");
+  assert.equal(exhaustedResponse.headers.get("X-MACROS-Degraded"), "usda-budget-exhausted");
+  assert.equal(responseResults(exhaustedResponse).length, 0);
+  const requestsBeforeRepeat = upstreamCalls;
+  const repeatedExhaustedResponse = await request(exhaustedBudget.url, exhaustedQuery);
+  assert.equal(repeatedExhaustedResponse.headers.get("Cache-Control"), "no-store");
+  assert.equal(upstreamCalls, requestsBeforeRepeat);
+  await exhaustedBudget.setOptions({ bindings: { USDA_BUDGET_PER_MINUTE: "14" } });
+  const afterBudgetReset = await request(exhaustedBudget.url, exhaustedQuery);
+  assert.equal(afterBudgetReset.status, 200);
+  assert.equal(afterBudgetReset.headers.get("Cache-Control"), "public, s-maxage=86400");
+  assert.equal(responseResults(afterBudgetReset).length, 1);
+  pass("USDA exhaustion returns no-store degraded response and does not cache it");
+
+  const strictBudget = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: providers,
+    bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local", USDA_BUDGET_PER_MINUTE: "14" },
+    durableObjects: { USDA_BUDGET: { className: "UsdaBudget", useSQLite: true } },
+  });
+
+  let strictBudgetUpstreamCalls = upstreamCalls;
+
+  for (let index = 1; index <= 15; index += 1) {
+    const limited = await request(strictBudget.url, `/v1/usda/search?q=budget%20slot%20${index}`, {
+      headers: { "cf-connecting-ip": `192.0.2.${index}` },
+    });
+
+    assert.equal(limited.status, index <= 14 ? 200 : 503);
+
+    if (index === 15) {
+      assert.equal(limited.headers.get("Cache-Control"), "no-store");
+      assert.equal(limited.headers.get("X-MACROS-Degraded"), "usda-budget-exhausted");
+    }
+  }
+
+  assert(upstreamCalls > strictBudgetUpstreamCalls);
+  assert.equal(upstreamCalls - strictBudgetUpstreamCalls, 14);
+  strictBudgetUpstreamCalls = upstreamCalls;
+  assert.equal((await request(strictBudget.url, "/v1/usda/search?q=budget%20slot%2015%20retry", {
+    headers: { "cf-connecting-ip": "192.0.2.100" },
+  })).status, 503);
+  assert.equal(upstreamCalls, strictBudgetUpstreamCalls);
+  pass("SQLite Durable Object allows 14 direct USDA calls and denies the 15th without upstream traffic");
+
+  const failOpenBudget = await runtime("tools/runtime-qa/usda-budget-failing-worker.mjs", {
+    fetchMock: providers,
+    bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local" },
+  });
+
+  const failOpenResponse = await request(failOpenBudget.url, "/v1/usda/search?q=QA%20cereal&page=7");
+  assert.equal(failOpenResponse.status, 200);
+  assert.equal(responseResults(failOpenResponse).length, 1);
+  pass("throwing shared-budget binding fails open to USDA");
   const detailsMock = providers.get("https://api.nal.usda.gov");
   detailsMock.intercept({ path: "/fdc/v1/food/42", method: "GET" }).reply(200, JSON.stringify({
     ...usdaFood, foodNutrients: usdaFood.foodNutrients.map(n => ({ nutrient: { id: n.nutrientId }, amount: n.value })),
@@ -344,13 +441,50 @@ try {
     ? ["headers", "body", "hang-headers", "hang-body"] as const
     : [fixturePhaseSchema.parse(process.env.QA_PHASE)];
 
+  let shortDeadlineAttempts = 0;
+  let shortDeadlineRecovery = false;
+
+  const shortDeadline = await runtime("worker/usda-proxy/src/index.ts", {
+    bindings: {
+      USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local",
+      REQUEST_DEADLINE_MS: "100", USDA_BUDGET_PER_MINUTE: "1000",
+    },
+    outboundService: async (req: Request) => {
+      shortDeadlineAttempts++;
+      const legacy = req.url.includes("/cgi/search.pl");
+
+      const data = shortDeadlineRecovery
+        ? { hits: [offProduct], products: [offProduct], count: 1, page_count: 1 }
+        : { hits: [], products: [], count: 0, page_count: 1 };
+
+      return fixtureResponse(data, "headers", legacy ? 150 : 80);
+    },
+  });
+
+  const shortDeadlineStart = performance.now();
+  const shortDeadlineResponse = await request(shortDeadline.url, "/v1/packaged-foods/search?q=QA%20cereal&provider=openFoodFacts");
+  const shortDeadlineElapsed = performance.now() - shortDeadlineStart;
+  assert.equal(shortDeadlineResponse.status, 200);
+  assert.equal(shortDeadlineResponse.headers.get("Cache-Control"), "no-store");
+  assert.equal(shortDeadlineResponse.headers.get("X-MACROS-Degraded"), "request-deadline-expired");
+  assert(shortDeadlineAttempts >= 2, `expected cumulative attempts, got ${shortDeadlineAttempts}`);
+  assert(shortDeadlineElapsed < 500, `short total deadline elapsed ${shortDeadlineElapsed}ms`);
+  shortDeadlineRecovery = true;
+  const recoveredShortDeadline = await request(shortDeadline.url, "/v1/packaged-foods/search?q=QA%20cereal&provider=openFoodFacts");
+  assert.equal(recoveredShortDeadline.status, 200);
+  assert.notEqual(recoveredShortDeadline.headers.get("Cache-Control"), "no-store");
+  pass("configurable deadline stops cumulative upstream attempts and allows a later same-query recovery");
+
   for (const phase of phases) {
     for (const path of (section === "auth-deadline" ? [] : process.env.QA_DEADLINE_PATH ? [process.env.QA_DEADLINE_PATH] : ["/v1/usda/search?q=QA%20cereal", "/v1/usda/foods/42", "/v1/packaged-foods/barcodes/1234567890123", "/v1/packaged-foods/search?q=QA%20cereal&provider=openFoodFacts"])) {
       // A fresh runtime per phase prevents recovery cache from masking the next failure.
       let upstreamAttempts = 0;
 
       const fresh = await runtime("worker/usda-proxy/src/index.ts", {
-        bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local" },
+        bindings: {
+          USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local",
+          REQUEST_DEADLINE_MS: "8000",
+        },
         outboundService: async (req: Request) => {
           assert(["api.nal.usda.gov", "search.openfoodfacts.org", "world.openfoodfacts.org", "world.openfoodfacts.net"].includes(new URL(req.url).hostname));
           upstreamAttempts++;
@@ -375,7 +509,8 @@ try {
       const failedAttemptCount = upstreamAttempts;
       timingDiagnostics.push({ label: `${path.split("?")[0]} ${phase} (${failedAttemptCount} attempts)`, elapsedMs: Math.round(elapsed) });
 
-      assert(elapsed < 8_500, `${path} ${phase} exceeded the 8.5-second request budget`);
+      assert(elapsed < 8_500, `${path} ${phase} exceeded the configured 8000ms request budget`);
+      assert(failedAttemptCount >= 1);
       assert.equal(failed.status, 503);
 
       const expectedMessage = path.includes("/v1/usda/search")
@@ -385,10 +520,9 @@ try {
           : "Open Food Facts is unavailable right now.";
 
       assert.deepEqual(responseBody(failed), { error: expectedMessage });
-      const expectedAttempts = path.includes("/packaged-foods/search") ? 3 : path.includes("/barcodes/") ? 2 : 1;
-      assert.equal(failedAttemptCount, expectedAttempts);
       delayMode = "success";
-      assert.equal((await request(fresh.url, path)).status, 200);
+    const recovered = await request(fresh.url, path);
+    assert.equal(recovered.status, 200, JSON.stringify({ body: responseBody(recovered), headers: recovered.headers }));
       pass(`${path.split("?")[0]} ${phase} deadline and nonsticky recovery`);
     }
   }

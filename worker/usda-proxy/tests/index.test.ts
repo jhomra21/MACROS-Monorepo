@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import { packagedFoodSearchLogContext, packagedFoodSearchLogEntry } from '../src/index'
+import { packagedFoodSearchLogContext, packagedFoodSearchLogEntry } from '../src/packagedFoodSearchLogging'
 
 describe('packagedFoodSearchLogEntry', () => {
   it('omits raw query text from telemetry payloads', () => {
