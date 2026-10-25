@@ -50,6 +50,16 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`, `
 
 ## Milestones and Tasks
 
+### Payments-review failure inventory (2026-10-25, before fixes)
+
+- Expiry, grace ending, and foreground resume must refresh access without a new transaction or restart; stopped stores must cancel both listeners.
+- Lifetime (including family-shared) must not hide management of a separate active subscription.
+- Cancelled subscriptions must say Expires, grace must use its grace deadline rather than an old billing date, and unavailable/unverified status must not imply renewal.
+- Listener tests must start the store and observe refund, expiry, Ask-to-Buy approval, and renewal without manual refresh.
+- The production selection reducer must reject unverified/revoked/upgraded/unrelated or wrong-type facts, preserve subscription dates and grace-period access, select lifetime in either input order, recognize legacy lifetime, and yield Free for empty input.
+
+Review fix 1: `PurchaseStore` now observes both `Transaction.updates` and `Product.SubscriptionInfo.Status.updates`, cancels both on `stop()`/deinit, and refreshes on app-root active scene transitions. Access still comes from `Transaction.currentEntitlements`, including grace, without a wall-clock expiration cutoff. Apple APIs verified: https://developer.apple.com/documentation/storekit/product/subscriptioninfo/status-swift.struct/updates and https://developer.apple.com/documentation/storekit/transaction/currententitlements.
+
 ### WS2 failure inventory (2026-10-25, before implementation)
 
 - Catalog network failure must leave all plans unavailable and allow a successful retry.
