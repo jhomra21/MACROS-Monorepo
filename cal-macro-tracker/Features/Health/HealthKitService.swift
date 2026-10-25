@@ -3,6 +3,20 @@ import HealthKit
 import Observation
 import SwiftData
 
+enum HealthNutritionAuthorization {
+    static func isAuthorized(_ status: HKAuthorizationStatus) -> Bool {
+        status == .sharingAuthorized
+    }
+
+    static func authorizedIdentifiers(
+        statuses: [HKQuantityTypeIdentifier: HKAuthorizationStatus]
+    ) -> Set<HKQuantityTypeIdentifier> {
+        Set(statuses.compactMap { identifier, status in
+            isAuthorized(status) ? identifier : nil
+        })
+    }
+}
+
 @MainActor
 @Observable
 final class HealthKitService {
@@ -37,9 +51,16 @@ final class HealthKitService {
             (.dietarySodium, entry.sodiumConsumed, .gramUnit(with: .milli)),
             (.dietaryCholesterol, entry.cholesterolConsumed, .gramUnit(with: .milli))
         ]
+        let authorizationStatuses = Dictionary(
+            uniqueKeysWithValues: values.compactMap { identifier, _, _ in
+                HKObjectType.quantityType(forIdentifier: identifier).map { (identifier, store.authorizationStatus(for: $0)) }
+            })
+        let authorizedIdentifiers = HealthNutritionAuthorization.authorizedIdentifiers(statuses: authorizationStatuses)
+        let hasUnauthorizedTypes = authorizedIdentifiers.count < values.count
         var samples: [HKQuantitySample] = []
         var deletionFailed = false
         for (identifier, amount, unit) in values {
+            guard authorizedIdentifiers.contains(identifier) else { continue }
             guard let type = HKObjectType.quantityType(forIdentifier: identifier) else { continue }
             let syncIdentifier = "\(entry.id.uuidString).\(identifier.rawValue)"
             guard let amount, amount.isFinite else {
@@ -62,12 +83,21 @@ final class HealthKitService {
                     metadata: metadata))
         }
         guard !samples.isEmpty else {
-            statusText = deletionFailed ? "Could not update nutrition in Apple Health." : "Nutrition updated in Apple Health."
+            statusText = deletionFailed
+                ? "Could not update nutrition in Apple Health."
+                : hasUnauthorizedTypes ? "No enabled Health nutrition categories to update. Review access in the Health app."
+                : "Nutrition updated in Apple Health."
             return
         }
         do {
             try await store.save(samples)
-            statusText = deletionFailed ? "Could not update nutrition in Apple Health." : "Nutrition saved to Apple Health."
+            statusText = if deletionFailed {
+                "Some nutrition could not be updated in Apple Health."
+            } else if hasUnauthorizedTypes {
+                "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
+            } else {
+                "Nutrition saved to Apple Health."
+            }
         } catch {
             statusText = "Could not save nutrition to Apple Health."
         }
@@ -75,6 +105,7 @@ final class HealthKitService {
 
     func deleteNutrition(for entryID: UUID) async {
         for type in nutritionTypes {
+            guard HealthNutritionAuthorization.isAuthorized(store.authorizationStatus(for: type)) else { continue }
             let predicate = HKQuery.predicateForObjects(
                 withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .beginsWith, value: entryID.uuidString)
             do { try await store.deleteObjects(of: type, predicate: predicate) } catch { continue }
