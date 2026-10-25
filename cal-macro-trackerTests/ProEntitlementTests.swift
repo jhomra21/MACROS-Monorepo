@@ -1,9 +1,40 @@
 import Foundation
+import StoreKit
 import XCTest
 @testable import cal_macro_tracker
 
 @MainActor
 final class ProEntitlementTests: XCTestCase {
+    func testSubscriptionStatusDistinguishesRenewalAndCancellation() {
+        let expiration = Date(timeIntervalSince1970: 2_000_000_000)
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .subscribed, willAutoRenew: true, expiration: expiration, graceExpiration: nil),
+            .renews(expiration))
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .subscribed, willAutoRenew: false, expiration: expiration, graceExpiration: nil),
+            .expires(expiration))
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .subscribed, willAutoRenew: true, expiration: nil, graceExpiration: nil),
+            .active)
+    }
+
+    func testGraceUsesGraceDeadlineAndRetryDoesNotPromiseAccess() {
+        let expiration = Date(timeIntervalSince1970: 1_000)
+        let grace = Date(timeIntervalSince1970: 2_000)
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .inGracePeriod, willAutoRenew: true, expiration: expiration, graceExpiration: grace),
+            .paymentIssue(accessUntil: grace))
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .inBillingRetryPeriod, willAutoRenew: true, expiration: expiration, graceExpiration: nil),
+            .paymentIssue(accessUntil: nil))
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .expired, willAutoRenew: false, expiration: expiration, graceExpiration: nil),
+            .expired)
+        XCTAssertEqual(
+            ProSubscriptionStatus.resolve(state: .revoked, willAutoRenew: true, expiration: expiration, graceExpiration: nil),
+            .revoked)
+    }
+
     func testAllFeaturesRequirePro() {
         let entitlements = AppEntitlements()
         for feature in PaidFeature.allCases {
