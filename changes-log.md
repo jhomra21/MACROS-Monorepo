@@ -27,6 +27,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Expanded the website with privacy and terms pages, launch pricing and feature details, FAQ, and App Store placeholder; drafted App Store listing, privacy labels, and screenshot plans.
 
+## 2026-10-25 MACROS Pro (WS2)
+
+- Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates.
+- Locked Insights now deliberately shows real 7-day summary tiles and blurred real charts instead of the earlier fake/no-user-data preview; longer ranges remain locked. Preserved native translucent sheet glass without fake strokes.
+- Build, formatting, and catalog guardrails pass; simulator UI verifies real totals and Debug Pro gates. StoreKit integration and purchase-path QA remain blocked by local `storekitd` development-entitlement rejection, not waived. Evidence: `build/ws2-qa-2026-10-25/QA.md`; WS9/device sandbox verification is still required.
+
 ## 2026-10-13 JavaScript and TypeScript Lint Tooling
 
 - Added isolated `tools/oxlint` Bun tooling with Oxlint 1.88.0, all generic vendored anti-slop rules, native `oxc/no-accumulating-spread`, and classic `eslint/complexity` max 20. Existing source findings are reported, not rewritten.
