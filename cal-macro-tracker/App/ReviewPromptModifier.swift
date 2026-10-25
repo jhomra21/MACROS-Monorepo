@@ -13,6 +13,7 @@ struct ReviewPromptModifier: ViewModifier {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(\.requestReview) private var requestReview
     @AppStorage(AppStorageKeys.reviewPromptedAppVersion) private var promptedVersion = ""
+    @State private var successfulLogSaveCount = 0
 
     func body(content: Content) -> some View {
         content
@@ -20,20 +21,29 @@ struct ReviewPromptModifier: ViewModifier {
                 UserDefaults.standard.set(false, forKey: AppStorageKeys.isProPaywallPresented)
             }
             .onReceive(NotificationCenter.default.publisher(for: .didSuccessfullyLogFood)) { _ in
+                successfulLogSaveCount += 1
+            }
+            .task(id: successfulLogSaveCount) {
+                guard successfulLogSaveCount > 0 else { return }
+                await Task.yield()
+                guard Task.isCancelled == false else { return }
                 requestReviewIfEligible()
             }
     }
 
     private func requestReviewIfEligible() {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
-        guard let entries = try? modelContext.fetch(FetchDescriptor<LogEntry>()) else { return }
+        let isPaywallPresented = UserDefaults.standard.bool(forKey: AppStorageKeys.isProPaywallPresented)
+        guard !version.isEmpty, promptedVersion != version, !isPaywallPresented else { return }
 
         let calendar = dayContext.today.resolvedCalendar
+        guard let start = calendar.date(byAdding: .day, value: -90, to: dayContext.today.startDate) else { return }
+        var descriptor = LogEntryQuery.descriptor(start: start, end: dayContext.today.dayInterval.end)
+        guard let entries = try? modelContext.fetch(descriptor) else { return }
+
         let distinctDays = Set(entries.map { CalendarDay(date: $0.dateLogged, calendar: calendar) })
-        let isPaywallPresented = UserDefaults.standard.bool(forKey: AppStorageKeys.isProPaywallPresented)
-        let hasNotRequestedForVersion = promptedVersion != version
         let meetsLogThreshold = entries.count >= 5 && distinctDays.count >= 3
-        guard !version.isEmpty, hasNotRequestedForVersion, !isPaywallPresented, meetsLogThreshold else { return }
+        guard meetsLogThreshold else { return }
 
         promptedVersion = version
         #if DEBUG
