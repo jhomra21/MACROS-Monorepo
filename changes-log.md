@@ -16,6 +16,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added an on-device weight log linked to `BodyProfile`, a free latest-weight Insights summary with Pro-gated trends and Apple Health import, free nutrition write support, and one free daily reminder with Pro named/smart reminder scheduling.
 - Added additive SwiftData registration, HealthKit and notification setup, notification-to-Add-Food routing, and focused failure-mode coverage for weight analytics and reminder day selection.
 - Validation: `make quality-format-check`, `make quality-build`, and focused XCTest selections passed (56 tests, zero failures). Simulator QA verified nutrition writes/edits, deletion of the latest Health sample, Health body-mass import, free Insights state, and weight formatting. Reminder delivery/background/cold-launch routing remain unverified. Evidence and exact limits: `build/ws5-qa-2026-10-25/QA.md`.
+- Review fixes serialize Health nutrition writes, deletes, and backfill through one FIFO owner with enqueue-time snapshots (a delete supersedes queued writes for the same entry), report backfill outcomes in the single Settings status line, guard backfill cancellation by generation, restart weight observation after authorization, and require an exact-day baseline for the 7-day weight comparison; focused Health, weight, reminder, and migration tests pass.
 
 ## 2026-10-25 Retention and Polish (WS7)
 
