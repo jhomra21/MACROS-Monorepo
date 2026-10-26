@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 TestFlight Upload (WS10)
+
+- Archived commit `44e9551b66c90418b30de76e70d24377900a3ebf` and uploaded version 1.0/build 7 to App Store Connect; archive signing includes HealthKit and the app group.
+- Validation: preflight formatting, build, StoreKit config, Release settings, device archive, and App Store Connect upload passed; physical-device QA remains with the owner.
+
 ## 2026-10-26 WS7 Close-out
 
 - Audited Add Food spacing and Pro entry points; fixed paywall plan rows at the largest accessibility text size. Barcode `429` camera verification remains assigned to TestFlight.
