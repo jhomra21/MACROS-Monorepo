@@ -187,6 +187,35 @@ describe("FNDDS food selection", () => {
     expect(food?.aliases).toContain(description);
   });
 
+  test("keeps distinct foods when their capped display names would collide", () => {
+    const foods = selectFoods([
+      baseFood({
+        fdcId: 1,
+        description: "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, not reconstituted",
+        portions: [{ description: "1 teaspoon, dry", gramWeight: 1.7 }],
+        nutrients: new Map([[1008, 457], [1003, 1], [1004, 0], [1005, 99]]),
+      }),
+      baseFood({
+        fdcId: 2,
+        description: "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted",
+        portions: [{ description: "1 cup", gramWeight: 30 }],
+        nutrients: new Map([[1008, 16], [1003, 0], [1004, 0], [1005, 10]]),
+      }),
+    ], 0);
+
+    expect(foods).toHaveLength(2);
+    expect(new Set(foods.map(({ name }) => name)).size).toBe(2);
+    expect(foods.map(({ name }) => name)).toContain(
+      "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Not Reconstituted",
+    );
+    expect(foods.find(({ aliases }) =>
+      aliases[0] === "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, not reconstituted"
+    )?.caloriesPerServing).toBe(7.77);
+    expect(foods.find(({ aliases }) =>
+      aliases[0] === "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
+    )?.caloriesPerServing).toBe(4.8);
+  });
+
   test("plain tofu staple targets the FNDDS soybean curd row", async () => {
     const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
       await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),

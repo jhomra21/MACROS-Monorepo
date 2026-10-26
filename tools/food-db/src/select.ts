@@ -113,7 +113,7 @@ export function choosePortion(
     : { description: "100 g", grams: 100, usedFallbackPortion: true };
 }
 
-export function friendlyName(description: string): string {
+export function friendlyName(description: string, qualifierLimit = 3): string {
   const withoutSource = description
     .replace(/,\s*from (?:fast food\s*\/\s*restaurant|other sources|precooked|raw)\b.*$/i, "")
     .replace(/\([^)]*\)/g, " ")
@@ -128,7 +128,8 @@ export function friendlyName(description: string): string {
   const genericFood = /^(?:chicken|beef|pork|fish|potato|potatoes|rice|beans|coffee|milk|tea|pasta|noodles|bread|cereal|soup|salad)$/i;
 
   const isQualifier = (part: string) => nutritionQualifier.test(part) || variantQualifier.test(part);
-  const significantQualifiers = parts.slice(1).filter(isQualifier).slice(0, 3);
+  const significantQualifiers = parts.slice(1).filter(isQualifier).slice(0, qualifierLimit);
+
   const retainedDescriptor = parts[1] && !isQualifier(parts[1]) ? [parts[1]] : [];
 
   const name = significantQualifiers.length > 0
@@ -146,7 +147,7 @@ export function friendlyName(description: string): string {
 }
 
 export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
-  const selectedByName = new Map<string, { row: FoodRow; name: string }>();
+  const selectedByName = new Map<string, FoodRow>();
 
   for (const row of rows) {
     if (excludedName.test(row.description) || excludedName.test(row.category)) continue;
@@ -155,19 +156,22 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
     if ([1008, 1003, 1004, 1005].some((id) => !row.nutrients.has(id))) continue;
     const name = friendlyName(row.description);
+    const identityName = friendlyName(row.description, Number.MAX_SAFE_INTEGER);
 
     if (name.length < 2) continue;
-    const key = name.normalize("NFKC").toLowerCase();
+    const key = identityName.normalize("NFKC").toLowerCase();
     const candidate = selectedByName.get(key);
 
-    if (!candidate || row.fdcId < candidate.row.fdcId) selectedByName.set(key, { row, name });
+    if (!candidate || row.fdcId < candidate.fdcId) selectedByName.set(key, row);
   }
 
-  const candidates = Array.from(selectedByName.values(), ({ row, name }) => ({
+  const candidates = Array.from(selectedByName.values(), (row) => ({
     row,
-    name,
+    name: friendlyName(row.description),
     priority: row.description.split(",").length * 10 + row.description.split(/\s+/).length,
   })).sort((left, right) => left.priority - right.priority || left.row.fdcId - right.row.fdcId);
+
+  preserveDisplayNameDistinctions(candidates);
 
   const selected = candidates.slice(0, 3300).map(({ row, name }) => {
     const portion = choosePortion(row.portions);
@@ -204,6 +208,41 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
   }
 
   return selected.sort((left, right) => left.name < right.name ? -1 : left.name > right.name ? 1 : left.fdcId - right.fdcId);
+}
+
+function preserveDisplayNameDistinctions(candidates: Array<{ row: FoodRow; name: string; priority: number }>): void {
+  const candidatesByDisplayName = new Map<string, typeof candidates>();
+
+  for (const candidate of candidates) {
+    const key = candidate.name.normalize("NFKC").toLowerCase();
+    const collidingCandidates = candidatesByDisplayName.get(key);
+
+    if (collidingCandidates) {
+      collidingCandidates.push(candidate);
+    } else {
+      candidatesByDisplayName.set(key, [candidate]);
+    }
+  }
+
+  for (const collidingCandidates of candidatesByDisplayName.values()) {
+    if (collidingCandidates.length < 2) continue;
+
+    const maxQualifierCount = Math.max(...collidingCandidates.map(({ row }) =>
+      row.description.split(",").slice(1).map((part) => part.trim())
+        .filter((part) => nutritionQualifier.test(part) || variantQualifier.test(part)).length
+    ));
+
+    for (let qualifierLimit = 4; qualifierLimit <= maxQualifierCount; qualifierLimit += 1) {
+      const expandedNames = collidingCandidates.map(({ row }) => friendlyName(row.description, qualifierLimit));
+
+      if (new Set(expandedNames.map((name) => name.normalize("NFKC").toLowerCase())).size !== expandedNames.length) continue;
+
+      collidingCandidates.forEach((candidate, index) => {
+        candidate.name = expandedNames[index]!;
+      });
+      break;
+    }
+  }
 }
 
 function round(value: number): number {

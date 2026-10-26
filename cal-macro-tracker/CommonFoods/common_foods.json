@@ -17678,8 +17678,27 @@
     "cholesterolPerServing": 0
   },
   {
+    "sourceIdentifier": "2710485",
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 1.7,
+    "caloriesPerServing": 7.77,
+    "proteinPerServing": 0.07,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 1.16,
+    "saturatedFatPerServing": 0.2,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.29,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.38,
+    "cholesterolPerServing": 0
+  },
+  {
     "sourceIdentifier": "2710459",
-    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener",
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Reconstituted",
     "aliases": [
       "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
     ],
@@ -17697,8 +17716,27 @@
     "cholesterolPerServing": 0
   },
   {
+    "sourceIdentifier": "2710484",
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 3.4,
+    "caloriesPerServing": 15.81,
+    "proteinPerServing": 0,
+    "fatPerServing": 0.45,
+    "carbsPerServing": 2.93,
+    "saturatedFatPerServing": 0.45,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 2.27,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 11.32,
+    "cholesterolPerServing": 0
+  },
+  {
     "sourceIdentifier": "2710455",
-    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar",
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Reconstituted",
     "aliases": [
       "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconsitituted"
     ],
