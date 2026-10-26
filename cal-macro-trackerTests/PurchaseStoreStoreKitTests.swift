@@ -182,12 +182,17 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     func testLifetimeBeatsSubscription() async throws {
-        _ = try await session.buyProduct(identifier: ProPlan.yearly.productID)
-        _ = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
-        await store.refreshEntitlements()
+        await store.start()
+        try await expectChange("Yearly purchase grants Pro", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.yearly.productID)
+        }
+        try await expectChange("Lifetime purchase outranks subscription", until: { self.entitlements.proSource == .lifetime }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.lifetime.productID)
+        }
         XCTAssertEqual(entitlements.proSource, .lifetime)
         XCTAssertNil(entitlements.proExpirationDate)
         try session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
+        try await AppStore.sync()
         await store.refreshEntitlements()
         XCTAssertTrue(store.hasPro)
         XCTAssertEqual(entitlements.proSource, .lifetime)
@@ -202,8 +207,10 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
     }
 
     func testRestoreFailurePreservesEntitlement() async throws {
-        _ = try await session.buyProduct(identifier: ProPlan.lifetime.productID)
-        await store.refreshEntitlements()
+        await store.start()
+        try await expectChange("Lifetime purchase grants Pro", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: ProPlan.lifetime.productID)
+        }
         try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .appStoreSync)
         await store.restorePurchases()
         XCTAssertTrue(store.hasPro)
