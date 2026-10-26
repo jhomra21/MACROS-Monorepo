@@ -9,11 +9,9 @@ struct BackupSettingsSection: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(SharingSyncService.self) private var sharingSyncService
-    @Query private var logEntries: [LogEntry]
     @State private var presentation: BackupPresentation?
     @State private var isImportingFile = false
     @State private var isWorking = false
-    @State private var importProgress: String?
     @State private var errorMessage: String?
 
     var body: some View {
@@ -25,6 +23,10 @@ struct BackupSettingsSection: View {
                     .disabled(isWorking)
                 Button("Import backup") { isImportingFile = true }
                     .disabled(isWorking)
+                    .fileImporter(
+                        isPresented: $isImportingFile, allowedContentTypes: [.json],
+                        allowsMultipleSelection: false, onCompletion: importFile
+                    )
             } else {
                 Button {
                     presentation = .paywall(.backup)
@@ -42,93 +44,96 @@ struct BackupSettingsSection: View {
                     Label("Import backup", systemImage: "lock.fill")
                 }
             }
-            if isWorking {
-                ProgressView(importProgress ?? "Importing backup…")
-            }
         } header: {
             Text("Backup")
+                .sheet(item: $presentation) { presentation in
+                    switch presentation {
+                    case let .importSummary(backup, unmatchedCount):
+                        BackupImportSummarySheet(
+                            backup: backup,
+                            unmatchedMealItemCount: unmatchedCount,
+                            onImport: { mode in
+                                try await importBackup(backup, mode: mode)
+                            },
+                            errorMessage: $errorMessage
+                        )
+                    case let .share(url):
+                        BackupFileShareSheet(url: url)
+                    case let .paywall(context):
+                        ProPaywallSheet(context: context).presentationDetents([.medium, .large])
+                    }
+                }
+                .errorBanner(message: $errorMessage)
         } footer: {
             Text("Backups contain your saved data and can be shared or stored in Files.")
-        }
-        .fileImporter(
-            isPresented: $isImportingFile,
-            allowedContentTypes: [.json],
-            allowsMultipleSelection: false,
-            onCompletion: importFile
-        )
-        .sheet(item: $presentation) { presentation in
-            switch presentation {
-            case let .importSummary(backup):
-                BackupImportSummarySheet(
-                    backup: backup,
-                    isImporting: $isWorking,
-                    onImport: { mode in
-                        Task { await importBackup(backup, mode: mode) }
-                    }
-                )
-            case let .share(url):
-                BackupFileShareSheet(url: url)
-            case let .paywall(context):
-                ProPaywallSheet(context: context).presentationDetents([.medium, .large])
-            }
-        }
-        .errorBanner(message: $errorMessage)
-    }
-
-    private func exportBackup() {
-        do {
-            let backup = try BackupExporter.makeBackup(from: modelContext)
-            let data = try BackupExporter.encode(backup)
-            presentation = .share(try makeShareItem(data: data, extension: "json"))
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
-
-    private func exportCSV() {
-        do {
-            let data = Data(BackupExporter.csv(for: logEntries).utf8)
-            presentation = .share(try makeShareItem(data: data, extension: "csv"))
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     private func importFile(_ result: Result<[URL], Error>) {
-        do {
-            guard let url = try result.get().first else { return }
-            let accessed = url.startAccessingSecurityScopedResource()
-            defer {
-                if accessed { url.stopAccessingSecurityScopedResource() }
+        let container = modelContext.container
+        Task {
+            do {
+                guard let url = try result.get().first else { return }
+                let backup = try await Task.detached {
+                    let accessed = url.startAccessingSecurityScopedResource()
+                    defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+                    return try BackupImporter.decode(Data(contentsOf: url))
+                }.value
+                let exporter = await BackupExportActor.background(container: container)
+                let count = try await exporter.unmatchedMealItemCount(in: backup)
+                presentation = .importSummary(backup, count)
+            } catch {
+                errorMessage = error.localizedDescription
             }
-            presentation = .importSummary(try BackupImporter.decode(Data(contentsOf: url)))
-        } catch {
-            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func exportBackup() {
+        let container = modelContext.container
+        let settings = BackupSettings.current()
+        isWorking = true
+        Task {
+            defer { isWorking = false }
+            do {
+                let exporter = await BackupExportActor.background(container: container)
+                let data = try await exporter.export(settings: settings)
+                let url = try await Task.detached { try Self.makeShareItem(data: data, extension: "json") }.value
+                presentation = .share(url)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func exportCSV() {
+        let container = modelContext.container
+        isWorking = true
+        Task {
+            defer { isWorking = false }
+            do {
+                let exporter = await BackupExportActor.background(container: container)
+                let data = try await exporter.exportCSV()
+                let url = try await Task.detached { try Self.makeShareItem(data: data, extension: "csv") }.value
+                presentation = .share(url)
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 
     @MainActor
-    private func importBackup(_ backup: MACROSBackup, mode: BackupImportMode) async {
-        isWorking = true
-        defer {
-            isWorking = false
-            importProgress = nil
-        }
-        await Task.yield()
-        do {
-            try BackupImporter.apply(backup, to: modelContext.container, mode: mode) {
-                importProgress = $0
-            }
-            presentation = nil
-            sharingSyncService.syncAfterDailyTotalsChange(container: modelContext.container)
-            NotificationCenter.default.post(name: .remindersDidChange, object: nil)
-        } catch {
-            presentation = nil
-            errorMessage = error.localizedDescription
-        }
+    private func importBackup(
+        _ backup: MACROSBackup,
+        mode: BackupImportMode
+    ) async throws {
+        try await BackupImporter.apply(backup, to: modelContext.container, mode: mode)
+        WidgetTimelineReloader.reloadMacroWidgets()
+        sharingSyncService.syncAfterDailyTotalsChange(container: modelContext.container)
+        NotificationCenter.default.post(name: .remindersDidChange, object: nil)
+        presentation = nil
     }
 
-    private func makeShareItem(data: Data, extension fileExtension: String) throws -> URL {
+    nonisolated private static func makeShareItem(data: Data, extension fileExtension: String) throws -> URL {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -145,13 +150,13 @@ struct BackupSettingsSection: View {
 }
 
 private enum BackupPresentation: Identifiable {
-    case importSummary(MACROSBackup)
+    case importSummary(MACROSBackup, Int)
     case share(URL)
     case paywall(ProPaywallContext)
 
     var id: String {
         switch self {
-        case let .importSummary(backup): "import-\(backup.id.timeIntervalSinceReferenceDate)"
+        case let .importSummary(backup, _): "import-\(backup.id.timeIntervalSinceReferenceDate)"
         case let .share(url): "share-\(url.path)"
         case let .paywall(context): "paywall-\(context.rawValue)"
         }

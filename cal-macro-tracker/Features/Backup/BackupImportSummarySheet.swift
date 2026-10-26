@@ -2,9 +2,12 @@ import SwiftUI
 
 struct BackupImportSummarySheet: View {
     let backup: MACROSBackup
-    @Binding var isImporting: Bool
-    let onImport: (BackupImportMode) -> Void
+    let unmatchedMealItemCount: Int
+    let onImport: (BackupImportMode) async throws -> Void
+    @Binding var errorMessage: String?
     @Environment(\.dismiss) private var dismiss
+    @State private var isImporting = false
+    @State private var importTask: Task<Void, Never>?
     @State private var confirmingReplace = false
 
     var body: some View {
@@ -25,15 +28,25 @@ struct BackupImportSummarySheet: View {
                     countRow("Weight entries", backup.weightEntries.count)
                 }
                 Section {
+                    if unmatchedMealItemCount > 0 {
+                        Text("\(unmatchedMealItemCount) meal items could not be matched to bundled foods")
+                    }
                     if isImporting {
                         ProgressView("Importing backup…")
-                    } else {
-                        Button("Merge") { onImport(.merge) }
-                        Button("Replace All Data", role: .destructive) { confirmingReplace = true }
                     }
                 } footer: {
                     Text("Merge keeps existing rows with matching IDs. Replace removes your saved data before importing this backup.")
                 }
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                BottomPinnedDualActionBar(
+                    leadingAction: BottomPinnedDualAction(
+                        title: "Replace All Data", systemImage: "trash", action: { confirmingReplace = true },
+                        role: .destructive),
+                    trailingAction: BottomPinnedDualAction(
+                        title: "Merge", systemImage: "square.and.arrow.down", action: { startImport(.merge) })
+                )
+                .disabled(isImporting)
             }
             .navigationTitle("Import Backup")
             .inlineNavigationTitle()
@@ -48,7 +61,7 @@ struct BackupImportSummarySheet: View {
                 isPresented: $confirmingReplace,
                 titleVisibility: .visible
             ) {
-                Button("Replace All Data", role: .destructive) { onImport(.replace) }
+                Button("Replace All Data", role: .destructive) { startImport(.replace) }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("Your current logs, meals, foods, goals, profile, and weight entries will be removed. Common foods stay available.")
@@ -56,6 +69,8 @@ struct BackupImportSummarySheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+        .interactiveDismissDisabled(isImporting)
+        .onDisappear { importTask?.cancel() }
     }
 
     private var dateRange: String? {
@@ -69,5 +84,24 @@ struct BackupImportSummarySheet: View {
 
     private func countRow(_ title: String, _ count: Int) -> some View {
         LabeledContent(title, value: count.formatted())
+    }
+
+    private func startImport(_ mode: BackupImportMode) {
+        isImporting = true
+        importTask = Task {
+            defer {
+                isImporting = false
+                importTask = nil
+            }
+
+            do {
+                try await onImport(mode)
+                dismiss()
+            } catch is CancellationError {
+            } catch {
+                errorMessage = error.localizedDescription
+                dismiss()
+            }
+        }
     }
 }

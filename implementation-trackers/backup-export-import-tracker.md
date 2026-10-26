@@ -4,7 +4,7 @@ Branch `launch/ws6-backup`. Mac only. Phase 2: starts after WS2, WS3, and WS5 ar
 
 ## Status
 
-Implementation is complete. Formatting, build, `BackupRoundTripTests` (9/9), and `MealSchemaMigrationTests` (1/1) pass. Simulator QA verified custom food logging, Pro-gated backup controls, JSON export/share, Files save, and backup parsing/summary. End-to-end Replace/Merge completion and seeded two-day/meal/weight/settings parity remain unverified; see `build/ws6-qa-2026-10-26/QA.md`.
+Implementation is complete. Formatting, build, `BackupRoundTripTests` (11/11), and `MealSchemaMigrationTests` (1/1) pass. Simulator QA verified export to Files, uninstall/reinstall, Replace and Merge automatic dismissal, and two-day meal/weight/settings parity across Dashboard, History, Insights, and Settings. Evidence and limits: `build/ws6-qa-2026-10-26/QA.md`.
 
 ## Shared Understanding
 
@@ -15,7 +15,9 @@ Implementation is complete. Formatting, build, `BackupRoundTripTests` (9/9), and
 - Format `MACROSBackup` JSON, `version: 1`, `exportedAt`, `appVersion`, then arrays of Codable DTOs (not SwiftData models): `goals`, `bodyProfile`, `foods` (custom and external sources only; `common` foods are reseeded), `meals` with components, `logEntries`, `weightEntries`, and `settings` (ring colors, suggestions toggle, reminder configuration). Stable ordering by `createdAt` then `id` so two exports of the same data are byte-identical.
 - Also export a CSV of log entries (one row per entry, consumed values and per-serving values) for spreadsheets.
 - Export: Settings > Backup > "Export backup" writes `MACROS-backup-<yyyy-MM-dd>.json` to a temporary directory and presents the share sheet (reuse the pattern in `DailyShareImageExporter` / `DashboardShareSupport`). "Export logs as CSV" likewise.
-- Import: `fileImporter` for JSON; parse and show a summary sheet (counts, date range, app version) with two choices: Merge (skip rows whose `id` already exists) or Replace (delete all non-common data first, then insert). Run in one `PersistenceReporter.persist` transaction per table group; show progress; on failure roll back and show the error banner. Reload widgets and trigger sharing sync after import.
+- Import: background JSON decoding and a counts Form with pinned Merge/Replace actions. Validate the whole document, then stage every group in a background `@ModelActor` context with autosave disabled and exactly one save; roll back on failure. Restore settings and refresh widgets, sharing, and reminders on the main actor after saving.
+- Bundled references carry optional source identifiers in version 1 and reconnect to local UUIDs. Unmatched log references retain nutrition snapshots; unmatched meal components have no snapshot and are counted in a summary warning.
+- Presentation fix: stable Settings rows alone did not prevent duplicate presenters on iOS 27. The summary/share/paywall sheet and error banner use the single Backup header host, rather than the outer Section modifier originally requested. The file importer stays on its button. First file selection and successful automatic dismissal are verified without transition delays or UIKit workarounds.
 - Validation rules: reject unknown versions, malformed JSON, negative nutrition values, entries referencing missing foods (import them as snapshot-only entries, which `LogEntry` already supports since it carries its own nutrition).
 
 ## Proposed File Shape
@@ -28,6 +30,13 @@ Implementation is complete. Formatting, build, `BackupRoundTripTests` (9/9), and
 
 ### Failure list (written before tests and implementation)
 
+- A logged meal's nested snapshots or non-default ring/reminder settings may be lost on round trip.
+- Replace may leave components, logged snapshots, weights, or profiles from the previous store.
+- Bundled foods may have different UUIDs on another device; references must reconnect by source identifier.
+- A negative weight in the final validation group must leave every existing row and setting untouched.
+- Merge with changed duplicate values must retain local values across all model groups.
+- An unresolved bundled meal item must be counted in the summary, not silently discarded.
+- Recreating Settings rows during import may orphan the live summary sheet.
 - A successful backup may lose fields or change decoded content when exported and imported.
 - Unsupported backup versions or malformed JSON may be accepted or crash import.
 - Negative nutrition values may enter the local store from a crafted backup.
@@ -41,4 +50,4 @@ Implementation is complete. Formatting, build, `BackupRoundTripTests` (9/9), and
 2. [x] DTOs and exporter.
 3. [x] Importer and summary UI.
 4. [x] Settings section with Pro gate (`ProPaywallSheet(context: .backup)` when locked).
-5. [ ] Validation and simulator E2E. Unit/build/format checks pass; full app erase/reinstall with seeded two-day data, Replace/Merge completion, and Dashboard/History/Insights/Settings parity are not verified. Partial evidence and exact steps are in `build/ws6-qa-2026-10-26/QA.md`.
+5. [x] Validation and simulator E2E. Full fixture export, uninstall/reinstall, Replace/Merge completion, document parity, and Dashboard/History/Insights/Settings comparisons pass. Reproduction steps, screenshots, and unverified external effects are in `build/ws6-qa-2026-10-26/QA.md`.

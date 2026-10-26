@@ -14,7 +14,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-26 Backup Export and Import (WS6)
 
 - Added versioned JSON backup and log CSV export, validated DTO import with Merge/Replace, common-food preservation, settings restore, summary review, and Pro-gated Settings controls.
-- Validation: formatting, quality build, `BackupRoundTripTests` (9/9), and `MealSchemaMigrationTests` (1/1) pass; simulator export/share/Files-save and import-summary presentation pass, while UI import completion and full data-parity E2E remain unverified (`build/ws6-qa-2026-10-26/QA.md`).
+- Follow-up: imports now validate before one atomic background-context save, restore bundled-food references by source identifier, and use pinned destructive Replace/primary Merge actions. Stable rows plus a single Backup-header presentation host fix the iOS 27 duplicate-presenter failure; both the sheet and parent clear successful presentation.
+- Validation: formatting, quality build, 11 backup tests and 1 migration test pass; simulator Files export, uninstall/reinstall Replace, overlapping Merge, automatic dismissal, full document parity, and Dashboard/History/Insights/Settings comparisons pass (`build/ws6-qa-2026-10-26/QA.md`).
 
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 
