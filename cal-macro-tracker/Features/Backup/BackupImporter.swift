@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 nonisolated enum BackupImportMode: Equatable, Sendable {
     case merge
@@ -10,6 +11,7 @@ nonisolated enum BackupImportError: LocalizedError, Equatable {
     case unsupportedVersion(Int)
     case invalidNutrition(String)
     case invalidWeight
+    case invalidValue(String)
 
     var errorDescription: String? {
         switch self {
@@ -19,6 +21,8 @@ nonisolated enum BackupImportError: LocalizedError, Equatable {
             "The backup contains an invalid nutrition value for \(name)."
         case .invalidWeight:
             "The backup contains an invalid weight entry."
+        case let .invalidValue(field):
+            "The backup contains an invalid value for \(field)."
         }
     }
 }
@@ -42,28 +46,71 @@ enum BackupImporter {
 
     nonisolated static func validate(_ backup: MACROSBackup) throws {
         guard backup.version == 1 else { throw BackupImportError.unsupportedVersion(backup.version) }
+        try validateDates([backup.exportedAt])
         for goals in backup.goals {
+            try validateDates([goals.createdAt, goals.updatedAt])
             try validateNutrition(
                 [goals.calorieGoal, goals.proteinGoalGrams, goals.fatGoalGrams, goals.carbGoalGrams],
                 name: "daily goals"
             )
         }
+        let currentYear = Calendar.current.component(.year, from: .now)
+        for profile in backup.bodyProfile {
+            try validateDates([profile.createdAt, profile.updatedAt])
+            // Compare birth years before subtracting an untrusted Int from the current year.
+            guard
+                profile.birthYear.map({ ((currentYear - 120)...(currentYear - 1)).contains($0) }) ?? true,
+                [profile.heightCm, profile.weightKg].compactMap({ $0 }).allSatisfy({ $0.isFinite && $0 > 0 }),
+                profile.goalCalorieOffset.isFinite, (-750...500).contains(profile.goalCalorieOffset)
+            else { throw BackupImportError.invalidValue("body profile") }
+        }
         for food in backup.foods {
+            try validateDates([food.createdAt, food.updatedAt])
             try validateNutrition(food.nutritionValues, name: food.name)
         }
         for entry in backup.logEntries {
+            try validateDates([entry.dateLogged, entry.createdAt, entry.updatedAt])
             try validateNutrition(entry.nutritionValues, name: entry.foodName)
             for snapshot in entry.componentSnapshots {
+                try validateDates([snapshot.createdAt])
                 try validateNutrition(snapshot.nutritionValues, name: snapshot.foodName)
             }
         }
         for meal in backup.meals {
-            for component in meal.components where !component.quantityAmount.isFinite || component.quantityAmount <= 0 {
-                throw BackupImportError.invalidNutrition(meal.name)
+            try validateDates([meal.createdAt, meal.updatedAt])
+            for component in meal.components {
+                try validateDates([component.createdAt, component.updatedAt])
+                guard component.quantityAmount.isFinite, component.quantityAmount > 0 else {
+                    throw BackupImportError.invalidNutrition(meal.name)
+                }
             }
         }
         guard backup.weightEntries.allSatisfy({ $0.weightKg.isFinite && $0.weightKg > 0 }) else {
             throw BackupImportError.invalidWeight
+        }
+        for weight in backup.weightEntries {
+            try validateDates([weight.recordedAt, weight.createdAt, weight.updatedAt])
+        }
+        let reminders = backup.settings.reminders
+        let times = [
+            (reminders.hour, reminders.minute),
+            (reminders.breakfastHour, reminders.breakfastMinute),
+            (reminders.lunchHour, reminders.lunchMinute),
+            (reminders.dinnerHour, reminders.dinnerMinute)
+        ]
+        // These fixed slots cannot inject identifiers or bypass the scheduler's 1-free/3-Pro cap.
+        guard times.allSatisfy({ (0...23).contains($0.0) && (0...59).contains($0.1) }) else {
+            throw BackupImportError.invalidValue("reminder times")
+        }
+        let colors = backup.settings.ringColors
+        guard [colors.proteinHex, colors.carbHex, colors.fatHex].allSatisfy({ Color(hex: $0) != nil }) else {
+            throw BackupImportError.invalidValue("ring colors")
+        }
+    }
+
+    nonisolated private static func validateDates(_ dates: [Date]) throws {
+        guard dates.allSatisfy({ $0.timeIntervalSinceReferenceDate.isFinite }) else {
+            throw BackupImportError.invalidValue("dates")
         }
     }
 

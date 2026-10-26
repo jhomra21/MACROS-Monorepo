@@ -15,7 +15,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Added versioned JSON backup and log CSV export, validated DTO import with Merge/Replace, common-food preservation, settings restore, summary review, and Pro-gated Settings controls.
 - Follow-up: imports now validate before one atomic background-context save, restore bundled-food references by source identifier, and use pinned destructive Replace/primary Merge actions. Stable rows plus a single Backup-header presentation host fix the iOS 27 duplicate-presenter failure; both the sheet and parent clear successful presentation.
-- Validation: formatting, quality build, 11 backup tests and 1 migration test pass; simulator Files export, uninstall/reinstall Replace, overlapping Merge, automatic dismissal, full document parity, and Dashboard/History/Insights/Settings comparisons pass (`build/ws6-qa-2026-10-26/QA.md`).
+- Review fixes validate profile bounds, all reminder times, ring hex through the palette parser, and every DTO date before mutation; settings round-trip tests now use separate destination defaults and failed Replace checks use different incoming settings.
+- Validation: formatting, quality build, 15 backup tests and 1 migration test pass; prior simulator Files export, uninstall/reinstall Replace, overlapping Merge, automatic dismissal, full document parity, and Dashboard/History/Insights/Settings comparisons pass (`build/ws6-qa-2026-10-26/QA.md`).
 
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 

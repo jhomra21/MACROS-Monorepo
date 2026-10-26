@@ -4,7 +4,7 @@ Branch `launch/ws6-backup`. Mac only. Phase 2: starts after WS2, WS3, and WS5 ar
 
 ## Status
 
-Implementation is complete. Formatting, build, `BackupRoundTripTests` (11/11), and `MealSchemaMigrationTests` (1/1) pass. Simulator QA verified export to Files, uninstall/reinstall, Replace and Merge automatic dismissal, and two-day meal/weight/settings parity across Dashboard, History, Insights, and Settings. Evidence and limits: `build/ws6-qa-2026-10-26/QA.md`.
+Implementation is complete. Formatting, build, `BackupRoundTripTests` (15/15), and `MealSchemaMigrationTests` (1/1) pass. Prior simulator QA verified export to Files, uninstall/reinstall, Replace and Merge automatic dismissal, and two-day meal/weight/settings parity across Dashboard, History, Insights, and Settings. Review follow-up validates profile/settings/date bounds before mutation and independently verifies destination settings restoration. Evidence and limits: `build/ws6-qa-2026-10-26/QA.md`.
 
 ## Shared Understanding
 
@@ -30,6 +30,8 @@ Implementation is complete. Formatting, build, `BackupRoundTripTests` (11/11), a
 
 ### Failure list (written before tests and implementation)
 
+- An extreme birth year, invalid profile measurement, reminder time, ring hex, or nonfinite date may survive validation and crash downstream after Replace deletes local data.
+- Shared source/destination defaults may hide a missing settings restore; failed Replace must retain different local settings.
 - A logged meal's nested snapshots or non-default ring/reminder settings may be lost on round trip.
 - Replace may leave components, logged snapshots, weights, or profiles from the previous store.
 - Bundled foods may have different UUIDs on another device; references must reconnect by source identifier.

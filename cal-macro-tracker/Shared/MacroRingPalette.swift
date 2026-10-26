@@ -96,7 +96,7 @@ extension UserDefaults {
 }
 
 extension Color {
-    init?(hex: String) {
+    nonisolated init?(hex: String) {
         let normalizedHex = hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
         guard normalizedHex.count == 6, let value = Int(normalizedHex, radix: 16) else { return nil }
 
