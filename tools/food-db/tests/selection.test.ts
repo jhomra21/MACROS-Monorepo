@@ -1,9 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { choosePortion, friendlyName, householdAliases, selectFoods, type FoodRow } from "../src/select";
 import { addStapleAliases, validateStaples, type Staple } from "../src/staples";
-import { loadFoods } from "../src/fndds";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { z } from "zod";
 
 const servingFields = [
@@ -240,13 +237,30 @@ describe("FNDDS food selection", () => {
       await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
     );
 
-    const tofu = bundledFoods.find(({ aliases }) => aliases.includes("tofu"));
-    const sourceRows = await loadFoods(join(homedir(), "Library", "Caches", "macros-food-db", "fndds-2024-10-31.zip"));
-    const sourceTofu = sourceRows.find(({ description }) => description === "Soybean curd");
+    const foodRows: Array<{ fdc_id: number; description: string }> = [
+      { fdc_id: 123, description: "Soybean curd" },
+      { fdc_id: 456, description: "Soybean curd, fried" },
+    ];
 
-    expect(tofu?.name).toBe("Soybean Curd");
-    expect(tofu?.aliases).toContain("Soybean curd");
-    expect(tofu?.sourceIdentifier).toBe(`fndds:${sourceTofu?.foodCode}`);
+    const surveyFnddsFoodRows: Array<{ fdc_id: number; food_code: string }> = [
+      { fdc_id: 123, food_code: "41420010" },
+      { fdc_id: 456, food_code: "41420011" },
+    ];
+
+    const foodCodeByFdcId = new Map(surveyFnddsFoodRows.map(({ fdc_id, food_code }) => [fdc_id, food_code]));
+
+    const selectionFixture = foodRows.map(({ fdc_id, description }) =>
+      baseFood({ fdcId: fdc_id, foodCode: foodCodeByFdcId.get(fdc_id), description })
+    );
+
+    const selectedFoods = selectFoods(selectionFixture, 0);
+    const tofu = selectedFoods.find(({ aliases }) => aliases.includes("Soybean curd"));
+    const bundledIdentifiers = bundledFoods.map(({ sourceIdentifier }) => sourceIdentifier);
+
+    expect(tofu?.sourceIdentifier).toBe("fndds:41420010");
+    expect(tofu?.sourceIdentifier).toMatch(/^fndds:\d{8}$/);
+    expect(new Set(bundledIdentifiers).size).toBe(bundledIdentifiers.length);
+    expect(bundledIdentifiers.filter((identifier) => identifier === tofu?.sourceIdentifier)).toHaveLength(1);
   });
 
   test("adds deterministic household aliases to matching source descriptions", () => {

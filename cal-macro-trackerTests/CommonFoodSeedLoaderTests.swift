@@ -133,8 +133,8 @@ final class CommonFoodSeedLoaderTests: XCTestCase {
         context.insert(sharedFood)
         try context.save()
 
-        let descriptionMatch = record(sourceIdentifier: "fndds:00000001", name: "Renamed Food")
-        let nameMatch = record(sourceIdentifier: "fndds:00000002", name: "Existing Name")
+        let nameMatch = record(sourceIdentifier: "fndds:00000001", name: "Existing Name")
+        let descriptionMatch = record(sourceIdentifier: "fndds:00000002", name: "Renamed Food")
         let originalID = sharedFood.id
         let descriptionMatchRecord = CommonFoodSeedRecord(
             sourceIdentifier: descriptionMatch.sourceIdentifier,
@@ -156,17 +156,25 @@ final class CommonFoodSeedLoaderTests: XCTestCase {
 
         try CommonFoodSeedLoader.reconcile(
             modelContext: context,
-            records: [descriptionMatchRecord, nameMatch]
+            records: [nameMatch, descriptionMatchRecord]
         )
 
         let foods = try context.fetch(FetchDescriptor<FoodItem>())
-        let claimedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == descriptionMatch.sourceIdentifier })
-        let insertedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == nameMatch.sourceIdentifier })
+        let claimedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == nameMatch.sourceIdentifier })
+        let insertedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == descriptionMatch.sourceIdentifier })
         XCTAssertEqual(foods.count, 2)
         XCTAssertEqual(claimedFood.id, originalID)
-        XCTAssertEqual(claimedFood.caloriesPerServing, 210)
+        XCTAssertEqual(claimedFood.sourceIdentifier, nameMatch.sourceIdentifier)
+        XCTAssertEqual(claimedFood.caloriesPerServing, nameMatch.caloriesPerServing)
+        XCTAssertEqual(claimedFood.proteinPerServing, nameMatch.proteinPerServing)
+        XCTAssertEqual(claimedFood.fatPerServing, nameMatch.fatPerServing)
+        XCTAssertEqual(claimedFood.carbsPerServing, nameMatch.carbsPerServing)
         XCTAssertNotEqual(insertedFood.id, originalID)
-        XCTAssertEqual(insertedFood.caloriesPerServing, nameMatch.caloriesPerServing)
+        XCTAssertEqual(insertedFood.sourceIdentifier, descriptionMatchRecord.sourceIdentifier)
+        XCTAssertEqual(insertedFood.caloriesPerServing, descriptionMatchRecord.caloriesPerServing)
+        XCTAssertEqual(insertedFood.proteinPerServing, descriptionMatchRecord.proteinPerServing)
+        XCTAssertEqual(insertedFood.fatPerServing, descriptionMatchRecord.fatPerServing)
+        XCTAssertEqual(insertedFood.carbsPerServing, descriptionMatchRecord.carbsPerServing)
     }
 
     func testReconcileBackfillsSameNameFoodDeterministically() throws {
