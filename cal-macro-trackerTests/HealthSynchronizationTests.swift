@@ -107,20 +107,20 @@ final class HealthSynchronizationTests: XCTestCase {
             HKQuantityTypeIdentifier.dietarySodium.rawValue,
             HKQuantityTypeIdentifier.dietaryCholesterol.rawValue
         ]
-        var deleteObjectsCalls: [(String, String)] = []
+        let store = RecordingHealthNutritionStore()
         let error = await HealthNutritionSnapshot.deleteSamples(
             for: entryID,
-            authorizedIdentifiers: Set(expectedNutrients)
-        ) { nutrientIdentifier, syncIdentifier in
-            deleteObjectsCalls.append((nutrientIdentifier, syncIdentifier))
-        }
+            authorizedIdentifiers: Set(expectedNutrients),
+            store: store
+        )
 
         XCTAssertNil(error)
-        XCTAssertEqual(deleteObjectsCalls.map(\.0), expectedNutrients)
-        XCTAssertEqual(
-            deleteObjectsCalls.map(\.1),
-            expectedNutrients.map { "\(entryID.uuidString).\($0)" }
-        )
+        XCTAssertEqual(store.deleteObjectsCalls.count, 9)
+        XCTAssertEqual(store.deleteObjectsCalls.map { $0.0.identifier }, expectedNutrients)
+        for ((_, predicate), nutrient) in zip(store.deleteObjectsCalls, expectedNutrients) {
+            XCTAssertTrue(predicate.predicateFormat.contains(HKMetadataKeySyncIdentifier))
+            XCTAssertTrue(predicate.predicateFormat.contains("\(entryID.uuidString).\(nutrient)"))
+        }
     }
 
     @MainActor
@@ -137,6 +137,7 @@ final class HealthSynchronizationTests: XCTestCase {
         await store.waitUntilSuspended()
         let queuedUserWrite = Task { await queue.enqueue(.write(target)) }
         let queuedBackfillWrite = Task { await queue.enqueueBackfill([.write(target)]) }
+        await store.waitUntilEnqueued(count: 3)
         let delete = Task { await queue.enqueue(.delete(entryID: target.entryID)) }
         await store.waitUntilEnqueued(count: 4)
         XCTAssertEqual(store.enqueuedOperations.last, .delete(entryID: target.entryID))
@@ -231,6 +232,7 @@ private final class RecordingHealthNutritionStore: HealthNutritionStore {
     private(set) var operations: [HealthNutritionOperation] = []
     private(set) var latestSnapshots: [UUID: HealthNutritionSnapshot] = [:]
     private(set) var enqueuedOperations: [HealthNutritionOperation] = []
+    private(set) var deleteObjectsCalls: [(HKQuantityType, NSPredicate)] = []
     var results: [HealthNutritionStoreResult] = []
     var suspendNextApply = false
     private var continuation: CheckedContinuation<Void, Never>?
@@ -252,9 +254,19 @@ private final class RecordingHealthNutritionStore: HealthNutritionStore {
         case let .write(snapshot):
             latestSnapshots[snapshot.entryID] = snapshot
         case let .delete(entryID):
+            let error = await HealthNutritionSnapshot.deleteSamples(
+                for: entryID,
+                authorizedIdentifiers: Set(HealthNutritionSnapshot.nutrientIdentifiers),
+                store: self
+            )
             latestSnapshots[entryID] = nil
+            if let error { return .failure(error) }
         }
         return results.isEmpty ? .success : results.removeFirst()
+    }
+
+    func deleteObjects(of type: HKQuantityType, predicate: NSPredicate) async throws {
+        deleteObjectsCalls.append((type, predicate))
     }
 
     func recordEnqueued(_ operation: HealthNutritionOperation) {

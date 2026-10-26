@@ -82,6 +82,14 @@ final class HealthKitService {
 
     var isAvailable: Bool { isAvailableOverride ?? HKHealthStore.isHealthDataAvailable() }
 
+    var backfillStatusText: String? {
+        guard let backfillResult else { return nil }
+        if backfillResult.failed > 0 {
+            return "Last sync failed: \(backfillResult.failedDayCount) of \(backfillResult.attemptedDayCount) days"
+        }
+        return "Synced \(backfillResult.syncedDayCount) days"
+    }
+
     func requestAuthorization(readWeight: Bool = false) async throws {
         guard isAvailable else { return }
         let bodyMass = HKObjectType.quantityType(forIdentifier: .bodyMass)
@@ -171,8 +179,6 @@ final class HealthKitService {
             self.backfillResult = result
             if result.failed > 0 {
                 self.backfillErrorMessage = result.firstError ?? "Could not sync nutrition to Apple Health."
-            } else {
-                self.statusText = "Synced \(result.syncedDayCount) days. Skipped \(result.skipped)."
             }
             self.isBackfilling = false
             self.backfillTask = nil
