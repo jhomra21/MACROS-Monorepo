@@ -53,7 +53,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 
 ## Commands
 
-- Local StoreKit catalog activation passed here with Xcode 26.4 (`/Applications/Xcode.app/Contents/Developer`) and the iOS 27.0 simulator runtime; Xcode 27.0 did not pass the same probe. Until Xcode 27 is verified, prefix each `xcodebuild`, `xcrun`, and `make` invocation with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`.
+- Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs an iOS 27.0 simulator runtime: the iOS 26.4 runtime rejects catalog activation with `SKInternalErrorDomain Code=3`. Use the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
 - Build the app from the CLI (a build is not a test run):
