@@ -14,10 +14,15 @@ struct HealthSettingsSection: View {
             Toggle("Write nutrition to Health", isOn: $writeNutrition)
                 .onChange(of: writeNutrition) { _, enabled in
                     NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
-                    if !enabled { health.cancelBackfill() }
+                    if !enabled {
+                        Task { await health.cancelBackfill() }
+                    }
                     if enabled {
                         Task {
                             try? await health.requestAuthorization(readWeight: readWeight && entitlements.canUse(.healthWeightImport))
+                            if readWeight && entitlements.canUse(.healthWeightImport) {
+                                health.restartWeightObservation(container: modelContext.container)
+                            }
                             NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
                         }
                     }
@@ -29,6 +34,7 @@ struct HealthSettingsSection: View {
                         if enabled {
                             Task {
                                 try? await health.requestAuthorization(readWeight: true)
+                                health.restartWeightObservation(container: modelContext.container)
                                 NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
                             }
                         }
@@ -54,7 +60,9 @@ struct HealthSettingsSection: View {
             }
             .disabled(!writeNutrition || health.isBackfilling)
         }
-        .onDisappear { health.cancelBackfill() }
+        .onDisappear {
+            Task { await health.cancelBackfill() }
+        }
         .sheet(item: $paywallContext) { context in
             ProPaywallSheet(context: context).presentationDetents([.medium, .large])
         }

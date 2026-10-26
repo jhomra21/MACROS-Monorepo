@@ -43,7 +43,9 @@ struct HealthQueryLifecycle {
 final class HealthKitService {
     private(set) var statusText =
         HKHealthStore.isHealthDataAvailable() ? "Apple Health is available." : "Apple Health is not available on this device."
-    private let store = HKHealthStore()
+    private let store: HKHealthStore
+    private let nutritionOperations: HealthNutritionOperationQueue
+    private let isAvailableOverride: Bool?
     private var observerQuery: HKObserverQuery?
     private var isObservingWeight = false
     private var weightLifecycle = HealthQueryLifecycle()
@@ -55,13 +57,24 @@ final class HealthKitService {
     private var backfillGeneration = 0
     private(set) var isBackfilling = false
 
-    var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
+    init(nutritionStore: (any HealthNutritionStore)? = nil, isAvailableOverride: Bool? = nil) {
+        let store = HKHealthStore()
+        self.store = store
+        self.isAvailableOverride = isAvailableOverride
+        if let nutritionStore {
+            nutritionOperations = HealthNutritionOperationQueue(store: nutritionStore)
+        } else {
+            nutritionOperations = HealthNutritionOperationQueue(store: HealthKitNutritionStore(store: store))
+        }
+    }
+
+    var isAvailable: Bool { isAvailableOverride ?? HKHealthStore.isHealthDataAvailable() }
 
     func requestAuthorization(readWeight: Bool = false) async throws {
         guard isAvailable else { return }
         let bodyMass = HKObjectType.quantityType(forIdentifier: .bodyMass)
         try await store.requestAuthorization(
-            toShare: nutritionTypes,
+            toShare: Self.nutritionTypes,
             read: readWeight ? Set(bodyMass.map { [$0] } ?? []) : []
         )
         statusText = "Health access updated. Manage permissions in the Health app."
@@ -69,125 +82,97 @@ final class HealthKitService {
 
     func writeNutrition(for entry: LogEntry) async {
         guard isAvailable else { return }
-        let values: [(HKQuantityTypeIdentifier, Double?, HKUnit)] = [
-            (.dietaryEnergyConsumed, entry.caloriesConsumed, .kilocalorie()),
-            (.dietaryProtein, entry.proteinConsumed, .gram()),
-            (.dietaryCarbohydrates, entry.carbsConsumed, .gram()),
-            (.dietaryFatTotal, entry.fatConsumed, .gram()),
-            (.dietaryFatSaturated, entry.saturatedFatConsumed, .gram()),
-            (.dietaryFiber, entry.fiberConsumed, .gram()),
-            (.dietarySugar, entry.sugarsConsumed, .gram()),
-            (.dietarySodium, entry.sodiumConsumed, .gramUnit(with: .milli)),
-            (.dietaryCholesterol, entry.cholesterolConsumed, .gramUnit(with: .milli))
-        ]
-        let authorizationStatuses = Dictionary(
-            uniqueKeysWithValues: values.compactMap { identifier, _, _ in
-                HKObjectType.quantityType(forIdentifier: identifier).map { (identifier, store.authorizationStatus(for: $0)) }
-            })
-        let authorizedIdentifiers = HealthNutritionAuthorization.authorizedIdentifiers(statuses: authorizationStatuses)
-        let hasUnauthorizedTypes = authorizedIdentifiers.count < values.count
-        var samples: [HKQuantitySample] = []
-        var deletionFailed = false
-        for (identifier, amount, unit) in values {
-            guard authorizedIdentifiers.contains(identifier) else { continue }
-            guard let type = HKObjectType.quantityType(forIdentifier: identifier) else { continue }
-            let syncIdentifier = "\(entry.id.uuidString).\(identifier.rawValue)"
-            guard let amount, amount.isFinite else {
-                let predicate = HKQuery.predicateForObjects(
-                    withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .equalTo, value: syncIdentifier)
-                do {
-                    try await store.deleteObjects(of: type, predicate: predicate)
-                } catch {
-                    deletionFailed = true
-                }
-                continue
-            }
-            let metadata: [String: Any] = [
-                HKMetadataKeySyncIdentifier: syncIdentifier,
-                HKMetadataKeySyncVersion: entry.healthSyncVersion
-            ]
-            samples.append(
-                HKQuantitySample(
-                    type: type, quantity: HKQuantity(unit: unit, doubleValue: amount), start: entry.dateLogged, end: entry.dateLogged,
-                    metadata: metadata))
-        }
-        guard !samples.isEmpty else {
-            statusText =
-                deletionFailed
-                ? "Could not update nutrition in Apple Health."
-                : hasUnauthorizedTypes
-                    ? "No enabled Health nutrition categories to update. Review access in the Health app."
-                    : "Nutrition updated in Apple Health."
-            return
-        }
-        do {
-            try await store.save(samples)
-            statusText =
-                if deletionFailed {
-                    "Some nutrition could not be updated in Apple Health."
-                } else if hasUnauthorizedTypes {
-                    "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
-                } else {
-                    "Nutrition saved to Apple Health."
-                }
-        } catch {
+        let snapshot = HealthNutritionSnapshot(entry: entry)
+        let result = await enqueueNutritionOperation(.write(snapshot))
+        switch result {
+        case .success:
+            statusText = "Nutrition saved to Apple Health."
+        case .partial:
+            statusText = "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
+        case .noAuthorizedTypes:
+            statusText = "No enabled Health nutrition categories to update. Review access in the Health app."
+        case .failure:
             statusText = "Could not save nutrition to Apple Health."
+        case .superseded:
+            break
         }
     }
 
     func deleteNutrition(for entryID: UUID) async {
-        var deletionFailed = false
-        var skippedUnauthorizedType = false
-        for type in nutritionTypes {
-            guard HealthNutritionAuthorization.isAuthorized(store.authorizationStatus(for: type)) else {
-                skippedUnauthorizedType = true
-                continue
-            }
-            let syncIdentifier = "\(entryID.uuidString).\(type.identifier)"
-            let predicate = HKQuery.predicateForObjects(
-                withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .equalTo, value: syncIdentifier)
-            do {
-                try await store.deleteObjects(of: type, predicate: predicate)
-            } catch {
-                deletionFailed = true
-            }
+        let result = await enqueueNutritionOperation(.delete(entryID: entryID))
+        switch result {
+        case .success:
+            statusText = "Nutrition removed from Apple Health."
+        case .partial:
+            statusText = "Nutrition was removed from enabled Health categories. Review other permissions in the Health app."
+        case .noAuthorizedTypes:
+            statusText = "No Health nutrition categories are enabled. Review access in the Health app."
+        case .failure:
+            statusText = "Some nutrition could not be removed from Apple Health."
+        case .superseded:
+            break
         }
-        statusText =
-            if deletionFailed {
-                "Some nutrition could not be removed from Apple Health."
-            } else if skippedUnauthorizedType {
-                "Nutrition was removed from enabled Health categories. Review other permissions in the Health app."
-            } else {
-                "Nutrition removed from Apple Health."
-            }
+    }
+
+    func enqueueNutritionOperation(_ operation: HealthNutritionOperation) async -> HealthNutritionStoreResult {
+        await nutritionOperations.enqueue(operation)
     }
 
     func backfill(days: Int, container: ModelContainer) async {
         guard isAvailable, days > 0 else { return }
         let start = Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
         let entries = (try? container.mainContext.fetch(FetchDescriptor<LogEntry>())) ?? []
-        for entry in entries where entry.dateLogged >= start {
-            if Task.isCancelled { return }
-            await writeNutrition(for: entry)
-        }
+        let operations =
+            entries
+            .filter { $0.dateLogged >= start }
+            .map { HealthNutritionOperation.write(HealthNutritionSnapshot(entry: $0)) }
+        if Task.isCancelled { return }
+        await nutritionOperations.enqueueBackfill(operations)
+        if Task.isCancelled { return }
     }
 
     func startBackfill(days: Int, container: ModelContainer) {
+        startBackfill { [weak self] in
+            await self?.backfill(days: days, container: container)
+        }
+    }
+
+    func startBackfill(snapshots: [HealthNutritionSnapshot]) {
+        startBackfill { [weak self] in
+            guard let self, self.isAvailable else { return }
+            await self.backfill(snapshots: snapshots)
+        }
+    }
+
+    private func startBackfill(operation: @escaping @MainActor () async -> Void) {
         guard !isBackfilling else { return }
         backfillGeneration += 1
         let generation = backfillGeneration
         isBackfilling = true
         backfillTask = Task { [weak self] in
-            await self?.backfill(days: days, container: container)
+            await operation()
             guard let self, self.backfillGeneration == generation else { return }
             self.isBackfilling = false
             self.backfillTask = nil
         }
     }
 
-    func cancelBackfill() {
+    private func backfill(snapshots: [HealthNutritionSnapshot]) async {
+        guard !Task.isCancelled else { return }
+        await nutritionOperations.enqueueBackfill(snapshots.map(HealthNutritionOperation.write))
+        guard !Task.isCancelled else { return }
+    }
+
+    func cancelBackfill() async {
         backfillGeneration += 1
-        backfillTask?.cancel()
+        guard let task = backfillTask else {
+            nutritionOperations.cancelPendingBackfill()
+            isBackfilling = false
+            return
+        }
+        task.cancel()
+        nutritionOperations.cancelPendingBackfill()
+        await task.value
         backfillTask = nil
         isBackfilling = false
     }
@@ -230,6 +215,11 @@ final class HealthKitService {
             weightImportContinuation = nil
             continuation?.resume()
         }
+    }
+
+    func restartWeightObservation(container: ModelContainer) {
+        stopWeightObservation()
+        startWeightObservation(container: container)
     }
 
     private func importWeights(into container: ModelContainer, type: HKQuantityType) async {
@@ -303,12 +293,11 @@ final class HealthKitService {
         Task { await importWeights(into: container, type: type) }
     }
 
-    private var nutritionTypes: Set<HKSampleType> {
+    private static var nutritionTypes: Set<HKSampleType> {
         Set(
-            [
-                HKQuantityTypeIdentifier.dietaryEnergyConsumed,
-                .dietaryProtein, .dietaryCarbohydrates, .dietaryFatTotal, .dietaryFatSaturated,
-                .dietaryFiber, .dietarySugar, .dietarySodium, .dietaryCholesterol
-            ].compactMap(HKObjectType.quantityType(forIdentifier:)))
+            HealthNutritionSnapshot.nutrientIdentifiers.compactMap {
+                HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier(rawValue: $0))
+            })
     }
+
 }
