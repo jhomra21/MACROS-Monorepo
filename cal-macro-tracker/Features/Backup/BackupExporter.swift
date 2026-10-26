@@ -1,28 +1,49 @@
 import Foundation
 import SwiftData
 
-@MainActor
-enum BackupExporter {
+nonisolated enum BackupExporter {
     static func makeBackup(
         from context: ModelContext,
         exportedAt: Date = .now,
         appVersion: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown",
-        settings: BackupSettings? = nil
+        settings: BackupSettings
     ) throws -> MACROSBackup {
-        let foods = try context.fetch(FetchDescriptor<FoodItem>())
+        let allFoods = try context.fetch(FetchDescriptor<FoodItem>())
+        let commonIdentifiers = allFoods.reduce(into: [UUID: String]()) {
+            if $1.sourceKind == .common { $0[$1.id] = $1.sourceIdentifier }
+        }
+        let foods =
+            allFoods
             .filter { $0.sourceKind != .common }
             .map(BackupFood.init)
             .sorted(by: BackupOrdering.before)
         let meals = try context.fetch(FetchDescriptor<Meal>())
         let mealComponents = try context.fetch(FetchDescriptor<MealComponent>())
         let componentsByMeal = Dictionary(grouping: mealComponents, by: \.mealID)
-        let backupMeals = meals.map { BackupMeal($0, components: componentsByMeal[$0.id] ?? []) }
-            .sorted(by: BackupOrdering.before)
+        let backupMeals = meals.map {
+            var meal = BackupMeal($0, components: componentsByMeal[$0.id] ?? [])
+            meal.components = meal.components.map {
+                var component = $0
+                component.foodSourceIdentifier = commonIdentifiers[component.foodItemID]
+                return component
+            }
+            return meal
+        }
+        .sorted(by: BackupOrdering.before)
 
         let snapshots = try context.fetch(FetchDescriptor<LoggedMealComponentSnapshot>())
         let snapshotsByEntry = Dictionary(grouping: snapshots, by: \.logEntryID)
         let entries = try context.fetch(FetchDescriptor<LogEntry>())
-            .map { BackupLogEntry($0, componentSnapshots: snapshotsByEntry[$0.id] ?? []) }
+            .map {
+                var entry = BackupLogEntry($0, componentSnapshots: snapshotsByEntry[$0.id] ?? [])
+                entry.foodSourceIdentifier = entry.foodItemID.flatMap { commonIdentifiers[$0] }
+                entry.componentSnapshots = entry.componentSnapshots.map {
+                    var snapshot = $0
+                    snapshot.foodSourceIdentifier = commonIdentifiers[snapshot.foodItemID]
+                    return snapshot
+                }
+                return entry
+            }
             .sorted(by: BackupOrdering.before)
 
         return MACROSBackup(
@@ -37,7 +58,7 @@ enum BackupExporter {
             logEntries: entries,
             weightEntries: try context.fetch(FetchDescriptor<WeightEntry>())
                 .map(BackupWeightEntry.init).sorted(by: BackupOrdering.before),
-            settings: settings ?? .current()
+            settings: settings
         )
     }
 
@@ -88,6 +109,31 @@ enum BackupExporter {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter.string(from: date)
+    }
+}
+
+@ModelActor
+actor BackupExportActor {
+    nonisolated static func background(container: ModelContainer) async -> BackupExportActor {
+        await Task.detached { BackupExportActor(modelContainer: container) }.value
+    }
+    func export(settings: BackupSettings) throws -> Data {
+        try BackupExporter.encode(BackupExporter.makeBackup(from: modelContext, settings: settings))
+    }
+
+    func exportCSV() throws -> Data {
+        let entries = try modelContext.fetch(FetchDescriptor<LogEntry>(sortBy: [SortDescriptor(\.dateLogged)]))
+        return Data(BackupExporter.csv(for: entries).utf8)
+    }
+
+    func unmatchedMealItemCount(in backup: MACROSBackup) throws -> Int {
+        let foods = try modelContext.fetch(FetchDescriptor<FoodItem>())
+        let identifiers = Set(foods.filter { $0.sourceKind == .common }.compactMap(\.sourceIdentifier))
+        let foodIDs = Set(foods.map(\.id) + backup.foods.map(\.id))
+        return backup.meals.flatMap(\.components).filter {
+            if let identifier = $0.foodSourceIdentifier { return !identifiers.contains(identifier) }
+            return !foodIDs.contains($0.foodItemID)
+        }.count
     }
 }
 

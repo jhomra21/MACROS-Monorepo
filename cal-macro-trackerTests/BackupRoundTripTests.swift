@@ -22,7 +22,7 @@ final class BackupRoundTripTests: XCTestCase {
         testRingDefaults = nil
     }
 
-    func testRoundTripDecodedContentMatchesAfterImportAndReexport() throws {
+    func testRoundTripDecodedContentMatchesAfterImportAndReexport() async throws {
         let context = container.mainContext
         seedRoundTripData(in: context)
 
@@ -36,7 +36,7 @@ final class BackupRoundTripTests: XCTestCase {
 
         let importedContainer = try makeContainer()
         defer { _ = importedContainer }
-        try apply(decoded, to: importedContainer, mode: .replace)
+        try await apply(decoded, to: importedContainer, mode: .replace)
         let secondBackup = try makeBackup(
             from: importedContainer.mainContext,
             exportedAt: date("2026-10-26T10:00:00Z"),
@@ -81,7 +81,7 @@ final class BackupRoundTripTests: XCTestCase {
         XCTAssertThrowsError(try BackupImporter.validate(backup))
     }
 
-    func testMergeSkipsExistingIDsAndKeepsExistingValues() throws {
+    func testMergeSkipsExistingIDsAndKeepsExistingValues() async throws {
         let context = container.mainContext
         let existing = FoodItem(
             name: "Local Name", source: .custom, servingDescription: "1 serving",
@@ -98,15 +98,31 @@ final class BackupRoundTripTests: XCTestCase {
             addedSugarsPerServing: nil, sodiumPerServing: nil, cholesterolPerServing: nil,
             secondaryNutrientBackfillState: .current, createdAt: .now, updatedAt: .now
         )
-        try apply(backup(foods: [incoming]), to: container, mode: .merge)
+        try await apply(backup(foods: [incoming]), to: container, mode: .merge)
 
         let foods = try context.fetch(FetchDescriptor<FoodItem>())
         XCTAssertEqual(foods.count, 1)
         XCTAssertEqual(foods.first?.name, "Local Name")
         XCTAssertEqual(foods.first?.caloriesPerServing, 10)
+
+        seedRoundTripData(in: context)
+        try context.save()
+        let original = try makeBackup(from: ModelContext(container), exportedAt: .now, appVersion: "1")
+        var changed = original
+        changed.goals[0].calorieGoal = 999
+        changed.bodyProfile[0].weightKg = 99
+        changed.meals[0].name = "Changed meal"
+        changed.meals[0].components[0].quantityAmount = 5
+        changed.logEntries[0].caloriesConsumed = 999
+        changed.logEntries[0].componentSnapshots[0].foodName = "Changed snapshot"
+        changed.weightEntries[0].weightKg = 99
+        try await apply(changed, to: container, mode: .merge)
+        let retained = try makeBackup(
+            from: ModelContext(container), exportedAt: original.exportedAt, appVersion: "1")
+        XCTAssertEqual(original, retained)
     }
 
-    func testReplaceDeletesNonCommonDataAndKeepsCommonFoods() throws {
+    func testReplaceDeletesNonCommonDataAndKeepsCommonFoods() async throws {
         let context = container.mainContext
         context.insert(
             FoodItem(
@@ -119,14 +135,36 @@ final class BackupRoundTripTests: XCTestCase {
         context.insert(DailyGoals(calorieGoal: 1_900))
         try context.save()
 
-        try apply(backup(), to: container, mode: .replace)
+        seedRoundTripData(in: context)
+        try context.save()
+        try await apply(backup(), to: container, mode: .replace)
 
         let foods = try context.fetch(FetchDescriptor<FoodItem>())
         XCTAssertEqual(foods.map(\.sourceKind), [.common])
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<DailyGoals>()), 0)
+        let fresh = ModelContext(container)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<Meal>()), 0)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<MealComponent>()), 0)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<LogEntry>()), 0)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<LoggedMealComponentSnapshot>()), 0)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<BodyProfile>()), 0)
+        XCTAssertEqual(try fresh.fetchCount(FetchDescriptor<WeightEntry>()), 0)
+
+        let incomingContainer = try makeContainer()
+        defer { _ = incomingContainer }
+        seedRoundTripData(in: incomingContainer.mainContext)
+        try incomingContainer.mainContext.save()
+        let incoming = try makeBackup(from: incomingContainer.mainContext, exportedAt: .now, appVersion: "1")
+        seedRoundTripData(in: context)
+        try context.save()
+        try await apply(incoming, to: container, mode: .replace)
+        let replaced = try makeBackup(
+            from: ModelContext(container), exportedAt: incoming.exportedAt, appVersion: "1")
+        XCTAssertEqual(replaced, incoming)
+        XCTAssertEqual(try ModelContext(container).fetchCount(FetchDescriptor<FoodItem>()), incoming.foods.count + 1)
     }
 
-    func testMissingFoodReferenceImportsLogAsSnapshotOnly() throws {
+    func testMissingFoodReferenceImportsLogAsSnapshotOnly() async throws {
         let entry = BackupLogEntry(
             id: UUID(), foodItemID: UUID(), mealID: nil, dateLogged: date("2026-10-25T12:00:00Z"),
             foodName: "Food no longer available", brand: nil, source: .custom, barcode: nil,
@@ -141,7 +179,7 @@ final class BackupRoundTripTests: XCTestCase {
             createdAt: .now, updatedAt: .now, componentSnapshots: []
         )
 
-        try apply(backup(logEntries: [entry]), to: container, mode: .replace)
+        try await apply(backup(logEntries: [entry]), to: container, mode: .replace)
 
         let imported = try XCTUnwrap(container.mainContext.fetch(FetchDescriptor<LogEntry>()).first)
         XCTAssertNil(imported.foodItemID)
@@ -180,6 +218,51 @@ final class BackupRoundTripTests: XCTestCase {
         )
     }
 
+    func testLateValidationFailureLeavesReplaceStoreUntouched() async throws {
+        seedRoundTripData(in: container.mainContext)
+        try container.mainContext.save()
+        let before = try makeBackup(from: container.mainContext, exportedAt: .now, appVersion: "1")
+        var invalid = before
+        invalid.weightEntries[0].weightKg = -1
+        do {
+            try await apply(invalid, to: container, mode: .replace)
+            XCTFail("Expected invalid weight")
+        } catch {
+            XCTAssertEqual(error as? BackupImportError, .invalidWeight)
+        }
+        let after = try makeBackup(from: ModelContext(container), exportedAt: before.exportedAt, appVersion: "1")
+        XCTAssertEqual(before, after)
+    }
+
+    func testBundledReferencesRemapAcrossContainers() async throws {
+        let source = container.mainContext
+        let common = FoodItem(
+            name: "Bundled oats", source: .common, sourceIdentifier: "fndds:123",
+            servingDescription: "1 bowl", caloriesPerServing: 100,
+            proteinPerServing: 1, fatPerServing: 1, carbsPerServing: 20)
+        source.insert(common)
+        seedRoundTripData(in: source)
+        let component = try XCTUnwrap(source.fetch(FetchDescriptor<MealComponent>()).first)
+        component.foodItemID = common.id
+        let entry = try XCTUnwrap(source.fetch(FetchDescriptor<LogEntry>()).first)
+        entry.foodItemID = common.id
+        try source.save()
+        let document = try makeBackup(from: source, exportedAt: .now, appVersion: "1")
+        let target = try makeContainer()
+        defer { _ = target }
+        let local = FoodItem(
+            name: "Bundled oats", source: .common, sourceIdentifier: "fndds:123",
+            servingDescription: "1 bowl", caloriesPerServing: 100,
+            proteinPerServing: 1, fatPerServing: 1, carbsPerServing: 20)
+        target.mainContext.insert(local)
+        try target.mainContext.save()
+        XCTAssertNotEqual(common.id, local.id)
+        try await apply(document, to: target, mode: .replace)
+        let fresh = ModelContext(target)
+        XCTAssertEqual(try fresh.fetch(FetchDescriptor<MealComponent>()).first?.foodItemID, local.id)
+        XCTAssertEqual(try fresh.fetch(FetchDescriptor<LogEntry>()).first?.foodItemID, local.id)
+    }
+
     private func seedRoundTripData(in context: ModelContext) {
         let timestamp = date("2026-10-25T08:00:00Z")
         let food = FoodItem(
@@ -196,14 +279,25 @@ final class BackupRoundTripTests: XCTestCase {
                 quantityAmount: 1, createdAt: timestamp, updatedAt: timestamp))
         context.insert(DailyGoals(calorieGoal: 2_000, createdAt: timestamp, updatedAt: timestamp))
         context.insert(BodyProfile(createdAt: timestamp, updatedAt: timestamp))
+        let entry = LogEntry(
+            foodItemID: food.id, mealID: meal.id, dateLogged: timestamp, foodName: food.name, source: .custom,
+            servingDescription: food.servingDescription, gramsPerServing: 80, caloriesPerServing: 300,
+            proteinPerServing: 12, fatPerServing: 5, carbsPerServing: 50, quantityMode: .servings,
+            servingsConsumed: 1, caloriesConsumed: 300, proteinConsumed: 12, fatConsumed: 5,
+            carbsConsumed: 50, createdAt: timestamp, updatedAt: timestamp
+        )
+        context.insert(entry)
         context.insert(
-            LogEntry(
-                foodItemID: food.id, dateLogged: timestamp, foodName: food.name, source: .custom,
-                servingDescription: food.servingDescription, gramsPerServing: 80, caloriesPerServing: 300,
-                proteinPerServing: 12, fatPerServing: 5, carbsPerServing: 50, quantityMode: .servings,
-                servingsConsumed: 1, caloriesConsumed: 300, proteinConsumed: 12, fatConsumed: 5,
-                carbsConsumed: 50, createdAt: timestamp, updatedAt: timestamp
-            ))
+            LoggedMealComponentSnapshot(
+                logEntryID: entry.id, mealID: meal.id, foodItemID: food.id, foodName: food.name,
+                quantityMode: .servings, quantityAmount: 1, caloriesConsumed: 300,
+                proteinConsumed: 12, fatConsumed: 5, carbsConsumed: 50, createdAt: timestamp))
+        var settings = BackupSettings.default
+        settings.ringColors.proteinHex = "#123456"
+        settings.isFoodSuggestionsEnabled = false
+        settings.reminders.enabled = true
+        settings.reminders.hour = 19
+        settings.apply(standardDefaults: testDefaults, ringDefaults: testRingDefaults)
         context.insert(
             WeightEntry(
                 day: "2026-10-25", recordedAt: timestamp, weightKg: 70,
@@ -216,8 +310,8 @@ final class BackupRoundTripTests: XCTestCase {
             foods: foods, meals: [], logEntries: logEntries, weightEntries: [], settings: .default)
     }
 
-    private func apply(_ backup: MACROSBackup, to target: ModelContainer, mode: BackupImportMode) throws {
-        try BackupImporter.apply(
+    private func apply(_ backup: MACROSBackup, to target: ModelContainer, mode: BackupImportMode) async throws {
+        try await BackupImporter.apply(
             backup,
             to: target,
             mode: mode,

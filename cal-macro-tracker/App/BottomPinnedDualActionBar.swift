@@ -7,6 +7,7 @@ struct BottomPinnedDualAction {
     let title: String
     let systemImage: String
     let action: () -> Void
+    var role: ButtonRole? = nil
 }
 
 struct BottomPinnedDualActionBar: View {
@@ -77,7 +78,8 @@ struct BottomPinnedDualActionBar: View {
             systemImage: action.systemImage,
             isCompact: isCompact,
             labelWidth: isCompact ? compactButtonSize : nil,
-            action: action.action
+            action: action.action,
+            role: action.role
         )
         .accessibilityLabel(action.title)
     }

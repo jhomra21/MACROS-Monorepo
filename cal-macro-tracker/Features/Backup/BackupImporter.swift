@@ -1,13 +1,12 @@
 import Foundation
 import SwiftData
 
-@MainActor
-enum BackupImportMode: Equatable {
+nonisolated enum BackupImportMode: Equatable, Sendable {
     case merge
     case replace
 }
 
-nonisolated enum BackupImportError: LocalizedError {
+nonisolated enum BackupImportError: LocalizedError, Equatable {
     case unsupportedVersion(Int)
     case invalidNutrition(String)
     case invalidWeight
@@ -26,7 +25,7 @@ nonisolated enum BackupImportError: LocalizedError {
 
 @MainActor
 enum BackupImporter {
-    static func decode(_ data: Data) throws -> MACROSBackup {
+    nonisolated static func decode(_ data: Data) throws -> MACROSBackup {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()
@@ -41,7 +40,7 @@ enum BackupImporter {
         return backup
     }
 
-    static func validate(_ backup: MACROSBackup) throws {
+    nonisolated static func validate(_ backup: MACROSBackup) throws {
         guard backup.version == 1 else { throw BackupImportError.unsupportedVersion(backup.version) }
         for goals in backup.goals {
             try validateNutrition(
@@ -73,151 +72,169 @@ enum BackupImporter {
         to container: ModelContainer,
         mode: BackupImportMode,
         standardDefaults: UserDefaults = .standard,
-        ringDefaults: UserDefaults? = nil,
-        progress: ((String) -> Void)? = nil
-    ) throws {
-        try validate(backup)
-        if mode == .replace {
-            progress?("Replacing existing data")
-            try deleteExistingData(in: container)
-        }
+        ringDefaults: UserDefaults? = nil
+    ) async throws {
+        // Construct the context off the main actor so SwiftData selects a background executor.
+        let importer = await Task.detached { BackupImportActor(modelContainer: container) }.value
+        try await importer.apply(backup, mode: mode)
+        backup.settings.apply(standardDefaults: standardDefaults, ringDefaults: ringDefaults)
+    }
 
-        progress?("Importing foods")
+    nonisolated private static func validateNutrition(_ values: [Double?], name: String) throws {
+        guard values.compactMap({ $0 }).allSatisfy({ $0.isFinite && $0 >= 0 }) else {
+            throw BackupImportError.invalidNutrition(name)
+        }
+    }
+}
+
+@ModelActor
+actor BackupImportActor {
+    func apply(_ backup: MACROSBackup, mode: BackupImportMode) throws {
+        try BackupImporter.validate(backup)
+        modelContext.autosaveEnabled = false
+        do {
+            try Task.checkCancellation()
+            if mode == .replace { try deleteExistingData() }
+            try importData(backup, mode: mode)
+            try Task.checkCancellation()
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            throw error
+        }
+    }
+
+    private func importData(_ backup: MACROSBackup, mode: BackupImportMode) throws {
         try importRows(
             backup.foods.filter { $0.source != .common },
             as: FoodItem.self,
-            container: container,
             mode: mode,
             modelID: \.id,
             makeModel: \.model
         )
 
-        progress?("Importing meals")
-        try importMeals(backup.meals, in: container, mode: mode)
-
-        progress?("Importing log entries")
-        try importLogEntries(backup.logEntries, in: container, mode: mode)
-
-        progress?("Importing goals")
-        try importRows(backup.goals, as: DailyGoals.self, container: container, mode: mode, modelID: \.id, makeModel: \.model)
-
-        progress?("Importing profile")
-        try importRows(backup.bodyProfile, as: BodyProfile.self, container: container, mode: mode, modelID: \.id, makeModel: \.model)
-
-        progress?("Importing weight entries")
-        try importRows(backup.weightEntries, as: WeightEntry.self, container: container, mode: mode, modelID: \.id, makeModel: \.model)
-
-        try PersistenceReporter.persist(in: container, operation: "backup.import.settings") { _ in
-            backup.settings.apply(standardDefaults: standardDefaults, ringDefaults: ringDefaults)
+        let foods = try modelContext.fetch(FetchDescriptor<FoodItem>())
+        let foodsByID = foods.reduce(into: [UUID: FoodItem]()) { $0[$1.id] = $1 }
+        let identifiers = Set(
+            backup.meals.flatMap(\.components).compactMap(\.foodSourceIdentifier)
+                + backup.logEntries.compactMap(\.foodSourceIdentifier)
+                + backup.logEntries.flatMap(\.componentSnapshots).compactMap(\.foodSourceIdentifier)
+        )
+        let commonSource = FoodSource.common.rawValue
+        let requestedIdentifiers = identifiers.map(Optional.some)
+        let commonFoods = try modelContext.fetch(
+            FetchDescriptor<FoodItem>(
+                predicate: #Predicate { $0.source == commonSource && requestedIdentifiers.contains($0.sourceIdentifier) }
+            ))
+        let commonIDs = commonFoods.reduce(into: [String: UUID]()) {
+            if let identifier = $1.sourceIdentifier { $0[identifier] = $1.id }
         }
-        WidgetTimelineReloader.reloadMacroWidgets()
+        func resolvedID(_ id: UUID, _ identifier: String?) -> UUID? {
+            if let identifier { return commonIDs[identifier] }
+            return foodsByID[id]?.id
+        }
+        let meals = backup.meals.map { meal in
+            var meal = meal
+            meal.components = meal.components.compactMap { component in
+                var component = component
+                guard let id = resolvedID(component.foodItemID, component.foodSourceIdentifier) else { return nil }
+                component.foodItemID = id
+                return component
+            }
+            return meal
+        }
+        let entries = backup.logEntries.map { entry in
+            var entry = entry
+            entry.foodItemID = entry.foodItemID.flatMap { resolvedID($0, entry.foodSourceIdentifier) }
+            entry.componentSnapshots = entry.componentSnapshots.map { snapshot in
+                var snapshot = snapshot
+                snapshot.foodItemID = resolvedID(snapshot.foodItemID, snapshot.foodSourceIdentifier) ?? snapshot.foodItemID
+                return snapshot
+            }
+            return entry
+        }
+        try importMeals(meals, mode: mode)
+        try importLogEntries(entries, mode: mode)
+        try importRows(backup.goals, as: DailyGoals.self, mode: mode, modelID: \.id, makeModel: \.model)
+        try importRows(backup.bodyProfile, as: BodyProfile.self, mode: mode, modelID: \.id, makeModel: \.model)
+        try importRows(backup.weightEntries, as: WeightEntry.self, mode: mode, modelID: \.id, makeModel: \.model)
     }
 
-    private static func deleteExistingData(in container: ModelContainer) throws {
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.loggedMealSnapshots") { context in
-            for row in try context.fetch(FetchDescriptor<LoggedMealComponentSnapshot>()) {
-                context.delete(row)
-            }
+    private func deleteExistingData() throws {
+        let context = modelContext
+        for row in try context.fetch(FetchDescriptor<LoggedMealComponentSnapshot>()) {
+            context.delete(row)
         }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.logEntries") { context in
-            for row in try context.fetch(FetchDescriptor<LogEntry>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<LogEntry>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<MealComponent>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<Meal>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<FoodItem>()) where row.sourceKind != .common {
+            context.delete(row)
         }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.mealComponents") { context in
-            for row in try context.fetch(FetchDescriptor<MealComponent>()) { context.delete(row) }
-        }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.meals") { context in
-            for row in try context.fetch(FetchDescriptor<Meal>()) { context.delete(row) }
-        }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.foods") { context in
-            for row in try context.fetch(FetchDescriptor<FoodItem>()) where row.sourceKind != .common {
-                context.delete(row)
-            }
-        }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.goals") { context in
-            for row in try context.fetch(FetchDescriptor<DailyGoals>()) { context.delete(row) }
-        }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.bodyProfile") { context in
-            for row in try context.fetch(FetchDescriptor<BodyProfile>()) { context.delete(row) }
-        }
-        try PersistenceReporter.persist(in: container, operation: "backup.replace.weightEntries") { context in
-            for row in try context.fetch(FetchDescriptor<WeightEntry>()) { context.delete(row) }
-        }
+        for row in try context.fetch(FetchDescriptor<DailyGoals>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<BodyProfile>()) { context.delete(row) }
+        for row in try context.fetch(FetchDescriptor<WeightEntry>()) { context.delete(row) }
     }
 
-    private static func importRows<DTO: Identifiable, Model: PersistentModel>(
+    private func importRows<DTO: Identifiable, Model: PersistentModel>(
         _ rows: [DTO],
         as type: Model.Type,
-        container: ModelContainer,
         mode: BackupImportMode,
         modelID: (Model) -> UUID,
         makeModel: (DTO) -> Model
     ) throws where DTO.ID == UUID {
-        try PersistenceReporter.persist(in: container, operation: "backup.import.\(String(describing: type))") { context in
-            var existingIDs = mode == .merge ? Set(try context.fetch(FetchDescriptor<Model>()).map(modelID)) : []
-            for row in rows where existingIDs.insert(row.id).inserted {
-                context.insert(makeModel(row))
-            }
+        let context = modelContext
+        var existingIDs = mode == .merge ? Set(try context.fetch(FetchDescriptor<Model>()).map(modelID)) : []
+        for row in rows where existingIDs.insert(row.id).inserted {
+            context.insert(makeModel(row))
         }
     }
 
-    private static func importMeals(_ meals: [BackupMeal], in container: ModelContainer, mode: BackupImportMode) throws {
-        try PersistenceReporter.persist(in: container, operation: "backup.import.meals") { context in
-            let existingMeals = mode == .merge ? try context.fetch(FetchDescriptor<Meal>()) : []
-            var existingIDs = Set(existingMeals.map(\.id))
-            var existingComponentIDs =
-                mode == .merge
-                ? Set(try context.fetch(FetchDescriptor<MealComponent>()).map(\.id))
-                : []
-            let namesByFoodID = try context.fetch(FetchDescriptor<FoodItem>()).reduce(into: [UUID: String]()) {
-                $0[$1.id] = $1.name
+    private func importMeals(_ meals: [BackupMeal], mode: BackupImportMode) throws {
+        let context = modelContext
+        let existingMeals = mode == .merge ? try context.fetch(FetchDescriptor<Meal>()) : []
+        var existingIDs = Set(existingMeals.map(\.id))
+        var existingComponentIDs =
+            mode == .merge
+            ? Set(try context.fetch(FetchDescriptor<MealComponent>()).map(\.id))
+            : []
+        let namesByFoodID = try context.fetch(FetchDescriptor<FoodItem>()).reduce(into: [UUID: String]()) {
+            $0[$1.id] = $1.name
+        }
+        for backupMeal in meals where !existingIDs.contains(backupMeal.id) {
+            existingIDs.insert(backupMeal.id)
+            let meal = backupMeal.model
+            context.insert(meal)
+            for component in backupMeal.components where existingComponentIDs.insert(component.id).inserted {
+                context.insert(component.model(for: backupMeal.id))
             }
-            for backupMeal in meals where !existingIDs.contains(backupMeal.id) {
-                existingIDs.insert(backupMeal.id)
-                let meal = backupMeal.model
-                context.insert(meal)
-                for component in backupMeal.components where existingComponentIDs.insert(component.id).inserted {
-                    context.insert(component.model(for: backupMeal.id))
-                }
-                meal.updateSearchableText(
-                    componentNames: backupMeal.components.compactMap { namesByFoodID[$0.foodItemID] },
-                    updateTimestamp: false
-                )
-            }
+            meal.updateSearchableText(
+                componentNames: backupMeal.components.compactMap { namesByFoodID[$0.foodItemID] },
+                updateTimestamp: false
+            )
         }
     }
 
-    private static func importLogEntries(
+    private func importLogEntries(
         _ entries: [BackupLogEntry],
-        in container: ModelContainer,
         mode: BackupImportMode
     ) throws {
-        try PersistenceReporter.persist(in: container, operation: "backup.import.logEntries") { context in
-            var existingIDs =
-                mode == .merge
-                ? Set(try context.fetch(FetchDescriptor<LogEntry>()).map(\.id))
-                : []
-            var existingSnapshotIDs =
-                mode == .merge
-                ? Set(try context.fetch(FetchDescriptor<LoggedMealComponentSnapshot>()).map(\.id))
-                : []
-            let foodIDs = Set(try context.fetch(FetchDescriptor<FoodItem>()).map(\.id))
-            for backupEntry in entries where !existingIDs.contains(backupEntry.id) {
-                existingIDs.insert(backupEntry.id)
-                let entry = backupEntry.model
-                if let foodItemID = entry.foodItemID, !foodIDs.contains(foodItemID) {
-                    entry.foodItemID = nil
-                }
-                context.insert(entry)
-                for snapshot in backupEntry.componentSnapshots where existingSnapshotIDs.insert(snapshot.id).inserted {
-                    context.insert(snapshot.model(logEntryID: backupEntry.id))
-                }
+        let context = modelContext
+        var existingIDs =
+            mode == .merge
+            ? Set(try context.fetch(FetchDescriptor<LogEntry>()).map(\.id))
+            : []
+        var existingSnapshotIDs =
+            mode == .merge
+            ? Set(try context.fetch(FetchDescriptor<LoggedMealComponentSnapshot>()).map(\.id))
+            : []
+        for backupEntry in entries where !existingIDs.contains(backupEntry.id) {
+            existingIDs.insert(backupEntry.id)
+            let entry = backupEntry.model
+            context.insert(entry)
+            for snapshot in backupEntry.componentSnapshots where existingSnapshotIDs.insert(snapshot.id).inserted {
+                context.insert(snapshot.model(logEntryID: backupEntry.id))
             }
-        }
-    }
-
-    private static func validateNutrition(_ values: [Double?], name: String) throws {
-        guard values.compactMap({ $0 }).allSatisfy({ $0.isFinite && $0 >= 0 }) else {
-            throw BackupImportError.invalidNutrition(name)
         }
     }
 }

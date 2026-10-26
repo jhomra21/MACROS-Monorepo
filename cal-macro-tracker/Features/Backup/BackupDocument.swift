@@ -1,8 +1,7 @@
 import Foundation
 import SwiftData
 
-@MainActor
-struct MACROSBackup: Codable, Equatable, Identifiable {
+nonisolated struct MACROSBackup: Codable, Equatable, Identifiable, Sendable {
     var version: Int
     var exportedAt: Date
     var appVersion: String
@@ -22,8 +21,7 @@ struct MACROSBackup: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupGoals: Codable, Equatable, Identifiable {
+nonisolated struct BackupGoals: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var calorieGoal: Double
     var proteinGoalGrams: Double
@@ -51,8 +49,7 @@ struct BackupGoals: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupBodyProfile: Codable, Equatable, Identifiable {
+nonisolated struct BackupBodyProfile: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var sex: GoalSex
     var birthYear: Int?
@@ -88,8 +85,7 @@ struct BackupBodyProfile: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupFood: Codable, Equatable, Identifiable {
+nonisolated struct BackupFood: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var name: String
     var brand: String?
@@ -189,10 +185,10 @@ struct BackupFood: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupMealComponent: Codable, Equatable, Identifiable {
+nonisolated struct BackupMealComponent: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var foodItemID: UUID
+    var foodSourceIdentifier: String?
     var quantityMode: QuantityMode
     var quantityAmount: Double
     var createdAt: Date
@@ -216,8 +212,7 @@ struct BackupMealComponent: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupMeal: Codable, Equatable, Identifiable {
+nonisolated struct BackupMeal: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var name: String
     var createdAt: Date
@@ -244,11 +239,11 @@ struct BackupMeal: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupLogComponentSnapshot: Codable, Equatable, Identifiable {
+nonisolated struct BackupLogComponentSnapshot: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var mealID: UUID
     var foodItemID: UUID
+    var foodSourceIdentifier: String?
     var foodName: String
     var quantityMode: QuantityMode
     var quantityAmount: Double
@@ -304,10 +299,10 @@ struct BackupLogComponentSnapshot: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupLogEntry: Codable, Equatable, Identifiable {
+nonisolated struct BackupLogEntry: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var foodItemID: UUID?
+    var foodSourceIdentifier: String?
     var mealID: UUID?
     var dateLogged: Date
     var foodName: String
@@ -461,8 +456,7 @@ struct BackupLogEntry: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupWeightEntry: Codable, Equatable, Identifiable {
+nonisolated struct BackupWeightEntry: Codable, Equatable, Identifiable, Sendable {
     var id: UUID
     var day: String
     var recordedAt: Date
@@ -491,8 +485,7 @@ struct BackupWeightEntry: Codable, Equatable, Identifiable {
     }
 }
 
-@MainActor
-struct BackupSettings: Codable, Equatable {
+nonisolated struct BackupSettings: Codable, Equatable, Sendable {
     var ringColors: MacroRingColorStorage
     var isFoodSuggestionsEnabled: Bool
     var reminders: BackupReminderConfiguration
@@ -507,7 +500,7 @@ struct BackupSettings: Codable, Equatable {
         reminders: BackupReminderConfiguration()
     )
 
-    static func current(standardDefaults: UserDefaults = .standard, ringDefaults: UserDefaults? = nil) -> Self {
+    @MainActor static func current(standardDefaults: UserDefaults = .standard, ringDefaults: UserDefaults? = nil) -> Self {
         var reminders = BackupReminderConfiguration()
         reminders.capture(from: standardDefaults)
         let ringDefaults = ringDefaults ?? UserDefaults.macroRingColors
@@ -525,7 +518,7 @@ struct BackupSettings: Codable, Equatable {
         )
     }
 
-    func apply(standardDefaults: UserDefaults = .standard, ringDefaults: UserDefaults? = nil) {
+    @MainActor func apply(standardDefaults: UserDefaults = .standard, ringDefaults: UserDefaults? = nil) {
         let ringDefaults = ringDefaults ?? UserDefaults.macroRingColors
         ringDefaults.set(ringColors.proteinHex, forKey: AppStorageKeys.customProteinRingColor)
         ringDefaults.set(ringColors.carbHex, forKey: AppStorageKeys.customCarbRingColor)
@@ -535,8 +528,7 @@ struct BackupSettings: Codable, Equatable {
     }
 }
 
-@MainActor
-struct BackupReminderConfiguration: Codable, Equatable {
+nonisolated struct BackupReminderConfiguration: Codable, Equatable, Sendable {
     var enabled = false
     var hour = 20
     var minute = 0
@@ -551,7 +543,7 @@ struct BackupReminderConfiguration: Codable, Equatable {
     var dinnerMinute = 0
     var smartEveningEnabled = false
 
-    mutating func capture(from defaults: UserDefaults) {
+    @MainActor mutating func capture(from defaults: UserDefaults) {
         enabled = defaults.object(forKey: AppStorageKeys.reminderEnabled) as? Bool ?? false
         hour = defaults.object(forKey: AppStorageKeys.reminderHour) as? Int ?? 20
         minute = defaults.object(forKey: AppStorageKeys.reminderMinute) as? Int ?? 0
@@ -567,7 +559,7 @@ struct BackupReminderConfiguration: Codable, Equatable {
         smartEveningEnabled = defaults.object(forKey: AppStorageKeys.reminderSmartEveningEnabled) as? Bool ?? false
     }
 
-    func apply(to defaults: UserDefaults) {
+    @MainActor func apply(to defaults: UserDefaults) {
         [
             (AppStorageKeys.reminderEnabled, enabled), (AppStorageKeys.reminderBreakfastEnabled, breakfastEnabled),
             (AppStorageKeys.reminderLunchEnabled, lunchEnabled), (AppStorageKeys.reminderDinnerEnabled, dinnerEnabled),
@@ -582,8 +574,7 @@ struct BackupReminderConfiguration: Codable, Equatable {
     }
 }
 
-@MainActor
-enum BackupOrdering {
+nonisolated enum BackupOrdering {
     static func before<T: Identifiable>(_ lhs: T, _ rhs: T) -> Bool where T.ID == UUID {
         if let left = (lhs as? any BackupDated)?.backupCreatedAt,
             let right = (rhs as? any BackupDated)?.backupCreatedAt,
@@ -595,8 +586,7 @@ enum BackupOrdering {
     }
 }
 
-@MainActor
-private protocol BackupDated {
+nonisolated private protocol BackupDated {
     var backupCreatedAt: Date { get }
 }
 

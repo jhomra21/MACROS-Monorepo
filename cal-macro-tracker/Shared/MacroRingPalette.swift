@@ -24,7 +24,7 @@ struct MacroRingPalette {
     }
 }
 
-struct MacroRingColorStorage: Codable, Equatable {
+nonisolated struct MacroRingColorStorage: Codable, Equatable, Sendable {
     static let proteinKey = "customProteinRingColor"
     static let carbKey = "customCarbRingColor"
     static let fatKey = "customFatRingColor"
@@ -37,7 +37,7 @@ struct MacroRingColorStorage: Codable, Equatable {
     var carbHex: String
     var fatHex: String
 
-    var palette: MacroRingPalette {
+    @MainActor var palette: MacroRingPalette {
         MacroRingPalette(
             protein: Color(hex: proteinHex) ?? MacroRingPalette.standard.protein,
             carbs: Color(hex: carbHex) ?? MacroRingPalette.standard.carbs,
@@ -45,7 +45,7 @@ struct MacroRingColorStorage: Codable, Equatable {
         )
     }
 
-    var customPalette: MacroRingPalette? {
+    @MainActor var customPalette: MacroRingPalette? {
         guard proteinHex != Self.defaultProteinHex || carbHex != Self.defaultCarbHex || fatHex != Self.defaultFatHex else {
             return nil
         }
@@ -53,7 +53,7 @@ struct MacroRingColorStorage: Codable, Equatable {
         return palette
     }
 
-    static func defaultHex(for metric: MacroMetric) -> String {
+    @MainActor static func defaultHex(for metric: MacroMetric) -> String {
         switch metric {
         case .protein:
             defaultProteinHex
@@ -64,7 +64,8 @@ struct MacroRingColorStorage: Codable, Equatable {
         }
     }
 
-    static func storedPalette(in defaults: UserDefaults = .macroRingColors) -> MacroRingPalette? {
+    @MainActor static func storedPalette(in defaults: UserDefaults? = nil) -> MacroRingPalette? {
+        let defaults = defaults ?? .macroRingColors
         let proteinHex = defaults.string(forKey: proteinKey) ?? defaultProteinHex
         let carbHex = defaults.string(forKey: carbKey) ?? defaultCarbHex
         let fatHex = defaults.string(forKey: fatKey) ?? defaultFatHex
@@ -76,13 +77,13 @@ struct MacroRingColorStorage: Codable, Equatable {
         .customPalette
     }
 
-    static func migrateLegacyStandardDefaultsToAppGroup() {
+    @MainActor static func migrateLegacyStandardDefaultsToAppGroup() {
         for key in [proteinKey, carbKey, fatKey] {
             migrateLegacyValue(forKey: key)
         }
     }
 
-    private static func migrateLegacyValue(forKey key: String) {
+    @MainActor private static func migrateLegacyValue(forKey key: String) {
         guard UserDefaults.macroRingColors.object(forKey: key) == nil else { return }
         guard let legacyValue = UserDefaults.standard.string(forKey: key) else { return }
 
