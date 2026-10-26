@@ -56,15 +56,27 @@ final class HealthKitService {
     private var backfillTask: Task<Void, Never>?
     private var backfillGeneration = 0
     private(set) var isBackfilling = false
+    private(set) var backfillResult: HealthNutritionBackfillResult?
+    private(set) var backfillErrorMessage: String?
 
-    init(nutritionStore: (any HealthNutritionStore)? = nil, isAvailableOverride: Bool? = nil) {
+    init(
+        nutritionStore: (any HealthNutritionStore)? = nil,
+        isAvailableOverride: Bool? = nil,
+        didEnqueueNutritionOperation: (@MainActor (HealthNutritionOperation) -> Void)? = nil
+    ) {
         let store = HKHealthStore()
         self.store = store
         self.isAvailableOverride = isAvailableOverride
         if let nutritionStore {
-            nutritionOperations = HealthNutritionOperationQueue(store: nutritionStore)
+            nutritionOperations = HealthNutritionOperationQueue(
+                store: nutritionStore,
+                didEnqueue: didEnqueueNutritionOperation
+            )
         } else {
-            nutritionOperations = HealthNutritionOperationQueue(store: HealthKitNutritionStore(store: store))
+            nutritionOperations = HealthNutritionOperationQueue(
+                store: HealthKitNutritionStore(store: store),
+                didEnqueue: didEnqueueNutritionOperation
+            )
         }
     }
 
@@ -91,8 +103,8 @@ final class HealthKitService {
             statusText = "Nutrition saved for enabled categories. Enable others in the Health app to sync all values."
         case .noAuthorizedTypes:
             statusText = "No enabled Health nutrition categories to update. Review access in the Health app."
-        case .failure:
-            statusText = "Could not save nutrition to Apple Health."
+        case let .failure(error):
+            statusText = error
         case .superseded:
             break
         }
@@ -107,8 +119,8 @@ final class HealthKitService {
             statusText = "Nutrition was removed from enabled Health categories. Review other permissions in the Health app."
         case .noAuthorizedTypes:
             statusText = "No Health nutrition categories are enabled. Review access in the Health app."
-        case .failure:
-            statusText = "Some nutrition could not be removed from Apple Health."
+        case let .failure(error):
+            statusText = error
         case .superseded:
             break
         }
@@ -118,53 +130,74 @@ final class HealthKitService {
         await nutritionOperations.enqueue(operation)
     }
 
-    func backfill(days: Int, container: ModelContainer) async {
-        guard isAvailable, days > 0 else { return }
+    func backfill(days: Int, container: ModelContainer) async -> HealthNutritionBackfillResult {
+        guard isAvailable, days > 0 else { return HealthNutritionBackfillResult() }
         let start = Calendar.current.date(byAdding: .day, value: -days, to: .now) ?? .now
         let entries = (try? container.mainContext.fetch(FetchDescriptor<LogEntry>())) ?? []
-        let operations =
+        let snapshots =
             entries
             .filter { $0.dateLogged >= start }
-            .map { HealthNutritionOperation.write(HealthNutritionSnapshot(entry: $0)) }
-        if Task.isCancelled { return }
-        await nutritionOperations.enqueueBackfill(operations)
-        if Task.isCancelled { return }
+            .map(HealthNutritionSnapshot.init(entry:))
+        if Task.isCancelled { return HealthNutritionBackfillResult() }
+        let results = await nutritionOperations.enqueueBackfill(snapshots.map(HealthNutritionOperation.write))
+        if Task.isCancelled { return HealthNutritionBackfillResult() }
+        return Self.backfillResult(for: results, snapshots: snapshots)
     }
 
     func startBackfill(days: Int, container: ModelContainer) {
         startBackfill { [weak self] in
-            await self?.backfill(days: days, container: container)
+            guard let self else { return HealthNutritionBackfillResult() }
+            return await self.backfill(days: days, container: container)
         }
     }
 
     func startBackfill(snapshots: [HealthNutritionSnapshot]) {
         startBackfill { [weak self] in
-            guard let self, self.isAvailable else { return }
-            await self.backfill(snapshots: snapshots)
+            guard let self, self.isAvailable else { return HealthNutritionBackfillResult() }
+            return await self.backfill(snapshots: snapshots)
         }
     }
 
-    private func startBackfill(operation: @escaping @MainActor () async -> Void) {
+    private func startBackfill(operation: @escaping @MainActor () async -> HealthNutritionBackfillResult) {
         guard !isBackfilling else { return }
         backfillGeneration += 1
         let generation = backfillGeneration
         isBackfilling = true
+        backfillResult = nil
+        backfillErrorMessage = nil
         backfillTask = Task { [weak self] in
-            await operation()
+            let result = await operation()
             guard let self, self.backfillGeneration == generation else { return }
+            self.backfillResult = result
+            if result.failed > 0 {
+                self.backfillErrorMessage = result.firstError ?? "Could not sync nutrition to Apple Health."
+            } else {
+                self.statusText = "Synced \(result.syncedDayCount) days. Skipped \(result.skipped)."
+            }
             self.isBackfilling = false
             self.backfillTask = nil
         }
     }
 
-    private func backfill(snapshots: [HealthNutritionSnapshot]) async {
-        guard !Task.isCancelled else { return }
-        await nutritionOperations.enqueueBackfill(snapshots.map(HealthNutritionOperation.write))
-        guard !Task.isCancelled else { return }
+    func backfill(snapshots: [HealthNutritionSnapshot]) async -> HealthNutritionBackfillResult {
+        guard !Task.isCancelled else { return HealthNutritionBackfillResult() }
+        let results = await nutritionOperations.enqueueBackfill(snapshots.map(HealthNutritionOperation.write))
+        guard !Task.isCancelled else { return HealthNutritionBackfillResult() }
+        return Self.backfillResult(for: results, snapshots: snapshots)
+    }
+
+    private static func backfillResult(
+        for results: [HealthNutritionStoreResult],
+        snapshots: [HealthNutritionSnapshot]
+    ) -> HealthNutritionBackfillResult {
+        zip(results, snapshots).reduce(into: HealthNutritionBackfillResult()) { summary, pair in
+            summary.record(pair.0, on: pair.1.startDate)
+        }
     }
 
     func cancelBackfill() async {
         backfillGeneration += 1
+        let cancellationGeneration = backfillGeneration
         guard let task = backfillTask else {
             nutritionOperations.cancelPendingBackfill()
             isBackfilling = false
@@ -173,8 +206,13 @@ final class HealthKitService {
         task.cancel()
         nutritionOperations.cancelPendingBackfill()
         await task.value
+        guard backfillGeneration == cancellationGeneration else { return }
         backfillTask = nil
         isBackfilling = false
+    }
+
+    func clearBackfillError() {
+        backfillErrorMessage = nil
     }
 
     func startWeightObservation(container: ModelContainer) {

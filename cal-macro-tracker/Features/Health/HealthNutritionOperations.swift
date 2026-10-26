@@ -23,6 +23,23 @@ struct HealthNutritionSnapshot: Equatable {
         nutrientIdentifiers.map { "\(entryID.uuidString).\($0)" }
     }
 
+    static func deleteSamples(
+        for entryID: UUID,
+        authorizedIdentifiers: Set<String>,
+        delete: (String, String) async throws -> Void
+    ) async -> String? {
+        var firstError: String?
+        for (nutrientIdentifier, syncIdentifier) in zip(nutrientIdentifiers, deletionIdentifiers(for: entryID))
+        where authorizedIdentifiers.contains(nutrientIdentifier) {
+            do {
+                try await delete(nutrientIdentifier, syncIdentifier)
+            } catch {
+                firstError = firstError ?? error.localizedDescription
+            }
+        }
+        return firstError
+    }
+
     let entryID: UUID
     let nutrients: [HealthNutritionValue]
     let startDate: Date
@@ -67,8 +84,34 @@ enum HealthNutritionStoreResult: Equatable {
     case success
     case partial
     case noAuthorizedTypes
-    case failure
+    case failure(String)
     case superseded
+}
+
+struct HealthNutritionBackfillResult: Equatable {
+    var written = 0
+    var skipped = 0
+    var failed = 0
+    var firstError: String?
+    private var syncedDays = Set<Date>()
+
+    var syncedDayCount: Int { syncedDays.count }
+
+    mutating func record(_ result: HealthNutritionStoreResult, on date: Date) {
+        switch result {
+        case .success:
+            written += 1
+            syncedDays.insert(Calendar.current.startOfDay(for: date))
+        case .partial:
+            written += 1
+            syncedDays.insert(Calendar.current.startOfDay(for: date))
+        case .noAuthorizedTypes, .superseded:
+            skipped += 1
+        case let .failure(error):
+            failed += 1
+            firstError = firstError ?? error
+        }
+    }
 }
 
 @MainActor
@@ -87,34 +130,71 @@ final class HealthNutritionOperationQueue {
         let operation: HealthNutritionOperation
         let source: Source
         let continuation: CheckedContinuation<HealthNutritionStoreResult, Never>?
+        let backfillBatchID: UUID?
+        let backfillIndex: Int?
+    }
+
+    private struct BackfillBatch {
+        var results: [HealthNutritionStoreResult?]
+        let continuation: CheckedContinuation<[HealthNutritionStoreResult], Never>
     }
 
     private let store: any HealthNutritionStore
+    private let didEnqueue: (@MainActor (HealthNutritionOperation) -> Void)?
     private var pending: [PendingOperation] = []
     private var isDraining = false
-    private var idleContinuations: [CheckedContinuation<Void, Never>] = []
+    private var backfillBatches: [UUID: BackfillBatch] = [:]
 
-    init(store: any HealthNutritionStore) {
+    init(
+        store: any HealthNutritionStore,
+        didEnqueue: (@MainActor (HealthNutritionOperation) -> Void)? = nil
+    ) {
         self.store = store
+        self.didEnqueue = didEnqueue
     }
 
     func enqueue(_ operation: HealthNutritionOperation) async -> HealthNutritionStoreResult {
         await withCheckedContinuation { continuation in
-            append(PendingOperation(operation: operation, source: .user, continuation: continuation))
+            append(
+                PendingOperation(
+                    operation: operation,
+                    source: .user,
+                    continuation: continuation,
+                    backfillBatchID: nil,
+                    backfillIndex: nil
+                ))
+            didEnqueue?(operation)
             startDrainingIfNeeded()
         }
     }
 
-    func enqueueBackfill(_ operations: [HealthNutritionOperation]) async {
-        for operation in operations {
-            append(PendingOperation(operation: operation, source: .backfill, continuation: nil))
+    func enqueueBackfill(_ operations: [HealthNutritionOperation]) async -> [HealthNutritionStoreResult] {
+        guard !operations.isEmpty else { return [] }
+        let batchID = UUID()
+        return await withCheckedContinuation { continuation in
+            backfillBatches[batchID] = BackfillBatch(
+                results: Array(repeating: nil, count: operations.count),
+                continuation: continuation
+            )
+            for (index, operation) in operations.enumerated() {
+                append(
+                    PendingOperation(
+                        operation: operation,
+                        source: .backfill,
+                        continuation: nil,
+                        backfillBatchID: batchID,
+                        backfillIndex: index
+                    ))
+                didEnqueue?(operation)
+            }
+            startDrainingIfNeeded()
         }
-        startDrainingIfNeeded()
-        await waitUntilDrained()
     }
 
     func cancelPendingBackfill() {
+        let cancelled = pending.filter { $0.source == .backfill }
         pending.removeAll { $0.source == .backfill }
+        cancelled.forEach { complete($0, with: .superseded) }
     }
 
     private func append(_ pendingOperation: PendingOperation) {
@@ -127,16 +207,9 @@ final class HealthNutritionOperationQueue {
                 if case .write = $0.operation { return $0.operation.entryID == entryID }
                 return false
             }
-            superseded.forEach { $0.continuation?.resume(returning: .superseded) }
+            superseded.forEach { complete($0, with: .superseded) }
         }
         pending.append(pendingOperation)
-    }
-
-    private func waitUntilDrained() async {
-        guard isDraining else { return }
-        await withCheckedContinuation { continuation in
-            idleContinuations.append(continuation)
-        }
     }
 
     private func startDrainingIfNeeded() {
@@ -149,12 +222,27 @@ final class HealthNutritionOperationQueue {
         while !pending.isEmpty {
             let pendingOperation = pending.removeFirst()
             let result = await store.apply(pendingOperation.operation)
-            pendingOperation.continuation?.resume(returning: result)
+            complete(pendingOperation, with: result)
         }
         isDraining = false
-        let continuations = idleContinuations
-        idleContinuations.removeAll()
-        continuations.forEach { $0.resume() }
+    }
+
+    private func complete(_ pendingOperation: PendingOperation, with result: HealthNutritionStoreResult) {
+        if let continuation = pendingOperation.continuation {
+            continuation.resume(returning: result)
+            return
+        }
+        guard let batchID = pendingOperation.backfillBatchID,
+            let index = pendingOperation.backfillIndex,
+            var batch = backfillBatches[batchID]
+        else { return }
+        batch.results[index] = result
+        guard batch.results.allSatisfy({ $0 != nil }) else {
+            backfillBatches[batchID] = batch
+            return
+        }
+        backfillBatches[batchID] = nil
+        batch.continuation.resume(returning: batch.results.compactMap { $0 })
     }
 }
 
@@ -191,7 +279,7 @@ final class HealthKitNutritionStore: HealthNutritionStore {
         let authorized = HealthNutritionAuthorization.authorizedIdentifiers(statuses: authorizationStatuses)
         let valuesByIdentifier = Dictionary(uniqueKeysWithValues: snapshot.nutrients.map { ($0.identifier, $0.amount) })
         var samples: [HKQuantitySample] = []
-        var deletionFailed = false
+        var deletionError: String?
 
         if authorized.isEmpty { return .noAuthorizedTypes }
 
@@ -208,7 +296,7 @@ final class HealthKitNutritionStore: HealthNutritionStore {
                 do {
                     try await store.deleteObjects(of: type, predicate: predicate)
                 } catch {
-                    deletionFailed = true
+                    deletionError = deletionError ?? error.localizedDescription
                 }
                 continue
             }
@@ -232,10 +320,10 @@ final class HealthKitNutritionStore: HealthNutritionStore {
             do {
                 try await store.save(samples)
             } catch {
-                return .failure
+                return .failure(error.localizedDescription)
             }
         }
-        if deletionFailed { return .failure }
+        if let deletionError { return .failure(deletionError) }
         return authorized.count < definitions.count ? .partial : .success
     }
 
@@ -248,19 +336,19 @@ final class HealthKitNutritionStore: HealthNutritionStore {
             })
         let authorized = HealthNutritionAuthorization.authorizedIdentifiers(statuses: authorizationStatuses)
         if authorized.isEmpty { return .noAuthorizedTypes }
-        var failed = false
-        let identifiers = HealthNutritionSnapshot.deletionIdentifiers(for: entryID)
-        for (definition, identifier) in zip(Self.definitions, identifiers) {
-            guard authorized.contains(definition.identifier),
-                let type = HKObjectType.quantityType(forIdentifier: definition.identifier)
-            else { continue }
-            do {
-                try await store.deleteObjects(of: type, predicate: Self.predicate(for: identifier))
-            } catch {
-                failed = true
+        let error = await HealthNutritionSnapshot.deleteSamples(
+            for: entryID,
+            authorizedIdentifiers: Set(authorized.map(\.rawValue))
+        ) { nutrientIdentifier, syncIdentifier in
+            guard
+                let type = HKObjectType.quantityType(
+                    forIdentifier: HKQuantityTypeIdentifier(rawValue: nutrientIdentifier))
+            else {
+                throw HealthNutritionDeletionError.missingQuantityType
             }
+            try await store.deleteObjects(of: type, predicate: Self.predicate(for: syncIdentifier))
         }
-        if failed { return .failure }
+        if let error { return .failure(error) }
         return authorized.count < Self.definitions.count ? .partial : .success
     }
 
@@ -270,6 +358,14 @@ final class HealthKitNutritionStore: HealthNutritionStore {
             operatorType: .equalTo,
             value: identifier
         )
+    }
+
+    private enum HealthNutritionDeletionError: LocalizedError {
+        case missingQuantityType
+
+        var errorDescription: String? {
+            "A Health nutrition category is unavailable."
+        }
     }
 
     private static let definitions: [NutrientDefinition] = [
