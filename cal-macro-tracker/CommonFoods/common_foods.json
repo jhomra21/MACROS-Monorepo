@@ -143,7 +143,8 @@
     "aliases": [
       "Rice, white, cooked, no added fat",
       "rice",
-      "white rice"
+      "white rice",
+      "plain rice"
     ],
     "servingDescription": "1 cup cooked",
     "gramsPerServing": 158,
@@ -162,8 +163,8 @@
     "name": "Chicken Breast",
     "aliases": [
       "Chicken breast, baked or broiled, skin not eaten, from pre-cooked",
-      "chicken breast",
-      "chicken"
+      "chicken",
+      "chicken breast"
     ],
     "servingDescription": "3 oz cooked",
     "gramsPerServing": 85,
@@ -816,7 +817,8 @@
   {
     "name": "Almonds, Unsalted",
     "aliases": [
-      "Almonds, unsalted"
+      "Almonds, unsalted",
+      "almonds"
     ],
     "servingDescription": "1 oz",
     "gramsPerServing": 28.35,
@@ -1824,7 +1826,8 @@
   {
     "name": "Bagel",
     "aliases": [
-      "Bagel"
+      "Bagel",
+      "bagel"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -3823,7 +3826,8 @@
     "name": "Beef, Ground",
     "aliases": [
       "Beef, ground",
-      "ground beef"
+      "ground beef",
+      "beef"
     ],
     "servingDescription": "1 oz yields",
     "gramsPerServing": 20,
@@ -4058,7 +4062,8 @@
   {
     "name": "Beef, Steak",
     "aliases": [
-      "Beef, steak, chuck"
+      "Beef, steak, chuck",
+      "steak"
     ],
     "servingDescription": "1 oz yields",
     "gramsPerServing": 20,
@@ -4814,7 +4819,9 @@
   {
     "name": "Black Beans, From Canned, No Added Fat",
     "aliases": [
-      "Black beans, from canned, no added fat"
+      "Black beans, from canned, no added fat",
+      "beans",
+      "black beans"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 180,
@@ -6182,7 +6189,9 @@
   {
     "name": "Bread, White",
     "aliases": [
-      "Bread, white"
+      "Bread, white",
+      "bread",
+      "white bread"
     ],
     "servingDescription": "1 medium or regular slice",
     "gramsPerServing": 28,
@@ -7028,7 +7037,8 @@
   {
     "name": "Burrito",
     "aliases": [
-      "Burrito, with beans, no cheese"
+      "Burrito, with beans, no cheese",
+      "burrito"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 120,
@@ -7244,7 +7254,8 @@
   {
     "name": "Butter, Stick",
     "aliases": [
-      "Butter, stick"
+      "Butter, stick",
+      "butter"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 14,
@@ -8108,7 +8119,8 @@
   {
     "name": "Cake, Chocolate",
     "aliases": [
-      "Cake, chocolate, flourless"
+      "Cake, chocolate, flourless",
+      "cake"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 120,
@@ -9314,7 +9326,8 @@
   {
     "name": "Cereal Or Granola Bar",
     "aliases": [
-      "Cereal or granola bar (General Mills Fiber One Chewy Bar)"
+      "Cereal or granola bar (General Mills Fiber One Chewy Bar)",
+      "granola"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -9530,7 +9543,8 @@
   {
     "name": "Cereal, Corn Flakes",
     "aliases": [
-      "Cereal, corn flakes, plain"
+      "Cereal, corn flakes, plain",
+      "cereal"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 30,
@@ -10034,7 +10048,8 @@
   {
     "name": "Cheese",
     "aliases": [
-      "Cheese,  with wine"
+      "Cheese,  with wine",
+      "cheese"
     ],
     "servingDescription": "1 oz",
     "gramsPerServing": 28.35,
@@ -11367,6 +11382,7 @@
     "name": "Chicken Breast, Baked",
     "aliases": [
       "Chicken breast, baked, coated, skin / coating eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium breast",
@@ -11386,6 +11402,7 @@
     "name": "Chicken Breast, Baked Or Broiled, Skin Eaten",
     "aliases": [
       "Chicken breast, baked or broiled, skin eaten, from pre-cooked",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11405,6 +11422,7 @@
     "name": "Chicken Breast, Baked, Broiled, Skin Eaten",
     "aliases": [
       "Chicken breast, baked, broiled, or roasted, skin eaten, from raw",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium breast",
@@ -11424,6 +11442,7 @@
     "name": "Chicken Breast, Baked, Broiled, Skin Not Eaten",
     "aliases": [
       "Chicken breast, baked, broiled, or roasted, skin not eaten, from raw",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11443,6 +11462,7 @@
     "name": "Chicken Breast, Fried",
     "aliases": [
       "Chicken breast, fried, coated, skin / coating eaten, from raw",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium breast",
@@ -11462,6 +11482,7 @@
     "name": "Chicken Breast, Grilled With Sauce, Skin Eaten",
     "aliases": [
       "Chicken breast, grilled with sauce, skin eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium breast",
@@ -11481,6 +11502,7 @@
     "name": "Chicken Breast, Grilled With Sauce, Skin Not Eaten",
     "aliases": [
       "Chicken breast, grilled with sauce, skin not eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11500,6 +11522,7 @@
     "name": "Chicken Breast, Grilled Without Sauce, Skin Eaten",
     "aliases": [
       "Chicken breast, grilled without sauce, skin eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11519,6 +11542,7 @@
     "name": "Chicken Breast, Grilled Without Sauce, Skin Not Eaten",
     "aliases": [
       "Chicken breast, grilled without sauce, skin not eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11538,6 +11562,7 @@
     "name": "Chicken Breast, Rotisserie, Skin Eaten",
     "aliases": [
       "Chicken breast, rotisserie, skin eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11557,6 +11582,7 @@
     "name": "Chicken Breast, Rotisserie, Skin Not Eaten",
     "aliases": [
       "Chicken breast, rotisserie, skin not eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11576,6 +11602,7 @@
     "name": "Chicken Breast, Sauteed, Skin Eaten",
     "aliases": [
       "Chicken breast, sauteed, skin eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11595,6 +11622,7 @@
     "name": "Chicken Breast, Sauteed, Skin Not Eaten",
     "aliases": [
       "Chicken breast, sauteed, skin not eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium breast",
@@ -11614,6 +11642,7 @@
     "name": "Chicken Breast, Stewed, Skin Eaten",
     "aliases": [
       "Chicken breast, stewed, skin eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -11633,6 +11662,7 @@
     "name": "Chicken Breast, Stewed, Skin Not Eaten",
     "aliases": [
       "Chicken breast, stewed, skin not eaten",
+      "chicken",
       "chicken breast"
     ],
     "servingDescription": "1 medium slice",
@@ -13865,7 +13895,8 @@
   {
     "name": "Chicken Wings, Plain",
     "aliases": [
-      "Chicken \"wings\", plain, from fast food / restaurant"
+      "Chicken \"wings\", plain, from fast food / restaurant",
+      "chicken wings"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -14775,7 +14806,8 @@
   {
     "name": "Chocolate Candy",
     "aliases": [
-      "Chocolate candy"
+      "Chocolate candy",
+      "chocolate"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 160,
@@ -16163,7 +16195,8 @@
   {
     "name": "Coffee, Brewed",
     "aliases": [
-      "Coffee, brewed"
+      "Coffee, brewed",
+      "coffee"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 480,
@@ -16703,7 +16736,8 @@
   {
     "name": "Cookie",
     "aliases": [
-      "Cookie, with peanut butter filling, chocolate-coated"
+      "Cookie, with peanut butter filling, chocolate-coated",
+      "cookie"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 42,
@@ -18017,7 +18051,8 @@
   {
     "name": "Corn, Cooked",
     "aliases": [
-      "Corn, cooked, from restaurant"
+      "Corn, cooked, from restaurant",
+      "corn"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 170,
@@ -18521,7 +18556,8 @@
   {
     "name": "Couscous, Plain, Cooked",
     "aliases": [
-      "Couscous, plain, cooked"
+      "Couscous, plain, cooked",
+      "couscous"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 90,
@@ -18953,7 +18989,8 @@
   {
     "name": "Crackers, Saltine",
     "aliases": [
-      "Crackers, saltine, reduced sodium"
+      "Crackers, saltine, reduced sodium",
+      "crackers"
     ],
     "servingDescription": "1 cup, NFS",
     "gramsPerServing": 50,
@@ -19781,7 +19818,8 @@
   {
     "name": "Croissant",
     "aliases": [
-      "Croissant"
+      "Croissant",
+      "croissant"
     ],
     "servingDescription": "1 medium croissant",
     "gramsPerServing": 57,
@@ -19979,7 +20017,8 @@
   {
     "name": "Cucumber, Raw",
     "aliases": [
-      "Cucumber, raw"
+      "Cucumber, raw",
+      "cucumber"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 120,
@@ -24245,7 +24284,9 @@
   {
     "name": "Fish, Tuna",
     "aliases": [
-      "Fish, tuna, canned"
+      "Fish, tuna, canned",
+      "tuna",
+      "tuna fish"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 135,
@@ -24263,7 +24304,8 @@
   {
     "name": "Fish, Tuna, Cooked",
     "aliases": [
-      "Fish, tuna, cooked"
+      "Fish, tuna, cooked",
+      "tuna"
     ],
     "servingDescription": "1 small/regular fillet",
     "gramsPerServing": 90,
@@ -24281,7 +24323,8 @@
   {
     "name": "Fish, Tuna, Raw",
     "aliases": [
-      "Fish, tuna, raw"
+      "Fish, tuna, raw",
+      "tuna"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 135,
@@ -24929,7 +24972,8 @@
   {
     "name": "French Toast, Plain",
     "aliases": [
-      "French toast, plain"
+      "French toast, plain",
+      "french toast"
     ],
     "servingDescription": "1 slice, any size",
     "gramsPerServing": 65,
@@ -26441,7 +26485,8 @@
   {
     "name": "Garlic, Raw",
     "aliases": [
-      "Garlic, raw"
+      "Garlic, raw",
+      "garlic"
     ],
     "servingDescription": "1 teaspoon",
     "gramsPerServing": 5,
@@ -27089,7 +27134,9 @@
   {
     "name": "Grapes, Raw",
     "aliases": [
-      "Grapes, raw"
+      "Grapes, raw",
+      "grape",
+      "grapes"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 150,
@@ -27269,7 +27316,8 @@
   {
     "name": "Green Beans, Cooked",
     "aliases": [
-      "Green beans, cooked, from restaurant"
+      "Green beans, cooked, from restaurant",
+      "green beans"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 145,
@@ -28043,7 +28091,8 @@
   {
     "name": "Ham",
     "aliases": [
-      "Ham"
+      "Ham",
+      "ham"
     ],
     "servingDescription": "1 oz yields",
     "gramsPerServing": 20,
@@ -28948,7 +28997,8 @@
   {
     "name": "Honey",
     "aliases": [
-      "Honey"
+      "Honey",
+      "honey"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 20,
@@ -29272,7 +29322,8 @@
   {
     "name": "Hot Dog, Beef",
     "aliases": [
-      "Hot dog, beef"
+      "Hot dog, beef",
+      "hot dog"
     ],
     "servingDescription": "1 cup, sliced",
     "gramsPerServing": 150,
@@ -29434,7 +29485,8 @@
   {
     "name": "Hummus, Plain",
     "aliases": [
-      "Hummus, plain"
+      "Hummus, plain",
+      "hummus"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 15,
@@ -29830,7 +29882,8 @@
   {
     "name": "Ice Cream, Vanilla",
     "aliases": [
-      "Ice cream, vanilla"
+      "Ice cream, vanilla",
+      "ice cream"
     ],
     "servingDescription": "1 medium ice cream cup",
     "gramsPerServing": 240,
@@ -30604,7 +30657,8 @@
   {
     "name": "Ketchup",
     "aliases": [
-      "Ketchup"
+      "Ketchup",
+      "ketchup"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 17,
@@ -31684,7 +31738,8 @@
   {
     "name": "Lentils, From Dried, No Added Fat",
     "aliases": [
-      "Lentils, from dried, no added fat"
+      "Lentils, from dried, no added fat",
+      "lentils"
     ],
     "servingDescription": "1 oz dry, yield after cooking",
     "gramsPerServing": 70,
@@ -31774,7 +31829,8 @@
   {
     "name": "Lettuce, Raw",
     "aliases": [
-      "Lettuce, raw"
+      "Lettuce, raw",
+      "lettuce"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 35,
@@ -33160,7 +33216,8 @@
   {
     "name": "Mango, Raw",
     "aliases": [
-      "Mango, raw"
+      "Mango, raw",
+      "mango"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 165,
@@ -33466,7 +33523,8 @@
   {
     "name": "Mayonnaise, Regular",
     "aliases": [
-      "Mayonnaise, regular"
+      "Mayonnaise, regular",
+      "mayonnaise"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 13.8,
@@ -33772,7 +33830,8 @@
   {
     "name": "Meatballs, Swedish",
     "aliases": [
-      "Meatballs, Swedish, in gravy, with noodles, diet frozen meal"
+      "Meatballs, Swedish, in gravy, with noodles, diet frozen meal",
+      "meatball"
     ],
     "servingDescription": "1 meal (9.1 oz)",
     "gramsPerServing": 258,
@@ -34132,7 +34191,9 @@
   {
     "name": "Milk, Whole",
     "aliases": [
-      "Milk, whole"
+      "Milk, whole",
+      "milk",
+      "whole milk"
     ],
     "servingDescription": "1 fl oz",
     "gramsPerServing": 30.5,
@@ -34745,7 +34806,8 @@
   {
     "name": "Muffin, Plain",
     "aliases": [
-      "Muffin, plain"
+      "Muffin, plain",
+      "muffin"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 130,
@@ -35123,7 +35185,8 @@
   {
     "name": "Mushrooms, Raw",
     "aliases": [
-      "Mushrooms, raw"
+      "Mushrooms, raw",
+      "mushroom"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 70,
@@ -35447,7 +35510,8 @@
   {
     "name": "Noodles, Cooked",
     "aliases": [
-      "Noodles, cooked"
+      "Noodles, cooked",
+      "noodles"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 75,
@@ -35807,7 +35871,9 @@
   {
     "name": "Oatmeal, Regular Or Quick, No Added Fat",
     "aliases": [
-      "Oatmeal, regular or quick, made with water, no added fat"
+      "Oatmeal, regular or quick, made with water, no added fat",
+      "oatmeal",
+      "plain oatmeal"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 170,
@@ -35825,7 +35891,8 @@
   {
     "name": "Oats, Raw",
     "aliases": [
-      "Oats, raw"
+      "Oats, raw",
+      "oats"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 80,
@@ -35987,7 +36054,9 @@
   {
     "name": "Olive Oil",
     "aliases": [
-      "Olive oil"
+      "Olive oil",
+      "oil",
+      "olive oil"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 14,
@@ -36279,7 +36348,8 @@
   {
     "name": "Onions, Raw",
     "aliases": [
-      "Onions, raw"
+      "Onions, raw",
+      "onion"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 160,
@@ -36369,7 +36439,8 @@
   {
     "name": "Orange Juice, 100%",
     "aliases": [
-      "Orange juice, 100%,  freshly squeezed"
+      "Orange juice, 100%,  freshly squeezed",
+      "orange juice"
     ],
     "servingDescription": "Juice of 1 orange (2-5/8\" dia)",
     "gramsPerServing": 86,
@@ -36405,7 +36476,8 @@
   {
     "name": "Orange, Raw",
     "aliases": [
-      "Orange, raw"
+      "Orange, raw",
+      "orange"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 180,
@@ -36873,7 +36945,9 @@
   {
     "name": "Pancakes, Plain",
     "aliases": [
-      "Pancakes, plain, frozen"
+      "Pancakes, plain, frozen",
+      "pancake",
+      "plain pancakes"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -37881,7 +37955,8 @@
   {
     "name": "Pasta, Cooked",
     "aliases": [
-      "Pasta, cooked"
+      "Pasta, cooked",
+      "pasta"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 80,
@@ -38313,7 +38388,8 @@
   {
     "name": "Peanut Butter",
     "aliases": [
-      "Peanut butter"
+      "Peanut butter",
+      "peanut butter"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 16,
@@ -38619,7 +38695,9 @@
   {
     "name": "Peanuts, Roasted",
     "aliases": [
-      "Peanuts, roasted, salted"
+      "Peanuts, roasted, salted",
+      "peanut",
+      "peanuts"
     ],
     "servingDescription": "1 oz, in shell, yields",
     "gramsPerServing": 21,
@@ -39991,7 +40069,8 @@
   {
     "name": "Pineapple, Raw",
     "aliases": [
-      "Pineapple, raw"
+      "Pineapple, raw",
+      "pineapple"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 165,
@@ -40261,7 +40340,8 @@
   {
     "name": "Pizza",
     "aliases": [
-      "Pizza, with pepperoni, from school lunch, medium crust"
+      "Pizza, with pepperoni, from school lunch, medium crust",
+      "pizza"
     ],
     "servingDescription": "1 piece, NFS",
     "gramsPerServing": 147,
@@ -40999,7 +41079,8 @@
   {
     "name": "Popcorn, Air-popped",
     "aliases": [
-      "Popcorn, air-popped, no butter added"
+      "Popcorn, air-popped, no butter added",
+      "popcorn"
     ],
     "servingDescription": "1 oz, unpopped, yields",
     "gramsPerServing": 19,
@@ -41377,7 +41458,8 @@
   {
     "name": "Pork Bacon, Smoked Or Cured, Cooked",
     "aliases": [
-      "Pork bacon, smoked or cured, cooked"
+      "Pork bacon, smoked or cured, cooked",
+      "bacon"
     ],
     "servingDescription": "1 medium slice (yield after cooking)",
     "gramsPerServing": 8,
@@ -41521,7 +41603,8 @@
   {
     "name": "Pork Sausage",
     "aliases": [
-      "Pork sausage"
+      "Pork sausage",
+      "sausage"
     ],
     "servingDescription": "1 oz, cooked",
     "gramsPerServing": 28.35,
@@ -41683,7 +41766,8 @@
   {
     "name": "Pork, Chop",
     "aliases": [
-      "Pork, chop, lean and fat eaten"
+      "Pork, chop, lean and fat eaten",
+      "pork"
     ],
     "servingDescription": "1 oz yields",
     "gramsPerServing": 20,
@@ -42079,7 +42163,8 @@
   {
     "name": "Potato Chips, Plain",
     "aliases": [
-      "Potato chips, plain"
+      "Potato chips, plain",
+      "chips"
     ],
     "servingDescription": "1 medium single serving bag",
     "gramsPerServing": 57,
@@ -42547,7 +42632,8 @@
   {
     "name": "Potato, Baked",
     "aliases": [
-      "Potato, baked, peel not eaten"
+      "Potato, baked, peel not eaten",
+      "potato"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 285,
@@ -43619,7 +43705,8 @@
   {
     "name": "Quinoa, No Added Fat",
     "aliases": [
-      "Quinoa, no added fat"
+      "Quinoa, no added fat",
+      "quinoa"
     ],
     "servingDescription": "1 cup, cooked",
     "gramsPerServing": 170,
@@ -43907,7 +43994,8 @@
   {
     "name": "Ranch Dressing",
     "aliases": [
-      "Ranch dressing"
+      "Ranch dressing",
+      "ranch"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 15,
@@ -44627,7 +44715,8 @@
   {
     "name": "Rice, White",
     "aliases": [
-      "Rice, white, cooked with fat, Puerto Rican style"
+      "Rice, white, cooked with fat, Puerto Rican style",
+      "rice"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 95,
@@ -44645,7 +44734,8 @@
   {
     "name": "Rice, White And Wild, Cooked, Fat Added",
     "aliases": [
-      "Rice, white and wild, cooked, fat added"
+      "Rice, white and wild, cooked, fat added",
+      "rice"
     ],
     "servingDescription": "1 cup, cooked",
     "gramsPerServing": 168,
@@ -44663,7 +44753,8 @@
   {
     "name": "Rice, White And Wild, Cooked, No Added Fat",
     "aliases": [
-      "Rice, white and wild, cooked, no added fat"
+      "Rice, white and wild, cooked, no added fat",
+      "rice"
     ],
     "servingDescription": "1 cup, cooked",
     "gramsPerServing": 166,
@@ -44681,7 +44772,8 @@
   {
     "name": "Rice, White, Cooked",
     "aliases": [
-      "Rice, white, cooked, made with oil"
+      "Rice, white, cooked, made with oil",
+      "rice"
     ],
     "servingDescription": "1 cup, cooked",
     "gramsPerServing": 163,
@@ -44699,7 +44791,8 @@
   {
     "name": "Rice, White, Fat Added",
     "aliases": [
-      "Rice, white, with corn, fat added"
+      "Rice, white, with corn, fat added",
+      "rice"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 161,
@@ -44717,7 +44810,8 @@
   {
     "name": "Rice, White, No Added Fat",
     "aliases": [
-      "Rice, white, with corn, no added fat"
+      "Rice, white, with corn, no added fat",
+      "rice"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 161,
@@ -45509,7 +45603,8 @@
   {
     "name": "Salsa, Red",
     "aliases": [
-      "Salsa, red"
+      "Salsa, red",
+      "salsa"
     ],
     "servingDescription": "1 tablespoon",
     "gramsPerServing": 16,
@@ -46553,7 +46648,8 @@
   {
     "name": "Shrimp",
     "aliases": [
-      "Shrimp, baked or broiled"
+      "Shrimp, baked or broiled",
+      "shrimp"
     ],
     "servingDescription": "1 small/medium shrimp",
     "gramsPerServing": 10,
@@ -47881,7 +47977,8 @@
   {
     "name": "Soup, Chicken Noodle",
     "aliases": [
-      "Soup, chicken noodle, canned"
+      "Soup, chicken noodle, canned",
+      "soup"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 245,
@@ -48385,7 +48482,8 @@
   {
     "name": "Soup, Ramen Noodles",
     "aliases": [
-      "Soup, ramen noodles, water added"
+      "Soup, ramen noodles, water added",
+      "ramen"
     ],
     "servingDescription": "1 oz, dry, yields",
     "gramsPerServing": 165,
@@ -49645,7 +49743,8 @@
   {
     "name": "Spinach, Raw",
     "aliases": [
-      "Spinach, raw"
+      "Spinach, raw",
+      "spinach"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 25,
@@ -51013,7 +51112,8 @@
   {
     "name": "Sugar, White",
     "aliases": [
-      "Sugar, white, granulated or lump"
+      "Sugar, white, granulated or lump",
+      "sugar"
     ],
     "servingDescription": "1 teaspoon",
     "gramsPerServing": 4.2,
@@ -51229,7 +51329,8 @@
   {
     "name": "Sushi Roll, California",
     "aliases": [
-      "Sushi roll, California"
+      "Sushi roll, California",
+      "sushi"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 150,
@@ -51715,7 +51816,8 @@
   {
     "name": "Sweet Potato, Baked, No Added Fat",
     "aliases": [
-      "Sweet potato, baked, no added fat"
+      "Sweet potato, baked, no added fat",
+      "sweet potato"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 150,
@@ -51949,7 +52051,8 @@
   {
     "name": "Taco",
     "aliases": [
-      "Taco, with beans, no cheese"
+      "Taco, with beans, no cheese",
+      "taco"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 120,
@@ -52615,7 +52718,8 @@
   {
     "name": "Tea, Hot",
     "aliases": [
-      "Tea, hot, leaf, black"
+      "Tea, hot, leaf, black",
+      "tea"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 480,
@@ -52867,7 +52971,8 @@
   {
     "name": "Tofu And Vegetables Excluding Carrots, Broccoli",
     "aliases": [
-      "Tofu and vegetables excluding carrots, broccoli, and dark-green leafy; no potatoes, with soy-based sauce"
+      "Tofu and vegetables excluding carrots, broccoli, and dark-green leafy; no potatoes, with soy-based sauce",
+      "tofu"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 217,
@@ -53173,7 +53278,8 @@
   {
     "name": "Tomatoes, Raw",
     "aliases": [
-      "Tomatoes, raw"
+      "Tomatoes, raw",
+      "tomato"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 180,
@@ -53605,7 +53711,8 @@
   {
     "name": "Tortilla, Corn",
     "aliases": [
-      "Tortilla, corn"
+      "Tortilla, corn",
+      "tortilla"
     ],
     "servingDescription": "1 medium",
     "gramsPerServing": 28,
@@ -54271,7 +54378,9 @@
   {
     "name": "Turkey Sandwich On White",
     "aliases": [
-      "Turkey sandwich on white"
+      "Turkey sandwich on white",
+      "sandwich",
+      "turkey sandwich"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -54613,7 +54722,9 @@
   {
     "name": "Turkey, Light Meat, Roasted, Skin Not Eaten",
     "aliases": [
-      "Turkey, light meat, roasted, skin not eaten"
+      "Turkey, light meat, roasted, skin not eaten",
+      "turkey",
+      "roasted turkey"
     ],
     "servingDescription": "1 medium slice",
     "gramsPerServing": 60,
@@ -56161,7 +56272,8 @@
   {
     "name": "Waffle, Plain",
     "aliases": [
-      "Waffle, plain, frozen"
+      "Waffle, plain, frozen",
+      "waffle"
     ],
     "servingDescription": "100 g",
     "gramsPerServing": 100,
@@ -56431,7 +56543,8 @@
   {
     "name": "Water, Tap",
     "aliases": [
-      "Water, tap"
+      "Water, tap",
+      "water"
     ],
     "servingDescription": "1 bottle (16.9 fl oz) filled with tap water",
     "gramsPerServing": 507,
@@ -56521,7 +56634,8 @@
   {
     "name": "Watermelon, Raw",
     "aliases": [
-      "Watermelon, raw"
+      "Watermelon, raw",
+      "watermelon"
     ],
     "servingDescription": "1 medium wedge/slice",
     "gramsPerServing": 325,
@@ -57601,7 +57715,8 @@
   {
     "name": "Yogurt, Whole Milk",
     "aliases": [
-      "Yogurt, whole milk, plain"
+      "Yogurt, whole milk, plain",
+      "yogurt drink"
     ],
     "servingDescription": "1 6 oz container",
     "gramsPerServing": 170,

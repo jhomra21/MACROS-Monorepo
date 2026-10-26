@@ -74,7 +74,9 @@ const householdAliasRules = [
   { sources: ["soft drink"], aliases: ["soda", "soft drink"] },
   { sources: ["potato french fries"], aliases: ["fries", "french fries"] },
   { sources: ["beef ground", "ground beef"], aliases: ["ground beef"] },
-  { sources: ["chicken breast"], aliases: ["chicken breast"] },
+  { sources: ["rice white"], aliases: ["rice"] },
+  { sources: ["fish tuna"], aliases: ["tuna"] },
+  { sources: ["chicken breast"], aliases: ["chicken", "chicken breast"] },
   { sources: ["hamburger"], aliases: ["burger"] },
   { sources: ["mixed salad greens"], aliases: ["salad"] },
 ];

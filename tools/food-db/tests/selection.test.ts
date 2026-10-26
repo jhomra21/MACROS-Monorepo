@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { choosePortion, friendlyName, householdAliases, selectFoods, type FoodRow } from "../src/select";
+import { addStapleAliases, validateStaples, type Staple } from "../src/staples";
 import { z } from "zod";
 
 const servingFields = [
@@ -161,7 +162,7 @@ describe("FNDDS food selection", () => {
       ["Soft drink, cola", ["soda", "soft drink"]],
       ["Potato, french fries, fast food", ["fries", "french fries"]],
       ["Beef, ground, raw", ["ground beef"]],
-      ["Chicken breast, grilled without sauce, skin not eaten", ["chicken breast"]],
+      ["Chicken breast, grilled without sauce, skin not eaten", ["chicken", "chicken breast"]],
     ];
 
     for (const [description, aliases] of cases) {
@@ -171,5 +172,39 @@ describe("FNDDS food selection", () => {
     expect(householdAliases("green pepper, cooked")).toEqual([]);
     expect(selectFoods([baseFood({ description: "Peppers, sweet, green, raw" })], 0)[0]?.aliases)
       .toContain("bell pepper");
+  });
+
+  test("rejects staples missing from the final food bundle", () => {
+    const staples: Staple[] = [
+      { query: "milk", name: "Milk, Whole" },
+      { query: "bread", name: "Bread, White" },
+    ];
+
+    expect(validateStaples(staples, [{ name: "Milk, Whole" }, { name: "Bread, White" }])).toEqual(staples);
+    expect(() => validateStaples(staples, [{ name: "Milk, Whole" }])).toThrow(
+      'Staple "bread" targets missing food "Bread, White".',
+    );
+    expect(() => validateStaples([
+      ...staples,
+      { query: "milk", name: "Milk, Whole" },
+    ], [{ name: "Milk, Whole" }, { name: "Bread, White" }])).toThrow('Duplicate staple query "milk".');
+  });
+
+  test("adds the curated query as an alias to its exact staple target", () => {
+    const foods = addStapleAliases(
+      [
+        { query: "milk", name: "Milk, Whole" },
+        { query: "whole milk", name: "Milk, Whole" },
+      ],
+      [
+        { name: "Milk, Whole", aliases: ["milk, whole"] },
+        { name: "Milk, Dry", aliases: ["milk, dry"] },
+      ],
+    );
+
+    expect(foods).toEqual([
+      { name: "Milk, Whole", aliases: ["milk, whole", "milk", "whole milk"] },
+      { name: "Milk, Dry", aliases: ["milk, dry"] },
+    ]);
   });
 });

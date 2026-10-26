@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { z } from "zod";
 import { discoverLatestRelease, downloadArchive, loadFoods } from "./fndds";
 import { selectFoods } from "./select";
+import { addStapleAliases, stapleNamesInPriorityOrder, stapleSchema, validateStaples } from "./staples";
 
 const seedFoodSchema = z.object({
   name: z.string(),
@@ -31,6 +32,8 @@ const root = resolve(import.meta.dir, "../../..");
 const outputDirectory = resolve(root, "cal-macro-tracker/CommonFoods");
 
 const manifestPath = resolve(outputDirectory, "common_foods_manifest.json");
+
+const staplesPath = resolve(import.meta.dir, "../staples.json");
 
 const legacyFoods = z.array(z.object({
   name: z.string(),
@@ -141,7 +144,14 @@ const foods = [...retainedFoods, ...remainingFoods.slice(0, 3300 - retainedFoods
 
 const jsonFoods: SeedFood[] = seedFoodListSchema.parse(foods.map(({ fdcId: _fdcId, ...food }) => food));
 
-const json = `${JSON.stringify(jsonFoods, null, 2)}\n`;
+const staples = validateStaples(
+  z.array(stapleSchema).parse(JSON.parse(await readFile(staplesPath, "utf8"))),
+  jsonFoods,
+);
+
+const foodsWithStapleAliases = addStapleAliases(staples, jsonFoods);
+
+const json = `${JSON.stringify(foodsWithStapleAliases, null, 2)}\n`;
 
 if (Buffer.byteLength(json) >= 2_000_000) throw new Error("Generated common foods JSON exceeds 2 MB.");
 
@@ -154,12 +164,13 @@ if (jsonFoods.some(({ caloriesPerServing, proteinPerServing, fatPerServing, carb
 }
 
 const manifest = {
-  version: `fndds-${release.date}-${createHash("sha256").update(json).digest("hex").slice(0, 12)}`,
+  version: `fndds-${release.date}-${createHash("sha256").update(json).update(JSON.stringify(staples)).digest("hex").slice(0, 12)}`,
   source: release.url,
   sourceRelease: release.release,
   sourceArchiveSha256,
   count: foods.length,
   generatedAt: release.date,
+  staples: stapleNamesInPriorityOrder(staples),
 };
 
 await mkdir(outputDirectory, { recursive: true });
