@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 StoreKit Test Failure Investigation
+
+- Fixed StoreKit tests to model the documented purchase cancellation outcomes and to wait for transaction-listener publication; sync after `SKTestSession.expireSubscription` so the simulated expiry reaches StoreKit status updates.
+- Validation: StoreKit 15/15 and Pro entitlement 18/18 passed on Xcode 26.4/iOS 27.0; format, build, and StoreKit catalog validation passed.
+
 ## 2026-10-26 Local StoreKit Simulator Repair
 
 - Captured real-price light and dark Pro paywall screenshots and recorded the Xcode/runtime probe matrix plus StoreKit test outcomes in `build/storekit-repair-2026-10-26/QA.md`.
