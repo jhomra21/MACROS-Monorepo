@@ -63,6 +63,14 @@ struct HealthSettingsSection: View {
         .onDisappear {
             Task { await health.cancelBackfill() }
         }
+        .errorBanner(
+            message: Binding(
+                get: { health.backfillErrorMessage },
+                set: { message in
+                    if message == nil { health.clearBackfillError() }
+                }
+            )
+        )
         .sheet(item: $paywallContext) { context in
             ProPaywallSheet(context: context).presentationDetents([.medium, .large])
         }
