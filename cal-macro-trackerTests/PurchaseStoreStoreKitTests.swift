@@ -98,14 +98,19 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         XCTAssertEqual(transaction.offer?.type, .introductory)
         try await expectChange("Expiry listener removes Pro", until: { !self.store.hasPro }) {
             try self.session.expireSubscription(productIdentifier: ProPlan.yearly.productID)
+            // StoreKit Test needs an explicit sync to publish the simulated expiry to status updates.
+            try await AppStore.sync()
         }
         XCTAssertFalse(store.hasPro)
         XCTAssertNil(entitlements.proExpirationDate)
         XCTAssertNil(entitlements.proSource)
     }
 
-    func testMonthlyGrantsPro() async {
-        await store.purchase(.monthly)
+    func testMonthlyGrantsPro() async throws {
+        await store.start()
+        try await expectChange("Monthly purchase grants Pro", until: { self.store.hasPro }) {
+            await self.store.purchase(.monthly)
+        }
         XCTAssertTrue(store.hasPro)
         XCTAssertEqual(entitlements.proSource, .monthly)
         XCTAssertNotNil(entitlements.proExpirationDate)
