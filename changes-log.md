@@ -13,6 +13,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 
+- Stable FNDDS/legacy source identifiers now reconcile renamed common foods in place, remove stale unreferenced foods while retaining meal-linked rows, and cap display qualifiers at three segments while preserving the complete source description as an alias.
+- Final follow-up bundle: 3,281 foods, manifest `fndds-2024-10-31-442a6db2598e`; additively migrated `FoodItem.sourceIdentifier` and validated stale-row retention against the existing pre-meal store fixture.
 - Expanded the USDA FNDDS bundle to 3,199 foods (October 2024 release; public domain, 17 U.S.C. § 105), preserving legacy serving/nutrient values and recording source archive provenance. Added deterministic common-name aliases and plural-insensitive, phrase-aware local ranking with explicit match tiers and stable ordering.
 - Follow-up: curated 112 everyday query mappings (97 unique exact food targets), included their aliases and ordered priorities in the rebuilt manifest, and applied priorities before stable within-tier tie-breakers in local food search.
 - Validation: food pipeline checks/tests (8 tests, 61 assertions), JS lint, Swift format, N+1 smoke, quality build, `FoodItemLocalSearchTests` (8/8), `LogEntryQueryTests` (3/3), and `MealSchemaMigrationTests` (1/1) passed. The final live in-app 50-query audit scored 50/50; captured top-three results and the updated bundle version/size are in ignored `build/ws4-qa-2026-10-25/final-build/QA.md`. Earlier bootstrap/search timings are unchanged measurements from the previous bundle, not remeasured here. Earlier two `LocalConfidenceTests` Vision/inference failures remain as documented in the QA report.

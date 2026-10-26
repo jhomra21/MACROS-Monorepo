@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 struct CommonFoodSeedRecord: Decodable, Sendable {
+    let sourceIdentifier: String
     let name: String
     let aliases: [String]
     let servingDescription: String
@@ -18,7 +19,7 @@ struct CommonFoodSeedRecord: Decodable, Sendable {
     let cholesterolPerServing: Double?
 }
 
-struct CommonFoodSeedManifest: Decodable, Sendable {
+nonisolated struct CommonFoodSeedManifest: Decodable, Sendable {
     let version: String
     let source: String
     let sourceRelease: String
@@ -98,19 +99,61 @@ enum CommonFoodSeedLoader {
             foods = try JSONDecoder().decode([CommonFoodSeedRecord].self, from: data)
         }
 
-        var existingFoodsByName: [String: FoodItem] = [:]
+        var existingFoodsBySourceIdentifier: [String: FoodItem] = [:]
+        var unidentifiedFoodsByName: [String: FoodItem] = [:]
+        var unidentifiedFoodsBySourceDescription: [String: FoodItem] = [:]
+        var ambiguousSourceDescriptions = Set<String>()
         for food in existingFoods {
-            let name = normalizedName(food.name)
-            if existingFoodsByName[name] == nil {
-                existingFoodsByName[name] = food
+            if let sourceIdentifier = food.sourceIdentifier {
+                if existingFoodsBySourceIdentifier[sourceIdentifier] == nil {
+                    existingFoodsBySourceIdentifier[sourceIdentifier] = food
+                }
+            } else {
+                let name = normalizedName(food.name)
+                if unidentifiedFoodsByName[name] == nil {
+                    unidentifiedFoodsByName[name] = food
+                }
+                let searchableValues = food.searchableText
+                    .components(separatedBy: FoodItemLocalSearch.searchableValueSeparator)
+                    .map { $0.components(separatedBy: FoodItemLocalSearch.searchableIndexSeparator).first ?? $0 }
+                for value in searchableValues where normalizedName(value) != name {
+                    let sourceDescription = normalizedName(value)
+                    if let existingFood = unidentifiedFoodsBySourceDescription[sourceDescription],
+                        existingFood.id != food.id
+                    {
+                        unidentifiedFoodsBySourceDescription.removeValue(forKey: sourceDescription)
+                        ambiguousSourceDescriptions.insert(sourceDescription)
+                    } else if ambiguousSourceDescriptions.contains(sourceDescription) == false {
+                        unidentifiedFoodsBySourceDescription[sourceDescription] = food
+                    }
+                }
             }
         }
+        var matchedFoodIDs = Set<UUID>()
         let changes = foods.compactMap { record -> (record: CommonFoodSeedRecord, food: FoodItem?)? in
-            let existingFood = existingFoodsByName.removeValue(forKey: normalizedName(record.name))
+            let sourceDescriptionFood = record.aliases.first
+                .flatMap { unidentifiedFoodsBySourceDescription.removeValue(forKey: normalizedName($0)) }
+            if let sourceDescriptionFood {
+                unidentifiedFoodsByName.removeValue(forKey: normalizedName(sourceDescriptionFood.name))
+            }
+
+            let existingFood =
+                existingFoodsBySourceIdentifier.removeValue(forKey: record.sourceIdentifier)
+                ?? sourceDescriptionFood
+                ?? unidentifiedFoodsByName.removeValue(forKey: normalizedName(record.name))
+            if let existingFood {
+                matchedFoodIDs.insert(existingFood.id)
+            }
             guard existingFood.map({ recordMatches(record, food: $0) }) != true else { return nil }
             return (record, existingFood)
         }
-        guard changes.isEmpty == false else { return }
+        let components = try modelContext.fetch(FetchDescriptor<MealComponent>())
+        let referencedFoodIDs = Set(components.map(\.foodItemID))
+        let staleFoods = existingFoods.filter {
+            matchedFoodIDs.contains($0.id) == false
+                && referencedFoodIDs.contains($0.id) == false
+        }
+        guard changes.isEmpty == false || staleFoods.isEmpty == false else { return }
 
         try PersistenceReporter.persist(modelContext: modelContext, operation: "Reconcile common foods") {
             for change in changes {
@@ -119,6 +162,9 @@ enum CommonFoodSeedLoader {
                 } else {
                     modelContext.insert(makeFoodItem(from: change.record))
                 }
+            }
+            for staleFood in staleFoods {
+                modelContext.delete(staleFood)
             }
         }
     }
@@ -144,7 +190,7 @@ enum CommonFoodSeedLoader {
     }
 
     private static func makeFoodItem(from record: CommonFoodSeedRecord) -> FoodItem {
-        FoodItem(importedData: record.importedData, aliases: record.aliases)
+        FoodItem(importedData: record.importedData, aliases: record.aliases, sourceIdentifier: record.sourceIdentifier)
     }
 
     static func makeFoodDraft(from record: CommonFoodSeedRecord) -> FoodDraft {
@@ -152,6 +198,7 @@ enum CommonFoodSeedLoader {
     }
 
     private static func apply(_ record: CommonFoodSeedRecord, to food: FoodItem) {
+        food.sourceIdentifier = record.sourceIdentifier
         food.name = record.name
         food.servingDescription = record.servingDescription
         food.gramsPerServing = record.gramsPerServing
@@ -171,7 +218,8 @@ enum CommonFoodSeedLoader {
 
     private static func recordMatches(_ record: CommonFoodSeedRecord, food: FoodItem) -> Bool {
         let seededFood = makeFoodItem(from: record)
-        return food.name == seededFood.name
+        return food.sourceIdentifier == seededFood.sourceIdentifier
+            && food.name == seededFood.name
             && food.servingDescription == seededFood.servingDescription
             && food.gramsPerServing == seededFood.gramsPerServing
             && food.caloriesPerServing == seededFood.caloriesPerServing

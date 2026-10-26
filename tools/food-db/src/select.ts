@@ -13,6 +13,7 @@ export type FoodRow = {
 
 export type SelectedFood = {
   fdcId: number;
+  sourceIdentifier: string;
   usedFallbackPortion: boolean;
   name: string;
   aliases: string[];
@@ -127,7 +128,7 @@ export function friendlyName(description: string): string {
   const genericFood = /^(?:chicken|beef|pork|fish|potato|potatoes|rice|beans|coffee|milk|tea|pasta|noodles|bread|cereal|soup|salad)$/i;
 
   const isQualifier = (part: string) => nutritionQualifier.test(part) || variantQualifier.test(part);
-  const significantQualifiers = parts.slice(1).filter(isQualifier);
+  const significantQualifiers = parts.slice(1).filter(isQualifier).slice(0, 3);
   const retainedDescriptor = parts[1] && !isQualifier(parts[1]) ? [parts[1]] : [];
 
   const name = significantQualifiers.length > 0
@@ -179,6 +180,7 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
     return {
       fdcId: row.fdcId,
+      sourceIdentifier: String(row.fdcId),
       usedFallbackPortion: portion.usedFallbackPortion,
       name,
       aliases: [row.description, ...householdAliases(row.description)],

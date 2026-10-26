@@ -1,11 +1,12 @@
 import Foundation
 
 extension FoodItem {
-    convenience init(importedData: FoodDraftImportedData, aliases: [String] = []) {
+    convenience init(importedData: FoodDraftImportedData, aliases: [String] = [], sourceIdentifier: String? = nil) {
         self.init(
             name: importedData.name,
             brand: importedData.brand,
             source: importedData.source,
+            sourceIdentifier: sourceIdentifier,
             barcode: importedData.barcode,
             externalProductID: importedData.externalProductID,
             sourceName: importedData.sourceName,

@@ -17,7 +17,8 @@
     "sugarsPerServing": 14.4,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 1.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:banana"
   },
   {
     "name": "Apple",
@@ -38,7 +39,8 @@
     "sugarsPerServing": 18.9,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 2.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:apple"
   },
   {
     "name": "Blueberries",
@@ -58,7 +60,8 @@
     "sugarsPerServing": 14.7,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 1.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:blueberries"
   },
   {
     "name": "Strawberries",
@@ -78,7 +81,8 @@
     "sugarsPerServing": 7.4,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 2.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:strawberries"
   },
   {
     "name": "Broccoli",
@@ -97,7 +101,8 @@
     "sugarsPerServing": 1.5,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 30.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:broccoli"
   },
   {
     "name": "Carrots",
@@ -117,7 +122,8 @@
     "sugarsPerServing": 6.1,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 88.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:carrots"
   },
   {
     "name": "Avocado",
@@ -136,7 +142,8 @@
     "sugarsPerServing": 0.7,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 7.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:avocado"
   },
   {
     "name": "White Rice",
@@ -156,7 +163,8 @@
     "sugarsPerServing": 0.1,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 2.0,
-    "cholesterolPerServing": 0.0
+    "cholesterolPerServing": 0.0,
+    "sourceIdentifier": "legacy:white-rice"
   },
   {
     "name": "Chicken Breast",
@@ -176,7 +184,8 @@
     "sugarsPerServing": 0.0,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 44.0,
-    "cholesterolPerServing": 73.0
+    "cholesterolPerServing": 73.0,
+    "sourceIdentifier": "legacy:chicken-breast"
   },
   {
     "name": "Salmon",
@@ -195,7 +204,8 @@
     "sugarsPerServing": 0.0,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 50.0,
-    "cholesterolPerServing": 47.0
+    "cholesterolPerServing": 47.0,
+    "sourceIdentifier": "legacy:salmon"
   },
   {
     "name": "Egg",
@@ -215,7 +225,8 @@
     "sugarsPerServing": 0.2,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 71.0,
-    "cholesterolPerServing": 186.0
+    "cholesterolPerServing": 186.0,
+    "sourceIdentifier": "legacy:egg"
   },
   {
     "name": "Greek Yogurt",
@@ -235,6 +246,7 @@
     "sugarsPerServing": 6.0,
     "addedSugarsPerServing": 0.0,
     "sodiumPerServing": 65.0,
-    "cholesterolPerServing": 10.0
+    "cholesterolPerServing": 10.0,
+    "sourceIdentifier": "legacy:greek-yogurt"
   }
 ]

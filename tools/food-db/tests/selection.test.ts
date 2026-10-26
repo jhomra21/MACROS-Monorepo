@@ -19,6 +19,7 @@ const servingFields = [
 ] as const;
 
 const legacyFoodFixtureSchema = z.object({
+  sourceIdentifier: z.string(),
   name: z.string(),
   servingDescription: z.string(),
   gramsPerServing: z.number(),
@@ -35,6 +36,7 @@ const legacyFoodFixtureSchema = z.object({
 });
 
 const bundledFoodFixtureSchema = legacyFoodFixtureSchema.extend({
+  sourceIdentifier: z.string(),
   aliases: z.array(z.string()),
 });
 
@@ -65,6 +67,8 @@ describe("FNDDS food selection", () => {
       const bundledFood = bundledByName.get(legacyFood.name);
 
       expect(bundledFood, legacyFood.name).toBeDefined();
+      expect(legacyFood.sourceIdentifier).toMatch(/^legacy:[a-z0-9-]+$/);
+      expect(bundledFood?.sourceIdentifier).toBe(legacyFood.sourceIdentifier);
       expect(
         JSON.stringify(Object.fromEntries(servingFields.map((field) => [field, bundledFood?.[field]]))),
         legacyFood.name,
@@ -156,7 +160,7 @@ describe("FNDDS food selection", () => {
     expect(friendlyName("Coffee, decaffeinated, pre-lightened and pre-sweetened with sugar"))
       .toBe("Coffee, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar");
     expect(friendlyName("Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconsitituted"))
-      .toBe("Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Reconstituted");
+      .toBe("Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar");
     expect(friendlyName("Milk, dry, reconstituted, nonfat")).toBe("Milk, Dry, Reconstituted, Nonfat");
     expect(friendlyName("Milk, dry, not reconstituted")).toBe("Milk, Dry, Not Reconstituted");
     expect(friendlyName("Tea, iced, brewed, black, pre-sweetened with low calorie sweetener"))
@@ -173,6 +177,14 @@ describe("FNDDS food selection", () => {
 
     expect(variants).toHaveLength(6);
     expect(new Set(variants.map(({ name }) => name)).size).toBe(6);
+  });
+
+  test("caps display qualifiers while retaining the full source description as an alias", () => {
+    const description = "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconstituted, brewed";
+    const food = selectFoods([baseFood({ description })], 0)[0];
+
+    expect(food?.name.split(",").slice(1)).toHaveLength(3);
+    expect(food?.aliases).toContain(description);
   });
 
   test("plain tofu staple targets the FNDDS soybean curd row", async () => {
@@ -207,6 +219,21 @@ describe("FNDDS food selection", () => {
     expect(householdAliases("green pepper, cooked")).toEqual([]);
     expect(selectFoods([baseFood({ description: "Peppers, sweet, green, raw" })], 0)[0]?.aliases)
       .toContain("bell pepper");
+  });
+
+  test("every generated source identifier is unique", async () => {
+    const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
+      await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
+    );
+
+    const identifiers = bundledFoods.map(({ sourceIdentifier }) => sourceIdentifier);
+
+    expect(identifiers.every(Boolean)).toBe(true);
+    expect(new Set(identifiers).size).toBe(identifiers.length);
+    expect(identifiers.filter((identifier) => identifier.startsWith("legacy:")))
+      .toHaveLength(12);
+    expect(identifiers.filter((identifier) => !identifier.startsWith("legacy:"))
+      .every((identifier) => /^\d+$/.test(identifier))).toBe(true);
   });
 
   test("rejects staples missing from the final food bundle", () => {

@@ -7,6 +7,7 @@ final class FoodItem {
     var name: String
     var brand: String?
     var source: String
+    var sourceIdentifier: String?
     var barcode: String?
     var externalProductID: String?
     var sourceName: String?
@@ -33,6 +34,7 @@ final class FoodItem {
         name: String,
         brand: String? = nil,
         source: FoodSource,
+        sourceIdentifier: String? = nil,
         barcode: String? = nil,
         externalProductID: String? = nil,
         sourceName: String? = nil,
@@ -58,6 +60,7 @@ final class FoodItem {
         self.name = name
         self.brand = brand
         self.source = source.rawValue
+        self.sourceIdentifier = sourceIdentifier
         self.barcode = barcode
         self.externalProductID = externalProductID
         self.sourceName = sourceName

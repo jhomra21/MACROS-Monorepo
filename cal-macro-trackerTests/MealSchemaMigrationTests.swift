@@ -217,6 +217,7 @@ final class MealSchemaMigrationTests: XCTestCase {
         XCTAssertEqual(log?.carbsConsumed, 49.5)
         XCTAssertEqual(log?.fiberConsumed, 8)
         XCTAssertEqual(food?.name, "QA Fixture Oats")
+        XCTAssertNil(food?.sourceIdentifier)
         XCTAssertEqual(food?.servingDescription, "1 bowl")
         XCTAssertEqual(food?.gramsPerServing, 80)
         XCTAssertEqual(food?.caloriesPerServing, 307.5)

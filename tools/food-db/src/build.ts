@@ -7,6 +7,7 @@ import { selectFoods } from "./select";
 import { addStapleAliases, stapleNamesInPriorityOrder, stapleSchema, validateStaples } from "./staples";
 
 const seedFoodSchema = z.object({
+  sourceIdentifier: z.string(),
   name: z.string(),
   aliases: z.array(z.string()),
   servingDescription: z.string(),
@@ -36,6 +37,7 @@ const manifestPath = resolve(outputDirectory, "common_foods_manifest.json");
 const staplesPath = resolve(import.meta.dir, "../staples.json");
 
 const legacyFoods = z.array(z.object({
+  sourceIdentifier: z.string(),
   name: z.string(),
   aliases: z.array(z.string()),
   sourcePrefix: z.string(),
@@ -115,6 +117,7 @@ const retainedFoods = legacyFoods.map((legacyFood) => {
 
   return {
     ...matching,
+    sourceIdentifier: legacyFood.sourceIdentifier,
     name: String(legacyFood.name),
     aliases: [...new Set([...matching.aliases, ...legacyFood.aliases])],
     servingDescription: legacyFood.servingDescription,
@@ -143,6 +146,10 @@ const remainingFoods = selectedFoods.filter(({ fdcId, name }) =>
 const foods = [...retainedFoods, ...remainingFoods.slice(0, 3300 - retainedFoods.length)];
 
 const jsonFoods: SeedFood[] = seedFoodListSchema.parse(foods.map(({ fdcId: _fdcId, ...food }) => food));
+
+if (new Set(jsonFoods.map(({ sourceIdentifier }) => sourceIdentifier)).size !== jsonFoods.length) {
+  throw new Error("Generated common foods must have unique source identifiers.");
+}
 
 const staples = validateStaples(
   z.array(stapleSchema).parse(JSON.parse(await readFile(staplesPath, "utf8"))),
