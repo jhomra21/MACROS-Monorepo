@@ -1,4 +1,5 @@
 import XCTest
+import SwiftData
 @testable import cal_macro_tracker
 
 final class FoodItemLocalSearchTests: XCTestCase {
@@ -204,6 +205,46 @@ final class FoodItemLocalSearchTests: XCTestCase {
         XCTAssertEqual(FoodItemLocalSearch.rankedFoods([cafe], matching: "cafe").first?.name, cafe.name)
         XCTAssertEqual(FoodItemSearchQuery("soy-based").tokens, ["soy", "based"])
         XCTAssertEqual(FoodItemSearchQuery("farmer's").tokens, ["farmer", "s"])
+    }
+
+    @MainActor
+    func testFetchAndRankFindsFoldedTermsInBothFoodSearchSurfaces() throws {
+        let container = try ModelContainer(
+            for: FoodItem.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        let context = container.mainContext
+        let foods = [
+            makeFood(name: "Cherries, Raw", calories: 50),
+            makeFood(name: "Pancakes, Plain", calories: 233, aliases: ["pancake"]),
+            makeFood(name: "Cottage Cheese, Farmer's", calories: 98),
+            makeFood(name: "Soy-based beverage", calories: 41),
+            makeFood(name: "Peppers, Sweet, Raw", calories: 34, aliases: ["bell pepper"]),
+        ]
+        foods.forEach(context.insert)
+        try context.save()
+
+        let expectations = [
+            ("cherry", "Cherries, Raw"),
+            ("pancake", "Pancakes, Plain"),
+            ("farmer's", "Cottage Cheese, Farmer's"),
+            ("soy-based", "Soy-based beverage"),
+            ("bell pepper", "Peppers, Sweet, Raw"),
+        ]
+
+        for (query, expectedName) in expectations {
+            let addFoodResults = try localFoodCandidates(in: context, matching: query)
+            XCTAssertEqual(
+                FoodItemLocalSearch.rankedFoods(addFoodResults, matching: query).first?.name,
+                expectedName,
+                "Add Food search did not find \(query)"
+            )
+            XCTAssertEqual(
+                try pickerLocalFoodCandidates(in: context, query: query).first?.name,
+                expectedName,
+                "Meal component picker did not find \(query)"
+            )
+        }
     }
 
     private func makeFood(name: String, calories: Double, aliases: [String] = []) -> FoodItem {

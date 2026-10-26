@@ -385,7 +385,6 @@ struct SearchFoodListView: View {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         isLocalSearchLoading = true
-        let searchTerm = localFetchSearchTerm(for: trimmedQuery)
         let searchTask = Task<[LocalAddFoodSearchResult], Never>(priority: .userInitiated) { @MainActor in
             guard Task.isCancelled == false else { return [] }
 
@@ -418,10 +417,9 @@ struct SearchFoodListView: View {
 
                 let foods = try localFoodCandidates(
                     in: modelContext,
-                    normalizedQuery: normalizedQuery,
-                    fieldPrefixQuery: fieldPrefixQuery,
-                    searchTerm: searchTerm
+                    matching: trimmedQuery
                 )
+                let searchTerm = FoodItemSearchQuery(trimmedQuery).searchTerm
                 let mealCandidates = try localMealCandidates(
                     in: modelContext,
                     normalizedQuery: normalizedQuery,
@@ -501,10 +499,6 @@ struct SearchFoodListView: View {
     private func localMealResult(for meal: Meal, summary: MealNutritionSummary) -> LocalAddFoodSearchResult {
         return .meal(LocalMealSearchResult(meal: meal, summary: summary))
     }
-
-    private func localFetchSearchTerm(for query: String) -> String {
-        FoodItemSearchQuery(query).searchTerm
-    }
 }
 
 private struct RankedLocalAddFoodSearchResult {
@@ -569,41 +563,8 @@ nonisolated private func recentLocalFoods(in context: ModelContext) throws -> [F
     return try context.fetch(descriptor)
 }
 
-nonisolated private func localFoodCandidates(
-    in context: ModelContext,
-    normalizedQuery: String,
-    fieldPrefixQuery: String,
-    searchTerm: String
-) throws -> [FoodItem] {
-    var candidates: [FoodItem] = []
-    var seen = Set<UUID>()
-
-    func append(_ foods: [FoodItem]) {
-        for food in foods where seen.insert(food.id).inserted {
-            candidates.append(food)
-        }
-    }
-
-    var prefixDescriptor = FetchDescriptor<FoodItem>(
-        predicate: #Predicate { food in
-            food.searchableText.starts(with: normalizedQuery)
-                || food.searchableText.localizedStandardContains(fieldPrefixQuery)
-        },
-        sortBy: [SortDescriptor(\.name)]
-    )
-    prefixDescriptor.fetchLimit = 60
-    append(try context.fetch(prefixDescriptor))
-
-    var fallbackDescriptor = FetchDescriptor<FoodItem>(
-        predicate: #Predicate { food in
-            food.searchableText.localizedStandardContains(searchTerm)
-        },
-        sortBy: [SortDescriptor(\.name)]
-    )
-    fallbackDescriptor.fetchLimit = 250
-    append(try context.fetch(fallbackDescriptor))
-
-    return candidates
+func localFoodCandidates(in context: ModelContext, matching query: String) throws -> [FoodItem] {
+    try FoodItemLocalSearch.fetchedCandidates(in: context, matching: query)
 }
 
 private func recentLocalMeals(in context: ModelContext) throws -> [Meal] {

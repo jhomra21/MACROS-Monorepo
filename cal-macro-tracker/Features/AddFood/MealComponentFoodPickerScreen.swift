@@ -283,42 +283,10 @@ private func pickerRecentLocalFoods(in context: ModelContext) throws -> [FoodIte
     return try context.fetch(descriptor)
 }
 
-private func pickerLocalFoodCandidates(in context: ModelContext, query: String) throws -> [FoodItem] {
-    let normalizedQuery = FoodItemSearchQuery(query).normalizedText
-    let fieldPrefixQuery = " \(normalizedQuery)"
-    let searchTerm = FoodItemSearchQuery(query).searchTerm
-
-    var candidates: [FoodItem] = []
-    var seen = Set<UUID>()
-
-    func append(_ foods: [FoodItem]) {
-        for food in foods where seen.insert(food.id).inserted {
-            candidates.append(food)
-        }
-    }
-
-    var prefixDescriptor = FetchDescriptor<FoodItem>(
-        predicate: #Predicate { food in
-            food.searchableText.starts(with: normalizedQuery)
-                || food.searchableText.localizedStandardContains(fieldPrefixQuery)
-        },
-        sortBy: [SortDescriptor(\.name)]
-    )
-    prefixDescriptor.fetchLimit = 60
-    append(try context.fetch(prefixDescriptor))
-
-    var fallbackDescriptor = FetchDescriptor<FoodItem>(
-        predicate: #Predicate { food in
-            food.searchableText.localizedStandardContains(searchTerm)
-        },
-        sortBy: [SortDescriptor(\.name)]
-    )
-    fallbackDescriptor.fetchLimit = 250
-    append(try context.fetch(fallbackDescriptor))
-
-    return Array(
+func pickerLocalFoodCandidates(in context: ModelContext, query: String) throws -> [FoodItem] {
+    Array(
         FoodItemLocalSearch.rankedFoods(
-            candidates,
+            try FoodItemLocalSearch.fetchedCandidates(in: context, matching: query),
             matching: query,
             priorities: CommonFoodSeedLoader.staplePriorities
         ).prefix(60)

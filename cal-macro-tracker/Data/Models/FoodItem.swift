@@ -134,6 +134,7 @@ final class FoodItem {
         var seen = Set<String>()
         return ([name, brand, barcode] + aliases)
             .compactMap(normalizedSearchValue)
+            .map(FoodItemLocalSearch.searchableIndexValue)
             .filter { seen.insert($0).inserted }
             .joined(separator: FoodItemLocalSearch.searchableValueSeparator)
     }
@@ -162,6 +163,12 @@ struct FoodItemSearchQuery: Hashable {
             ?? normalizedText
     }
 
+    var foldedSearchTokens: [String] {
+        Array(Set(Self.tokenize(normalizedText).map(FoodItemLocalSearch.singularize)))
+            .filter { $0.count > 1 || $0.allSatisfy(\.isNumber) }
+            .sorted()
+    }
+
     nonisolated static func normalize(_ value: String) -> String {
         value.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
             .lowercased()
@@ -180,6 +187,49 @@ struct FoodItemSearchQuery: Hashable {
 
 enum FoodItemLocalSearch {
     static let searchableValueSeparator = "\n"
+    nonisolated static let searchableIndexSeparator = "\u{001F}"
+
+    nonisolated static func searchableIndexValue(_ value: String) -> String {
+        let indexTokens = Set(FoodItemSearchQuery.tokenize(value).map(singularize)).sorted()
+        return value + searchableIndexSeparator + indexTokens.joined(separator: " ")
+    }
+
+    static func fetchedCandidates(in context: ModelContext, matching query: String) throws -> [FoodItem] {
+        let searchQuery = FoodItemSearchQuery(query)
+        let normalizedQuery = searchQuery.normalizedText
+        let fieldPrefixQuery = " \(normalizedQuery)"
+        var candidates: [FoodItem] = []
+        var seen = Set<UUID>()
+
+        func append(_ foods: [FoodItem]) {
+            for food in foods where seen.insert(food.id).inserted {
+                candidates.append(food)
+            }
+        }
+
+        var prefixDescriptor = FetchDescriptor<FoodItem>(
+            predicate: #Predicate { food in
+                food.searchableText.starts(with: normalizedQuery)
+                    || food.searchableText.localizedStandardContains(fieldPrefixQuery)
+            },
+            sortBy: [SortDescriptor(\.name)]
+        )
+        prefixDescriptor.fetchLimit = 60
+        append(try context.fetch(prefixDescriptor))
+
+        for token in searchQuery.foldedSearchTokens {
+            var tokenDescriptor = FetchDescriptor<FoodItem>(
+                predicate: #Predicate { food in
+                    food.searchableText.localizedStandardContains(token)
+                },
+                sortBy: [SortDescriptor(\.name)]
+            )
+            tokenDescriptor.fetchLimit = 250
+            append(try context.fetch(tokenDescriptor))
+        }
+
+        return candidates
+    }
 
     private struct SearchMatch {
         let food: FoodItem
@@ -250,7 +300,9 @@ enum FoodItemLocalSearch {
                     values.append(value)
                 }
             }
-        let searchableComponents = food.searchableText.components(separatedBy: Self.searchableValueSeparator)
+        let searchableComponents = food.searchableText
+            .components(separatedBy: Self.searchableValueSeparator)
+            .map { $0.components(separatedBy: Self.searchableIndexSeparator).first ?? $0 }
         let aliasWords: [[String]]
         if searchableComponents.count > 1 {
             aliasWords = Array(searchableComponents.dropFirst(prefixValues.count)).map(comparableWords)
@@ -287,7 +339,7 @@ enum FoodItemLocalSearch {
         FoodItemSearchQuery.tokenize(value).map(singularize)
     }
 
-    nonisolated private static func singularize(_ word: String) -> String {
+    nonisolated static func singularize(_ word: String) -> String {
         if word.count > 4, word.hasSuffix("ies") {
             return String(word.dropLast(3)) + "y"
         }
