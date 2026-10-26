@@ -50,6 +50,74 @@ final class InsightsAnalyticsTests: XCTestCase {
         XCTAssertEqual(days.last, today)
     }
 
+    func testAllTimeDaysAreEmptyWithoutAnEarliestEntry() {
+        let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
+
+        XCTAssertTrue(InsightsRange.allTime.days(endingOn: today, startingAt: nil).isEmpty)
+        XCTAssertTrue(InsightsRange.allTime.previousDays(endingBefore: today).isEmpty)
+    }
+
+    func testAllTimeDaysIncludeEarliestEntryThroughToday() {
+        let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
+        let earliest = CalendarDay(date: date(year: 2026, month: 5, day: 5))
+
+        XCTAssertEqual(InsightsRange.allTime.days(endingOn: today, startingAt: earliest), [earliest, earliest.advanced(byDays: 1)!, today])
+    }
+
+    func testLongFixedRangesPreserveCalendarDayCountAndPreviousPeriod() {
+        let today = CalendarDay(date: date(year: 2026, month: 1, day: 3))
+
+        XCTAssertEqual(InsightsRange.ninetyDays.days(endingOn: today).count, 90)
+        let yearDays = InsightsRange.oneYear.days(endingOn: today)
+        XCTAssertEqual(yearDays.count, 365)
+        XCTAssertEqual(InsightsRange.oneYear.previousDays(endingBefore: today).count, 365)
+        XCTAssertEqual(InsightsRange.oneYear.previousDays(endingBefore: today).last, yearDays.first?.advanced(byDays: -1))
+    }
+
+    func testChartBucketsAverageOnlyLoggedDaysAndKeepMissingNutrientsMissing() {
+        let points = [
+            point(dayOffset: 0, calories: 2_000, protein: 100, fiber: 20),
+            emptyPoint(dayOffset: 1),
+            point(dayOffset: 2, calories: 1_600, protein: 80, fiber: nil)
+        ]
+
+        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
+
+        XCTAssertEqual(buckets.count, 1)
+        XCTAssertEqual(buckets[0].snapshot.totals.calories, 1_800)
+        XCTAssertEqual(buckets[0].snapshot.totals.protein, 90)
+        XCTAssertEqual(buckets[0].snapshot.secondaryTotals.fiber, 20)
+        XCTAssertEqual(buckets[0].loggedDayCount, 2)
+    }
+
+    func testChartBucketingKeepsOneLoggedDayAndSeparatesMonthBoundaries() {
+        let points = [
+            point(date: date(year: 2024, month: 2, day: 29), calories: 2_100),
+            point(date: date(year: 2024, month: 3, day: 1), calories: 1_900)
+        ]
+
+        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .monthly)
+
+        XCTAssertEqual(buckets.count, 2)
+        XCTAssertEqual(buckets.map(\.snapshot.totals.calories), [2_100, 1_900])
+        XCTAssertEqual(buckets.map(\.loggedDayCount), [1, 1])
+    }
+
+    func testWeeklyChartBucketingHandlesDaylightSavingBoundary() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let march8 = CalendarDay(date: date(year: 2026, month: 3, day: 8), calendar: calendar)
+        let points = [
+            point(day: march8, calories: 2_000),
+            point(day: march8.advanced(byDays: 1)!, calories: 1_800)
+        ]
+
+        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
+
+        XCTAssertEqual(buckets.count, 1)
+        XCTAssertEqual(buckets[0].snapshot.totals.calories, 1_900)
+    }
+
     func testAverageExcludesDaysWithoutEntries() {
         let points = [
             point(dayOffset: 0, calories: 2_000, protein: 150),
@@ -125,8 +193,23 @@ final class InsightsAnalyticsTests: XCTestCase {
         carbs: Double = 0,
         fiber: Double? = nil
     ) -> InsightsDayPoint {
+        point(day: day(dayOffset), calories: calories, protein: protein, fat: fat, carbs: carbs, fiber: fiber)
+    }
+
+    private func point(date: Date, calories: Double) -> InsightsDayPoint {
+        point(day: CalendarDay(date: date), calories: calories)
+    }
+
+    private func point(
+        day: CalendarDay,
+        calories: Double = 0,
+        protein: Double = 0,
+        fat: Double = 0,
+        carbs: Double = 0,
+        fiber: Double? = nil
+    ) -> InsightsDayPoint {
         let entry = LogEntry(
-            dateLogged: day(dayOffset).startDate,
+            dateLogged: day.startDate,
             foodName: "Test Food",
             source: .custom,
             servingDescription: "1 serving",
@@ -144,7 +227,7 @@ final class InsightsAnalyticsTests: XCTestCase {
             fiberConsumed: fiber
         )
 
-        return InsightsDayPoint(day: day(dayOffset), snapshot: LogEntryDaySummary.snapshot(for: [entry]))
+        return InsightsDayPoint(day: day, snapshot: LogEntryDaySummary.snapshot(for: [entry]))
     }
 
     private func day(_ offset: Int) -> CalendarDay {
