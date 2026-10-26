@@ -64,6 +64,7 @@ export async function loadFoods(archivePath: string): Promise<FoodRow[]> {
     if (id === undefined || !description) return;
     foodByID.set(id, {
       fdcId: id,
+      foodCode: "",
       description,
       category: row.wweia_category_code ?? row.food_category_id ?? "",
       portions: [],
@@ -81,10 +82,16 @@ export async function loadFoods(archivePath: string): Promise<FoodRow[]> {
   await forEachCsvRow(archivePath, /(?:^|\/)survey_fndds_food\.csv$/i, (row) => {
     const id = numberValue(row.fdc_id);
 
+    const food = id === undefined ? undefined : foodByID.get(id);
+    const foodCode = row.food_code?.trim();
+
+    if (food && foodCode && /^\d{1,8}$/.test(foodCode)) food.foodCode = foodCode.padStart(8, "0");
+
     if (id !== undefined && row.wweia_category_number) categoryByFoodID.set(id, row.wweia_category_number);
   });
 
   for (const food of foodByID.values()) {
+    if (!food.foodCode) foodByID.delete(food.fdcId);
     food.category = categories.get(categoryByFoodID.get(food.fdcId) ?? "") ?? food.category;
   }
 

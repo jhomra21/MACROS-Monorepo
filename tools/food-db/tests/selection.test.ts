@@ -1,6 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { choosePortion, friendlyName, householdAliases, selectFoods, type FoodRow } from "../src/select";
 import { addStapleAliases, validateStaples, type Staple } from "../src/staples";
+import { loadFoods } from "../src/fndds";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { z } from "zod";
 
 const servingFields = [
@@ -42,6 +45,7 @@ const bundledFoodFixtureSchema = legacyFoodFixtureSchema.extend({
 
 const baseFood = (overrides: Partial<FoodRow> = {}): FoodRow => ({
   fdcId: 1,
+  foodCode: "00000001",
   description: "Chicken breast, grilled",
   category: "Poultry",
   portions: [],
@@ -183,7 +187,7 @@ describe("FNDDS food selection", () => {
     const description = "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconstituted, brewed";
     const food = selectFoods([baseFood({ description })], 0)[0];
 
-    expect(food?.name.split(",").slice(1)).toHaveLength(3);
+    expect(food?.name.split(",").slice(1).length).toBeLessThanOrEqual(3);
     expect(food?.aliases).toContain(description);
   });
 
@@ -205,26 +209,44 @@ describe("FNDDS food selection", () => {
 
     expect(foods).toHaveLength(2);
     expect(new Set(foods.map(({ name }) => name)).size).toBe(2);
-    expect(foods.map(({ name }) => name)).toContain(
-      "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Not Reconstituted",
-    );
+    expect(foods.map(({ name }) => name)).toContain("Coffee, Instant, Decaffeinated, Not Reconstituted");
+    expect(foods.map(({ name }) => name)).toContain("Coffee, Instant, Decaffeinated, Reconstituted");
     expect(foods.find(({ aliases }) =>
       aliases[0] === "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, not reconstituted"
     )?.caloriesPerServing).toBe(7.77);
     expect(foods.find(({ aliases }) =>
       aliases[0] === "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
     )?.caloriesPerServing).toBe(4.8);
+
+    const sweetenerVariants = selectFoods([
+      baseFood({
+        fdcId: 3,
+        description: "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconstituted",
+      }),
+      baseFood({
+        fdcId: 4,
+        description: "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted",
+      }),
+    ], 0);
+
+    expect(new Set(sweetenerVariants.map(({ name }) => name))).toEqual(new Set([
+      "Coffee, Instant, Decaffeinated, Sugar",
+      "Coffee, Instant, Decaffeinated, Low Calorie Sweetener",
+    ]));
   });
 
-  test("plain tofu staple targets the FNDDS soybean curd row", async () => {
+  test("plain tofu staple identifier uses its FNDDS food code", async () => {
     const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
       await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
     );
 
     const tofu = bundledFoods.find(({ aliases }) => aliases.includes("tofu"));
+    const sourceRows = await loadFoods(join(homedir(), "Library", "Caches", "macros-food-db", "fndds-2024-10-31.zip"));
+    const sourceTofu = sourceRows.find(({ description }) => description === "Soybean curd");
 
     expect(tofu?.name).toBe("Soybean Curd");
     expect(tofu?.aliases).toContain("Soybean curd");
+    expect(tofu?.sourceIdentifier).toBe(`fndds:${sourceTofu?.foodCode}`);
   });
 
   test("adds deterministic household aliases to matching source descriptions", () => {
@@ -250,7 +272,7 @@ describe("FNDDS food selection", () => {
       .toContain("bell pepper");
   });
 
-  test("every generated source identifier is unique", async () => {
+  test("bundle identifiers and display names are unique and within limits", async () => {
     const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
       await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
     );
@@ -262,7 +284,12 @@ describe("FNDDS food selection", () => {
     expect(identifiers.filter((identifier) => identifier.startsWith("legacy:")))
       .toHaveLength(12);
     expect(identifiers.filter((identifier) => !identifier.startsWith("legacy:"))
-      .every((identifier) => /^\d+$/.test(identifier))).toBe(true);
+      .every((identifier) => /^fndds:\d{8}$/.test(identifier))).toBe(true);
+    const names = bundledFoods.map(({ name }) => name);
+    expect(new Set(names).size).toBe(names.length);
+    expect(names.every((name) => name.length <= 60 && name.split(",").length <= 4)).toBe(true);
+    expect(names).toContain("Almond Milk, Sweetened");
+    expect(names).toContain("Almond Milk, Unsweetened");
   });
 
   test("rejects staples missing from the final food bundle", () => {

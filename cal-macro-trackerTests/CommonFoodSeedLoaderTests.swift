@@ -117,6 +117,96 @@ final class CommonFoodSeedLoaderTests: XCTestCase {
         XCTAssertEqual(foods.first?.sourceIdentifier, record.sourceIdentifier)
     }
 
+    func testReconcileClaimsStoredFoodOnlyOnceAcrossDescriptionAndNameMatches() throws {
+        let container = try makeContainer()
+        let context = container.mainContext
+        let sharedFood = FoodItem(
+            name: "Existing Name",
+            source: .common,
+            servingDescription: "1 serving",
+            caloriesPerServing: 40,
+            proteinPerServing: 2,
+            fatPerServing: 1,
+            carbsPerServing: 5,
+            aliases: ["shared source description"]
+        )
+        context.insert(sharedFood)
+        try context.save()
+
+        let descriptionMatch = record(sourceIdentifier: "fndds:00000001", name: "Renamed Food")
+        let nameMatch = record(sourceIdentifier: "fndds:00000002", name: "Existing Name")
+        let originalID = sharedFood.id
+        let descriptionMatchRecord = CommonFoodSeedRecord(
+            sourceIdentifier: descriptionMatch.sourceIdentifier,
+            name: descriptionMatch.name,
+            aliases: ["shared source description"],
+            servingDescription: descriptionMatch.servingDescription,
+            gramsPerServing: descriptionMatch.gramsPerServing,
+            caloriesPerServing: 210,
+            proteinPerServing: 11,
+            fatPerServing: 7,
+            carbsPerServing: 24,
+            saturatedFatPerServing: nil,
+            fiberPerServing: nil,
+            sugarsPerServing: nil,
+            addedSugarsPerServing: nil,
+            sodiumPerServing: nil,
+            cholesterolPerServing: nil
+        )
+
+        try CommonFoodSeedLoader.reconcile(
+            modelContext: context,
+            records: [descriptionMatchRecord, nameMatch]
+        )
+
+        let foods = try context.fetch(FetchDescriptor<FoodItem>())
+        let claimedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == descriptionMatch.sourceIdentifier })
+        let insertedFood = try XCTUnwrap(foods.first { $0.sourceIdentifier == nameMatch.sourceIdentifier })
+        XCTAssertEqual(foods.count, 2)
+        XCTAssertEqual(claimedFood.id, originalID)
+        XCTAssertEqual(claimedFood.caloriesPerServing, 210)
+        XCTAssertNotEqual(insertedFood.id, originalID)
+        XCTAssertEqual(insertedFood.caloriesPerServing, nameMatch.caloriesPerServing)
+    }
+
+    func testReconcileBackfillsSameNameFoodDeterministically() throws {
+        let container = try makeContainer()
+        let context = container.mainContext
+        let earlierFood = FoodItem(
+            name: "Duplicate Name",
+            source: .common,
+            servingDescription: "1 serving",
+            caloriesPerServing: 10,
+            proteinPerServing: 1,
+            fatPerServing: 1,
+            carbsPerServing: 1,
+            createdAt: Date(timeIntervalSince1970: 100)
+        )
+        let laterFood = FoodItem(
+            name: "Duplicate Name",
+            source: .common,
+            servingDescription: "1 serving",
+            caloriesPerServing: 20,
+            proteinPerServing: 2,
+            fatPerServing: 2,
+            carbsPerServing: 2,
+            createdAt: Date(timeIntervalSince1970: 200)
+        )
+        context.insert(laterFood)
+        context.insert(earlierFood)
+        try context.save()
+        let record = record(sourceIdentifier: "fndds:00000003", name: "Duplicate Name")
+
+        try CommonFoodSeedLoader.reconcile(modelContext: context, records: [record])
+        let firstSurvivor = try XCTUnwrap(context.fetch(FetchDescriptor<FoodItem>()).first)
+        try CommonFoodSeedLoader.reconcile(modelContext: context, records: [record])
+        let secondSurvivor = try XCTUnwrap(context.fetch(FetchDescriptor<FoodItem>()).first)
+
+        XCTAssertEqual(firstSurvivor.id, earlierFood.id)
+        XCTAssertEqual(secondSurvivor.id, earlierFood.id)
+        XCTAssertEqual(secondSurvivor.caloriesPerServing, record.caloriesPerServing)
+    }
+
     private func makeContainer() throws -> ModelContainer {
         try ModelContainer(
             for: FoodItem.self, Meal.self, MealComponent.self,

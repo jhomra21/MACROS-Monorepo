@@ -5,6 +5,7 @@ export type PortionRow = {
 
 export type FoodRow = {
   fdcId: number;
+  foodCode: string;
   description: string;
   category: string;
   portions: PortionRow[];
@@ -167,7 +168,7 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
   const candidates = Array.from(selectedByName.values(), (row) => ({
     row,
-    name: friendlyName(row.description),
+    name: capDisplayName(friendlyName(row.description)),
     priority: row.description.split(",").length * 10 + row.description.split(/\s+/).length,
   })).sort((left, right) => left.priority - right.priority || left.row.fdcId - right.row.fdcId);
 
@@ -184,7 +185,7 @@ export function selectFoods(rows: FoodRow[], minimum = 2500): SelectedFood[] {
 
     return {
       fdcId: row.fdcId,
-      sourceIdentifier: String(row.fdcId),
+      sourceIdentifier: `fndds:${row.foodCode}`,
       usedFallbackPortion: portion.usedFallbackPortion,
       name,
       aliases: [row.description, ...householdAliases(row.description)],
@@ -227,22 +228,104 @@ function preserveDisplayNameDistinctions(candidates: Array<{ row: FoodRow; name:
   for (const collidingCandidates of candidatesByDisplayName.values()) {
     if (collidingCandidates.length < 2) continue;
 
-    const maxQualifierCount = Math.max(...collidingCandidates.map(({ row }) =>
-      row.description.split(",").slice(1).map((part) => part.trim())
-        .filter((part) => nutritionQualifier.test(part) || variantQualifier.test(part)).length
-    ));
+    const descriptionQualifiers = collidingCandidates.map(({ row }) =>
+      row.description.split(",").slice(1).map((part) =>
+        part.trim().replace(/reconsitituted/gi, "reconstituted")
+      )
+    );
 
-    for (let qualifierLimit = 4; qualifierLimit <= maxQualifierCount; qualifierLimit += 1) {
-      const expandedNames = collidingCandidates.map(({ row }) => friendlyName(row.description, qualifierLimit));
+    const qualifierCount = Math.max(...descriptionQualifiers.map((qualifiers) => qualifiers.length));
+    const qualifierLabels = collidingCandidates.map(() => new Array<string>());
 
-      if (new Set(expandedNames.map((name) => name.normalize("NFKC").toLowerCase())).size !== expandedNames.length) continue;
+    for (let qualifierIndex = 0; qualifierIndex < qualifierCount; qualifierIndex += 1) {
+      const groups = new Map<string, number[]>();
 
-      collidingCandidates.forEach((candidate, index) => {
-        candidate.name = expandedNames[index]!;
-      });
-      break;
+      for (const [index, labels] of qualifierLabels.entries()) {
+        const key = labels.join(" ").toLowerCase();
+        groups.set(key, [...(groups.get(key) ?? []), index]);
+      }
+
+      for (const group of groups.values()) {
+        if (group.length < 2) continue;
+
+        const values = group.map((index) => descriptionQualifiers[index]?.[qualifierIndex] ?? "");
+
+        if (new Set(values.map((value) => value.toLowerCase())).size < 2) continue;
+
+        group.forEach((index, groupIndex) => {
+          const label = uniqueQualifier(values[groupIndex]!, values);
+
+          if (label) qualifierLabels[index]!.push(label);
+        });
+      }
     }
+
+    collidingCandidates.forEach((candidate, index) => {
+      const discriminator = qualifierLabels[index]!.join(" ");
+
+      if (discriminator) candidate.name = displayNameWithDiscriminator(candidate.name, discriminator);
+    });
   }
+
+  const names = new Set<string>();
+
+  for (const candidate of candidates) {
+    const base = capDisplayName(candidate.name);
+    let name = base;
+    let suffix = 2;
+
+    while (names.has(name.normalize("NFKC").toLowerCase())) {
+      const marker = ` ${suffix++}`;
+      name = `${base.slice(0, 60 - marker.length).trimEnd()}${marker}`;
+    }
+
+    candidate.name = name;
+    names.add(name.normalize("NFKC").toLowerCase());
+  }
+}
+
+function uniqueQualifier(value: string, values: string[]): string {
+  if (!value) return "";
+
+  const words = value.split(/\s+/);
+  const otherWords = values.map((candidate) => candidate.split(/\s+/));
+  let sharedPrefixLength = 0;
+
+  while (words[sharedPrefixLength]
+    && otherWords.every((candidate) =>
+      candidate[sharedPrefixLength]?.toLowerCase() === words[sharedPrefixLength]?.toLowerCase()
+    )) {
+    sharedPrefixLength += 1;
+  }
+
+  return titleCase(words.slice(sharedPrefixLength).join(" "));
+}
+
+function displayNameWithDiscriminator(name: string, discriminator: string): string {
+  const segments = name.split(", ").slice(0, 3);
+
+  while (segments.length > 1 && [...segments, discriminator].join(", ").length > 60) segments.pop();
+
+  const availableLength = 60 - segments.join(", ").length - (segments.length ? 2 : 0);
+
+  return [...segments, discriminator.slice(0, availableLength).trimEnd()].join(", ");
+}
+
+function titleCase(value: string): string {
+  return value.split(" ").filter(Boolean)
+    .map((word) => word[0]!.toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+}
+
+function capDisplayName(value: string): string {
+  const segments = value.split(", ").slice(0, 4);
+
+  if (segments.join(", ").length <= 60) return segments.join(", ");
+
+  while (segments.length > 1 && segments.join(", ").length > 60) {
+    segments.pop();
+  }
+
+  return segments.join(", ").slice(0, 60).trimEnd();
 }
 
 function round(value: number): number {

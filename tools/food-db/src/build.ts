@@ -151,6 +151,20 @@ if (new Set(jsonFoods.map(({ sourceIdentifier }) => sourceIdentifier)).size !== 
   throw new Error("Generated common foods must have unique source identifiers.");
 }
 
+if (jsonFoods.some(({ sourceIdentifier, name }) =>
+  !(sourceIdentifier.startsWith("legacy:")
+    ? /^legacy:[a-z0-9-]+$/.test(sourceIdentifier)
+    : /^fndds:\d{8}$/.test(sourceIdentifier))
+  || name.length > 60
+  || name.split(",").length > 4
+)) {
+  throw new Error("Generated common foods must have valid identifiers and display names of at most four segments and 60 characters.");
+}
+
+if (new Set(jsonFoods.map(({ name }) => name.normalize("NFKC").toLowerCase())).size !== jsonFoods.length) {
+  throw new Error("Generated common foods must have unique display names.");
+}
+
 const staples = validateStaples(
   z.array(stapleSchema).parse(JSON.parse(await readFile(staplesPath, "utf8"))),
   jsonFoods,

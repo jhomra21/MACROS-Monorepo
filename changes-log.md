@@ -13,6 +13,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 
+- Follow-up: use stable FNDDS food-code identifiers, deterministic single-claim reconciliation, and capped collision-safe names. Regenerated 3,283 foods from the October 2024 archive; manifest `fndds-2024-10-31-43e9e747b198`.
 - Stable FNDDS/legacy source identifiers now reconcile renamed common foods in place, remove stale unreferenced foods while retaining meal-linked rows, and cap display qualifiers at three segments while preserving the complete source description as an alias.
 - Final follow-up bundle: 3,281 foods, manifest `fndds-2024-10-31-442a6db2598e`; additively migrated `FoodItem.sourceIdentifier` and validated stale-row retention against the existing pre-meal store fixture.
 - Review follow-up: deduplicate by full food identity before display-name capping and retain extra qualifiers only when needed to distinguish variants; restored both dry and reconstituted instant-coffee variants. Bundle: 3,283 foods, manifest `fndds-2024-10-31-4807bc73432b`.

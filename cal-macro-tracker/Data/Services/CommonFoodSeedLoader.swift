@@ -103,7 +103,11 @@ enum CommonFoodSeedLoader {
         var unidentifiedFoodsByName: [String: FoodItem] = [:]
         var unidentifiedFoodsBySourceDescription: [String: FoodItem] = [:]
         var ambiguousSourceDescriptions = Set<String>()
-        for food in existingFoods {
+        let orderedExistingFoods = existingFoods.sorted {
+            if $0.createdAt != $1.createdAt { return $0.createdAt < $1.createdAt }
+            return $0.id.uuidString < $1.id.uuidString
+        }
+        for food in orderedExistingFoods {
             if let sourceIdentifier = food.sourceIdentifier {
                 if existingFoodsBySourceIdentifier[sourceIdentifier] == nil {
                     existingFoodsBySourceIdentifier[sourceIdentifier] = food
@@ -129,28 +133,34 @@ enum CommonFoodSeedLoader {
                 }
             }
         }
-        var matchedFoodIDs = Set<UUID>()
+        var claimedFoodIDs = Set<UUID>()
+        func claim(_ food: FoodItem?) -> FoodItem? {
+            guard let food, claimedFoodIDs.insert(food.id).inserted else { return nil }
+            return food
+        }
+
         let changes = foods.compactMap { record -> (record: CommonFoodSeedRecord, food: FoodItem?)? in
-            let sourceDescriptionFood = record.aliases.first
-                .flatMap { unidentifiedFoodsBySourceDescription.removeValue(forKey: normalizedName($0)) }
+            let sourceDescriptionFood = record.aliases.first.flatMap { alias -> FoodItem? in
+                unidentifiedFoodsBySourceDescription.removeValue(forKey: normalizedName(alias))
+            }
             if let sourceDescriptionFood {
                 unidentifiedFoodsByName.removeValue(forKey: normalizedName(sourceDescriptionFood.name))
             }
 
             let existingFood =
-                existingFoodsBySourceIdentifier.removeValue(forKey: record.sourceIdentifier)
-                ?? sourceDescriptionFood
-                ?? unidentifiedFoodsByName.removeValue(forKey: normalizedName(record.name))
-            if let existingFood {
-                matchedFoodIDs.insert(existingFood.id)
-            }
+                claim(existingFoodsBySourceIdentifier.removeValue(forKey: record.sourceIdentifier))
+                ?? claim(
+                    sourceDescriptionFood
+                )
+                ?? claim(unidentifiedFoodsByName.removeValue(forKey: normalizedName(record.name)))
+
             guard existingFood.map({ recordMatches(record, food: $0) }) != true else { return nil }
             return (record, existingFood)
         }
         let components = try modelContext.fetch(FetchDescriptor<MealComponent>())
         let referencedFoodIDs = Set(components.map(\.foodItemID))
         let staleFoods = existingFoods.filter {
-            matchedFoodIDs.contains($0.id) == false
+            claimedFoodIDs.contains($0.id) == false
                 && referencedFoodIDs.contains($0.id) == false
         }
         guard changes.isEmpty == false || staleFoods.isEmpty == false else { return }
