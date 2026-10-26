@@ -207,6 +207,29 @@ final class FoodItemLocalSearchTests: XCTestCase {
         XCTAssertEqual(FoodItemSearchQuery("farmer's").tokens, ["farmer", "s"])
     }
 
+    func testBarcodeExactMatchRanksAboveOrdinaryNameMatch() {
+        let namedAsBarcode = makeFood(name: "4006381333931", calories: 50)
+        let barcodeProduct = makeFood(name: "Protein Bar", calories: 200, barcode: "4006381333931")
+
+        let results = FoodItemLocalSearch.rankedFoods([namedAsBarcode, barcodeProduct], matching: "4006381333931")
+
+        XCTAssertEqual(results.map(\.name), ["Protein Bar", "4006381333931"])
+    }
+
+    func testBrandPrefixAndWordRankAboveLaterNameSegmentMatches() {
+        let laterSegment = makeFood(name: "Yogurt, Greek, Chobani Style", calories: 150)
+        let brandProduct = makeFood(name: "Vanilla Yogurt", calories: 120, brand: "Chobani")
+
+        XCTAssertEqual(
+            FoodItemLocalSearch.rankedFoods([laterSegment, brandProduct], matching: "chob").map(\.name),
+            ["Vanilla Yogurt", "Yogurt, Greek, Chobani Style"]
+        )
+        XCTAssertEqual(
+            FoodItemLocalSearch.rankedFoods([laterSegment, brandProduct], matching: "chobani").map(\.name),
+            ["Vanilla Yogurt", "Yogurt, Greek, Chobani Style"]
+        )
+    }
+
     @MainActor
     func testFetchAndRankFindsFoldedTermsInBothFoodSearchSurfaces() throws {
         let container = try ModelContainer(
@@ -247,10 +270,46 @@ final class FoodItemLocalSearchTests: XCTestCase {
         }
     }
 
-    private func makeFood(name: String, calories: Double, aliases: [String] = []) -> FoodItem {
+    @MainActor
+    func testFetchAndRankFindsPersistedBarcodeAndBrandMatches() throws {
+        let container = try ModelContainer(
+            for: FoodItem.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        let context = container.mainContext
+        let barcodeProduct = makeFood(name: "Protein Bar", calories: 200, brand: "Acme", barcode: "4006381333931")
+        let laterSegment = makeFood(name: "Yogurt, Greek, Chobani Style", calories: 150)
+        let brandProduct = makeFood(name: "Vanilla Yogurt", calories: 120, brand: "Chobani")
+        [barcodeProduct, laterSegment, brandProduct].forEach(context.insert)
+        try context.save()
+
+        let barcodeQuery = "4006381333931"
+        let barcodeResults = try FoodItemLocalSearch.rankedFoods(
+            localFoodCandidates(in: context, matching: barcodeQuery),
+            matching: barcodeQuery
+        )
+        let brandQuery = "chob"
+        let brandResults = try FoodItemLocalSearch.rankedFoods(
+            localFoodCandidates(in: context, matching: brandQuery),
+            matching: brandQuery
+        )
+
+        XCTAssertEqual(barcodeResults.map(\.name), ["Protein Bar"])
+        XCTAssertEqual(brandResults.map(\.name), ["Vanilla Yogurt", "Yogurt, Greek, Chobani Style"])
+    }
+
+    private func makeFood(
+        name: String,
+        calories: Double,
+        aliases: [String] = [],
+        brand: String? = nil,
+        barcode: String? = nil
+    ) -> FoodItem {
         FoodItem(
             name: name,
+            brand: brand,
             source: .common,
+            barcode: barcode,
             servingDescription: "1 serving",
             caloriesPerServing: calories,
             proteinPerServing: 1,

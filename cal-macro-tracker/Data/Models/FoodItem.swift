@@ -313,8 +313,12 @@ enum FoodItemLocalSearch {
             aliasWords = [Array(comparableWords(food.searchableText).dropFirst(prefixWordCount))]
         }
         let brandWords = food.brand.map(comparableWords) ?? []
+        let barcodeWords = food.barcode.map(comparableWords) ?? []
+        // Lower tiers rank first: -1 barcode, 0 exact, 1 head noun, 2 name prefix, 3 brand, 4 later name segment or alias.
         let tier: Int
-        if phraseEquals(firstNameWords, queryWords)
+        if phraseEquals(barcodeWords, queryWords) {
+            tier = -1
+        } else if phraseEquals(firstNameWords, queryWords)
             || phraseEquals(brandWords, queryWords)
             || aliasWords.contains(where: { phraseEquals($0, queryWords) })
         {
@@ -323,13 +327,15 @@ enum FoodItemLocalSearch {
             tier = 1
         } else if containsWords(firstNameWords, queryWords, allowingPrefix: true) {
             tier = 2
+        } else if containsWords(brandWords, queryWords, allowingPrefix: true) {
+            tier = 3
         } else {
             let laterNameSegments = nameSegments.dropFirst().map { comparableWords($0) }
             guard
                 laterNameSegments.contains(where: { containsWords($0, queryWords, allowingPrefix: true) })
                     || aliasWords.contains(where: { containsWords($0, queryWords, allowingPrefix: true) })
             else { return nil }
-            tier = 3
+            tier = 4
         }
 
         return tier
