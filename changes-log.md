@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
+
+- Expanded the USDA FNDDS bundle to 3,199 foods (October 2024 release; public domain, 17 U.S.C. § 105), preserving legacy serving/nutrient values and recording source archive provenance. Added deterministic common-name aliases and plural-insensitive, phrase-aware local ranking with explicit match tiers and stable ordering.
+- Follow-up: curated 112 everyday query mappings (97 unique exact food targets), included their aliases and ordered priorities in the rebuilt manifest, and applied priorities before stable within-tier tie-breakers in local food search.
+- Validation: food pipeline checks/tests (8 tests, 61 assertions), JS lint, Swift format, N+1 smoke, quality build, `FoodItemLocalSearchTests` (8/8), `LogEntryQueryTests` (3/3), and `MealSchemaMigrationTests` (1/1) passed. The final live in-app 50-query audit scored 50/50; captured top-three results and the updated bundle version/size are in ignored `build/ws4-qa-2026-10-25/final-build/QA.md`. Earlier bootstrap/search timings are unchanged measurements from the previous bundle, not remeasured here. Earlier two `LocalConfidenceTests` Vision/inference failures remain as documented in the QA report.
+
 ## 2026-10-25 Weight, Apple Health, and Reminders (WS5)
 
 - Added an on-device weight log linked to `BodyProfile`, a free latest-weight Insights summary with Pro-gated trends and Apple Health import, free nutrition write support, and one free daily reminder with Pro named/smart reminder scheduling.
@@ -21,13 +27,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-25 Retention and Polish (WS7)
 
 - Centralized the display brand, added a calendar-aware dashboard logging streak and eligible post-save App Store review request, made barcode 429 responses non-retryable with bounded `Retry-After` feedback, and aligned current Insights and ring-color Pro entry copy. Deferred WS4/WS5/WS6 follow-ups are listed in the tracker.
-
-## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
-
-- Expanded the USDA FNDDS bundle to 3,199 foods (October 2024 release; public domain, 17 U.S.C. § 105), preserving legacy serving/nutrient values and recording source archive provenance. Added deterministic common-name aliases and plural-insensitive, phrase-aware local ranking with explicit match tiers and stable ordering.
-- Follow-up: curated 112 everyday query mappings (97 unique exact food targets), included their aliases and ordered priorities in the rebuilt manifest, and applied priorities before stable within-tier tie-breakers in local food search.
-- Validation: food pipeline checks/tests (8 tests, 61 assertions), JS lint, Swift format, N+1 smoke, quality build, `FoodItemLocalSearchTests` (8/8), `LogEntryQueryTests` (3/3), and `MealSchemaMigrationTests` (1/1) passed. The final live in-app 50-query audit scored 50/50; captured top-three results and the updated bundle version/size are in ignored `build/ws4-qa-2026-10-25/final-build/QA.md`. Earlier bootstrap/search timings are unchanged measurements from the previous bundle, not remeasured here. Earlier two `LocalConfidenceTests` Vision/inference failures remain as documented in the QA report.
-
 ## 2026-10-25 MACROS Pro (WS2)
 
 - Replaced the single unlock offer with yearly (7-day trial), monthly, and family-shareable $49.99 lifetime Pro plans while preserving legacy lifetime access; added observable source/expiration, native contextual paywall, subscription management, redemption, and all six future feature gates. Rebased owner decisions use `healthWeightImport` for Pro; nutrition writing stays free.
