@@ -32,7 +32,7 @@
   { "query": "almonds", "name": "Almonds, Unsalted" },
   { "query": "beans", "name": "Black Beans, From Canned, No Added Fat" },
   { "query": "lentils", "name": "Lentils, From Dried, No Added Fat" },
-  { "query": "tofu", "name": "Tofu And Vegetables Excluding Carrots, Broccoli" },
+  { "query": "tofu", "name": "Soybean Curd" },
   { "query": "pizza", "name": "Pizza" },
   { "query": "burger", "name": "Hamburger" },
   { "query": "fries", "name": "Potato, French Fries" },

@@ -50141,7 +50141,8 @@
   {
     "name": "Soybean Curd",
     "aliases": [
-      "Soybean curd"
+      "Soybean curd",
+      "tofu"
     ],
     "servingDescription": "1 cup (1/2\" cubes)",
     "gramsPerServing": 248,
@@ -54467,8 +54468,7 @@
   {
     "name": "Tofu And Vegetables Excluding Carrots, Broccoli",
     "aliases": [
-      "Tofu and vegetables excluding carrots, broccoli, and dark-green leafy; no potatoes, with soy-based sauce",
-      "tofu"
+      "Tofu and vegetables excluding carrots, broccoli, and dark-green leafy; no potatoes, with soy-based sauce"
     ],
     "servingDescription": "1 cup",
     "gramsPerServing": 217,

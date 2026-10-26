@@ -175,6 +175,16 @@ describe("FNDDS food selection", () => {
     expect(new Set(variants.map(({ name }) => name)).size).toBe(6);
   });
 
+  test("plain tofu staple targets the FNDDS soybean curd row", async () => {
+    const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
+      await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
+    );
+    const tofu = bundledFoods.find(({ aliases }) => aliases.includes("tofu"));
+
+    expect(tofu?.name).toBe("Soybean Curd");
+    expect(tofu?.aliases).toContain("Soybean curd");
+  });
+
   test("adds deterministic household aliases to matching source descriptions", () => {
     const cases: [string, string[]][] = [
       ["Peppers, sweet, green, raw", ["bell pepper", "sweet pepper"]],
