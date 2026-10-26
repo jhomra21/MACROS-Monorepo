@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 Backup Export and Import (WS6)
+
+- Added versioned JSON backup and log CSV export, validated DTO import with Merge/Replace, common-food preservation, settings restore, summary review, and Pro-gated Settings controls.
+- Validation: formatting, quality build, `BackupRoundTripTests` (9/9), and `MealSchemaMigrationTests` (1/1) pass; simulator export/share/Files-save and import-summary presentation pass, while UI import completion and full data-parity E2E remain unverified (`build/ws6-qa-2026-10-26/QA.md`).
+
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 
 - Follow-up: use stable FNDDS food-code identifiers, deterministic single-claim reconciliation, and capped collision-safe names. Regenerated 3,283 foods from the October 2024 archive; manifest `fndds-2024-10-31-43e9e747b198`.
