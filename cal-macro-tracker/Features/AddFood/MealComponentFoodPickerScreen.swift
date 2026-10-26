@@ -316,5 +316,11 @@ private func pickerLocalFoodCandidates(in context: ModelContext, query: String) 
     fallbackDescriptor.fetchLimit = 250
     append(try context.fetch(fallbackDescriptor))
 
-    return Array(FoodItemLocalSearch.rankedFoods(candidates, matching: query).prefix(60))
+    return Array(
+        FoodItemLocalSearch.rankedFoods(
+            candidates,
+            matching: query,
+            priorities: CommonFoodSeedLoader.staplePriorities
+        ).prefix(60)
+    )
 }

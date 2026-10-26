@@ -434,17 +434,29 @@ struct SearchFoodListView: View {
                 let foodQuery = FoodItemSearchQuery(trimmedQuery)
                 let mealQuery = MealSearchQuery(trimmedQuery)
                 let foodResults = foods.compactMap { food -> RankedLocalAddFoodSearchResult? in
-                    guard let rank = FoodItemLocalSearch.rank(for: food, matching: foodQuery) else { return nil }
+                    guard
+                        let rank = FoodItemLocalSearch.rank(for: food, matching: foodQuery)
+                    else { return nil }
                     return RankedLocalAddFoodSearchResult(
                         result: .food(LocalFoodSearchResult(food: food)),
                         rank: rank,
-                        name: food.name
+                        name: food.name,
+                        searchPriority: CommonFoodSeedLoader.staplePriorities[food.name],
+                        nameSegmentCount: food.name.split(separator: ",").count,
+                        nameLength: food.name.count
                     )
                 }
                 let mealResults = mealCandidates.compactMap { meal -> RankedLocalAddFoodSearchResult? in
                     guard let rank = MealLocalSearch.rank(for: meal, matching: mealQuery) else { return nil }
                     let result = localMealResult(for: meal, summary: summariesByMealID[meal.id]!)
-                    return RankedLocalAddFoodSearchResult(result: result, rank: rank, name: meal.name)
+                    return RankedLocalAddFoodSearchResult(
+                        result: result,
+                        rank: rank,
+                        name: meal.name,
+                        searchPriority: nil,
+                        nameSegmentCount: meal.name.split(separator: ",").count,
+                        nameLength: meal.name.count
+                    )
                 }
 
                 return Array((foodResults + mealResults).sortedForSearchResults().prefix(60).map(\.result))
@@ -499,6 +511,9 @@ private struct RankedLocalAddFoodSearchResult {
     let result: LocalAddFoodSearchResult
     let rank: Int
     let name: String
+    let searchPriority: Int?
+    let nameSegmentCount: Int
+    let nameLength: Int
 }
 
 private struct RecentLocalAddFoodSearchResult {
@@ -511,6 +526,18 @@ private extension Array where Element == RankedLocalAddFoodSearchResult {
     func sortedForSearchResults() -> [RankedLocalAddFoodSearchResult] {
         sorted { lhs, rhs in
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            if lhs.searchPriority != rhs.searchPriority {
+                switch (lhs.searchPriority, rhs.searchPriority) {
+                case let (left?, right?): return left < right
+                case (.some, .none): return true
+                case (.none, .some): return false
+                case (.none, .none): break
+                }
+            }
+            if lhs.nameSegmentCount != rhs.nameSegmentCount {
+                return lhs.nameSegmentCount < rhs.nameSegmentCount
+            }
+            if lhs.nameLength != rhs.nameLength { return lhs.nameLength < rhs.nameLength }
             let nameOrder = lhs.name.compare(
                 rhs.name,
                 options: [.caseInsensitive, .diacriticInsensitive],

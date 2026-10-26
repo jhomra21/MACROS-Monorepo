@@ -184,9 +184,16 @@ enum FoodItemLocalSearch {
     private struct SearchMatch {
         let food: FoodItem
         let rank: Int
+        let searchPriority: Int?
+        let nameSegmentCount: Int
+        let nameLength: Int
     }
 
-    static func rankedFoods(_ foods: [FoodItem], matching query: String) -> [FoodItem] {
+    static func rankedFoods(
+        _ foods: [FoodItem],
+        matching query: String,
+        priorities: [String: Int] = [:]
+    ) -> [FoodItem] {
         let searchQuery = FoodItemSearchQuery(query)
         guard searchQuery.isEmpty == false else { return foods }
 
@@ -194,16 +201,34 @@ enum FoodItemLocalSearch {
             guard let rank = rank(for: food, matching: searchQuery) else {
                 return nil
             }
-            return SearchMatch(food: food, rank: rank)
+            return SearchMatch(
+                food: food,
+                rank: rank,
+                searchPriority: priorities[food.name],
+                nameSegmentCount: food.name.split(separator: ",").count,
+                nameLength: food.name.count
+            )
         }
 
         let rankedMatches = searchMatches.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            if lhs.searchPriority != rhs.searchPriority {
+                switch (lhs.searchPriority, rhs.searchPriority) {
+                case let (left?, right?): return left < right
+                case (.some, .none): return true
+                case (.none, .some): return false
+                case (.none, .none): break
+                }
+            }
+            if lhs.nameSegmentCount != rhs.nameSegmentCount {
+                return lhs.nameSegmentCount < rhs.nameSegmentCount
+            }
+            if lhs.nameLength != rhs.nameLength { return lhs.nameLength < rhs.nameLength }
             let nameOrder = lhs.food.name.compare(
                 rhs.food.name,
                 options: [.caseInsensitive, .diacriticInsensitive],
                 locale: Locale(identifier: "en_US_POSIX")
             )
-            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
             if nameOrder != .orderedSame { return nameOrder == .orderedAscending }
             return lhs.food.id.uuidString < rhs.food.id.uuidString
         }
@@ -255,9 +280,7 @@ enum FoodItemLocalSearch {
             tier = 3
         }
 
-        let commaSegmentPenalty = min(nameSegments.count, 99) * 100_000
-        let nameLengthPenalty = min(food.name.count, 99_999)
-        return tier * 10_000_000 + commaSegmentPenalty + nameLengthPenalty
+        return tier
     }
 
     nonisolated private static func comparableWords(_ value: String) -> [String] {

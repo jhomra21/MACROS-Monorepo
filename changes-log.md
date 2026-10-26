@@ -25,7 +25,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-25 Bundled Common Food Database (WS4 follow-up)
 
 - Expanded the USDA FNDDS bundle to 3,199 foods (October 2024 release; public domain, 17 U.S.C. § 105), preserving legacy serving/nutrient values and recording source archive provenance. Added deterministic common-name aliases and plural-insensitive, phrase-aware local ranking with explicit match tiers and stable ordering.
-- Validation: food pipeline tests (6/57 assertions), JS lint, Swift format, N+1 smoke, quality build, and focused local-search (6/6) and log-query (3/3) tests passed. The qualitative 50-query audit scored 43/50; see ignored `build/ws4-qa-2026-10-25/final-build/QA.md` for all misses and top-three results. Five-launch bootstrap-ready median 0.5896 s; local search update medians 0.0169–0.0296 s. Two simulator `LocalConfidenceTests` cases failed due Vision/inference behavior; see QA for details.
+- Follow-up: curated 112 everyday query mappings (97 unique exact food targets), included their aliases and ordered priorities in the rebuilt manifest, and applied priorities before stable within-tier tie-breakers in local food search.
+- Validation: food pipeline checks/tests (8 tests, 61 assertions), JS lint, Swift format, N+1 smoke, quality build, `FoodItemLocalSearchTests` (8/8), `LogEntryQueryTests` (3/3), and `MealSchemaMigrationTests` (1/1) passed. The final live in-app 50-query audit scored 50/50; captured top-three results and the updated bundle version/size are in ignored `build/ws4-qa-2026-10-25/final-build/QA.md`. Earlier bootstrap/search timings are unchanged measurements from the previous bundle, not remeasured here. Earlier two `LocalConfidenceTests` Vision/inference failures remain as documented in the QA report.
 
 ## 2026-10-25 MACROS Pro (WS2)
 

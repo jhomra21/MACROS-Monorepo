@@ -116,6 +116,84 @@ final class FoodItemLocalSearchTests: XCTestCase {
         }
     }
 
+    func testStaplePrioritiesOverrideArbitraryTieBreakersWithinMatchTier() throws {
+        let foods = [
+            makeFood(name: "Milk, Dry", calories: 10),
+            makeFood(name: "Milk, Whole", calories: 19),
+            makeFood(name: "Oatmeal, Fast Food", calories: 192),
+            makeFood(name: "Oatmeal, Regular Or Quick, No Added Fat", calories: 109),
+            makeFood(name: "Bread, Egg", calories: 89),
+            makeFood(name: "Bread, White", calories: 80),
+            makeFood(name: "Beef, Rice", calories: 241),
+            makeFood(name: "Beef, Ground", calories: 250),
+            makeFood(name: "Turkey, Back", calories: 203),
+            makeFood(name: "Turkey, Light Meat, Roasted, Skin Not Eaten", calories: 135),
+            makeFood(name: "Pancakes, Fruit", calories: 224),
+            makeFood(name: "Pancakes, Plain", calories: 233),
+            makeFood(name: "Rice Croquette", calories: 154),
+            makeFood(name: "White Rice", calories: 205, aliases: ["rice"]),
+            makeFood(name: "Chicken Cornbread", calories: 154),
+            makeFood(name: "Chicken Breast", calories: 128, aliases: ["chicken"]),
+            makeFood(name: "Beef Salad", calories: 475),
+            makeFood(name: "Mixed Salad Greens, Raw", calories: 20, aliases: ["salad"]),
+            makeFood(name: "Sushi Roll Tuna", calories: 145),
+            makeFood(name: "Fish, Tuna", calories: 133, aliases: ["tuna"])
+        ]
+        let priorities = [
+            "Milk, Whole": 1,
+            "Oatmeal, Regular Or Quick, No Added Fat": 2,
+            "Bread, White": 3,
+            "Beef, Ground": 4,
+            "Turkey, Light Meat, Roasted, Skin Not Eaten": 5,
+            "Pancakes, Plain": 6,
+            "White Rice": 7,
+            "Chicken Breast": 8,
+            "Mixed Salad Greens, Raw": 9,
+            "Fish, Tuna": 10
+        ]
+        let expectedFirstResults = [
+            ("milk", "Milk, Whole"),
+            ("oatmeal", "Oatmeal, Regular Or Quick, No Added Fat"),
+            ("bread", "Bread, White"),
+            ("beef", "Beef, Ground"),
+            ("turkey", "Turkey, Light Meat, Roasted, Skin Not Eaten"),
+            ("pancake", "Pancakes, Plain"),
+            ("rice", "White Rice"),
+            ("chicken", "Chicken Breast"),
+            ("salad", "Mixed Salad Greens, Raw"),
+            ("tuna", "Fish, Tuna")
+        ]
+
+        let cannedTuna = try XCTUnwrap(foods.first(where: { $0.name == "Fish, Tuna" }))
+        XCTAssertEqual(
+            FoodItemLocalSearch.rank(for: cannedTuna, matching: FoodItemSearchQuery("tuna")),
+            0,
+            cannedTuna.searchableText.debugDescription
+        )
+
+        for (query, expectedName) in expectedFirstResults {
+            XCTAssertEqual(
+                FoodItemLocalSearch.rankedFoods(foods, matching: query, priorities: priorities).first?.name,
+                expectedName,
+                "Unexpected first result for \(query)"
+            )
+        }
+    }
+
+    func testBundledManifestPrioritiesRankWholeMilkBeforeDryMilk() {
+        let priorities = CommonFoodSeedLoader.staplePriorities
+        let foods = [
+            makeFood(name: "Milk, Dry", calories: 10),
+            makeFood(name: "Milk, Whole", calories: 19)
+        ]
+
+        XCTAssertEqual(priorities["Milk, Whole"], 1)
+        XCTAssertEqual(
+            FoodItemLocalSearch.rankedFoods(foods, matching: "milk", priorities: priorities).first?.name,
+            "Milk, Whole"
+        )
+    }
+
     func testPunctuationAndDiacriticsShareSearchTokenization() {
         let farmersCheese = makeFood(name: "Cottage Cheese, Farmer's", calories: 98)
         let soyBasedFood = makeFood(name: "Soy-based beverage", calories: 41)

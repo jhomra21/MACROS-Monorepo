@@ -24,9 +24,22 @@ struct CommonFoodSeedManifest: Decodable, Sendable {
     let sourceRelease: String
     let count: Int
     let generatedAt: String
+    let staples: [String]?
 }
 
 enum CommonFoodSeedLoader {
+    static let staplePriorities: [String: Int] = {
+        guard
+            let manifestURL = try? commonFoodSeedManifestURL(),
+            let data = try? Data(contentsOf: manifestURL),
+            let manifest = try? JSONDecoder().decode(CommonFoodSeedManifest.self, from: data)
+        else { return [:] }
+
+        return Dictionary(
+            uniqueKeysWithValues: (manifest.staples ?? []).enumerated().map { ($0.element, $0.offset + 1) }
+        )
+    }()
+
     static func commonFoodSeedManifest() async throws -> CommonFoodSeedManifest {
         let url = try commonFoodSeedManifestURL()
         return try await commonFoodSeedManifest(from: url)
