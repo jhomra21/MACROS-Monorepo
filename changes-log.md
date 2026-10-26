@@ -14,7 +14,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-26 WS7 Close-out
 
 - Audited Add Food spacing and Pro entry points; fixed paywall plan rows at the largest accessibility text size. Barcode `429` camera verification remains assigned to TestFlight.
-- Validation: format, build, simulator entry-point and layout QA passed; evidence is in `build/ws7-qa-2026-10-26/closeout/QA.md`.
+- Validation: format, build, 18 Pro entitlement tests, and simulator entry-point/layout QA passed; evidence is in `build/ws7-qa-2026-10-26/closeout/QA.md`.
 
 ## 2026-10-26 Backup Export and Import (WS6)
 
