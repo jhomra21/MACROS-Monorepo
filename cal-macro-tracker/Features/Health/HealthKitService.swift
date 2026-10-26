@@ -56,7 +56,6 @@ final class HealthKitService {
     private var backfillTask: Task<Void, Never>?
     private var backfillGeneration = 0
     private(set) var isBackfilling = false
-    private(set) var backfillResult: HealthNutritionBackfillResult?
     private(set) var backfillErrorMessage: String?
 
     init(
@@ -81,14 +80,6 @@ final class HealthKitService {
     }
 
     var isAvailable: Bool { isAvailableOverride ?? HKHealthStore.isHealthDataAvailable() }
-
-    var backfillStatusText: String? {
-        guard let backfillResult else { return nil }
-        if backfillResult.failed > 0 {
-            return "Last sync failed: \(backfillResult.failedDayCount) of \(backfillResult.attemptedDayCount) days"
-        }
-        return "Synced \(backfillResult.syncedDayCount) days"
-    }
 
     func requestAuthorization(readWeight: Bool = false) async throws {
         guard isAvailable else { return }
@@ -171,14 +162,16 @@ final class HealthKitService {
         backfillGeneration += 1
         let generation = backfillGeneration
         isBackfilling = true
-        backfillResult = nil
         backfillErrorMessage = nil
         backfillTask = Task { [weak self] in
             let result = await operation()
             guard let self, self.backfillGeneration == generation else { return }
-            self.backfillResult = result
             if result.failed > 0 {
+                self.statusText =
+                    "Last sync failed: \(result.failedDayCount) of \(result.attemptedDayCount) days"
                 self.backfillErrorMessage = result.firstError ?? "Could not sync nutrition to Apple Health."
+            } else {
+                self.statusText = "Synced \(result.syncedDayCount) days"
             }
             self.isBackfilling = false
             self.backfillTask = nil
