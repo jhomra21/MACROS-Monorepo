@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-enum GoalSex: String, CaseIterable, Identifiable, Hashable {
+enum GoalSex: String, CaseIterable, Identifiable, Hashable, Codable {
     case female
     case male
     case unspecified
@@ -10,7 +10,7 @@ enum GoalSex: String, CaseIterable, Identifiable, Hashable {
 
 }
 
-enum GoalActivityLevel: String, CaseIterable, Identifiable, Hashable {
+enum GoalActivityLevel: String, CaseIterable, Identifiable, Hashable, Codable {
     case sedentary
     case light
     case moderate
@@ -21,7 +21,7 @@ enum GoalActivityLevel: String, CaseIterable, Identifiable, Hashable {
 
 }
 
-enum GoalMacroPreset: String, CaseIterable, Identifiable, Hashable {
+enum GoalMacroPreset: String, CaseIterable, Identifiable, Hashable, Codable {
     case balanced
     case highProtein
     case lowCarb
@@ -31,7 +31,7 @@ enum GoalMacroPreset: String, CaseIterable, Identifiable, Hashable {
 
 }
 
-enum GoalUnitSystem: String, CaseIterable, Identifiable, Hashable {
+enum GoalUnitSystem: String, CaseIterable, Identifiable, Hashable, Codable {
     case metric
     case imperial
 

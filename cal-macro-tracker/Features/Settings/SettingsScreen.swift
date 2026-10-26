@@ -40,6 +40,8 @@ struct SettingsScreen: View {
 
             HealthSettingsSection()
 
+            BackupSettingsSection()
+
             ReminderSettingsSection()
 
             Section {

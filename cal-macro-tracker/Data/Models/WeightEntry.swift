@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-enum WeightEntrySource: String {
+enum WeightEntrySource: String, Codable {
     case manual
     case healthKit
 }

@@ -24,7 +24,7 @@ struct MacroRingPalette {
     }
 }
 
-struct MacroRingColorStorage {
+struct MacroRingColorStorage: Codable, Equatable {
     static let proteinKey = "customProteinRingColor"
     static let carbKey = "customCarbRingColor"
     static let fatKey = "customFatRingColor"
