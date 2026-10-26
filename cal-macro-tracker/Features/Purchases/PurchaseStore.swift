@@ -37,6 +37,7 @@ final class PurchaseStore {
 
     private let entitlements: AppEntitlements
     private let entitlementSource: @MainActor () async -> EntitlementSnapshot
+    private let purchaseProduct: @MainActor (Product) async throws -> Product.PurchaseResult
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var refreshTask: Task<EntitlementResolution, Never>?
@@ -60,10 +61,12 @@ final class PurchaseStore {
 
     init(
         entitlements: AppEntitlements,
-        entitlementSource: @escaping @MainActor () async -> EntitlementSnapshot = PurchaseStore.readStoreKitEntitlements
+        entitlementSource: @escaping @MainActor () async -> EntitlementSnapshot = PurchaseStore.readStoreKitEntitlements,
+        purchaseProduct: @escaping @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() }
     ) {
         self.entitlements = entitlements
         self.entitlementSource = entitlementSource
+        self.purchaseProduct = purchaseProduct
     }
 
     deinit {
@@ -131,7 +134,7 @@ final class PurchaseStore {
             return
         }
         do {
-            switch try await product.purchase() {
+            switch try await purchaseProduct(product) {
             case let .success(verification):
                 guard case let .verified(transaction) = verification else {
                     feedback = .error("Purchase could not be verified.")

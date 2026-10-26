@@ -63,9 +63,14 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         XCTAssertNotNil(store.feedback)
     }
 
-    func testCancellationDoesNotGrantPro() async throws {
-        await store.loadProducts()
-        try await session.setSimulatedError(.generic(.userCancelled), forAPI: .purchase)
+    func testCancellationDoesNotGrantPro() async {
+        store = PurchaseStore(entitlements: entitlements, purchaseProduct: { _ in .userCancelled })
+        await store.purchase(.yearly)
+        XCTAssertFalse(store.hasPro)
+        XCTAssertFalse(store.isPurchasing)
+        XCTAssertNil(store.feedback)
+
+        store = PurchaseStore(entitlements: entitlements, purchaseProduct: { _ in throw StoreKitError.userCancelled })
         await store.purchase(.yearly)
         XCTAssertFalse(store.hasPro)
         XCTAssertFalse(store.isPurchasing)
