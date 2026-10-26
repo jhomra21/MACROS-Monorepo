@@ -156,6 +156,7 @@ private struct InsightsRangeQueryContent: View {
                             .foregroundStyle(.secondary)
                         AppAccentActionButton(title: "Unlock Insights", systemImage: "lock.open.fill", isCompact: false) {
                             isPresentingPro.wrappedValue = true
+                        }
                     }
                     .padding(24)
                     .background(PlatformColors.groupedBackground, in: RoundedRectangle(cornerRadius: 24))
