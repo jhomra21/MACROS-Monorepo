@@ -8,6 +8,7 @@ Mac, on `main` after all Phase 1 and Phase 2 branches are merged and an interim 
 2. [x] Scheme: Archive uses Release; Release excludes the `#if DEBUG` Pro unlock controls in `ProSettingsSection` and `PurchaseStore`. The archive used the production StoreKit configuration.
 3. [x] Archived commit `44e9551b66c90418b30de76e70d24377900a3ebf` as version 1.0/build 1; Xcode managed the uploaded App Store Connect build number to 7. Upload succeeded and App Store Connect reported the package processing. Archive entitlements include HealthKit and `group.juan-test.cal-macro-tracker`. QA evidence: `build/testflight-qa-2026-10-26/QA.md`.
 4. [ ] Owner: after App Store Connect finishes processing version 1.0/build 7, add it to the internal TestFlight group and complete the physical-device sandbox checks in `build/testflight-qa-2026-10-26/QA.md`.
+   - 2026-10-26 build 7 on the owner's iPhone: install, lifetime sandbox purchase, and Pro features pass. Defect: the Pro paywall opened at the medium detent, hiding the plan rows (fixed on `launch/paywall-success-flow`, ships in build 8). Remaining device checks continue on build 7.
 5. [ ] Owner: fill in and retain device results and defects in `build/testflight-qa-2026-10-26/QA.md`.
 6. [ ] Owner: complete the submission checklist: App Privacy labels (from WS8 mapping), screenshots (WS8 shot list), review notes, support and privacy URLs, subscription review screenshots, and age rating.
 

@@ -92,3 +92,4 @@ Branch `launch/ws1-services-hardening`. TypeScript only; no Xcode. Read `AGENTS.
 - Replaced the approximate per-location USDA budget with the `UsdaBudget` SQLite Durable Object; added route-level rate-limit/cache checks, fail-open coverage, configurable deadlines, and degraded-response cache protection.
 - Added bounded quota-row cleanup during sharing-profile deletion and documented the remaining iOS 429 handling as a WS7 follow-up.
 - Validated all package checks, Wrangler type generation, runtime Miniflare integration, Convex integrations, and a local Wrangler loopback budget run; no deployment was performed.
+- 2026-10-26: Deployed by the parent thread with owner approval: `worker/usda-proxy` version `9f52f065-11d3-4393-8c20-ca52767d61b0`, `worker/auth` version `165985d3-447b-48f7-8a45-72f1b1740af0`, Convex dev deployment pushed with `bunx convex dev --once`. Live smoke of barcode lookup, unknown barcode, JWKS, and invite redirect passed.
