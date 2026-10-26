@@ -11,15 +11,15 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
-## 2026-10-25 Retention and Polish (WS7)
-
-- Centralized the display brand, added a calendar-aware dashboard logging streak and eligible post-save App Store review request, made barcode 429 responses non-retryable with bounded `Retry-After` feedback, and aligned current Insights and ring-color Pro entry copy. Deferred WS4/WS5/WS6 follow-ups are listed in the tracker.
-
 ## 2026-10-25 Weight, Apple Health, and Reminders (WS5)
 
 - Added an on-device weight log linked to `BodyProfile`, a free latest-weight Insights summary with Pro-gated trends and Apple Health import, free nutrition write support, and one free daily reminder with Pro named/smart reminder scheduling.
 - Added additive SwiftData registration, HealthKit and notification setup, notification-to-Add-Food routing, and focused failure-mode coverage for weight analytics and reminder day selection.
-- Validation: `make quality-format-check`, `make quality-build`, and the six required test classes passed (45 tests), plus Health synchronization and reminder configuration classes (7 tests). Simulator QA verified nutrition writes/edits, Health body-mass import, free Insights state, and weight formatting. Health-synced deletion still needs confirmation against the latest exact-sample cleanup; reminder delivery/background/cold-launch routing remain unverified. Evidence and exact limits: `build/ws5-qa-2026-10-25/QA.md`.
+- Validation: `make quality-format-check`, `make quality-build`, and focused XCTest selections passed (56 tests, zero failures). Simulator QA verified nutrition writes/edits, deletion of the latest Health sample, Health body-mass import, free Insights state, and weight formatting. Reminder delivery/background/cold-launch routing remain unverified. Evidence and exact limits: `build/ws5-qa-2026-10-25/QA.md`.
+
+## 2026-10-25 Retention and Polish (WS7)
+
+- Centralized the display brand, added a calendar-aware dashboard logging streak and eligible post-save App Store review request, made barcode 429 responses non-retryable with bounded `Retry-After` feedback, and aligned current Insights and ring-color Pro entry copy. Deferred WS4/WS5/WS6 follow-ups are listed in the tracker.
 
 ## 2026-10-25 MACROS Pro (WS2)
 
