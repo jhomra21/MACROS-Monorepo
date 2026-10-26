@@ -143,7 +143,7 @@ final class HealthKitService {
                 skippedUnauthorizedType = true
                 continue
             }
-            let syncIdentifier = "\(entryID.uuidString).\(type.identifier.rawValue)"
+            let syncIdentifier = "\(entryID.uuidString).\(type.identifier)"
             let predicate = HKQuery.predicateForObjects(
                 withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .equalTo, value: syncIdentifier)
             do {
