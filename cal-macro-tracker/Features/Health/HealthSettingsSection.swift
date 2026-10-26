@@ -46,7 +46,7 @@ struct HealthSettingsSection: View {
                     Label("Read weight from Health", systemImage: "lock.fill")
                 }
             }
-            Text(health.statusText)
+            Text(health.backfillStatusText ?? health.statusText)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             Button {

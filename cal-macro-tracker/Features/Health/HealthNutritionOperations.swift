@@ -23,16 +23,27 @@ struct HealthNutritionSnapshot: Equatable {
         nutrientIdentifiers.map { "\(entryID.uuidString).\($0)" }
     }
 
+    @MainActor
     static func deleteSamples(
         for entryID: UUID,
         authorizedIdentifiers: Set<String>,
-        delete: (String, String) async throws -> Void
+        store: any HealthNutritionStore
     ) async -> String? {
         var firstError: String?
         for (nutrientIdentifier, syncIdentifier) in zip(nutrientIdentifiers, deletionIdentifiers(for: entryID))
         where authorizedIdentifiers.contains(nutrientIdentifier) {
             do {
-                try await delete(nutrientIdentifier, syncIdentifier)
+                guard
+                    let type = HKObjectType.quantityType(
+                        forIdentifier: HKQuantityTypeIdentifier(rawValue: nutrientIdentifier))
+                else {
+                    firstError = firstError ?? "A Health nutrition category is unavailable."
+                    continue
+                }
+                try await store.deleteObjects(
+                    of: type,
+                    predicate: HealthKitNutritionStore.predicate(for: syncIdentifier)
+                )
             } catch {
                 firstError = firstError ?? error.localizedDescription
             }
@@ -94,21 +105,28 @@ struct HealthNutritionBackfillResult: Equatable {
     var failed = 0
     var firstError: String?
     private var syncedDays = Set<Date>()
+    private var attemptedDays = Set<Date>()
+    private var failedDays = Set<Date>()
 
     var syncedDayCount: Int { syncedDays.count }
+    var attemptedDayCount: Int { attemptedDays.count }
+    var failedDayCount: Int { failedDays.count }
 
     mutating func record(_ result: HealthNutritionStoreResult, on date: Date) {
+        let day = Calendar.current.startOfDay(for: date)
+        attemptedDays.insert(day)
         switch result {
         case .success:
             written += 1
-            syncedDays.insert(Calendar.current.startOfDay(for: date))
+            syncedDays.insert(day)
         case .partial:
             written += 1
-            syncedDays.insert(Calendar.current.startOfDay(for: date))
+            syncedDays.insert(day)
         case .noAuthorizedTypes, .superseded:
             skipped += 1
         case let .failure(error):
             failed += 1
+            failedDays.insert(day)
             firstError = firstError ?? error
         }
     }
@@ -117,6 +135,7 @@ struct HealthNutritionBackfillResult: Equatable {
 @MainActor
 protocol HealthNutritionStore: AnyObject {
     func apply(_ operation: HealthNutritionOperation) async -> HealthNutritionStoreResult
+    func deleteObjects(of type: HKQuantityType, predicate: NSPredicate) async throws
 }
 
 @MainActor
@@ -134,9 +153,20 @@ final class HealthNutritionOperationQueue {
         let backfillIndex: Int?
     }
 
-    private struct BackfillBatch {
+    private final class BackfillBatch {
         var results: [HealthNutritionStoreResult?]
+        var remainingOperations: Int
         let continuation: CheckedContinuation<[HealthNutritionStoreResult], Never>
+
+        init(
+            results: [HealthNutritionStoreResult?],
+            remainingOperations: Int,
+            continuation: CheckedContinuation<[HealthNutritionStoreResult], Never>
+        ) {
+            self.results = results
+            self.remainingOperations = remainingOperations
+            self.continuation = continuation
+        }
     }
 
     private let store: any HealthNutritionStore
@@ -174,6 +204,7 @@ final class HealthNutritionOperationQueue {
         return await withCheckedContinuation { continuation in
             backfillBatches[batchID] = BackfillBatch(
                 results: Array(repeating: nil, count: operations.count),
+                remainingOperations: operations.count,
                 continuation: continuation
             )
             for (index, operation) in operations.enumerated() {
@@ -234,13 +265,11 @@ final class HealthNutritionOperationQueue {
         }
         guard let batchID = pendingOperation.backfillBatchID,
             let index = pendingOperation.backfillIndex,
-            var batch = backfillBatches[batchID]
+            let batch = backfillBatches[batchID]
         else { return }
         batch.results[index] = result
-        guard batch.results.allSatisfy({ $0 != nil }) else {
-            backfillBatches[batchID] = batch
-            return
-        }
+        batch.remainingOperations -= 1
+        guard batch.remainingOperations == 0 else { return }
         backfillBatches[batchID] = nil
         batch.continuation.resume(returning: batch.results.compactMap { $0 })
     }
@@ -338,21 +367,14 @@ final class HealthKitNutritionStore: HealthNutritionStore {
         if authorized.isEmpty { return .noAuthorizedTypes }
         let error = await HealthNutritionSnapshot.deleteSamples(
             for: entryID,
-            authorizedIdentifiers: Set(authorized.map(\.rawValue))
-        ) { nutrientIdentifier, syncIdentifier in
-            guard
-                let type = HKObjectType.quantityType(
-                    forIdentifier: HKQuantityTypeIdentifier(rawValue: nutrientIdentifier))
-            else {
-                throw HealthNutritionDeletionError.missingQuantityType
-            }
-            try await store.deleteObjects(of: type, predicate: Self.predicate(for: syncIdentifier))
-        }
+            authorizedIdentifiers: Set(authorized.map(\.rawValue)),
+            store: self
+        )
         if let error { return .failure(error) }
         return authorized.count < Self.definitions.count ? .partial : .success
     }
 
-    private static func predicate(for identifier: String) -> NSPredicate {
+    static func predicate(for identifier: String) -> NSPredicate {
         HKQuery.predicateForObjects(
             withMetadataKey: HKMetadataKeySyncIdentifier,
             operatorType: .equalTo,
@@ -360,12 +382,8 @@ final class HealthKitNutritionStore: HealthNutritionStore {
         )
     }
 
-    private enum HealthNutritionDeletionError: LocalizedError {
-        case missingQuantityType
-
-        var errorDescription: String? {
-            "A Health nutrition category is unavailable."
-        }
+    func deleteObjects(of type: HKQuantityType, predicate: NSPredicate) async throws {
+        try await store.deleteObjects(of: type, predicate: predicate)
     }
 
     private static let definitions: [NutrientDefinition] = [
