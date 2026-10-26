@@ -179,6 +179,7 @@ describe("FNDDS food selection", () => {
     const bundledFoods = z.array(bundledFoodFixtureSchema).parse(
       await Bun.file(new URL("../../../cal-macro-tracker/CommonFoods/common_foods.json", import.meta.url)).json(),
     );
+
     const tofu = bundledFoods.find(({ aliases }) => aliases.includes("tofu"));
 
     expect(tofu?.name).toBe("Soybean Curd");
