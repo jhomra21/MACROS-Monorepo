@@ -11,6 +11,7 @@ Mac, on `main` after all Phase 1 and Phase 2 branches are merged and an interim 
 5. QA artifact `build/testflight-qa-<date>/QA.md` with build number, device, results, and any defects filed back into the relevant tracker.
 6. Submission checklist: App Privacy labels (from WS8 mapping), screenshots (WS8 shot list), review notes, support and privacy URLs, subscription review screenshots, age rating.
 
+Pre-checked on Windows (2026-10-26): `Info-iOS.plist` has `ITSAppUsesNonExemptEncryption` false and usage strings for camera, photo library, Health share and update; app icons are 1024×1024 RGB without alpha; the project currently builds `MARKETING_VERSION` 1.0 / `CURRENT_PROJECT_VERSION` 1 with automatic signing for team `NK3K87K955`; the Pro unlock debug controls (`ProSettingsSection`, `PurchaseStore`) sit behind `#if DEBUG`; `tools/release/ExportOptions.plist` exists (`app-store-connect`, `upload`, automatic signing, symbols uploaded, build number managed manually).
 ## Carried-over verification items (must pass on the TestFlight device)
 
 Items that simulator QA could not verify during Phase 1 and 2. Each one is a required row in the WS10 QA artifact; file defects back into the source tracker.
