@@ -151,6 +151,30 @@ describe("FNDDS food selection", () => {
     ]);
   });
 
+  test("keeps qualifier variants distinct before dedupe", () => {
+    expect(friendlyName("Coffee, brewed, decaffeinated")).toBe("Coffee, Brewed, Decaffeinated");
+    expect(friendlyName("Coffee, decaffeinated, pre-lightened and pre-sweetened with sugar"))
+      .toBe("Coffee, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar");
+    expect(friendlyName("Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconsitituted"))
+      .toBe("Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Reconstituted");
+    expect(friendlyName("Milk, dry, reconstituted, nonfat")).toBe("Milk, Dry, Reconstituted, Nonfat");
+    expect(friendlyName("Milk, dry, not reconstituted")).toBe("Milk, Dry, Not Reconstituted");
+    expect(friendlyName("Tea, iced, brewed, black, pre-sweetened with low calorie sweetener"))
+      .toBe("Tea, Iced, Brewed, Pre-sweetened With Low Calorie Sweetener");
+
+    const variants = selectFoods([
+      baseFood({ fdcId: 1, description: "Coffee, decaffeinated, pre-lightened and pre-sweetened with sugar" }),
+      baseFood({ fdcId: 2, description: "Coffee, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener" }),
+      baseFood({ fdcId: 3, description: "Milk, dry, reconstituted, nonfat" }),
+      baseFood({ fdcId: 4, description: "Milk, dry, reconstituted, whole" }),
+      baseFood({ fdcId: 5, description: "Tea, iced, brewed, black, pre-sweetened with sugar" }),
+      baseFood({ fdcId: 6, description: "Tea, iced, brewed, black, pre-sweetened with low calorie sweetener" }),
+    ], 0);
+
+    expect(variants).toHaveLength(6);
+    expect(new Set(variants.map(({ name }) => name)).size).toBe(6);
+  });
+
   test("adds deterministic household aliases to matching source descriptions", () => {
     const cases: [string, string[]][] = [
       ["Peppers, sweet, green, raw", ["bell pepper", "sweet pepper"]],

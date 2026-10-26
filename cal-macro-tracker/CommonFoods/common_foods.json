@@ -14768,7 +14768,7 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Chocolate Beverage Powder, Dry Mix",
+    "name": "Chocolate Beverage Powder, Dry Mix, Not Reconstituted",
     "aliases": [
       "Chocolate beverage powder, dry mix, not reconstituted"
     ],
@@ -14786,7 +14786,7 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Chocolate Beverage Powder, Light",
+    "name": "Chocolate Beverage Powder, Light, Not Reconstituted",
     "aliases": [
       "Chocolate beverage powder, light, dry mix, not reconstituted"
     ],
@@ -15238,6 +15238,24 @@
   },
   {
     "name": "Chocolate Milk, Reduced Sugar",
+    "aliases": [
+      "Chocolate milk, reduced sugar, reduced fat (2%)"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 31,
+    "caloriesPerServing": 19.53,
+    "proteinPerServing": 0.96,
+    "fatPerServing": 0.55,
+    "carbsPerServing": 2.67,
+    "saturatedFatPerServing": 0.3,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 2.44,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.57,
+    "cholesterolPerServing": 2.17
+  },
+  {
+    "name": "Chocolate Milk, Reduced Sugar, Whole",
     "aliases": [
       "Chocolate milk, reduced sugar, whole"
     ],
@@ -16067,6 +16085,24 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Coffee And Chicory, Brewed, Decaffeinated",
+    "aliases": [
+      "Coffee and chicory, brewed, decaffeinated"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.03,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0.6,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Coffee Cake, Crumb Or Quick-bread Type",
     "aliases": [
       "Coffee cake, crumb or quick-bread type"
@@ -16212,6 +16248,24 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Coffee, Brewed, Decaffeinated",
+    "aliases": [
+      "Coffee, brewed, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.48,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.6,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Coffee, Cafe Con Leche",
     "aliases": [
       "Coffee, cafe con leche"
@@ -16228,6 +16282,24 @@
     "addedSugarsPerServing": null,
     "sodiumPerServing": 64.48,
     "cholesterolPerServing": 9.92
+  },
+  {
+    "name": "Coffee, Cafe Con Leche, Decaffeinated",
+    "aliases": [
+      "Coffee, cafe con leche, decaffeinated"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 31,
+    "caloriesPerServing": 12.4,
+    "proteinPerServing": 0.52,
+    "fatPerServing": 0.36,
+    "carbsPerServing": 1.77,
+    "saturatedFatPerServing": 0.2,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.52,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 8.06,
+    "cholesterolPerServing": 1.24
   },
   {
     "name": "Coffee, Cafe Mocha",
@@ -16248,6 +16320,60 @@
     "cholesterolPerServing": 29.76
   },
   {
+    "name": "Coffee, Cafe Mocha, Decaffeinated",
+    "aliases": [
+      "Coffee, Cafe Mocha, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 317.44,
+    "proteinPerServing": 12.7,
+    "fatPerServing": 7.29,
+    "carbsPerServing": 50.74,
+    "saturatedFatPerServing": 4.24,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 46.13,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 228.16,
+    "cholesterolPerServing": 29.76
+  },
+  {
+    "name": "Coffee, Cafe Mocha, Decaffeinated, Nonfat",
+    "aliases": [
+      "Coffee, Cafe Mocha, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 257.92,
+    "proteinPerServing": 12.95,
+    "fatPerServing": 0.45,
+    "carbsPerServing": 50.79,
+    "saturatedFatPerServing": 0.25,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 46.72,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 233.12,
+    "cholesterolPerServing": 9.92
+  },
+  {
+    "name": "Coffee, Cafe Mocha, Nonfat",
+    "aliases": [
+      "Coffee, Cafe Mocha, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 257.92,
+    "proteinPerServing": 12.9,
+    "fatPerServing": 0.45,
+    "carbsPerServing": 50.59,
+    "saturatedFatPerServing": 0.25,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 46.48,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 233.12,
+    "cholesterolPerServing": 9.92
+  },
+  {
     "name": "Coffee, Cappuccino",
     "aliases": [
       "Coffee, Cappuccino"
@@ -16264,6 +16390,60 @@
     "addedSugarsPerServing": null,
     "sodiumPerServing": 110.4,
     "cholesterolPerServing": 19.2
+  },
+  {
+    "name": "Coffee, Cappuccino, Decaffeinated",
+    "aliases": [
+      "Coffee, Cappuccino, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 129.6,
+    "proteinPerServing": 8.26,
+    "fatPerServing": 4.75,
+    "carbsPerServing": 13.25,
+    "saturatedFatPerServing": 2.77,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 11.9,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 110.4,
+    "cholesterolPerServing": 19.2
+  },
+  {
+    "name": "Coffee, Cappuccino, Decaffeinated, Nonfat",
+    "aliases": [
+      "Coffee, Cappuccino, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 91.2,
+    "proteinPerServing": 8.4,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 13.3,
+    "saturatedFatPerServing": 0.19,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.29,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 115.2,
+    "cholesterolPerServing": 9.6
+  },
+  {
+    "name": "Coffee, Cappuccino, Nonfat",
+    "aliases": [
+      "Coffee, Cappuccino, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 91.2,
+    "proteinPerServing": 8.4,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 13.25,
+    "saturatedFatPerServing": 0.19,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.19,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 115.2,
+    "cholesterolPerServing": 9.6
   },
   {
     "name": "Coffee, Cuban",
@@ -16284,7 +16464,43 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Coffee, Decaffeinated",
+    "name": "Coffee, Decaffeinated, Pre-lightened",
+    "aliases": [
+      "Coffee, decaffeinated, pre-lightened"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 240,
+    "caloriesPerServing": 33.6,
+    "proteinPerServing": 0.36,
+    "fatPerServing": 1.7,
+    "carbsPerServing": 4.54,
+    "saturatedFatPerServing": 0.99,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.41,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 16.8,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Coffee, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 4.8,
+    "proteinPerServing": 0.05,
+    "fatPerServing": 0.21,
+    "carbsPerServing": 0.71,
+    "saturatedFatPerServing": 0.12,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.18,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.1,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar",
     "aliases": [
       "Coffee, decaffeinated, pre-lightened and pre-sweetened with sugar"
     ],
@@ -16302,6 +16518,42 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Coffee, Decaffeinated, Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Coffee, decaffeinated, pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 1.5,
+    "proteinPerServing": 0.03,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.34,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.14,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.2,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Decaffeinated, Pre-sweetened With Sugar",
+    "aliases": [
+      "Coffee, decaffeinated, pre-sweetened with sugar"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 248,
+    "caloriesPerServing": 39.68,
+    "proteinPerServing": 0.22,
+    "fatPerServing": 0.02,
+    "carbsPerServing": 9.85,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 8.33,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.92,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Coffee, Espresso",
     "aliases": [
       "Coffee, espresso"
@@ -16312,6 +16564,24 @@
     "proteinPerServing": 0.07,
     "fatPerServing": 0.11,
     "carbsPerServing": 1,
+    "saturatedFatPerServing": 0.06,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 8.4,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Espresso, Decaffeinated",
+    "aliases": [
+      "Coffee, espresso, decaffeinated"
+    ],
+    "servingDescription": "1 espresso cup (2 fl oz)",
+    "gramsPerServing": 60,
+    "caloriesPerServing": 5.4,
+    "proteinPerServing": 0.06,
+    "fatPerServing": 0.11,
+    "carbsPerServing": 1.01,
     "saturatedFatPerServing": 0.06,
     "fiberPerServing": 0,
     "sugarsPerServing": 0,
@@ -16338,6 +16608,60 @@
     "cholesterolPerServing": 19.84
   },
   {
+    "name": "Coffee, Iced Cafe Mocha, Decaffeinated",
+    "aliases": [
+      "Coffee, Iced Cafe Mocha, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 252.96,
+    "proteinPerServing": 7.89,
+    "fatPerServing": 4.56,
+    "carbsPerServing": 44.59,
+    "saturatedFatPerServing": 2.64,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 39.83,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 178.56,
+    "cholesterolPerServing": 19.84
+  },
+  {
+    "name": "Coffee, Iced Cafe Mocha, Decaffeinated, Nonfat",
+    "aliases": [
+      "Coffee, Iced Cafe Mocha, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 213.28,
+    "proteinPerServing": 8.04,
+    "fatPerServing": 0.3,
+    "carbsPerServing": 44.64,
+    "saturatedFatPerServing": 0.18,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 40.23,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 183.52,
+    "cholesterolPerServing": 4.96
+  },
+  {
+    "name": "Coffee, Iced Cafe Mocha, Nonfat",
+    "aliases": [
+      "Coffee, Iced Cafe Mocha, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 213.28,
+    "proteinPerServing": 7.99,
+    "fatPerServing": 0.35,
+    "carbsPerServing": 44.44,
+    "saturatedFatPerServing": 0.18,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 40.03,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 178.56,
+    "cholesterolPerServing": 4.96
+  },
+  {
     "name": "Coffee, Iced Latte",
     "aliases": [
       "Coffee, Iced Latte"
@@ -16356,7 +16680,277 @@
     "cholesterolPerServing": 19.2
   },
   {
-    "name": "Coffee, Instant",
+    "name": "Coffee, Iced Latte, Decaffeinated",
+    "aliases": [
+      "Coffee, Iced Latte, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 129.6,
+    "proteinPerServing": 8.4,
+    "fatPerServing": 4.85,
+    "carbsPerServing": 13.54,
+    "saturatedFatPerServing": 2.83,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.14,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 110.4,
+    "cholesterolPerServing": 19.2
+  },
+  {
+    "name": "Coffee, Iced Latte, Decaffeinated, Nonfat",
+    "aliases": [
+      "Coffee, Iced Latte, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 91.2,
+    "proteinPerServing": 8.59,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 13.58,
+    "saturatedFatPerServing": 0.2,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.53,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 120,
+    "cholesterolPerServing": 9.6
+  },
+  {
+    "name": "Coffee, Iced Latte, Nonfat",
+    "aliases": [
+      "Coffee, Iced Latte, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 91.2,
+    "proteinPerServing": 8.54,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 13.54,
+    "saturatedFatPerServing": 0.2,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.48,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 115.2,
+    "cholesterolPerServing": 9.6
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 0.9,
+    "caloriesPerServing": 3.16,
+    "proteinPerServing": 0.1,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.68,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0.21,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 1.7,
+    "caloriesPerServing": 7.77,
+    "proteinPerServing": 0.07,
+    "fatPerServing": 0.34,
+    "carbsPerServing": 1.16,
+    "saturatedFatPerServing": 0.2,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.29,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.38,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 4.8,
+    "proteinPerServing": 0.05,
+    "fatPerServing": 0.21,
+    "carbsPerServing": 0.71,
+    "saturatedFatPerServing": 0.12,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.18,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.1,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 3.4,
+    "caloriesPerServing": 15.81,
+    "proteinPerServing": 0,
+    "fatPerServing": 0.45,
+    "carbsPerServing": 2.93,
+    "saturatedFatPerServing": 0.45,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 2.27,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 11.32,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Pre-lightened And Pre-sweetened With Sugar, Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, pre-lightened and pre-sweetened with sugar, reconsitituted"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 248,
+    "caloriesPerServing": 66.96,
+    "proteinPerServing": 0.35,
+    "fatPerServing": 1.71,
+    "carbsPerServing": 12.67,
+    "saturatedFatPerServing": 0.98,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 8.56,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 17.36,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Decaffeinated, Reconstituted",
+    "aliases": [
+      "Coffee, instant, decaffeinated, reconstituted"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 240,
+    "caloriesPerServing": 7.2,
+    "proteinPerServing": 0.24,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.54,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.6,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 0.9,
+    "caloriesPerServing": 3.18,
+    "proteinPerServing": 0.11,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.68,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0.33,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Reconstituted",
+    "aliases": [
+      "Coffee, instant, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 240,
+    "caloriesPerServing": 38.4,
+    "proteinPerServing": 0.36,
+    "fatPerServing": 1.68,
+    "carbsPerServing": 5.69,
+    "saturatedFatPerServing": 0.98,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.44,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 16.8,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Pre-lightened And Pre-sweetened With Sugar, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, pre-lightened and pre-sweetened with sugar, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 3.4,
+    "caloriesPerServing": 14.89,
+    "proteinPerServing": 0.08,
+    "fatPerServing": 0.38,
+    "carbsPerServing": 2.82,
+    "saturatedFatPerServing": 0.22,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.91,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.6,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Pre-lightened And Pre-sweetened With Sugar, Reconstituted",
+    "aliases": [
+      "Coffee, instant, pre-lightened and pre-sweetened with sugar, reconstituted"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 31,
+    "caloriesPerServing": 8.37,
+    "proteinPerServing": 0.05,
+    "fatPerServing": 0.22,
+    "carbsPerServing": 1.58,
+    "saturatedFatPerServing": 0.12,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.07,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.17,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Pre-sweetened With Sugar, Not Reconstituted",
+    "aliases": [
+      "Coffee, instant, pre-sweetened with sugar, not reconstituted"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 3.4,
+    "caloriesPerServing": 13.33,
+    "proteinPerServing": 0.08,
+    "fatPerServing": 0.01,
+    "carbsPerServing": 3.23,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 2.74,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0.27,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Pre-sweetened With Sugar, Reconstituted",
+    "aliases": [
+      "Coffee, instant, pre-sweetened with sugar, reconstituted"
+    ],
+    "servingDescription": "1 cup (8 fl oz)",
+    "gramsPerServing": 248,
+    "caloriesPerServing": 39.68,
+    "proteinPerServing": 0.25,
+    "fatPerServing": 0.05,
+    "carbsPerServing": 9.82,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 8.33,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.92,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Coffee, Instant, Reconstituted",
     "aliases": [
       "Coffee, instant, reconstituted"
     ],
@@ -16390,6 +16984,60 @@
     "addedSugarsPerServing": null,
     "sodiumPerServing": 168,
     "cholesterolPerServing": 33.6
+  },
+  {
+    "name": "Coffee, Latte, Decaffeinated",
+    "aliases": [
+      "Coffee, Latte, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 206.4,
+    "proteinPerServing": 13.54,
+    "fatPerServing": 7.78,
+    "carbsPerServing": 20.98,
+    "saturatedFatPerServing": 4.53,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 19.63,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 168,
+    "cholesterolPerServing": 33.6
+  },
+  {
+    "name": "Coffee, Latte, Decaffeinated, Nonfat",
+    "aliases": [
+      "Coffee, Latte, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 144,
+    "proteinPerServing": 13.82,
+    "fatPerServing": 0.48,
+    "carbsPerServing": 21.07,
+    "saturatedFatPerServing": 0.27,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 20.26,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 177.6,
+    "cholesterolPerServing": 14.4
+  },
+  {
+    "name": "Coffee, Latte, Nonfat",
+    "aliases": [
+      "Coffee, Latte, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 144,
+    "proteinPerServing": 13.78,
+    "fatPerServing": 0.48,
+    "carbsPerServing": 20.98,
+    "saturatedFatPerServing": 0.27,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 20.16,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 172.8,
+    "cholesterolPerServing": 9.6
   },
   {
     "name": "Coffee, Macchiato",
@@ -16428,7 +17076,7 @@
     "cholesterolPerServing": 1.86
   },
   {
-    "name": "Coffee, Mocha",
+    "name": "Coffee, Mocha, Instant, Pre-lightened And Pre-sweetened With Low Calorie Sweetener, Reconstituted",
     "aliases": [
       "Coffee, mocha, instant, pre-lightened and pre-sweetened with low calorie sweetener, reconstituted"
     ],
@@ -25385,6 +26033,24 @@
     "cholesterolPerServing": 19.84
   },
   {
+    "name": "Frozen Coffee Drink, Decaffeinated, Nonfat",
+    "aliases": [
+      "Frozen coffee drink, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 302.56,
+    "proteinPerServing": 7.89,
+    "fatPerServing": 0.5,
+    "carbsPerServing": 66.81,
+    "saturatedFatPerServing": 0.18,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 65.97,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 109.12,
+    "cholesterolPerServing": 4.96
+  },
+  {
     "name": "Frozen Coffee Drink, Nonfat",
     "aliases": [
       "Frozen coffee drink, nonfat"
@@ -25527,6 +26193,24 @@
     "addedSugarsPerServing": null,
     "sodiumPerServing": 168.64,
     "cholesterolPerServing": 19.84
+  },
+  {
+    "name": "Frozen Mocha Coffee Drink, Decaffeinated, Nonfat",
+    "aliases": [
+      "Frozen mocha coffee drink, decaffeinated, nonfat"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 496,
+    "caloriesPerServing": 292.64,
+    "proteinPerServing": 7.64,
+    "fatPerServing": 0.4,
+    "carbsPerServing": 65.17,
+    "saturatedFatPerServing": 0.17,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 61.01,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 173.6,
+    "cholesterolPerServing": 4.96
   },
   {
     "name": "Frozen Mocha Coffee Drink, Nonfat",
@@ -25871,7 +26555,43 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Fruit Flavored Drink, Powdered",
+    "name": "Fruit Flavored Drink, Powdered, Not Reconstituted",
+    "aliases": [
+      "Fruit flavored drink, powdered, not reconstituted"
+    ],
+    "servingDescription": "1 tablespoon",
+    "gramsPerServing": 13,
+    "caloriesPerServing": 49.4,
+    "proteinPerServing": 0,
+    "fatPerServing": 0.13,
+    "carbsPerServing": 12.73,
+    "saturatedFatPerServing": 0.02,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 12.63,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 16.9,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, Powdered, Not Reconstituted, Diet",
+    "aliases": [
+      "Fruit flavored drink, powdered, not reconstituted, diet"
+    ],
+    "servingDescription": "1 tablespoon",
+    "gramsPerServing": 12,
+    "caloriesPerServing": 26.16,
+    "proteinPerServing": 0.05,
+    "fatPerServing": 0,
+    "carbsPerServing": 10.49,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0.01,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 48.48,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, Powdered, Reconstituted",
     "aliases": [
       "Fruit flavored drink, powdered, reconstituted"
     ],
@@ -25886,6 +26606,96 @@
     "sugarsPerServing": 2.02,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 3.72,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, Powdered, Reconstituted, Diet",
+    "aliases": [
+      "Fruit flavored drink, powdered, reconstituted, diet"
+    ],
+    "servingDescription": "1 fl oz (no ice)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0.6,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.22,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.1,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, With High Vitamin C, Diet",
+    "aliases": [
+      "Fruit flavored drink, with high vitamin C, diet"
+    ],
+    "servingDescription": "1 fl oz (NFS)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0.6,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.26,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.4,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, With High Vitamin C, Not Reconstituted",
+    "aliases": [
+      "Fruit flavored drink, with high vitamin C, powdered, not reconstituted"
+    ],
+    "servingDescription": "1 tablespoon",
+    "gramsPerServing": 14,
+    "caloriesPerServing": 54.04,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 13.85,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0.06,
+    "sugarsPerServing": 12.92,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.38,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, With High Vitamin C, Reconstituted",
+    "aliases": [
+      "Fruit flavored drink, with high vitamin C, powdered, reconstituted"
+    ],
+    "servingDescription": "1 tablespoon dry yields 8 fl oz",
+    "gramsPerServing": 248,
+    "caloriesPerServing": 101.68,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 25.92,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 24.18,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 12.4,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Fruit Flavored Drink, With High Vitamin C, Reconstituted, Diet",
+    "aliases": [
+      "Fruit flavored drink, with high vitamin C, powdered, reconstituted, diet"
+    ],
+    "servingDescription": "1 fl oz (no ice)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0.6,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.26,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.4,
     "cholesterolPerServing": 0
   },
   {
@@ -29917,6 +30727,24 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Iced Coffee, Brewed, Decaffeinated",
+    "aliases": [
+      "Iced Coffee, brewed, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.38,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.6,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Iced Coffee, Pre-lightened And Pre-sweetened",
     "aliases": [
       "Iced Coffee, pre-lightened and pre-sweetened"
@@ -31610,7 +32438,7 @@
     "cholesterolPerServing": 33.92
   },
   {
-    "name": "Lemonade, Frozen Concentrate",
+    "name": "Lemonade, Frozen Concentrate, Not Reconstituted",
     "aliases": [
       "Lemonade, frozen concentrate, not reconstituted"
     ],
@@ -34063,7 +34891,25 @@
     "cholesterolPerServing": 12.92
   },
   {
-    "name": "Milk, Dry",
+    "name": "Milk, Dry, Not Reconstituted",
+    "aliases": [
+      "Milk, dry, not reconstituted"
+    ],
+    "servingDescription": "1 cup",
+    "gramsPerServing": 128,
+    "caloriesPerServing": 463.36,
+    "proteinPerServing": 46.28,
+    "fatPerServing": 0.99,
+    "carbsPerServing": 66.53,
+    "saturatedFatPerServing": 0.64,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 66.53,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 684.8,
+    "cholesterolPerServing": 25.6
+  },
+  {
+    "name": "Milk, Dry, Reconstituted, Nonfat",
     "aliases": [
       "Milk, dry, reconstituted, nonfat"
     ],
@@ -34081,7 +34927,43 @@
     "cholesterolPerServing": 0.61
   },
   {
+    "name": "Milk, Dry, Reconstituted, Whole",
+    "aliases": [
+      "Milk, dry, reconstituted, whole"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30.5,
+    "caloriesPerServing": 23.18,
+    "proteinPerServing": 1.22,
+    "fatPerServing": 1.24,
+    "carbsPerServing": 1.79,
+    "saturatedFatPerServing": 0.78,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.79,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 18.3,
+    "cholesterolPerServing": 4.58
+  },
+  {
     "name": "Milk, Evaporated",
+    "aliases": [
+      "Milk, evaporated, reduced fat (2%)"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 31.5,
+    "caloriesPerServing": 28.98,
+    "proteinPerServing": 2.34,
+    "fatPerServing": 0.62,
+    "carbsPerServing": 3.51,
+    "saturatedFatPerServing": 0.38,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 3.51,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 35.6,
+    "cholesterolPerServing": 2.52
+  },
+  {
+    "name": "Milk, Evaporated, Whole",
     "aliases": [
       "Milk, evaporated, whole"
     ],
@@ -34135,6 +35017,24 @@
     "cholesterolPerServing": 1.53
   },
   {
+    "name": "Milk, Lactose Free, Whole",
+    "aliases": [
+      "Milk, lactose free, whole"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 30.5,
+    "caloriesPerServing": 18.61,
+    "proteinPerServing": 1,
+    "fatPerServing": 0.98,
+    "carbsPerServing": 1.41,
+    "saturatedFatPerServing": 0.57,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.47,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 11.59,
+    "cholesterolPerServing": 3.66
+  },
+  {
     "name": "Milk, Low Fat",
     "aliases": [
       "Milk, low fat (1%)"
@@ -34169,6 +35069,24 @@
     "addedSugarsPerServing": null,
     "sodiumPerServing": 19.2,
     "cholesterolPerServing": 2.56
+  },
+  {
+    "name": "Milk, Malted, Not Reconstituted",
+    "aliases": [
+      "Milk, malted, dry mix, not reconstituted"
+    ],
+    "servingDescription": "1 tablespoon",
+    "gramsPerServing": 5.5,
+    "caloriesPerServing": 20.46,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 5.11,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 4,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 29.15,
+    "cholesterolPerServing": 0
   },
   {
     "name": "Milk, Reduced Fat",
@@ -36453,6 +37371,42 @@
     "sugarsPerServing": 6.95,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 0,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Orange Juice, 100%, Not Reconstituted",
+    "aliases": [
+      "Orange juice, 100%, frozen, not reconstituted"
+    ],
+    "servingDescription": "1 fl oz",
+    "gramsPerServing": 36,
+    "caloriesPerServing": 53.28,
+    "proteinPerServing": 0.86,
+    "fatPerServing": 0.09,
+    "carbsPerServing": 12.67,
+    "saturatedFatPerServing": 0.02,
+    "fiberPerServing": 0.36,
+    "sugarsPerServing": 10.68,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.52,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Orange Juice, 100%, Reconstituted",
+    "aliases": [
+      "Orange juice, 100%, frozen, reconstituted"
+    ],
+    "servingDescription": "1 fl oz (with ice)",
+    "gramsPerServing": 23,
+    "caloriesPerServing": 9.66,
+    "proteinPerServing": 0.16,
+    "fatPerServing": 0.02,
+    "carbsPerServing": 2.31,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0.07,
+    "sugarsPerServing": 1.95,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.15,
     "cholesterolPerServing": 0
   },
   {
@@ -45187,6 +46141,24 @@
     "cholesterolPerServing": 49.5
   },
   {
+    "name": "Roll, Sweet, Diet",
+    "aliases": [
+      "Roll, sweet, with fruit, frosted, diet"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 90,
+    "caloriesPerServing": 406.8,
+    "proteinPerServing": 4.01,
+    "fatPerServing": 23.95,
+    "carbsPerServing": 43.74,
+    "saturatedFatPerServing": 11.38,
+    "fiberPerServing": 1.08,
+    "sugarsPerServing": 23.13,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 274.5,
+    "cholesterolPerServing": 4.5
+  },
+  {
     "name": "Roll, Wheat Or Cracked Wheat",
     "aliases": [
       "Roll, wheat or cracked wheat"
@@ -47621,6 +48593,26 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Soft Drink, Chocolate Flavored, Diet",
+    "aliases": [
+      "Soft drink, chocolate flavored, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 9.9,
+    "proteinPerServing": 0.54,
+    "fatPerServing": 0.15,
+    "carbsPerServing": 1.44,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 39.6,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Soft Drink, Cola",
     "aliases": [
       "Soft drink, cola",
@@ -47638,6 +48630,66 @@
     "sugarsPerServing": 50.89,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 15.36,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Cola, Decaffeinated",
+    "aliases": [
+      "Soft drink, cola, decaffeinated",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 209.92,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 54.17,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 54.17,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 20.48,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Cola, Decaffeinated, Diet",
+    "aliases": [
+      "Soft drink, cola, decaffeinated, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0.59,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.59,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 19.8,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Cola, Diet",
+    "aliases": [
+      "Soft drink, cola, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 9.9,
+    "proteinPerServing": 0.54,
+    "fatPerServing": 0.15,
+    "carbsPerServing": 1.44,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 39.6,
     "cholesterolPerServing": 0
   },
   {
@@ -47661,6 +48713,26 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Soft Drink, Cream Soda, Diet",
+    "aliases": [
+      "Soft drink, cream soda, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.5,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 29.7,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Soft Drink, Fruit Flavored",
     "aliases": [
       "Soft drink, fruit flavored, caffeine free",
@@ -47678,6 +48750,26 @@
     "sugarsPerServing": 45.98,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 46.08,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Fruit Flavored, Diet",
+    "aliases": [
+      "Soft drink, fruit flavored, diet, caffeine free",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.5,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 29.7,
     "cholesterolPerServing": 0
   },
   {
@@ -47701,6 +48793,26 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Soft Drink, Ginger Ale, Diet",
+    "aliases": [
+      "Soft drink, ginger ale, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0.5,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 29.7,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Soft Drink, Pepper Type",
     "aliases": [
       "Soft drink, pepper type",
@@ -47721,7 +48833,67 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Soft Drink, Root Beer",
+    "name": "Soft Drink, Pepper Type, Decaffeinated",
+    "aliases": [
+      "Soft drink, pepper type, decaffeinated",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 209.92,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 54.17,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 54.17,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 20.48,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Pepper Type, Decaffeinated, Diet",
+    "aliases": [
+      "Soft drink, pepper type, decaffeinated, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0.59,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.59,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 19.8,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Pepper Type, Diet",
+    "aliases": [
+      "Soft drink, pepper type, diet",
+      "soda",
+      "soft drink"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 9.9,
+    "proteinPerServing": 0.54,
+    "fatPerServing": 0.15,
+    "carbsPerServing": 1.44,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 39.6,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Soft Drink, Root Beer, Diet",
     "aliases": [
       "Soft drink, root beer, diet",
       "soda",
@@ -49832,7 +51004,7 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Sports Drink, Dry Concentrate",
+    "name": "Sports Drink, Dry Concentrate, Not Reconstituted",
     "aliases": [
       "Sports drink, dry concentrate, not reconstituted"
     ],
@@ -50498,7 +51670,7 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Strawberry Beverage Powder, Dry Mix",
+    "name": "Strawberry Beverage Powder, Dry Mix, Not Reconstituted",
     "aliases": [
       "Strawberry beverage powder, dry mix, not reconstituted"
     ],
@@ -52735,7 +53907,313 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Tea, Hot, Decaffeinated",
+    "aliases": [
+      "Tea, hot, leaf, black, decaffeinated"
+    ],
+    "servingDescription": "1 medium",
+    "gramsPerServing": 480,
+    "caloriesPerServing": 4.8,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.44,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.4,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Tea, Iced",
+    "aliases": [
+      "Tea, iced, bottled, black"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 230.4,
+    "proteinPerServing": 0,
+    "fatPerServing": 1.13,
+    "carbsPerServing": 55.3,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 48.59,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 15.36,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Decaffeinated, Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Tea, iced, brewed, black, decaffeinated, pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 9.9,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 3.37,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.63,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.85,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Decaffeinated, Pre-sweetened With Sugar",
+    "aliases": [
+      "Tea, iced, brewed, black, decaffeinated, pre-sweetened with sugar"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 163.84,
+    "proteinPerServing": 0,
+    "fatPerServing": 0.1,
+    "carbsPerServing": 40.65,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 39.32,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 15.36,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Decaffeinated, Unsweetened",
+    "aliases": [
+      "Tea, iced, brewed, black, decaffeinated, unsweetened"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.49,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.85,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Tea, iced, brewed, black, pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 9.9,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 3.37,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 1.63,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.85,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Pre-sweetened With Sugar",
+    "aliases": [
+      "Tea, iced, brewed, black, pre-sweetened with sugar"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 163.84,
+    "proteinPerServing": 0,
+    "fatPerServing": 0.1,
+    "carbsPerServing": 40.65,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 39.32,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 15.36,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Brewed, Unsweetened",
+    "aliases": [
+      "Tea, iced, brewed, black, unsweetened"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.49,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.85,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Decaffeinated",
+    "aliases": [
+      "Tea, iced, bottled, black, decaffeinated"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 512,
+    "caloriesPerServing": 194.56,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 44.8,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 40.55,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 40.96,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Decaffeinated, Diet",
+    "aliases": [
+      "Tea, iced, bottled, black, decaffeinated, diet"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 4.11,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 19.8,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Decaffeinated, Unsweetened",
+    "aliases": [
+      "Tea, iced, bottled, black, decaffeinated, unsweetened"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.49,
+    "saturatedFatPerServing": 0.01,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 14.85,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Diet",
+    "aliases": [
+      "Tea, iced, bottled, black, diet"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 4.95,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 1.09,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 84.15,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Decaffeinated, Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Tea, iced, instant, black, decaffeinated, pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 fl oz (NFS)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0.9,
+    "proteinPerServing": 0.01,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.22,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.01,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 2.1,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Decaffeinated, Pre-sweetened With Sugar",
+    "aliases": [
+      "Tea, iced, instant, black, decaffeinated, pre-sweetened with sugar"
+    ],
+    "servingDescription": "1 fl oz (no ice)",
+    "gramsPerServing": 31,
+    "caloriesPerServing": 9.92,
+    "proteinPerServing": 0.02,
+    "fatPerServing": 0.01,
+    "carbsPerServing": 2.45,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 2.41,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.24,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Decaffeinated, Unsweetened",
+    "aliases": [
+      "Tea, iced, instant, black, decaffeinated, unsweetened"
+    ],
+    "servingDescription": "1 fl oz (no ice)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 0.3,
+    "proteinPerServing": 0.02,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.05,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.01,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.2,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Pre-sweetened",
+    "aliases": [
+      "Tea, iced, instant, black, pre-sweetened, dry"
+    ],
+    "servingDescription": "1 teaspoon, dry",
+    "gramsPerServing": 4.8,
+    "caloriesPerServing": 19.25,
+    "proteinPerServing": 0.01,
+    "fatPerServing": 0.04,
+    "carbsPerServing": 4.73,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0.03,
+    "sugarsPerServing": 4.57,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0.24,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Pre-sweetened With Low Calorie Sweetener",
+    "aliases": [
+      "Tea, iced, instant, black, pre-sweetened with low calorie sweetener"
+    ],
+    "servingDescription": "1 fl oz (with ice)",
+    "gramsPerServing": 23,
+    "caloriesPerServing": 0.46,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.1,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 1.38,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Instant, Pre-sweetened With Sugar",
     "aliases": [
       "Tea, iced, instant, black, pre-sweetened with sugar"
     ],
@@ -52753,7 +54231,7 @@
     "cholesterolPerServing": 0
   },
   {
-    "name": "Tea, Iced, Unsweetened",
+    "name": "Tea, Iced, Instant, Unsweetened",
     "aliases": [
       "Tea, iced, instant, black, unsweetened"
     ],
@@ -52768,6 +54246,24 @@
     "sugarsPerServing": 0,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 1.2,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Tea, Iced, Unsweetened",
+    "aliases": [
+      "Tea, iced, bottled, black, unsweetened"
+    ],
+    "servingDescription": "1 medium drink",
+    "gramsPerServing": 495,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 9.9,
     "cholesterolPerServing": 0
   },
   {
@@ -55496,6 +56992,24 @@
     "cholesterolPerServing": 0
   },
   {
+    "name": "Vegetable And Fruit Juice Drink, With High Vitamin C, Diet",
+    "aliases": [
+      "Vegetable and fruit juice drink, with high vitamin C, diet"
+    ],
+    "servingDescription": "1 fl oz (NFS)",
+    "gramsPerServing": 30,
+    "caloriesPerServing": 1.2,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0.33,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0.19,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 4.2,
+    "cholesterolPerServing": 0
+  },
+  {
     "name": "Vegetable And Fruit Juice, 100% Juice",
     "aliases": [
       "Vegetable and fruit juice, 100% juice, with high vitamin C"
@@ -56518,6 +58032,24 @@
     "saturatedFatPerServing": 0,
     "fiberPerServing": 0,
     "sugarsPerServing": 32.94,
+    "addedSugarsPerServing": null,
+    "sodiumPerServing": 0,
+    "cholesterolPerServing": 0
+  },
+  {
+    "name": "Water, Enhanced, Diet",
+    "aliases": [
+      "Water, enhanced, diet"
+    ],
+    "servingDescription": "1 bottle (20 fl oz)",
+    "gramsPerServing": 600,
+    "caloriesPerServing": 0,
+    "proteinPerServing": 0,
+    "fatPerServing": 0,
+    "carbsPerServing": 0,
+    "saturatedFatPerServing": 0,
+    "fiberPerServing": 0,
+    "sugarsPerServing": 0,
     "addedSugarsPerServing": null,
     "sodiumPerServing": 0,
     "cholesterolPerServing": 0

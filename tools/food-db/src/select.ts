@@ -64,6 +64,8 @@ const alcoholName = /\b(?:alcoholic|vodka|whiskey|whisky|rum|gin|tequila|liqueur
 
 const nutritionQualifier = /^(?:as purchased|baked|boiled|broiled|cooked|fat added|fat not added|from dried|from fresh|fried|grilled|ground|made with|microwaved|no added fat|no fat added|raw|roasted|skin eaten|skin not eaten|steamed|sweetened|unsweetened|with skin|without skin)$/i;
 
+const variantQualifier = /^(?:brewed|decaffeinated|diet|instant|nonfat|(?:not )?reconstituted|pre-lightened.*|pre-sweetened.*|sweetened with.*|unsweetened|whole)$/i;
+
 const householdAliasRules = [
   { sources: ["pepper sweet"], aliases: ["bell pepper", "sweet pepper"] },
   { sources: ["onion green"], aliases: ["scallion", "green onion"] },
@@ -115,6 +117,7 @@ export function friendlyName(description: string): string {
     .replace(/,\s*from (?:fast food\s*\/\s*restaurant|other sources|precooked|raw)\b.*$/i, "")
     .replace(/\([^)]*\)/g, " ")
     .replace(/["“”]/g, "")
+    .replace(/reconsitituted/gi, "reconstituted")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -123,8 +126,9 @@ export function friendlyName(description: string): string {
   const preparation = /^(?:raw|cooked|grilled|roasted|baked|boiled|fried|steamed|broiled|microwaved|as purchased|with|without|from|made with|no added fat)\b/i;
   const genericFood = /^(?:chicken|beef|pork|fish|potato|potatoes|rice|beans|coffee|milk|tea|pasta|noodles|bread|cereal|soup|salad)$/i;
 
-  const significantQualifiers = parts.slice(1).filter((part) => nutritionQualifier.test(part));
-  const retainedDescriptor = parts[1] && !nutritionQualifier.test(parts[1]) ? [parts[1]] : [];
+  const isQualifier = (part: string) => nutritionQualifier.test(part) || variantQualifier.test(part);
+  const significantQualifiers = parts.slice(1).filter(isQualifier);
+  const retainedDescriptor = parts[1] && !isQualifier(parts[1]) ? [parts[1]] : [];
 
   const name = significantQualifiers.length > 0
     ? [parts[0], ...retainedDescriptor, ...significantQualifiers].join(", ")
