@@ -41,6 +41,7 @@ struct ProPaywallSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.isProPaywallPresented) private var isProPaywallPresented = false
     @Environment(PurchaseStore.self) private var store
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedPlan = ProPlan.yearly
     @State private var isRedeeming = false
 
@@ -128,21 +129,42 @@ struct ProPaywallSheet: View {
         Button {
             selectedPlan = plan
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(plan.title).font(.headline)
-                    if plan == .yearly {
-                        Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 12) {
+                            Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                            Text(plan.title).font(.headline)
+                        }
+                        if plan == .yearly {
+                            Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(Color.accentColor)
+                        }
+                        Text(store.products[plan].map { $0.proPrice } ?? "Unavailable")
+                            .font(.subheadline.weight(.semibold))
+                            .multilineTextAlignment(.leading)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
+                    HStack(spacing: 12) {
+                        Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(plan.title).font(.headline)
+                            if plan == .yearly {
+                                Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.accentColor)
+                            }
+                        }
+                        Spacer()
+                        Text(store.products[plan].map { $0.proPrice } ?? "Unavailable")
+                            .font(.subheadline.weight(.semibold))
+                            .multilineTextAlignment(.trailing)
                     }
                 }
-                Spacer()
-                Text(store.products[plan].map { $0.proPrice } ?? "Unavailable")
-                    .font(.subheadline.weight(.semibold))
-                    .multilineTextAlignment(.trailing)
             }
             .padding(16)
             .contentShape(RoundedRectangle(cornerRadius: 20))

@@ -28,5 +28,9 @@ Branch `launch/ws7-retention-polish`. Mac only. Phase 2: starts after WS2 and WS
 
 ## Close-out (deferred until WS4, WS5, and WS6 merge)
 
-- Check the WS4 “Search online for …” row spacing against the glass action bar states and adjust only if they collide.
-- Audit paywall entry points for the weight trend card, Health section, Backup section, and reminders; verify the correct contexts and “Included with <brand> Pro” copy.
+- [x] Checked the WS4 “Search online for …” prompt against the pinned glass action bar with an empty query, local results, no local results, and the keyboard up. The prompt and pinned actions remain visible and do not collide; no spacing or safe-area change was needed.
+- [x] Audited the Insights, weight trends, Health weight import, Backup, reminders, ring colors, and Pro Settings entry points. Contexts match their features; locked Health, Backup, reminders, and ring-color rows use `lock.fill`; included-feature copy uses `AppBrand.displayName`.
+- [x] Fixed Pro plan-row wrapping at the largest accessibility text size by stacking row content. The plan names and price/status now use the full row width.
+- [x] Confirmed free and Debug Pro states, and opened/dismissed the visible paywalls. Purchase products are unavailable in this simulator; purchase completion remains covered by the existing StoreKit limitation.
+- [x] Recorded screenshots and the pass/fail audit table in `build/ws7-qa-2026-10-26/closeout/QA.md`.
+- [x] Recorded the remaining simulator limitation: barcode lookup `429` camera handling must be verified on a TestFlight device (non-retryable response and `Retry-After` feedback); see [TestFlight Release Tracker](testflight-release-tracker.md#carried-over-verification-items-must-pass-on-the-testflight-device).

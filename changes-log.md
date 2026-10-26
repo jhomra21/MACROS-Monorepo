@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 WS7 Close-out
+
+- Audited Add Food spacing and Pro entry points; fixed paywall plan rows at the largest accessibility text size. Barcode `429` camera verification remains assigned to TestFlight.
+- Validation: format, build, simulator entry-point and layout QA passed; evidence is in `build/ws7-qa-2026-10-26/closeout/QA.md`.
+
 ## 2026-10-26 Backup Export and Import (WS6)
 
 - Added versioned JSON backup and log CSV export, validated DTO import with Merge/Replace, common-food preservation, settings restore, summary review, and Pro-gated Settings controls.
