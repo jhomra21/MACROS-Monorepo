@@ -41,9 +41,7 @@ struct InsightsWeightCard: View {
                         in: allPoints,
                         endingOn: latestInRange.day
                     ) {
-                        let label =
-                            comparison.matchedTargetDay
-                            ? "in 7 days" : "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
+                        let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
                         Text(
                             "\(comparison.changeKg >= 0 ? "+" : "")\(displayWeight(comparison.changeKg), specifier: "%.1f") \(unitLabel) \(label)"
                         )
