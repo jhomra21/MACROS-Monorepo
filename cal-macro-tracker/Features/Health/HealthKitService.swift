@@ -136,12 +136,30 @@ final class HealthKitService {
     }
 
     func deleteNutrition(for entryID: UUID) async {
+        var deletionFailed = false
+        var skippedUnauthorizedType = false
         for type in nutritionTypes {
-            guard HealthNutritionAuthorization.isAuthorized(store.authorizationStatus(for: type)) else { continue }
+            guard HealthNutritionAuthorization.isAuthorized(store.authorizationStatus(for: type)) else {
+                skippedUnauthorizedType = true
+                continue
+            }
+            let syncIdentifier = "\(entryID.uuidString).\(type.identifier.rawValue)"
             let predicate = HKQuery.predicateForObjects(
-                withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .beginsWith, value: entryID.uuidString)
-            do { try await store.deleteObjects(of: type, predicate: predicate) } catch { continue }
+                withMetadataKey: HKMetadataKeySyncIdentifier, operatorType: .equalTo, value: syncIdentifier)
+            do {
+                try await store.deleteObjects(of: type, predicate: predicate)
+            } catch {
+                deletionFailed = true
+            }
         }
+        statusText =
+            if deletionFailed {
+                "Some nutrition could not be removed from Apple Health."
+            } else if skippedUnauthorizedType {
+                "Nutrition was removed from enabled Health categories. Review other permissions in the Health app."
+            } else {
+                "Nutrition removed from Apple Health."
+            }
     }
 
     func backfill(days: Int, container: ModelContainer) async {
