@@ -64,6 +64,17 @@ final class WeightAnalyticsTests: XCTestCase {
         )
     }
 
+    func testSevenDayChangeDoesNotMatchAdjacentCalendarDay() {
+        let latestDate = date(2026, 10, 8)
+        let points = [
+            entry(day: date(2026, 9, 30), recordedAt: date(2026, 9, 30), kg: 70),
+            entry(day: date(2026, 10, 8), recordedAt: date(2026, 10, 8), kg: 69)
+        ]
+
+        XCTAssertNil(WeightAnalytics.comparisonFromSevenDaysAgo(in: points, endingOn: latestDate, calendar: calendar))
+        XCTAssertNil(WeightAnalytics.changeFromSevenDaysAgo(in: points, endingOn: latestDate, calendar: calendar))
+    }
+
     func testSevenDayChangeDoesNotUseAnArbitrarilyOldEntry() {
         let latestDate = date(2026, 10, 30)
         let points = [

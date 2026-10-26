@@ -15,7 +15,6 @@ struct WeightMovingAveragePoint: Identifiable {
 struct WeightChangeComparison {
     let changeKg: Double
     let baselineDay: Date
-    let matchedTargetDay: Bool
 }
 
 enum WeightAnalytics {
@@ -83,23 +82,11 @@ enum WeightAnalytics {
             let latest = latest(from: points.filter({ calendar.startOfDay(for: $0.day) == endingDay }))
         else { return nil }
 
-        let candidates = valid(points).filter { point in
-            let day = calendar.startOfDay(for: point.day)
-            let distance = abs(calendar.dateComponents([.day], from: targetDay, to: day).day ?? Int.max)
-            return distance <= 1
-        }
-        guard
-            let prior = candidates.min(by: {
-                let leftDistance = abs(calendar.dateComponents([.day], from: targetDay, to: $0.day).day ?? Int.max)
-                let rightDistance = abs(calendar.dateComponents([.day], from: targetDay, to: $1.day).day ?? Int.max)
-                if leftDistance != rightDistance { return leftDistance < rightDistance }
-                return $0.recordedAt > $1.recordedAt
-            })
+        guard let prior = Self.latest(from: points.filter { calendar.startOfDay(for: $0.day) == targetDay })
         else { return nil }
         return WeightChangeComparison(
             changeKg: latest.weightKg - prior.weightKg,
-            baselineDay: calendar.startOfDay(for: prior.day),
-            matchedTargetDay: calendar.startOfDay(for: prior.day) == targetDay
+            baselineDay: targetDay
         )
     }
 
