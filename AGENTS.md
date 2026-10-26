@@ -53,6 +53,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 
 ## Commands
 
+- Local StoreKit catalog activation passed here with Xcode 26.4 (`/Applications/Xcode.app/Contents/Developer`) and the iOS 27.0 simulator runtime; Xcode 27.0 did not pass the same probe. Until Xcode 27 is verified, prefix each `xcodebuild`, `xcrun`, and `make` invocation with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`.
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
 - Build the app from the CLI (a build is not a test run):
