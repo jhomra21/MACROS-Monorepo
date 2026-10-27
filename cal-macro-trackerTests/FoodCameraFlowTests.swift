@@ -150,6 +150,131 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertFalse(flow.isSaving)
     }
 
+    func testActiveLibraryCancellationRestartsScanning() {
+        var flow = FoodCameraFlow()
+        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.phase, .library)
+        XCTAssertEqual(flow.reduce(.libraryCancelled), [.startScanning])
+        XCTAssertEqual(flow.phase, .scanning)
+    }
+
+    func testLibraryOpenedBeforeBackgroundDoesNotResumeUntilActive() {
+        var flow = FoodCameraFlow()
+        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.phase, .library)
+        XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.phase, .library)
+        XCTAssertEqual(flow.reduce(.libraryCancelled), [])
+        XCTAssertEqual(flow.phase, .scanning)
+        XCTAssertTrue(flow.isInactive)
+        XCTAssertEqual(flow.reduce(.sceneActive), [.startScanning])
+        XCTAssertEqual(flow.phase, .scanning)
+    }
+
+    func testLiveBarcodeIsIgnoredDuringOCRAndCapture() {
+        for phase: FoodCameraFlow.Phase in [.readingLabel, .capturing] {
+            var flow = flow(in: phase)
+            XCTAssertEqual(flow.reduce(.barcodeRecognized("late")), [])
+            XCTAssertEqual(flow.phase, phase)
+        }
+    }
+
+    func testSecondShutterIsIgnoredDuringCapture() {
+        var flow = flow(in: .capturing)
+        XCTAssertEqual(flow.reduce(.shutterTapped), [])
+        XCTAssertEqual(flow.phase, .capturing)
+    }
+
+    func testInactiveLookupCompletionKeepsResultWithoutRestarting() {
+        var flow = flow(in: .lookingUp)
+        XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.phase, .lookingUp)
+        XCTAssertEqual(flow.reduce(.lookupFinished), [])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+        XCTAssertEqual(flow.reduce(.sceneActive), [])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+    }
+
+    func testScanAgainStartsOnlyWhenActive() {
+        var active = barcodeResultFlow()
+        XCTAssertEqual(active.reduce(.scanAgain), [.cancelWork, .torchOff, .startScanning])
+        XCTAssertEqual(active.phase, .scanning)
+        var inactive = barcodeResultFlow()
+        XCTAssertEqual(inactive.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(inactive.phase, .showingBarcode)
+        XCTAssertEqual(inactive.reduce(.scanAgain), [.cancelWork, .torchOff, .stopScanning])
+        XCTAssertEqual(inactive.phase, .scanning)
+    }
+
+    func testOCRFailureClearsBarcodeRecoveryForLabelManualEntry() {
+        var flow = flow(in: .readingLabel)
+        let barcodeDestination = BarcodeManualFallbackFactory.destination(for: "123")
+        XCTAssertEqual(
+            flow.reduce(.recoveryDestinationChanged(barcodeDestination)),
+            [.recoveryDestination(barcodeDestination)]
+        )
+        XCTAssertEqual(flow.phase, .readingLabel)
+        XCTAssertEqual(flow.reduce(.ocrFailed), [.recoveryDestination(nil)])
+        XCTAssertEqual(flow.phase, .recovering)
+    }
+
+    func testDismissedFlowRejectsEventsAndContent() {
+        var flow = flow(in: .dismissed)
+        let events: [FoodCameraFlow.Event] = [
+            .barcodeRecognized("123"), .barcodeFromImage("123"), .shutterTapped,
+            .libraryOpened, .libraryCancelled, .imagePicked, .lookupFinished,
+            .lookupFailed("123"), .scannerFailed, .importFailed, .captureFailed,
+            .ocrFinished, .ocrFailed, .photoCaptured, .imageBarcodeMissing,
+            .logTapped, .logFinished, .scanAgain, .servingsChanged(2),
+            .sceneInactive, .sceneActive, .navigationAway,
+            .contentChanged(.message("late")), .recoveryDestinationChanged(nil),
+        ]
+        for event in events {
+            XCTAssertEqual(flow.reduce(event), [])
+            XCTAssertEqual(flow.phase, .dismissed)
+        }
+    }
+
+    func testInvalidQuantityIsRejected() {
+        var flow = barcodeResultFlow()
+        for amount in [0, -1, Double.nan, .infinity] {
+            XCTAssertEqual(flow.reduce(.servingsChanged(amount)), [])
+            XCTAssertEqual(flow.phase, .showingBarcode)
+            XCTAssertEqual(flow.servings, 1)
+        }
+    }
+
+    func testValidationFailureFinishesSavingAndUnblocksResult() {
+        var flow = barcodeResultFlow()
+        XCTAssertEqual(flow.reduce(.logTapped), [.log(servings: 1)])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+        XCTAssertTrue(flow.isSaving)
+        XCTAssertEqual(flow.reduce(.logFinished), [])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+        XCTAssertFalse(flow.isSaving)
+    }
+
+    func testRepeatedDismissalHasNoEffects() {
+        var flow = FoodCameraFlow()
+        XCTAssertEqual(flow.reduce(.dismissed), [.stopScanning, .cancelWork, .torchOff])
+        XCTAssertEqual(flow.phase, .dismissed)
+        XCTAssertEqual(flow.reduce(.dismissed), [])
+        XCTAssertEqual(flow.phase, .dismissed)
+    }
+
+    func testTorchToggleIsOwnedByScanningPhase() {
+        var scanning = FoodCameraFlow()
+        XCTAssertEqual(scanning.reduce(.torchToggled), [.torchOn])
+        XCTAssertEqual(scanning.phase, .scanning)
+        XCTAssertEqual(scanning.reduce(.torchToggled), [.torchOff])
+        XCTAssertEqual(scanning.phase, .scanning)
+        for phase in FoodCameraFlow.Phase.allTestPhases where phase != .scanning {
+            var other = flow(in: phase)
+            XCTAssertEqual(other.reduce(.torchToggled), [])
+            XCTAssertEqual(other.phase, phase)
+        }
+    }
+
     private func barcodeResultFlow() -> FoodCameraFlow {
         var flow = FoodCameraFlow()
         _ = flow.reduce(.barcodeRecognized("123"))
