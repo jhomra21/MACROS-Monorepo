@@ -88,7 +88,7 @@
 
 Round-4 validation: format/build pass, focused FoodCameraFlowTests 22/22 pass, whitespace check passes. Initial red test run executed 21 tests with five failed assertions in four new cases; the torch API test was added to the test-first commit before implementing its new event/effect. Red xcodebuild teardown stalled after results and was terminated; final green xcodebuild exited successfully. Simulator `MACROS-CAMERA4-2026-10-26` (`E649001E-90B8-4D08-B83E-477D752EB81A`, iPhone 17 Pro/iOS 27.0) was created within the two-booted-device limit; no other simulator was touched. Evidence/commands: ignored `build/unified-camera-qa-2026-10-26/QA.md`, round-4 section and `r4/`.
 
-Accessibility follow-up: `BottomPinnedDualActionBar` uses icon-only buttons at accessibility text sizes and keeps the action titles as accessibility labels; the still-camera fallback description is allowed to wrap. Simulator was booted at the requested text size, but first-run onboarding prevented reaching the dashboard in the available UI automation; no dashboard screenshots were captured. Temporary screenshots are under ignored `build/unified-camera-qa-2026-10-26/r4-ax/`.
+Accessibility follow-up: `MACROS-AX2-2026-10-26` verified the Camera/Add Food icon-only pills before and after dashboard scrolling and the wrapping still-camera fallback copy at accessibility-extra-extra-extra-large; screenshots and results are in ignored `build/unified-camera-qa-2026-10-26/r4-ax/QA.md`.
 
 - Live barcode recognition and repeated scan behavior.
 - Torch availability/behavior and preview stability when it is turned on (watch for preview freeze).

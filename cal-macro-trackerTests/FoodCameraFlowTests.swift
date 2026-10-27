@@ -244,16 +244,6 @@ final class FoodCameraFlowTests: XCTestCase {
         }
     }
 
-    func testValidationFailureFinishesSavingAndUnblocksResult() {
-        var flow = barcodeResultFlow()
-        XCTAssertEqual(flow.reduce(.logTapped), [.log(servings: 1)])
-        XCTAssertEqual(flow.phase, .showingBarcode)
-        XCTAssertTrue(flow.isSaving)
-        XCTAssertEqual(flow.reduce(.logFinished), [])
-        XCTAssertEqual(flow.phase, .showingBarcode)
-        XCTAssertFalse(flow.isSaving)
-    }
-
     func testRepeatedDismissalHasNoEffects() {
         var flow = FoodCameraFlow()
         XCTAssertEqual(flow.reduce(.dismissed), [.stopScanning, .cancelWork, .torchOff])

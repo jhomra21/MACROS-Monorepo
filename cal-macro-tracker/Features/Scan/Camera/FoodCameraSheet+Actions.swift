@@ -112,17 +112,18 @@ extension FoodCameraSheet {
     }
 
     func logBarcode() {
+        guard case let .barcode(draft, amount, _) = result else { return }
+        let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
+        guard action.canLog else {
+            send(.contentChanged(.error(action.validationError?.localizedDescription ?? "Review the food details before logging.")))
+            return
+        }
         send(.logTapped)
     }
 
     func logBarcode(servings amount: Double) {
         guard case let .barcode(draft, _, _) = result, flow.isSaving else { return }
         let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
-        guard action.canLog else {
-            send(.logFinished)
-            send(.contentChanged(.error(action.validationError?.localizedDescription ?? "Review the food details before logging.")))
-            return
-        }
         do {
             try LogEntryRepository(
                 modelContext: modelContext,
