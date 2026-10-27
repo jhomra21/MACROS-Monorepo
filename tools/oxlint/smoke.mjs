@@ -49,7 +49,7 @@ try {
   );
 
   const run = (target) =>
-    spawnSync(oxlint, ["--config", ".oxlintrc.json", "--format", "json", target], {
+    spawnSync(process.execPath, [oxlint, "--config", ".oxlintrc.json", "--format", "json", target], {
       cwd: root,
       encoding: "utf8",
     });
@@ -76,8 +76,8 @@ try {
   );
 
   const missingPluginResult = spawnSync(
-    oxlint,
-    ["--config", missingPluginConfig, "--format", "json", positive],
+    process.execPath,
+    [oxlint, "--config", missingPluginConfig, "--format", "json", positive],
     { cwd: root, encoding: "utf8" },
   );
 
@@ -94,7 +94,7 @@ try {
     complexityDiagnostics.some(
       (diagnostic) =>
         diagnostic.code === "eslint(complexity)" &&
-        diagnostic.filename === complexityBoundary &&
+        path.basename(diagnostic.filename) === path.basename(complexityBoundary) &&
         diagnostic.message.includes("21"),
     ),
     `Expected complexity diagnostic on overLimit; received ${complexityResult.stdout}`,

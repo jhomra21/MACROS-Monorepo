@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 JavaScript and TypeScript Dependency Updates
+
+- Updated package manifests and Bun lockfiles across the workers, Astro site, Convex backend, runtime QA, food database, and Oxlint tooling; detailed version changes and migration notes are in [`implementation-trackers/dependency-update-tracker.md`](implementation-trackers/dependency-update-tracker.md).
+- Validation: package checks, tests, integrations, build, dry runs, and lint passed; Convex code generation was run from the configured checkout after the merge.
+
 ## 2026-10-26 MACROS Pro Paywall Success Flow
 
 - Opened the Pro paywall at the large detent only and added transition-only success feedback, entitlement details, unlocked benefits, and context-aware dismissal.
