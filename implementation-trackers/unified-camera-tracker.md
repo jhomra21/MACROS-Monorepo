@@ -46,6 +46,10 @@
 - [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
 - [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
 - [ ] Complete simulator E2E and record evidence; round 3 ran dashboard and camera entry-point smoke checks on the created simulator, but photo picker/result scenarios remain pending.
+- [x] Round 4: fix library import, ordered scanner/torch execution, inactive cancellation, terminal dismissal, save validation, and duplicate status/task mutations.
+- [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
+- [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
+- [ ] Resolve largest-text dashboard pill truncation found during round-4 QA.
 - [x] Preserve branch history by merging `origin/main` into `56f7e95` instead of rebasing, per owner override.
 
 ## Implementation notes
@@ -63,6 +67,26 @@
 - Round 3 validation: focused `FoodCameraFlowTests` pass 10/10; `make quality-format-check` and `make quality-build` pass. The new simulator `MACROS-CAMERA3-2026-10-26` was created and used for dashboard, camera fallback, photo picker, label OCR/review, Back, and Retake checks; outstanding checks are in `build/unified-camera-qa-2026-10-26/QA.md`. The sheet's single `send(_:)` executor runs all reducer effects in order; phase, busy, servings, result content, and recovery destination are flow/effect-owned.
 
 ## Device-only TestFlight checks
+
+### Round-4 evidence classification
+
+| Failure or race | Evidence |
+| --- | --- |
+| Active picker → background → cancel → foreground | reducer-tested, exact no-start/start effects |
+| Barcode during OCR/capture; second shutter | reducer-tested |
+| Inactive lookup result; active/inactive Scan again | reducer-tested |
+| OCR failure clears barcode manual destination | reducer-tested; nil destination routes to label/manual entry |
+| Terminal dismissal, repeated dismissal, late content/events | reducer-tested |
+| Invalid quantity; validation logFinished; torch toggle gating | reducer-tested; helper/device behavior device-only |
+| Library label import; repeated same-image pick; cancel | simulator-verified |
+| Review without auto-log; Back; Retake; swipe dismissal/reopen | simulator-verified; live scanning device-only |
+| Background immediately after image selection | simulator-verified smoke (no stuck state); exact overlap with loading not observable |
+| Unknown QR → recovery / lookup dismissal | not verified: QR is unsupported; imports reach incomplete label review instead. Supplemental EAN fixture also reached incomplete label review, not lookup. |
+| Add Food barcode/label buttons and dashboard Camera | simulator-verified; dashboard Add Food opens its selector as designed |
+| Largest accessibility text | simulator-verified: result Review/Retake reachable by scrolling; dashboard pills truncate (FAIL); preview fallback copy clips |
+| Live scanner readiness/order, torch/preview stability | reducer-tested effect order; hardware behavior device-only |
+
+Round-4 validation: format/build pass, focused FoodCameraFlowTests 22/22 pass, whitespace check passes. Initial red test run executed 21 tests with five failed assertions in four new cases; the torch API test was added to the test-first commit before implementing its new event/effect. Red xcodebuild teardown stalled after results and was terminated; final green xcodebuild exited successfully. Simulator `MACROS-CAMERA4-2026-10-26` (`E649001E-90B8-4D08-B83E-477D752EB81A`, iPhone 17 Pro/iOS 27.0) was created within the two-booted-device limit; no other simulator was touched. Evidence/commands: ignored `build/unified-camera-qa-2026-10-26/QA.md`, round-4 section and `r4/`.
 
 - Live barcode recognition and repeated scan behavior.
 - Torch availability/behavior and preview stability when it is turned on (watch for preview freeze).
