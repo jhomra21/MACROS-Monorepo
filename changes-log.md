@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 TestFlight Build 8
+
+- Archived merged `main` commit `6d6ce5054eabbe845a739e0fe5f9f1e2b1d6ae3d` as version 1.0; Xcode advanced the duplicate build 7 to build 8 and App Store Connect accepted the upload for processing.
+- Formatting, build, StoreKit configuration, and 60 targeted tests passed; simulator camera, seeded Insights, and purchase UI checks remain unverified. Evidence: `build/build8-preflight-2026-10-26/QA.md`.
+
 ## 2026-10-26 Unified Food Camera
 
 - Replaced the dashboard's single Add Food action with equal Camera and Add Food pills (icon-only while scrolling and at accessibility text sizes) and routed the barcode and label entry points through one full-height camera sheet: live barcode recognition with a product panel, servings stepper, Log, and Details; shutter or photo-library capture into label OCR that always lands in review; still-camera and library-only fallbacks; a guarded torch toggle. Removed the separate barcode and label screens.
