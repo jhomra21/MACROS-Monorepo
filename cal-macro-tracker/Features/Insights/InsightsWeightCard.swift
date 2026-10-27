@@ -15,10 +15,16 @@ struct InsightsWeightCard: View {
         self.range = range
         self.today = today
         self._isPresentingPro = isPresentingPro
-        let start =
+        let rangeStart =
             range == .allTime
             ? Date.distantPast
             : (range.days(endingOn: today).first?.startDate ?? today.startDate)
+        let start: Date
+        if range == .allTime {
+            start = rangeStart
+        } else {
+            start = today.resolvedCalendar.date(byAdding: .day, value: -7, to: rangeStart) ?? rangeStart
+        }
         let end = today.dayInterval.end
         let predicate = #Predicate<WeightEntry> { entry in
             entry.recordedAt >= start && entry.recordedAt < end
@@ -36,13 +42,16 @@ struct InsightsWeightCard: View {
     }
 
     private var points: [WeightAnalyticsPoint] {
-        allPoints
+        guard range != .allTime,
+              let rangeStart = range.days(endingOn: today).first?.startDate else {
+            return allPoints
+        }
+        return allPoints.filter { $0.recordedAt >= rangeStart && $0.recordedAt < today.dayInterval.end }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if let latest = WeightAnalytics.latest(from: allPoints) {
-                let latestInRange = WeightAnalytics.latest(from: points)
+            if let latest = WeightAnalytics.latest(from: points) {
                 HStack {
                     Text("Weight").font(.headline)
                     Spacer()
@@ -53,10 +62,10 @@ struct InsightsWeightCard: View {
                     Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                } else if let latestInRange {
+                } else {
                     if let comparison = WeightAnalytics.comparisonFromSevenDaysAgo(
                         in: allPoints,
-                        endingOn: latestInRange.day
+                        endingOn: latest.day
                     ) {
                         let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
                         Text(
