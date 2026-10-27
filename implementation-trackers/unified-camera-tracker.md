@@ -34,6 +34,8 @@
 | Unsupported/unavailable camera | Use still-image camera picker when available; otherwise keep library picker accessible. |
 | Barcode not found in product database | Reuse resolver error text (including WS7 throttling/Retry-After copy); offer retry, remote search if available, and label photo. |
 | OCR parse failure | Show failure state with Retake and manual entry; never auto-log OCR. |
+| Save failure in camera review | Keep the current unlogged result, including edited label name and servings, and show an alert so Log can be retried. |
+| Long camera review result | Keep the result panel scrollable at regular and accessibility sizes, bounded to 440 points. |
 
 ## Progress
 

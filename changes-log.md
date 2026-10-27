@@ -14,7 +14,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-27 Camera Inline Results
 
 - Replaced the idle camera spinner with a viewfinder hint and made parsed label results editable and loggable in the camera panel, with the existing editor available only through Edit details. Barcode results remain in place.
-- Added exact reducer coverage for label servings and save transitions. Format/build passed; simulator tests and E2E remain pending because two unrelated simulators were already booted.
+- Save failures preserve the editable review and surface a retryable alert; expanded results scroll within a bounded camera panel. Validation: FoodCameraFlowTests 25/25 and BarcodeImageScannerTests 3/3 passed; E2E partially passed (onboarding, dashboard, idle hint), photo-picker scenarios not verified because the device automation daemon was unavailable. Evidence: `build/camera-inline-2026-10-27/QA.md`.
 
 ## 2026-10-27 Dashboard Dynamic Type Legend
 
