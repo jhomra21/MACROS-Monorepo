@@ -227,8 +227,9 @@ struct MacroLegendView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
+        let isStacked = dynamicTypeSize.isAccessibilitySize
         let layout =
-            dynamicTypeSize.isAccessibilitySize
+            isStacked
             ? AnyLayout(VStackLayout(spacing: 0))
             : AnyLayout(HStackLayout(spacing: 24))
 
@@ -241,6 +242,7 @@ struct MacroLegendView: View {
                     selectedMacro: $selectedMacro,
                     color: palette?.color(for: metric),
                     canCustomizeColors: canCustomizeColors,
+                    verticalPadding: isStacked ? 8 : 16,
                     onChangeColor: onChangeColor
                 )
             }
@@ -255,6 +257,7 @@ private struct MacroLegendColumn: View {
     @Binding var selectedMacro: MacroMetric?
     let color: Color?
     let canCustomizeColors: Bool
+    let verticalPadding: CGFloat
     let onChangeColor: (MacroMetric) -> Void
 
     @ViewBuilder
@@ -267,7 +270,7 @@ private struct MacroLegendColumn: View {
             style: .dashboardCard,
             accentColor: color
         )
-        .padding(.vertical, 16)
+        .padding(.vertical, verticalPadding)
         .frame(maxWidth: .infinity)
         .opacity(selectedMacro == nil || selectedMacro == metric ? 1 : 0.48)
         .contentShape(Rectangle())
