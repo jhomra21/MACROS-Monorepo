@@ -8,11 +8,14 @@ enum BarcodeScanConfiguration {
 
 enum BarcodeImageScannerError: LocalizedError {
     case noBarcodeFound
+    case detectionUnavailable(underlying: Error)
 
     var errorDescription: String? {
         switch self {
         case .noBarcodeFound:
             "No barcode was found in that image."
+        case let .detectionUnavailable(underlying):
+            "Barcode detection is unavailable: \(underlying.localizedDescription)"
         }
     }
 }
@@ -32,7 +35,7 @@ nonisolated private func scanBarcodeImageSync(from image: UIImage) throws -> Str
     request.symbologies = BarcodeScanConfiguration.packagedFoodSymbologies
 
     let handler = VNImageRequestHandler(cgImage: visionImage.cgImage, orientation: visionImage.orientation)
-    try handler.perform([request])
+    try performBarcodeDetection(request, with: handler)
 
     guard
         let barcode = request.results?
@@ -43,5 +46,17 @@ nonisolated private func scanBarcodeImageSync(from image: UIImage) throws -> Str
     }
 
     return barcode
+}
+
+nonisolated func performBarcodeDetection(
+    _ request: VNDetectBarcodesRequest,
+    with handler: VNImageRequestHandler,
+    perform: (VNImageRequestHandler, [VNRequest]) throws -> Void = { try $0.perform($1) }
+) throws {
+    do {
+        try perform(handler, [request])
+    } catch {
+        throw BarcodeImageScannerError.detectionUnavailable(underlying: error)
+    }
 }
 #endif
