@@ -72,7 +72,7 @@ struct HealthSettingsSection: View {
             )
         )
         .sheet(item: $paywallContext) { context in
-            ProPaywallSheet(context: context).presentationDetents([.medium, .large])
+            ProPaywallSheet(context: context)
         }
     }
 }

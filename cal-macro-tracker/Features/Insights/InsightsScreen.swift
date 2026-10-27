@@ -44,7 +44,6 @@ struct InsightsScreen: View {
         .inlineNavigationTitle()
         .sheet(isPresented: $isPresentingPro) {
             ProPaywallSheet(context: .insights)
-                .presentationDetents([.medium, .large])
         }
     }
 }

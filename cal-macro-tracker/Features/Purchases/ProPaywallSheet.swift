@@ -112,7 +112,7 @@ struct ProPaywallSheet: View {
             .task { await store.loadProducts() }
             .offerCodeRedemption(isPresented: $isRedeeming)
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear { isProPaywallPresented = true }
         .onDisappear { isProPaywallPresented = false }

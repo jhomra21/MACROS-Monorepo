@@ -82,7 +82,6 @@ struct InsightsWeightCard: View {
         .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
         .sheet(isPresented: $isPresentingPro) {
             ProPaywallSheet(context: .weightTrends)
-                .presentationDetents([.medium, .large])
         }
     }
 

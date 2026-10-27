@@ -81,7 +81,6 @@ struct SettingsScreen: View {
         }
         .sheet(item: $paywallContext) { context in
             ProPaywallSheet(context: context)
-                .presentationDetents([.medium, .large])
         }
     }
 
