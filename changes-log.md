@@ -15,6 +15,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Added a matched zoom transition from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera sheet, preserving the existing sheet dismissal behavior. Simulator QA verified open/close and swipe-down dismissal from the dashboard Camera pill and verified the Add Food Barcode/Label sheet entry points; simulator camera access was unavailable, so the fallback screen was shown. Evidence and caveats: `build/camera-zoom-2026-10-27/QA.md`.
 
+## 2026-10-27 Dashboard Dynamic Type Legend
+
+- Replaced the fixed-height macro legend with a horizontal default-size layout and stacked accessibility-size layout so the legend can grow without overlapping dashboard content. Simulator check on the dedicated iPhone 17 Pro: default and XXXL pass with horizontal columns and no Today-header overlap; AX5 shows one macro per row and icon-only bottom pills, with no overlap against the Today navigation title. The simulator could not be scrolled to frame the full legend, streak line, and Today / items header together, so that combined view remains unverified. Evidence: `build/legend-ax-2026-10-27/QA.md`.
+
 ## 2026-10-27 Simulator Barcode Detection
 
 - Confirmed the simulator's oldest supported Vision revision decodes the EAN-13 fixture; device behavior is unchanged and all still-image barcode errors continue to label OCR.
