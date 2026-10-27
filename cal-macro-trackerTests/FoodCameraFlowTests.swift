@@ -16,7 +16,7 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertEqual(flow.phase, .library)
         XCTAssertEqual(flow.reduce(.imagePicked), [.scanImage])
         XCTAssertEqual(flow.phase, .readingLabel)
-        XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.reduce(.navigationAway), [.stopScanning, .cancelWork, .torchOff])
         XCTAssertEqual(flow.phase, .readingLabel)
         XCTAssertEqual(flow.reduce(.barcodeFromImage("123")), [.stopScanning, .lookup(barcode: "123")])
         XCTAssertEqual(flow.phase, .lookingUp)
@@ -100,10 +100,30 @@ final class FoodCameraFlowTests: XCTestCase {
 
     func testNavigationAwayAndBackPreservesResultPhase() {
         var flow = barcodeResultFlow()
-        XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(flow.reduce(.navigationAway), [.stopScanning, .cancelWork, .torchOff])
         XCTAssertEqual(flow.phase, .showingBarcode)
         XCTAssertEqual(flow.reduce(.sceneActive), [])
         XCTAssertEqual(flow.phase, .showingBarcode)
+    }
+
+    func testScannerAndImageImportFailuresEnterRecovery() {
+        var scanner = FoodCameraFlow()
+        XCTAssertEqual(scanner.reduce(.scannerFailed), [.stopScanning, .torchOff])
+        XCTAssertEqual(scanner.phase, .recovering)
+
+        var imageImport = FoodCameraFlow()
+        XCTAssertEqual(imageImport.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(imageImport.phase, .library)
+        XCTAssertEqual(imageImport.reduce(.importFailed), [.torchOff])
+        XCTAssertEqual(imageImport.phase, .recovering)
+
+        var capture = FoodCameraFlow()
+        XCTAssertEqual(capture.reduce(.shutterTapped), [.capturePhoto])
+        XCTAssertEqual(capture.phase, .capturing)
+        XCTAssertEqual(capture.reduce(.sceneInactive), [.stopScanning, .torchOff])
+        XCTAssertEqual(capture.phase, .capturing)
+        XCTAssertEqual(capture.reduce(.captureFailed), [])
+        XCTAssertEqual(capture.phase, .recovering)
     }
 
     func testSavingAndQuantityTransitionsHaveExactEffects() {
