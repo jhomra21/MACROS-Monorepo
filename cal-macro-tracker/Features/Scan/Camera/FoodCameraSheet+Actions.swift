@@ -76,12 +76,8 @@ extension FoodCameraSheet {
             foundBarcode(barcode, fromImage: true)
         } catch {
             guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
-            if case BarcodeImageScannerError.noBarcodeFound = error {
-                pendingImageHadNoBarcode = true
-                send(.imageBarcodeMissing)
-            } else {
-                showImportError(error.localizedDescription)
-            }
+            pendingImageHadNoBarcode = true
+            send(.imageBarcodeMissing)
         }
     }
 

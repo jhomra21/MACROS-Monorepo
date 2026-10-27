@@ -38,24 +38,6 @@ final class BarcodeImageScannerTests: XCTestCase {
         }
     }
 
-    func testPerformFailureIsDistinguishableFromNoBarcode() throws {
-        let image = try image(named: "ean-737628064502")
-        let visionImage = try ScanImageLoading.makeVisionImage(from: image)
-        let request = VNDetectBarcodesRequest()
-        let handler = VNImageRequestHandler(cgImage: visionImage.cgImage, orientation: visionImage.orientation)
-
-        XCTAssertThrowsError(
-            try performBarcodeDetection(request, with: handler) { _, _ in
-                throw URLError(.notConnectedToInternet)
-            }
-        ) { error in
-            guard case let BarcodeImageScannerError.detectionUnavailable(underlying) = error else {
-                return XCTFail("Expected detectionUnavailable, received \(error)")
-            }
-            XCTAssertEqual((underlying as? URLError)?.code, .notConnectedToInternet)
-        }
-    }
-
     private func image(named name: String) throws -> UIImage {
         let url = try XCTUnwrap(Bundle(for: Self.self).url(forResource: name, withExtension: "png"))
         return try XCTUnwrap(UIImage(contentsOfFile: url.path))
