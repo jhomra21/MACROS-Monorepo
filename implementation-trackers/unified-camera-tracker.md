@@ -46,6 +46,7 @@
 - [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
 - [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
 - [ ] Complete simulator E2E and record evidence; initial isolated simulator checks and screenshots are complete, but picker/product-result scenarios remain pending.
+- [x] Preserve branch history by merging `origin/main` into `56f7e95` instead of rebasing, per owner override.
 
 ## Implementation notes
 
@@ -56,7 +57,7 @@
 - The sheet stores one task for capture/photo loading, barcode lookup, and OCR; cancellation is not presented as a recovery error. Barcode serving state is shared by the panel, log action, and Details initial quantity.
 - The torch resolves `AVCaptureDevice.userPreferredCamera` only when it is a back camera, otherwise tries a back-position `DiscoverySession` in triple, dual-wide, dual, and wide-angle order. It checks `hasTorch`/`isTorchAvailable`, locks configuration, and turns off when scanning stops. Device-only verification is required: watch for the preview freezing when the independently resolved device torch turns on.
 - `MACROS-CAMERA2-2026-10-26` (iPhone 17 Pro, iOS 27.0) was created, shut down, and deleted; a second same-named simulator was later created for the focused test, then shut down by xcodebuild and deleted. The other pre-existing simulator was left untouched. Live scanning and torch remain device-only. A no-result QR and nutrition label fixture were generated under ignored `build/unified-camera-qa-2026-10-26/fixtures/` and added to Photos. The simulator launched the app and verified the default-size dashboard pills. Picker/product-result scenarios could not be completed; exact status and screenshot paths are in the matching QA.md.
-- Validation passed: `make quality-format-check`, `make quality-build`, `git diff --check origin/main...HEAD`, and the 10-case `FoodCameraFlowTests`.
+- Validation passed after the merge: `make quality-format-check`, `make quality-build`, and `git diff --check origin/main...HEAD`. The 10-case `FoodCameraFlowTests` passed on the same implementation before history restoration; they were not rerun after merging because both simulator slots were booted and neither belonged to this task.
 
 ## Device-only TestFlight checks
 
