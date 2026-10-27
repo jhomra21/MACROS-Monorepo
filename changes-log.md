@@ -16,6 +16,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added 90D, 1Y, and All Pro ranges with day-accurate summaries, no All-time comparison, weekly/monthly average charts, and an accessibility-friendly native menu picker.
 - Validation: format/build and InsightsAnalyticsTests (16/16) passed; simulator QA verified seeded history, All/90D/1Y and free locked-range behavior, with visual evidence in `build/insights-qa-2026-10-26/`.
 
+## 2026-10-26 Insights Review Fixes
+
+- Omitted unlogged days from daily chart points while retaining day-accurate summaries; corrected the All-range six-calendar-month threshold; extended the bounded weight query by seven days for comparison while keeping trend points in range.
+- Added five analytics coverage tests and split chart bucketing, chart views, and shared chart components into focused files. Format, simulator build, and InsightsAnalyticsTests (21/21) passed. Review-specific seeded UI checks were not rerun.
+
 ## 2026-10-26 JavaScript and TypeScript Dependency Updates
 
 - Updated package manifests and Bun lockfiles across the workers, Astro site, Convex backend, runtime QA, food database, and Oxlint tooling; detailed version changes and migration notes are in [`implementation-trackers/dependency-update-tracker.md`](implementation-trackers/dependency-update-tracker.md).
@@ -25,11 +30,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Opened the Pro paywall at the large detent only and added transition-only success feedback, entitlement details, unlocked benefits, and context-aware dismissal.
 - Validation: formatting, app build, and simulator StoreKit purchase QA passed; screenshots and per-check results are in `build/paywall-success-qa-2026-10-26/QA.md`.
-
-## 2026-10-26 Insights Review Fixes
-
-- Omitted unlogged days from daily chart points while retaining day-accurate summaries; corrected the All-range six-calendar-month threshold; extended the bounded weight query by seven days for comparison while keeping trend points in range.
-- Added five analytics coverage tests and split chart bucketing, chart views, and shared chart components into focused files. Format, simulator build, and InsightsAnalyticsTests (21/21) passed. Review-specific seeded UI checks were not rerun.
 
 ## 2026-10-26 StoreKit Test Failure Investigation
 
