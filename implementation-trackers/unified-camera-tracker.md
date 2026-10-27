@@ -42,21 +42,26 @@
 - [x] Implement unified camera and reuse existing logging/recovery flows.
 - [x] Route entry points and remove obsolete scan UI.
 - [x] Format and build.
-- [ ] Simulator E2E and record full evidence; paused because the two allowed simulator slots are occupied.
+- [x] Extract a pure, synchronous camera-flow reducer and add transition failure-mode tests before implementation.
+- [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
+- [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
+- [ ] Complete simulator E2E and record evidence; initial isolated simulator checks and screenshots are complete, but picker/product-result scenarios remain pending.
 
 ## Implementation notes
 
 - The single Add Food dashboard button is now the existing dual-action bar with equal Camera and Add Food actions. Both respect the current compact icon display and selected day.
 - The shared large-sheet `FoodCameraSheet` embeds a live `DataScannerViewController`; still photos from capture or Photos picker are barcode-scanned first, then passed to the existing label OCR/parser. It uses existing lookup/cache, fallback-draft, logging action, repository, editor, and haptic paths.
 - Removed the separate Barcode/Label screens and option-list UI after rerouting all entry points. Shared resolver, barcode image scanner, camera picker, parser and fallback draft logic remain.
-- The Apple docs confirm the async high-resolution `capturePhoto()` API. The `AVCaptureDevice` torch API requires exclusive configuration locking, but the documentation does not establish that a separately discovered device is the same active capture device used by VisionKit. As requested, no torch button is shipped until its behavior can be confirmed on hardware.
-- On `MACROS-CAMERA-2026-10-26` (iPhone 17 Pro, iOS 27.0), onboarding completed and the dashboard showed both equal, labeled pills. Tapping Camera launches the simulator's still-camera picker because live scanning is unavailable in this simulator. The two-slot simulator limit was then reached by another child's device, so library/result, compact-bar, permission-state, and large-text E2E remain pending. Screenshots and detailed QA state are in `build/unified-camera-qa-2026-10-26/QA.md`.
-- Validation passed: `make quality-format-check`, `make quality-build`, `make quality-dead`, and `git diff --check`. Periphery reported existing unrelated unused-symbol warnings; it did not flag the removed scanner screens or camera files. Simulator E2E remains outstanding.
+- `FoodCameraFlow` owns synchronous, sendable state transitions. Its tests cover duplicate barcode delivery, scanning exclusion while processing, shutter re-entry, Photos picker resume rules, lifecycle stop/resume, dismissal cancellation, stale recovery metadata, save gating, and quantity flow.
+- The sheet stores one task for capture/photo loading, barcode lookup, and OCR; cancellation is not presented as a recovery error. Barcode serving state is shared by the panel, log action, and Details initial quantity.
+- The torch resolves `AVCaptureDevice.userPreferredCamera` only when it is a back camera, otherwise tries a back-position `DiscoverySession` in triple, dual-wide, dual, and wide-angle order. It checks `hasTorch`/`isTorchAvailable`, locks configuration, and turns off when scanning stops. Device-only verification is required: watch for the preview freezing when the independently resolved device torch turns on.
+- `MACROS-CAMERA2-2026-10-26` (iPhone 17 Pro, iOS 27.0) was created and later shut down/deleted; the other pre-existing simulator remained booted and untouched. Live scanning and torch remain device-only. A no-result QR and nutrition label fixture were generated under ignored `build/unified-camera-qa-2026-10-26/fixtures/` and added to Photos. The simulator launched the app and verified the default-size dashboard pills. Picker/product-result scenarios could not be completed; exact status and screenshot paths are in the matching QA.md.
+- Validation passed: `make quality-format-check`, `make quality-build`, `git diff --check origin/main...HEAD`, and the 10-case `FoodCameraFlowTests`.
 
 ## Device-only TestFlight checks
 
 - Live barcode recognition and repeated scan behavior.
-- Torch availability/behavior if an implementation is retained.
+- Torch availability/behavior and preview stability when it is turned on (watch for preview freeze).
 - Shutter capture quality with a nutrition label.
 - Label OCR accuracy on a real package and correction in `LogFoodScreen`.
 - WS7 HTTP 429 recovery and `Retry-After` messaging.
