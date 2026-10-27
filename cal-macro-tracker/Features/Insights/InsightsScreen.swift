@@ -6,14 +6,22 @@ struct InsightsScreen: View {
     @Environment(AppDayContext.self) private var dayContext
 
     @State private var isPresentingPro = false
+    @State private var isPresentingWeightTrendsPro = false
 
     var body: some View {
         PaidFeatureGate(.nutritionInsights) {
-            InsightsUnlockedContent(today: dayContext.today)
+            InsightsUnlockedContent(
+                today: dayContext.today,
+                isPresentingWeightTrendsPro: $isPresentingWeightTrendsPro
+            )
         } locked: {
             ScrollView {
                 VStack(spacing: 0) {
-                    InsightsWeightCard(range: .sevenDays, today: dayContext.today)
+                    InsightsWeightCard(
+                        range: .sevenDays,
+                        today: dayContext.today,
+                        isPresentingPro: $isPresentingWeightTrendsPro
+                    )
                     HStack(spacing: 4) {
                         ForEach(InsightsRange.allCases) { range in
                             Button {
@@ -45,11 +53,15 @@ struct InsightsScreen: View {
         .sheet(isPresented: $isPresentingPro) {
             ProPaywallSheet(context: .insights)
         }
+        .sheet(isPresented: $isPresentingWeightTrendsPro) {
+            ProPaywallSheet(context: .weightTrends)
+        }
     }
 }
 
 private struct InsightsUnlockedContent: View {
     let today: CalendarDay
+    @Binding var isPresentingWeightTrendsPro: Bool
 
     @State private var selectedRange = InsightsRange.thirtyDays
 
@@ -61,7 +73,11 @@ private struct InsightsUnlockedContent: View {
                     .padding(.top, 12)
                     .padding(.bottom, 8)
 
-                InsightsWeightCard(range: selectedRange, today: today)
+                InsightsWeightCard(
+                    range: selectedRange,
+                    today: today,
+                    isPresentingPro: $isPresentingWeightTrendsPro
+                )
                 InsightsRangeQueryContent(range: selectedRange, today: today)
             }
         }

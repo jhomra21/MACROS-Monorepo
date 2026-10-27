@@ -6,10 +6,10 @@ struct InsightsWeightCard: View {
     @Query(sort: \WeightEntry.recordedAt) private var entries: [WeightEntry]
     @Query private var profiles: [BodyProfile]
     @Environment(AppEntitlements.self) private var entitlements
-    @State private var isPresentingPro = false
 
     let range: InsightsRange
     let today: CalendarDay
+    @Binding var isPresentingPro: Bool
 
     private var allPoints: [WeightAnalyticsPoint] {
         entries.map { WeightAnalyticsPoint(day: $0.recordedAt, recordedAt: $0.recordedAt, weightKg: $0.weightKg) }
@@ -80,9 +80,6 @@ struct InsightsWeightCard: View {
         }
         .padding()
         .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
-        .sheet(isPresented: $isPresentingPro) {
-            ProPaywallSheet(context: .weightTrends)
-        }
     }
 
     private var isMetric: Bool {
