@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-27 Camera Zoom Transition
+
+- Added a matched zoom transition from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera sheet, preserving the existing sheet dismissal behavior. Formatting and build passed; simulator visual QA is pending because two unrelated simulators were already booted. Evidence status: `build/camera-zoom-2026-10-27/QA.md`.
+
 ## 2026-10-26 TestFlight Build 8
 
 - Archived merged `main` commit `6d6ce5054eabbe845a739e0fe5f9f1e2b1d6ae3d` as version 1.0; Xcode advanced the duplicate build 7 to build 8 and App Store Connect accepted the upload for processing.

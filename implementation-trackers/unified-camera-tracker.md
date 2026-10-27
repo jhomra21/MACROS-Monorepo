@@ -36,6 +36,7 @@
 
 ## Progress
 
+- [ ] Verify dashboard and Add Food matched camera-sheet zoom/dismiss transitions in simulator; pending because two unrelated simulators were already booted. Status: `build/camera-zoom-2026-10-27/QA.md`.
 - [x] Read repository and Swift guidance.
 - [x] Verify Apple camera and torch API contracts.
 - [x] Implement dashboard bar split.
