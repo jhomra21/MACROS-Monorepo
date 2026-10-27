@@ -1,11 +1,35 @@
 import Foundation
 
-enum InsightsRange: Int, CaseIterable, Identifiable {
-    case sevenDays = 7
-    case fourteenDays = 14
-    case thirtyDays = 30
+extension CalendarDay: Comparable {
+    static func < (lhs: CalendarDay, rhs: CalendarDay) -> Bool {
+        lhs.startDate < rhs.startDate
+    }
 
-    var id: Int { rawValue }
+    static func dateDistance(from start: CalendarDay, through end: CalendarDay) -> Int {
+        start.resolvedCalendar.dateComponents([.day], from: start.startDate, to: end.startDate).day ?? 0
+    }
+}
+
+enum InsightsRange: CaseIterable, Identifiable {
+    case sevenDays
+    case fourteenDays
+    case thirtyDays
+    case ninetyDays
+    case oneYear
+    case allTime
+
+    var id: Self { self }
+
+    var dayCount: Int? {
+        switch self {
+        case .sevenDays: 7
+        case .fourteenDays: 14
+        case .thirtyDays: 30
+        case .ninetyDays: 90
+        case .oneYear: 365
+        case .allTime: nil
+        }
+    }
 
     var title: String {
         switch self {
@@ -15,19 +39,56 @@ enum InsightsRange: Int, CaseIterable, Identifiable {
             "14D"
         case .thirtyDays:
             "30D"
+        case .ninetyDays:
+            "90D"
+        case .oneYear:
+            "1Y"
+        case .allTime:
+            "All"
         }
     }
 
-    func days(endingOn endDay: CalendarDay) -> [CalendarDay] {
-        (0..<rawValue).compactMap { offset in
-            endDay.advanced(byDays: offset - rawValue + 1)
+    func days(endingOn endDay: CalendarDay, startingAt earliestDay: CalendarDay? = nil) -> [CalendarDay] {
+        guard let dayCount else {
+            guard let earliestDay, earliestDay <= endDay else { return [] }
+            return calendarDays(from: earliestDay, through: endDay)
+        }
+
+        return (0..<dayCount).compactMap { offset in
+            endDay.advanced(byDays: offset - dayCount + 1)
         }
     }
 
     func previousDays(endingBefore endDay: CalendarDay) -> [CalendarDay] {
-        guard let previousEndDay = endDay.advanced(byDays: -rawValue) else { return [] }
+        guard let dayCount, let previousEndDay = endDay.advanced(byDays: -dayCount) else { return [] }
         return days(endingOn: previousEndDay)
     }
+
+    private func calendarDays(from startDay: CalendarDay, through endDay: CalendarDay) -> [CalendarDay] {
+        var days: [CalendarDay] = []
+        var day = startDay
+        while day <= endDay {
+            days.append(day)
+            guard let nextDay = day.advanced(byDays: 1) else { break }
+            day = nextDay
+        }
+        return days
+    }
+}
+
+enum InsightsChartBucket: Equatable {
+    case daily
+    case weekly
+    case monthly
+}
+
+struct InsightsChartPoint: Identifiable {
+    let day: CalendarDay
+    let totals: NutritionSnapshot
+    let secondaryTotals: SecondaryNutritionSnapshot
+    let loggedDayCount: Int
+
+    var id: CalendarDay { day }
 }
 
 enum InsightsChartStyle: String, CaseIterable, Identifiable {
@@ -236,6 +297,11 @@ enum InsightsAnalytics {
 
     private static func loggedDayCount(in points: [InsightsDayPoint]) -> Int {
         points.filter(\.isLogged).count
+    }
+
+    static func average(_ values: [Double]) -> Double? {
+        guard !values.isEmpty else { return nil }
+        return values.reduce(0, +) / Double(values.count)
     }
 
     private static func averageLoggedValue(

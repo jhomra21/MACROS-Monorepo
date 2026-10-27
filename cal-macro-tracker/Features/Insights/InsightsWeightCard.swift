@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 struct InsightsWeightCard: View {
-    @Query(sort: \WeightEntry.recordedAt) private var entries: [WeightEntry]
+    @Query private var entries: [WeightEntry]
     @Query private var profiles: [BodyProfile]
     @Environment(AppEntitlements.self) private var entitlements
 
@@ -11,21 +11,48 @@ struct InsightsWeightCard: View {
     let today: CalendarDay
     @Binding var isPresentingPro: Bool
 
+    init(range: InsightsRange, today: CalendarDay, isPresentingPro: Binding<Bool>) {
+        self.range = range
+        self.today = today
+        self._isPresentingPro = isPresentingPro
+        let rangeStart =
+            range == .allTime
+            ? Date.distantPast
+            : (range.days(endingOn: today).first?.startDate ?? today.startDate)
+        let start: Date
+        if range == .allTime {
+            start = rangeStart
+        } else {
+            start = today.resolvedCalendar.date(byAdding: .day, value: -7, to: rangeStart) ?? rangeStart
+        }
+        let end = today.dayInterval.end
+        let predicate = #Predicate<WeightEntry> { entry in
+            entry.recordedAt >= start && entry.recordedAt < end
+        }
+        _entries = Query(
+            FetchDescriptor(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\WeightEntry.recordedAt)]
+            )
+        )
+    }
+
     private var allPoints: [WeightAnalyticsPoint] {
         entries.map { WeightAnalyticsPoint(day: $0.recordedAt, recordedAt: $0.recordedAt, weightKg: $0.weightKg) }
     }
 
     private var points: [WeightAnalyticsPoint] {
-        guard let firstDay = range.days(endingOn: today).first else { return [] }
-        let rangeStart = firstDay.startDate
-        let rangeEnd = today.dayInterval.end
-        return allPoints.filter { $0.recordedAt >= rangeStart && $0.recordedAt < rangeEnd }
+        guard range != .allTime,
+            let rangeStart = range.days(endingOn: today).first?.startDate
+        else {
+            return allPoints
+        }
+        return allPoints.filter { $0.recordedAt >= rangeStart && $0.recordedAt < today.dayInterval.end }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if let latest = WeightAnalytics.latest(from: allPoints) {
-                let latestInRange = WeightAnalytics.latest(from: points)
+            if let latest = WeightAnalytics.latest(from: points) {
                 HStack {
                     Text("Weight").font(.headline)
                     Spacer()
@@ -36,10 +63,10 @@ struct InsightsWeightCard: View {
                     Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                } else if let latestInRange {
+                } else {
                     if let comparison = WeightAnalytics.comparisonFromSevenDaysAgo(
                         in: allPoints,
-                        endingOn: latestInRange.day
+                        endingOn: latest.day
                     ) {
                         let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
                         Text(
@@ -74,9 +101,12 @@ struct InsightsWeightCard: View {
                     }
                 }
             } else {
-                Text("No entries yet").foregroundStyle(.secondary)
+                Text(range == .allTime ? "No entries yet" : "No weight logged in this range")
+                    .foregroundStyle(.secondary)
             }
-            NavigationLink(entries.isEmpty ? "Log your first weight" : "View weight log") { WeightScreen() }
+            NavigationLink(entries.isEmpty && range == .allTime ? "Log your first weight" : "View weight log") {
+                WeightScreen()
+            }
         }
         .padding()
         .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
