@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 Simulator Barcode Detection
+
+- Confirmed Vision revisions 3 (default) and 2 fail on the iOS simulator with `Could not create inference context`; simulator-only revision 1 decodes the EAN-13 fixture. Device behavior is unchanged, and scanner failures now surface as import errors instead of falling through to OCR.
+- Validation: scanner tests and 21 camera-flow tests pass. Simulator recovery and dismissal checks are recorded in `build/sim-barcode-2026-10-26/QA.md`; product lookup returned no product, so serving/log-total evidence remains blocked.
+
 ## 2026-10-26 TestFlight Build 8
 
 - Archived merged `main` commit `6d6ce5054eabbe845a739e0fe5f9f1e2b1d6ae3d` as version 1.0; Xcode advanced the duplicate build 7 to build 8 and App Store Connect accepted the upload for processing.
