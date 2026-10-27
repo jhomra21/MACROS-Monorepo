@@ -25,7 +25,7 @@ struct FoodCameraTorch {
     }
 
     mutating func set(on: Bool) {
-        guard isAvailable, let device else { return }
+        guard let device, device.hasTorch, on == false || device.isTorchAvailable else { return }
         do {
             try device.lockForConfiguration()
             defer { device.unlockForConfiguration() }
