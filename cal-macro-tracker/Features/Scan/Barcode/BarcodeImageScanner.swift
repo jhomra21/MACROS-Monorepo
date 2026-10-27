@@ -32,6 +32,10 @@ struct BarcodeImageScanner {
 nonisolated private func scanBarcodeImageSync(from image: UIImage) throws -> String {
     let visionImage = try ScanImageLoading.makeVisionImage(from: image)
     let request = VNDetectBarcodesRequest()
+    #if targetEnvironment(simulator)
+    // Revision 3 and 2 cannot create inference contexts in the iOS simulator.
+    request.revision = VNDetectBarcodesRequestRevision1
+    #endif
     request.symbologies = BarcodeScanConfiguration.packagedFoodSymbologies
 
     let handler = VNImageRequestHandler(cgImage: visionImage.cgImage, orientation: visionImage.orientation)
