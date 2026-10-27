@@ -11,10 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
-## 2026-10-26 Simulator Barcode Detection
+## 2026-10-27 Simulator Barcode Detection
 
-- Confirmed Vision revisions 3 (default) and 2 fail on the iOS simulator with `Could not create inference context`; simulator-only revision 1 decodes the EAN-13 fixture. Device behavior is unchanged, and scanner failures now surface as import errors instead of falling through to OCR.
-- Validation: scanner tests and 21 camera-flow tests pass. Simulator recovery and dismissal checks are recorded in `build/sim-barcode-2026-10-26/QA.md`; product lookup returned no product, so serving/log-total evidence remains blocked.
+- Confirmed the simulator's oldest supported Vision revision decodes the EAN-13 fixture; device behavior is unchanged and all still-image barcode errors continue to label OCR.
+- Simulator E2E: EAN `0737628064502` resolved to Thai peanut noodle kit includes stir-fry rice noodles & thai peanut seasoning (Simply Asia / Thai Kitchen), `0.333 PACKAGE (52 g)`, 200 kcal, 5 g protein, 4 g fat, 37 g carbs. At 2 servings it logged 400 kcal, 10 g protein, 8 g fat, 74 g carbs. The all-zero fixture showed the unknown-product recovery actions; dismissing after selecting the real EAN returned to the same one-item dashboard without a crash. The earlier “no product” result came from selecting the all-zero fixture. Screenshots and exact checks: `build/sim-barcode-e2e-2026-10-27/QA.md`.
+- Validation: `make quality-format-check`, `make quality-build`, `git diff --check`, BarcodeImageScannerTests (3/3), and FoodCameraFlowTests (21/21) passed.
 
 ## 2026-10-26 TestFlight Build 8
 
