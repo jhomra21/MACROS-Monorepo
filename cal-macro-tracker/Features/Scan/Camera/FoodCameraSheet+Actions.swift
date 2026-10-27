@@ -12,7 +12,7 @@ extension FoodCameraSheet {
 
     func foundBarcode(_ barcode: String, fromImage: Bool = false) {
         let event: FoodCameraFlow.Event = fromImage ? .barcodeFromImage(barcode) : .barcodeRecognized(barcode)
-        guard flow.reduce(event).contains(.lookup(barcode: barcode)) else { return }
+        guard send(event).contains(.lookup(barcode: barcode)) else { return }
         torch.set(on: false)
         torchIsOn = false
         busy = true
@@ -29,7 +29,7 @@ extension FoodCameraSheet {
                     draft = try await resolver.resolveRemoteDraft(barcode: barcode)
                 }
                 try Task.checkCancellation()
-                _ = flow.reduce(.lookupFinished)
+                send(.lookupFinished)
                 busy = false
                 result = .barcode(draft, servings: flow.servings, logged: false)
             } catch {
@@ -38,7 +38,7 @@ extension FoodCameraSheet {
                     error: error,
                     destination: BarcodeManualFallbackFactory.destination(for: barcode)
                 )
-                _ = flow.reduce(.lookupFailed(barcode))
+                send(.lookupFailed(barcode))
                 recoveryDestination = recovery.destination
                 busy = false
                 result = .error(recovery.message)
@@ -63,7 +63,7 @@ extension FoodCameraSheet {
     }
 
     func captureLabel() {
-        guard flow.reduce(.shutterTapped).contains(.capturePhoto) else { return }
+        guard send(.shutterTapped).contains(.capturePhoto) else { return }
         torch.set(on: false)
         torchIsOn = false
         recoveryDestination = nil
@@ -77,10 +77,10 @@ extension FoodCameraSheet {
                     let canCaptureStill =
                         UIImagePickerController.isSourceTypeAvailable(.camera)
                         && AVCaptureDevice.authorizationStatus(for: .video) != .denied
-                    _ = flow.reduce(.scanAgain)
+                    send(.scanAgain)
                     useStillCamera = canCaptureStill
                     if canCaptureStill == false {
-                        _ = flow.reduce(.captureFailed)
+                        send(.captureFailed)
                         result = .error("Camera capture is unavailable. Choose a photo from your library.")
                     }
                     busy = false
@@ -90,13 +90,14 @@ extension FoodCameraSheet {
                 try Task.checkCancellation()
                 isCapturingPhoto = false
                 active = false
+                send(.photoCaptured)
                 await readLabel(image)
             } catch {
                 guard Task.isCancelled == false else { return }
                 isCapturingPhoto = false
                 active = false
                 busy = false
-                _ = flow.reduce(.captureFailed)
+                send(.captureFailed)
                 result = .error("Couldn’t capture that photo. Try again or choose a photo from your library.")
             }
         }
@@ -108,15 +109,16 @@ extension FoodCameraSheet {
             async let recognizedText = labelRecognizer.recognizeText(in: image)
             async let jpegData = ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
             let parsed = NutritionLabelParser.parse(recognizedText: try await recognizedText)
+            let encodedImage = await jpegData
             try Task.checkCancellation()
-            captureImageData = await jpegData
+            captureImageData = encodedImage
             busy = false
-            _ = flow.reduce(.ocrFinished)
+            send(.ocrFinished)
             result = .label(parsed.draft, notes: parsed.notes, missingNutrients: parsed.missingRequiredNutrients)
         } catch {
             guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
             busy = false
-            _ = flow.reduce(.ocrFailed)
+            send(.ocrFailed)
             result = .error(
                 barcodeWasNotFound
                     ? "No packaged-food barcode or readable nutrition label was found. Scan again, search online, or photograph the nutrition label."
@@ -127,7 +129,7 @@ extension FoodCameraSheet {
 
     func logBarcode() {
         guard case let .barcode(draft, amount, _) = result, busy == false else { return }
-        guard flow.reduce(.logTapped).contains(.log(servings: amount)) else { return }
+        guard send(.logTapped).contains(.log(servings: amount)) else { return }
         let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
         guard action.canLog else {
             result = .error(action.validationError?.localizedDescription ?? "Review the food details before logging.")
@@ -140,13 +142,13 @@ extension FoodCameraSheet {
                 onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange
             ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
             busy = false
-            _ = flow.reduce(.logFinished)
+            send(.logFinished)
             feedbackToken += 1
             result = .barcode(draft, servings: amount, logged: true)
             active = false
         } catch {
             busy = false
-            _ = flow.reduce(.logFinished)
+            send(.logFinished)
             result = .error(error.localizedDescription)
         }
     }
@@ -177,7 +179,8 @@ extension FoodCameraSheet {
     }
 
     func resumeScanning() {
-        guard flow.reduce(.scanAgain).contains(.startScanning) || flow.isInactive else { return }
+        let effects = send(.scanAgain)
+        guard effects.contains(.startScanning) || flow.isInactive else { return }
         processingTask?.cancel()
         processingTask = nil
         busy = false
@@ -191,7 +194,7 @@ extension FoodCameraSheet {
 
     func showError(_ message: String) {
         guard Task.isCancelled == false else { return }
-        _ = flow.reduce(.captureFailed)
+        send(flow.phase == .readingLabel ? .importFailed : .scannerFailed)
         torch.set(on: false)
         torchIsOn = false
         busy = false

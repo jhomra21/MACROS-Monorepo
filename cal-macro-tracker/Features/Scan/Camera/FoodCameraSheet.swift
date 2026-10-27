@@ -49,7 +49,10 @@ struct FoodCameraSheet: View {
                     .clipShape(RoundedRectangle(cornerRadius: 28))
 
                 HStack {
-                    Button(action: dismiss.callAsFunction) {
+                    Button {
+                        send(.dismissed)
+                        dismiss()
+                    } label: {
                         Label("Close", systemImage: "xmark")
                             .labelStyle(.iconOnly)
                             .frame(width: 52, height: 52)
@@ -66,10 +69,7 @@ struct FoodCameraSheet: View {
                     Button {
                         guard busy == false else { return }
                         libraryPausedIdleScan = flow.phase == .scanning
-                        _ = flow.reduce(.libraryOpened)
-                        torch.set(on: false)
-                        torchIsOn = false
-                        active = false
+                        send(.libraryOpened)
                         showingLibraryPicker = true
                     } label: {
                         Image(systemName: "photo.on.rectangle").frame(width: 52, height: 52)
@@ -106,13 +106,13 @@ struct FoodCameraSheet: View {
             .sheet(isPresented: $useStillCamera) {
                 CameraImagePicker(onImagePicked: { image in
                     useStillCamera = false
-                    if flow.phase == .scanning { _ = flow.reduce(.libraryOpened) }
-                    _ = flow.reduce(.imagePicked)
+                    if flow.phase == .scanning { send(.libraryOpened) }
+                    send(.imagePicked)
                     recoveryDestination = nil
                     startProcessing { await processImage(image) }
                 }) {
                     useStillCamera = false
-                    _ = flow.reduce(.scanAgain)
+                    send(.scanAgain)
                     recoveryDestination = nil
                     if libraryPausedIdleScan { active = canLiveScan && scenePhase == .active }
                 }
@@ -124,7 +124,7 @@ struct FoodCameraSheet: View {
                 active = false
                 busy = true
                 recoveryDestination = nil
-                _ = flow.reduce(.imagePicked)
+                send(.imagePicked)
                 startProcessing {
                     await ScanStillImageImport.loadSelectedPhoto(
                         item,
@@ -136,10 +136,7 @@ struct FoodCameraSheet: View {
             }
             .onChange(of: showingLibraryPicker) { _, isPresented in
                 guard isPresented == false, selectedPhoto == nil else { return }
-                _ = flow.reduce(.libraryCancelled)
-                if libraryPausedIdleScan {
-                    active = canLiveScan && scenePhase == .active
-                }
+                send(.libraryCancelled)
                 libraryPausedIdleScan = false
             }
             .onChange(of: scenePhase) { _, phase in
@@ -150,13 +147,9 @@ struct FoodCameraSheet: View {
                     }
                 }
                 if phase == .active {
-                    _ = flow.reduce(.sceneActive)
-                    active = flow.phase == .scanning && canLiveScan
+                    send(.sceneActive)
                 } else {
-                    _ = flow.reduce(.sceneInactive)
-                    torch.set(on: false)
-                    torchIsOn = false
-                    active = false
+                    send(.sceneInactive)
                 }
             }
             .onAppear {
@@ -168,13 +161,13 @@ struct FoodCameraSheet: View {
                     active = false
                 }
             }
+            .onAppear {
+                if flow.phase != .dismissed { send(.sceneActive) }
+            }
             .onDisappear {
-                active = false
-                _ = flow.reduce(.dismissed)
-                torch.set(on: false)
-                torchIsOn = false
-                processingTask?.cancel()
-                processingTask = nil
+                let isNavigatingAway =
+                    logDestination != nil || route != nil || showingLibraryPicker || useStillCamera
+                send(isNavigatingAway ? .navigationAway : .dismissed)
             }
             .sensoryFeedback(.success, trigger: feedbackToken)
             .photosPicker(isPresented: $showingLibraryPicker, selection: $selectedPhoto, matching: .images)
@@ -190,7 +183,7 @@ struct FoodCameraSheet: View {
         let panel = FoodCameraResultPanel(
             content: result,
             onChangeServings: { amount in
-                _ = flow.reduce(.servingsChanged(amount))
+                send(.servingsChanged(amount))
                 guard case let .barcode(draft, _, logged) = result else { return }
                 result = .barcode(draft, servings: flow.servings, logged: logged)
             },
@@ -209,6 +202,28 @@ struct FoodCameraSheet: View {
         } else {
             panel.fixedSize(horizontal: false, vertical: true)
         }
+    }
+
+    @discardableResult
+    func send(_ event: FoodCameraFlow.Event) -> [FoodCameraFlow.Effect] {
+        let effects = flow.reduce(event)
+        for effect in effects {
+            switch effect {
+            case .startScanning:
+                active = canLiveScan && scenePhase == .active
+            case .stopScanning:
+                active = false
+            case .torchOff:
+                torch.set(on: false)
+                torchIsOn = false
+            case .cancelWork:
+                processingTask?.cancel()
+                processingTask = nil
+            case .lookup, .scanImage, .capturePhoto, .readLabel, .log:
+                break
+            }
+        }
+        return effects
     }
 
     private var preview: some View {
