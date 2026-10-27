@@ -7,6 +7,7 @@
 - Reuse `BarcodeLookupResolver`, `BarcodeImageScanner`, `BarcodeScanErrorRecovery`, `NutritionLabelTextRecognizer`, `NutritionLabelParser`, `LogFoodScreen`, and `CameraImagePicker`; do not duplicate nutrition calculation or persistence.
 - Route the Add Food barcode and label actions and the quick action to the unified camera. Keep reusable parser/resolver/scanner code.
 - Files expected to change: `Features/Dashboard/DashboardScreen.swift`, `App/AppRootView.swift`, `Features/AddFood/AddFoodScreen.swift`, existing barcode scanner view where coordinator reset is needed, new camera view files, this tracker, and `changes-log.md`. Remove obsolete option-list/screen UI only when references are gone.
+- The camera result panel is the review surface for both barcode and OCR results; only explicit Details, Edit details, or Enter manually navigation opens `LogFoodScreen` or another editor.
 
 ## Apple API facts checked
 
@@ -56,6 +57,7 @@
 
 - The single Add Food dashboard button is now the existing dual-action bar with equal Camera and Add Food actions. Both respect the current compact icon display and selected day.
 - The shared large-sheet `FoodCameraSheet` embeds a live `DataScannerViewController`; still photos from capture or Photos picker are barcode-scanned first, then passed to the existing label OCR/parser. It uses existing lookup/cache, fallback-draft, logging action, repository, editor, and haptic paths.
+- Barcode and label results remain in the camera panel. Label scans can have their name corrected, servings adjusted, and be logged there without automatic logging; missing required nutrients route the prominent action to Edit details. `LogFoodScreen` is reached only through Details, Edit details, or Enter manually.
 - Removed the separate Barcode/Label screens and option-list UI after rerouting all entry points. Shared resolver, barcode image scanner, camera picker, parser and fallback draft logic remain.
 - `FoodCameraFlow` owns synchronous, sendable state transitions. Its tests cover duplicate barcode delivery, scanning exclusion while processing, shutter re-entry, Photos picker resume rules, lifecycle stop/resume, dismissal cancellation, stale recovery metadata, save gating, and quantity flow.
 - The sheet stores one task for capture/photo loading, barcode lookup, and OCR; cancellation is not presented as a recovery error. Barcode serving state is shared by the panel, log action, and Details initial quantity.

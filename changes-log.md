@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-27 Camera Inline Results
+
+- Replaced the idle camera spinner with a viewfinder hint and made parsed label results editable and loggable in the camera panel, with the existing editor available only through Edit details. Barcode results remain in place.
+- Added exact reducer coverage for label servings and save transitions. Format/build passed; simulator tests and E2E remain pending because two unrelated simulators were already booted.
+
 ## 2026-10-27 Dashboard Dynamic Type Legend
 
 - Replaced the fixed-height macro legend with a horizontal default-size layout and stacked accessibility-size layout so the legend can grow without overlapping dashboard content. Simulator check on the dedicated iPhone 17 Pro: default and XXXL pass with horizontal columns and no Today-header overlap; AX5 shows one macro per row and icon-only bottom pills, with no overlap against the Today navigation title. The simulator could not be scrolled to frame the full legend, streak line, and Today / items header together, so that combined view remains unverified. Evidence: `build/legend-ax-2026-10-27/QA.md`.
