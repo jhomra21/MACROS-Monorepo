@@ -163,8 +163,8 @@ extension FoodCameraSheet {
     }
 
     func resumeScanning() {
-        let effects = send(.scanAgain)
-        guard effects.contains(.startScanning) || flow.isInactive else { return }
+        send(.scanAgain)
+        guard flow.phase == .scanning else { return }
         send(.recoveryDestinationChanged(nil))
         send(.contentChanged(.message("Point at a barcode, or photograph the nutrition label.")))
     }
