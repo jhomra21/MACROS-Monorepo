@@ -43,7 +43,8 @@ struct InsightsWeightCard: View {
 
     private var points: [WeightAnalyticsPoint] {
         guard range != .allTime,
-              let rangeStart = range.days(endingOn: today).first?.startDate else {
+            let rangeStart = range.days(endingOn: today).first?.startDate
+        else {
             return allPoints
         }
         return allPoints.filter { $0.recordedAt >= rangeStart && $0.recordedAt < today.dayInterval.end }
