@@ -3,12 +3,15 @@ import SwiftUI
 
 private enum AppRootSheetDestination: Identifiable, Hashable {
     case addFood(AddFoodEntryPoint, CalendarDay?)
+    case foodCamera(CalendarDay?)
     case editLogEntry(PersistentIdentifier)
 
     var id: String {
         switch self {
         case let .addFood(entryPoint, loggingDay):
             "add-food:\(entryPoint.rawValue):\(String(describing: loggingDay))"
+        case let .foodCamera(loggingDay):
+            "food-camera:\(String(describing: loggingDay))"
         case let .editLogEntry(entryID):
             "edit-log-entry:\(String(describing: entryID))"
         }
@@ -41,6 +44,9 @@ struct AppRootView: View {
                 resetToTodayToken: dashboardResetToken,
                 onOpenAddFood: { loggingDay in
                     presentSheet(.addFood(.addFood, loggingDay))
+                },
+                onOpenFoodCamera: { loggingDay in
+                    presentSheet(.foodCamera(loggingDay))
                 },
                 onEditEntry: { entry in
                     presentSheet(.editLogEntry(entry.persistentModelID))
@@ -129,26 +135,14 @@ private struct AppRootSheetContent: View {
             case .addFood:
                 AddFoodScreen(loggingDay: loggingDay)
             case .scanBarcode:
-                BarcodeScanScreen(onFoodLogged: dismissSheet, loggingDay: loggingDay, entryMode: .immediateCamera)
-                    .toolbar {
-                        ToolbarItem(placement: .appTopBarTrailing) {
-                            Button("Done") {
-                                dismissSheet()
-                            }
-                        }
-                    }
+                FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: dismissSheet)
             case .scanLabel:
-                LabelScanScreen(onFoodLogged: dismissSheet, loggingDay: loggingDay)
-                    .toolbar {
-                        ToolbarItem(placement: .appTopBarTrailing) {
-                            Button("Done") {
-                                dismissSheet()
-                            }
-                        }
-                    }
+                FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: dismissSheet)
             case .manualEntry:
                 AddFoodScreen(initialMode: .manual, loggingDay: loggingDay)
             }
+        case let .foodCamera(loggingDay):
+            FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: dismissSheet)
         case let .editLogEntry(entryID):
             EditLogEntrySheetContent(entryID: entryID)
         }

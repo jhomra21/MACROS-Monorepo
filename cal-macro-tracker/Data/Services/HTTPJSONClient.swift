@@ -15,8 +15,11 @@ struct HTTPJSONClient {
         self.decoder = decoder
     }
 
-    func makeRequest(url: URL, acceptJSON: Bool = false) -> URLRequest {
+    func makeRequest(url: URL, acceptJSON: Bool = false, timeoutInterval: TimeInterval? = nil) -> URLRequest {
         var request = URLRequest(url: url)
+        if let timeoutInterval {
+            request.timeoutInterval = timeoutInterval
+        }
         if acceptJSON {
             request.setValue("application/json", forHTTPHeaderField: "Accept")
         }
@@ -27,6 +30,7 @@ struct HTTPJSONClient {
     func makeProxyRequest(
         pathComponents: [String],
         queryItems: [URLQueryItem?] = [],
+        timeoutInterval: TimeInterval? = nil,
         unavailableConfigurationError: @autoclosure () -> Error
     ) throws -> URLRequest {
         guard let baseURL = RemoteFoodSearchConfiguration.packagedFoodSearchBaseURL else {
@@ -47,7 +51,7 @@ struct HTTPJSONClient {
             url = queryURL
         }
 
-        return makeRequest(url: url, acceptJSON: true)
+        return makeRequest(url: url, acceptJSON: true, timeoutInterval: timeoutInterval)
     }
 
     func data(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {

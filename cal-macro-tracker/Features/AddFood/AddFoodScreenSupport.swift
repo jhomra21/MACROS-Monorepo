@@ -1,12 +1,5 @@
 import SwiftUI
 
-enum AddFoodScanDestination: Hashable, Identifiable {
-    case barcode
-    case label
-
-    var id: Self { self }
-}
-
 struct AddFoodRemoteSearchSession {
     var query = ""
     var page = 0

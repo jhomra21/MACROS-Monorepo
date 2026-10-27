@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 Unified Food Camera
+
+- Replaced the dashboard's single Add Food action with equal Camera and Add Food pills (icon-only while scrolling and at accessibility text sizes) and routed the barcode and label entry points through one full-height camera sheet: live barcode recognition with a product panel, servings stepper, Log, and Details; shutter or photo-library capture into label OCR that always lands in review; still-camera and library-only fallbacks; a guarded torch toggle. Removed the separate barcode and label screens.
+- The flow is a pure `FoodCameraFlow` reducer whose effects (scanner start/stop, torch, work cancellation, content) the sheet executes in order; 21 reducer tests written from the failure-mode map cover duplicate recognition, double shutter, library open/cancel/replace, backgrounding, navigation-away versus dismissal, failures, and quantity.
+- Validation: format, build, reducer tests, and simulator QA (library label import to review, Back, Retake, same-image reselection, sheet dismissal and reopen, entry points, accessibility sizes) passed; barcode-from-library lookup, live scanning, torch preview stability, and real-package OCR need an EAN-13 fixture or a device. Evidence in `build/unified-camera-qa-2026-10-26/QA.md`.
 ## 2026-10-26 Insights Long Ranges
 
 - Added 90D, 1Y, and All Pro ranges with day-accurate summaries, no All-time comparison, weekly/monthly average charts, and an accessibility-friendly native menu picker.

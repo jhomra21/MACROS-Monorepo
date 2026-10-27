@@ -11,6 +11,8 @@ struct BottomPinnedDualAction {
 }
 
 struct BottomPinnedDualActionBar: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     private let compactButtonSize: CGFloat = 60
     private let horizontalPadding: CGFloat = 20
     private let buttonSpacing: CGFloat = 10
@@ -18,13 +20,14 @@ struct BottomPinnedDualActionBar: View {
     let leadingAction: BottomPinnedDualAction
     let trailingAction: BottomPinnedDualAction
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
+    var compactActionsAreHorizontal = false
     var topPadding: CGFloat = 10
     var bottomOffset: CGFloat = 0
 
     @State private var isKeyboardVisible = false
 
     private var isCompact: Bool {
-        displayMode == .compactIcon
+        displayMode == .compactIcon || dynamicTypeSize.isAccessibilitySize
     }
 
     private var bottomPadding: CGFloat {
@@ -53,9 +56,18 @@ struct BottomPinnedDualActionBar: View {
     @ViewBuilder
     private var buttons: some View {
         if isCompact {
-            VStack(spacing: buttonSpacing) {
-                actionButton(leadingAction)
-                actionButton(trailingAction)
+            Group {
+                if compactActionsAreHorizontal {
+                    HStack(spacing: buttonSpacing) {
+                        actionButton(leadingAction)
+                        actionButton(trailingAction)
+                    }
+                } else {
+                    VStack(spacing: buttonSpacing) {
+                        actionButton(leadingAction)
+                        actionButton(trailingAction)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
             .padding(.horizontal, horizontalPadding)
@@ -85,7 +97,7 @@ struct BottomPinnedDualActionBar: View {
     }
 
     private var bottomBarHeight: CGFloat {
-        topPadding + bottomPadding + (isCompact ? compactStackHeight : compactButtonSize)
+        topPadding + bottomPadding + (isCompact && !compactActionsAreHorizontal ? compactStackHeight : compactButtonSize)
     }
 
     private var compactStackHeight: CGFloat {
