@@ -8,8 +8,8 @@
     "smoke": "bun smoke.mjs"
   },
   "devDependencies": {
-    "@oxlint/plugins": "1.88.0",
-    "oxlint": "1.88.0",
-    "typescript": "5.9.3"
+    "@oxlint/plugins": "1.89.0",
+    "oxlint": "1.89.0",
+    "typescript": "^7.0.2"
   }
 }
