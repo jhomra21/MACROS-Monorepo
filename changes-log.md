@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-27 Simulator Barcode Detection
+
+- Confirmed the simulator's oldest supported Vision revision decodes the EAN-13 fixture; device behavior is unchanged and all still-image barcode errors continue to label OCR.
+- Simulator E2E: EAN `0737628064502` resolved to Thai peanut noodle kit includes stir-fry rice noodles & thai peanut seasoning (Simply Asia / Thai Kitchen), `0.333 PACKAGE (52 g)`, 200 kcal, 5 g protein, 4 g fat, 37 g carbs. At 2 servings it logged 400 kcal, 10 g protein, 8 g fat, 74 g carbs. The all-zero fixture showed the unknown-product recovery actions; dismissing after selecting the real EAN returned to the same one-item dashboard without a crash. The earlier “no product” result came from selecting the all-zero fixture. Screenshots and exact checks: `build/sim-barcode-e2e-2026-10-27/QA.md`.
+- Validation: `make quality-format-check`, `make quality-build`, `git diff --check`, BarcodeImageScannerTests (3/3), and FoodCameraFlowTests (21/21) passed.
+
 ## 2026-10-26 TestFlight Build 8
 
 - Archived merged `main` commit `6d6ce5054eabbe845a739e0fe5f9f1e2b1d6ae3d` as version 1.0; Xcode advanced the duplicate build 7 to build 8 and App Store Connect accepted the upload for processing.
