@@ -15,6 +15,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Replaced the idle camera spinner with a viewfinder hint and made parsed label results editable and loggable in the camera panel, with the existing editor available only through Edit details. Barcode results remain in place.
 - Save failures preserve the editable review and surface a retryable alert; expanded results scroll within a bounded camera panel. Validation: FoodCameraFlowTests 25/25 and BarcodeImageScannerTests 3/3 passed; E2E partially passed (onboarding, dashboard, idle hint), photo-picker scenarios not verified because the device automation daemon was unavailable. Evidence: `build/camera-inline-2026-10-27/QA.md`.
+- 2026-10-27 follow-up: no new UI scenarios could run because the designated simulator was absent while an iPhone 18 Pro Max was already booted, and the one-simulator limit prohibited booting or using another device. The separate r2 report records the exact driver errors and marks complete-label, incomplete-label, and barcode flows NOT RUN; no code changes or repeat tests. Evidence: `build/camera-inline-2026-10-27/r2/QA.md`.
 
 ## 2026-10-27 Dashboard Dynamic Type Legend
 
