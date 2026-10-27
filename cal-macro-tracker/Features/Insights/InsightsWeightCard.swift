@@ -3,7 +3,7 @@ import SwiftData
 import SwiftUI
 
 struct InsightsWeightCard: View {
-    @Query(sort: \WeightEntry.recordedAt) private var entries: [WeightEntry]
+    @Query private var entries: [WeightEntry]
     @Query private var profiles: [BodyProfile]
     @Environment(AppEntitlements.self) private var entitlements
 
@@ -11,15 +11,31 @@ struct InsightsWeightCard: View {
     let today: CalendarDay
     @Binding var isPresentingPro: Bool
 
+    init(range: InsightsRange, today: CalendarDay) {
+        self.range = range
+        self.today = today
+        let start =
+            range == .allTime
+            ? Date.distantPast
+            : (range.days(endingOn: today).first?.startDate ?? today.startDate)
+        let end = today.dayInterval.end
+        let predicate = #Predicate<WeightEntry> { entry in
+            entry.recordedAt >= start && entry.recordedAt < end
+        }
+        _entries = Query(
+            FetchDescriptor(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\WeightEntry.recordedAt)]
+            )
+        )
+    }
+
     private var allPoints: [WeightAnalyticsPoint] {
         entries.map { WeightAnalyticsPoint(day: $0.recordedAt, recordedAt: $0.recordedAt, weightKg: $0.weightKg) }
     }
 
     private var points: [WeightAnalyticsPoint] {
-        guard let firstDay = range.days(endingOn: today).first else { return [] }
-        let rangeStart = firstDay.startDate
-        let rangeEnd = today.dayInterval.end
-        return allPoints.filter { $0.recordedAt >= rangeStart && $0.recordedAt < rangeEnd }
+        allPoints
     }
 
     var body: some View {
@@ -74,9 +90,12 @@ struct InsightsWeightCard: View {
                     }
                 }
             } else {
-                Text("No entries yet").foregroundStyle(.secondary)
+                Text(range == .allTime ? "No entries yet" : "No weight logged in this range")
+                    .foregroundStyle(.secondary)
             }
-            NavigationLink(entries.isEmpty ? "Log your first weight" : "View weight log") { WeightScreen() }
+            NavigationLink(entries.isEmpty && range == .allTime ? "Log your first weight" : "View weight log") {
+                WeightScreen()
+            }
         }
         .padding()
         .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
