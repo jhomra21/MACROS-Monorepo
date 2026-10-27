@@ -19,6 +19,7 @@ struct FoodCameraSheet: View {
 
     @State var scanner: DataScannerViewController?
     @State var selectedPhoto: PhotosPickerItem?
+    @State var importingPhoto = false
     @State var showingLibraryPicker = false
     @State var panelContent: FoodCameraResultPanel.Content = .message(
         "Point at a barcode, or photograph the nutrition label."
@@ -125,12 +126,15 @@ struct FoodCameraSheet: View {
             }
             .onChange(of: selectedPhoto) { _, item in
                 guard let item else { return }
-                guard busy == false, flow.phase == .library else { return }
+                guard flow.phase == .library, importingPhoto == false else { return }
+                importingPhoto = true
+                selectedPhoto = nil
                 recoveryDestination = nil
                 startProcessing {
+                    defer { importingPhoto = false }
                     await ScanStillImageImport.loadSelectedPhoto(
                         item,
-                        clearSelection: { selectedPhoto = nil },
+                        clearSelection: {},
                         processImage: { image in
                             pendingImage = image
                             send(.imagePicked)
@@ -140,7 +144,7 @@ struct FoodCameraSheet: View {
                 }
             }
             .onChange(of: showingLibraryPicker) { _, isPresented in
-                guard isPresented == false, selectedPhoto == nil else { return }
+                guard isPresented == false, selectedPhoto == nil, importingPhoto == false else { return }
                 send(.libraryCancelled)
             }
             .onChange(of: scenePhase) { _, phase in

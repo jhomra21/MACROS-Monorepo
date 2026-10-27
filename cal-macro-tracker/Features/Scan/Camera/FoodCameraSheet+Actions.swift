@@ -124,6 +124,7 @@ extension FoodCameraSheet {
         guard case let .barcode(draft, _, _) = result, flow.isSaving else { return }
         let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
         guard action.canLog else {
+            send(.logFinished)
             send(.contentChanged(.error(action.validationError?.localizedDescription ?? "Review the food details before logging.")))
             return
         }

@@ -94,7 +94,7 @@ struct FoodCameraFlow: Sendable {
             return []
         case .libraryCancelled where phase == .library:
             phase = libraryPausedScanning && isInactive == false ? .scanning : phaseBeforeLibrary
-            let shouldResume = libraryPausedScanning && phase == .scanning
+            let shouldResume = libraryPausedScanning && phase == .scanning && isInactive == false
             libraryPausedScanning = false
             return shouldResume ? [.startScanning] : []
         case .libraryCancelled:
@@ -136,7 +136,7 @@ struct FoodCameraFlow: Sendable {
             return []
         case .ocrFailed where phase == .readingLabel || phase == .capturing:
             phase = .recovering
-            return []
+            return [.recoveryDestination(nil)]
         case .ocrFailed:
             return []
         case .scannerFailed where phase != .dismissed:
