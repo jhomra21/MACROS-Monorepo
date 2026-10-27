@@ -84,9 +84,9 @@ final class InsightsAnalyticsTests: XCTestCase {
         let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
 
         XCTAssertEqual(buckets.count, 1)
-        XCTAssertEqual(buckets[0].snapshot.totals.calories, 1_800)
-        XCTAssertEqual(buckets[0].snapshot.totals.protein, 90)
-        XCTAssertEqual(buckets[0].snapshot.secondaryTotals.fiber, 20)
+        XCTAssertEqual(buckets[0].totals.calories, 1_800)
+        XCTAssertEqual(buckets[0].totals.protein, 90)
+        XCTAssertEqual(buckets[0].secondaryTotals.fiber, 20)
         XCTAssertEqual(buckets[0].loggedDayCount, 2)
     }
 
@@ -99,14 +99,17 @@ final class InsightsAnalyticsTests: XCTestCase {
         let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .monthly)
 
         XCTAssertEqual(buckets.count, 2)
-        XCTAssertEqual(buckets.map(\.snapshot.totals.calories), [2_100, 1_900])
+        XCTAssertEqual(buckets.map(\.totals.calories), [2_100, 1_900])
         XCTAssertEqual(buckets.map(\.loggedDayCount), [1, 1])
     }
 
     func testWeeklyChartBucketingHandlesDaylightSavingBoundary() {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
-        let march8 = CalendarDay(date: date(year: 2026, month: 3, day: 8), calendar: calendar)
+        let march8 = CalendarDay(
+            date: calendar.date(from: DateComponents(year: 2026, month: 3, day: 8))!,
+            calendar: calendar
+        )
         let points = [
             point(day: march8, calories: 2_000),
             point(day: march8.advanced(byDays: 1)!, calories: 1_800)
@@ -115,7 +118,7 @@ final class InsightsAnalyticsTests: XCTestCase {
         let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
 
         XCTAssertEqual(buckets.count, 1)
-        XCTAssertEqual(buckets[0].snapshot.totals.calories, 1_900)
+        XCTAssertEqual(buckets[0].totals.calories, 1_900)
     }
 
     func testAverageExcludesDaysWithoutEntries() {
@@ -197,7 +200,9 @@ final class InsightsAnalyticsTests: XCTestCase {
     }
 
     private func point(date: Date, calories: Double) -> InsightsDayPoint {
-        point(day: CalendarDay(date: date), calories: calories)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        return point(day: CalendarDay(date: date, calendar: calendar), calories: calories)
     }
 
     private func point(
