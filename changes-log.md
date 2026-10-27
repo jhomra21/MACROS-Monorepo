@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 Insights Long Ranges
+
+- Added 90D, 1Y, and All Pro ranges with day-accurate summaries, no All-time comparison, weekly/monthly average charts, and an accessibility-friendly native menu picker.
+- Validation: format/build and InsightsAnalyticsTests (16/16) passed; simulator QA verified seeded history, All/90D/1Y and free locked-range behavior, with visual evidence in `build/insights-qa-2026-10-26/`.
+
 ## 2026-10-26 JavaScript and TypeScript Dependency Updates
 
 - Updated package manifests and Bun lockfiles across the workers, Astro site, Convex backend, runtime QA, food database, and Oxlint tooling; detailed version changes and migration notes are in [`implementation-trackers/dependency-update-tracker.md`](implementation-trackers/dependency-update-tracker.md).
@@ -20,11 +25,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Opened the Pro paywall at the large detent only and added transition-only success feedback, entitlement details, unlocked benefits, and context-aware dismissal.
 - Validation: formatting, app build, and simulator StoreKit purchase QA passed; screenshots and per-check results are in `build/paywall-success-qa-2026-10-26/QA.md`.
-
-## 2026-10-26 Insights Long Ranges
-
-- Added 90D, 1Y, and All Pro ranges with day-accurate summaries, no All-time comparison, weekly/monthly average charts, and an accessibility-friendly native menu picker.
-- Validation: format/build and InsightsAnalyticsTests (16/16) passed; simulator QA verified seeded history, All/90D/1Y and free locked-range behavior, with visual evidence in `build/insights-qa-2026-10-26/`.
 
 ## 2026-10-26 Insights Review Fixes
 
@@ -111,7 +111,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Expanded the website with privacy and terms pages, launch pricing and feature details, FAQ, and App Store placeholder; drafted App Store listing, privacy labels, and screenshot plans.
 
-
 ## 2026-10-25 Services Hardening
 
 - Added Cloudflare Worker per-IP request limits, a strict SQLite Durable Object-backed shared USDA budget, non-cacheable degraded empty results, configurable food lookup deadline, bounded restaurant legacy scanning, Convex daily profile quotas with profile-deletion cleanup, and support/waitlist honeypots. Reduced Worker log and trace sampling to 10%; public success response contracts remain unchanged.
@@ -152,7 +151,6 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Isolated local-data QA and all six existing analytics tests passed: fractional food and meal scaling, edit/delete total refresh, immutable historical meal snapshots, referenced-food deletion protection, Insights totals, and cold-launch persistence. Final QA totals were 1,275 kcal, P72.5/C184.5/F25.5 across six entries. Repeatable evidence: `build/qa-regression-2026-10-13/QA.md`.
 - Two-device development sharing QA passed actual invite acceptance, one-way/reciprocal grants, live aggregate updates without refresh, pause/resume, named removal confirmation and Cancel, removal/reconnect, global stop, device off/on, foreground recovery, and profile deletion without deleting local logs. Both temporary cloud profiles were deleted. Evidence: `build/sharing-qa-2026-10-13/QA.md`.
 - No confirmed product failures or implementation changes resulted from these passes. Day rollover, network failure/retry, invite replay, exact subscription counts, advanced StoreKit transactions, and physical-phone TestFlight purchases remain unverified. The last observed Paid Apps Agreement status was Pending User Info; sandbox-payment readiness requires confirming Active status.
-
 
 ## StoreKit Validator Path Correction
 
