@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 JavaScript and TypeScript Dependency Updates
+
+- Updated package manifests and Bun lockfiles across the workers, Astro site, Convex backend, runtime QA, food database, and Oxlint tooling; detailed version changes and migration notes are in [`implementation-trackers/dependency-update-tracker.md`](implementation-trackers/dependency-update-tracker.md).
+- Validation: package checks, tests, integrations, build, dry runs, and lint passed; Convex code generation remains blocked because no deployment is configured.
+
 ## 2026-10-26 StoreKit Test Failure Investigation
 
 - Fixed StoreKit tests to model the documented purchase cancellation outcomes and to wait for transaction-listener publication; sync after `SKTestSession.expireSubscription` so the simulated expiry reaches StoreKit status updates.
