@@ -11,9 +11,10 @@ struct InsightsWeightCard: View {
     let today: CalendarDay
     @Binding var isPresentingPro: Bool
 
-    init(range: InsightsRange, today: CalendarDay) {
+    init(range: InsightsRange, today: CalendarDay, isPresentingPro: Binding<Bool>) {
         self.range = range
         self.today = today
+        self._isPresentingPro = isPresentingPro
         let start =
             range == .allTime
             ? Date.distantPast
