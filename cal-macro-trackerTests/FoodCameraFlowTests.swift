@@ -166,6 +166,17 @@ final class FoodCameraFlowTests: XCTestCase {
         }
     }
 
+    func testLabelLogTapIsRejectedOutsideResultPhases() {
+        for phase: FoodCameraFlow.Phase in [
+            .scanning, .lookingUp, .capturing, .readingLabel, .library, .recovering
+        ] {
+            var other = flow(in: phase)
+            XCTAssertEqual(other.reduce(.logTapped), [], "\(phase)")
+            XCTAssertEqual(other.phase, phase, "\(phase)")
+            XCTAssertFalse(other.isSaving, "\(phase)")
+        }
+    }
+
     func testLabelLoggingAndSavingTransitionsHaveExactEffects() {
         var label = flow(in: .showingLabel)
         XCTAssertEqual(label.reduce(.logTapped), [.log(servings: 1)])
