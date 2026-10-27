@@ -7,34 +7,38 @@ import UIKit
 import VisionKit
 
 struct FoodCameraSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(SharingSyncService.self) private var sharingSyncService
+    @Environment(\.dismiss) var dismiss
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.scenePhase) var scenePhase
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+    @Environment(SharingSyncService.self) var sharingSyncService
 
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
-    @State private var scanner: DataScannerViewController?
-    @State private var selectedPhoto: PhotosPickerItem?
-    @State private var showingLibraryPicker = false
-    @State private var result: FoodCameraResultPanel.Content = .message("Point at a barcode, or photograph the nutrition label.")
-    @State private var active = true
-    @State private var busy = false
-    @State private var isCapturingPhoto = false
-    @State private var useStillCamera = false
-    @State private var captureImageData: Data?
-    @State private var servings = 1.0
-    @State private var logDestination: FoodCameraLogDestination?
-    @State private var recoveryDestination: BarcodeScanLogFoodDestination?
-    @State private var route: FoodCameraRoute?
-    @State private var feedbackToken = 0
-    @State private var permissionDenied = false
+    @State var scanner: DataScannerViewController?
+    @State var selectedPhoto: PhotosPickerItem?
+    @State var showingLibraryPicker = false
+    @State var result: FoodCameraResultPanel.Content = .message("Point at a barcode, or photograph the nutrition label.")
+    @State var active = true
+    @State var busy = false
+    @State var flow = FoodCameraFlow()
+    @State var processingTask: Task<Void, Never>?
+    @State var libraryPausedIdleScan = false
+    @State var isCapturingPhoto = false
+    @State var useStillCamera = false
+    @State var captureImageData: Data?
+    @State var logDestination: FoodCameraLogDestination?
+    @State var recoveryDestination: BarcodeScanLogFoodDestination?
+    @State var route: FoodCameraRoute?
+    @State var feedbackToken = 0
+    @State var permissionDenied = false
 
-    private let barcodeScanner = BarcodeImageScanner()
-    private let labelRecognizer = NutritionLabelTextRecognizer()
+    let barcodeScanner = BarcodeImageScanner()
+    let labelRecognizer = NutritionLabelTextRecognizer()
+    @State var torch = FoodCameraTorch()
+    @State var torchIsOn = false
 
     var body: some View {
         NavigationStack {
@@ -60,13 +64,18 @@ struct FoodCameraSheet: View {
                     .disabled(busy)
                     Spacer()
                     Button {
+                        guard busy == false else { return }
+                        libraryPausedIdleScan = flow.phase == .scanning
+                        _ = flow.reduce(.libraryOpened)
+                        torch.set(on: false)
+                        torchIsOn = false
                         active = false
-                        busy = true
                         showingLibraryPicker = true
                     } label: {
                         Image(systemName: "photo.on.rectangle").frame(width: 52, height: 52)
                     }
                     .accessibilityLabel("Choose a photo")
+                    .disabled(busy)
                 }
                 .font(.title3.weight(.semibold))
                 .buttonStyle(.glass)
@@ -79,6 +88,7 @@ struct FoodCameraSheet: View {
                 LogFoodScreen(
                     initialDraft: destination.draft,
                     loggingDay: loggingDay,
+                    initialQuantityAmount: destination.quantityAmount,
                     reviewNotes: destination.notes,
                     requiredReviewNutrients: destination.missingNutrients,
                     previewImageData: destination.imageData,
@@ -96,18 +106,26 @@ struct FoodCameraSheet: View {
             .sheet(isPresented: $useStillCamera) {
                 CameraImagePicker(onImagePicked: { image in
                     useStillCamera = false
-                    Task { await processImage(image) }
+                    if flow.phase == .scanning { _ = flow.reduce(.libraryOpened) }
+                    _ = flow.reduce(.imagePicked)
+                    recoveryDestination = nil
+                    startProcessing { await processImage(image) }
                 }) {
                     useStillCamera = false
-                    active = true
+                    _ = flow.reduce(.scanAgain)
+                    recoveryDestination = nil
+                    if libraryPausedIdleScan { active = canLiveScan && scenePhase == .active }
                 }
                 .ignoresSafeArea()
             }
             .onChange(of: selectedPhoto) { _, item in
                 guard let item else { return }
+                guard busy == false, flow.phase == .library else { return }
                 active = false
                 busy = true
-                Task {
+                recoveryDestination = nil
+                _ = flow.reduce(.imagePicked)
+                startProcessing {
                     await ScanStillImageImport.loadSelectedPhoto(
                         item,
                         clearSelection: { selectedPhoto = nil },
@@ -118,30 +136,45 @@ struct FoodCameraSheet: View {
             }
             .onChange(of: showingLibraryPicker) { _, isPresented in
                 guard isPresented == false, selectedPhoto == nil else { return }
-                busy = false
-                active = canLiveScan && scenePhase == .active
+                _ = flow.reduce(.libraryCancelled)
+                if libraryPausedIdleScan {
+                    active = canLiveScan && scenePhase == .active
+                }
+                libraryPausedIdleScan = false
             }
             .onChange(of: scenePhase) { _, phase in
-                guard busy == false else { return }
                 if phase == .active, AVCaptureDevice.authorizationStatus(for: .video) == .denied {
                     permissionDenied = true
-                    result = .error("Camera access is off. Allow camera access in Settings, or choose a photo from your library.")
+                    if flow.phase == .scanning {
+                        result = .error("Camera access is off. Allow camera access in Settings, or choose a photo from your library.")
+                    }
                 }
-                active = phase == .active && canLiveScan
+                if phase == .active {
+                    _ = flow.reduce(.sceneActive)
+                    active = flow.phase == .scanning && canLiveScan
+                } else {
+                    _ = flow.reduce(.sceneInactive)
+                    torch.set(on: false)
+                    torchIsOn = false
+                    active = false
+                }
             }
             .onAppear {
                 permissionDenied = AVCaptureDevice.authorizationStatus(for: .video) == .denied
                 if permissionDenied {
                     active = false
                     result = .error("Camera access is off. Allow camera access in Settings, or choose a photo from your library.")
-                } else if canLiveScan == false, UIImagePickerController.isSourceTypeAvailable(.camera) {
-                    useStillCamera = true
                 } else if canLiveScan == false {
                     active = false
                 }
             }
             .onDisappear {
                 active = false
+                _ = flow.reduce(.dismissed)
+                torch.set(on: false)
+                torchIsOn = false
+                processingTask?.cancel()
+                processingTask = nil
             }
             .sensoryFeedback(.success, trigger: feedbackToken)
             .photosPicker(isPresented: $showingLibraryPicker, selection: $selectedPhoto, matching: .images)
@@ -156,7 +189,11 @@ struct FoodCameraSheet: View {
     private var resultPanel: some View {
         let panel = FoodCameraResultPanel(
             content: result,
-            onChangeServings: { servings = $0 },
+            onChangeServings: { amount in
+                _ = flow.reduce(.servingsChanged(amount))
+                guard case let .barcode(draft, _, logged) = result else { return }
+                result = .barcode(draft, servings: flow.servings, logged: logged)
+            },
             onLog: logBarcode,
             onDetails: showDetails,
             onReview: showLabelReview,
@@ -180,7 +217,7 @@ struct FoodCameraSheet: View {
                 FoodCameraPreview(
                     isActive: active && (busy == false || isCapturingPhoto),
                     onReady: { scanner = $0 },
-                    onBarcode: foundBarcode,
+                    onBarcode: { foundBarcode($0) },
                     onFailure: showError
                 )
             } else {
@@ -193,10 +230,24 @@ struct FoodCameraSheet: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.regularMaterial)
             }
+            if canLiveScan, flow.phase == .scanning, active, torch.isAvailable {
+                Button {
+                    torchIsOn.toggle()
+                    torch.set(on: torchIsOn)
+                    if torch.isAvailable == false { torchIsOn = false }
+                } label: {
+                    Image(systemName: torchIsOn ? "flashlight.on.fill" : "flashlight.off.fill")
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.glass)
+                .accessibilityLabel(torchIsOn ? "Turn Off Flashlight" : "Turn On Flashlight")
+                .accessibilityAddTraits(torchIsOn ? .isSelected : [])
+                .padding(12)
+            }
         }
     }
 
-    private var canLiveScan: Bool {
+    var canLiveScan: Bool {
         DataScannerViewController.isSupported && DataScannerViewController.isAvailable
     }
 
@@ -209,176 +260,18 @@ struct FoodCameraSheet: View {
         }
     }
 
-    private var foodRepository: FoodItemRepository {
-        FoodItemRepository(modelContext: modelContext)
-    }
-
-    private func foundBarcode(_ barcode: String) {
-        guard busy == false else { return }
-        busy = true
-        active = false
-        result = .message("Looking up…")
-        feedbackToken += 1
-        Task {
-            defer { busy = false }
-            do {
-                let resolver = BarcodeLookupResolver(foodRepository: foodRepository, client: OpenFoodFactsClient())
-                let draft: FoodDraft
-                if let cachedDraft = try resolver.cachedDraft(for: barcode) {
-                    draft = cachedDraft
-                } else {
-                    draft = try await resolver.resolveRemoteDraft(barcode: barcode)
-                }
-                servings = 1
-                result = .barcode(draft, servings: servings, logged: false)
-            } catch {
-                let recovery = BarcodeScanErrorRecovery(
-                    error: error,
-                    destination: BarcodeManualFallbackFactory.destination(for: barcode)
-                )
-                recoveryDestination = recovery.destination
-                result = .error(recovery.message)
-            }
-        }
-    }
-
-    private func processImage(_ image: UIImage) async {
-        active = false
-        busy = true
-        result = .message("Looking for a barcode…")
-        do {
-            let barcode = try await barcodeScanner.scanBarcode(from: image)
-            busy = false
-            foundBarcode(barcode)
-        } catch {
-            await readLabel(image)
-        }
-    }
-
-    private func captureLabel() {
-        guard busy == false else { return }
-        busy = true
-        isCapturingPhoto = true
-        result = .message("Reading label…")
-        Task {
-            do {
-                guard let scanner, scanner.isScanning else {
-                    isCapturingPhoto = false
-                    let canCaptureStill =
-                        UIImagePickerController.isSourceTypeAvailable(.camera)
-                        && AVCaptureDevice.authorizationStatus(for: .video) != .denied
-                    useStillCamera = canCaptureStill
-                    if canCaptureStill == false {
-                        result = .error("Camera capture is unavailable. Choose a photo from your library.")
-                    }
-                    busy = false
-                    return
-                }
-                let image = try await scanner.capturePhoto()
-                isCapturingPhoto = false
-                active = false
-                captureImageData = await ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
-                await readLabel(image)
-            } catch {
-                isCapturingPhoto = false
-                active = false
-                active = false
-                busy = false
-                result = .error("Couldn’t capture that photo. Try again or choose a photo from your library.")
-            }
-        }
-    }
-
-    private func readLabel(_ image: UIImage) async {
-        result = .message("Reading label…")
-        do {
-            async let recognizedText = labelRecognizer.recognizeText(in: image)
-            async let jpegData = ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
-            let parsed = NutritionLabelParser.parse(recognizedText: try await recognizedText)
-            captureImageData = await jpegData
-            busy = false
-            result = .label(parsed.draft, notes: parsed.notes, missingNutrients: parsed.missingRequiredNutrients)
-        } catch {
-            busy = false
-            result = .error("Couldn’t read a nutrition label from this image. Retake the photo or enter the food manually.")
-        }
-    }
-
-    private func logBarcode() {
-        guard case let .barcode(draft, amount, _) = result, busy == false else { return }
-        let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
-        guard action.canLog else {
-            result = .error(action.validationError?.localizedDescription ?? "Review the food details before logging.")
-            return
-        }
-        busy = true
-        do {
-            try LogEntryRepository(
-                modelContext: modelContext,
-                onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange
-            ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
-            busy = false
-            feedbackToken += 1
-            result = .barcode(draft, servings: amount, logged: true)
-            active = canLiveScan && scenePhase == .active
-        } catch {
-            busy = false
-            result = .error(error.localizedDescription)
-        }
-    }
-
-    private func showDetails() {
-        guard case let .barcode(draft, _, _) = result else { return }
-        logDestination = FoodCameraLogDestination(draft: draft, notes: [], missingNutrients: [], imageData: nil)
-    }
-
-    private func showManualRecovery() {
-        guard let recoveryDestination else {
-            route = .manual
-            return
-        }
-        logDestination = FoodCameraLogDestination(
-            draft: recoveryDestination.draft,
-            notes: recoveryDestination.reviewNotes,
-            missingNutrients: [],
-            imageData: nil
-        )
-    }
-
-    private func showLabelReview() {
-        guard case let .label(draft, notes, missing) = result else { return }
-        logDestination = FoodCameraLogDestination(draft: draft, notes: notes, missingNutrients: missing, imageData: captureImageData)
-    }
-
-    private func resumeScanning() {
-        busy = false
-        isCapturingPhoto = false
-        result = .message("Point at a barcode, or photograph the nutrition label.")
-        active = canLiveScan && scenePhase == .active
-    }
-
-    private func showError(_ message: String) {
-        busy = false
-        active = false
-        permissionDenied = AVCaptureDevice.authorizationStatus(for: .video) == .denied
-        result = .error(message)
-    }
-
-    private func openSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-        UIApplication.shared.open(url)
-    }
 }
 
-private struct FoodCameraLogDestination: Identifiable, Hashable {
+struct FoodCameraLogDestination: Identifiable, Hashable {
     let id = UUID()
     let draft: FoodDraft
     let notes: [String]
     let missingNutrients: [RequiredNutritionReviewNutrient]
     let imageData: Data?
+    let quantityAmount: Double
 }
 
-private enum FoodCameraRoute: String, Identifiable, Hashable {
+enum FoodCameraRoute: String, Identifiable, Hashable {
     case manual
     case search
     var id: String { rawValue }
