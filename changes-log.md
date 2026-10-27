@@ -1,5 +1,11 @@
 # Changes Log
 
+## 2026-10-26 Unified Food Camera
+
+- Replaced the Dashboard's single Add Food action with equal Camera/Add Food pills; barcode and label entry points now open one shared camera and result flow, with still-image fallback, label review, and existing barcode logging/editor behavior.
+- Removed the obsolete barcode/label screens and option-list UI. Apple documents VisionKit `capturePhoto()` as an async high-resolution `UIImage`; omitted the torch control because Apple doesn't document controlling the scanner-owned device through an independently obtained `AVCaptureDevice`.
+- Validation: `make quality-format-check` and `make quality-build` passed; Dashboard pills were inspected on the iOS 27 simulator. Full import/result E2E remains pending a free simulator slot.
+
 `changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
 
 Detailed implementation trackers live in `implementation-trackers/`:
