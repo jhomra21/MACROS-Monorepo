@@ -1,4 +1,3 @@
-import Charts
 import SwiftData
 import SwiftUI
 
@@ -22,25 +21,27 @@ struct InsightsScreen: View {
                         today: dayContext.today,
                         isPresentingPro: $isPresentingWeightTrendsPro
                     )
-                    HStack(spacing: 4) {
+                    Menu {
                         ForEach(InsightsRange.allCases) { range in
                             Button {
+                                if range != .sevenDays {
+                                    isPresentingPro = true
+                                }
                             } label: {
-                                Label(range.title, systemImage: range == .sevenDays ? "checkmark" : "lock.fill")
-                                    .frame(maxWidth: .infinity)
+                                Label(
+                                    range.title,
+                                    systemImage: range == .sevenDays ? "checkmark" : "lock.fill"
+                                )
                             }
-                            .padding(.vertical, 8)
-                            .background(
-                                range == .sevenDays ? PlatformColors.cardBackground : Color.clear,
-                                in: RoundedRectangle(cornerRadius: 8)
-                            )
-                            .disabled(range != .sevenDays)
-                            .accessibilityLabel("\(range.title), \(range == .sevenDays ? "selected" : "requires Pro")")
                         }
+                    } label: {
+                        Label("7D", systemImage: "chevron.down")
+                            .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.plain)
-                    .padding(4)
-                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
+                    .accessibilityLabel("Insights range, 7D selected. Other ranges require Pro.")
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 20)
                     .padding(.vertical, 12)
                     InsightsRangeQueryContent(range: .sevenDays, today: dayContext.today, isPresentingPro: $isPresentingPro)
@@ -84,31 +85,97 @@ private struct InsightsUnlockedContent: View {
     }
 
     private var rangePicker: some View {
-        Picker("Range", selection: $selectedRange) {
-            ForEach(InsightsRange.allCases) { range in
-                Text(range.title)
-                    .tag(range)
+        HStack {
+            Text("Range")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Picker("Range", selection: $selectedRange) {
+                ForEach(InsightsRange.allCases) { range in
+                    Text(range.title)
+                        .tag(range)
+                }
             }
+            .pickerStyle(.menu)
+            .accessibilityLabel("Insights range")
         }
-        .pickerStyle(.segmented)
-        .accessibilityLabel("Insights range")
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 16))
     }
 }
 
 private struct InsightsRangeQueryContent: View {
-    @Query private var entries: [LogEntry]
-    @Query private var goals: [DailyGoals]
-
     let range: InsightsRange
     let today: CalendarDay
     var isPresentingPro: Binding<Bool>?
 
     init(range: InsightsRange, today: CalendarDay, isPresentingPro: Binding<Bool>? = nil) {
+        self.range = range
+        self.today = today
+        self.isPresentingPro = isPresentingPro
+    }
+
+    @ViewBuilder
+    var body: some View {
+        if range == .allTime {
+            InsightsAllTimeRangeQueryContent(today: today, isPresentingPro: isPresentingPro)
+        } else {
+            InsightsRangeQueryResults(range: range, today: today, isPresentingPro: isPresentingPro)
+        }
+    }
+}
+
+private struct InsightsAllTimeRangeQueryContent: View {
+    @Query private var earliestEntries: [LogEntry]
+
+    let today: CalendarDay
+    var isPresentingPro: Binding<Bool>?
+
+    init(today: CalendarDay, isPresentingPro: Binding<Bool>?) {
+        self.today = today
+        self.isPresentingPro = isPresentingPro
+        var descriptor = FetchDescriptor<LogEntry>(sortBy: [SortDescriptor(\LogEntry.dateLogged)])
+        descriptor.fetchLimit = 1
+        _earliestEntries = Query(descriptor)
+    }
+
+    @ViewBuilder
+    var body: some View {
+        if let earliestEntry = earliestEntries.first {
+            InsightsRangeQueryResults(
+                range: .allTime,
+                today: today,
+                startingAt: CalendarDay(date: earliestEntry.dateLogged, calendar: today.resolvedCalendar),
+                isPresentingPro: isPresentingPro
+            )
+        } else {
+            ContentUnavailableView("No entries yet", systemImage: "chart.bar.xaxis")
+                .padding(20)
+        }
+    }
+}
+
+private struct InsightsRangeQueryResults: View {
+    @Query private var entries: [LogEntry]
+    @Query private var goals: [DailyGoals]
+
+    let range: InsightsRange
+    let today: CalendarDay
+    let startingAt: CalendarDay?
+    var isPresentingPro: Binding<Bool>?
+
+    init(
+        range: InsightsRange,
+        today: CalendarDay,
+        startingAt: CalendarDay? = nil,
+        isPresentingPro: Binding<Bool>? = nil
+    ) {
         self.isPresentingPro = isPresentingPro
         self.range = range
         self.today = today
-
-        let currentDays = range.days(endingOn: today)
+        self.startingAt = startingAt
+        let currentDays = range.days(endingOn: today, startingAt: startingAt)
         let previousDays = range.previousDays(endingBefore: today)
         let start = previousDays.first?.startDate ?? currentDays.first?.startDate ?? today.startDate
         let end = currentDays.last?.dayInterval.end ?? today.dayInterval.end
@@ -120,7 +187,7 @@ private struct InsightsRangeQueryContent: View {
     }
 
     private var currentPoints: [InsightsDayPoint] {
-        InsightsAnalytics.points(for: entries, days: range.days(endingOn: today))
+        InsightsAnalytics.points(for: entries, days: range.days(endingOn: today, startingAt: startingAt))
     }
 
     private var previousPoints: [InsightsDayPoint] {
@@ -130,30 +197,43 @@ private struct InsightsRangeQueryContent: View {
     var body: some View {
         let currentPoints = currentPoints
         let previousPoints = previousPoints
+        let bucket = InsightsAnalytics.chartBucket(for: range, points: currentPoints)
+        let chartPoints = InsightsAnalytics.chartPoints(
+            for: currentPoints,
+            bucket: bucket
+        )
+        let comparisons = range == .allTime ? [] : previousPoints
 
         VStack(spacing: 16) {
             InsightsSummaryTiles(
                 points: currentPoints,
-                previousPoints: previousPoints
+                previousPoints: comparisons,
+                showsComparison: range != .allTime
             )
 
             ZStack(alignment: .top) {
                 VStack(spacing: 16) {
                     InsightsCaloriesCard(
                         points: currentPoints,
-                        previousPoints: previousPoints,
-                        goals: currentGoals
+                        previousPoints: comparisons,
+                        goals: currentGoals,
+                        chartPoints: chartPoints,
+                        bucket: bucket
                     )
 
                     InsightsMacrosCard(
                         points: currentPoints,
-                        previousPoints: previousPoints,
-                        goals: currentGoals
+                        previousPoints: comparisons,
+                        goals: currentGoals,
+                        chartPoints: chartPoints,
+                        bucket: bucket
                     )
 
                     InsightsNutrientsCard(
                         points: currentPoints,
-                        previousPoints: previousPoints
+                        previousPoints: comparisons,
+                        chartPoints: chartPoints,
+                        bucket: bucket
                     )
                 }
                 .blur(radius: isPresentingPro == nil ? 0 : 6)
@@ -187,6 +267,7 @@ private struct InsightsRangeQueryContent: View {
 private struct InsightsSummaryTiles: View {
     let points: [InsightsDayPoint]
     let previousPoints: [InsightsDayPoint]
+    let showsComparison: Bool
 
     private var summaries: [InsightsSummaryTileModel] {
         [
@@ -215,7 +296,7 @@ private struct InsightsSummaryTiles: View {
                 InsightsStatTile(
                     title: summary.title,
                     value: summary.value.average.insightsFormattedValue(unit: summary.unit),
-                    detail: summary.value.comparisonPercent.insightsComparisonText
+                    detail: showsComparison ? summary.value.comparisonPercent.insightsComparisonText : nil
                 )
             }
         }
@@ -228,468 +309,4 @@ private struct InsightsSummaryTileModel: Identifiable {
     let unit: String
 
     var id: String { title }
-}
-
-private struct InsightsCaloriesCard: View {
-    let points: [InsightsDayPoint]
-    let previousPoints: [InsightsDayPoint]
-    let goals: MacroGoalsSnapshot
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
-    @State private var hasAnimatedIn = false
-
-    private var summary: InsightsMetricSummary {
-        InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.calories)
-    }
-
-    private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
-    }
-
-    private var indexedPoints: [InsightsIndexedPoint] {
-        points.indexedForCharts()
-    }
-
-    var body: some View {
-        InsightsCard(title: "Calories", subtitle: "Daily totals compared with your current goal range.") {
-            InsightsChartHeader(
-                primary: summary.average.insightsFormattedValue(unit: "kcal avg"),
-                secondary: summary.comparisonPercent.insightsComparisonText,
-                chartStyle: $chartStyle
-            )
-
-            selectedPoint.map { point in
-                InsightsSelectedValueLabel(
-                    title: point.day.dayTitle,
-                    value: point.snapshot.totals.calories.insightsFormattedValue(unit: "kcal")
-                )
-            }
-
-            Chart {
-                ForEach(indexedPoints) { point in
-                    switch chartStyle {
-                    case .bars:
-                        BarMark(
-                            x: .value("Day", point.index),
-                            y: .value("Calories", animatedValue(point.snapshot.totals.calories))
-                        )
-                        .foregroundStyle(Color.accentColor.gradient)
-                    case .lines:
-                        LineMark(
-                            x: .value("Day", point.index),
-                            y: .value("Calories", animatedValue(point.snapshot.totals.calories))
-                        )
-                        .foregroundStyle(Color.accentColor)
-                        .interpolationMethod(.catmullRom)
-
-                        PointMark(
-                            x: .value("Day", point.index),
-                            y: .value("Calories", animatedValue(point.snapshot.totals.calories))
-                        )
-                        .foregroundStyle(Color.accentColor)
-                    }
-                }
-                RuleMark(y: .value("Goal", goals.calorieGoal))
-                    .foregroundStyle(.secondary.opacity(0.7))
-                    .lineStyle(.init(lineWidth: 1, dash: [4, 4]))
-            }
-            .chartXAxis {
-                AxisMarks(values: .automatic(desiredCount: 6)) { value in
-                    AxisGridLine()
-                    AxisValueLabel {
-                        if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                            Text(point.day.startDate.formatted(.dateTime.month(.abbreviated).day()))
-                        }
-                    }
-                }
-            }
-            .chartXSelection(value: $selectedIndex)
-            .frame(height: 220)
-            .accessibilityLabel("Calories chart")
-            .onAppear {
-                guard !hasAnimatedIn else { return }
-                withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                    hasAnimatedIn = true
-                }
-            }
-        }
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
-    }
-}
-
-private struct InsightsMacrosCard: View {
-    let points: [InsightsDayPoint]
-    let previousPoints: [InsightsDayPoint]
-    let goals: MacroGoalsSnapshot
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
-    @State private var hasAnimatedIn = false
-
-    private var proteinSummary: InsightsMetricSummary {
-        InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.protein)
-    }
-
-    private var indexedPoints: [InsightsIndexedPoint] {
-        points.indexedForCharts()
-    }
-
-    private var macroSegments: [InsightsMacroSegment] {
-        indexedPoints.flatMap { point in
-            MacroMetric.allCases.map { metric in
-                InsightsMacroSegment(point: point, metric: metric)
-            }
-        }
-    }
-
-    private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
-    }
-
-    var body: some View {
-        InsightsCard(title: "Macros", subtitle: "Composition and protein consistency across logged days.") {
-            InsightsChartHeader(
-                primary: proteinSummary.average.insightsFormattedValue(unit: "g protein avg"),
-                secondary: InsightsAnalytics.proteinAdherence(in: points, proteinGoal: goals.proteinGoalGrams).insightsRateText,
-                chartStyle: $chartStyle
-            )
-
-            selectedPoint.map { point in
-                InsightsSelectedValueLabel(
-                    title: point.day.dayTitle,
-                    value:
-                        "P \(point.snapshot.totals.protein.roundedForDisplay)g • C \(point.snapshot.totals.carbs.roundedForDisplay)g • F \(point.snapshot.totals.fat.roundedForDisplay)g"
-                )
-            }
-
-            Chart {
-                switch chartStyle {
-                case .bars:
-                    ForEach(macroSegments) { segment in
-                        BarMark(
-                            x: .value("Day", segment.point.index),
-                            y: .value("Grams", animatedValue(segment.value))
-                        )
-                        .foregroundStyle(by: .value("Macro", segment.metric.title))
-                    }
-                case .lines:
-                    ForEach(macroSegments) { segment in
-                        LineMark(
-                            x: .value("Day", segment.point.index),
-                            y: .value("Grams", animatedValue(segment.value))
-                        )
-                        .foregroundStyle(by: .value("Macro", segment.metric.title))
-                        .interpolationMethod(.catmullRom)
-                    }
-                }
-            }
-            .chartForegroundStyleScale([
-                MacroMetric.protein.title: MacroMetric.protein.accentColor,
-                MacroMetric.carbs.title: MacroMetric.carbs.accentColor,
-                MacroMetric.fat.title: MacroMetric.fat.accentColor
-            ])
-            .chartXAxis {
-                AxisMarks(values: .automatic(desiredCount: 6)) { value in
-                    AxisGridLine()
-                    AxisValueLabel {
-                        if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                            Text(point.day.startDate.formatted(.dateTime.month(.abbreviated).day()))
-                        }
-                    }
-                }
-            }
-            .chartXSelection(value: $selectedIndex)
-            .frame(height: 240)
-            .accessibilityLabel("Macros chart")
-            .onAppear {
-                guard !hasAnimatedIn else { return }
-                withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                    hasAnimatedIn = true
-                }
-            }
-        }
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
-    }
-}
-
-private struct InsightsNutrientsCard: View {
-    let points: [InsightsDayPoint]
-    let previousPoints: [InsightsDayPoint]
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var selectedNutrient = InsightsNutrient.fiber
-    @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
-    @State private var hasAnimatedIn = false
-
-    private var summary: InsightsNutrientSummary {
-        InsightsAnalytics.nutrientSummary(current: points, previous: previousPoints, nutrient: selectedNutrient)
-    }
-
-    private var indexedPoints: [InsightsIndexedPoint] {
-        points.indexedForCharts()
-    }
-
-    private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
-    }
-
-    var body: some View {
-        InsightsCard(title: "Nutrients", subtitle: coverageText) {
-            Picker("Nutrient", selection: $selectedNutrient) {
-                ForEach(InsightsNutrient.allCases) { nutrient in
-                    Text(nutrient.shortTitle)
-                        .tag(nutrient)
-                }
-            }
-            .pickerStyle(.menu)
-
-            InsightsChartHeader(
-                primary: summary.average.insightsFormattedValue(unit: selectedNutrient.unit),
-                secondary: summary.comparisonPercent.insightsComparisonText,
-                chartStyle: $chartStyle
-            )
-
-            if summary.availableDayCount == 0 {
-                ContentUnavailableView(
-                    "No \(selectedNutrient.title) Data",
-                    systemImage: "chart.bar.xaxis",
-                    description: Text("Logged foods in this range do not include \(selectedNutrient.title.lowercased()) values.")
-                )
-                .frame(minHeight: 180)
-            } else {
-                selectedPoint.flatMap { point in
-                    selectedNutrient.value(from: point.snapshot.secondaryTotals).map { value in
-                        InsightsSelectedValueLabel(
-                            title: point.day.dayTitle,
-                            value: value.insightsFormattedValue(unit: selectedNutrient.unit)
-                        )
-                    }
-                }
-
-                Chart(indexedPoints) { point in
-                    let value = selectedNutrient.value(from: point.snapshot.secondaryTotals)
-
-                    switch chartStyle {
-                    case .bars:
-                        BarMark(
-                            x: .value("Day", point.index),
-                            y: .value(selectedNutrient.title, animatedValue(value ?? 0))
-                        )
-                        .foregroundStyle(Color.green.gradient)
-                        .opacity(value == nil ? 0.18 : 1)
-                    case .lines:
-                        if let value {
-                            LineMark(
-                                x: .value("Day", point.index),
-                                y: .value(selectedNutrient.title, animatedValue(value))
-                            )
-                            .foregroundStyle(Color.green)
-                            .interpolationMethod(.catmullRom)
-
-                            PointMark(
-                                x: .value("Day", point.index),
-                                y: .value(selectedNutrient.title, animatedValue(value))
-                            )
-                            .foregroundStyle(Color.green)
-                        }
-                    }
-                }
-                .chartXAxis {
-                    AxisMarks(values: .automatic(desiredCount: 6)) { value in
-                        AxisGridLine()
-                        AxisValueLabel {
-                            if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                                Text(point.day.startDate.formatted(.dateTime.month(.abbreviated).day()))
-                            }
-                        }
-                    }
-                }
-                .chartXSelection(value: $selectedIndex)
-                .frame(height: 220)
-                .accessibilityLabel("\(selectedNutrient.title) chart")
-            }
-        }
-        .onAppear {
-            guard !hasAnimatedIn else { return }
-            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                hasAnimatedIn = true
-            }
-        }
-    }
-
-    private var coverageText: String {
-        "\(selectedNutrient.title) data available on \(summary.availableDayCount)/\(summary.loggedDayCount) logged days."
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
-    }
-}
-
-private struct InsightsCard<Content: View>: View {
-    let title: String
-    let subtitle: String
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-
-            content
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 24, interactive: false)
-    }
-}
-
-private struct InsightsChartHeader: View {
-    let primary: String
-    let secondary: String
-    @Binding var chartStyle: InsightsChartStyle
-
-    var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(primary)
-                    .font(.title3.weight(.semibold))
-                Text(secondary)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Picker("Chart style", selection: $chartStyle) {
-                ForEach(InsightsChartStyle.allCases) { style in
-                    Text(style.title)
-                        .tag(style)
-                }
-            }
-            .pickerStyle(.segmented)
-            .frame(maxWidth: 148)
-        }
-    }
-}
-
-private struct InsightsStatTile: View {
-    let title: String
-    let value: String
-    let detail: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.headline)
-            Text(detail)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 16, interactive: false)
-    }
-}
-
-private struct InsightsSelectedValueLabel: View {
-    let title: String
-    let value: String
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(title)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .fontWeight(.semibold)
-        }
-        .font(.caption)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Color.primary.opacity(0.08), in: Capsule())
-    }
-}
-
-private struct InsightsIndexedPoint: Identifiable {
-    let index: Int
-    let day: CalendarDay
-    let snapshot: LogEntryDaySnapshot
-
-    var id: Int { index }
-}
-
-private struct InsightsMacroSegment: Identifiable {
-    let point: InsightsIndexedPoint
-    let metric: MacroMetric
-
-    var id: String { "\(point.index)-\(metric.title)" }
-    var value: Double { metric.value(from: point.snapshot.totals) }
-}
-
-private extension [InsightsDayPoint] {
-    func indexedForCharts() -> [InsightsIndexedPoint] {
-        enumerated().map { index, point in
-            InsightsIndexedPoint(index: index, day: point.day, snapshot: point.snapshot)
-        }
-    }
-}
-
-private extension Array {
-    subscript(safe index: Int?) -> Element? {
-        guard let index, indices.contains(index) else { return nil }
-        return self[index]
-    }
-}
-
-private extension Optional where Wrapped == Double {
-    func insightsFormattedValue(unit: String) -> String {
-        guard let self else { return "No data" }
-        return self.insightsFormattedValue(unit: unit)
-    }
-
-    var insightsComparisonText: String {
-        guard let self else { return "No previous comparison" }
-        if self == 0 {
-            return "No change vs previous"
-        }
-
-        let sign = self > 0 ? "+" : ""
-        return "\(sign)\(self.roundedForDisplay)% vs previous"
-    }
-
-    var insightsPercentText: String {
-        guard let self else { return "No data" }
-        return "\(Int((self * 100).rounded()))%"
-    }
-}
-
-private extension Double {
-    func insightsFormattedValue(unit: String) -> String {
-        "\(roundedForDisplay) \(unit)"
-    }
-}
-
-private extension InsightsGoalAdherence {
-    var insightsRateText: String {
-        guard loggedDayCount > 0 else { return "No data" }
-        return "\(successfulDays)/\(loggedDayCount)"
-    }
 }
