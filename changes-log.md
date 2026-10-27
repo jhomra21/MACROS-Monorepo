@@ -13,7 +13,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-27 Dashboard Dynamic Type Legend
 
-- Replaced the fixed-height macro legend with a horizontal default-size layout and stacked accessibility-size layout so the legend can grow without overlapping dashboard content.
+- Replaced the fixed-height macro legend with a horizontal default-size layout and stacked accessibility-size layout so the legend can grow without overlapping dashboard content. Simulator visual check: default and XXXL passed; AX5 confirmed the accessibility layout but the full legend, streak line, and Today header could not be framed together. Evidence: `build/legend-ax-2026-10-27/QA.md`.
 
 ## 2026-10-27 Simulator Barcode Detection
 
