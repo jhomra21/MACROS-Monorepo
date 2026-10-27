@@ -96,8 +96,17 @@ extension FoodCameraSheet {
             let encodedImage = await jpegData
             try Task.checkCancellation()
             captureImageData = encodedImage
+            labelInitialDraft = parsed.draft
             send(.ocrFinished)
-            send(.contentChanged(.label(parsed.draft, notes: parsed.notes, missingNutrients: parsed.missingRequiredNutrients)))
+            send(
+                .contentChanged(
+                    .label(
+                        parsed.draft,
+                        notes: parsed.notes,
+                        missingNutrients: parsed.missingRequiredNutrients,
+                        servings: 1,
+                        logged: false
+                    )))
         } catch {
             guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
             send(.ocrFailed)
@@ -112,9 +121,14 @@ extension FoodCameraSheet {
     }
 
     func logBarcode() {
-        guard case let .barcode(draft, amount, _) = result else { return }
-        let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
+        guard let loggable = loggableResult else { return }
+        let action = loggable.draft.loggingAction(
+            initialDraft: loggable.initialDraft,
+            quantityMode: .servings,
+            quantityAmount: loggable.servings
+        )
         guard action.canLog else {
+            if case .label = result { return }
             send(.contentChanged(.error(action.validationError?.localizedDescription ?? "Review the food details before logging.")))
             return
         }
@@ -122,8 +136,12 @@ extension FoodCameraSheet {
     }
 
     func logBarcode(servings amount: Double) {
-        guard case let .barcode(draft, _, _) = result, flow.isSaving else { return }
-        let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
+        guard let loggable = loggableResult, flow.isSaving else { return }
+        let action = loggable.draft.loggingAction(
+            initialDraft: loggable.initialDraft,
+            quantityMode: .servings,
+            quantityAmount: amount
+        )
         do {
             try LogEntryRepository(
                 modelContext: modelContext,
@@ -131,10 +149,33 @@ extension FoodCameraSheet {
             ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
             send(.logFinished)
             feedbackToken += 1
-            send(.contentChanged(.barcode(draft, servings: amount, logged: true)))
+            send(.contentChanged(loggable.content(amount, true)))
         } catch {
             send(.logFinished)
             send(.contentChanged(.error(error.localizedDescription)))
+        }
+    }
+
+    private var loggableResult:
+        (
+            draft: FoodDraft,
+            initialDraft: FoodDraft,
+            servings: Double,
+            content: (Double, Bool) -> FoodCameraResultPanel.Content
+        )?
+    {
+        switch result {
+        case let .barcode(draft, servings, _):
+            (draft, draft, servings, { .barcode(draft, servings: $0, logged: $1) })
+        case let .label(draft, notes, missing, servings, _):
+            (
+                draft,
+                labelInitialDraft ?? draft,
+                servings,
+                { .label(draft, notes: notes, missingNutrients: missing, servings: $0, logged: $1) }
+            )
+        default:
+            nil
         }
     }
 
@@ -158,16 +199,17 @@ extension FoodCameraSheet {
     }
 
     func showLabelReview() {
-        guard case let .label(draft, notes, missing) = result else { return }
+        guard case let .label(draft, notes, missing, servings, _) = result else { return }
         logDestination = FoodCameraLogDestination(
-            draft: draft, notes: notes, missingNutrients: missing, imageData: captureImageData, quantityAmount: 1)
+            draft: draft, notes: notes, missingNutrients: missing, imageData: captureImageData, quantityAmount: servings)
     }
 
     func resumeScanning() {
         send(.scanAgain)
         guard flow.phase == .scanning else { return }
+        labelInitialDraft = nil
         send(.recoveryDestinationChanged(nil))
-        send(.contentChanged(.message("Point at a barcode, or photograph the nutrition label.")))
+        send(.contentChanged(.hint("Point at a barcode, or photograph the nutrition label.")))
     }
 
     func showError(_ message: String) {

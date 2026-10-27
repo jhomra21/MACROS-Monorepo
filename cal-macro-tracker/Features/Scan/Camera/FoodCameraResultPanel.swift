@@ -3,13 +3,21 @@ import SwiftUI
 struct FoodCameraResultPanel: View {
     enum Content: Equatable {
         case message(String)
+        case hint(String)
         case barcode(FoodDraft, servings: Double, logged: Bool)
-        case label(FoodDraft, notes: [String], missingNutrients: [RequiredNutritionReviewNutrient])
+        case label(
+            FoodDraft,
+            notes: [String],
+            missingNutrients: [RequiredNutritionReviewNutrient],
+            servings: Double,
+            logged: Bool
+        )
         case error(String)
     }
 
     let content: Content
     let onChangeServings: (Double) -> Void
+    let onChangeName: (String) -> Void
     let onLog: () -> Void
     let onDetails: () -> Void
     let onReview: () -> Void
@@ -24,10 +32,21 @@ struct FoodCameraResultPanel: View {
             switch content {
             case let .message(message):
                 status(message)
+            case let .hint(message):
+                HStack(spacing: 12) {
+                    Image(systemName: "viewfinder").foregroundStyle(.secondary)
+                    Text(message).font(.subheadline)
+                }
             case let .barcode(draft, servings, logged):
-                barcodePanel(draft, servings: servings, logged: logged)
-            case let .label(draft, notes, missingNutrients):
-                labelPanel(draft, notes: notes, missingNutrients: missingNutrients)
+                foodPanel(draft, servings: servings, logged: logged)
+            case let .label(draft, notes, missingNutrients, servings, logged):
+                foodPanel(
+                    draft,
+                    servings: servings,
+                    logged: logged,
+                    notes: notes,
+                    missingNutrients: missingNutrients
+                )
             case let .error(message):
                 errorPanel(message)
             }
@@ -45,55 +64,93 @@ struct FoodCameraResultPanel: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func barcodePanel(_ draft: FoodDraft, servings: Double, logged: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(logged ? "Logged" : draft.name)
-                .font(.headline)
-            if logged {
-                Text(draft.name).foregroundStyle(.secondary)
+    private func foodPanel(
+        _ draft: FoodDraft,
+        servings: Double,
+        logged: Bool,
+        notes: [String]? = nil,
+        missingNutrients: [RequiredNutritionReviewNutrient] = []
+    ) -> some View {
+        let isLabel = notes != nil
+        return VStack(alignment: .leading, spacing: 12) {
+            if isLabel == false {
+                Text(logged ? "Logged" : draft.name).font(.headline)
             } else {
-                if draft.brand.isEmpty == false { Text(draft.brand).foregroundStyle(.secondary) }
-                Text(draft.servingDescription).font(.subheadline)
+                if logged {
+                    Text("Logged").font(.headline)
+                    Text(draft.name).foregroundStyle(.secondary)
+                } else {
+                    TextField("Name", text: Binding(get: { draft.name }, set: onChangeName))
+                        .font(.headline)
+                        .submitLabel(.done)
+                }
+            }
+            if logged {
+                if isLabel == false { Text(draft.name).foregroundStyle(.secondary) }
+            } else {
+                if isLabel == false {
+                    if draft.brand.isEmpty == false { Text(draft.brand).foregroundStyle(.secondary) }
+                }
+                if isLabel {
+                    Text("Serving: \(draft.servingDescription)").font(.subheadline)
+                } else {
+                    Text(draft.servingDescription).font(.subheadline)
+                }
                 Text(nutritionLine(draft))
                     .font(.subheadline.weight(.medium))
+                ForEach(Array((notes ?? []).enumerated()), id: \.offset) { _, note in
+                    Text(note).font(.footnote).foregroundStyle(.secondary)
+                }
+                if missingNutrients.isEmpty == false {
+                    Text(NutritionLabelParser.reviewRequiredNutrientsMessage(missingNutrients))
+                        .font(.footnote).foregroundStyle(.orange)
+                }
                 Stepper(value: Binding(get: { servings }, set: onChangeServings), in: 0.25...20, step: 0.25) {
                     Text("Servings: \(servings.formatted(.number.precision(.fractionLength(0...2))))")
                 }
                 ViewThatFits(in: .horizontal) {
-                    HStack {
-                        Button("Details", action: onDetails).buttonStyle(.bordered)
-                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
-                    }
-                    VStack {
-                        Button("Details", action: onDetails).buttonStyle(.bordered)
-                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                    if isLabel == false {
+                        HStack {
+                            Button("Details", action: onDetails).buttonStyle(.bordered)
+                            Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                        }
+                        VStack {
+                            Button("Details", action: onDetails).buttonStyle(.bordered)
+                            Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                        }
+                    } else {
+                        labelActions(draft: draft, missingNutrients: missingNutrients, servings: servings)
                     }
                 }
             }
-            Button("Scan again", action: onRetry).font(.subheadline)
+            Button(isLabel ? "Retake" : "Scan again", action: onRetry).font(.subheadline)
         }
     }
 
-    private func labelPanel(
-        _ draft: FoodDraft,
-        notes: [String],
-        missingNutrients: [RequiredNutritionReviewNutrient]
+    private func labelActions(
+        draft: FoodDraft,
+        missingNutrients: [RequiredNutritionReviewNutrient],
+        servings: Double
     ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(draft.name.isEmpty ? "Label read" : draft.name).font(.headline)
-            if draft.servingDescription != FoodDraft.defaultServingDescription {
-                Text("Serving: \(draft.servingDescription)").font(.subheadline)
+        Group {
+            if missingNutrients.isEmpty {
+                ViewThatFits(in: .horizontal) {
+                    HStack {
+                        Button("Edit details", action: onReview).buttonStyle(.bordered)
+                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                            .disabled(
+                                draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog == false)
+                    }
+                    VStack {
+                        Button("Edit details", action: onReview).buttonStyle(.bordered)
+                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                            .disabled(
+                                draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog == false)
+                    }
+                }
+            } else {
+                Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
             }
-            Text(nutritionLine(draft)).font(.subheadline.weight(.medium))
-            ForEach(Array(notes.enumerated()), id: \.offset) { _, note in
-                Text(note).font(.footnote).foregroundStyle(.secondary)
-            }
-            if missingNutrients.isEmpty == false {
-                Text(NutritionLabelParser.reviewRequiredNutrientsMessage(missingNutrients))
-                    .font(.footnote).foregroundStyle(.orange)
-            }
-            Button("Review and log", action: onReview).buttonStyle(.borderedProminent)
-            Button("Retake", action: onRetry)
         }
     }
 
