@@ -38,6 +38,7 @@ struct FoodCameraSheet: View {
     @State var route: FoodCameraRoute?
     @State var feedbackToken = 0
     @State var permissionDenied = false
+    @State var logError: String?
 
     let barcodeScanner = BarcodeImageScanner()
     let labelRecognizer = NutritionLabelTextRecognizer()
@@ -188,6 +189,17 @@ struct FoodCameraSheet: View {
         .onChange(of: isPresented) { _, presented in
             if presented == false { send(.dismissed) }
         }
+        .alert(
+            "Couldn't log",
+            isPresented: Binding(
+                get: { logError != nil },
+                set: { if $0 == false { logError = nil } }
+            )
+        ) {
+            Button("OK") { logError = nil }
+        } message: {
+            Text(logError ?? "")
+        }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(30)
@@ -223,12 +235,9 @@ struct FoodCameraSheet: View {
             showSettings: permissionDenied,
             onSettings: openSettings
         )
-        if dynamicTypeSize.isAccessibilitySize {
-            ScrollView { panel }
-                .frame(maxHeight: 440)
-        } else {
-            panel.fixedSize(horizontal: false, vertical: true)
-        }
+        ScrollView { panel }
+            .frame(maxHeight: 440)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     @discardableResult

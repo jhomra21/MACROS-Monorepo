@@ -38,12 +38,13 @@ struct FoodCameraResultPanel: View {
                     Text(message).font(.subheadline)
                 }
             case let .barcode(draft, servings, logged):
-                foodPanel(draft, servings: servings, logged: logged)
+                foodPanel(draft, servings: servings, logged: logged, isLabel: false)
             case let .label(draft, notes, missingNutrients, servings, logged):
                 foodPanel(
                     draft,
                     servings: servings,
                     logged: logged,
+                    isLabel: true,
                     notes: notes,
                     missingNutrients: missingNutrients
                 )
@@ -68,14 +69,23 @@ struct FoodCameraResultPanel: View {
         _ draft: FoodDraft,
         servings: Double,
         logged: Bool,
-        notes: [String]? = nil,
+        isLabel: Bool,
+        notes: [String] = [],
         missingNutrients: [RequiredNutritionReviewNutrient] = []
     ) -> some View {
-        let isLabel = notes != nil
-        return VStack(alignment: .leading, spacing: 12) {
-            if isLabel == false {
-                Text(logged ? "Logged" : draft.name).font(.headline)
+        let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
+        let detailsButton = Group {
+            if isLabel {
+                Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
             } else {
+                Button("Details", action: onDetails).buttonStyle(.bordered)
+            }
+        }
+        let logButton = Button("Log", action: onLog)
+            .buttonStyle(.borderedProminent)
+            .disabled(isLabel && canLog == false)
+        return VStack(alignment: .leading, spacing: 12) {
+            if isLabel {
                 if logged {
                     Text("Logged").font(.headline)
                     Text(draft.name).foregroundStyle(.secondary)
@@ -84,21 +94,24 @@ struct FoodCameraResultPanel: View {
                         .font(.headline)
                         .submitLabel(.done)
                 }
-            }
-            if logged {
-                if isLabel == false { Text(draft.name).foregroundStyle(.secondary) }
             } else {
-                if isLabel == false {
-                    if draft.brand.isEmpty == false { Text(draft.brand).foregroundStyle(.secondary) }
+                Text(logged ? "Logged" : draft.name).font(.headline)
+                if logged { Text(draft.name).foregroundStyle(.secondary) }
+            }
+            if logged == false {
+                if isLabel == false, draft.brand.isEmpty == false {
+                    Text(draft.brand).foregroundStyle(.secondary)
                 }
                 if isLabel {
-                    Text("Serving: \(draft.servingDescription)").font(.subheadline)
+                    if draft.servingDescription != FoodDraft.defaultServingDescription {
+                        Text("Serving: \(draft.servingDescription)").font(.subheadline)
+                    }
                 } else {
                     Text(draft.servingDescription).font(.subheadline)
                 }
                 Text(nutritionLine(draft))
                     .font(.subheadline.weight(.medium))
-                ForEach(Array((notes ?? []).enumerated()), id: \.offset) { _, note in
+                ForEach(Array(notes.enumerated()), id: \.offset) { _, note in
                     Text(note).font(.footnote).foregroundStyle(.secondary)
                 }
                 if missingNutrients.isEmpty == false {
@@ -109,48 +122,21 @@ struct FoodCameraResultPanel: View {
                     Text("Servings: \(servings.formatted(.number.precision(.fractionLength(0...2))))")
                 }
                 ViewThatFits(in: .horizontal) {
-                    if isLabel == false {
+                    if missingNutrients.isEmpty {
                         HStack {
-                            Button("Details", action: onDetails).buttonStyle(.bordered)
-                            Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                            detailsButton
+                            logButton
                         }
                         VStack {
-                            Button("Details", action: onDetails).buttonStyle(.bordered)
-                            Button("Log", action: onLog).buttonStyle(.borderedProminent)
+                            detailsButton
+                            logButton
                         }
                     } else {
-                        labelActions(draft: draft, missingNutrients: missingNutrients, servings: servings)
+                        Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
                     }
                 }
             }
             Button(isLabel ? "Retake" : "Scan again", action: onRetry).font(.subheadline)
-        }
-    }
-
-    private func labelActions(
-        draft: FoodDraft,
-        missingNutrients: [RequiredNutritionReviewNutrient],
-        servings: Double
-    ) -> some View {
-        Group {
-            if missingNutrients.isEmpty {
-                ViewThatFits(in: .horizontal) {
-                    HStack {
-                        Button("Edit details", action: onReview).buttonStyle(.bordered)
-                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
-                            .disabled(
-                                draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog == false)
-                    }
-                    VStack {
-                        Button("Edit details", action: onReview).buttonStyle(.bordered)
-                        Button("Log", action: onLog).buttonStyle(.borderedProminent)
-                            .disabled(
-                                draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog == false)
-                    }
-                }
-            } else {
-                Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
-            }
         }
     }
 

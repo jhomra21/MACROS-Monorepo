@@ -149,31 +149,26 @@ extension FoodCameraSheet {
             ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
             send(.logFinished)
             feedbackToken += 1
-            send(.contentChanged(loggable.content(amount, true)))
+            switch result {
+            case .barcode(let draft, _, _):
+                send(.contentChanged(.barcode(draft, servings: amount, logged: true)))
+            case let .label(draft, notes, missing, _, _):
+                send(.contentChanged(.label(draft, notes: notes, missingNutrients: missing, servings: amount, logged: true)))
+            default:
+                break
+            }
         } catch {
             send(.logFinished)
-            send(.contentChanged(.error(error.localizedDescription)))
+            logError = error.localizedDescription
         }
     }
 
-    private var loggableResult:
-        (
-            draft: FoodDraft,
-            initialDraft: FoodDraft,
-            servings: Double,
-            content: (Double, Bool) -> FoodCameraResultPanel.Content
-        )?
-    {
+    private var loggableResult: (draft: FoodDraft, initialDraft: FoodDraft, servings: Double)? {
         switch result {
         case let .barcode(draft, servings, _):
-            (draft, draft, servings, { .barcode(draft, servings: $0, logged: $1) })
-        case let .label(draft, notes, missing, servings, _):
-            (
-                draft,
-                labelInitialDraft ?? draft,
-                servings,
-                { .label(draft, notes: notes, missingNutrients: missing, servings: $0, logged: $1) }
-            )
+            (draft, draft, servings)
+        case let .label(draft, _, _, servings, _):
+            (draft, labelInitialDraft ?? draft, servings)
         default:
             nil
         }
