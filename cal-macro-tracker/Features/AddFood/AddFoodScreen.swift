@@ -15,6 +15,8 @@ struct AddFoodScreen: View {
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var isFoodCameraPresented = false
+    @Namespace private var cameraTransition
+    @State private var cameraTransitionSourceID: String?
 
     let remotePageSize = 12
     let packagedFoodSearchClient = PackagedFoodSearchClient()
@@ -97,6 +99,12 @@ struct AddFoodScreen: View {
             NavigationStack {
                 FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
             }
+            .navigationTransition(
+                .zoom(
+                    sourceID: cameraTransitionSourceID ?? "scan-barcode",
+                    in: cameraTransition
+                )
+            )
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
@@ -119,16 +127,23 @@ struct AddFoodScreen: View {
         BottomPinnedDualActionBar(
             leadingAction: BottomPinnedDualAction(
                 title: "Scan Barcode",
-                systemImage: "barcode.viewfinder"
-            ) {
-                isFoodCameraPresented = true
-            },
+                systemImage: "barcode.viewfinder",
+                action: {
+                    cameraTransitionSourceID = "scan-barcode"
+                    isFoodCameraPresented = true
+                },
+                transitionSourceID: "scan-barcode"
+            ),
             trailingAction: BottomPinnedDualAction(
                 title: "Scan Label",
-                systemImage: "camera.viewfinder"
-            ) {
-                isFoodCameraPresented = true
-            },
+                systemImage: "camera.viewfinder",
+                action: {
+                    cameraTransitionSourceID = "scan-label"
+                    isFoodCameraPresented = true
+                },
+                transitionSourceID: "scan-label"
+            ),
+            transitionNamespace: cameraTransition,
             displayMode: isScanActionBarCompact ? .compactIcon : .expanded,
             topPadding: 0,
             bottomOffset: 6

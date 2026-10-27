@@ -7,6 +7,8 @@ import UIKit
 import VisionKit
 
 struct FoodCameraSheet: View {
+    static let zoomTransitionID = "food-camera"
+
     @Environment(\.dismiss) var dismiss
     @Environment(\.isPresented) var isPresented
     @Environment(\.modelContext) var modelContext
@@ -342,6 +344,8 @@ enum FoodCameraRoute: String, Identifiable, Hashable {
 import SwiftUI
 
 struct FoodCameraSheet: View {
+    static let zoomTransitionID = "food-camera"
+
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 

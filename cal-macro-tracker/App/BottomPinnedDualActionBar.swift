@@ -8,6 +8,7 @@ struct BottomPinnedDualAction {
     let systemImage: String
     let action: () -> Void
     var role: ButtonRole? = nil
+    var transitionSourceID: String? = nil
 }
 
 struct BottomPinnedDualActionBar: View {
@@ -19,6 +20,7 @@ struct BottomPinnedDualActionBar: View {
 
     let leadingAction: BottomPinnedDualAction
     let trailingAction: BottomPinnedDualAction
+    var transitionNamespace: Namespace.ID? = nil
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var compactActionsAreHorizontal = false
     var topPadding: CGFloat = 10
@@ -84,8 +86,9 @@ struct BottomPinnedDualActionBar: View {
         }
     }
 
+    @ViewBuilder
     private func actionButton(_ action: BottomPinnedDualAction) -> some View {
-        AppAccentActionButton(
+        let button = AppAccentActionButton(
             title: action.title,
             systemImage: action.systemImage,
             isCompact: isCompact,
@@ -94,6 +97,14 @@ struct BottomPinnedDualActionBar: View {
             role: action.role
         )
         .accessibilityLabel(action.title)
+
+        if let sourceID = action.transitionSourceID, let namespace = transitionNamespace {
+            button.matchedTransitionSource(id: sourceID, in: namespace) {
+                $0.clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            }
+        } else {
+            button
+        }
     }
 
     private var bottomBarHeight: CGFloat {

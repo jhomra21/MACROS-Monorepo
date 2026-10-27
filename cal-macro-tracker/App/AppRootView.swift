@@ -29,6 +29,7 @@ struct AppRootView: View {
 
     @Binding private var pendingOpenRequest: AppOpenRequest?
 
+    @Namespace private var cameraTransition
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var dashboardResetToken = 0
@@ -42,6 +43,7 @@ struct AppRootView: View {
         NavigationStack(path: $path) {
             DashboardScreen(
                 resetToTodayToken: dashboardResetToken,
+                cameraTransitionNamespace: cameraTransition,
                 onOpenAddFood: { loggingDay in
                     presentSheet(.addFood(.addFood, loggingDay))
                 },
@@ -74,9 +76,7 @@ struct AppRootView: View {
             }
         }
         .sheet(item: $sheetDestination) { destination in
-            NavigationStack {
-                AppRootSheetContent(destination: destination)
-            }
+            sheetPresentation(for: destination)
         }
         .onChange(of: pendingOpenRequest) { _, newValue in
             applyPendingOpenRequest(newValue)
@@ -86,6 +86,21 @@ struct AppRootView: View {
             await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
         .modifier(ReviewPromptModifier())
+    }
+
+    @ViewBuilder
+    private func sheetPresentation(for destination: AppRootSheetDestination) -> some View {
+        if case .foodCamera = destination {
+            NavigationStack {
+                AppRootSheetContent(destination: destination)
+            }
+            .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+        } else {
+            NavigationStack {
+                AppRootSheetContent(destination: destination)
+            }
+            .navigationTransition(.automatic)
+        }
     }
 
     private func open(_ route: Route) {
