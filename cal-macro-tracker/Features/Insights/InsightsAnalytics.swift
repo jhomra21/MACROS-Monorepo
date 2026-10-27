@@ -247,14 +247,17 @@ enum InsightsAnalytics {
             return .monthly
         case .allTime:
             guard let first = points.first?.day, let last = points.last?.day else { return .weekly }
-            let span = CalendarDay.dateDistance(from: first, through: last)
-            return span < 180 ? .weekly : .monthly
+            let calendar = first.resolvedCalendar
+            guard let sixMonthsAfterStart = calendar.date(byAdding: .month, value: 6, to: first.startDate) else {
+                return .monthly
+            }
+            return last.startDate < sixMonthsAfterStart ? .weekly : .monthly
         }
     }
 
     static func chartPoints(for points: [InsightsDayPoint], bucket: InsightsChartBucket) -> [InsightsChartPoint] {
         guard bucket != .daily else {
-            return points.map { point in
+            return points.filter(\.isLogged).map { point in
                 InsightsChartPoint(
                     day: point.day,
                     totals: point.snapshot.totals,
