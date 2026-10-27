@@ -11,6 +11,7 @@
 import type * as authHelpers from "../authHelpers.js";
 import type * as bootstrap from "../bootstrap.js";
 import type * as http from "../http.js";
+import type * as quotas from "../quotas.js";
 import type * as sharing from "../sharing.js";
 import type * as sharingModel from "../sharingModel.js";
 
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   authHelpers: typeof authHelpers;
   bootstrap: typeof bootstrap;
   http: typeof http;
+  quotas: typeof quotas;
   sharing: typeof sharing;
   sharingModel: typeof sharingModel;
 }>;

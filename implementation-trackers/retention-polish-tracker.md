@@ -1,5 +1,10 @@
 # Retention and Polish Tracker (WS7)
 
+## Pro paywall success flow (2026-10-26)
+
+- Paywall now opens full-height from all presenters; successful purchase, restore, or redeem shows a Pro activation state with haptic feedback and a context-specific action.
+- Simulator evidence and limits: `build/paywall-success-qa-2026-10-26/QA.md`.
+
 ## Follow-ups from WS1 review
 
 - Treat USDA-proxy `429` as non-retryable in the iOS barcode client, show “Too many lookups, try again in a minute” (using `Retry-After` when present), and stop the immediate retry.

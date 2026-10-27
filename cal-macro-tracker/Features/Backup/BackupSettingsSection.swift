@@ -60,7 +60,7 @@ struct BackupSettingsSection: View {
                     case let .share(url):
                         BackupFileShareSheet(url: url)
                     case let .paywall(context):
-                        ProPaywallSheet(context: context).presentationDetents([.medium, .large])
+                        ProPaywallSheet(context: context)
                     }
                 }
                 .errorBanner(message: $errorMessage)

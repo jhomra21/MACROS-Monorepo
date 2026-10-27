@@ -41,29 +41,44 @@ struct ProPaywallSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.isProPaywallPresented) private var isProPaywallPresented = false
     @Environment(PurchaseStore.self) private var store
+    @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedPlan = ProPlan.yearly
     @State private var isRedeeming = false
+    @State private var successFeedbackToken = 0
+    @State private var successAnimationToken = 0
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    Image(systemName: store.hasPro ? "checkmark.seal.fill" : "sparkles")
-                        .font(.system(size: 44, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
-                        .accessibilityHidden(true)
-                    Text(ProLegalLinks.name)
-                        .font(.title.bold())
-                    Text(store.hasPro ? "Your Pro features are ready." : "See your progress. Make it yours.")
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                    VStack(alignment: .leading, spacing: 10) {
-                        ForEach(context.benefits) { benefit in
-                            Label(benefit.title, systemImage: benefit.symbol)
+                    if store.hasPro {
+                        ProPurchaseSuccessView(
+                            context: context,
+                            activation: activationDescription,
+                            animationToken: successAnimationToken,
+                            reduceMotion: reduceMotion,
+                            dismiss: { dismiss() }
+                        )
+                        .transition(successTransition)
+                    } else {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 44, weight: .semibold))
+                            .foregroundStyle(Color.accentColor)
+                            .accessibilityHidden(true)
+                        Text(ProLegalLinks.name)
+                            .font(.title.bold())
+                        Text("See your progress. Make it yours.")
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(context.benefits) { benefit in
+                                Label(benefit.title, systemImage: benefit.symbol)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     if !store.hasPro {
                         GlassEffectContainer(spacing: 12) {
@@ -74,35 +89,36 @@ struct ProPaywallSheet: View {
                             }
                         }
                     }
-                    PurchaseFeedbackText(feedback: store.feedback)
-                    if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
-                        Button("Retry Purchase Options") {
-                            Task { await store.loadProducts() }
-                        }
+                    if !store.hasPro || store.feedback.isError {
+                        PurchaseFeedbackText(feedback: store.feedback)
                     }
-                    AppAccentActionButton(
-                        title: store.hasPro ? "Done" : purchaseTitle,
-                        systemImage: store.hasPro ? "checkmark" : "lock.open.fill",
-                        isCompact: false,
-                        isDisabled: !store.hasPro && (isBusy || store.products[selectedPlan] == nil)
-                    ) {
-                        if store.hasPro {
-                            dismiss()
-                        } else {
+                    if !store.hasPro {
+                        if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
+                            Button("Retry Purchase Options") {
+                                Task { await store.loadProducts() }
+                            }
+                        }
+                        AppAccentActionButton(
+                            title: purchaseTitle,
+                            systemImage: "lock.open.fill",
+                            isCompact: false,
+                            isDisabled: isBusy || store.products[selectedPlan] == nil
+                        ) {
                             Task { await store.purchase(selectedPlan) }
                         }
-                    }
-                    Button("Restore Purchases") {
-                        Task { await store.restorePurchases() }
-                    }
-                    .disabled(isBusy)
-                    Button("Redeem Code") { isRedeeming = true }
+                        Button("Restore Purchases") {
+                            Task { await store.restorePurchases() }
+                        }
                         .disabled(isBusy)
-                    legalFooter
+                        Button("Redeem Code") { isRedeeming = true }
+                            .disabled(isBusy)
+                        legalFooter
+                    }
                 }
                 .padding(24)
                 .frame(maxWidth: 560)
                 .frame(maxWidth: .infinity)
+                .animation(reduceMotion ? nil : .smooth, value: store.hasPro)
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -112,13 +128,44 @@ struct ProPaywallSheet: View {
             .task { await store.loadProducts() }
             .offerCodeRedemption(isPresented: $isRedeeming)
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear { isProPaywallPresented = true }
         .onDisappear { isProPaywallPresented = false }
+        .onChange(of: store.hasPro) { wasPro, isPro in
+            guard !wasPro, isPro else { return }
+            withAnimation(reduceMotion ? nil : .smooth) {
+                successAnimationToken += 1
+            }
+            successFeedbackToken += 1
+        }
+        .sensoryFeedback(.success, trigger: successFeedbackToken)
     }
 
     private var isBusy: Bool { store.isPurchasing || store.isRestoring }
+
+    private var successTransition: AnyTransition {
+        reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98))
+    }
+
+    private var activationDescription: String {
+        switch entitlements.proSource {
+        case .lifetime, .legacyFullUnlock:
+            return "Lifetime access"
+        case .yearly, .monthly:
+            let plan: ProPlan = entitlements.proSource == .yearly ? .yearly : .monthly
+            let status = store.subscriptionStatuses[plan.productID] ?? .active
+            let detail: String
+            if status == .active, let expiration = entitlements.proExpirationDate {
+                detail = "Through \(expiration.formatted(date: .abbreviated, time: .omitted))"
+            } else {
+                detail = status.text
+            }
+            return "\(plan.title) · \(detail)"
+        case nil:
+            return "Pro access"
+        }
+    }
 
     private var hasYearlyTrial: Bool {
         store.isEligibleForIntroOffer
@@ -204,6 +251,75 @@ struct ProPaywallSheet: View {
     }
 }
 
+private struct ProPurchaseSuccessView: View {
+    let context: ProPaywallContext
+    let activation: String
+    let animationToken: Int
+    let reduceMotion: Bool
+    let dismiss: () -> Void
+
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if reduceMotion {
+                successMark
+            } else {
+                successMark
+                    .symbolEffect(.bounce, value: animationToken)
+            }
+        }
+        .accessibilityHidden(true)
+        Text("You’re all set")
+            .font(.title.bold())
+        Text("Welcome to \(ProLegalLinks.name)")
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+        Text(activation)
+            .font(.subheadline.weight(.semibold))
+            .multilineTextAlignment(.center)
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(context.benefits) { benefit in
+                HStack(spacing: 10) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Color.accentColor)
+                    Text(benefit.title)
+                        .foregroundStyle(.primary)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        AppAccentActionButton(
+            title: actionTitle,
+            systemImage: "arrow.right",
+            isCompact: false,
+            isDisabled: false,
+            action: dismiss
+        )
+    }
+
+    private var successMark: some View {
+        Image(systemName: "checkmark.seal.fill")
+            .font(.system(size: 52, weight: .semibold))
+            .foregroundStyle(Color.accentColor)
+    }
+
+    private var actionTitle: String {
+        guard dynamicTypeSize.isAccessibilitySize else {
+            return context == .general ? "Start using Pro" : "Open \(context.title)"
+        }
+        return switch context {
+        case .insights: "Open Insights"
+        case .ringColors: "Open Ring colors"
+        case .weightTrends: "Open Weight trends"
+        case .healthWeightImport: "Open Health import"
+        case .backup: "Open Backup"
+        case .reminders: "Open Reminders"
+        case .general: "Start Pro"
+        }
+    }
+}
+
 extension Product {
     var proPrice: String {
         guard let period = subscription?.subscriptionPeriod else { return "\(displayPrice) once" }
@@ -231,5 +347,11 @@ struct PurchaseFeedbackText: View {
         case nil:
             EmptyView()
         }
+    }
+}
+
+private extension PurchaseStore.Feedback? {
+    var isError: Bool {
+        if case .error? = self { true } else { false }
     }
 }

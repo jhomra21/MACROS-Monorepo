@@ -75,6 +75,12 @@ Additional Apple APIs checked: https://developer.apple.com/documentation/storeki
 - `stop()` cancels/clears the shared task. A cancelled source returning late cannot publish or clear a newer task. Cancellation results derive from the actual committed observable entitlement, avoiding duplicate cached state. Normal concurrent refreshes perform no competing reads.
 - Validation: 18 `ProEntitlementTests` + 6 `InsightsAnalyticsTests` pass (24 total); format/build/catalog/diff checks pass. Catalog activation probe still fails setup, exit 65 (`SKInternalErrorDomain Code=3`, `WS2.StoreKitSetup Code=1`), so the full StoreKit suite and purchase-path E2E remain blocked. Evidence: `build/ws2-qa-2026-10-25/coalescing-*.log` / `.xcresult` and `QA.md`. Swift Task awaiting/cancellation semantics verified against https://developer.apple.com/documentation/swift/task.
 
+### 2026-10-26 StoreKit test failure follow-up
+
+- The `.generic(.userCancelled)` StoreKit test error was not a cancellation result: StoreKit Testing surfaced `ASDServerErrorDomain Code=907`, which `Product.purchase()` correctly treats as a purchase failure. The existing test now checks both documented silent cancellation variants (`.userCancelled` and thrown `StoreKitError.userCancelled`) through the injected purchase action; it keeps all no-Pro/no-feedback/not-purchasing assertions.
+- `SKTestSession.expireSubscription` updated its own expiration date but did not update `Transaction.currentEntitlements` or emit an expired status until `AppStore.sync()`. The expiry test now syncs after that external test-session mutation, then keeps its original listener-driven assertions and five-second deadline. No polling, timeout increase, or production behavior change.
+- Focused StoreKit runs pass for cancellation (both paths), legacy lifetime, Ask to Buy approval, and expiry with sync. Whole `PurchaseStoreStoreKitTests` passes 15/15; `ProEntitlementTests` passes 18/18. Formatting, app build, StoreKit config validation, and diff checks pass. Evidence and logs: `build/storekit-fixes-2026-10-26/QA.md`.
+
 ### WS2 failure inventory (2026-10-25, before implementation)
 
 - Catalog network failure must leave all plans unavailable and allow a successful retry.

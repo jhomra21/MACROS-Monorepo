@@ -66,7 +66,6 @@ struct ReminderSettingsSection: View {
         }
         .sheet(isPresented: $isPresentingPro) {
             ProPaywallSheet(context: .reminders)
-                .presentationDetents([.medium, .large])
         }
     }
 
