@@ -16,7 +16,6 @@ extension FoodCameraSheet {
     }
 
     func resolveBarcode(_ barcode: String) async {
-        send(.contentChanged(.message("Looking up…")))
         feedbackToken += 1
         do {
             let resolver = BarcodeLookupResolver(foodRepository: foodRepository, client: OpenFoodFactsClient())
@@ -46,10 +45,8 @@ extension FoodCameraSheet {
     }
 
     func capturePhoto() async {
-        send(.recoveryDestinationChanged(nil))
-        send(.contentChanged(.message("Reading label…")))
         do {
-            guard let scanner, scanner.isScanning else {
+            guard let scanner = scannerController?.scanner, scanner.isScanning else {
                 let canCaptureStill =
                     UIImagePickerController.isSourceTypeAvailable(.camera)
                     && AVCaptureDevice.authorizationStatus(for: .video) != .denied
@@ -73,7 +70,6 @@ extension FoodCameraSheet {
 
     func processPendingImage() async {
         guard let image = pendingImage else { return }
-        send(.contentChanged(.message("Looking for a barcode…")))
         do {
             let barcode = try await barcodeScanner.scanBarcode(from: image)
             try Task.checkCancellation()
@@ -93,7 +89,6 @@ extension FoodCameraSheet {
     }
 
     func readLabel(_ image: UIImage, barcodeWasNotFound: Bool = false) async {
-        send(.contentChanged(.message("Reading label…")))
         do {
             async let recognizedText = labelRecognizer.recognizeText(in: image)
             async let jpegData = ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
@@ -170,8 +165,6 @@ extension FoodCameraSheet {
     func resumeScanning() {
         let effects = send(.scanAgain)
         guard effects.contains(.startScanning) || flow.isInactive else { return }
-        processingTask?.cancel()
-        processingTask = nil
         send(.recoveryDestinationChanged(nil))
         send(.contentChanged(.message("Point at a barcode, or photograph the nutrition label.")))
     }
@@ -192,6 +185,19 @@ extension FoodCameraSheet {
     func startProcessing(_ operation: @escaping @MainActor () async -> Void) {
         processingTask?.cancel()
         processingTask = Task { await operation() }
+    }
+
+    func startScanner() {
+        guard let scannerController else {
+            pendingScannerStart = true
+            return
+        }
+        pendingScannerStart = false
+        do {
+            try scannerController.startScanning()
+        } catch {
+            showError(error.localizedDescription)
+        }
     }
 
     func openSettings() {

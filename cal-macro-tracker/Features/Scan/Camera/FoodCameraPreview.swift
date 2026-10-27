@@ -3,11 +3,30 @@ import SwiftUI
 import Vision
 import VisionKit
 
+@MainActor
+final class FoodCameraScannerController {
+    let scanner: DataScannerViewController
+    private let reset: () -> Void
+
+    init(scanner: DataScannerViewController, reset: @escaping () -> Void) {
+        self.scanner = scanner
+        self.reset = reset
+    }
+
+    func startScanning() throws {
+        guard scanner.isScanning == false else { return }
+        reset()
+        try scanner.startScanning()
+    }
+
+    func stopScanning() {
+        scanner.stopScanning()
+    }
+}
+
 struct FoodCameraPreview: UIViewControllerRepresentable {
-    let isActive: Bool
-    let onReady: (DataScannerViewController) -> Void
+    let onReady: (FoodCameraScannerController) -> Void
     let onBarcode: (String) -> Void
-    let onFailure: (String) -> Void
 
     func makeCoordinator() -> Coordinator {
         Coordinator(onBarcode: onBarcode)
@@ -24,23 +43,15 @@ struct FoodCameraPreview: UIViewControllerRepresentable {
             isHighlightingEnabled: true
         )
         scanner.delegate = context.coordinator
-        onReady(scanner)
+        let coordinator = context.coordinator
+        let controller = FoodCameraScannerController(scanner: scanner, reset: { [weak coordinator] in coordinator?.reset() })
+        // Report readiness after SwiftUI finishes installing this controller.
+        Task { @MainActor in onReady(controller) }
         return scanner
     }
 
     func updateUIViewController(_ scanner: DataScannerViewController, context: Context) {
         context.coordinator.onBarcode = onBarcode
-        guard scanner.isScanning != isActive else { return }
-        if isActive {
-            context.coordinator.reset()
-            do {
-                try scanner.startScanning()
-            } catch {
-                onFailure(error.localizedDescription)
-            }
-        } else {
-            scanner.stopScanning()
-        }
     }
 
     final class Coordinator: NSObject, DataScannerViewControllerDelegate {
@@ -65,7 +76,6 @@ struct FoodCameraPreview: UIViewControllerRepresentable {
                     continue
                 }
                 hasReportedBarcode = true
-                dataScanner.stopScanning()
                 onBarcode(value)
                 return
             }

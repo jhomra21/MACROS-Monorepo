@@ -17,7 +17,8 @@ struct FoodCameraSheet: View {
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
-    @State var scanner: DataScannerViewController?
+    @State var scannerController: FoodCameraScannerController?
+    @State var pendingScannerStart = false
     @State var selectedPhoto: PhotosPickerItem?
     @State var importingPhoto = false
     @State var showingLibraryPicker = false
@@ -223,9 +224,13 @@ struct FoodCameraSheet: View {
         for effect in effects {
             switch effect {
             case .startScanning:
-                break
+                startScanner()
             case .stopScanning:
-                break
+                pendingScannerStart = false
+                scannerController?.stopScanning()
+            case .torchOn:
+                torch.set(on: true)
+                torchIsOn = torch.isAvailable
             case .torchOff:
                 torch.set(on: false)
                 torchIsOn = false
@@ -241,6 +246,7 @@ struct FoodCameraSheet: View {
                 startProcessing { await resolveBarcode(barcode) }
             case .scanImage:
                 guard pendingImage != nil else { continue }
+                send(.contentChanged(.message("Looking for a barcode…")))
                 startProcessing { await processPendingImage() }
             case .capturePhoto:
                 recoveryDestination = nil
@@ -261,10 +267,11 @@ struct FoodCameraSheet: View {
         ZStack(alignment: .topTrailing) {
             if canLiveScan {
                 FoodCameraPreview(
-                    isActive: active && (busy == false || isCapturingPhoto),
-                    onReady: { scanner = $0 },
-                    onBarcode: { foundBarcode($0) },
-                    onFailure: showError
+                    onReady: { controller in
+                        scannerController = controller
+                        if pendingScannerStart { startScanner() }
+                    },
+                    onBarcode: { foundBarcode($0) }
                 )
             } else {
                 ContentUnavailableView(
@@ -278,9 +285,7 @@ struct FoodCameraSheet: View {
             }
             if canLiveScan, flow.phase == .scanning, active, torch.isAvailable {
                 Button {
-                    torchIsOn.toggle()
-                    torch.set(on: torchIsOn)
-                    if torch.isAvailable == false { torchIsOn = false }
+                    send(.torchToggled)
                 } label: {
                     Image(systemName: torchIsOn ? "flashlight.on.fill" : "flashlight.off.fill")
                         .frame(width: 48, height: 48)
@@ -299,16 +304,12 @@ struct FoodCameraSheet: View {
 
     var active: Bool {
         canLiveScan && scenePhase == .active && flow.isInactive == false
-            && (flow.phase == .scanning || flow.phase == .capturing)
+            && flow.phase == .scanning
     }
 
     var busy: Bool {
         flow.phase == .lookingUp || flow.phase == .capturing || flow.phase == .readingLabel
             || flow.phase == .library || flow.isSaving
-    }
-
-    var isCapturingPhoto: Bool {
-        flow.phase == .capturing
     }
 
     private var isResultExpanded: Bool {

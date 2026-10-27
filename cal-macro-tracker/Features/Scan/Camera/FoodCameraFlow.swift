@@ -17,6 +17,7 @@ struct FoodCameraFlow: Sendable {
         case barcodeRecognized(String)
         case barcodeFromImage(String)
         case shutterTapped
+        case torchToggled
         case libraryOpened
         case libraryCancelled
         case imagePicked
@@ -45,6 +46,7 @@ struct FoodCameraFlow: Sendable {
         case startScanning
         case stopScanning
         case torchOff
+        case torchOn
         case cancelWork
         case lookup(barcode: String)
         case scanImage
@@ -59,11 +61,23 @@ struct FoodCameraFlow: Sendable {
     private(set) var isInactive = false
     private(set) var isSaving = false
     private(set) var servings = 1.0
+    private var torchIsOn = false
     private var libraryPausedScanning = false
     private var phaseBeforeLibrary: Phase = .scanning
 
     mutating func reduce(_ event: Event) -> [Effect] {
+        let effects = transition(event)
+        if effects.contains(.torchOff) { torchIsOn = false }
+        return effects
+    }
+
+    private mutating func transition(_ event: Event) -> [Effect] {
         switch event {
+        case .torchToggled where phase == .scanning && isInactive == false:
+            torchIsOn.toggle()
+            return [torchIsOn ? .torchOn : .torchOff]
+        case .torchToggled:
+            return []
         case .contentChanged(let content) where phase != .dismissed:
             return [.content(content)]
         case .recoveryDestinationChanged(let destination) where phase != .dismissed:
