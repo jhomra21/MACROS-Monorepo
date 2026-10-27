@@ -11,6 +11,8 @@ struct BottomPinnedDualAction {
 }
 
 struct BottomPinnedDualActionBar: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     private let compactButtonSize: CGFloat = 60
     private let horizontalPadding: CGFloat = 20
     private let buttonSpacing: CGFloat = 10
@@ -25,7 +27,7 @@ struct BottomPinnedDualActionBar: View {
     @State private var isKeyboardVisible = false
 
     private var isCompact: Bool {
-        displayMode == .compactIcon
+        displayMode == .compactIcon || dynamicTypeSize.isAccessibilitySize
     }
 
     private var bottomPadding: CGFloat {

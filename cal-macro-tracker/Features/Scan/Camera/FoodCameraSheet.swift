@@ -279,6 +279,7 @@ struct FoodCameraSheet: View {
                     systemImage: "camera",
                     description: Text("Choose a photo to scan a barcode or nutrition label.")
                 )
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(.regularMaterial)
