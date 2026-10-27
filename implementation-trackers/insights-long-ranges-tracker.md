@@ -10,8 +10,10 @@
 
 ## File plan
 
-- `cal-macro-tracker/Features/Insights/InsightsAnalytics.swift`: range/date math, bucket selection, and pure chart aggregation.
-- `cal-macro-tracker/Features/Insights/InsightsScreen.swift`: one bounded query, chart data and labels, empty comparisons, responsive range picker and free locked affordance.
+- `cal-macro-tracker/Features/Insights/InsightsAnalytics.swift`: range/date math and summaries.
+- `cal-macro-tracker/Features/Insights/InsightsChartBucketing.swift`: pure chart bucket selection and aggregation.
+- `cal-macro-tracker/Features/Insights/InsightsChartCards.swift` and `InsightsChartComponents.swift`: chart views and shared presentation helpers.
+- `cal-macro-tracker/Features/Insights/InsightsScreen.swift`: one bounded query, empty comparisons, responsive range picker, and free locked affordance.
 - `cal-macro-tracker/Features/Insights/InsightsWeightCard.swift`: query weight history only in selected range (all history for All).
 - `cal-macro-trackerTests/InsightsAnalyticsTests.swift`: failure-mode-first tests for date math and pure chart bucketing.
 - `changes-log.md`: concise dated entry.
@@ -28,10 +30,21 @@
 - Today advances while the screen remains open (the supplied `today` value remains the range anchor).
 - Dynamic Type overflow in the range picker and crowded chart-axis labels.
 
+## Review coverage and fixes
+
+- `testDailyChartBucketsOmitUnloggedDaysButKeepSummaryCoverage` confirms daily chart points omit empty days while day-accurate summary coverage retains them.
+- `testWeeklyAndMonthlyChartBucketsOmitRangesWithNoLoggedDays` confirms empty weekly and monthly ranges produce no chart buckets.
+- `testAllTimeBucketUsesSixCalendarMonthThreshold` pins the calendar threshold at exactly six months and one day short.
+- `testWeeklyChartBucketStartsRespectExplicitFirstWeekday` pins a Gregorian calendar's `firstWeekday` and expected bucket start dates. The DST test also asserts exact starts on both sides of the week boundary.
+- The 365-day previous-period test asserts fixed start/end dates across a year boundary; repeated calls with the same anchor assert range stability.
+- Daily chart aggregation now filters unlogged days without changing summary inputs. The All threshold uses six calendar months. The weight query includes the seven-day comparison baseline before the range start while chart/trend points remain inside the selected range.
+- The chart bucketing, chart views, and shared chart components moved into focused files without changing chart or screen behavior.
+
 ## Status
 
 - [x] Decisions, file plan, and failure modes recorded before implementation.
-- [x] Pure date and bucketing tests written before implementation (6 added; 16 analytics tests pass).
+- [x] Pure date and bucketing tests written before implementation; five additional review tests bring InsightsAnalyticsTests to 21 tests.
 - [x] Long ranges, chart bucketing, picker, and weight range implemented.
-- [x] Format, build, targeted tests, and simulator QA recorded in `build/insights-qa-2026-10-26/QA.md`.
-- [ ] Scoped commits created and branch pushed.
+- [x] Review fixes and file split validated with format, build, and 21/21 targeted tests.
+- [ ] Review-specific seeded UI screenshots for weight comparison, omitted daily gaps, and All threshold were not captured; simulator QA remains documented in `build/insights-qa-2026-10-26/QA.md`.
+- [x] Scoped commits created and branch pushed.
