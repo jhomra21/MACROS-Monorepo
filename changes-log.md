@@ -2,6 +2,7 @@
 
 ## 2026-10-26 Unified Food Camera
 
+- Round-3 follow-up: centralized reducer effect execution and moved phase-derived busy/scanner state and panel/recovery content updates behind the flow. Updated transitions for navigation pause, inactive image completion, capture order, library replacement quantity, scanner/import failures, dismissal, and torch-off availability. Ten exact-effect XCTest cases pass. Simulator QA verified label import, review navigation/back, and Retake; lookup-dismissal and background-import scenarios remain outstanding. See the unified camera tracker and ignored QA report.
 - Replaced the Dashboard's single Add Food action with equal Camera/Add Food pills; barcode and label entry points now open one shared camera and result flow, with still-image fallback, label review, and existing barcode logging/editor behavior.
 - Removed the obsolete barcode/label screens and option-list UI. Added a synchronous `Sendable` camera-flow reducer, retained task cancellation, shared serving quantity, and guarded AVCaptureDevice torch control.
 - Validation: format, quality build, reducer tests (10/10), and dashboard simulator inspection passed; full photo-to-product E2E remains incomplete and device-only torch preview stability needs verification.
