@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-26 MACROS Pro Paywall Success Flow
+
+- Opened the Pro paywall at the large detent only and added transition-only success feedback, entitlement details, unlocked benefits, and context-aware dismissal.
+- Validation: formatting, app build, and simulator StoreKit purchase QA passed; screenshots and per-check results are in `build/paywall-success-qa-2026-10-26/QA.md`.
+
 ## 2026-10-26 StoreKit Test Failure Investigation
 
 - Fixed StoreKit tests to model the documented purchase cancellation outcomes and to wait for transaction-listener publication; sync after `SKTestSession.expireSubscription` so the simulated expiry reaches StoreKit status updates.
