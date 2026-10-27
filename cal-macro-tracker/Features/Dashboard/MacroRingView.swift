@@ -224,30 +224,29 @@ struct MacroLegendView: View {
     let palette: MacroRingPalette?
     let canCustomizeColors: Bool
     let onChangeColor: (MacroMetric) -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        GeometryReader { geometry in
-            let spacing: CGFloat = 24
-            let metricCount = CGFloat(MacroMetric.allCases.count)
-            let columnWidth = max((geometry.size.width - (spacing * (metricCount - 1))) / metricCount, 0)
+        let isStacked = dynamicTypeSize.isAccessibilitySize
+        let layout =
+            isStacked
+            ? AnyLayout(VStackLayout(spacing: 0))
+            : AnyLayout(HStackLayout(spacing: 24))
 
-            HStack(spacing: spacing) {
-                ForEach(MacroMetric.allCases) { metric in
-                    MacroLegendColumn(
-                        metric: metric,
-                        totals: totals,
-                        goals: goals,
-                        selectedMacro: $selectedMacro,
-                        color: palette?.color(for: metric),
-                        canCustomizeColors: canCustomizeColors,
-                        columnWidth: columnWidth,
-                        onChangeColor: onChangeColor
-                    )
-                }
+        layout {
+            ForEach(MacroMetric.allCases) { metric in
+                MacroLegendColumn(
+                    metric: metric,
+                    totals: totals,
+                    goals: goals,
+                    selectedMacro: $selectedMacro,
+                    color: palette?.color(for: metric),
+                    canCustomizeColors: canCustomizeColors,
+                    verticalPadding: isStacked ? 8 : 16,
+                    onChangeColor: onChangeColor
+                )
             }
-            .frame(maxWidth: .infinity)
         }
-        .frame(height: 102)
     }
 }
 
@@ -258,7 +257,7 @@ private struct MacroLegendColumn: View {
     @Binding var selectedMacro: MacroMetric?
     let color: Color?
     let canCustomizeColors: Bool
-    let columnWidth: CGFloat
+    let verticalPadding: CGFloat
     let onChangeColor: (MacroMetric) -> Void
 
     @ViewBuilder
@@ -271,8 +270,8 @@ private struct MacroLegendColumn: View {
             style: .dashboardCard,
             accentColor: color
         )
-        .padding(.vertical, 16)
-        .frame(width: columnWidth)
+        .padding(.vertical, verticalPadding)
+        .frame(maxWidth: .infinity)
         .opacity(selectedMacro == nil || selectedMacro == metric ? 1 : 0.48)
         .contentShape(Rectangle())
         .accessibilityAddTraits(.isButton)
