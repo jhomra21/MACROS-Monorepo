@@ -8,6 +8,7 @@ import VisionKit
 
 struct FoodCameraSheet: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(\.isPresented) var isPresented
     @Environment(\.modelContext) var modelContext
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
@@ -178,14 +179,13 @@ struct FoodCameraSheet: View {
             .onAppear {
                 if flow.phase != .dismissed { send(.sceneActive) }
             }
-            .onDisappear {
-                let isNavigatingAway =
-                    logDestination != nil || route != nil || showingLibraryPicker || useStillCamera
-                send(isNavigatingAway ? .navigationAway : .dismissed)
-            }
+            .onDisappear { send(.navigationAway) }
             .sensoryFeedback(.success, trigger: feedbackToken)
             .photosPicker(isPresented: $showingLibraryPicker, selection: $selectedPhoto, matching: .images)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
+        }
+        .onChange(of: isPresented) { _, presented in
+            if presented == false { send(.dismissed) }
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)

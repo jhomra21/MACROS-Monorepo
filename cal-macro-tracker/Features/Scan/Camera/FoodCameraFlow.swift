@@ -66,6 +66,7 @@ struct FoodCameraFlow: Sendable {
     private var phaseBeforeLibrary: Phase = .scanning
 
     mutating func reduce(_ event: Event) -> [Effect] {
+        guard phase != .dismissed else { return [] }
         let effects = transition(event)
         if effects.contains(.torchOff) { torchIsOn = false }
         return effects

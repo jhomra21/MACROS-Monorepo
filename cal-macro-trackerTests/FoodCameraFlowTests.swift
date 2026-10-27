@@ -94,7 +94,7 @@ final class FoodCameraFlowTests: XCTestCase {
     func testSceneInactiveStopsCaptureAndTorchFromEveryPhase() {
         for phase in FoodCameraFlow.Phase.allTestPhases {
             var flow = flow(in: phase)
-            XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff], "\(phase)")
+            XCTAssertEqual(flow.reduce(.sceneInactive), phase == .dismissed ? [] : [.stopScanning, .torchOff], "\(phase)")
             XCTAssertEqual(flow.phase, phase, "\(phase)")
         }
     }
@@ -102,7 +102,7 @@ final class FoodCameraFlowTests: XCTestCase {
     func testDismissalFromEveryPhaseStopsCancelsAndTurnsTorchOff() {
         for phase in FoodCameraFlow.Phase.allTestPhases {
             var flow = flow(in: phase)
-            XCTAssertEqual(flow.reduce(.dismissed), [.stopScanning, .cancelWork, .torchOff], "\(phase)")
+            XCTAssertEqual(flow.reduce(.dismissed), phase == .dismissed ? [] : [.stopScanning, .cancelWork, .torchOff], "\(phase)")
             XCTAssertEqual(flow.phase, .dismissed, "\(phase)")
         }
     }
@@ -227,7 +227,7 @@ final class FoodCameraFlowTests: XCTestCase {
             .ocrFinished, .ocrFailed, .photoCaptured, .imageBarcodeMissing,
             .logTapped, .logFinished, .scanAgain, .servingsChanged(2),
             .sceneInactive, .sceneActive, .navigationAway,
-            .contentChanged(.message("late")), .recoveryDestinationChanged(nil),
+            .contentChanged(.message("late")), .recoveryDestinationChanged(nil)
         ]
         for event in events {
             XCTAssertEqual(flow.reduce(event), [])
@@ -323,7 +323,7 @@ private extension FoodCameraFlow.Phase {
             .showingBarcode,
             .showingLabel,
             .recovering,
-            .dismissed,
+            .dismissed
         ]
     }
 }
