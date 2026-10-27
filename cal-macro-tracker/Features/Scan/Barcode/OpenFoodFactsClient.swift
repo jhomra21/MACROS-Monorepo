@@ -190,6 +190,7 @@ enum OpenFoodFactsClientError: LocalizedError {
 }
 
 struct OpenFoodFactsClient {
+    private static let lookupTimeout: TimeInterval = 30
     private let jsonClient: HTTPJSONClient
 
     init(session: URLSession = .shared) {
@@ -203,6 +204,7 @@ struct OpenFoodFactsClient {
 
         let request = try jsonClient.makeProxyRequest(
             pathComponents: ["v1", "packaged-foods", "barcodes", normalizedBarcode],
+            timeoutInterval: Self.lookupTimeout,
             unavailableConfigurationError: OpenFoodFactsClientError.unavailableConfiguration
         )
         let decodedResponse = try await jsonClient.proxyResponse(

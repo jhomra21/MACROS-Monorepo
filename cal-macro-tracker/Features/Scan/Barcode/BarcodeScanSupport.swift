@@ -5,36 +5,13 @@ struct BarcodeScanLogFoodDestination {
     let reviewNotes: [String]
 }
 
-struct BarcodeScanErrorRecovery: Identifiable {
-    let id = UUID()
+struct BarcodeScanErrorRecovery {
     let message: String
-    let captureSource: BarcodeCaptureSource
     let destination: BarcodeScanLogFoodDestination
-}
 
-enum BarcodeCaptureSource {
-    case liveScanner
-    case cameraPhoto
-    case photoLibrary
-
-    var retryActionTitle: String {
-        switch self {
-        case .liveScanner:
-            "Scan Again"
-        case .cameraPhoto:
-            "Retake Photo"
-        case .photoLibrary:
-            "Choose Another Photo"
-        }
-    }
-
-    var rescanPrompt: String {
-        switch self {
-        case .liveScanner, .cameraPhoto:
-            "Please scan again."
-        case .photoLibrary:
-            "Please choose another barcode photo."
-        }
+    init(error: Error, destination: BarcodeScanLogFoodDestination) {
+        message = "\(error.localizedDescription) Please scan again."
+        self.destination = destination
     }
 }
 
@@ -102,48 +79,5 @@ struct BarcodeLookupResolver {
         }
 
         return true
-    }
-}
-
-enum BarcodeScanPresentationSupport {
-    static func presentImmediateScannerIfNeeded(
-        entryMode: BarcodeScanScreen.EntryMode,
-        hasPresentedImmediateScanner: inout Bool,
-        hasLogFoodDestination: Bool,
-        canScanLive: Bool,
-        canUseCamera: Bool,
-        showingLiveScanner: inout Bool,
-        showingCamera: inout Bool,
-        showManualOptions: inout Bool,
-        errorMessage: inout String?
-    ) {
-        guard entryMode == .immediateCamera, hasPresentedImmediateScanner == false, hasLogFoodDestination == false else { return }
-
-        hasPresentedImmediateScanner = true
-
-        if canScanLive {
-            showingLiveScanner = true
-        } else if canUseCamera {
-            showingCamera = true
-        } else {
-            showManualOptions = true
-            errorMessage = "Camera scanning is not available on this device right now."
-        }
-    }
-
-    static func reopenCaptureSource(
-        _ captureSource: BarcodeCaptureSource,
-        showingLiveScanner: inout Bool,
-        showingCamera: inout Bool,
-        showManualOptions: inout Bool
-    ) {
-        switch captureSource {
-        case .liveScanner:
-            showingLiveScanner = true
-        case .cameraPhoto:
-            showingCamera = true
-        case .photoLibrary:
-            showManualOptions = true
-        }
     }
 }
