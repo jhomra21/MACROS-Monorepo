@@ -1,6 +1,6 @@
 import Foundation
 
-struct BarcodeScanLogFoodDestination {
+struct BarcodeScanLogFoodDestination: Equatable {
     let draft: FoodDraft
     let reviewNotes: [String]
 }

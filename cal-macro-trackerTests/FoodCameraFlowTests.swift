@@ -4,7 +4,10 @@ import XCTest
 final class FoodCameraFlowTests: XCTestCase {
     func testBarcodeRecognitionStartsLookupInExactOrder() {
         var flow = FoodCameraFlow()
-        XCTAssertEqual(flow.reduce(.barcodeRecognized("first")), [.stopScanning, .lookup(barcode: "first")])
+        XCTAssertEqual(
+            flow.reduce(.barcodeRecognized("first")),
+            [.stopScanning, .torchOff, .lookup(barcode: "first")]
+        )
         XCTAssertEqual(flow.phase, .lookingUp)
         XCTAssertEqual(flow.reduce(.barcodeRecognized("second")), [])
         XCTAssertEqual(flow.phase, .lookingUp)
@@ -12,17 +15,20 @@ final class FoodCameraFlowTests: XCTestCase {
 
     func testBarcodeFromImageAndOCRCanCompleteWhileInactive() {
         var flow = FoodCameraFlow()
-        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(flow.phase, .library)
         XCTAssertEqual(flow.reduce(.imagePicked), [.scanImage])
         XCTAssertEqual(flow.phase, .readingLabel)
         XCTAssertEqual(flow.reduce(.navigationAway), [.stopScanning, .cancelWork, .torchOff])
         XCTAssertEqual(flow.phase, .readingLabel)
-        XCTAssertEqual(flow.reduce(.barcodeFromImage("123")), [.stopScanning, .lookup(barcode: "123")])
+        XCTAssertEqual(
+            flow.reduce(.barcodeFromImage("123")),
+            [.stopScanning, .torchOff, .lookup(barcode: "123")]
+        )
         XCTAssertEqual(flow.phase, .lookingUp)
 
         var ocrFlow = FoodCameraFlow()
-        XCTAssertEqual(ocrFlow.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(ocrFlow.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(ocrFlow.phase, .library)
         XCTAssertEqual(ocrFlow.reduce(.imagePicked), [.scanImage])
         XCTAssertEqual(ocrFlow.phase, .readingLabel)
@@ -42,7 +48,10 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertEqual(flow.phase, .readingLabel)
 
         var recovering = FoodCameraFlow()
-        XCTAssertEqual(recovering.reduce(.barcodeRecognized("123")), [.stopScanning, .lookup(barcode: "123")])
+        XCTAssertEqual(
+            recovering.reduce(.barcodeRecognized("123")),
+            [.stopScanning, .torchOff, .lookup(barcode: "123")]
+        )
         XCTAssertEqual(recovering.phase, .lookingUp)
         XCTAssertEqual(recovering.reduce(.lookupFailed("123")), [])
         XCTAssertEqual(recovering.phase, .recovering)
@@ -55,7 +64,7 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertEqual(replacement.reduce(.servingsChanged(2)), [])
         XCTAssertEqual(replacement.phase, .showingBarcode)
         XCTAssertEqual(replacement.servings, 2)
-        XCTAssertEqual(replacement.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(replacement.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(replacement.phase, .library)
         XCTAssertEqual(replacement.servings, 2)
         XCTAssertEqual(replacement.reduce(.imagePicked), [.scanImage])
@@ -65,7 +74,7 @@ final class FoodCameraFlowTests: XCTestCase {
         var cancelled = barcodeResultFlow()
         XCTAssertEqual(cancelled.reduce(.servingsChanged(2)), [])
         XCTAssertEqual(cancelled.phase, .showingBarcode)
-        XCTAssertEqual(cancelled.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(cancelled.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(cancelled.phase, .library)
         XCTAssertEqual(cancelled.reduce(.libraryCancelled), [])
         XCTAssertEqual(cancelled.phase, .showingBarcode)
@@ -76,7 +85,7 @@ final class FoodCameraFlowTests: XCTestCase {
         var flow = FoodCameraFlow()
         XCTAssertEqual(flow.reduce(.sceneInactive), [.stopScanning, .torchOff])
         XCTAssertEqual(flow.phase, .scanning)
-        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(flow.phase, .library)
         XCTAssertEqual(flow.reduce(.libraryCancelled), [])
         XCTAssertEqual(flow.phase, .scanning)
@@ -112,7 +121,7 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertEqual(scanner.phase, .recovering)
 
         var imageImport = FoodCameraFlow()
-        XCTAssertEqual(imageImport.reduce(.libraryOpened), [.stopScanning])
+        XCTAssertEqual(imageImport.reduce(.libraryOpened), [.stopScanning, .torchOff])
         XCTAssertEqual(imageImport.phase, .library)
         XCTAssertEqual(imageImport.reduce(.importFailed), [.torchOff])
         XCTAssertEqual(imageImport.phase, .recovering)
@@ -180,6 +189,16 @@ final class FoodCameraFlowTests: XCTestCase {
 
 private extension FoodCameraFlow.Phase {
     static var allTestPhases: [Self] {
-        [.scanning, .lookingUp, .capturing, .readingLabel, .library, .showingBarcode, .showingLabel, .recovering]
+        [
+            .scanning,
+            .lookingUp,
+            .capturing,
+            .readingLabel,
+            .library,
+            .showingBarcode,
+            .showingLabel,
+            .recovering,
+            .dismissed,
+        ]
     }
 }

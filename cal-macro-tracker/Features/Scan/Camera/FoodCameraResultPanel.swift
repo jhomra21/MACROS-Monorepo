@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct FoodCameraResultPanel: View {
-    enum Content {
+    enum Content: Equatable {
         case message(String)
         case barcode(FoodDraft, servings: Double, logged: Bool)
         case label(FoodDraft, notes: [String], missingNutrients: [RequiredNutritionReviewNutrient])

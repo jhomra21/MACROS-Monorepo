@@ -13,7 +13,7 @@ struct FoodCameraFlow: Sendable {
         case dismissed
     }
 
-    enum Event: Sendable {
+    enum Event {
         case barcodeRecognized(String)
         case barcodeFromImage(String)
         case shutterTapped
@@ -28,6 +28,7 @@ struct FoodCameraFlow: Sendable {
         case ocrFinished
         case ocrFailed
         case photoCaptured
+        case imageBarcodeMissing
         case logTapped
         case logFinished
         case scanAgain
@@ -36,9 +37,11 @@ struct FoodCameraFlow: Sendable {
         case sceneActive
         case navigationAway
         case dismissed
+        case contentChanged(FoodCameraResultPanel.Content)
+        case recoveryDestinationChanged(BarcodeScanLogFoodDestination?)
     }
 
-    enum Effect: Equatable, Sendable {
+    enum Effect: Equatable {
         case startScanning
         case stopScanning
         case torchOff
@@ -48,33 +51,37 @@ struct FoodCameraFlow: Sendable {
         case capturePhoto
         case readLabel
         case log(servings: Double)
+        case content(FoodCameraResultPanel.Content)
+        case recoveryDestination(BarcodeScanLogFoodDestination?)
     }
 
     private(set) var phase: Phase = .scanning
     private(set) var isInactive = false
     private(set) var isSaving = false
     private(set) var servings = 1.0
-    private(set) var recoveryBarcode: String?
     private var libraryPausedScanning = false
     private var phaseBeforeLibrary: Phase = .scanning
 
     mutating func reduce(_ event: Event) -> [Effect] {
         switch event {
+        case .contentChanged(let content) where phase != .dismissed:
+            return [.content(content)]
+        case .recoveryDestinationChanged(let destination) where phase != .dismissed:
+            return [.recoveryDestination(destination)]
+        case .contentChanged, .recoveryDestinationChanged:
+            return []
         case let .barcodeRecognized(barcode) where phase == .scanning && isInactive == false:
             phase = .lookingUp
-            recoveryBarcode = nil
-            return [.stopScanning, .lookup(barcode: barcode)]
+            return [.stopScanning, .torchOff, .lookup(barcode: barcode)]
         case let .barcodeFromImage(barcode) where phase == .readingLabel:
             phase = .lookingUp
-            recoveryBarcode = nil
-            return [.stopScanning, .lookup(barcode: barcode)]
+            return [.stopScanning, .torchOff, .lookup(barcode: barcode)]
         case .barcodeFromImage:
             return []
         case .barcodeRecognized:
             return []
         case .shutterTapped where isIdleCapturePhase && isInactive == false:
             phase = .capturing
-            recoveryBarcode = nil
             return [.capturePhoto]
         case .shutterTapped:
             return []
@@ -82,8 +89,7 @@ struct FoodCameraFlow: Sendable {
             libraryPausedScanning = phase == .scanning && isInactive == false
             phaseBeforeLibrary = phase
             phase = .library
-            recoveryBarcode = nil
-            return [.stopScanning]
+            return [.stopScanning, .torchOff]
         case .libraryOpened:
             return []
         case .libraryCancelled where phase == .library:
@@ -95,7 +101,6 @@ struct FoodCameraFlow: Sendable {
             return []
         case .imagePicked where phase == .library || phase == .capturing || phase == .scanning:
             phase = .readingLabel
-            recoveryBarcode = nil
             servings = 1
             return [.scanImage]
         case .imagePicked:
@@ -105,9 +110,8 @@ struct FoodCameraFlow: Sendable {
             return []
         case .lookupFinished:
             return []
-        case let .lookupFailed(barcode) where phase == .lookingUp:
+        case .lookupFailed where phase == .lookingUp:
             phase = .recovering
-            recoveryBarcode = barcode
             return []
         case .lookupFailed:
             return []
@@ -120,6 +124,10 @@ struct FoodCameraFlow: Sendable {
             phase = .readingLabel
             return [.stopScanning, .torchOff, .readLabel]
         case .photoCaptured:
+            return []
+        case .imageBarcodeMissing where phase == .readingLabel:
+            return [.readLabel]
+        case .imageBarcodeMissing:
             return []
         case .ocrFinished where phase == .readingLabel || phase == .capturing:
             phase = .showingLabel
@@ -158,10 +166,9 @@ struct FoodCameraFlow: Sendable {
             return []
         case .scanAgain where phase != .dismissed:
             phase = .scanning
-            recoveryBarcode = nil
             isSaving = false
             servings = 1
-            return [.cancelWork, isInactive ? .stopScanning : .startScanning]
+            return [.cancelWork, .torchOff, isInactive ? .stopScanning : .startScanning]
         case .scanAgain:
             return []
         case .sceneInactive:

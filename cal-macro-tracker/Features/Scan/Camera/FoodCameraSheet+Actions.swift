@@ -12,99 +12,88 @@ extension FoodCameraSheet {
 
     func foundBarcode(_ barcode: String, fromImage: Bool = false) {
         let event: FoodCameraFlow.Event = fromImage ? .barcodeFromImage(barcode) : .barcodeRecognized(barcode)
-        guard send(event).contains(.lookup(barcode: barcode)) else { return }
-        torch.set(on: false)
-        torchIsOn = false
-        busy = true
-        active = false
-        result = .message("Looking up…")
+        send(event)
+    }
+
+    func resolveBarcode(_ barcode: String) async {
+        send(.contentChanged(.message("Looking up…")))
         feedbackToken += 1
-        startProcessing {
-            do {
-                let resolver = BarcodeLookupResolver(foodRepository: foodRepository, client: OpenFoodFactsClient())
-                let draft: FoodDraft
-                if let cachedDraft = try resolver.cachedDraft(for: barcode) {
-                    draft = cachedDraft
-                } else {
-                    draft = try await resolver.resolveRemoteDraft(barcode: barcode)
-                }
-                try Task.checkCancellation()
-                send(.lookupFinished)
-                busy = false
-                result = .barcode(draft, servings: flow.servings, logged: false)
-            } catch {
-                guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
-                let recovery = BarcodeScanErrorRecovery(
-                    error: error,
-                    destination: BarcodeManualFallbackFactory.destination(for: barcode)
-                )
-                send(.lookupFailed(barcode))
-                recoveryDestination = recovery.destination
-                busy = false
-                result = .error(recovery.message)
+        do {
+            let resolver = BarcodeLookupResolver(foodRepository: foodRepository, client: OpenFoodFactsClient())
+            let draft: FoodDraft
+            if let cachedDraft = try resolver.cachedDraft(for: barcode) {
+                draft = cachedDraft
+            } else {
+                draft = try await resolver.resolveRemoteDraft(barcode: barcode)
             }
+            try Task.checkCancellation()
+            send(.lookupFinished)
+            send(.contentChanged(.barcode(draft, servings: flow.servings, logged: false)))
+        } catch {
+            guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
+            let recovery = BarcodeScanErrorRecovery(
+                error: error,
+                destination: BarcodeManualFallbackFactory.destination(for: barcode)
+            )
+            send(.lookupFailed(barcode))
+            send(.recoveryDestinationChanged(recovery.destination))
+            send(.contentChanged(.error(recovery.message)))
         }
     }
 
-    func processImage(_ image: UIImage) async {
-        torch.set(on: false)
-        torchIsOn = false
-        active = false
-        busy = true
-        result = .message("Looking for a barcode…")
+    func captureLabel() {
+        send(.shutterTapped)
+    }
+
+    func capturePhoto() async {
+        send(.recoveryDestinationChanged(nil))
+        send(.contentChanged(.message("Reading label…")))
+        do {
+            guard let scanner, scanner.isScanning else {
+                let canCaptureStill =
+                    UIImagePickerController.isSourceTypeAvailable(.camera)
+                    && AVCaptureDevice.authorizationStatus(for: .video) != .denied
+                useStillCamera = canCaptureStill
+                if canCaptureStill == false {
+                    send(.captureFailed)
+                    send(.contentChanged(.error("Camera capture is unavailable. Choose a photo from your library.")))
+                }
+                return
+            }
+            let image = try await scanner.capturePhoto()
+            try Task.checkCancellation()
+            pendingImage = image
+            send(.photoCaptured)
+        } catch {
+            guard Task.isCancelled == false else { return }
+            send(.captureFailed)
+            send(.contentChanged(.error("Couldn’t capture that photo. Try again or choose a photo from your library.")))
+        }
+    }
+
+    func processPendingImage() async {
+        guard let image = pendingImage else { return }
+        send(.contentChanged(.message("Looking for a barcode…")))
         do {
             let barcode = try await barcodeScanner.scanBarcode(from: image)
             try Task.checkCancellation()
             foundBarcode(barcode, fromImage: true)
         } catch {
             guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
-            await readLabel(image, barcodeWasNotFound: true)
+            pendingImageHadNoBarcode = true
+            send(.imageBarcodeMissing)
         }
     }
 
-    func captureLabel() {
-        guard send(.shutterTapped).contains(.capturePhoto) else { return }
-        torch.set(on: false)
-        torchIsOn = false
-        recoveryDestination = nil
-        busy = true
-        isCapturingPhoto = true
-        result = .message("Reading label…")
-        startProcessing {
-            do {
-                guard let scanner, scanner.isScanning else {
-                    isCapturingPhoto = false
-                    let canCaptureStill =
-                        UIImagePickerController.isSourceTypeAvailable(.camera)
-                        && AVCaptureDevice.authorizationStatus(for: .video) != .denied
-                    send(.scanAgain)
-                    useStillCamera = canCaptureStill
-                    if canCaptureStill == false {
-                        send(.captureFailed)
-                        result = .error("Camera capture is unavailable. Choose a photo from your library.")
-                    }
-                    busy = false
-                    return
-                }
-                let image = try await scanner.capturePhoto()
-                try Task.checkCancellation()
-                isCapturingPhoto = false
-                active = false
-                send(.photoCaptured)
-                await readLabel(image)
-            } catch {
-                guard Task.isCancelled == false else { return }
-                isCapturingPhoto = false
-                active = false
-                busy = false
-                send(.captureFailed)
-                result = .error("Couldn’t capture that photo. Try again or choose a photo from your library.")
-            }
-        }
+    func readPendingLabel() async {
+        guard let image = pendingImage else { return }
+        await readLabel(image, barcodeWasNotFound: pendingImageHadNoBarcode)
+        pendingImage = nil
+        pendingImageHadNoBarcode = false
     }
 
     func readLabel(_ image: UIImage, barcodeWasNotFound: Bool = false) async {
-        result = .message("Reading label…")
+        send(.contentChanged(.message("Reading label…")))
         do {
             async let recognizedText = labelRecognizer.recognizeText(in: image)
             async let jpegData = ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
@@ -112,44 +101,43 @@ extension FoodCameraSheet {
             let encodedImage = await jpegData
             try Task.checkCancellation()
             captureImageData = encodedImage
-            busy = false
             send(.ocrFinished)
-            result = .label(parsed.draft, notes: parsed.notes, missingNutrients: parsed.missingRequiredNutrients)
+            send(.contentChanged(.label(parsed.draft, notes: parsed.notes, missingNutrients: parsed.missingRequiredNutrients)))
         } catch {
             guard ScanCancellation.isCancellation(error) == false, Task.isCancelled == false else { return }
-            busy = false
             send(.ocrFailed)
-            result = .error(
-                barcodeWasNotFound
-                    ? "No packaged-food barcode or readable nutrition label was found. Scan again, search online, or photograph the nutrition label."
-                    : "Couldn’t read a nutrition label from this image. Retake the photo or enter the food manually."
-            )
+            send(
+                .contentChanged(
+                    .error(
+                        barcodeWasNotFound
+                            ? "No packaged-food barcode or readable nutrition label was found. Scan again, search online, or photograph the nutrition label."
+                            : "Couldn’t read a nutrition label from this image. Retake the photo or enter the food manually."
+                    )))
         }
     }
 
     func logBarcode() {
-        guard case let .barcode(draft, amount, _) = result, busy == false else { return }
-        guard send(.logTapped).contains(.log(servings: amount)) else { return }
+        send(.logTapped)
+    }
+
+    func logBarcode(servings amount: Double) {
+        guard case let .barcode(draft, _, _) = result, flow.isSaving else { return }
         let action = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: amount)
         guard action.canLog else {
-            result = .error(action.validationError?.localizedDescription ?? "Review the food details before logging.")
+            send(.contentChanged(.error(action.validationError?.localizedDescription ?? "Review the food details before logging.")))
             return
         }
-        busy = true
         do {
             try LogEntryRepository(
                 modelContext: modelContext,
                 onDailyTotalsChanged: sharingSyncService.syncAfterDailyTotalsChange
             ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
-            busy = false
             send(.logFinished)
             feedbackToken += 1
-            result = .barcode(draft, servings: amount, logged: true)
-            active = false
+            send(.contentChanged(.barcode(draft, servings: amount, logged: true)))
         } catch {
-            busy = false
             send(.logFinished)
-            result = .error(error.localizedDescription)
+            send(.contentChanged(.error(error.localizedDescription)))
         }
     }
 
@@ -183,24 +171,21 @@ extension FoodCameraSheet {
         guard effects.contains(.startScanning) || flow.isInactive else { return }
         processingTask?.cancel()
         processingTask = nil
-        busy = false
-        isCapturingPhoto = false
-        torch.set(on: false)
-        torchIsOn = false
-        recoveryDestination = nil
-        result = .message("Point at a barcode, or photograph the nutrition label.")
-        active = canLiveScan && scenePhase == .active
+        send(.recoveryDestinationChanged(nil))
+        send(.contentChanged(.message("Point at a barcode, or photograph the nutrition label.")))
     }
 
     func showError(_ message: String) {
         guard Task.isCancelled == false else { return }
         send(flow.phase == .readingLabel ? .importFailed : .scannerFailed)
-        torch.set(on: false)
-        torchIsOn = false
-        busy = false
-        active = false
         permissionDenied = AVCaptureDevice.authorizationStatus(for: .video) == .denied
-        result = .error(message)
+        send(.contentChanged(.error(message)))
+    }
+
+    func showImportError(_ message: String) {
+        guard Task.isCancelled == false else { return }
+        send(.importFailed)
+        send(.contentChanged(.error(message)))
     }
 
     func startProcessing(_ operation: @escaping @MainActor () async -> Void) {

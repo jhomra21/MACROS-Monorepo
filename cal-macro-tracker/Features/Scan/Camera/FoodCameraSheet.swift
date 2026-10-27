@@ -20,17 +20,17 @@ struct FoodCameraSheet: View {
     @State var scanner: DataScannerViewController?
     @State var selectedPhoto: PhotosPickerItem?
     @State var showingLibraryPicker = false
-    @State var result: FoodCameraResultPanel.Content = .message("Point at a barcode, or photograph the nutrition label.")
-    @State var active = true
-    @State var busy = false
+    @State var panelContent: FoodCameraResultPanel.Content = .message(
+        "Point at a barcode, or photograph the nutrition label."
+    )
     @State var flow = FoodCameraFlow()
     @State var processingTask: Task<Void, Never>?
-    @State var libraryPausedIdleScan = false
-    @State var isCapturingPhoto = false
     @State var useStillCamera = false
     @State var captureImageData: Data?
+    @State var pendingImage: UIImage?
+    @State var pendingImageHadNoBarcode = false
     @State var logDestination: FoodCameraLogDestination?
-    @State var recoveryDestination: BarcodeScanLogFoodDestination?
+    @State var storedRecoveryDestination: BarcodeScanLogFoodDestination?
     @State var route: FoodCameraRoute?
     @State var feedbackToken = 0
     @State var permissionDenied = false
@@ -39,6 +39,13 @@ struct FoodCameraSheet: View {
     let labelRecognizer = NutritionLabelTextRecognizer()
     @State var torch = FoodCameraTorch()
     @State var torchIsOn = false
+
+    var result: FoodCameraResultPanel.Content { panelContent }
+
+    var recoveryDestination: BarcodeScanLogFoodDestination? {
+        get { storedRecoveryDestination }
+        nonmutating set { send(.recoveryDestinationChanged(newValue)) }
+    }
 
     var body: some View {
         NavigationStack {
@@ -68,7 +75,6 @@ struct FoodCameraSheet: View {
                     Spacer()
                     Button {
                         guard busy == false else { return }
-                        libraryPausedIdleScan = flow.phase == .scanning
                         send(.libraryOpened)
                         showingLibraryPicker = true
                     } label: {
@@ -107,43 +113,45 @@ struct FoodCameraSheet: View {
                 CameraImagePicker(onImagePicked: { image in
                     useStillCamera = false
                     if flow.phase == .scanning { send(.libraryOpened) }
+                    pendingImage = image
                     send(.imagePicked)
                     recoveryDestination = nil
-                    startProcessing { await processImage(image) }
                 }) {
                     useStillCamera = false
                     send(.scanAgain)
                     recoveryDestination = nil
-                    if libraryPausedIdleScan { active = canLiveScan && scenePhase == .active }
                 }
                 .ignoresSafeArea()
             }
             .onChange(of: selectedPhoto) { _, item in
                 guard let item else { return }
                 guard busy == false, flow.phase == .library else { return }
-                active = false
-                busy = true
                 recoveryDestination = nil
-                send(.imagePicked)
                 startProcessing {
                     await ScanStillImageImport.loadSelectedPhoto(
                         item,
                         clearSelection: { selectedPhoto = nil },
-                        processImage: processImage,
-                        onError: showError
+                        processImage: { image in
+                            pendingImage = image
+                            send(.imagePicked)
+                        },
+                        onError: { showImportError($0) }
                     )
                 }
             }
             .onChange(of: showingLibraryPicker) { _, isPresented in
                 guard isPresented == false, selectedPhoto == nil else { return }
                 send(.libraryCancelled)
-                libraryPausedIdleScan = false
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active, AVCaptureDevice.authorizationStatus(for: .video) == .denied {
                     permissionDenied = true
                     if flow.phase == .scanning {
-                        result = .error("Camera access is off. Allow camera access in Settings, or choose a photo from your library.")
+                        send(
+                            .contentChanged(
+                                .error(
+                                    "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
+                                )))
                     }
                 }
                 if phase == .active {
@@ -155,10 +163,11 @@ struct FoodCameraSheet: View {
             .onAppear {
                 permissionDenied = AVCaptureDevice.authorizationStatus(for: .video) == .denied
                 if permissionDenied {
-                    active = false
-                    result = .error("Camera access is off. Allow camera access in Settings, or choose a photo from your library.")
-                } else if canLiveScan == false {
-                    active = false
+                    send(
+                        .contentChanged(
+                            .error(
+                                "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
+                            )))
                 }
             }
             .onAppear {
@@ -185,7 +194,7 @@ struct FoodCameraSheet: View {
             onChangeServings: { amount in
                 send(.servingsChanged(amount))
                 guard case let .barcode(draft, _, logged) = result else { return }
-                result = .barcode(draft, servings: flow.servings, logged: logged)
+                send(.contentChanged(.barcode(draft, servings: flow.servings, logged: logged)))
             },
             onLog: logBarcode,
             onDetails: showDetails,
@@ -210,17 +219,35 @@ struct FoodCameraSheet: View {
         for effect in effects {
             switch effect {
             case .startScanning:
-                active = canLiveScan && scenePhase == .active
+                break
             case .stopScanning:
-                active = false
+                break
             case .torchOff:
                 torch.set(on: false)
                 torchIsOn = false
             case .cancelWork:
                 processingTask?.cancel()
                 processingTask = nil
-            case .lookup, .scanImage, .capturePhoto, .readLabel, .log:
-                break
+            case .content(let content):
+                panelContent = content
+            case .recoveryDestination(let destination):
+                storedRecoveryDestination = destination
+            case let .lookup(barcode):
+                send(.contentChanged(.message("Looking up…")))
+                startProcessing { await resolveBarcode(barcode) }
+            case .scanImage:
+                guard pendingImage != nil else { continue }
+                startProcessing { await processPendingImage() }
+            case .capturePhoto:
+                recoveryDestination = nil
+                send(.contentChanged(.message("Reading label…")))
+                startProcessing { await capturePhoto() }
+            case .readLabel:
+                guard pendingImage != nil else { continue }
+                send(.contentChanged(.message("Reading label…")))
+                startProcessing { await readPendingLabel() }
+            case .log(let servings):
+                logBarcode(servings: servings)
             }
         }
         return effects
@@ -264,6 +291,20 @@ struct FoodCameraSheet: View {
 
     var canLiveScan: Bool {
         DataScannerViewController.isSupported && DataScannerViewController.isAvailable
+    }
+
+    var active: Bool {
+        canLiveScan && scenePhase == .active && flow.isInactive == false
+            && (flow.phase == .scanning || flow.phase == .capturing)
+    }
+
+    var busy: Bool {
+        flow.phase == .lookingUp || flow.phase == .capturing || flow.phase == .readingLabel
+            || flow.phase == .library || flow.isSaving
+    }
+
+    var isCapturingPhoto: Bool {
+        flow.phase == .capturing
     }
 
     private var isResultExpanded: Bool {
