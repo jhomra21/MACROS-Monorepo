@@ -150,6 +150,53 @@ final class FoodCameraFlowTests: XCTestCase {
         XCTAssertFalse(flow.isSaving)
     }
 
+    func testLabelServingsChangeIsAcceptedOnlyWhileShowingLabel() {
+        var label = flow(in: .showingLabel)
+        XCTAssertEqual(label.reduce(.servingsChanged(2)), [])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertEqual(label.servings, 2)
+
+        for phase: FoodCameraFlow.Phase in [
+            .scanning, .lookingUp, .capturing, .readingLabel, .library, .recovering
+        ] {
+            var other = flow(in: phase)
+            XCTAssertEqual(other.reduce(.servingsChanged(2)), [], "\(phase)")
+            XCTAssertEqual(other.phase, phase, "\(phase)")
+            XCTAssertEqual(other.servings, 1, "\(phase)")
+        }
+    }
+
+    func testLabelLoggingAndSavingTransitionsHaveExactEffects() {
+        var label = flow(in: .showingLabel)
+        XCTAssertEqual(label.reduce(.logTapped), [.log(servings: 1)])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertTrue(label.isSaving)
+        XCTAssertEqual(label.reduce(.logTapped), [])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertTrue(label.isSaving)
+
+        XCTAssertEqual(label.reduce(.logFinished), [])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertFalse(label.isSaving)
+        XCTAssertEqual(label.reduce(.logFinished), [])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertFalse(label.isSaving)
+    }
+
+    func testScanAgainAfterLabelLogResetsServings() {
+        var label = flow(in: .showingLabel)
+        XCTAssertEqual(label.reduce(.servingsChanged(2)), [])
+        XCTAssertEqual(label.servings, 2)
+        XCTAssertEqual(label.reduce(.logTapped), [.log(servings: 2)])
+        XCTAssertEqual(label.isSaving, true)
+        XCTAssertEqual(label.reduce(.logFinished), [])
+        XCTAssertEqual(label.phase, .showingLabel)
+        XCTAssertFalse(label.isSaving)
+        XCTAssertEqual(label.reduce(.scanAgain), [.cancelWork, .torchOff, .startScanning])
+        XCTAssertEqual(label.phase, .scanning)
+        XCTAssertEqual(label.servings, 1)
+    }
+
     func testActiveLibraryCancellationRestartsScanning() {
         var flow = FoodCameraFlow()
         XCTAssertEqual(flow.reduce(.libraryOpened), [.stopScanning, .torchOff])
