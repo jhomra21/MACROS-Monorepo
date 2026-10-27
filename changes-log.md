@@ -13,7 +13,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-27 Camera Zoom Transition
 
-- Added a matched zoom transition from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera sheet, preserving the existing sheet dismissal behavior. Formatting and build passed; simulator visual QA is pending because two unrelated simulators were already booted. Evidence status: `build/camera-zoom-2026-10-27/QA.md`.
+- Added a matched zoom transition from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera sheet, preserving the existing sheet dismissal behavior. Simulator QA verified open/close and swipe-down dismissal from the dashboard Camera pill and verified the Add Food Barcode/Label sheet entry points; simulator camera access was unavailable, so the fallback screen was shown. Evidence and caveats: `build/camera-zoom-2026-10-27/QA.md`.
 
 ## 2026-10-27 Simulator Barcode Detection
 
