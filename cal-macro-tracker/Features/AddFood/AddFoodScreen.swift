@@ -14,7 +14,7 @@ struct AddFoodScreen: View {
     @State var remoteSearchTask: Task<Void, Never>?
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
-    @State private var scanDestination: AddFoodScanDestination?
+    @State private var isFoodCameraPresented = false
 
     let remotePageSize = 12
     let packagedFoodSearchClient = PackagedFoodSearchClient()
@@ -93,8 +93,10 @@ struct AddFoodScreen: View {
             text: $searchText,
             onSubmit: searchOnline
         )
-        .navigationDestination(item: $scanDestination) { destination in
-            scanScreen(for: destination)
+        .sheet(isPresented: $isFoodCameraPresented) {
+            NavigationStack {
+                FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
+            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
@@ -119,29 +121,19 @@ struct AddFoodScreen: View {
                 title: "Scan Barcode",
                 systemImage: "barcode.viewfinder"
             ) {
-                scanDestination = .barcode
+                isFoodCameraPresented = true
             },
             trailingAction: BottomPinnedDualAction(
                 title: "Scan Label",
                 systemImage: "camera.viewfinder"
             ) {
-                scanDestination = .label
+                isFoodCameraPresented = true
             },
             displayMode: isScanActionBarCompact ? .compactIcon : .expanded,
             topPadding: 0,
             bottomOffset: 6
         )
         .frame(maxWidth: .infinity)
-    }
-
-    @ViewBuilder
-    private func scanScreen(for destination: AddFoodScanDestination) -> some View {
-        switch destination {
-        case .barcode:
-            BarcodeScanScreen(onFoodLogged: closeSheet, loggingDay: loggingDay, entryMode: .immediateCamera)
-        case .label:
-            LabelScanScreen(onFoodLogged: closeSheet, loggingDay: loggingDay)
-        }
     }
 
     private func updateScanActionBarDisplay(for offset: CGFloat) {
