@@ -31,7 +31,7 @@
 ## Status
 
 - [x] Decisions, file plan, and failure modes recorded before implementation.
-- [ ] Pure date and bucketing tests written before implementation.
-- [ ] Long ranges, chart bucketing, picker, and weight range implemented.
-- [ ] Format, build, targeted tests, and simulator QA recorded.
+- [x] Pure date and bucketing tests written before implementation (6 added; 16 analytics tests pass).
+- [x] Long ranges, chart bucketing, picker, and weight range implemented.
+- [x] Format, build, targeted tests, and simulator QA recorded in `build/insights-qa-2026-10-26/QA.md`.
 - [ ] Scoped commits created and branch pushed.
