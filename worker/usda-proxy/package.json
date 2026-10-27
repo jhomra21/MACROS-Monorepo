@@ -2,7 +2,7 @@
   "name": "usda-proxy",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "bun@1.3.11",
+  "packageManager": "bun@1.4.4",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev --port 8787",
@@ -12,13 +12,13 @@
     "check": "bun run types && tsc --noEmit"
   },
   "dependencies": {
-    "hono": "^4.10.1",
-    "zod": "4.1.12"
+    "hono": "^4.13.14",
+    "zod": "4.6.7"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.12",
-    "@types/node": "^24.5.2",
-    "typescript": "^5.9.3",
-    "wrangler": "^4.80.0"
+    "@types/bun": "^1.4.4",
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2",
+    "wrangler": "4.116.0"
   }
 }
