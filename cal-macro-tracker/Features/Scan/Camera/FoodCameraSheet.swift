@@ -11,6 +11,7 @@ struct FoodCameraSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(SharingSyncService.self) private var sharingSyncService
 
     let loggingDay: CalendarDay?
@@ -60,6 +61,7 @@ struct FoodCameraSheet: View {
                     Spacer()
                     Button {
                         active = false
+                        busy = true
                         showingLibraryPicker = true
                     } label: {
                         Image(systemName: "photo.on.rectangle").frame(width: 52, height: 52)
@@ -114,6 +116,11 @@ struct FoodCameraSheet: View {
                     )
                 }
             }
+            .onChange(of: showingLibraryPicker) { _, isPresented in
+                guard isPresented == false, selectedPhoto == nil else { return }
+                busy = false
+                active = canLiveScan && scenePhase == .active
+            }
             .onChange(of: scenePhase) { _, phase in
                 guard busy == false else { return }
                 if phase == .active, AVCaptureDevice.authorizationStatus(for: .video) == .denied {
@@ -138,6 +145,7 @@ struct FoodCameraSheet: View {
             }
             .sensoryFeedback(.success, trigger: feedbackToken)
             .photosPicker(isPresented: $showingLibraryPicker, selection: $selectedPhoto, matching: .images)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
@@ -190,6 +198,15 @@ struct FoodCameraSheet: View {
 
     private var canLiveScan: Bool {
         DataScannerViewController.isSupported && DataScannerViewController.isAvailable
+    }
+
+    private var isResultExpanded: Bool {
+        switch result {
+        case .message:
+            false
+        case .barcode, .label, .error:
+            true
+        }
     }
 
     private var foodRepository: FoodItemRepository {
@@ -246,8 +263,12 @@ struct FoodCameraSheet: View {
         Task {
             do {
                 guard let scanner, scanner.isScanning else {
-                    useStillCamera = UIImagePickerController.isSourceTypeAvailable(.camera)
-                    if useStillCamera == false {
+                    isCapturingPhoto = false
+                    let canCaptureStill =
+                        UIImagePickerController.isSourceTypeAvailable(.camera)
+                        && AVCaptureDevice.authorizationStatus(for: .video) != .denied
+                    useStillCamera = canCaptureStill
+                    if canCaptureStill == false {
                         result = .error("Camera capture is unavailable. Choose a photo from your library.")
                     }
                     busy = false
@@ -255,7 +276,6 @@ struct FoodCameraSheet: View {
                 }
                 let image = try await scanner.capturePhoto()
                 isCapturingPhoto = false
-                active = false
                 active = false
                 captureImageData = await ImageJPEGEncoder.jpegData(from: image, compressionQuality: 0.9)
                 await readLabel(image)

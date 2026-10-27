@@ -29,6 +29,7 @@ struct FoodCameraPreview: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ scanner: DataScannerViewController, context: Context) {
+        context.coordinator.onBarcode = onBarcode
         guard scanner.isScanning != isActive else { return }
         if isActive {
             context.coordinator.reset()
@@ -43,7 +44,7 @@ struct FoodCameraPreview: UIViewControllerRepresentable {
     }
 
     final class Coordinator: NSObject, DataScannerViewControllerDelegate {
-        private let onBarcode: (String) -> Void
+        var onBarcode: (String) -> Void
         private var hasReportedBarcode = false
 
         init(onBarcode: @escaping (String) -> Void) {
