@@ -49,6 +49,7 @@
 - [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
 - [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
 - [ ] Complete simulator E2E and record evidence; round 3 ran dashboard and camera entry-point smoke checks on the created simulator, but photo picker/result scenarios remain pending.
+- [ ] T3 recheck 2026-10-27: exact branch build succeeded, but agent-device could not perform the first onboarding tap because the host Xcode could not start its simulator service on macOS. Scenarios A–D remain unverified; no source defect was demonstrated. See `build/camera-inline-t3-qa-2026-10-27/QA.md`.
 - [x] Round 4: fix library import, ordered scanner/torch execution, inactive cancellation, terminal dismissal, save validation, and duplicate status/task mutations.
 - [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
