@@ -16,7 +16,7 @@ struct AddFoodScreen: View {
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var isFoodCameraPresented = false
     @Namespace private var cameraTransition
-    @State private var cameraTransitionSourceID: String?
+    @State private var cameraTransitionSourceID = "scan-barcode"
 
     let remotePageSize = 12
     let packagedFoodSearchClient = PackagedFoodSearchClient()
@@ -101,7 +101,7 @@ struct AddFoodScreen: View {
             }
             .navigationTransition(
                 .zoom(
-                    sourceID: cameraTransitionSourceID ?? "scan-barcode",
+                    sourceID: cameraTransitionSourceID,
                     in: cameraTransition
                 )
             )

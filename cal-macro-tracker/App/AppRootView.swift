@@ -90,16 +90,13 @@ struct AppRootView: View {
 
     @ViewBuilder
     private func sheetPresentation(for destination: AppRootSheetDestination) -> some View {
+        let content = NavigationStack {
+            AppRootSheetContent(destination: destination)
+        }
         if case .foodCamera = destination {
-            NavigationStack {
-                AppRootSheetContent(destination: destination)
-            }
-            .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+            content.navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
         } else {
-            NavigationStack {
-                AppRootSheetContent(destination: destination)
-            }
-            .navigationTransition(.automatic)
+            content
         }
     }
 
