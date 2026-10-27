@@ -10,10 +10,7 @@ enum BarcodeImageScannerError: LocalizedError {
     case noBarcodeFound
 
     var errorDescription: String? {
-        switch self {
-        case .noBarcodeFound:
-            "No barcode was found in that image."
-        }
+        "No barcode was found in that image."
     }
 }
 
@@ -29,6 +26,10 @@ struct BarcodeImageScanner {
 nonisolated private func scanBarcodeImageSync(from image: UIImage) throws -> String {
     let visionImage = try ScanImageLoading.makeVisionImage(from: image)
     let request = VNDetectBarcodesRequest()
+    #if targetEnvironment(simulator)
+    // The ML-based detector revisions cannot create an inference context in the simulator; the oldest supported revision can.
+    request.revision = VNDetectBarcodesRequest.supportedRevisions.min() ?? request.revision
+    #endif
     request.symbologies = BarcodeScanConfiguration.packagedFoodSymbologies
 
     let handler = VNImageRequestHandler(cgImage: visionImage.cgImage, orientation: visionImage.orientation)
