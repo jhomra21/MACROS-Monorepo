@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-27 Dashboard Dynamic Type Legend
+
+- Replaced the fixed-height macro legend with a horizontal default-size layout and stacked accessibility-size layout so the legend can grow without overlapping dashboard content.
+
 ## 2026-10-26 TestFlight Build 8
 
 - Archived merged `main` commit `6d6ce5054eabbe845a739e0fe5f9f1e2b1d6ae3d` as version 1.0; Xcode advanced the duplicate build 7 to build 8 and App Store Connect accepted the upload for processing.
