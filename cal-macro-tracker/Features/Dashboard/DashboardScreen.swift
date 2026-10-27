@@ -16,6 +16,7 @@ struct DashboardScreen: View {
 
     let resetToTodayToken: Int
     let onOpenAddFood: (CalendarDay) -> Void
+    let onOpenFoodCamera: (CalendarDay) -> Void
     let onEditEntry: (LogEntry) -> Void
     let onOpenHistory: () -> Void
     let onOpenInsights: () -> Void
@@ -274,16 +275,22 @@ struct DashboardScreen: View {
     }
 
     private var dashboardBottomBar: some View {
-        BottomPinnedActionBar(
-            title: "Add Food",
-            systemImage: "plus",
-            isDisabled: false,
+        BottomPinnedDualActionBar(
+            leadingAction: BottomPinnedDualAction(
+                title: "Camera",
+                systemImage: "camera",
+                action: { onOpenFoodCamera(daySelection.selectedDay) }
+            ),
+            trailingAction: BottomPinnedDualAction(
+                title: "Add Food",
+                systemImage: "plus",
+                action: { onOpenAddFood(daySelection.selectedDay) }
+            ),
             displayMode: isAddFoodButtonCompact ? .compactIcon : .expanded,
+            compactActionsAreHorizontal: true,
             topPadding: 0,
             bottomOffset: 6
-        ) {
-            onOpenAddFood(daySelection.selectedDay)
-        }
+        )
         .frame(maxWidth: .infinity)
     }
 
