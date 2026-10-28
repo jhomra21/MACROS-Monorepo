@@ -7,6 +7,7 @@
 - Reuse `BarcodeLookupResolver`, `BarcodeImageScanner`, `BarcodeScanErrorRecovery`, `NutritionLabelTextRecognizer`, `NutritionLabelParser`, `LogFoodScreen`, and `CameraImagePicker`; do not duplicate nutrition calculation or persistence.
 - Route the Add Food barcode and label actions and the quick action to the unified camera. Keep reusable parser/resolver/scanner code.
 - Files expected to change: `Features/Dashboard/DashboardScreen.swift`, `App/AppRootView.swift`, `Features/AddFood/AddFoodScreen.swift`, existing barcode scanner view where coordinator reset is needed, new camera view files, this tracker, and `changes-log.md`. Remove obsolete option-list/screen UI only when references are gone.
+- The camera result panel is the review surface for both barcode and OCR results; only explicit Details, Edit details, or Enter manually navigation opens `LogFoodScreen` or another editor.
 
 ## Apple API facts checked
 
@@ -33,6 +34,8 @@
 | Unsupported/unavailable camera | Use still-image camera picker when available; otherwise keep library picker accessible. |
 | Barcode not found in product database | Reuse resolver error text (including WS7 throttling/Retry-After copy); offer retry, remote search if available, and label photo. |
 | OCR parse failure | Show failure state with Retake and manual entry; never auto-log OCR. |
+| Save failure in camera review | Keep the current unlogged result, including edited label name and servings, and show an alert so Log can be retried. |
+| Long camera review result | Keep the result panel scrollable at regular and accessibility sizes, bounded to 440 points. |
 
 ## Progress
 
@@ -46,7 +49,8 @@
 - [x] Extract a pure, synchronous camera-flow reducer and add transition failure-mode tests before implementation.
 - [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
 - [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
-- [ ] Complete simulator E2E and record evidence; round 3 ran dashboard and camera entry-point smoke checks on the created simulator, but photo picker/result scenarios remain pending.
+- [x] Complete simulator E2E for complete label OCR, incomplete-label review, barcode import, and saved totals; see the 2026-10-27 camera-inline T3 QA artifact.
+- [x] T3 E2E 2026-10-27: the existing user-owned iPhone 18 Pro simulator completed direct-goals onboarding and camera cases. Complete label OCR/name correction/two-serving log and dashboard totals passed; incomplete-label warnings, disabled Log, two-serving editor handoff, and keyboard-visible control reachability with a long result name passed without needing to scroll; EAN barcode lookup/log/totals passed. Complete-label Edit details initially competed with Log at prominent emphasis; it now uses bordered emphasis. See `build/camera-inline-t3-qa-2026-10-27/QA.md`.
 - [x] Round 4: fix library import, ordered scanner/torch execution, inactive cancellation, terminal dismissal, save validation, and duplicate status/task mutations.
 - [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
@@ -57,6 +61,7 @@
 
 - The single Add Food dashboard button is now the existing dual-action bar with equal Camera and Add Food actions. Both respect the current compact icon display and selected day.
 - The shared large-sheet `FoodCameraSheet` embeds a live `DataScannerViewController`; still photos from capture or Photos picker are barcode-scanned first, then passed to the existing label OCR/parser. It uses existing lookup/cache, fallback-draft, logging action, repository, editor, and haptic paths.
+- Barcode and label results remain in the camera panel. Label scans can have their name corrected, servings adjusted, and be logged there without automatic logging; missing required nutrients route the prominent action to Edit details. `LogFoodScreen` is reached only through Details, Edit details, or Enter manually.
 - Removed the separate Barcode/Label screens and option-list UI after rerouting all entry points. Shared resolver, barcode image scanner, camera picker, parser and fallback draft logic remain.
 - `FoodCameraFlow` owns synchronous, sendable state transitions. Its tests cover duplicate barcode delivery, scanning exclusion while processing, shutter re-entry, Photos picker resume rules, lifecycle stop/resume, dismissal cancellation, stale recovery metadata, save gating, and quantity flow.
 - The sheet stores one task for capture/photo loading, barcode lookup, and OCR; cancellation is not presented as a recovery error. Barcode serving state is shared by the panel, log action, and Details initial quantity.
