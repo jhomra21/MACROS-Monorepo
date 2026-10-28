@@ -1,3 +1,4 @@
+import Charts
 import SwiftUI
 
 struct InsightsCard<Content: View>: View {
@@ -105,6 +106,38 @@ struct InsightsIndexedPoint: Identifiable {
     var id: Int { index }
 }
 
+struct InsightsChartAxis: Equatable {
+    let dayCount: Int
+
+    var visibleDayCount: Int {
+        max(1, min(dayCount, 30))
+    }
+
+    var usesHorizontalScrolling: Bool {
+        dayCount > visibleDayCount
+    }
+
+    func selectedDayIndex(for chartValue: Double?) -> Int? {
+        guard let chartValue, chartValue >= 0, chartValue < Double(dayCount) else { return nil }
+        let index = Int(chartValue.rounded())
+        return (0..<dayCount).contains(index) ? index : nil
+    }
+
+    var labelIndices: [Int] {
+        guard dayCount > 0 else { return [] }
+        if dayCount <= 7 {
+            return Array(0..<dayCount)
+        }
+        let intervalCount =
+            dayCount <= 30
+            ? min(6, dayCount - 1)
+            : max(1, Int((Double(dayCount - 1) / 7).rounded()))
+        return (0...intervalCount).map { interval in
+            Int((Double(interval) * Double(dayCount - 1) / Double(intervalCount)).rounded())
+        }
+    }
+}
+
 struct InsightsMacroSegment: Identifiable {
     let point: InsightsIndexedPoint
     let metric: MacroMetric
@@ -114,10 +147,11 @@ struct InsightsMacroSegment: Identifiable {
 }
 
 extension [InsightsChartPoint] {
-    func indexedForCharts() -> [InsightsIndexedPoint] {
-        enumerated().map { index, point in
+    func indexedForCharts(startingAt firstDay: CalendarDay?) -> [InsightsIndexedPoint] {
+        guard let firstDay else { return [] }
+        return map { point in
             InsightsIndexedPoint(
-                index: index,
+                index: CalendarDay.dateDistance(from: firstDay, through: point.day),
                 day: point.day,
                 totals: point.totals,
                 secondaryTotals: point.secondaryTotals
@@ -126,40 +160,36 @@ extension [InsightsChartPoint] {
     }
 }
 
-extension [InsightsIndexedPoint] {
-    var axisLabelIndices: [Int] {
-        let interval = Swift.max(1, Int(ceil(Double(count) / 6)))
-        return stride(from: 0, to: count, by: interval).map { $0 }
-    }
-}
-
-extension InsightsChartBucket {
-    var averageLabel: String {
-        switch self {
-        case .daily: "Daily totals"
-        case .weekly: "Weekly avg"
-        case .monthly: "Monthly avg"
-        }
-    }
-}
-
 extension CalendarDay {
-    func chartLabel(for bucket: InsightsChartBucket) -> String {
-        switch bucket {
-        case .daily:
-            startDate.formatted(.dateTime.month(.abbreviated).day())
-        case .weekly:
-            "Wk of \(startDate.formatted(.dateTime.month(.abbreviated).day()))"
-        case .monthly:
-            startDate.formatted(.dateTime.month(.abbreviated).year(.twoDigits))
-        }
+    var chartLabel: String {
+        startDate.formatted(.dateTime.month(.abbreviated).day())
+    }
+
+    func chartAxisLabel(inRangeFrom firstDay: CalendarDay?, through lastDay: CalendarDay?) -> String {
+        let calendar = resolvedCalendar
+        let includesYear =
+            firstDay.map { calendar.component(.year, from: $0.startDate) }
+            != lastDay.map { calendar.component(.year, from: $0.startDate) }
+        return includesYear
+            ? startDate.formatted(.dateTime.month(.defaultDigits).day().year(.twoDigits))
+            : startDate.formatted(.dateTime.month(.defaultDigits).day())
     }
 }
 
-extension Array {
-    subscript(safe index: Int?) -> Element? {
-        guard let index, indices.contains(index) else { return nil }
-        return self[index]
+extension View {
+    @ViewBuilder
+    func insightsDailyChartXScale(dayCount: Int) -> some View {
+        let axis = InsightsChartAxis(dayCount: dayCount)
+        let finalDayOffset = Double(max(dayCount, 1))
+
+        if axis.usesHorizontalScrolling {
+            chartScrollableAxes(.horizontal)
+                .chartXScale(domain: -1...(finalDayOffset + 1))
+                .chartXVisibleDomain(length: axis.visibleDayCount + 1)
+                .chartScrollPosition(initialX: max(0, dayCount - axis.visibleDayCount))
+        } else {
+            chartXScale(domain: -1...finalDayOffset)
+        }
     }
 }
 
