@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-28 TestFlight Build 9 Preflight
+
+- Prepared the merged camera candidate at version 1.0/build 9; format, signed simulator and Release device builds, StoreKit catalog validation, and 63 targeted tests passed. No archive or upload was performed; details and remaining release checks are in `build/build9-preflight-2026-10-28/QA.md`.
+
 ## 2026-10-28 Camera Zoom Glass-Preserving Fix
 
 - Final checkpoint: camera presentation is full-screen and transparent, with separate native glass guidance/results above an inset rounded preview; Back, shutter, and expandable Photos/flash controls stay above the home indicator. Add Food and Dashboard pill-origin opening/reverse transitions pass guarded native clips, and the expanded rail fits at accessibility text size. P2 cleanup is in source, but an active remote request was not proven before dismissal, so cancellation behavior remains unverified. Physical camera/flash and Reduce Motion also remain unverified. Evidence: `build/camera-transparent-zoom-fix-2026-10-28/QA.md`, `build/camera-dashboard-final-2026-10-28/QA.md`, and `build/camera-final-native-tools-2026-10-28/QA.md`.
