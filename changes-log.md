@@ -17,7 +17,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-28 TestFlight Build 9 Upload
 
-- Reused the existing version 1.0/build 9 archive from approved source `b3604bf439b44fce1c1c231c6afa792590fb7bbf`; Xcode automatic App Store Connect export re-signed the app and widget for distribution, with `get-task-allow=false` recorded for both. Upload succeeded once and App Store Connect reported the package `PROCESSING` (delivery `53348865-98b4-4201-8d2e-9b846e93cc4c`). It is not yet confirmed processed or TestFlight-ready. Archive preserved; receipt and export logs are under `build/build9-release-2026-10-28/`.
+- Reused the existing version 1.0/build 9 archive from approved source `b3604bf439b44fce1c1c231c6afa792590fb7bbf`; Xcode automatic App Store Connect export re-signed the app and widget for distribution, with `get-task-allow=false` recorded for both. Upload succeeded once (delivery `53348865-98b4-4201-8d2e-9b846e93cc4c`). Parent later verified the build detail as `TESTING` in the existing `MACROS Beta` (internal) and `MACROS-Beta Family & Friends` (external) groups. No group assignment was made in this session; actor is unknown. Archive preserved; receipt and export logs are under `build/build9-release-2026-10-28/`.
 
 ## 2026-10-28 Camera Zoom Glass-Preserving Fix
 
