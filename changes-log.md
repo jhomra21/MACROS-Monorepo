@@ -11,9 +11,19 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-28 Camera Zoom Glass-Preserving Fix
+
+- Moved the matched zoom source outside a local `GlassEffectContainer` around the existing native interactive tinted capsule, so the matched source bounds and its rendered glass surface share the transition boundary. Signed simulator E2E visually confirms the sheet’s first visible outer boundary grows from the Camera pill at native PTS 897/600 (1.495 s) to PTS 905/600 (1.508 s), not the screen center; glass appearance is retained. Close returned to the dashboard at 0.833–1.005 s. Add Food Scan Barcode and Scan Label both opened the camera; their transition animations and Reduce Motion were not separately captured. Evidence: `build/camera-zoom-glass-fix-2026-10-28/QA.md`.
+
 ## 2026-10-27 Camera Zoom Transition
 
 - Added matched-zoom transition wiring from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera. The original simulator report incorrectly called the transition pill-origin; bounded frame captures instead show a center-origin fallback in three tested configurations. No pill-origin fix is claimed. See `build/camera-zoom-t3-2026-10-27/QA.md`.
+
+## 2026-10-27 Daily Insights Charts
+
+- Changed every Insights range to show one point per logged calendar day instead of weekly/monthly averages. Sparse dates keep their actual spacing, long ranges scroll through a readable 30-day window, and unknown nutrient values remain absent. Daily-average summaries and Pro gating are unchanged.
+- The isolated 400-day simulator fixture showed seven separate bars with seven date labels in 7D and distinct daily marks in longer ranges. Regression tests cover all ranges, sparse gaps, calendar boundaries, same-day totals, and missing nutrients. E2E evidence: `build/insights-daily-qa-2026-10-27/QA.md`.
+- 2026-10-28 follow-up: corrected the three daily X-axis labels to align on their tick positions. Native E2E on the verified Xcode 27 binary confirms corrected 7D alignment, matching daily selection, long-range pan/return, range changes, and calorie/macro/nutrient chart interactions. The earlier claim that the simulator binary lacked entitlements was false; decoded Mach-O entitlements include the expected app identifier, app group, and HealthKit key. Details and remaining gaps: `build/insights-daily-qa-2026-10-28/QA.md`.
 
 ## 2026-10-27 Camera Inline Results
 
