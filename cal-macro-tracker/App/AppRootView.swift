@@ -94,7 +94,9 @@ struct AppRootView: View {
             AppRootSheetContent(destination: destination)
         }
         if case .foodCamera = destination {
-            content.navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+            content
+                .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+                .presentationBackground(.clear)
         } else {
             content
         }

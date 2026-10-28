@@ -59,7 +59,6 @@ struct FoodCameraSheet: View {
             ZStack {
                 preview
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .ignoresSafeArea()
 
                 VStack(spacing: 0) {
                     topOverlay
@@ -67,6 +66,8 @@ struct FoodCameraSheet: View {
                     cameraControls
                 }
             }
+            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .padding(8)
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(item: $logDestination) { destination in
                 LogFoodScreen(
@@ -173,7 +174,7 @@ struct FoodCameraSheet: View {
         } message: {
             Text(logError ?? "")
         }
-        .presentationDetents([.large])
+        .presentationDetents([.fraction(0.9)])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(30)
     }
@@ -181,7 +182,7 @@ struct FoodCameraSheet: View {
     @ViewBuilder
     private var resultPanel: some View {
         let panel = FoodCameraResultPanel(
-            content: result,
+            content: displayedResult,
             onChangeServings: { amount in
                 send(.servingsChanged(amount))
                 switch result {
@@ -234,6 +235,13 @@ struct FoodCameraSheet: View {
         .padding(.trailing, 76)
     }
 
+    private var displayedResult: FoodCameraResultPanel.Content {
+        if dynamicTypeSize.isAccessibilitySize, canLiveScan == false, case .hint = result {
+            return .hint("Camera unavailable. Choose a photo to scan a barcode or nutrition label.")
+        }
+        return result
+    }
+
     private var topOverlay: some View {
         ZStack(alignment: .topTrailing) {
             resultPanel
@@ -242,7 +250,7 @@ struct FoodCameraSheet: View {
                     send(.torchToggled)
                 } label: {
                     Image(systemName: torchIsOn ? "flashlight.on.fill" : "flashlight.off.fill")
-                        .frame(width: 48, height: 48)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.glass)
                 .foregroundStyle(.white)
@@ -262,8 +270,12 @@ struct FoodCameraSheet: View {
             } label: {
                 Label("Close", systemImage: "xmark")
                     .labelStyle(.iconOnly)
-                    .frame(width: 52, height: 52)
+                    .frame(width: 38, height: 38)
+                    .glassEffect(.regular.interactive(), in: .circle)
+                    .frame(width: 44, height: 44)
+                    .contentShape(.circle)
             }
+            .buttonStyle(.plain)
             .accessibilityLabel("Close camera")
             Spacer()
             Button(action: captureLabel) {
@@ -278,12 +290,17 @@ struct FoodCameraSheet: View {
                 send(.libraryOpened)
                 showingLibraryPicker = true
             } label: {
-                Image(systemName: "photo.on.rectangle").frame(width: 52, height: 52)
+                Image(systemName: "photo.on.rectangle")
+                    .frame(width: 38, height: 38)
+                    .glassEffect(.regular.interactive(), in: .circle)
+                    .frame(width: 44, height: 44)
+                    .contentShape(.circle)
             }
+            .buttonStyle(.plain)
             .accessibilityLabel("Choose a photo")
             .disabled(busy)
         }
-        .font(.title3.weight(.semibold))
+        .font(.system(size: 17, weight: .semibold))
         .buttonStyle(.glass)
         .foregroundStyle(canLiveScan ? .white : .primary)
         .padding(.horizontal, 24)
@@ -348,13 +365,15 @@ struct FoodCameraSheet: View {
             } else {
                 ZStack {
                     Color(uiColor: .secondarySystemBackground)
-                    ContentUnavailableView(
-                        "Camera unavailable",
-                        systemImage: "camera",
-                        description: Text("Choose a photo to scan a barcode or nutrition label.")
-                    )
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundStyle(.primary)
+                    if isResultExpanded == false, dynamicTypeSize.isAccessibilitySize == false {
+                        ContentUnavailableView(
+                            "Camera unavailable",
+                            systemImage: "camera",
+                            description: Text("Choose a photo to scan a barcode or nutrition label.")
+                        )
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundStyle(.primary)
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }

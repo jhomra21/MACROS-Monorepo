@@ -55,7 +55,7 @@
 - [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
 - [x] Accessibility-size dashboard pills use icon-only mode, with VoiceOver labels retained; fallback camera copy wraps.
-- [x] Replace the nested black camera scaffold with a single edge-to-edge preview surface; guidance and results overlay the preview, with floating safe-area controls. Default-size fallback screenshot passes for contrast and full-bleed surface; light/dark screenshots pass. Accessibility XXXL fallback copy overlaps the unavailable-camera content, and OCR/review/log flows remain unverified in this layout. See `build/camera-borderless-2026-10-28/QA.md`.
+- [x] Replace the nested black camera scaffold with an 8-point-inset rounded preview inside a transparent 90%-height sheet, exposing the underlying app around the camera. Guidance and results overlay the preview, with 38-point glass secondary controls in 44-point hit targets and a 68-point shutter. Default-size and dark fallback contrast pass; accessibility XXXL removes the redundant centered fallback copy to avoid overlap. OCR/review/log flows remain unverified. See `build/camera-borderless-2026-10-28/QA.md`.
 - [x] Preserve branch history by merging `origin/main` into `56f7e95` instead of rebasing, per owner override.
 
 ## 2026-10-27 camera transition recheck

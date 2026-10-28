@@ -105,6 +105,7 @@ struct AddFoodScreen: View {
                     in: cameraTransition
                 )
             )
+            .presentationBackground(.clear)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
