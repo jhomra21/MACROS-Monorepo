@@ -99,7 +99,10 @@ struct BottomPinnedDualActionBar: View {
         .accessibilityLabel(action.title)
 
         if let sourceID = action.transitionSourceID, let namespace = transitionNamespace {
-            button.matchedTransitionSource(id: sourceID, in: namespace) {
+            GlassEffectContainer(spacing: 0) {
+                button
+            }
+            .matchedTransitionSource(id: sourceID, in: namespace) {
                 $0.clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             }
         } else {
