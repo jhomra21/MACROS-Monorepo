@@ -18,6 +18,8 @@ struct BottomPinnedActionBar: View {
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var topPadding: CGFloat = 10
     var bottomOffset: CGFloat = 0
+    var transitionSourceID: String? = nil
+    var transitionNamespace: Namespace.ID? = nil
     let action: () -> Void
 
     @State private var isKeyboardVisible = false
@@ -52,7 +54,7 @@ struct BottomPinnedActionBar: View {
     }
 
     private func glassButton(buttonWidth: CGFloat) -> some View {
-        AppAccentActionButton(
+        let button = AppAccentActionButton(
             title: title,
             systemImage: systemImage,
             isCompact: isCompact,
@@ -60,12 +62,27 @@ struct BottomPinnedActionBar: View {
             labelWidth: buttonWidth,
             action: action
         )
-        .clipped()
-        .frame(width: buttonWidth, height: compactButtonSize)
-        .padding(.horizontal, horizontalPadding)
-        .padding(.top, topPadding)
-        .padding(.bottom, bottomPadding)
-        .accessibilityLabel(title)
+        return transitionSource(for: button)
+            .clipped()
+            .frame(width: buttonWidth, height: compactButtonSize)
+            .padding(.horizontal, horizontalPadding)
+            .padding(.top, topPadding)
+            .padding(.bottom, bottomPadding)
+            .accessibilityLabel(title)
+    }
+
+    @ViewBuilder
+    private func transitionSource(for button: some View) -> some View {
+        if let sourceID = transitionSourceID, let namespace = transitionNamespace {
+            GlassEffectContainer(spacing: 0) {
+                button
+            }
+            .matchedTransitionSource(id: sourceID, in: namespace) {
+                $0.clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+            }
+        } else {
+            button
+        }
     }
 
     private var fallbackButton: some View {

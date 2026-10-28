@@ -6,6 +6,17 @@ private enum AppRootSheetDestination: Identifiable, Hashable {
     case foodCamera(CalendarDay?)
     case editLogEntry(PersistentIdentifier)
 
+    var isCameraPresentation: Bool {
+        switch self {
+        case .foodCamera:
+            true
+        case let .addFood(entryPoint, _):
+            entryPoint == .scanBarcode || entryPoint == .scanLabel
+        case .editLogEntry:
+            false
+        }
+    }
+
     var id: String {
         switch self {
         case let .addFood(entryPoint, loggingDay):
@@ -75,7 +86,10 @@ struct AppRootView: View {
                 }
             }
         }
-        .sheet(item: $sheetDestination) { destination in
+        .sheet(item: nonCameraSheetDestination) { destination in
+            sheetPresentation(for: destination)
+        }
+        .fullScreenCover(item: cameraSheetDestination) { destination in
             sheetPresentation(for: destination)
         }
         .onChange(of: pendingOpenRequest) { _, newValue in
@@ -90,15 +104,18 @@ struct AppRootView: View {
 
     @ViewBuilder
     private func sheetPresentation(for destination: AppRootSheetDestination) -> some View {
-        let content = NavigationStack {
+        switch destination {
+        case .foodCamera:
             AppRootSheetContent(destination: destination)
-        }
-        if case .foodCamera = destination {
-            content
                 .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
                 .presentationBackground(.clear)
-        } else {
-            content
+        case let .addFood(entryPoint, _) where entryPoint == .scanBarcode || entryPoint == .scanLabel:
+            AppRootSheetContent(destination: destination)
+                .presentationBackground(.clear)
+        default:
+            NavigationStack {
+                AppRootSheetContent(destination: destination)
+            }
         }
     }
 
@@ -108,6 +125,35 @@ struct AppRootView: View {
 
     private func presentSheet(_ destination: AppRootSheetDestination) {
         sheetDestination = destination
+    }
+
+    private var nonCameraSheetDestination: Binding<AppRootSheetDestination?> {
+        Binding(
+            get: {
+                guard sheetDestination?.isCameraPresentation == false else { return nil }
+                return sheetDestination
+            },
+            set: { destination in
+                if destination == nil, sheetDestination?.isCameraPresentation == true {
+                    return
+                }
+                sheetDestination = destination
+            }
+        )
+    }
+
+    private var cameraSheetDestination: Binding<AppRootSheetDestination?> {
+        Binding(
+            get: {
+                guard sheetDestination?.isCameraPresentation == true else { return nil }
+                return sheetDestination
+            },
+            set: { destination in
+                if destination == nil, sheetDestination?.isCameraPresentation == true {
+                    sheetDestination = nil
+                }
+            }
+        )
     }
 
     private func resetPresentedState() {
