@@ -15,6 +15,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Prepared the merged camera candidate at version 1.0/build 9; format, signed simulator and Release device builds, StoreKit catalog validation, and 63 targeted tests passed. No archive or upload was performed; details and remaining release checks are in `build/build9-preflight-2026-10-28/QA.md`.
 
+## 2026-10-28 TestFlight Build 9 Upload
+
+- Reused the existing version 1.0/build 9 archive from approved source `b3604bf439b44fce1c1c231c6afa792590fb7bbf`; Xcode automatic App Store Connect export re-signed the app and widget for distribution, with `get-task-allow=false` recorded for both. Upload succeeded once and App Store Connect reported the package `PROCESSING` (delivery `53348865-98b4-4201-8d2e-9b846e93cc4c`). It is not yet confirmed processed or TestFlight-ready. Archive preserved; receipt and export logs are under `build/build9-release-2026-10-28/`.
+
 ## 2026-10-28 Camera Zoom Glass-Preserving Fix
 
 - Final checkpoint: camera presentation is full-screen and transparent, with separate native glass guidance/results above an inset rounded preview; Back, shutter, and expandable Photos/flash controls stay above the home indicator. Add Food and Dashboard pill-origin opening/reverse transitions pass guarded native clips, and the expanded rail fits at accessibility text size. P2 cleanup is in source, but an active remote request was not proven before dismissal, so cancellation behavior remains unverified. Physical camera/flash and Reduce Motion also remain unverified. Evidence: `build/camera-transparent-zoom-fix-2026-10-28/QA.md`, `build/camera-dashboard-final-2026-10-28/QA.md`, and `build/camera-final-native-tools-2026-10-28/QA.md`.
