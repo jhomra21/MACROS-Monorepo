@@ -39,7 +39,7 @@
 
 ## Progress
 
-- [x] Verify dashboard and Add Food matched camera-sheet zoom/dismiss transitions in simulator; dashboard open/close and swipe-down returned to the intact dashboard, and Add Food Barcode/Label entry points showed the camera fallback. Simulator camera unavailable; evidence and caveats: `build/camera-zoom-2026-10-27/QA.md`.
+- [ ] Verify a true pill-origin camera zoom. Three bounded variants still entered from the screen center; the initial report's pill-origin claim is withdrawn. Dashboard fallback and return work, but origin-aware open/close and Add Food entry-point transitions remain unresolved. Evidence: `build/camera-zoom-t3-2026-10-27/QA.md`.
 - [x] Read repository and Swift guidance.
 - [x] Verify Apple camera and torch API contracts.
 - [x] Implement dashboard bar split.
@@ -56,6 +56,13 @@
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
 - [x] Accessibility-size dashboard pills use icon-only mode, with VoiceOver labels retained; fallback camera copy wraps.
 - [x] Preserve branch history by merging `origin/main` into `56f7e95` instead of rebasing, per owner override.
+
+## 2026-10-27 camera transition recheck
+
+- Replaced the earlier unsubstantiated pill-origin QA claim with bounded simulator video evidence. The existing sheet, moving the match source from the reusable button wrapper to its glass label, and switching the dashboard camera to `fullScreenCover` (with the source attached directly to the button) all still showed center-origin entry. The original sheet behavior was restored; no custom transform animation or behavior change was kept.
+- Dashboard fallback open and X dismissal returned to the intact two-item dashboard. A downward swipe was tried on the experimental `fullScreenCover` and did not dismiss it; swipe-to-dismiss was not retested after restoring the original `.sheet`. Add Food Barcode/Label source-origin, History-selected deep link, Reduce Motion, and live-camera behavior remain unverified.
+- Apple documents `.navigationTransition(.zoom(sourceID:in:))` for a view in a stack or sheet and shows a matched source on the button or its label. The observed center-origin result matches the documented fallback when the source cannot be resolved. Remaining lead: isolate whether the source is unavailable across the presentation boundary or lost inside `GlassEffectContainer`; neither was isolated within the three-build limit.
+- Evidence and exact build/configuration/resource notes: `build/camera-zoom-t3-2026-10-27/QA.md`.
 
 ## Implementation notes
 

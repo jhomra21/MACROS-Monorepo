@@ -13,7 +13,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-10-27 Camera Zoom Transition
 
-- Added a matched zoom transition from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera sheet. Initial simulator QA observed center-origin fallback on dashboard and Add Food entry points; the pill-origin transition is not yet verified. See `build/camera-zoom-t3-2026-10-27/QA.md`.
+- Added matched-zoom transition wiring from the dashboard Camera pill and Add Food Scan Barcode/Scan Label pills into the unified camera. The original simulator report incorrectly called the transition pill-origin; bounded frame captures instead show a center-origin fallback in three tested configurations. No pill-origin fix is claimed. See `build/camera-zoom-t3-2026-10-27/QA.md`.
 
 ## 2026-10-27 Camera Inline Results
 
