@@ -54,7 +54,6 @@ struct FoodCameraResultPanel: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24))
     }
 
     private func status(_ message: String) -> some View {

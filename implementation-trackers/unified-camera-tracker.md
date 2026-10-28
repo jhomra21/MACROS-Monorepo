@@ -39,6 +39,7 @@
 
 ## Progress
 
+- [x] Verify the glass-preserving dashboard Camera pill-origin zoom; exact native onset evidence is in `build/camera-zoom-glass-fix-2026-10-28/QA.md`. Follow-up confirms downward swipe returns to Today, Add Food Barcode/Label X dismissal returns to Add Food, and a recognized scanner deep link opens from History and returns to the same History date. Swipe landing on the exact pill, Add Food morph classification, Reduce Motion, and actual Home Screen Quick Action remain unverified.
 - [x] Read repository and Swift guidance.
 - [x] Verify Apple camera and torch API contracts.
 - [x] Implement dashboard bar split.
@@ -54,7 +55,15 @@
 - [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
 - [x] Accessibility-size dashboard pills use icon-only mode, with VoiceOver labels retained; fallback camera copy wraps.
+- [x] Replace the nested black camera scaffold with an 8-point-inset rounded preview inside a transparent 90%-height sheet, exposing the underlying app around the camera. Guidance and results overlay the preview, with 38-point glass secondary controls in 44-point hit targets and a 68-point shutter. Default-size and dark fallback contrast pass; accessibility XXXL removes the redundant centered fallback copy to avoid overlap. OCR/review/log flows remain unverified. See `build/camera-borderless-2026-10-28/QA.md`.
 - [x] Preserve branch history by merging `origin/main` into `56f7e95` instead of rebasing, per owner override.
+
+## 2026-10-27 camera transition recheck
+
+- Replaced the earlier unsubstantiated pill-origin QA claim with bounded simulator video evidence. The existing sheet, moving the match source from the reusable button wrapper to its glass label, and switching the dashboard camera to `fullScreenCover` (with the source attached directly to the button) all still showed center-origin entry. The original sheet behavior was restored; no custom transform animation or behavior change was kept.
+- Dashboard fallback open and X dismissal returned to the intact two-item dashboard. The 2026-10-28 follow-up additionally verified native downward-swipe dismissal back to Today and X dismissal from both Add Food Scan Barcode and Scan Label back to Add Food; only Barcode open/return were recorded, and its morph was not separately classified. The recognized camera deep link opened from History and Close returned to the same History date; this does not verify a Home Screen Quick Action. Add Food source-origin, Reduce Motion, and live-camera behavior remain unverified.
+- Apple documents `.navigationTransition(.zoom(sourceID:in:))` for a view in a stack or sheet and shows a matched source on the button or its label. The observed center-origin result matches the documented fallback when the source cannot be resolved. Remaining lead: isolate whether the source is unavailable across the presentation boundary or lost inside `GlassEffectContainer`; neither was isolated within the three-build limit.
+- Evidence and exact build/configuration/resource notes: `build/camera-zoom-t3-2026-10-27/QA.md`.
 
 ## Implementation notes
 

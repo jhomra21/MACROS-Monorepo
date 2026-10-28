@@ -6,6 +6,17 @@ private enum AppRootSheetDestination: Identifiable, Hashable {
     case foodCamera(CalendarDay?)
     case editLogEntry(PersistentIdentifier)
 
+    var isCameraPresentation: Bool {
+        switch self {
+        case .foodCamera:
+            true
+        case let .addFood(entryPoint, _):
+            entryPoint == .scanBarcode || entryPoint == .scanLabel
+        case .editLogEntry:
+            false
+        }
+    }
+
     var id: String {
         switch self {
         case let .addFood(entryPoint, loggingDay):
@@ -29,6 +40,7 @@ struct AppRootView: View {
 
     @Binding private var pendingOpenRequest: AppOpenRequest?
 
+    @Namespace private var cameraTransition
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var dashboardResetToken = 0
@@ -42,6 +54,7 @@ struct AppRootView: View {
         NavigationStack(path: $path) {
             DashboardScreen(
                 resetToTodayToken: dashboardResetToken,
+                cameraTransitionNamespace: cameraTransition,
                 onOpenAddFood: { loggingDay in
                     presentSheet(.addFood(.addFood, loggingDay))
                 },
@@ -73,10 +86,11 @@ struct AppRootView: View {
                 }
             }
         }
-        .sheet(item: $sheetDestination) { destination in
-            NavigationStack {
-                AppRootSheetContent(destination: destination)
-            }
+        .sheet(item: nonCameraSheetDestination) { destination in
+            sheetPresentation(for: destination)
+        }
+        .fullScreenCover(item: cameraSheetDestination) { destination in
+            sheetPresentation(for: destination)
         }
         .onChange(of: pendingOpenRequest) { _, newValue in
             applyPendingOpenRequest(newValue)
@@ -88,12 +102,58 @@ struct AppRootView: View {
         .modifier(ReviewPromptModifier())
     }
 
+    @ViewBuilder
+    private func sheetPresentation(for destination: AppRootSheetDestination) -> some View {
+        switch destination {
+        case .foodCamera:
+            AppRootSheetContent(destination: destination)
+                .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+                .presentationBackground(.clear)
+        case let .addFood(entryPoint, _) where entryPoint == .scanBarcode || entryPoint == .scanLabel:
+            AppRootSheetContent(destination: destination)
+                .presentationBackground(.clear)
+        default:
+            NavigationStack {
+                AppRootSheetContent(destination: destination)
+            }
+        }
+    }
+
     private func open(_ route: Route) {
         path.append(route)
     }
 
     private func presentSheet(_ destination: AppRootSheetDestination) {
         sheetDestination = destination
+    }
+
+    private var nonCameraSheetDestination: Binding<AppRootSheetDestination?> {
+        Binding(
+            get: {
+                guard sheetDestination?.isCameraPresentation == false else { return nil }
+                return sheetDestination
+            },
+            set: { destination in
+                if destination == nil, sheetDestination?.isCameraPresentation == true {
+                    return
+                }
+                sheetDestination = destination
+            }
+        )
+    }
+
+    private var cameraSheetDestination: Binding<AppRootSheetDestination?> {
+        Binding(
+            get: {
+                guard sheetDestination?.isCameraPresentation == true else { return nil }
+                return sheetDestination
+            },
+            set: { destination in
+                if destination == nil, sheetDestination?.isCameraPresentation == true {
+                    sheetDestination = nil
+                }
+            }
+        )
     }
 
     private func resetPresentedState() {

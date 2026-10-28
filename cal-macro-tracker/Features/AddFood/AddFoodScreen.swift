@@ -15,6 +15,8 @@ struct AddFoodScreen: View {
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var isFoodCameraPresented = false
+    @Namespace private var cameraTransition
+    private let cameraTransitionSourceID = "search-camera"
 
     let remotePageSize = 12
     let packagedFoodSearchClient = PackagedFoodSearchClient()
@@ -64,6 +66,7 @@ struct AddFoodScreen: View {
         .onDisappear {
             remoteSearchTask?.cancel()
             remoteSearchTask = nil
+            remoteSearch.isLoading = false
         }
         .toolbar {
             ToolbarItem(placement: .appTopBarLeading) {
@@ -93,10 +96,15 @@ struct AddFoodScreen: View {
             text: $searchText,
             onSubmit: searchOnline
         )
-        .sheet(isPresented: $isFoodCameraPresented) {
-            NavigationStack {
-                FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
-            }
+        .fullScreenCover(isPresented: $isFoodCameraPresented) {
+            FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
+                .navigationTransition(
+                    .zoom(
+                        sourceID: cameraTransitionSourceID,
+                        in: cameraTransition
+                    )
+                )
+                .presentationBackground(.clear)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
@@ -116,23 +124,20 @@ struct AddFoodScreen: View {
     }
 
     private var scanActionBar: some View {
-        BottomPinnedDualActionBar(
-            leadingAction: BottomPinnedDualAction(
-                title: "Scan Barcode",
-                systemImage: "barcode.viewfinder"
-            ) {
-                isFoodCameraPresented = true
-            },
-            trailingAction: BottomPinnedDualAction(
-                title: "Scan Label",
-                systemImage: "camera.viewfinder"
-            ) {
-                isFoodCameraPresented = true
-            },
+        BottomPinnedActionBar(
+            title: "Camera",
+            systemImage: "camera.viewfinder",
+            isDisabled: false,
             displayMode: isScanActionBarCompact ? .compactIcon : .expanded,
             topPadding: 0,
-            bottomOffset: 6
+            bottomOffset: 6,
+            transitionSourceID: cameraTransitionSourceID,
+            transitionNamespace: cameraTransition,
+            action: {
+                isFoodCameraPresented = true
+            }
         )
+        .accessibilityLabel("Camera")
         .frame(maxWidth: .infinity)
     }
 

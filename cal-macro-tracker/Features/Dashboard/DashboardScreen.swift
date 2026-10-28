@@ -15,6 +15,7 @@ struct DashboardScreen: View {
         MacroRingColorStorage.defaultFatHex
 
     let resetToTodayToken: Int
+    let cameraTransitionNamespace: Namespace.ID
     let onOpenAddFood: (CalendarDay) -> Void
     let onOpenFoodCamera: (CalendarDay) -> Void
     let onEditEntry: (LogEntry) -> Void
@@ -279,13 +280,15 @@ struct DashboardScreen: View {
             leadingAction: BottomPinnedDualAction(
                 title: "Camera",
                 systemImage: "camera",
-                action: { onOpenFoodCamera(daySelection.selectedDay) }
+                action: { onOpenFoodCamera(daySelection.selectedDay) },
+                transitionSourceID: FoodCameraSheet.zoomTransitionID
             ),
             trailingAction: BottomPinnedDualAction(
                 title: "Add Food",
                 systemImage: "plus",
                 action: { onOpenAddFood(daySelection.selectedDay) }
             ),
+            transitionNamespace: cameraTransitionNamespace,
             displayMode: isAddFoodButtonCompact ? .compactIcon : .expanded,
             compactActionsAreHorizontal: true,
             topPadding: 0,
