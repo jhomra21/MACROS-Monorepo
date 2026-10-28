@@ -14,6 +14,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-28 Camera Zoom Glass-Preserving Fix
 
 - Moved the matched zoom source outside a local `GlassEffectContainer` around the existing native interactive tinted capsule, so the matched source bounds and its rendered glass surface share the transition boundary. Signed simulator E2E visually confirms the sheet’s first visible outer boundary grows from the Camera pill at native PTS 897/600 (1.495 s) to PTS 905/600 (1.508 s), not the screen center; glass appearance is retained. Close returned to the dashboard at 0.833–1.005 s. Add Food Scan Barcode and Scan Label both opened the camera; their transition animations and Reduce Motion were not separately captured. Evidence: `build/camera-zoom-glass-fix-2026-10-28/QA.md`.
+- 2026-10-28 follow-up: native downward swipe returned the Camera sheet to Today; X from Add Food Scan Barcode and Scan Label returned to Add Food. The recognized scanner deep link opened from History and Close returned to the same date. Barcode open/return were recorded; morph classification, Reduce Motion, and Home Screen Quick Action remain unverified. See the same QA artifact.
+
+## 2026-10-28 Borderless Camera Surface
+
+- Replaced the inset black camera scaffold with an edge-to-edge preview and floating controls. Guidance overlays the top of the preview, while scan/review results remain editable in a scrollable translucent overlay. The fallback uses one full-surface neutral background. Formatting and signed simulator build passed; see the follow-up contrast review below.
+- Follow-up contrast review: fallback guidance/status text and floating controls use semantic foreground colors; the dark gradient is limited to the live-camera overlay. Simulator screenshots confirm default-size fallback contrast and coherent light/dark appearance. Accessibility XXXL fallback text overlaps the centered unavailable-camera content, so large-type fallback layout and OCR/review/log flows are still unverified.
 
 ## 2026-10-27 Camera Zoom Transition
 
