@@ -76,7 +76,7 @@ struct FoodCameraResultPanel: View {
         let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
         let detailsButton = Group {
             if isLabel {
-                Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
+                Button("Edit details", action: onReview).buttonStyle(.bordered)
             } else {
                 Button("Details", action: onDetails).buttonStyle(.bordered)
             }

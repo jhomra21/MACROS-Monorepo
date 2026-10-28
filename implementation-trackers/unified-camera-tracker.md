@@ -48,8 +48,8 @@
 - [x] Extract a pure, synchronous camera-flow reducer and add transition failure-mode tests before implementation.
 - [x] Retain/cancel image, OCR, capture, and lookup work; prevent stale results after cancellation.
 - [x] Add the guarded AVCaptureDevice torch toggle; device verification remains required.
-- [ ] Complete simulator E2E and record evidence; round 3 ran dashboard and camera entry-point smoke checks on the created simulator, but photo picker/result scenarios remain pending.
-- [ ] T3 recheck 2026-10-27: exact branch build succeeded, but agent-device could not perform the first onboarding tap because the host Xcode could not start its simulator service on macOS. Scenarios A–D remain unverified; no source defect was demonstrated. See `build/camera-inline-t3-qa-2026-10-27/QA.md`.
+- [x] Complete simulator E2E for complete label OCR, incomplete-label review, barcode import, and saved totals; see the 2026-10-27 camera-inline T3 QA artifact.
+- [x] T3 E2E 2026-10-27: the owned iPhone 18 Pro simulator completed direct-goals onboarding and camera cases. Complete label OCR/name correction/two-serving log and dashboard totals passed; incomplete label warnings, disabled Log, and two-serving editor handoff passed; EAN barcode lookup/log/totals passed. Complete-label Edit details initially competed with Log at prominent emphasis; it now uses bordered emphasis. See `build/camera-inline-t3-qa-2026-10-27/QA.md`.
 - [x] Round 4: fix library import, ordered scanner/torch execution, inactive cancellation, terminal dismissal, save validation, and duplicate status/task mutations.
 - [x] Round 4: expand exact reducer coverage from 10 to 22 tests and verify label import/review/reselection/cancellation on final implementation.
 - [ ] Complete unknown-product lookup dismissal/recovery E2E; supplied QR is outside packaged-food symbologies.
