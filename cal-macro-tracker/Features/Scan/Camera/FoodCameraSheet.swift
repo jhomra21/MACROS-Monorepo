@@ -23,9 +23,10 @@ struct FoodCameraSheet: View {
     @State var selectedPhoto: PhotosPickerItem?
     @State var importingPhoto = false
     @State var showingLibraryPicker = false
-    @State var panelContent: FoodCameraResultPanel.Content = .message(
+    @State var panelContent: FoodCameraResultPanel.Content = .hint(
         "Point at a barcode, or photograph the nutrition label."
     )
+    @State var labelInitialDraft: FoodDraft?
     @State var flow = FoodCameraFlow()
     @State var processingTask: Task<Void, Never>?
     @State var useStillCamera = false
@@ -37,6 +38,7 @@ struct FoodCameraSheet: View {
     @State var route: FoodCameraRoute?
     @State var feedbackToken = 0
     @State var permissionDenied = false
+    @State var logError: String?
 
     let barcodeScanner = BarcodeImageScanner()
     let labelRecognizer = NutritionLabelTextRecognizer()
@@ -187,6 +189,17 @@ struct FoodCameraSheet: View {
         .onChange(of: isPresented) { _, presented in
             if presented == false { send(.dismissed) }
         }
+        .alert(
+            "Couldn't log",
+            isPresented: Binding(
+                get: { logError != nil },
+                set: { if $0 == false { logError = nil } }
+            )
+        ) {
+            Button("OK") { logError = nil }
+        } message: {
+            Text(logError ?? "")
+        }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
         .presentationCornerRadius(30)
@@ -198,8 +211,20 @@ struct FoodCameraSheet: View {
             content: result,
             onChangeServings: { amount in
                 send(.servingsChanged(amount))
-                guard case let .barcode(draft, _, logged) = result else { return }
-                send(.contentChanged(.barcode(draft, servings: flow.servings, logged: logged)))
+                switch result {
+                case let .barcode(draft, _, logged):
+                    send(.contentChanged(.barcode(draft, servings: flow.servings, logged: logged)))
+                case let .label(draft, notes, missing, _, logged):
+                    send(.contentChanged(.label(draft, notes: notes, missingNutrients: missing, servings: flow.servings, logged: logged)))
+                default:
+                    break
+                }
+            },
+            onChangeName: { name in
+                guard case let .label(draft, notes, missing, servings, logged) = result else { return }
+                var editedDraft = draft
+                editedDraft.name = name
+                send(.contentChanged(.label(editedDraft, notes: notes, missingNutrients: missing, servings: servings, logged: logged)))
             },
             onLog: logBarcode,
             onDetails: showDetails,
@@ -210,12 +235,9 @@ struct FoodCameraSheet: View {
             showSettings: permissionDenied,
             onSettings: openSettings
         )
-        if dynamicTypeSize.isAccessibilitySize {
-            ScrollView { panel }
-                .frame(maxHeight: 300)
-        } else {
-            panel.fixedSize(horizontal: false, vertical: true)
-        }
+        ScrollView { panel }
+            .frame(maxHeight: 440)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     @discardableResult
@@ -315,7 +337,7 @@ struct FoodCameraSheet: View {
 
     private var isResultExpanded: Bool {
         switch result {
-        case .message:
+        case .message, .hint:
             false
         case .barcode, .label, .error:
             true

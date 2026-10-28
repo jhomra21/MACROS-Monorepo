@@ -164,7 +164,7 @@ struct FoodCameraFlow: Sendable {
             return [.torchOff]
         case .importFailed:
             return []
-        case .logTapped where phase == .showingBarcode && isSaving == false:
+        case .logTapped where (phase == .showingBarcode || phase == .showingLabel) && isSaving == false:
             isSaving = true
             return [.log(servings: servings)]
         case .logTapped:
@@ -174,7 +174,8 @@ struct FoodCameraFlow: Sendable {
             return []
         case .logFinished:
             return []
-        case .servingsChanged(let amount) where phase == .showingBarcode && amount.isFinite && amount > 0:
+        case .servingsChanged(let amount)
+        where (phase == .showingBarcode || phase == .showingLabel) && amount.isFinite && amount > 0:
             servings = amount
             return []
         case .servingsChanged:
