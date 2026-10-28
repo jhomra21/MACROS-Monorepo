@@ -76,12 +76,6 @@ enum InsightsRange: CaseIterable, Identifiable {
     }
 }
 
-enum InsightsChartBucket: Equatable {
-    case daily
-    case weekly
-    case monthly
-}
-
 struct InsightsChartPoint: Identifiable {
     let day: CalendarDay
     let totals: NutritionSnapshot
@@ -234,6 +228,17 @@ enum InsightsAnalytics {
         let snapshotsByDay = LogEntryDaySummary.snapshotsByDay(for: entries, matching: days)
         return days.map { day in
             InsightsDayPoint(day: day, snapshot: snapshotsByDay[day] ?? .empty)
+        }
+    }
+
+    static func chartPoints(for points: [InsightsDayPoint]) -> [InsightsChartPoint] {
+        points.filter(\.isLogged).map { point in
+            InsightsChartPoint(
+                day: point.day,
+                totals: point.snapshot.totals,
+                secondaryTotals: point.snapshot.secondaryTotals,
+                loggedDayCount: 1
+            )
         }
     }
 

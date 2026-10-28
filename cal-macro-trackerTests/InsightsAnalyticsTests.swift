@@ -2,6 +2,9 @@ import XCTest
 @testable import cal_macro_tracker
 
 final class InsightsAnalyticsTests: XCTestCase {
+    // Chart failure modes: 90D/1Y/All aggregation; sparse logged days collapsing
+    // together; missing dates becoming zeroes; month/leap/DST offsets; and
+    // incomplete nutrients being presented as zero.
     // Streak failure cases: no entries; a gap before today; yesterday-only logging;
     // and dates straddling UTC midnight in the app calendar's time zone.
     func testCurrentStreakIsZeroWithoutEntries() {
@@ -99,7 +102,7 @@ final class InsightsAnalyticsTests: XCTestCase {
             point(dayOffset: 2, calories: 1_600)
         ]
 
-        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .daily)
+        let buckets = InsightsAnalytics.chartPoints(for: points)
         let summary = InsightsAnalytics.metricSummary(current: points, previous: [], value: \.calories)
 
         XCTAssertEqual(buckets.map(\.totals.calories), [2_000, 1_600])
@@ -108,103 +111,122 @@ final class InsightsAnalyticsTests: XCTestCase {
         XCTAssertEqual(summary.totalDayCount, 3)
     }
 
-    func testWeeklyAndMonthlyChartBucketsOmitRangesWithNoLoggedDays() {
-        let points = [emptyPoint(dayOffset: 0), emptyPoint(dayOffset: 1)]
-
-        XCTAssertTrue(InsightsAnalytics.chartPoints(for: points, bucket: .weekly).isEmpty)
-        XCTAssertTrue(InsightsAnalytics.chartPoints(for: points, bucket: .monthly).isEmpty)
-    }
-
-    func testAllTimeBucketUsesSixCalendarMonthThreshold() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        let first = CalendarDay(date: date(year: 2026, month: 5, day: 1), calendar: calendar)
-        let exactlySixMonths = CalendarDay(date: date(year: 2026, month: 11, day: 1), calendar: calendar)
-        let oneDayShort = CalendarDay(date: date(year: 2026, month: 10, day: 31), calendar: calendar)
-
-        XCTAssertEqual(
-            InsightsAnalytics.chartBucket(for: .allTime, points: [point(day: first), point(day: exactlySixMonths)]),
-            .monthly
-        )
-        XCTAssertEqual(
-            InsightsAnalytics.chartBucket(for: .allTime, points: [point(day: first), point(day: oneDayShort)]),
-            .weekly
-        )
-    }
-
-    func testWeeklyChartBucketStartsRespectExplicitFirstWeekday() {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "en_US")
-        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        calendar.firstWeekday = 1
-        let saturday = CalendarDay(date: date(year: 2026, month: 3, day: 7), calendar: calendar)
-        let sunday = CalendarDay(date: date(year: 2026, month: 3, day: 8), calendar: calendar)
-
-        let buckets = InsightsAnalytics.chartPoints(
-            for: [point(day: saturday, calories: 1_900), point(day: sunday, calories: 2_100)],
-            bucket: .weekly
-        )
-
-        XCTAssertEqual(
-            buckets.map(\.day.startDate),
-            [
-                date(year: 2026, month: 3, day: 1),
-                date(year: 2026, month: 3, day: 8)
+    func testEveryInsightsRangeUsesDailyChartPoints() {
+        for range in InsightsRange.allCases {
+            let days = range.days(endingOn: day(0), startingAt: day(-2))
+            let loggedPoints = [
+                point(day: days[0], calories: 1_500),
+                point(day: days[days.count - 1], calories: 1_700)
             ]
-        )
+
+            let chartPoints = InsightsAnalytics.chartPoints(for: loggedPoints)
+
+            XCTAssertEqual(chartPoints.map(\.day), [days[0], days[days.count - 1]], "\(range.title) should retain each logged day")
+        }
     }
 
-    func testChartBucketsAverageOnlyLoggedDaysAndKeepMissingNutrientsMissing() {
+    func testSevenConsecutiveLoggedDaysRemainSevenDailyChartPoints() {
+        let points = (0..<7).map { point(dayOffset: $0, calories: Double(1_500 + $0 * 100)) }
+
+        let chartPoints = InsightsAnalytics.chartPoints(for: points)
+
+        XCTAssertEqual(chartPoints.count, 7)
+        XCTAssertEqual(chartPoints.map(\.totals.calories), [1_500, 1_600, 1_700, 1_800, 1_900, 2_000, 2_100])
+        XCTAssertEqual(chartPoints.map(\.day), points.map(\.day))
+    }
+
+    func testSparseDailyChartPointsKeepCalendarDayPositionsAndOmitUnloggedDays() {
+        let days = (0..<7).map { day($0) }
         let points = [
-            point(dayOffset: 0, calories: 2_000, protein: 100, fiber: 20),
+            point(day: days[0], calories: 1_500, fiber: nil),
             emptyPoint(dayOffset: 1),
-            point(dayOffset: 2, calories: 1_600, protein: 80, fiber: nil)
+            emptyPoint(dayOffset: 2),
+            emptyPoint(dayOffset: 3),
+            emptyPoint(dayOffset: 4),
+            emptyPoint(dayOffset: 5),
+            point(day: days[6], calories: 2_100, fiber: 0)
         ]
+        let chartPoints = InsightsAnalytics.chartPoints(for: points)
+        let indexed = chartPoints.indexedForCharts(startingAt: days[0])
 
-        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
-
-        XCTAssertEqual(buckets.count, 1)
-        XCTAssertEqual(buckets[0].totals.calories, 1_800)
-        XCTAssertEqual(buckets[0].totals.protein, 90)
-        XCTAssertEqual(buckets[0].secondaryTotals.fiber, 20)
-        XCTAssertEqual(buckets[0].loggedDayCount, 2)
+        XCTAssertEqual(chartPoints.map(\.day), [days[0], days[6]])
+        XCTAssertEqual(indexed.map(\.index), [0, 6])
+        XCTAssertNil(chartPoints[0].secondaryTotals.fiber)
+        XCTAssertEqual(chartPoints[1].secondaryTotals.fiber, 0)
     }
 
-    func testChartBucketingKeepsOneLoggedDayAndSeparatesMonthBoundaries() {
-        let points = [
-            point(date: date(year: 2024, month: 2, day: 29), calories: 2_100),
-            point(date: date(year: 2024, month: 3, day: 1), calories: 1_900)
-        ]
+    func testChartAxisKeepsSevenDailyLabelsAndIncludesLastLongRangeDay() {
+        XCTAssertEqual(InsightsChartAxis(dayCount: 7).labelIndices, Array(0...6))
+        XCTAssertEqual(InsightsChartAxis(dayCount: 14).labelIndices.last, 13)
 
-        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .monthly)
-
-        XCTAssertEqual(buckets.count, 2)
-        XCTAssertEqual(buckets.map(\.totals.calories), [2_100, 1_900])
-        XCTAssertEqual(buckets.map(\.loggedDayCount), [1, 1])
+        let longRangeAxis = InsightsChartAxis(dayCount: 365)
+        XCTAssertEqual(longRangeAxis.visibleDayCount, 30)
+        XCTAssertTrue(longRangeAxis.usesHorizontalScrolling)
+        XCTAssertEqual(longRangeAxis.labelIndices.last, 364)
     }
 
-    func testWeeklyChartBucketingHandlesDaylightSavingBoundary() {
+    func testChartSelectionDoesNotResolveOutsideCurrentCalendarDomain() {
+        let axis = InsightsChartAxis(dayCount: 7)
+
+        XCTAssertEqual(axis.selectedDayIndex(for: 0), 0)
+        XCTAssertEqual(axis.selectedDayIndex(for: 6), 6)
+        XCTAssertEqual(axis.selectedDayIndex(for: nil), nil)
+        XCTAssertEqual(axis.selectedDayIndex(for: -1), nil)
+        XCTAssertEqual(axis.selectedDayIndex(for: 7), nil)
+    }
+
+    func testLongRangeDaysStaySeparateAcrossWeeksMonthsAndYears() {
+        let start = CalendarDay(date: date(year: 2025, month: 1, day: 1))
+        let offsets = [0, 8, 31, 90, 180, 364]
+        let points = offsets.map { offset in
+            point(day: start.advanced(byDays: offset)!, calories: Double(1_000 + offset))
+        }
+
+        let chartPoints = InsightsAnalytics.chartPoints(for: points)
+
+        XCTAssertEqual(chartPoints.count, offsets.count)
+        XCTAssertEqual(chartPoints.map(\.day), offsets.map { start.advanced(byDays: $0)! })
+        XCTAssertEqual(chartPoints.map(\.totals.calories), offsets.map { Double(1_000 + $0) })
+    }
+
+    func testMultipleEntriesOnOneDateRemainOneCombinedDailyTotal() {
+        let loggedDay = day(0)
+        let days = [loggedDay]
+        let entries = [
+            entry(day: loggedDay, calories: 600),
+            entry(day: loggedDay, calories: 900)
+        ]
+
+        let points = InsightsAnalytics.points(for: entries, days: days)
+        let chartPoints = InsightsAnalytics.chartPoints(for: points)
+
+        XCTAssertEqual(chartPoints.count, 1)
+        XCTAssertEqual(chartPoints[0].totals.calories, 1_500)
+    }
+
+    func testDailyChartOffsetsRespectCalendarAcrossMonthLeapAndDSTBoundaries() {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
-        let march8 = CalendarDay(
-            date: calendar.date(from: DateComponents(year: 2026, month: 3, day: 8))!,
-            calendar: calendar
-        )
-        let march14 = CalendarDay(date: calendar.date(from: DateComponents(year: 2026, month: 3, day: 14))!, calendar: calendar)
-        let march15 = CalendarDay(date: calendar.date(from: DateComponents(year: 2026, month: 3, day: 15))!, calendar: calendar)
-        let points = [
-            point(day: march8, calories: 2_000),
-            point(day: march14, calories: 1_800),
-            point(day: march15, calories: 1_600)
-        ]
-
-        let buckets = InsightsAnalytics.chartPoints(for: points, bucket: .weekly)
-
-        XCTAssertEqual(buckets.map(\.day.startDate), [
+        let dates = [
+            date(year: 2024, month: 2, day: 28),
+            date(year: 2024, month: 2, day: 29),
+            date(year: 2024, month: 3, day: 1),
+            calendar.date(from: DateComponents(year: 2026, month: 3, day: 7))!,
             calendar.date(from: DateComponents(year: 2026, month: 3, day: 8))!,
-            calendar.date(from: DateComponents(year: 2026, month: 3, day: 15))!
-        ])
-        XCTAssertEqual(buckets.map(\.totals.calories), [1_900, 1_600])
+            calendar.date(from: DateComponents(year: 2026, month: 3, day: 9))!
+        ]
+        let days = dates.map { CalendarDay(date: $0, calendar: calendar) }
+
+        XCTAssertEqual(
+            InsightsAnalytics.chartPoints(for: [point(day: days[1]), point(day: days[2])])
+                .indexedForCharts(startingAt: days[0]).map(\.index),
+            [1, 2]
+        )
+        XCTAssertEqual(
+            InsightsAnalytics.chartPoints(for: [point(day: days[4]), point(day: days[5])])
+                .indexedForCharts(startingAt: days[3]).map(\.index),
+            [1, 2]
+        )
     }
 
     func testAverageExcludesDaysWithoutEntries() {
@@ -299,7 +321,18 @@ final class InsightsAnalyticsTests: XCTestCase {
         carbs: Double = 0,
         fiber: Double? = nil
     ) -> InsightsDayPoint {
-        let entry = LogEntry(
+        InsightsDayPoint(day: day, snapshot: LogEntryDaySummary.snapshot(for: [entry(day: day, calories: calories, protein: protein, fat: fat, carbs: carbs, fiber: fiber)]))
+    }
+
+    private func entry(
+        day: CalendarDay,
+        calories: Double = 0,
+        protein: Double = 0,
+        fat: Double = 0,
+        carbs: Double = 0,
+        fiber: Double? = nil
+    ) -> LogEntry {
+        LogEntry(
             dateLogged: day.startDate,
             foodName: "Test Food",
             source: .custom,
@@ -317,8 +350,6 @@ final class InsightsAnalyticsTests: XCTestCase {
             carbsConsumed: carbs,
             fiberConsumed: fiber
         )
-
-        return InsightsDayPoint(day: day, snapshot: LogEntryDaySummary.snapshot(for: [entry]))
     }
 
     private func day(_ offset: Int) -> CalendarDay {

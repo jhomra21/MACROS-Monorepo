@@ -5,7 +5,7 @@
 - Keep 7D, 14D, and 30D and add 90D, 1Y (365 calendar days), and All. All uses the earliest logged day through today and has no previous comparison period. If there are no log entries, All has no days and shows empty-data states.
 - All ranges above 7D remain gated by `PaidFeature.nutritionInsights`.
 - Use a compact native menu picker for all six ranges so labels remain legible at accessibility text sizes. The free affordance lists every range, marks 7D selected, and opens the existing Pro paywall for locked choices.
-- Keep daily points for summaries, streaks, adherence, and nutrient coverage. Aggregate chart-only values by average over logged days: daily through 30D, weekly for 90D, monthly for 1Y, and weekly for All under six months, otherwise monthly. Omit buckets with no logged days. Weight stays record-level.
+- Keep daily points for summaries, streaks, adherence, nutrient coverage, and every chart range. Omit unlogged chart marks while retaining their calendar-day positions on the x-axis. Use a 30-day visible domain for longer ranges; weight stays record-level.
 - Query log entries once per range, bounded to the selected period. For All, resolve the earliest date with a minimum-date SwiftData query and use that as the lower bound. Keep aggregation in-process unless simulator measurement reveals a visible stall.
 
 ## File plan
@@ -30,6 +30,16 @@
 - Today advances while the screen remains open (the supplied `today` value remains the range anchor).
 - Dynamic Type overflow in the range picker and crowded chart-axis labels.
 
+## Daily-chart fix failure modes (listed before this fix's implementation)
+
+- 90D, 1Y, and All still selecting weekly/monthly averages.
+- Seven consecutive logged dates collapsing into fewer chart marks.
+- Two logged dates separated by unlogged dates being positioned next to each other.
+- Multiple entries on one date failing to retain the existing daily total.
+- Missing nutrient values appearing as zero while an explicitly logged zero remains valid.
+- Calendar-day positions drifting at leap day, month boundaries, or a DST transition.
+- Axis labels or point selection resolving to a different day after changing range.
+
 ## Review coverage and fixes
 
 - `testDailyChartBucketsOmitUnloggedDaysButKeepSummaryCoverage` confirms daily chart points omit empty days while day-accurate summary coverage retains them.
@@ -43,8 +53,9 @@
 ## Status
 
 - [x] Decisions, file plan, and failure modes recorded before implementation.
-- [x] Pure date and bucketing tests written before implementation; five additional review tests bring InsightsAnalyticsTests to 21 tests.
-- [x] Long ranges, chart bucketing, picker, and weight range implemented.
-- [x] Review fixes and file split validated with format, build, and 21/21 targeted tests.
-- [ ] Review-specific seeded UI screenshots for weight comparison, omitted daily gaps, and All threshold were not captured; simulator QA remains documented in `build/insights-qa-2026-10-26/QA.md`.
-- [x] Scoped commits created and branch pushed.
+- [x] Daily chart failure modes and regression tests written before implementation; the old implementation failed the 90D/1Y/All and sparse-date assertions.
+- [x] Long ranges remain Pro-gated; all nutrition chart ranges now keep distinct daily totals at calendar-day x positions, with a 30-day visible scrolling window for longer ranges.
+- [x] Weekly/monthly aggregation types and labels removed. Nutrient marks omit unknown values, chart lines use linear interpolation, and selection resets when the date domain changes.
+- [x] Review fixes, file split, and daily chart changes validated with formatting, simulator build, and 23/23 targeted tests.
+- [x] 7D simulator evidence shows seven separate daily bars and seven date labels with the isolated 400-day fixture.
+- [ ] Existing 90D screenshots show daily marks in a dense-range chart, but do not conclusively establish that horizontal panning moved the domain; point selection and other ranges remain unverified. See the ignored QA notes for limitations.

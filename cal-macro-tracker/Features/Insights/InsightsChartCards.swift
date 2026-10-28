@@ -6,11 +6,10 @@ struct InsightsCaloriesCard: View {
     let previousPoints: [InsightsDayPoint]
     let goals: MacroGoalsSnapshot
     let chartPoints: [InsightsChartPoint]
-    let bucket: InsightsChartBucket
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
+    @State private var selectedIndex: Double?
     @State private var hasAnimatedIn = false
 
     private var summary: InsightsMetricSummary {
@@ -18,19 +17,28 @@ struct InsightsCaloriesCard: View {
     }
 
     private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
+        guard let selectedIndex = chartAxis.selectedDayIndex(for: selectedIndex) else { return nil }
+        return indexedPoints.first { $0.index == selectedIndex }
     }
 
     private var indexedPoints: [InsightsIndexedPoint] {
-        chartPoints.indexedForCharts()
+        chartPoints.indexedForCharts(startingAt: chartStartDay)
     }
 
-    private var axisLabelIndices: [Int] {
-        indexedPoints.axisLabelIndices
+    private var axisLabelIndices: [Double] {
+        chartAxis.labelIndices.map(Double.init)
+    }
+
+    private var chartStartDay: CalendarDay? {
+        points.first?.day
+    }
+
+    private var chartAxis: InsightsChartAxis {
+        InsightsChartAxis(dayCount: points.count)
     }
 
     var body: some View {
-        InsightsCard(title: "Calories", subtitle: "Calories compared with your current goal range. \(bucket.averageLabel).") {
+        InsightsCard(title: "Calories", subtitle: "Calories compared with your current goal range. Daily totals.") {
             InsightsChartHeader(
                 primary: summary.average.insightsFormattedValue(unit: "kcal avg"),
                 secondary: previousPoints.isEmpty ? nil : summary.comparisonPercent.insightsComparisonText,
@@ -39,7 +47,7 @@ struct InsightsCaloriesCard: View {
 
             selectedPoint.map { point in
                 InsightsSelectedValueLabel(
-                    title: point.day.chartLabel(for: bucket),
+                    title: point.day.chartLabel,
                     value: point.totals.calories.insightsFormattedValue(unit: "kcal")
                 )
             }
@@ -49,20 +57,20 @@ struct InsightsCaloriesCard: View {
                     switch chartStyle {
                     case .bars:
                         BarMark(
-                            x: .value("Day", point.index),
+                            x: .value("Day", Double(point.index)),
                             y: .value("Calories", animatedValue(point.totals.calories))
                         )
                         .foregroundStyle(Color.accentColor.gradient)
                     case .lines:
                         LineMark(
-                            x: .value("Day", point.index),
+                            x: .value("Day", Double(point.index)),
                             y: .value("Calories", animatedValue(point.totals.calories))
                         )
                         .foregroundStyle(Color.accentColor)
-                        .interpolationMethod(.catmullRom)
+                        .interpolationMethod(.linear)
 
                         PointMark(
-                            x: .value("Day", point.index),
+                            x: .value("Day", Double(point.index)),
                             y: .value("Calories", animatedValue(point.totals.calories))
                         )
                         .foregroundStyle(Color.accentColor)
@@ -75,14 +83,28 @@ struct InsightsCaloriesCard: View {
             .chartXAxis {
                 AxisMarks(values: axisLabelIndices) { value in
                     AxisGridLine()
-                    AxisValueLabel {
-                        if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                            Text(point.day.chartLabel(for: bucket))
+                    AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                        if let index = value.as(Double.self),
+                            let day = chartStartDay?.advanced(byDays: Int(index))
+                        {
+                            Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
+                                .offset(
+                                    x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
+                                )
                         }
                     }
                 }
             }
-            .chartXSelection(value: $selectedIndex)
+            .chartYAxis {
+                AxisMarks(position: .leading)
+            }
+            .insightsDailyChartXScale(dayCount: points.count)
+            .chartGesture { proxy in
+                SpatialTapGesture()
+                    .onEnded { value in
+                        selectedIndex = proxy.value(atX: value.location.x, as: Double.self)
+                    }
+            }
             .frame(height: 220)
             .accessibilityLabel("Calories chart")
             .onAppear {
@@ -90,6 +112,9 @@ struct InsightsCaloriesCard: View {
                 withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
                     hasAnimatedIn = true
                 }
+            }
+            .onChange(of: points.map(\.day)) {
+                selectedIndex = nil
             }
         }
     }
@@ -104,11 +129,10 @@ struct InsightsMacrosCard: View {
     let previousPoints: [InsightsDayPoint]
     let goals: MacroGoalsSnapshot
     let chartPoints: [InsightsChartPoint]
-    let bucket: InsightsChartBucket
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
+    @State private var selectedIndex: Double?
     @State private var hasAnimatedIn = false
 
     private var proteinSummary: InsightsMetricSummary {
@@ -116,11 +140,19 @@ struct InsightsMacrosCard: View {
     }
 
     private var indexedPoints: [InsightsIndexedPoint] {
-        chartPoints.indexedForCharts()
+        chartPoints.indexedForCharts(startingAt: chartStartDay)
     }
 
-    private var axisLabelIndices: [Int] {
-        indexedPoints.axisLabelIndices
+    private var axisLabelIndices: [Double] {
+        chartAxis.labelIndices.map(Double.init)
+    }
+
+    private var chartStartDay: CalendarDay? {
+        points.first?.day
+    }
+
+    private var chartAxis: InsightsChartAxis {
+        InsightsChartAxis(dayCount: points.count)
     }
 
     private var macroSegments: [InsightsMacroSegment] {
@@ -132,11 +164,12 @@ struct InsightsMacrosCard: View {
     }
 
     private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
+        guard let selectedIndex = chartAxis.selectedDayIndex(for: selectedIndex) else { return nil }
+        return indexedPoints.first { $0.index == selectedIndex }
     }
 
     var body: some View {
-        InsightsCard(title: "Macros", subtitle: "Composition and protein consistency. \(bucket.averageLabel).") {
+        InsightsCard(title: "Macros", subtitle: "Composition and protein consistency. Daily totals.") {
             InsightsChartHeader(
                 primary: proteinSummary.average.insightsFormattedValue(unit: "g protein avg"),
                 secondary: InsightsAnalytics.proteinAdherence(in: points, proteinGoal: goals.proteinGoalGrams).insightsRateText,
@@ -145,7 +178,7 @@ struct InsightsMacrosCard: View {
 
             selectedPoint.map { point in
                 InsightsSelectedValueLabel(
-                    title: point.day.chartLabel(for: bucket),
+                    title: point.day.chartLabel,
                     value:
                         "P \(point.totals.protein.roundedForDisplay)g • C \(point.totals.carbs.roundedForDisplay)g • F \(point.totals.fat.roundedForDisplay)g"
                 )
@@ -156,7 +189,7 @@ struct InsightsMacrosCard: View {
                 case .bars:
                     ForEach(macroSegments) { segment in
                         BarMark(
-                            x: .value("Day", segment.point.index),
+                            x: .value("Day", Double(segment.point.index)),
                             y: .value("Grams", animatedValue(segment.value))
                         )
                         .foregroundStyle(by: .value("Macro", segment.metric.title))
@@ -164,11 +197,11 @@ struct InsightsMacrosCard: View {
                 case .lines:
                     ForEach(macroSegments) { segment in
                         LineMark(
-                            x: .value("Day", segment.point.index),
+                            x: .value("Day", Double(segment.point.index)),
                             y: .value("Grams", animatedValue(segment.value))
                         )
                         .foregroundStyle(by: .value("Macro", segment.metric.title))
-                        .interpolationMethod(.catmullRom)
+                        .interpolationMethod(.linear)
                     }
                 }
             }
@@ -180,14 +213,28 @@ struct InsightsMacrosCard: View {
             .chartXAxis {
                 AxisMarks(values: axisLabelIndices) { value in
                     AxisGridLine()
-                    AxisValueLabel {
-                        if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                            Text(point.day.chartLabel(for: bucket))
+                    AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                        if let index = value.as(Double.self),
+                            let day = chartStartDay?.advanced(byDays: Int(index))
+                        {
+                            Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
+                                .offset(
+                                    x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
+                                )
                         }
                     }
                 }
             }
-            .chartXSelection(value: $selectedIndex)
+            .chartYAxis {
+                AxisMarks(position: .leading)
+            }
+            .insightsDailyChartXScale(dayCount: points.count)
+            .chartGesture { proxy in
+                SpatialTapGesture()
+                    .onEnded { value in
+                        selectedIndex = proxy.value(atX: value.location.x, as: Double.self)
+                    }
+            }
             .frame(height: 240)
             .accessibilityLabel("Macros chart")
             .onAppear {
@@ -195,6 +242,9 @@ struct InsightsMacrosCard: View {
                 withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
                     hasAnimatedIn = true
                 }
+            }
+            .onChange(of: points.map(\.day)) {
+                selectedIndex = nil
             }
         }
     }
@@ -208,12 +258,11 @@ struct InsightsNutrientsCard: View {
     let points: [InsightsDayPoint]
     let previousPoints: [InsightsDayPoint]
     let chartPoints: [InsightsChartPoint]
-    let bucket: InsightsChartBucket
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedNutrient = InsightsNutrient.fiber
     @State private var chartStyle = InsightsChartStyle.bars
-    @State private var selectedIndex: Int?
+    @State private var selectedIndex: Double?
     @State private var hasAnimatedIn = false
 
     private var summary: InsightsNutrientSummary {
@@ -221,19 +270,28 @@ struct InsightsNutrientsCard: View {
     }
 
     private var indexedPoints: [InsightsIndexedPoint] {
-        chartPoints.indexedForCharts()
+        chartPoints.indexedForCharts(startingAt: chartStartDay)
     }
 
-    private var axisLabelIndices: [Int] {
-        indexedPoints.axisLabelIndices
+    private var axisLabelIndices: [Double] {
+        chartAxis.labelIndices.map(Double.init)
+    }
+
+    private var chartStartDay: CalendarDay? {
+        points.first?.day
+    }
+
+    private var chartAxis: InsightsChartAxis {
+        InsightsChartAxis(dayCount: points.count)
     }
 
     private var selectedPoint: InsightsIndexedPoint? {
-        indexedPoints[safe: selectedIndex]
+        guard let selectedIndex = chartAxis.selectedDayIndex(for: selectedIndex) else { return nil }
+        return indexedPoints.first { $0.index == selectedIndex }
     }
 
     var body: some View {
-        InsightsCard(title: "Nutrients", subtitle: "\(coverageText) \(bucket.averageLabel).") {
+        InsightsCard(title: "Nutrients", subtitle: "\(coverageText) Daily totals.") {
             Picker("Nutrient", selection: $selectedNutrient) {
                 ForEach(InsightsNutrient.allCases) { nutrient in
                     Text(nutrient.shortTitle)
@@ -259,7 +317,7 @@ struct InsightsNutrientsCard: View {
                 selectedPoint.flatMap { point in
                     selectedNutrient.value(from: point.secondaryTotals).map { value in
                         InsightsSelectedValueLabel(
-                            title: point.day.chartLabel(for: bucket),
+                            title: point.day.chartLabel,
                             value: value.insightsFormattedValue(unit: selectedNutrient.unit)
                         )
                     }
@@ -270,23 +328,24 @@ struct InsightsNutrientsCard: View {
 
                     switch chartStyle {
                     case .bars:
-                        BarMark(
-                            x: .value("Day", point.index),
-                            y: .value(selectedNutrient.title, animatedValue(value ?? 0))
-                        )
-                        .foregroundStyle(Color.green.gradient)
-                        .opacity(value == nil ? 0.18 : 1)
+                        if let value {
+                            BarMark(
+                                x: .value("Day", Double(point.index)),
+                                y: .value(selectedNutrient.title, animatedValue(value))
+                            )
+                            .foregroundStyle(Color.green.gradient)
+                        }
                     case .lines:
                         if let value {
                             LineMark(
-                                x: .value("Day", point.index),
+                                x: .value("Day", Double(point.index)),
                                 y: .value(selectedNutrient.title, animatedValue(value))
                             )
                             .foregroundStyle(Color.green)
-                            .interpolationMethod(.catmullRom)
+                            .interpolationMethod(.linear)
 
                             PointMark(
-                                x: .value("Day", point.index),
+                                x: .value("Day", Double(point.index)),
                                 y: .value(selectedNutrient.title, animatedValue(value))
                             )
                             .foregroundStyle(Color.green)
@@ -296,14 +355,28 @@ struct InsightsNutrientsCard: View {
                 .chartXAxis {
                     AxisMarks(values: axisLabelIndices) { value in
                         AxisGridLine()
-                        AxisValueLabel {
-                            if let index = value.as(Int.self), let point = indexedPoints[safe: index] {
-                                Text(point.day.chartLabel(for: bucket))
+                        AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                            if let index = value.as(Double.self),
+                                let day = chartStartDay?.advanced(byDays: Int(index))
+                            {
+                                Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
+                                    .offset(
+                                        x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
+                                    )
                             }
                         }
                     }
                 }
-                .chartXSelection(value: $selectedIndex)
+                .chartYAxis {
+                    AxisMarks(position: .leading)
+                }
+                .insightsDailyChartXScale(dayCount: points.count)
+                .chartGesture { proxy in
+                    SpatialTapGesture()
+                        .onEnded { value in
+                            selectedIndex = proxy.value(atX: value.location.x, as: Double.self)
+                        }
+                }
                 .frame(height: 220)
                 .accessibilityLabel("\(selectedNutrient.title) chart")
             }
@@ -313,6 +386,9 @@ struct InsightsNutrientsCard: View {
             withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
                 hasAnimatedIn = true
             }
+        }
+        .onChange(of: points.map(\.day)) {
+            selectedIndex = nil
         }
     }
 

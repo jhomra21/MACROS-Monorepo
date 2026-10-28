@@ -197,11 +197,7 @@ private struct InsightsRangeQueryResults: View {
     var body: some View {
         let currentPoints = currentPoints
         let previousPoints = previousPoints
-        let bucket = InsightsAnalytics.chartBucket(for: range, points: currentPoints)
-        let chartPoints = InsightsAnalytics.chartPoints(
-            for: currentPoints,
-            bucket: bucket
-        )
+        let chartPoints = InsightsAnalytics.chartPoints(for: currentPoints)
         let comparisons = range == .allTime ? [] : previousPoints
 
         VStack(spacing: 16) {
@@ -217,23 +213,20 @@ private struct InsightsRangeQueryResults: View {
                         points: currentPoints,
                         previousPoints: comparisons,
                         goals: currentGoals,
-                        chartPoints: chartPoints,
-                        bucket: bucket
+                        chartPoints: chartPoints
                     )
 
                     InsightsMacrosCard(
                         points: currentPoints,
                         previousPoints: comparisons,
                         goals: currentGoals,
-                        chartPoints: chartPoints,
-                        bucket: bucket
+                        chartPoints: chartPoints
                     )
 
                     InsightsNutrientsCard(
                         points: currentPoints,
                         previousPoints: comparisons,
-                        chartPoints: chartPoints,
-                        bucket: bucket
+                        chartPoints: chartPoints
                     )
                 }
                 .blur(radius: isPresentingPro == nil ? 0 : 6)
