@@ -19,7 +19,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-28 Borderless Camera Surface
 
 - Replaced the inset black camera scaffold with an edge-to-edge preview and floating controls. Guidance overlays the top of the preview, while scan/review results remain editable in a scrollable translucent overlay. The fallback uses one full-surface neutral background. Formatting and signed simulator build passed; see the follow-up contrast review below.
-- Follow-up contrast review: fallback guidance/status text and floating controls use semantic foreground colors; the dark gradient is limited to the live-camera overlay. Simulator screenshots confirm default-size fallback contrast and coherent light/dark appearance. Accessibility XXXL fallback text overlaps the centered unavailable-camera content, so large-type fallback layout and OCR/review/log flows are still unverified.
+- Follow-up contrast/UI QA: fallback guidance/status text and floating controls use semantic foreground colors; the dark gradient is limited to the live-camera overlay. Simulator screenshots confirm default-size fallback contrast and coherent light/dark appearance. Selecting the tracked EAN fixture reached barcode lookup, but the simulator’s network failure showed the camera recovery panel instead of a product result. Accessibility XXXL fallback text overlaps the centered unavailable-camera content; label OCR/review/log flows remain unverified. Evidence: `build/camera-borderless-2026-10-28/QA.md`.
 
 ## 2026-10-27 Camera Zoom Transition
 
