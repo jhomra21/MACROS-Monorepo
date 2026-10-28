@@ -15,6 +15,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Changed every Insights range to show one point per logged calendar day instead of weekly/monthly averages. Sparse dates keep their actual spacing, long ranges scroll through a readable 30-day window, and unknown nutrient values remain absent. Daily-average summaries and Pro gating are unchanged.
 - The isolated 400-day simulator fixture showed seven separate bars with seven date labels in 7D and distinct daily marks in longer ranges. Regression tests cover all ranges, sparse gaps, calendar boundaries, same-day totals, and missing nutrients. E2E evidence: `build/insights-daily-qa-2026-10-27/QA.md`.
+- 2026-10-28 follow-up: corrected the three daily X-axis labels to align on their tick positions. Formatting and an Xcode 27 simulator build pass; live UI verification remains blocked because the built app's signed entitlement payload is empty. Details: `build/insights-daily-qa-2026-10-27/QA.md`.
 
 ## 2026-10-27 Camera Inline Results
 

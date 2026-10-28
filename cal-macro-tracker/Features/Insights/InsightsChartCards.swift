@@ -83,14 +83,11 @@ struct InsightsCaloriesCard: View {
             .chartXAxis {
                 AxisMarks(values: axisLabelIndices) { value in
                     AxisGridLine()
-                    AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                    AxisValueLabel(collisionResolution: .disabled) {
                         if let index = value.as(Double.self),
                             let day = chartStartDay?.advanced(byDays: Int(index))
                         {
                             Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
-                                .offset(
-                                    x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
-                                )
                         }
                     }
                 }
@@ -213,14 +210,11 @@ struct InsightsMacrosCard: View {
             .chartXAxis {
                 AxisMarks(values: axisLabelIndices) { value in
                     AxisGridLine()
-                    AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                    AxisValueLabel(collisionResolution: .disabled) {
                         if let index = value.as(Double.self),
                             let day = chartStartDay?.advanced(byDays: Int(index))
                         {
                             Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
-                                .offset(
-                                    x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
-                                )
                         }
                     }
                 }
@@ -355,14 +349,11 @@ struct InsightsNutrientsCard: View {
                 .chartXAxis {
                     AxisMarks(values: axisLabelIndices) { value in
                         AxisGridLine()
-                        AxisValueLabel(centered: true, collisionResolution: .disabled) {
+                        AxisValueLabel(collisionResolution: .disabled) {
                             if let index = value.as(Double.self),
                                 let day = chartStartDay?.advanced(byDays: Int(index))
                             {
                                 Text(day.chartAxisLabel(inRangeFrom: chartStartDay, through: points.last?.day))
-                                    .offset(
-                                        x: chartAxis.usesHorizontalScrolling && index == Double(chartAxis.labelIndices.last ?? -1) ? -18 : 0
-                                    )
                             }
                         }
                     }
