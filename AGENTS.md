@@ -18,6 +18,9 @@ Read `swift-dev.mdc` for specific swift coding guidance.
 
 When behavior is unclear or tooling is non-obvious, verify it against primary docs or public repo examples instead of guessing. Use web research and GitHub/API lookups to confirm build-system, Xcode project, and framework details before changing project structure.
 
+If you append `.md` to any of Apple's developer documentation it will render as markdown.
+Example: https://developer.apple.com/documentation/
+
 ## Engineering Rules (Non-Negotiable)
 
 - Functional style first: prefer pure functions, immutable updates, explicit inputs/outputs.
