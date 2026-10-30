@@ -11,11 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
-## 2026-10-30 Compact Dashboard Toolbar (TestFlight Build 13)
+## 2026-10-30 Widget Taps Keep Your Place; Compact Dashboard Toolbar (TestFlight Build 13)
 
+- Returning to MACROS by tapping a widget popped Settings/Insights back to the Dashboard. Cause: both widgets set `.widgetURL(AppOpenRequest.dashboard.url)`, so every tap delivered `calmacrotracker://dashboard`, and `applyPendingOpenRequest(.dashboard)` reset the navigation stack and sheets. Icon and app-switcher returns never popped (`.onOpenURL` fires once per URL, not on foreground). Fix: removed `widgetURL` from both widgets so WidgetKit simply opens the app, and removed the now-unused `AppOpenRequest.dashboard`, its URL parsing, `dashboardResetToken`, and `DashboardScreen.resetToTodayToken`. `sharing` and `add-food` links are unchanged.
 - The four dashboard toolbar icons were spread too wide and the glass capsule touched the ring. Restored the build 10 layout without its offset hack: one `ToolbarItem` with an `HStack(spacing: 8)` of 32 pt icon buttons, plus 8 pt top padding on the ring row.
-- "Pops back to the Dashboard after returning" (Settings/Insights): not an app-lifecycle bug. Logs on the iPhone 18 Pro simulator show `.onOpenURL` fires once per URL, never on foreground, and the switcher or icon return keeps the screen. A real MACROS widget tap delivers `calmacrotracker://dashboard` (the widgets' `widgetURL`) and intentionally resets navigation to the Dashboard, so returning to the app by tapping a widget looks like the pop. No code change; the intended behavior is unchanged.
-- Validation: format check, `git diff --check`, Debug build, and AppDayContextTests plus LogEntryQueryTests passed (iPad runner); toolbar screenshots in `build/b13-bugs-2026-10-30/`.
+- Validation: format check, `git diff --check`, Debug build, AppDayContextTests plus LogEntryQueryTests passed (iPad runner); simulator checks (widget tap keeps Settings, cold widget start opens Dashboard, sharing and add-food links) in `build/b13-bugs-2026-10-30/`.
 
 ## 2026-10-30 Weight Chart Y-Axis No Longer Anchors At Zero
 
