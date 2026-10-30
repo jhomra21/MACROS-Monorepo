@@ -22,7 +22,7 @@ const ogImageURL = new URL(site.ogImage.src, site.url).href;
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
 		<meta name="color-scheme" content="light dark" />
 		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
 		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
@@ -77,7 +77,7 @@ const ogImageURL = new URL(site.ogImage.src, site.url).href;
 								const target = entry.target;
 								target.classList.add('is-revealed');
 								observer.unobserve(target);
-								// Drop the reveal transition and delay once settled so hover transitions stay instant.
+								// Drop the reveal transition and delay once settled so later style changes stay instant.
 								target.addEventListener('transitionend', (event) => {
 									// SAFETY: transitionend listeners always receive a TransitionEvent.
 									if (event.target === target && (event as TransitionEvent).propertyName === 'opacity') {

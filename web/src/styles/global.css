@@ -140,7 +140,22 @@ img {
 
 a {
 	color: var(--link);
+	text-decoration-thickness: 0.06em;
 	text-underline-offset: 0.18em;
+}
+
+p {
+	text-wrap: pretty;
+}
+
+/* Browser surfaces themed from the palette */
+::selection {
+	background: color-mix(in srgb, var(--link) 28%, transparent);
+}
+
+input,
+textarea {
+	caret-color: var(--link);
 }
 
 button,
@@ -159,7 +174,6 @@ summary {
 :focus-visible {
 	outline: 3px solid var(--link);
 	outline-offset: 3px;
-	border-radius: 4px;
 }
 
 .sr-only {
@@ -305,6 +319,8 @@ summary {
 	letter-spacing: -0.01em;
 	text-decoration: none;
 	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
 	transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
 }
 
@@ -614,17 +630,6 @@ summary {
 	}
 }
 
-/* Cards: hover lift via the independent translate property */
-.card-lift {
-	transition: translate 280ms var(--ease-out);
-}
-
-@media (hover: hover) and (pointer: fine) {
-	.card-lift:hover {
-		translate: 0 -4px;
-	}
-}
-
 /* Showcase */
 .showcase__track {
 	display: flex;
@@ -845,6 +850,8 @@ summary {
 	line-height: 1.25;
 	cursor: pointer;
 	list-style: none;
+	-webkit-user-select: none;
+	user-select: none;
 }
 
 .faq-item summary::-webkit-details-marker {
@@ -1271,7 +1278,7 @@ summary {
 	max-width: 22rem;
 }
 
-.site-footer__brand .brand {
+.site-footer .site-footer__brand .brand {
 	min-height: 0;
 	color: var(--ink);
 }
@@ -1290,10 +1297,14 @@ summary {
 }
 
 .site-footer a {
+	color: var(--ink-muted);
+}
+
+.site-footer nav a,
+.site-footer .brand {
 	display: flex;
 	align-items: center;
 	min-height: 2.75rem;
-	color: var(--ink-muted);
 	text-decoration: none;
 }
 
@@ -1310,6 +1321,17 @@ summary {
 @media (hover: hover) and (pointer: fine) {
 	.site-footer a:hover {
 		color: var(--ink);
+	}
+}
+
+/* Reduced motion: keep fades, drop travel */
+@media (prefers-reduced-motion: reduce) {
+	.button:active:not(:disabled) {
+		transform: none;
+	}
+
+	.faq-item summary::after {
+		transition: none;
 	}
 }
 

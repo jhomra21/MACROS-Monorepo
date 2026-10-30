@@ -2,6 +2,20 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Design-Craft Pass (impeccable, emil-design-eng)
+
+### Delivered
+
+- Focus ring (impeccable/emil): removed `border-radius: 4px` from the global `:focus-visible`. It squared off pill buttons and inputs when focused; the outline now follows each element's own radius.
+- Footer (break-ui): `.site-footer a` was `display: flex`, which pulled the inline "Email us at" mailto out of its sentence and left it without an underline. Flex and the 44px target now apply only to `.site-footer nav a` and the brand; the inline link is underlined.
+- Hover lift removed (animate/animation-performance): `.card-lift` moved non-clickable bento and plan cards on hover, which implied a click. Class and CSS deleted.
+- Browser surfaces (impeccable craft floor): themed `::selection` and `caret-color` from `--link`; links get a 0.06em underline thickness.
+- Text (impeccable): `p { text-wrap: pretty }` to avoid orphaned last words.
+- Touch (mobile-native): `user-select: none` on `.button` and FAQ summaries; viewport adds `interactive-widget=resizes-content`.
+- Reduced motion (emil): button press scale and FAQ icon rotation are off under `prefers-reduced-motion: reduce`.
+- Copy (unslop): about and support copy shortened, passive and "built to surface" phrasing replaced, rule-of-three dropped from the about lead. Legal text unchanged; the support storage disclosure keeps its meaning.
+- Not changed: macro-bar motif, hero rise and scroll reveal (one-time, transform and opacity only, reduced-motion gated), device frame, plans, FAQ, legal layout.
+
 ## 2026-10-29 Redesign Follow-ups (Support Contact, Insights Wording, Privacy Disclosure, Waitlist CTA, Narrow Widths)
 
 ### Delivered

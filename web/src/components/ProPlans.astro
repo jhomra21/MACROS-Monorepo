@@ -13,7 +13,7 @@ import { site } from '../data/site';
 		<div class="plans">
 			{
 				site.plans.map((plan, index) => (
-					<article class:list={['plan', 'card-lift', plan.featured && 'plan--featured']} data-reveal style={`--reveal-index: ${index}`}>
+					<article class:list={['plan', plan.featured && 'plan--featured']} data-reveal style={`--reveal-index: ${index}`}>
 						{plan.badge && <p class="plan__badge">{plan.badge}</p>}
 						<h3 class="title">{plan.name}</h3>
 						<p class="plan__price">
