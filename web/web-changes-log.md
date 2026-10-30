@@ -2,6 +2,25 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Wrangler 4.156.0 Update
+
+### Delivered
+
+- Updated `wrangler` 4.116.0 → 4.156.0 (exact pin) in `package.json` and `bun.lock`. This was an owner decision to take the latest release despite its Miniflare 5 beta dependency (`miniflare@5.20261023.3-beta`).
+- Regenerated `worker-configuration.d.ts` with `wrangler types` (workerd 1.20261023.1 runtime types, module declarations). The content changed, so the file is committed.
+- No Worker code or config changed. Rate-limit bindings are used only through `limit()`, and both `wrangler.jsonc` and `wrangler.api.jsonc` keep their existing bindings.
+
+### Caveats
+
+- Miniflare 5 is a beta. It runs in `wrangler dev` and the tests. Deploys now upload source maps by default (wrangler 4.150).
+- Revert to 4.116.0 if a dev or deploy regression appears.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy; bindings unchanged).
+- `wrangler dev --config wrangler.api.jsonc` smoke: `/api/waitlist` returned 400 on a bad body, and `/api/support` returned the 303 form redirect on a valid POST. Then the server was stopped.
+- Runtime QA `check` and `test`; convex-backend `test:integration`; repo oxlint command. All passed.
+
 ## 2026-10-29 Web Dependency Refresh
 
 ### Delivered
