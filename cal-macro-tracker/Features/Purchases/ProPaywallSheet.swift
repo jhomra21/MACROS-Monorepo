@@ -2,7 +2,7 @@ import StoreKit
 import SwiftUI
 
 enum ProPaywallContext: String, CaseIterable, Identifiable {
-    case insights, ringColors, weightTrends, healthWeightImport, backup, reminders, general
+    case insights, ringColors, weightTrends, healthWeightImport, backup, reminders, widgetBackground, general
 
     var id: Self { self }
 
@@ -14,6 +14,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .healthWeightImport: "Weight import from Apple Health"
         case .backup: "Backup export and import"
         case .reminders: "Multiple reminders"
+        case .widgetBackground: "Widget backgrounds"
         case .general: ProLegalLinks.name
         }
     }
@@ -26,12 +27,13 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .healthWeightImport: "heart.text.square"
         case .backup: "arrow.down.doc"
         case .reminders: "bell.badge"
+        case .widgetBackground: "photo"
         case .general: "sparkles"
         }
     }
 
     var benefits: [Self] {
-        let all: [Self] = [.insights, .weightTrends, .healthWeightImport, .backup, .ringColors, .reminders]
+        let all: [Self] = [.insights, .weightTrends, .healthWeightImport, .backup, .ringColors, .widgetBackground, .reminders]
         return self == .general ? all : [self] + all.filter { $0 != self }
     }
 }
@@ -315,6 +317,7 @@ private struct ProPurchaseSuccessView: View {
         case .healthWeightImport: "Open Health import"
         case .backup: "Open Backup"
         case .reminders: "Open Reminders"
+        case .widgetBackground: "Open Widget backgrounds"
         case .general: "Start Pro"
         }
     }

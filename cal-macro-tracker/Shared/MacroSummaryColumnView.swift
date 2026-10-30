@@ -84,7 +84,7 @@ struct MacroSummaryColumnView: View {
         .frame(maxWidth: .infinity, minHeight: minimumHeight, alignment: .center)
     }
 
-    private var titleLine: some View {
+    var titleLine: some View {
         HStack(spacing: style.titleSpacing) {
             if style.showsTitleDot {
                 Circle()
@@ -101,9 +101,9 @@ struct MacroSummaryColumnView: View {
     }
 
     @ViewBuilder
-    private var currentValueLine: some View {
+    var currentValueLine: some View {
         if style.showsOverGoalIndicatorInValueLine, presentation.overGoalValueText != nil {
-            HStack(spacing: 1) {
+            HStack(alignment: .firstTextBaseline, spacing: 1) {
                 currentValueText
 
                 Text("↑")
@@ -131,7 +131,7 @@ struct MacroSummaryColumnView: View {
     }
 
     @ViewBuilder
-    private var goalLine: some View {
+    var goalLine: some View {
         if style.showsOverGoalDeltaInGoalLine, let overGoalValueText = presentation.overGoalValueText {
             HStack(spacing: style.goalSpacing) {
                 Text(presentation.goalValueText)
@@ -158,6 +158,64 @@ struct MacroSummaryColumnView: View {
         }
     }
 
+    var accessibilitySummary: String {
+        let overGoal = presentation.overGoalValueText.map { ", over goal by \($0)" } ?? ""
+        return "\(metric.title), \(presentation.currentValueText) grams, goal \(presentation.goalValueText) grams\(overGoal)"
+    }
+
+}
+
+struct MacroSummaryColumnsGrid: View {
+    let metrics: [MacroMetric]
+    let totals: NutritionSnapshot
+    let goals: MacroGoalsSnapshot
+    let style: MacroSummaryColumnView.Style
+    let columnWidth: CGFloat
+    let columnSpacing: CGFloat
+
+    var body: some View {
+        Grid(horizontalSpacing: columnSpacing, verticalSpacing: style.verticalSpacing) {
+            GridRow(alignment: .firstTextBaseline) {
+                ForEach(metrics) { metric in
+                    column(metric).currentValueLine
+                        .accessibilityHidden(true)
+                        .frame(width: columnWidth)
+                }
+            }
+            GridRow(alignment: .firstTextBaseline) {
+                ForEach(metrics) { metric in
+                    column(metric).goalLine
+                        .accessibilityHidden(true)
+                        .frame(width: columnWidth)
+                }
+            }
+            GridRow(alignment: .firstTextBaseline) {
+                ForEach(metrics) { metric in
+                    column(metric).titleLine
+                        .accessibilityHidden(true)
+                        .frame(width: columnWidth)
+                }
+            }
+        }
+        .accessibilityRepresentation {
+            VStack {
+                ForEach(metrics) { metric in
+                    Text(column(metric).accessibilitySummary)
+                        .accessibilityElement(children: .ignore)
+                }
+            }
+        }
+    }
+
+    private func column(_ metric: MacroMetric) -> MacroSummaryColumnView {
+        MacroSummaryColumnView(
+            metric: metric,
+            totals: totals,
+            goals: goals,
+            titleStyle: .short,
+            style: style
+        )
+    }
 }
 
 struct MacroGoalValuePresentation {

@@ -19,6 +19,9 @@ struct FoodCameraSheet: View {
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
 
+    @State private var cameraRevealVisible = false
+    @State private var cameraCardVisible = false
+    @State private var isCameraDismissalActive = false
     @State var scannerController: FoodCameraScannerController?
     @State var pendingScannerStart = false
     @State var selectedPhoto: PhotosPickerItem?
@@ -58,7 +61,7 @@ struct FoodCameraSheet: View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
-                    resultPanel
+                    stagedResultPanel
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
                 .containerBackground(.clear, for: .navigation)
@@ -162,6 +165,14 @@ struct FoodCameraSheet: View {
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: isCameraOptionsExpanded)
         }
+        .background {
+            CameraPresentationTransitionObserver(
+                onPresentationFinished: revealCameraCard,
+                onDismissalBegan: softenCameraForDismissal,
+                onDismissalCancelled: restoreCameraAfterCancelledDismissal
+            )
+            .frame(width: 0, height: 0)
+        }
         .onChange(of: isPresented) { _, presented in
             if presented == false { send(.dismissed) }
         }
@@ -234,20 +245,67 @@ struct FoodCameraSheet: View {
         return result
     }
 
+    private var stagedResultPanel: some View {
+        resultPanel
+            .opacity(cameraCardVisible ? 1 : 0)
+            .offset(y: cameraCardVisible || reduceMotion ? 0 : 56)
+            .blur(radius: reduceMotion || cameraCardVisible ? 0 : 8)
+            .allowsHitTesting(cameraCardVisible)
+            .accessibilityHidden(!cameraCardVisible)
+    }
+
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
         ZStack {
+            Color(uiColor: .darkGray)
+
             preview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(cameraRevealVisible ? 1 : 0)
+                .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
+
             VStack {
                 Spacer()
                 cameraControls(bottomSafeAreaInset: bottomSafeAreaInset)
             }
+            .opacity(cameraRevealVisible ? 1 : 0)
+            .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
         }
         .frame(maxWidth: .infinity, minHeight: 120, maxHeight: .infinity)
         .layoutPriority(0)
         .clipShape(RoundedRectangle(cornerRadius: 28))
         .padding(8)
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+                cameraRevealVisible = true
+            }
+        }
+    }
+
+    private func revealCameraCard() {
+        isCameraDismissalActive = false
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) {
+            cameraCardVisible = true
+        }
+    }
+
+    private func softenCameraForDismissal() {
+        guard isCameraDismissalActive == false else { return }
+        isCameraDismissalActive = true
+        send(.sceneInactive)
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.22)) {
+            cameraCardVisible = false
+            cameraRevealVisible = false
+        }
+    }
+
+    private func restoreCameraAfterCancelledDismissal() {
+        isCameraDismissalActive = false
+        send(.sceneActive)
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) {
+            cameraCardVisible = true
+            cameraRevealVisible = true
+        }
     }
 
     private func cameraControls(bottomSafeAreaInset: CGFloat) -> some View {
@@ -280,7 +338,8 @@ struct FoodCameraSheet: View {
 
             HStack {
                 Button {
-                    send(.dismissed)
+                    guard isCameraDismissalActive == false else { return }
+                    softenCameraForDismissal()
                     dismiss()
                 } label: {
                     Label("Back", systemImage: "chevron.backward")
@@ -330,6 +389,7 @@ struct FoodCameraSheet: View {
             .font(.system(size: 17, weight: .semibold))
             .foregroundStyle(canLiveScan ? .white : .primary)
         }
+        .disabled(isCameraDismissalActive)
         .padding(.horizontal, 24)
         .padding(.bottom, 12 + bottomSafeAreaInset)
     }
@@ -410,7 +470,7 @@ struct FoodCameraSheet: View {
                     onBarcode: { foundBarcode($0) }
                 )
             } else {
-                Color(uiColor: .secondarySystemBackground)
+                Color.clear
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
@@ -448,6 +508,126 @@ struct FoodCameraLogDestination: Identifiable, Hashable {
     let missingNutrients: [RequiredNutritionReviewNutrient]
     let imageData: Data?
     let quantityAmount: Double
+}
+
+private struct CameraPresentationTransitionObserver: UIViewControllerRepresentable {
+    let onPresentationFinished: () -> Void
+    let onDismissalBegan: () -> Void
+    let onDismissalCancelled: () -> Void
+
+    func makeUIViewController(context: Context) -> TransitionObserverController {
+        let controller = TransitionObserverController()
+        update(controller)
+        return controller
+    }
+
+    func updateUIViewController(_ controller: TransitionObserverController, context: Context) {
+        update(controller)
+    }
+
+    private func update(_ controller: TransitionObserverController) {
+        controller.onPresentationFinished = onPresentationFinished
+        controller.onDismissalBegan = onDismissalBegan
+        controller.onDismissalCancelled = onDismissalCancelled
+    }
+
+    final class TransitionObserverController: UIViewController {
+        var onPresentationFinished: (() -> Void)?
+        var onDismissalBegan: (() -> Void)?
+        var onDismissalCancelled: (() -> Void)?
+
+        private weak var presentationRoot: UIViewController?
+        private var registeredPresentation = false
+        private var trackingDismissal = false
+
+        override func loadView() {
+            let view = UIView(frame: .zero)
+            view.isHidden = true
+            view.isUserInteractionEnabled = false
+            self.view = view
+        }
+
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+
+            guard registeredPresentation == false,
+                let modal = enclosingModal,
+                modal.host.isBeingPresented,
+                modal.presenter.presentedViewController === modal.host,
+                let coordinator = modal.host.transitionCoordinator,
+                coordinator.viewController(forKey: .from) === modal.presenter,
+                coordinator.viewController(forKey: .to) === modal.host
+            else { return }
+
+            presentationRoot = modal.host
+            registeredPresentation = true
+            coordinator.animate(alongsideTransition: nil) { [weak self, weak host = modal.host, weak presenter = modal.presenter] context in
+                guard let self, let host, let presenter,
+                    self.presentationRoot === host,
+                    context.viewController(forKey: .from) === presenter,
+                    context.viewController(forKey: .to) === host
+                else { return }
+
+                guard context.isCancelled == false,
+                    host.presentingViewController === presenter,
+                    presenter.presentedViewController === host
+                else {
+                    self.registeredPresentation = false
+                    self.presentationRoot = nil
+                    return
+                }
+
+                self.onPresentationFinished?()
+            }
+        }
+
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+
+            guard trackingDismissal == false,
+                let modal = enclosingModal,
+                modal.host.isBeingDismissed,
+                modal.host.presentingViewController === modal.presenter,
+                modal.presenter.presentedViewController === modal.host,
+                let coordinator = modal.host.transitionCoordinator,
+                coordinator.viewController(forKey: .from) === modal.host,
+                coordinator.viewController(forKey: .to) === modal.presenter
+            else { return }
+
+            trackingDismissal = true
+            onDismissalBegan?()
+            coordinator.animate(alongsideTransition: nil) { [weak self, weak host = modal.host, weak presenter = modal.presenter] context in
+                guard let self, let host, let presenter,
+                    context.viewController(forKey: .from) === host,
+                    context.viewController(forKey: .to) === presenter
+                else { return }
+
+                self.trackingDismissal = false
+                if context.isCancelled,
+                    host.presentingViewController === presenter,
+                    presenter.presentedViewController === host
+                {
+                    self.onDismissalCancelled?()
+                } else {
+                    self.registeredPresentation = false
+                    self.presentationRoot = nil
+                }
+            }
+        }
+
+        private var enclosingModal: (host: UIViewController, presenter: UIViewController)? {
+            var candidate = parent
+            while let host = candidate {
+                if let presenter = host.presentingViewController,
+                    presenter.presentedViewController === host
+                {
+                    return (host, presenter)
+                }
+                candidate = host.parent
+            }
+            return nil
+        }
+    }
 }
 
 enum FoodCameraRoute: String, Identifiable, Hashable {

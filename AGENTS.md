@@ -53,6 +53,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
 
 ## Commands
 
+- Simulator budget: keep at most two simulators booted on the Mac. Keep protected fixtures local and separate from disposable QA fixtures. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
 - Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs an iOS 27.0 simulator runtime: the iOS 26.4 runtime rejects catalog activation with `SKInternalErrorDomain Code=3`. Use the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`

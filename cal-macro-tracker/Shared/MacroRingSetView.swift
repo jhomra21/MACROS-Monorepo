@@ -220,10 +220,25 @@ private struct GoalProgressRing: View {
     }
 
     var body: some View {
-        ZStack {
-            Circle()
-                .stroke(resolvedTrackColor, lineWidth: lineWidth)
+        if #available(iOS 26.0, macOS 26.0, *) {
+            progressContent
+                .glassEffect(
+                    .regular.tint(resolvedTrackColor),
+                    in: Circle().stroke(style: StrokeStyle(lineWidth: lineWidth))
+                )
+        } else {
+            ZStack {
+                Circle()
+                    .stroke(resolvedTrackColor, lineWidth: lineWidth)
 
+                progressContent
+            }
+            .frame(width: diameter, height: diameter)
+        }
+    }
+
+    private var progressContent: some View {
+        ZStack {
             if progress > 0 {
                 if usesOverlapRenderer {
                     // Exact-goal and exact-multiple states intentionally use the overlap renderer.

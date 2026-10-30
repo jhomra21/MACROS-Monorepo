@@ -61,6 +61,10 @@ struct SettingsScreen: View {
                 paywallContext: $paywallContext
             )
 
+            #if os(iOS)
+            WidgetBackgroundSettingsSection(paywallContext: $paywallContext)
+            #endif
+
             SavedFoodsSection(
                 title: "Saved Custom Foods",
                 emptyState: "Custom foods you save while logging will show up here.",

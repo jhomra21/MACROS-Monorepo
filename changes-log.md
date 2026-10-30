@@ -11,6 +11,19 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 TestFlight Build 10 Upload
+
+- Bumped `CURRENT_PROJECT_VERSION` 9 to 10 in all six project configs (version 1.0 unchanged; the user confirmed ASC's highest build was 9). Fresh archive from HEAD 36fa465 plus the working tree; the exported distribution payload had `get-task-allow=false` for app and widget, correct App Group and HealthKit entitlements, and no StoreKit or test content. Upload succeeded once (delivery `fa71ea80-9926-46fe-b29a-6d4b9a59b913`). Parent verified in App Store Connect that processing is complete and build 10 is available to the internal MACROS Beta group for TestFlight testing; external testing is not enabled. Artifacts: `build/testflight-build10-release-2026-10-29/`.
+
+## 2026-10-29 Widget Background Photo
+
+- Added a device-local photo option to Settings > Widget Background for full-color Home Screen daily macro widgets; Lock Screen and accessory backgrounds remain system-controlled. The imported copy is stored as a protected, backup-excluded file owned by the app. A denied commit preserves an initially Native selection, and replacing the photo removes only the previously owned file.
+- Fixed photo saves rejected by the legacy file-protection query on Simulator. Staging and destination checks now read size and protection through typed URL resource values, after clearing cached values, and fail closed unless protection is exactly `completeUntilFirstUserAuthentication`. There is no simulator-only bypass.
+- Wrote the regression tests before the fix. `WidgetBackgroundPhotoImportTests` covers commit with Restore Default cleanup, denied selection, and replacement. Commit and replacement failed with `writeFailed` before the fix and pass after it.
+- `LocalConfidenceTests` now renders its barcode fixture at an explicit scale-1 format (1,200 x 600 px), so Vision results no longer depend on the simulator display scale. The production scanner is unchanged.
+- Validation: 12 focused tests passed on the iPhone 18 Pro iOS 27.0 simulator (3 new import tests, 7 appearance storage tests, 2 barcode tests). Format lint and build-for-testing passed. Simulator UI checks covered Photo selection, Small and Medium widgets in Light, Dark, Tinted, and Clear, picker Cancel, and Native reset. Pro state came from a temporary local StoreKit test transaction, removed afterward; it was not a real purchase.
+- Not release-accepted. The full suite was not run. Still open: AskToBuy and `Product.purchase` first-process Sandbox routing (the local `SKTestSession` route does not prove it), physical-device file protection, corrupt and oversized photo error UI, StandBy, accessory, and VoiceOver checks, and the App Store Connect next build number. Version 1.0 (9) is unchanged. No commit, push, archive, or upload was made.
+
 ## 2026-10-28 TestFlight Build 9 Preflight
 
 - Prepared the merged camera candidate at version 1.0/build 9; format, signed simulator and Release device builds, StoreKit catalog validation, and 63 targeted tests passed. No archive or upload was performed; details and remaining release checks are in `build/build9-preflight-2026-10-28/QA.md`.

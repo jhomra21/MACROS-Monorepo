@@ -10,13 +10,35 @@ extension CalendarDay: Comparable {
     }
 }
 
-enum InsightsRange: CaseIterable, Identifiable {
-    case sevenDays
-    case fourteenDays
-    case thirtyDays
-    case ninetyDays
-    case oneYear
-    case allTime
+enum InsightsWeightNotice {
+    static func message(latestWeightDate: Date?, today: CalendarDay, dismissedAt: Date?) -> String? {
+        // Compare local civil days; future weight entries stay recent during a clock rollback.
+        let calendar = today.resolvedCalendar
+        let cutoffDate = calendar.date(byAdding: .month, value: -1, to: today.startDate) ?? today.startDate
+        let cutoffDay = CalendarDay(date: cutoffDate, calendar: calendar)
+
+        if let latestWeightDate {
+            let latestWeightDay = CalendarDay(date: latestWeightDate, calendar: calendar)
+            guard latestWeightDay < cutoffDay else { return nil }
+        }
+
+        if let dismissedAt, let dismissalInterval = calendar.dateInterval(of: .day, for: dismissedAt) {
+            let expiryDate = calendar.date(byAdding: .month, value: 1, to: dismissalInterval.start) ?? dismissalInterval.start
+            let expiryDay = CalendarDay(date: expiryDate, calendar: calendar)
+            guard today >= expiryDay else { return nil }
+        }
+
+        return latestWeightDate == nil ? "No weight logged" : "No weight logged in a month"
+    }
+}
+
+enum InsightsRange: String, CaseIterable, Identifiable {
+    case sevenDays = "sevenDays"
+    case fourteenDays = "fourteenDays"
+    case thirtyDays = "thirtyDays"
+    case ninetyDays = "ninetyDays"
+    case oneYear = "oneYear"
+    case allTime = "allTime"
 
     var id: Self { self }
 

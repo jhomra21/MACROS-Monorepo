@@ -6,7 +6,7 @@ struct DailyMacroAccessoryWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: SharedAppConfiguration.dailyMacroAccessoryWidgetKind,
-            provider: DailyMacroWidgetProvider()
+            provider: DailyMacroWidgetProvider(includesAppearance: false)
         ) { entry in
             DailyMacroAccessoryWidgetContentView(entry: entry)
                 .containerBackground(for: .widget) {
