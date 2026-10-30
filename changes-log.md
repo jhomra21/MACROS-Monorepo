@@ -18,6 +18,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Dismissing the Insights weight notice snapped out. The X now animates with `.smooth`, and the notice uses a bottom move plus opacity transition, or opacity only when Reduce Motion is on.
 - Scope: simulator checks on the iPhone 18 Pro iOS 27.0 simulator (Light and Dark Home Screen, Insights dismiss clip). Not verified on a physical device or in the medium widget.
 
+## 2026-10-29 TestFlight Build 10 Upload
+
 - Bumped `CURRENT_PROJECT_VERSION` 9 to 10 in all six project configs (version 1.0 unchanged; the user confirmed ASC's highest build was 9). Fresh archive from HEAD 36fa465 plus the working tree; the exported distribution payload had `get-task-allow=false` for app and widget, correct App Group and HealthKit entitlements, and no StoreKit or test content. Upload succeeded once (delivery `fa71ea80-9926-46fe-b29a-6d4b9a59b913`). Parent verified in App Store Connect that processing is complete and build 10 is available to the internal MACROS Beta group for TestFlight testing; external testing is not enabled. Artifacts: `build/testflight-build10-release-2026-10-29/`.
 
 ## 2026-10-29 Widget Background Photo
