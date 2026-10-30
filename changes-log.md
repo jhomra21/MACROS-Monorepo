@@ -11,6 +11,18 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 Polish Batch 3a
+
+- Native surfaces: content cards (History week card, Insights cards and weight card, onboarding choice and reminder cards, goal rows, body profile rows) use the standard card background through `appCardBackground(cornerRadius:)`. Glass stays on the floating controls: Today pill, Insights range and weight notice, paywall plan buttons, bottom bars, camera controls, and suggestion pills (now 44pt minimum height).
+- Add Food: Cancel is the leading toolbar action, the Search and Manual switch is a segmented control under the title with no animation wrapper, and Done is removed.
+- Dashboard: the top-right actions are two toolbar groups split by a fixed `ToolbarSpacer`, with icon-only labelled buttons.
+- Settings: Pro, Daily Goals (Save and Recalculate share one section), Food Suggestions, Macro Ring Colors, Widget Background, Reminders, Apple Health, Weight, Sharing, saved foods, then Backup last. Locked Pro rows share `ProLockedRow`, which opens the paywall. The Sharing disclaimer stays on the Sharing screen only. The ring Reset button uses a bordered style.
+- Onboarding: the locked additional-reminders card opens the Reminders paywall.
+- Backup: Merge is the primary action and Replace All Data is a destructive glass button. The import sheet and error banner attach to the section.
+- Paywall: the close control uses the system close role, the selected plan has a 2pt accent ring, and the success action reads "Done".
+- Scope: visual and structural changes only. Import summary, the onboarding path, the success CTA, and the Reset button were not reachable on the test device and remain unverified.
+- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `ProEntitlementTests`, `InsightsAnalyticsTests`, and `BackupRoundTripTests` pass 60 of 60 on the iPhone 18 Pro iOS 27.0 simulator.
+
 ## 2026-10-29 Polish Batch 2
 
 - Camera options: the ellipsis toggle and its option circles share a `GlassEffectContainer(spacing: 12)` with `glassEffectID` and `matchedGeometry`, so the circles grow out of and collapse back into the toggle. The slide-in transition is removed. The back and shutter controls stay separate glass controls. Under Reduce Motion the change is not animated.

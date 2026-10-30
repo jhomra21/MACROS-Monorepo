@@ -5,7 +5,6 @@ import UIKit
 
 struct WidgetBackgroundSettingsSection: View {
     @Environment(AppEntitlements.self) private var entitlements
-    @Binding var paywallContext: ProPaywallContext?
     @State private var photoItem: PhotosPickerItem?
     @State private var selection = WidgetAppearanceStorage.shared.background
     @State private var errorMessage: String?
@@ -61,25 +60,7 @@ struct WidgetBackgroundSettingsSection: View {
                         .accessibilityLabel("Widget background status. \(errorMessage)")
                 }
             } locked: {
-                Button {
-                    paywallContext = .widgetBackground
-                } label: {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Customize Widget Background")
-                                .foregroundStyle(Color.accentColor)
-                            Text("Included with \(AppBrand.displayName) Pro")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                ProLockedRow(title: "Customize Widget Background", context: .widgetBackground)
             }
 
             Button("Restore Default") {

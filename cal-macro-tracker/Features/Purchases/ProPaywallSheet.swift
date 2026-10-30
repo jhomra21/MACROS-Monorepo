@@ -124,7 +124,7 @@ struct ProPaywallSheet: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Close", role: .close) { dismiss() }
                 }
             }
             .task { await store.loadProducts() }
@@ -216,6 +216,12 @@ struct ProPaywallSheet: View {
             .padding(16)
             .contentShape(RoundedRectangle(cornerRadius: 20))
             .appGlassRoundedRect(cornerRadius: 20)
+            .overlay {
+                if selectedPlan == plan {
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(Color.accentColor, lineWidth: 2)
+                }
+            }
         }
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
@@ -258,8 +264,6 @@ private struct ProPurchaseSuccessView: View {
     let reduceMotion: Bool
     let dismiss: () -> Void
 
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
     var body: some View {
         Group {
             if reduceMotion {
@@ -290,7 +294,7 @@ private struct ProPurchaseSuccessView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         AppAccentActionButton(
-            title: actionTitle,
+            title: "Done",
             systemImage: "arrow.right",
             isCompact: false,
             isDisabled: false,
@@ -302,22 +306,6 @@ private struct ProPurchaseSuccessView: View {
         Image(systemName: "checkmark.seal.fill")
             .font(.system(size: 52, weight: .semibold))
             .foregroundStyle(Color.accentColor)
-    }
-
-    private var actionTitle: String {
-        guard dynamicTypeSize.isAccessibilitySize else {
-            return context == .general ? "Start using Pro" : "Open \(context.title)"
-        }
-        return switch context {
-        case .insights: "Open Insights"
-        case .ringColors: "Open Ring colors"
-        case .weightTrends: "Open Weight trends"
-        case .healthWeightImport: "Open Health import"
-        case .backup: "Open Backup"
-        case .reminders: "Open Reminders"
-        case .widgetBackground: "Open Widget backgrounds"
-        case .general: "Start Pro"
-        }
     }
 }
 

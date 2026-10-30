@@ -88,18 +88,7 @@ struct OnboardingChoiceScreen: View {
         .inlineNavigationTitle()
     }
 
-    @ViewBuilder
     private var choiceRows: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 14) {
-                rows
-            }
-        } else {
-            rows
-        }
-    }
-
-    private var rows: some View {
         VStack(spacing: 14) {
             NavigationLink(value: OnboardingStep.aboutYou) {
                 choiceRow("Calculate my targets", subtitle: "Get a starting point based on your routine", symbol: "sparkles")
@@ -131,7 +120,7 @@ struct OnboardingChoiceScreen: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 20)
+        .appCardBackground(cornerRadius: 20)
         .accessibilityElement(children: .combine)
     }
 }
@@ -144,6 +133,7 @@ private struct OnboardingRemindersScreen: View {
     @State private var permissionMessage = ""
     @State private var didFinish = false
     @State private var authorizationTask: Task<Void, Never>?
+    @State private var isPresentingPro = false
 
     let onComplete: () -> Void
 
@@ -223,20 +213,12 @@ private struct OnboardingRemindersScreen: View {
         } message: {
             Text(permissionMessage)
         }
-    }
-
-    @ViewBuilder
-    private var reminderCards: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 14) {
-                reminderCardContent
-            }
-        } else {
-            reminderCardContent
+        .sheet(isPresented: $isPresentingPro) {
+            ProPaywallSheet(context: .reminders)
         }
     }
 
-    private var reminderCardContent: some View {
+    private var reminderCards: some View {
         VStack(spacing: 14) {
             dailyReminderCard
             additionalReminderCard
@@ -256,7 +238,7 @@ private struct OnboardingRemindersScreen: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 20, interactive: false)
+        .appCardBackground(cornerRadius: 20)
     }
 
     private var additionalReminderCard: some View {
@@ -304,7 +286,14 @@ private struct OnboardingRemindersScreen: View {
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 20, interactive: false)
+        .appCardBackground(cornerRadius: 20)
+        .contentShape(RoundedRectangle(cornerRadius: 20))
+        .onTapGesture {
+            guard !includesProChoices else { return }
+            isPresentingPro = true
+        }
+        .accessibilityAddTraits(includesProChoices ? [] : .isButton)
+        .accessibilityHint(includesProChoices ? "" : "Opens the Pro paywall")
     }
 
     private func timePicker(_ title: String, hour: Binding<Int>, minute: Binding<Int>) -> some View {

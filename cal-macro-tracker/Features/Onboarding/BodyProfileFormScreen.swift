@@ -254,9 +254,8 @@ struct BodyProfileFormScreen: View {
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: keyboardFields)
     }
 
-    @ViewBuilder
     private var profileInputRows: some View {
-        let rows = VStack(spacing: 12) {
+        VStack(spacing: 12) {
             Picker("Sex", selection: $profile.sex) {
                 ForEach(GoalSex.allCases, id: \.self) { sex in
                     Text(sex.title).tag(sex)
@@ -265,7 +264,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Sex")
             .padding(12)
-            .appGlassRoundedRect(cornerRadius: 18)
+            .appCardBackground(cornerRadius: 18)
 
             profileNumericRow("Age", value: $profile.ageText, suffix: "years", field: .age)
             if profile.ageText.isEmpty {
@@ -292,7 +291,7 @@ struct BodyProfileFormScreen: View {
                 }
                 .padding(.horizontal, 16)
                 .frame(height: 58)
-                .appGlassRoundedRect(cornerRadius: 18)
+                .appCardBackground(cornerRadius: 18)
             }
             profileNumericRow(
                 "Weight",
@@ -313,14 +312,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Units")
             .padding(12)
-            .appGlassRoundedRect(cornerRadius: 18)
-        }
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                rows
-            }
-        } else {
-            rows
+            .appCardBackground(cornerRadius: 18)
         }
     }
 
@@ -340,7 +332,7 @@ struct BodyProfileFormScreen: View {
         .accessibilityElement(children: .contain)
         .padding(.horizontal, 16)
         .frame(height: 58)
-        .appGlassRoundedRect(cornerRadius: 18)
+        .appCardBackground(cornerRadius: 18)
         .accessibilityLabel(title)
     }
 

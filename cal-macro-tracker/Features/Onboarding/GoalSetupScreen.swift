@@ -64,7 +64,7 @@ struct GoalSetupScreen: View {
 
             header
 
-            goalsList
+            goalRows
 
             Spacer()
 
@@ -91,17 +91,6 @@ struct GoalSetupScreen: View {
                 .multilineTextAlignment(.center)
         }
         .padding(.horizontal, 24)
-    }
-
-    @ViewBuilder
-    private var goalsList: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 14) {
-                goalRows
-            }
-        } else {
-            goalRows
-        }
     }
 
     private var goalRows: some View {
@@ -135,7 +124,7 @@ struct GoalSetupScreen: View {
         }
         .padding(.horizontal, 18)
         .frame(height: 62)
-        .appGlassRoundedRect(cornerRadius: 20)
+        .appCardBackground(cornerRadius: 20)
         .contentShape(Rectangle())
         .onTapGesture {
             focusedField = field

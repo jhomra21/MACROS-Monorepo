@@ -39,13 +39,22 @@ struct BackupImportSummarySheet: View {
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                BottomPinnedDualActionBar(
-                    leadingAction: BottomPinnedDualAction(
-                        title: "Replace All Data", systemImage: "trash", action: { confirmingReplace = true },
-                        role: .destructive),
-                    trailingAction: BottomPinnedDualAction(
-                        title: "Merge", systemImage: "square.and.arrow.down", action: { startImport(.merge) })
-                )
+                VStack(spacing: 10) {
+                    AppAccentActionButton(
+                        title: "Merge", systemImage: "square.and.arrow.down", isCompact: false,
+                        action: { startImport(.merge) }
+                    )
+                    Button(role: .destructive) {
+                        confirmingReplace = true
+                    } label: {
+                        Label("Replace All Data", systemImage: "trash")
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.glass)
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                .padding(.bottom, 8)
                 .disabled(isImporting)
             }
             .navigationTitle("Import Backup")

@@ -9,4 +9,8 @@ extension View {
             background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
     }
+
+    func appCardBackground(cornerRadius: CGFloat) -> some View {
+        background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+    }
 }

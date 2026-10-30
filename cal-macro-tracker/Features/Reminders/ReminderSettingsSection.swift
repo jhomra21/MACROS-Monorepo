@@ -21,7 +21,6 @@ struct ReminderSettingsSection: View {
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.openURL) private var openURL
     @State private var isDenied = false
-    @State private var isPresentingPro = false
 
     var body: some View {
         Section("Reminders") {
@@ -52,20 +51,13 @@ struct ReminderSettingsSection: View {
                         handleReminderChange(enabled, binding: $smartEveningEnabled)
                     }
             } else {
-                Button {
-                    isPresentingPro = true
-                } label: {
-                    Label("Multiple reminders", systemImage: "lock.fill")
-                }
+                ProLockedRow(title: "Multiple reminders", context: .reminders)
             }
             if isDenied {
                 Button("Open notification settings") {
                     openURL(URL(string: UIApplication.openSettingsURLString)!)
                 }
             }
-        }
-        .sheet(isPresented: $isPresentingPro) {
-            ProPaywallSheet(context: .reminders)
         }
         .task {
             isDenied = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus == .denied

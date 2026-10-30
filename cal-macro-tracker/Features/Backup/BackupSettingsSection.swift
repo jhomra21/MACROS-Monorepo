@@ -28,45 +28,31 @@ struct BackupSettingsSection: View {
                         allowsMultipleSelection: false, onCompletion: importFile
                     )
             } else {
-                Button {
-                    presentation = .paywall(.backup)
-                } label: {
-                    Label("Export backup", systemImage: "lock.fill")
-                }
-                Button {
-                    presentation = .paywall(.backup)
-                } label: {
-                    Label("Export logs as CSV", systemImage: "lock.fill")
-                }
-                Button {
-                    presentation = .paywall(.backup)
-                } label: {
-                    Label("Import backup", systemImage: "lock.fill")
-                }
+                ProLockedRow(title: "Export backup", context: .backup)
+                ProLockedRow(title: "Export logs as CSV", context: .backup)
+                ProLockedRow(title: "Import backup", context: .backup)
             }
         } header: {
             Text("Backup")
-                .sheet(item: $presentation) { presentation in
-                    switch presentation {
-                    case let .importSummary(backup, unmatchedCount):
-                        BackupImportSummarySheet(
-                            backup: backup,
-                            unmatchedMealItemCount: unmatchedCount,
-                            onImport: { mode in
-                                try await importBackup(backup, mode: mode)
-                            },
-                            errorMessage: $errorMessage
-                        )
-                    case let .share(url):
-                        BackupFileShareSheet(url: url)
-                    case let .paywall(context):
-                        ProPaywallSheet(context: context)
-                    }
-                }
-                .errorBanner(message: $errorMessage)
         } footer: {
             Text("Backups contain your saved data and can be shared or stored in Files.")
         }
+        .sheet(item: $presentation) { presentation in
+            switch presentation {
+            case let .importSummary(backup, unmatchedCount):
+                BackupImportSummarySheet(
+                    backup: backup,
+                    unmatchedMealItemCount: unmatchedCount,
+                    onImport: { mode in
+                        try await importBackup(backup, mode: mode)
+                    },
+                    errorMessage: $errorMessage
+                )
+            case let .share(url):
+                BackupFileShareSheet(url: url)
+            }
+        }
+        .errorBanner(message: $errorMessage)
     }
 
     private func importFile(_ result: Result<[URL], Error>) {
@@ -152,13 +138,11 @@ struct BackupSettingsSection: View {
 private enum BackupPresentation: Identifiable {
     case importSummary(MACROSBackup, Int)
     case share(URL)
-    case paywall(ProPaywallContext)
 
     var id: String {
         switch self {
         case let .importSummary(backup, _): "import-\(backup.id.timeIntervalSinceReferenceDate)"
         case let .share(url): "share-\(url.path)"
-        case let .paywall(context): "paywall-\(context.rawValue)"
         }
     }
 }

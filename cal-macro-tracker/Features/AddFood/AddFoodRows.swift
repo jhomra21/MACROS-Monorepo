@@ -10,6 +10,7 @@ struct SuggestionPillLabel: View {
             .foregroundStyle(.primary)
             .padding(.horizontal, SearchFoodSpacing.pillHorizontalPadding)
             .padding(.vertical, SearchFoodSpacing.pillVerticalPadding)
+            .frame(minHeight: 44)
             .background(fallbackBackground)
             .contentShape(Capsule())
             .ifAvailableSuggestionGlassCapsule()

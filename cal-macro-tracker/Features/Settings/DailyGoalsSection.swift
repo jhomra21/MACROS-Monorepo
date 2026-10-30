@@ -122,12 +122,13 @@ private struct DailyGoalsSection: View {
     }
 }
 
-private struct DailyGoalsSaveSection: View {
+private struct DailyGoalsActionSection: View {
     let actionTitle: String
     let actionSystemImage: String?
     let actionColor: Color
     let canSave: Bool
     let onSave: () -> Void
+    @State private var isPresentingRecalculation = false
 
     var body: some View {
         Section {
@@ -149,6 +150,17 @@ private struct DailyGoalsSaveSection: View {
             }
             .disabled(!canSave)
             .opacity(canSave || actionSystemImage != nil ? 1 : 0.55)
+
+            Button("Recalculate targets", systemImage: "arrow.clockwise") {
+                isPresentingRecalculation = true
+            }
+        } footer: {
+            Text("Update your profile and recalculate your daily targets.")
+        }
+        .sheet(isPresented: $isPresentingRecalculation) {
+            RecalculateTargetsSheet {
+                isPresentingRecalculation = false
+            }
         }
     }
 }
@@ -207,14 +219,13 @@ struct SettingsGoalsEditorSection: View {
                 numericText: $numericText,
                 focusedField: focusedField
             )
-            DailyGoalsSaveSection(
+            DailyGoalsActionSection(
                 actionTitle: actionTitle,
                 actionSystemImage: actionSystemImage,
                 actionColor: actionColor,
                 canSave: canSave,
                 onSave: saveGoals
             )
-            SettingsRecalculateTargetsSection()
         }
         .errorBanner(message: $errorMessage)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
@@ -249,25 +260,6 @@ struct SettingsGoalsEditorSection: View {
         } catch {
             errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
-        }
-    }
-}
-
-private struct SettingsRecalculateTargetsSection: View {
-    @State private var isPresentingRecalculation = false
-
-    var body: some View {
-        Section {
-            Button("Recalculate targets", systemImage: "arrow.clockwise") {
-                isPresentingRecalculation = true
-            }
-        } footer: {
-            Text("Update your profile and recalculate your daily targets.")
-        }
-        .sheet(isPresented: $isPresentingRecalculation) {
-            RecalculateTargetsSheet {
-                isPresentingRecalculation = false
-            }
         }
     }
 }

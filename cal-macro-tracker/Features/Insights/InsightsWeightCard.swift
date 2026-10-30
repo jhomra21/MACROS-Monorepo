@@ -106,14 +106,14 @@ struct InsightsWeightCard: View {
                     }
                 }
                 .padding()
-                .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
+                .appCardBackground(cornerRadius: 24)
             } else {
                 NavigationLink("View weight log") {
                     WeightScreen()
                 }
                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 .padding()
-                .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
+                .appCardBackground(cornerRadius: 24)
             }
         }
     }

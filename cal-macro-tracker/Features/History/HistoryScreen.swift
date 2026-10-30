@@ -92,20 +92,8 @@ private struct HistoryWeekCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        cardContent
-            .appGlassRoundedRect(cornerRadius: showsCalendar ? 28 : 24, interactive: false)
-            .clipShape(RoundedRectangle(cornerRadius: showsCalendar ? 28 : 24, style: .continuous))
-    }
-
-    @ViewBuilder
-    private var cardContent: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                content
-            }
-        } else {
-            content
-        }
+        content
+            .appCardBackground(cornerRadius: 24)
     }
 
     private var content: some View {

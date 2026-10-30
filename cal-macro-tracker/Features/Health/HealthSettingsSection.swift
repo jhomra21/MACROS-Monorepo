@@ -7,7 +7,6 @@ struct HealthSettingsSection: View {
     @Environment(HealthKitService.self) private var health
     @AppStorage(AppStorageKeys.healthNutritionWriteEnabled) private var writeNutrition = false
     @AppStorage(AppStorageKeys.healthWeightReadEnabled) private var readWeight = false
-    @State private var paywallContext: ProPaywallContext?
 
     var body: some View {
         Section("Apple Health") {
@@ -40,11 +39,7 @@ struct HealthSettingsSection: View {
                         }
                     }
             } else {
-                Button {
-                    paywallContext = .healthWeightImport
-                } label: {
-                    Label("Read weight from Health", systemImage: "lock.fill")
-                }
+                ProLockedRow(title: "Read weight from Health", context: .healthWeightImport)
             }
             Text(health.statusText)
                 .font(.footnote)
@@ -71,9 +66,6 @@ struct HealthSettingsSection: View {
                 }
             )
         )
-        .sheet(item: $paywallContext) { context in
-            ProPaywallSheet(context: context)
-        }
     }
 }
 
