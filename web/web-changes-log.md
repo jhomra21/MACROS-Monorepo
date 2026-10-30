@@ -2,6 +2,18 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Web Dependency Refresh
+
+### Delivered
+
+- Updated `astro` 7.4.2 → 7.4.4 and `@types/node` 26.6.5 → 26.6.6 in `package.json` and `bun.lock`.
+- Kept TypeScript 6.0.3 and wrangler 4.116.0 on their existing holds (see the dependency tracker for reasons).
+- No application code changed. Astro 7.4.3 fixes duplicate `srcset` candidates in `<Image />`, which the home page uses.
+
+### Validation recorded
+
+- `bun install`, `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy), and the `lint-js` oxlint command (65 files, 0 errors) passed.
+
 ## MACROS: Nutrition Tracker Name and Listing Refresh
 
 ### Delivered
