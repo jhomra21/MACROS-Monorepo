@@ -70,3 +70,27 @@ TypeScript 7 no longer includes `@types/*` packages automatically, so `convex-ba
 The Swift package `convex-swift` was checked on the same day and is already at its latest release, 0.8.1 (February 2026), so no Xcode package update was needed.
 
 Validation logs are in `build/deps-qa-2026-10-26/` (local/generated, not committed).
+
+## 2026-10-29 Web Refresh
+
+Changed only `web/`. Astro moved to its latest patch, and `@types/node` moved to its latest patch. The other holds were re-checked against the registry.
+
+| Package | Dependency | From → to | Current docs / release notes consulted | Breaking changes and response |
+| --- | --- | --- | --- | --- |
+| `web` | `astro` | 7.4.2 → 7.4.4 | [Astro 7.4.3](https://github.com/withastro/astro/releases/tag/astro%407.4.3), [Astro 7.4.4](https://github.com/withastro/astro/releases/tag/astro%407.4.4) | Patch releases only. 7.4.3 fixes duplicate `<Image />` srcset candidates; 7.4.4 changes `astro add` only. No code change needed. |
+| `web` | `@types/node` | 26.6.5 → 26.6.6 | [DefinitelyTyped Node types](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node) | Type-only patch; check passed. |
+| `web` | `zod` | 4.6.7 → 4.6.7 | [Zod v4.6.7](https://github.com/colinhacks/zod/releases/tag/v4.6.7) | Already at latest stable; unchanged. |
+| `web` | `@astrojs/check` | 0.9.12 → 0.9.12 | npm `latest` tag | Already at latest stable; unchanged. |
+| `web` | `@types/bun` | 1.4.4 → 1.4.4 | npm `latest` tag | Already at latest stable; unchanged. |
+| `web` | `typescript` | held at 6.0.3 | [TypeScript 7.0.2](https://github.com/microsoft/TypeScript/releases/tag/v7.0.2), `@astrojs/check@0.9.12` peer range | Latest stable is 7.0.2, but `@astrojs/check` peers on `typescript` `^5.0.0 \|\| ^6.0.0`. 6.0.3 is the newest 6.x release. Hold until `@astrojs/check` widens its range. |
+| `web` | `wrangler` | 4.116.0 → 4.156.0 | [Wrangler 4.156.0](https://github.com/cloudflare/workers-sdk/releases/tag/wrangler%404.156.0), [Wrangler changelog](https://github.com/cloudflare/workers-sdk/blob/main/packages/wrangler/CHANGELOG.md) | Adopted the latest release by owner decision, despite the Miniflare 5 beta dependency (`miniflare@5.20261023.3-beta`, `workerd@1.20261023.1`). Items checked against this project: deploys now upload source maps by default (4.150; no `upload_source_maps` set here); `nodejs_compat` is enabled by default from compatibility date 2026-08-04 (this project uses 2026-04-15 and sets the flag explicitly); the dev registry path (4.154) and `/cdn-cgi` local paths (4.117) moved, and neither is set or used here. `wrangler types` changed `worker-configuration.d.ts` in content, so the file is committed. |
+
+Validation: `bun install`, `bun run check` (18 Astro files, 0 diagnostics), `bun run build` (5 pages), `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy), and the `lint-js` oxlint command (65 files, 0 errors). `wrangler types` rewrote `worker-configuration.d.ts` with whitespace only, so that file was restored.
+
+Logs are in `build/web-deps-2026-10-29/` (local/generated, not committed).
+
+Wrangler 4.156.0 (owner decision, same day): `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), and `bun run deploy:dry-run` (bindings unchanged: SUPPORT_DB, two rate limiters, ASSETS) passed. A local `wrangler dev --config wrangler.api.jsonc` smoke answered `/api/waitlist` and `/api/support` under Miniflare 5 beta, then was stopped. Runtime QA `check` and `test` passed, but those scripts import `miniflare` directly on the stable Miniflare 4 pin, so they do not exercise wrangler or Miniflare 5. The Convex `test:integration` suite (convex-test, in-memory) and the oxlint command passed.
+
+Caveat: Miniflare 5 is still a beta. It runs in `wrangler dev` and the tests. The deploy path runs wrangler itself, which is a release with a beta Miniflare dependency. Revert the pin to 4.116.0 if a dev or deploy regression appears.
+
+Follow-up 2026-10-29: `cf migrate` for `web/` was tried and reverted. `cf build` delegates to `astro build` for Astro projects and never writes Worker Build Output, and the Cloudflare docs say Astro 6+ does not build with `cf` during the beta. Wrangler stays the build and deploy tool for `web/`. Workers Issues and full observability sampling were enabled in `web/wrangler.jsonc`.

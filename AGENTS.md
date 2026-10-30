@@ -18,6 +18,9 @@ Read `swift-dev.mdc` for specific swift coding guidance.
 
 When behavior is unclear or tooling is non-obvious, verify it against primary docs or public repo examples instead of guessing. Use web research and GitHub/API lookups to confirm build-system, Xcode project, and framework details before changing project structure.
 
+If you append `.md` to any of Apple's developer documentation it will render as markdown.
+Example: https://developer.apple.com/documentation/
+
 ## Engineering Rules (Non-Negotiable)
 
 - Functional style first: prefer pure functions, immutable updates, explicit inputs/outputs.
@@ -86,6 +89,7 @@ When behavior is unclear or tooling is non-obvious, verify it against primary do
   ```
   The shared `cal-macro-tracker` scheme includes the `cal-macro-trackerTests` target. Test resources, including migration fixtures, belong to the test bundle, not the app bundle.
 - macOS builds are intentionally deferred; do not use `-destination 'platform=macOS'` unless explicitly requested.
+- When interacting with Cloudflare, use the `cf` CLI for account and resource tasks (D1, DNS, deployments, cache). `web/` and `worker/*` stay on `wrangler.jsonc` for `dev`/`deploy`; do not run `cf init`, `cf dev`, `cf build`, or `cf deploy` in them: Astro 6+ does not build with `cf` during the beta. Re-evaluate `cf migrate` when the cf docs drop that limitation.
 - Lint / formatting:
   - The repository formatter is the official `swift-format` tool, wired through `make quality-format-check` and `make format` with the root `.swift-format` configuration.
   - `make lint-js` runs the isolated Bun/Oxlint package against owned JavaScript and TypeScript sources. It enables vendored anti-slop rules and classic `eslint/complexity` at error with a maximum of 20. Keep the rules, severities, and source coverage intact; fix findings in owned source rather than adding suppressions.

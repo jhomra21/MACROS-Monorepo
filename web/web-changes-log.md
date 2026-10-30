@@ -2,6 +2,71 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Workers Observability and cf Migration Deferral
+
+### Delivered
+
+- Enabled Workers Issues (`observability.issues.enabled`) in `wrangler.jsonc`. Issues processes new traffic only after the next deploy.
+- Set observability to explicit `enabled: true` for logs and traces, and raised head sampling from 0.1 to 1 at every level. Every request is now logged and traced, so log and trace volume rises. Check the cost after the first deploy.
+- Kept Wrangler as the build and deploy tool for `web/`. `cf migrate` was run and reverted. Its output was 4 files and one follow-up (`migrations_dir`), but `cf build` delegates to `astro build` for Astro projects and never writes Worker Build Output. The Cloudflare docs say Astro 6 and later does not build with `cf` during the beta. Re-evaluate when that changes.
+- No `cf` dependency was added. Scripts, `wrangler.jsonc`, `wrangler.api.jsonc`, and `worker-configuration.d.ts` are unchanged apart from the observability block.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy), and the `lint-js` oxlint command (65 files, 0 errors) passed.
+- `observability.issues` is in the Wrangler 4.156.0 config schema. The dry-run bundle does not print observability settings, so the keys were checked against the schema and the Wrangler configuration docs.
+
+## 2026-10-29 Wrangler 4.156.0 Update
+
+### Delivered
+
+- Updated `wrangler` 4.116.0 → 4.156.0 (exact pin) in `package.json` and `bun.lock`. This was an owner decision to take the latest release despite its Miniflare 5 beta dependency (`miniflare@5.20261023.3-beta`).
+- Regenerated `worker-configuration.d.ts` with `wrangler types` (workerd 1.20261023.1 runtime types, module declarations). The content changed, so the file is committed.
+- No Worker code or config changed. Rate-limit bindings are used only through `limit()`, and both `wrangler.jsonc` and `wrangler.api.jsonc` keep their existing bindings.
+
+### Caveats
+
+- Miniflare 5 is a beta. It runs in `wrangler dev` and the tests. Deploys now upload source maps by default (wrangler 4.150).
+- Revert to 4.116.0 if a dev or deploy regression appears.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy; bindings unchanged).
+- `wrangler dev --config wrangler.api.jsonc` smoke: `/api/waitlist` returned 400 on a bad body, and `/api/support` returned the 303 form redirect on a valid POST. Then the server was stopped.
+- Runtime QA `check` and `test`; convex-backend `test:integration`; repo oxlint command. All passed.
+
+## 2026-10-29 Web Dependency Refresh
+
+### Delivered
+
+- Updated `astro` 7.4.2 → 7.4.4 and `@types/node` 26.6.5 → 26.6.6 in `package.json` and `bun.lock`.
+- Kept TypeScript 6.0.3 and wrangler 4.116.0 on their existing holds (see the dependency tracker for reasons).
+- No application code changed. Astro 7.4.3 fixes duplicate `srcset` candidates in `<Image />`, which the home page uses.
+
+### Validation recorded
+
+- `bun install`, `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy), and the `lint-js` oxlint command (65 files, 0 errors) passed.
+
+## MACROS: Nutrition Tracker Name and Listing Refresh
+
+### Delivered
+
+- Added `site.fullName` (`MACROS: Nutrition Tracker`) for page `<title>` values and meta descriptions. The header, footer, and hero keep the `MACROS` brand.
+- Refreshed the hero subtitle, site description and tagline, Free and Pro lists, and FAQ to the current feature set: one camera view for barcodes and nutrition labels, Insights from 7D to All, Home and Lock Screen widgets, custom widget backgrounds, custom ring colors, and multiple or smart reminders.
+- Corrected the offline FAQ: barcode lookup needs a connection, like packaged-food search.
+- Shows the App Store button only when `site.appStoreURL` is set. It previously showed a "coming soon" placeholder.
+- Removed the Full Unlock screenshot card and relabeled the remaining cards. Added a TODO in `site.ts` that lists the expected new screenshot file names.
+- Updated About, Privacy, Terms, and Support copy. Legal substance (data flows, retention, governing law) is unchanged.
+- Rewrote `docs/app-store/listing.md` for the new name and current features, within Apple's limits.
+
+### Open items
+
+- `src/assets/app-images/app-full-unlock.png` is no longer imported. Delete it with the next screenshot refresh.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, oxlint (run through bun because `make` is not installed on this Windows machine), and `git diff --check -- web docs` passed.
+
 ## Website Foundation
 
 ### Delivered
