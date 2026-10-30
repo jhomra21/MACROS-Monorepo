@@ -47,6 +47,12 @@ struct AddFoodScreen: View {
                             onLoadMoreRemoteResults: loadMoreRemoteResults,
                             onScrollOffsetChange: updateScanActionBarDisplay
                         )
+                        .searchable(
+                            text: $searchText,
+                            placement: .appNavigationDrawer,
+                            prompt: "Search foods on device or online"
+                        )
+                        .onSubmit(of: .search, searchOnline)
                     case .manual:
                         ManualFoodEntryScreen(loggingDay: loggingDay, onFoodLogged: closeSheet)
                     }
@@ -73,11 +79,6 @@ struct AddFoodScreen: View {
                 Button("Cancel") { dismiss() }
             }
         }
-        .addFoodSearchable(
-            isSearchMode: selectedMode == .search,
-            text: $searchText,
-            onSubmit: searchOnline
-        )
         .fullScreenCover(isPresented: $isFoodCameraPresented) {
             FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
                 .navigationTransition(

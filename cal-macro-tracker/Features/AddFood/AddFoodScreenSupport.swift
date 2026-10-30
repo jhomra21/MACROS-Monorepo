@@ -35,20 +35,3 @@ final class AddFoodSearchScrollTracking {
         deepestOffset = 0
     }
 }
-
-extension View {
-    @ViewBuilder
-    func addFoodSearchable(
-        isSearchMode: Bool,
-        text: Binding<String>,
-        onSubmit: @escaping () -> Void
-    ) -> some View {
-        if isSearchMode {
-            self
-                .searchable(text: text, placement: .appNavigationDrawer, prompt: "Search foods on device or online")
-                .onSubmit(of: .search, onSubmit)
-        } else {
-            self
-        }
-    }
-}

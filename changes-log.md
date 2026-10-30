@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Add Food Mode Switch Keeps A Stable View Tree
+
+- Cause: `addFoodSearchable` wrapped the whole Add Food screen in an if/else `@ViewBuilder`, so every Search/Manual switch changed the structural identity of the entire subtree and rebuilt the navigation search drawer. On a fresh install the Manual form could lag the picker by about 0.5-1 s (the reported "picker says Manual, content stays"). I could not reproduce a permanent failed switch in 9 simulator attempts.
+- Fix: `.searchable` and `.onSubmit(of: .search)` now sit on `SearchFoodListView` inside the `.search` branch, and the helper is removed. Manual still has no search field; Camera and its zoom source are unchanged. The picker still moves up 54 pt when the search field is removed.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); 7 cold simulator attempts after the fix showed Manual on the first tap.
+
 ## 2026-10-30 TestFlight Build 14
 
 - Since build 13: the weight chart y-axis no longer starts at zero; widget taps no longer pop the navigation stack (`widgetURL` removed); the compact dashboard toolbar with 44 pt hit targets; and the simslim QA profile (tooling only).
