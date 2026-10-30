@@ -11,6 +11,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 E2E Delight Pass Fixes
+
+- Log rows, meal detail and meal editor summaries now say "1 serving" instead of "1 servings" (`QuantityMode.formattedSummary`, inflect).
+- Camera result panel buttons (Edit details, Log, Details, Scan again, Search online, Enter manually, Open Settings) use `.controlSize(.large)`; the old `.frame(minHeight: 44)` sat outside the glass style and rendered 32-34pt tall.
+- `NutrientInputField` stacks title over input at accessibility text sizes so the Settings Daily Goals "kcal" suffix no longer wraps one letter per line.
+- Verified on iPhone 18 Pro iOS 27.0 with the local StoreKit Pro seed (removed afterward, app Free). No iPad simulator exists, so the iPad pass was skipped. Reduce Motion, the medium widget and the Lock Screen were not checked. Report: `build/e2e-delight-2026-10-29/REPORT.md`.
+
 ## 2026-10-29 Polish Batch 3c
 
 - Carry-overs: log rows read as one VoiceOver element (name, quantity, time, calories, macros). Backup import sheet uses the shared bottom action bar with Merge as the primary action and Replace All Data as the destructive secondary. Small widget seen in light mode on the Home Screen; dark mode and the gallery card were not checked.

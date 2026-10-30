@@ -81,10 +81,10 @@ struct FoodCameraResultPanel: View {
             }
         }
         .buttonStyle(.glass)
-        .frame(minHeight: 44)
+        .controlSize(.large)
         let logButton = Button("Log", action: onLog)
             .buttonStyle(.glassProminent)
-            .frame(minHeight: 44)
+            .controlSize(.large)
             .disabled(isLabel && canLog == false)
         return VStack(alignment: .leading, spacing: 12) {
             if isLabel {
@@ -140,13 +140,13 @@ struct FoodCameraResultPanel: View {
                     } else {
                         Button("Edit details", action: onReview)
                             .buttonStyle(.glassProminent)
-                            .frame(minHeight: 44)
+                            .controlSize(.large)
                     }
                 }
             }
             Button(isLabel ? "Retake" : "Scan again", action: onRetry)
                 .buttonStyle(.glass)
-                .frame(minHeight: 44)
+                .controlSize(.large)
                 .font(.subheadline)
         }
     }
@@ -156,18 +156,18 @@ struct FoodCameraResultPanel: View {
             Text(message).font(.subheadline)
             Button("Scan again", action: onRetry)
                 .buttonStyle(.glassProminent)
-                .frame(minHeight: 44)
+                .controlSize(.large)
             Button("Search online", action: onSearch)
                 .buttonStyle(.glass)
-                .frame(minHeight: 44)
+                .controlSize(.large)
             Text("Or photograph the nutrition label instead.").font(.footnote).foregroundStyle(.secondary)
             Button("Enter manually", action: onManual)
                 .buttonStyle(.glass)
-                .frame(minHeight: 44)
+                .controlSize(.large)
             if showSettings {
                 Button("Open Settings", action: onSettings)
                     .buttonStyle(.glass)
-                    .frame(minHeight: 44)
+                    .controlSize(.large)
             }
         }
     }
