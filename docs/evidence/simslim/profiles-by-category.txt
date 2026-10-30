@@ -1,0 +1,126 @@
+=== widgets ===
+widgets        Widgets & Wallpaper
+               Home and lock screen posters, widgets, and Live Activities.
+               4 daemons · ~675 MB idle footprint when enabled
+               When disabled: Home and Lock Screen widgets, wallpaper posters, and Live Activities stop updating.
+
+Daemons:
+  com.apple.PosterBoard                        Renders Home and Lock Screen wallpaper scenes.
+  com.apple.chronod                            Refreshes widgets and complications on schedule.
+  com.apple.liveactivitiesd                    Updates Live Activities and Dynamic Island content.
+  com.apple.navd                               Coordinates background navigation state.
+exit=0
+=== store ===
+store          App Store, Push & Media
+               App Store, push notification, StoreKit, and media services.
+               14 daemons · ~80 MB idle footprint when enabled
+               When disabled: Remote push notifications and StoreKit or App Store testing will not work.
+
+Daemons:
+  com.apple.appstored                          Installs and updates apps from the App Store.
+  com.apple.appstorecomponentsd                Provides background components used by the App Store.
+  com.apple.apsd                               Receives Apple Push Notification service messages.
+  com.apple.itunescloudd                       Synchronizes purchased and cloud media libraries.
+  com.apple.itunesstored                       Handles media-store accounts and purchases.
+  com.apple.storekitd                          Processes StoreKit products and transactions.
+  com.apple.amsaccountsd                       Manages App Store and media account state.
+  com.apple.amsengagementd                     Handles App Store and media engagement messages.
+  com.apple.amsondevicestoraged                Stores Apple media-service data on the device.
+  com.apple.passd                              Manages Wallet passes and Apple Pay state.
+  com.apple.financed                           Provides Wallet transaction and finance services.
+  com.apple.videosubscriptionsd                Manages video subscriptions and TV providers.
+  com.apple.assetsubscriptiond                 Manages subscribed media assets and downloads.
+  com.apple.musicd                             Runs background Music library and playback services.
+exit=0
+=== icloud ===
+icloud         iCloud & Apple Account
+               iCloud sync, Apple Account, keychain, and backup services.
+               21 daemons · ~100 MB idle footprint when enabled
+               When disabled: iCloud sync, Apple Account, Keychain, and backup workflows will not work.
+
+Daemons:
+  com.apple.appleaccountd                      Maintains Apple Account state on the device.
+  com.apple.appleaccounttransparencyd          Checks Apple Account security records.
+  com.apple.appleidsetupd                      Handles Apple Account setup workflows.
+  com.apple.akd                                Provides Apple Account authentication tokens.
+  com.apple.amsaccountsd                       Manages App Store and media account state.
+  com.apple.amsengagementd                     Handles App Store and media engagement messages.
+  com.apple.amsondevicestoraged                Stores Apple media-service data on the device.
+  com.apple.cloudd                             Synchronizes CloudKit databases and records.
+  com.apple.cloudphotod                        Synchronizes the iCloud Photos library.
+  com.apple.ckdiscretionaryd                   Schedules non-urgent CloudKit transfers.
+  com.apple.cloudsettingssyncagent             Synchronizes supported system settings through iCloud.
+  com.apple.bird                               Synchronizes iCloud Drive files.
+  com.apple.syncdefaultsd                      Synchronizes supported preferences between devices.
+  com.apple.cdpd                               Handles iCloud data-protection setup and recovery.
+  com.apple.sosd                               Synchronizes iCloud Keychain secure items.
+  com.apple.SecureBackupDaemon                 Handles secure backup and account recovery data.
+  com.apple.TrustedPeersHelper                 Maintains trusted peers for iCloud Keychain.
+  com.apple.protectedcloudstorage.protectedcloudkeysyncing Synchronizes protected cloud encryption keys.
+  com.apple.icloudmailagent                    Runs background services for iCloud Mail.
+  com.apple.icloudsubscriptionoptimizerd       Evaluates iCloud storage subscription recommendations.
+  com.apple.communicationtrustd                Maintains communication trust and safety state.
+exit=0
+=== photos ===
+photos         Photos & Media Analysis
+               Photos library, photo analysis, and media analysis services.
+               8 daemons · ~60 MB idle footprint when enabled
+               When disabled: Photo picker, Photos-library workflows, and media analysis may fail.
+
+Daemons:
+  com.apple.photoanalysisd                     Analyzes photos for scenes, people, and search.
+  com.apple.photosface                         Performs face detection for the Photos library.
+  com.apple.mediaanalysisd                     Analyzes image, video, and audio content.
+  com.apple.mediaanalysisd.service             Runs isolated media-analysis work.
+  com.apple.mediastream.mstreamd               Synchronizes shared and streamed photo content.
+  com.apple.medialibraryd                      Maintains the system media library database.
+  com.apple.assetsd                            Provides access to Photos library assets.
+  com.apple.assetsd.nebulad                    Handles cloud-backed Photos asset transfers.
+exit=0
+=== health ===
+health         Health, Home & Fitness
+               HealthKit, HomeKit, and Fitness services.
+               14 daemons · ~135 MB idle footprint when enabled
+               When disabled: HealthKit, HomeKit, and Fitness integrations will not work.
+
+Daemons:
+  com.apple.healthd                            Stores and serves HealthKit data.
+  com.apple.healthappd                         Runs background tasks for the Health app.
+  com.apple.healthcontentd                     Provides educational and recommended health content.
+  com.apple.healtheventsd                      Processes health events and related notifications.
+  com.apple.healthrecordsd                     Synchronizes clinical health records.
+  com.apple.finhealthd                         Analyzes Wallet transactions and financial-health data.
+  com.apple.homed                              Manages HomeKit accessories, rooms, and automations. Kept enabled on watchOS.
+  com.apple.homeeventsd                        Processes HomeKit events and automation triggers.
+  com.apple.fitcore                            Runs Apple Fitness content and background services.
+  com.apple.fitcore.session                    Manages active Apple Fitness sessions.
+  com.apple.fitnesscoachingd                   Provides Fitness coaching recommendations.
+  com.apple.fitnessintelligenced               Generates personalized Fitness insights.
+  com.apple.activityawardsd                    Tracks Activity awards and achievements.
+  com.apple.activitysharingd                   Synchronizes shared Activity and Fitness data.
+exit=0
+=== other ===
+other          Other Background Services
+               Wallet, business services, assets, and miscellaneous background daemons.
+               14 daemons · ~195 MB idle footprint when enabled
+               When disabled: Wallet, merchant, business, asset, and miscellaneous background services are unavailable.
+
+Daemons:
+  com.apple.financed                           Provides Wallet transaction and finance services.
+  com.apple.passd                              Manages Wallet passes and Apple Pay state.
+  com.apple.merchantd                          Looks up merchant details for Wallet transactions.
+  com.apple.coreidvd                           Manages supported digital identity credentials.
+  com.apple.businessservicesd                  Supports Apple business messaging and services.
+  com.apple.deviceaccessd                      Coordinates app access to supported accessories.
+  com.apple.replicatord                        Replicates supported system data between services.
+  com.apple.linkd                              Indexes App Intents and shortcut suggestions.
+  com.apple.ind                                Receives background iCloud notifications.
+  com.apple.storagedatad                       Calculates storage usage shown by the system.
+  com.apple.StatusKitAgent                     Shares Focus, presence, and status between devices.
+  com.apple.countryd                           Determines regional availability for system features.
+  com.apple.mobileassetd                       Downloads and manages system asset packages. Kept enabled on visionOS.
+  com.apple.managedconfiguration.passcodenagd  Enforces managed passcode requirements.
+exit=0
+=== wallet ===
+simslim: unknown category "wallet" (see `simslim profiles`)
+exit=1

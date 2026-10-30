@@ -1,0 +1,4 @@
+Slimming 918D29B9-97D3-42C0-9C47-00605E01E8DB: disabling 110 background services while it is off, then booting it slim.
+Booting the simulator (a first boot can take up to a minute)...
+Already slim. Nothing to change.
+on_exit=0

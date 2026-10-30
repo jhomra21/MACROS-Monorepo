@@ -1,0 +1,2 @@
+E91B597B-CE57-4C0B-A8A4-51CBDC3386AB matches the profile: all expected disable overrides are applied.
+verify_exit=0

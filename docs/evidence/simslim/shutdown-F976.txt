@@ -1,0 +1,2 @@
+Shut down F976E800-DA1F-4F20-B755-DFD964E33975.
+shutdown_exit=0

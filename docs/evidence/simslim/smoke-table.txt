@@ -1,0 +1,9 @@
+| Check | Result | Screenshot | Evidence |
+|---|---|---|---|
+| Onboarding | PASS | smoke-onboarding.png | Onboarding completed on slim iPhone 17. |
+| Paywall | PASS | smoke-paywall.png | Paywall displayed localized prices. |
+| Photo picker | PASS | smoke-photo-picker.png | Picker/OCR flow displayed 190 kcal. |
+| Health | PASS | smoke-health.png, smoke-health-after.png | Permission sheet appeared; Allow completed and settings confirmed access updated. |
+| Reminder | PASS | smoke-reminder.png | Daily log reminder was already enabled. |
+| Sharing | PASS | smoke-sharing.png | Display name Smoke saved; sharing enabled, with no keychain or network error. |
+| Widget | BLOCKED-automation | smoke-widget-home.png | Three Home Screen long-press attempts did not reach widget gallery; simslim doctor previously reported widgets OK. |

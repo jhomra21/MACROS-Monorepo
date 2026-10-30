@@ -1,0 +1,2 @@
+Shut down 918D29B9-97D3-42C0-9C47-00605E01E8DB.
+shutdown_exit=0

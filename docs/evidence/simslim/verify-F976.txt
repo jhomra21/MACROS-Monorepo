@@ -1,0 +1,2 @@
+F976E800-DA1F-4F20-B755-DFD964E33975 matches the profile: all expected disable overrides are applied.
+verify_exit=0

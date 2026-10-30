@@ -1,0 +1,2 @@
+Shut down 844B72D7-D128-4607-AB2E-6C14B024618F.
+shutdown_exit=0

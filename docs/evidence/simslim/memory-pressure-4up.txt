@@ -1,0 +1,5 @@
+File I/O:
+Pageins: 110582766 
+Pageouts: 334521 
+
+System-wide memory free percentage: 37%

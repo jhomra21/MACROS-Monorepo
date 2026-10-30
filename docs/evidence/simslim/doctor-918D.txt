@@ -1,0 +1,8 @@
+918D29B9-97D3-42C0-9C47-00605E01E8DB: 6/6 required features OK
+  ok    storekit
+  ok    widgets
+  ok    photos
+  ok    health
+  ok    keychain-sync
+  ok    push
+doctor_exit=0

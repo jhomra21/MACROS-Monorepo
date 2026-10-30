@@ -1,0 +1,51 @@
+widgets        Widgets & Wallpaper
+               4 daemons · ~675 MB idle footprint when enabled
+               When disabled: Home and Lock Screen widgets, wallpaper posters, and Live Activities stop updating.
+siri           Siri & Intelligence
+               28 daemons · ~265 MB idle footprint when enabled
+               When disabled: Siri, speech features, and Apple Intelligence services are unavailable.
+               Always on: com.apple.assistantd — Hosts the dictation service; without it the system Spotlight app leaks memory.
+search         Spotlight & Search
+               5 daemons · ~50 MB idle footprint when enabled
+               When disabled: Spotlight and Settings search return no results, and Recents in Files and the document picker fails to load.
+icloud         iCloud & Apple Account
+               21 daemons · ~100 MB idle footprint when enabled
+               When disabled: iCloud sync, Apple Account, Keychain, and backup workflows will not work.
+store          App Store, Push & Media
+               14 daemons · ~80 MB idle footprint when enabled
+               When disabled: Remote push notifications and StoreKit or App Store testing will not work.
+pim            Mail, Calendar & Contacts
+               8 daemons · ~80 MB idle footprint when enabled
+               When disabled: Contacts, Calendar, Reminders, and Mail-backed pickers or sync may fail.
+web            Safari Sync & Web Services
+               10 daemons · ~50 MB idle footprint when enabled
+               When disabled: Universal links and Safari sync or background web services will not work.
+family         Family & Screen Time
+               8 daemons · ~65 MB idle footprint when enabled
+               When disabled: Family Sharing, Screen Time, and usage tracking stop working.
+health         Health, Home & Fitness
+               14 daemons · ~135 MB idle footprint when enabled
+               When disabled: HealthKit, HomeKit, and Fitness integrations will not work.
+photos         Photos & Media Analysis
+               8 daemons · ~60 MB idle footprint when enabled
+               When disabled: Photo picker, Photos-library workflows, and media analysis may fail.
+apps           News, Weather, Maps & Games
+               11 daemons · ~90 MB idle footprint when enabled
+               When disabled: News, Weather, Maps background data, and game-controller services are unavailable.
+               Always on: com.apple.gamed — Required for timely XCUITest app launches (DTServiceHub / GameKit).
+messaging      Messaging & FaceTime
+               7 daemons · ~60 MB idle footprint when enabled
+               When disabled: iMessage, FaceTime, and related identity services will not work.
+connectivity   Sharing & Device Connectivity
+               11 daemons · ~65 MB idle footprint when enabled
+               When disabled: AirDrop, Continuity, CarPlay, Watch, and Find My connectivity will not work.
+               Always on: com.apple.sharingd — Required for system share sheets.
+telemetry      Ads, Diagnostics & Telemetry
+               11 daemons · ~105 MB idle footprint when enabled
+               When disabled: DeviceCheck plus analytics, diagnostics, and feedback services are unavailable.
+other          Other Background Services
+               14 daemons · ~195 MB idle footprint when enabled
+               When disabled: Wallet, merchant, business, asset, and miscellaneous background services are unavailable.
+
+168 daemons across 15 categories. Core workflow and deadlock-prone daemons are never disabled.
+Memory estimates are iOS 26.5 clean-boot measurements; they vary by runtime and workload and are not additive.

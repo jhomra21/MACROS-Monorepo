@@ -1,0 +1,2 @@
+Shut down E91B597B-CE57-4C0B-A8A4-51CBDC3386AB.
+shutdown_exit=0

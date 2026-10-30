@@ -1,0 +1,25 @@
+push             Push notifications                     com.apple.apsd
+storekit         StoreKit / in-app purchase             com.apple.storekitd, com.apple.itunesstored, com.apple.amsaccountsd, com.apple.amsengagementd, com.apple.amsondevicestoraged, com.apple.passd, com.apple.financed
+app-store        App Store                              com.apple.appstored, com.apple.itunesstored
+universal-links  Universal links / associated domains   com.apple.swcd
+spotlight        Spotlight & Settings search            com.apple.searchd, com.apple.searchtoold
+files-recents    Files & document picker Recents        com.apple.searchd
+siri             Siri & speech                          com.apple.assistantd, com.apple.corespeechd
+icloud           iCloud sync                            com.apple.cloudd
+keychain-sync    iCloud Keychain                        com.apple.akd
+contacts         Contacts                               com.apple.contactsd
+calendar         Calendar                               com.apple.calaccessd
+reminders        Reminders                              com.apple.remindd
+mail             Mail                                   com.apple.email.maild
+photos           Photos library & analysis              com.apple.assetsd, com.apple.photoanalysisd
+health           HealthKit                              com.apple.healthd
+homekit          HomeKit                                com.apple.homed
+imessage         iMessage & FaceTime                    com.apple.identityservicesd
+widgets          Widgets & Live Activities              com.apple.chronod, com.apple.liveactivitiesd, com.apple.navd
+wallet           Wallet & passes                        com.apple.passd
+maps             Maps background services               com.apple.Maps.mapssyncd
+weather          Weather                                com.apple.weatherd
+news             News                                   com.apple.newsd
+game-center      Game Center                            com.apple.gamed
+find-my          Find My                                com.apple.findmy.findmylocated
+screen-time      Screen Time                            com.apple.ScreenTimeAgent
