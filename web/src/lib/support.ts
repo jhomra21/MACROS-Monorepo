@@ -24,7 +24,7 @@ export const supportFieldAttributes = {
 } as const;
 
 export const supportStatusMessages = {
-	submitted: 'Thanks — your support request was received.',
+	submitted: 'Thanks, your support request was received.',
 	error: 'Something went wrong while sending your request. Please try again.',
 	invalid: 'Please review your form and try again.',
 } as const;

@@ -1,0 +1,75 @@
+---
+import { site } from '../data/site';
+---
+
+<section id="plans" class="section" aria-labelledby="plans-title">
+	<div class="container">
+		<div class="section-heading section-heading--center" data-reveal>
+			<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+			<h2 id="plans-title" class="headline">Free to track. Pro when you want more.</h2>
+			<p class="lead">Keep the everyday essentials free and upgrade for insight and control.</p>
+		</div>
+
+		<div class="plans">
+			{
+				site.plans.map((plan, index) => (
+					<article class:list={['plan', plan.featured && 'plan--featured']} data-reveal style={`--reveal-index: ${index}`}>
+						{plan.badge && <p class="plan__badge">{plan.badge}</p>}
+						<h3 class="title">{plan.name}</h3>
+						<p class="plan__price">
+							<span class="plan__amount">{plan.price}</span>
+							<span class="muted">{plan.cadence}</span>
+						</p>
+						<p class="muted">{plan.summary}</p>
+						<ul class="plan__list">
+							{plan.highlights.map((item) => <li>{item}</li>)}
+						</ul>
+					</article>
+				))
+			}
+		</div>
+		<p class="plans-note small muted">{site.plansNote}</p>
+
+		<div class="compare" data-reveal>
+			<h3 class="headline">Compare Free and Pro</h3>
+			<div class="table-wrap">
+				<table class="compare-table">
+					<caption class="sr-only">Features included in Free and in MACROS Pro</caption>
+					<thead>
+						<tr>
+							<th scope="col">Feature</th>
+							<th scope="col">Free</th>
+							<th scope="col">Pro</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th class="compare-table__group" colspan="3" scope="colgroup">Everyday tracking</th>
+						</tr>
+						{
+							site.freeFeatures.map((feature) => (
+								<tr>
+									<th scope="row">{feature}</th>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+								</tr>
+							))
+						}
+						<tr>
+							<th class="compare-table__group" colspan="3" scope="colgroup">Pro extras</th>
+						</tr>
+						{
+							site.proFeatures.map((feature) => (
+								<tr>
+									<th scope="row">{feature}</th>
+									<td class="no"><span aria-hidden="true">–</span><span class="sr-only">Not included</span></td>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+								</tr>
+							))
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</section>

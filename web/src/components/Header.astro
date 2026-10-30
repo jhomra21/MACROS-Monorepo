@@ -1,0 +1,31 @@
+---
+import { site } from '../data/site';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+	<div class="container site-header__inner">
+		<a class="brand" href="/" aria-label={`${site.name} home`}>{site.name}</a>
+		<nav class="site-nav" aria-label="Primary">
+			<ul class="nav-list">
+				{
+					site.navItems.map((item) => (
+						<li class:list={[item.secondary && 'nav-item--secondary']}>
+							<a class="nav-link" href={item.href} aria-current={currentPath === item.href ? 'page' : undefined}>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+			{
+				site.appStoreURL && (
+					<a class="button button--sm" href={site.appStoreURL}>
+						Download
+					</a>
+				)
+			}
+		</nav>
+	</div>
+</header>

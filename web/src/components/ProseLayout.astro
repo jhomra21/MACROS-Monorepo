@@ -1,0 +1,55 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	heading: string;
+	lede?: string;
+	effective: string;
+}
+
+const { title, description, heading, lede, effective } = Astro.props;
+
+const slugify = (text: string) =>
+	text
+		.toLowerCase()
+		.replace(/&#?\w+;/g, '')
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '');
+
+// Give every h2 an id and build the table of contents from the same list.
+const html = await Astro.slots.render('default');
+
+const toc: { id: string; label: string }[] = [];
+
+const body = html.replace(/<h2([^>]*)>([^<]+)<\/h2>/g, (_match, attributes: string, label: string) => {
+	const id = slugify(label);
+	toc.push({ id, label });
+
+	return `<h2 id="${id}"${attributes}>${label}</h2>`;
+});
+---
+
+<SiteLayout title={title} description={description}>
+	<div class="container prose-layout">
+		<header class="prose-header">
+			<h1 class="display">{heading}</h1>
+			{lede && <p class="lead">{lede}</p>}
+			<p class="prose-meta">Effective date: {effective}</p>
+		</header>
+		<nav class="prose-toc" aria-label="On this page">
+			<p>On this page</p>
+			<ul>
+				{
+					toc.map((entry) => (
+						<li>
+							<a href={`#${entry.id}`} set:html={entry.label} />
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<div class="prose" set:html={body} />
+	</div>
+</SiteLayout>

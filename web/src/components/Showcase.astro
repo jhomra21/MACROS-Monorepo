@@ -1,0 +1,30 @@
+---
+import { site } from '../data/site';
+import DeviceFrame from './DeviceFrame.astro';
+---
+
+<section id="showcase" class="section section--soft" aria-labelledby="showcase-title">
+	<div class="container">
+		<div class="section-heading" data-reveal>
+			<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+			<h2 id="showcase-title" class="headline">See a day in MACROS.</h2>
+			<p class="lead">From the first scan to the daily share card.</p>
+		</div>
+		<div class="showcase__track" role="list" tabindex="0" aria-label="App screenshots">
+			{
+				site.screenshots.map((shot) => (
+					<figure class="showcase__card" role="listitem">
+						<DeviceFrame
+							src={shot.src}
+							alt={shot.alt}
+							small
+							widths={[240, 480]}
+							sizes="(max-width: 900px) 240px, 240px"
+						/>
+						<figcaption>{shot.title}</figcaption>
+					</figure>
+				))
+			}
+		</div>
+	</div>
+</section>

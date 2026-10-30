@@ -2,6 +2,56 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Design-Craft Pass (impeccable, emil-design-eng)
+
+### Delivered
+
+- Focus ring (impeccable/emil): removed `border-radius: 4px` from the global `:focus-visible`. It squared off pill buttons and inputs when focused; the outline now follows each element's own radius.
+- Footer (break-ui): `.site-footer a` was `display: flex`, which pulled the inline "Email us at" mailto out of its sentence and left it without an underline. Flex and the 44px target now apply only to `.site-footer nav a` and the brand; the inline link is underlined.
+- Hover lift removed (animate/animation-performance): `.card-lift` moved non-clickable bento and plan cards on hover, which implied a click. Class and CSS deleted.
+- Browser surfaces (impeccable craft floor): themed `::selection` and `caret-color` from `--link`; links get a 0.06em underline thickness.
+- Text (impeccable): `p { text-wrap: pretty }` to avoid orphaned last words.
+- Touch (mobile-native): `user-select: none` on `.button` and FAQ summaries; viewport adds `interactive-widget=resizes-content`.
+- Reduced motion (emil): button press scale and FAQ icon rotation are off under `prefers-reduced-motion: reduce`.
+- Copy (unslop): about and support copy shortened, passive and "built to surface" phrasing replaced, rule-of-three dropped from the about lead. Legal text unchanged; the support storage disclosure keeps its meaning.
+- Not changed: macro-bar motif, hero rise and scroll reveal (one-time, transform and opacity only, reduced-motion gated), device frame, plans, FAQ, legal layout.
+
+## 2026-10-29 Redesign Follow-ups (Support Contact, Insights Wording, Privacy Disclosure, Waitlist CTA, Narrow Widths)
+
+### Delivered
+
+- Support contact: `supportEmail` in `src/data/site.ts` is `jhonra121@gmail.com`. `/support` shows "Email us at ..." above the form, and the footer shows the same mailto link.
+- Insights wording: the Pro list, the Pro plan highlight, and the Pro FAQ answer now say "Insights ranges beyond 7 days". Free users keep 7-day Insights.
+- Privacy page: effective date is October 30, 2026. The food-search section discloses sampled operational logs (about 10% of requests) that can include the request URL, IP address, and coarse location, kept up to 7 days for reliability and abuse prevention. These logs are not linked to any sharing profile. The sharing section says shared totals are linked to the sharing profile (display name and device-generated key), which makes them pseudonymous.
+- Waitlist primary button: validation is unchanged. The disabled state keeps the primary fill at 65% on the background only, so the label stays at full contrast. Label contrast is about 5.1:1 in light mode and 7.2:1 in dark mode.
+- Narrow widths: removed horizontal overflow at 320 px and at 320 px with 200% text on home, support, and privacy. Hero, bento, support, and footer grids use `minmax(0, 1fr)` tracks. The footer group track uses `min(9rem, 100%)`. The header wraps instead of forcing width. Form inputs no longer size the layout from their intrinsic width. Body text uses `overflow-wrap: anywhere`. `.table-wrap` is `position: relative`, so the sr-only table caption clips inside it.
+- Copy: em dashes are gone from the two status strings in `lib/waitlist-validation.ts` and `lib/support.ts`. Home-page copy got one unslop pass: the why-section lead, the Pro plan summary, and the feature body apostrophe.
+
+### Open items
+
+- The food-search Worker's own log lines (`worker/usda-proxy/src/packagedFoodSearchLogging.ts`) hold only page, page size, provider, cache key, attempt count, and resolved provider. The URL, IP, and location in the privacy text come from platform request logs at the sampled rate (`head_sampling_rate: 0.1`). Confirm that, and the 7-day retention, in the Cloudflare dashboard before launch.
+- Screenshots in `build/web-redesign-2026-10-29/screens/` predate these changes.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), oxlint with the repo config (0 errors), `git diff --check -- web` clean. Headless Edge overflow audit at 320x568, 320 with 200% text, and 640 wide is clean on home, support, and privacy.
+
+## 2026-10-29 Marketing Site Redesign (Apple-style, "The product performs")
+
+### Delivered
+
+- New plain-CSS design system (`src/styles/global.css`, about 18 KB built): light and dark tokens, fluid type, system fonts only, calm reveal motion that is off under reduced motion.
+- Direction "The product performs": app screens shown inside CSS device frames are the page's main material. Hero is a device frame with the waitlist form and privacy note.
+- New components: `DeviceFrame`, `Header`, `Footer`, `Hero`, `FeatureGrid`, `Showcase`, `ProPlans`, `FAQ`, `WaitlistForm`, `WaitlistCta`, `ProseLayout` (sticky table of contents). `SiteLayout` adds a skip link, canonical URL, Open Graph and Twitter meta.
+- All pages restyled: home (hero, why, showcase, plans, FAQ, waitlist), about, privacy, terms (legal text unchanged), support (same fields, validation, and API).
+- Plans: free core, MACROS Pro $2.99/mo or $19.99/yr with a 7-day trial, $49.99 lifetime. Copy never promises AI photo logging, Apple Watch, or iCloud sync.
+- `site.ts` is the single source for copy and images. `public/og.png` comes from `scripts/generate-og.mjs`. `site.appStoreURL` is empty until launch, so no App Store button shows.
+- Open: replace placeholder screenshots with the new captures listed in the TODO in `site.ts`, then rerun the OG script.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), repo oxlint, and `git diff --check -- web` all exit 0. Screenshots for five pages at 390 and 1440 wide in both schemes are in `build/web-redesign-2026-10-29/screens/`.
+
 ## 2026-10-29 Workers Observability and cf Migration Deferral
 
 ### Delivered
