@@ -1,43 +1,32 @@
 import SwiftUI
 
 extension DashboardScreen {
+    @ToolbarContentBuilder
     func dashboardToolbarTrailing(snapshot: LogEntryDaySnapshot) -> some ToolbarContent {
-        ToolbarItem(placement: .appTopBarTrailing) {
-            HStack(spacing: 8) {
-                #if os(iOS)
-                Button {
-                    prepareShare(for: snapshot)
-                } label: {
-                    shareButtonLabel
-                }
-                .buttonStyle(.plain)
-                .disabled(isPreparingShare)
-                .accessibilityLabel("Share daily summary")
-                #endif
-
-                Button(action: onOpenInsights) {
-                    Image(systemName: "chart.xyaxis.line")
-                        .appTopBarIconStyle()
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open insights")
-
-                Button(action: onOpenHistory) {
-                    Image(systemName: "calendar")
-                        .appTopBarIconStyle()
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open history")
-
-                Button(action: onOpenSettings) {
-                    Image(systemName: "gearshape")
-                        .appTopBarIconStyle()
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Open settings")
+        ToolbarItemGroup(placement: .appTopBarTrailing) {
+            #if os(iOS)
+            Button {
+                prepareShare(for: snapshot)
+            } label: {
+                shareButtonLabel
             }
-            .padding(.horizontal, 4)
-            .foregroundStyle(.primary)
+            .labelStyle(.iconOnly)
+            .disabled(isPreparingShare)
+            .accessibilityLabel("Share daily summary")
+            #endif
+
+            Button("Open Insights", systemImage: "chart.xyaxis.line", action: onOpenInsights)
+                .labelStyle(.iconOnly)
+        }
+
+        ToolbarSpacer(.fixed, placement: .appTopBarTrailing)
+
+        ToolbarItemGroup(placement: .appTopBarTrailing) {
+            Button("Open History", systemImage: "calendar", action: onOpenHistory)
+                .labelStyle(.iconOnly)
+
+            Button("Open Settings", systemImage: "gearshape", action: onOpenSettings)
+                .labelStyle(.iconOnly)
         }
     }
 
@@ -46,13 +35,8 @@ extension DashboardScreen {
         #if os(iOS)
         if isPreparingShare {
             ProgressView()
-                .controlSize(.small)
-                .frame(width: 32, height: 32)
         } else {
-            Image(systemName: "square.and.arrow.up")
-                .appTopBarIconStyle()
-                .frame(width: 32, height: 32)
-                .offset(y: -2)
+            Label("Share daily summary", systemImage: "square.and.arrow.up")
         }
         #endif
     }

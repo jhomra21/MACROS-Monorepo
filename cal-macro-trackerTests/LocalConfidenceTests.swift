@@ -70,7 +70,10 @@ final class LocalConfidenceTests: XCTestCase {
     func testBarcodeImageThroughVision() async throws {
         // Fixed EAN-13 fixture, 4006381333931, including its supplied check digit.
         let bits = "10100011010100111010111101111010001001011001101010100001010000101000010111010010000101100110101"
-        let image = UIGraphicsImageRenderer(size: CGSize(width: 1_200, height: 600)).image { context in
+        // Scale 1 pins the bitmap to 1,200 x 600 px so bar widths do not depend on the display.
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 1_200, height: 600), format: format).image { context in
             UIColor.white.setFill()
             context.fill(CGRect(x: 0, y: 0, width: 1_200, height: 600))
             UIColor.black.setFill()

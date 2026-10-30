@@ -142,14 +142,17 @@ struct SharingDashboardScreen: View {
                 description: Text(
                     sharingSyncService.isDeviceSharingEnabled
                         ? "Invite someone or accept an invite to see shared macro rings here."
-                        : "You don't have sharing enabled yet."
+                        : "You don’t have sharing enabled yet."
                 )
             )
 
-            Button(sharingSyncService.isDeviceSharingEnabled ? "Open Sharing Settings" : "Enable Sharing") {
+            AppAccentActionButton(
+                title: sharingSyncService.isDeviceSharingEnabled ? "Open Sharing Settings" : "Enable Sharing",
+                systemImage: nil,
+                isCompact: false
+            ) {
                 onOpenSharingSettings()
             }
-            .buttonStyle(.borderedProminent)
         }
         .padding(.vertical, 24)
         .frame(maxWidth: .infinity)
@@ -255,7 +258,7 @@ private struct SharingPreviewPersonRow: View {
 
             if isExpanded {
                 SharingPreviewExpandedSettings(person: person, onOutgoingChanged: onOutgoingChanged, onRemove: onRemove)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(14)

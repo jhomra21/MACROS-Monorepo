@@ -23,8 +23,8 @@ enum FoodDraftField: Hashable {
         .gramsPerServing,
         .calories,
         .protein,
-        .fat,
-        .carbs
+        .carbs,
+        .fat
     ]
 
     static let additionalNutritionFields: [FoodDraftField] = [
@@ -212,8 +212,8 @@ struct FoodDraftFormSections: View {
             Section(nutritionSectionTitle) {
                 nutrientField(title: "Calories", suffix: "kcal", field: .calories, text: nutrientBinding(for: .calories))
                 nutrientField(title: "Protein", suffix: "g", field: .protein, text: nutrientBinding(for: .protein))
-                nutrientField(title: "Fat", suffix: "g", field: .fat, text: nutrientBinding(for: .fat))
                 nutrientField(title: "Carbs", suffix: "g", field: .carbs, text: nutrientBinding(for: .carbs))
+                nutrientField(title: "Fat", suffix: "g", field: .fat, text: nutrientBinding(for: .fat))
                 additionalNutritionToggle
 
                 if showsVisibleAdditionalNutrition {
@@ -259,7 +259,7 @@ struct FoodDraftFormSections: View {
             }
         } label: {
             HStack(spacing: 12) {
-                Text(showsVisibleAdditionalNutrition ? "Show less" : "Show more")
+                Text(showsVisibleAdditionalNutrition ? "Show Less" : "Show More")
                     .foregroundStyle(.primary)
 
                 Spacer()

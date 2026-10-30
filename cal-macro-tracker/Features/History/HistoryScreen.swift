@@ -49,16 +49,16 @@ struct HistoryScreen: View {
         .onChange(of: dayContext.today) { oldToday, newToday in
             daySelection.syncToday(from: oldToday, to: newToday)
         }
+        .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
         .toolbar {
             ToolbarItem(placement: .appTopBarTrailing) {
                 calendarToolbarButton
-                    .padding(.horizontal, 4)
             }
         }
     }
 
     private func toggleCalendar() {
-        withAnimation(.easeInOut(duration: 0.24)) {
+        withAnimation(.smooth(duration: 0.28)) {
             showsCalendar.toggle()
         }
     }
@@ -75,12 +75,10 @@ struct HistoryScreen: View {
     }
 
     private var calendarToolbarButton: some View {
-        Button(action: toggleCalendar) {
-            Image(systemName: "calendar")
-                .appTopBarIconStyle()
-        }
-        .accessibilityLabel("Toggle calendar")
-        .accessibilityValue(showsCalendar ? "Expanded" : "Collapsed")
+        Button("Toggle calendar", systemImage: "calendar", action: toggleCalendar)
+            .labelStyle(.iconOnly)
+            .appTopBarIconStyle()
+            .accessibilityValue(showsCalendar ? "Expanded" : "Collapsed")
     }
 }
 
@@ -89,23 +87,11 @@ private struct HistoryWeekCard: View {
     @Binding var showsCalendar: Bool
     let goals: MacroGoalsSnapshot
     let maximumDay: CalendarDay
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        cardContent
-            .appGlassRoundedRect(cornerRadius: showsCalendar ? 28 : 24, interactive: false)
-            .clipShape(RoundedRectangle(cornerRadius: showsCalendar ? 28 : 24, style: .continuous))
-            .animation(.easeInOut(duration: 0.24), value: showsCalendar)
-    }
-
-    @ViewBuilder
-    private var cardContent: some View {
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                content
-            }
-        } else {
-            content
-        }
+        content
+            .appCardBackground(cornerRadius: 24)
     }
 
     private var content: some View {
@@ -122,7 +108,7 @@ private struct HistoryWeekCard: View {
 
             if showsCalendar {
                 calendarSection
-                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
             }
         }
     }
@@ -184,6 +170,8 @@ private struct HistoryWeekStrip: View {
                 .buttonStyle(.plain)
                 .disabled(!isSelectable)
                 .frame(maxWidth: .infinity)
+                .contentShape(.rect)
+                .frame(minHeight: 44)
             }
         }
     }
@@ -216,6 +204,6 @@ private struct HistoryWeekdayCell: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(day.weekdayAccessibilityTitle))
-        .accessibilityValue(Text("\(snapshot.entries.count) logged items"))
+        .accessibilityValue(Text("^[\(snapshot.entries.count) logged item](inflect: true)"))
     }
 }

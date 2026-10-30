@@ -87,6 +87,7 @@ struct MacroDashboardRingPanel: View {
     let colorStyle: MacroRingColorStyle
     let onToggleExpansion: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let collapsedRingDiameter: CGFloat = 269
     private let expandedRingDiameter: CGFloat = 321
 
@@ -108,6 +109,7 @@ struct MacroDashboardRingPanel: View {
                     ringDiameter: expandedRingDiameter,
                     colorStyle: colorStyle
                 )
+                .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
                 .compositingGroup()
                 .scaleEffect(ringScale, anchor: .top)
             }
@@ -279,13 +281,17 @@ private struct MacroLegendColumn: View {
 
         if canCustomizeColors {
             #if os(iOS)
-            column.overlay {
-                MacroLegendContextMenuInteraction(
-                    metric: metric,
-                    onTap: toggleSelection,
-                    onChangeColor: onChangeColor
-                )
-            }
+            column
+                .accessibilityAction(named: "Change Color") {
+                    onChangeColor(metric)
+                }
+                .overlay {
+                    MacroLegendContextMenuInteraction(
+                        metric: metric,
+                        onTap: toggleSelection,
+                        onChangeColor: onChangeColor
+                    )
+                }
             #else
             column
                 .onTapGesture {

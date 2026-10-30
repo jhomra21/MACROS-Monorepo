@@ -2,7 +2,7 @@ import StoreKit
 import SwiftUI
 
 enum ProPaywallContext: String, CaseIterable, Identifiable {
-    case insights, ringColors, weightTrends, healthWeightImport, backup, reminders, general
+    case insights, ringColors, weightTrends, healthWeightImport, backup, reminders, widgetBackground, general
 
     var id: Self { self }
 
@@ -14,6 +14,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .healthWeightImport: "Weight import from Apple Health"
         case .backup: "Backup export and import"
         case .reminders: "Multiple reminders"
+        case .widgetBackground: "Widget backgrounds"
         case .general: ProLegalLinks.name
         }
     }
@@ -26,12 +27,13 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .healthWeightImport: "heart.text.square"
         case .backup: "arrow.down.doc"
         case .reminders: "bell.badge"
+        case .widgetBackground: "photo"
         case .general: "sparkles"
         }
     }
 
     var benefits: [Self] {
-        let all: [Self] = [.insights, .weightTrends, .healthWeightImport, .backup, .ringColors, .reminders]
+        let all: [Self] = [.insights, .weightTrends, .healthWeightImport, .backup, .ringColors, .widgetBackground, .reminders]
         return self == .general ? all : [self] + all.filter { $0 != self }
     }
 }
@@ -48,6 +50,7 @@ struct ProPaywallSheet: View {
     @State private var isRedeeming = false
     @State private var successFeedbackToken = 0
     @State private var successAnimationToken = 0
+    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 44
 
     var body: some View {
         NavigationStack {
@@ -64,7 +67,7 @@ struct ProPaywallSheet: View {
                         .transition(successTransition)
                     } else {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 44, weight: .semibold))
+                            .font(.system(size: heroIconSize, weight: .semibold))
                             .foregroundStyle(Color.accentColor)
                             .accessibilityHidden(true)
                         Text(ProLegalLinks.name)
@@ -87,6 +90,7 @@ struct ProPaywallSheet: View {
                                     planRow(plan)
                                 }
                             }
+                            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
                         }
                     }
                     if !store.hasPro || store.feedback.isError {
@@ -94,9 +98,10 @@ struct ProPaywallSheet: View {
                     }
                     if !store.hasPro {
                         if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
-                            Button("Retry Purchase Options") {
+                            Button("Retry") {
                                 Task { await store.loadProducts() }
                             }
+                            .frame(minHeight: 44)
                         }
                         AppAccentActionButton(
                             title: purchaseTitle,
@@ -109,8 +114,10 @@ struct ProPaywallSheet: View {
                         Button("Restore Purchases") {
                             Task { await store.restorePurchases() }
                         }
+                        .frame(minHeight: 44)
                         .disabled(isBusy)
                         Button("Redeem Code") { isRedeeming = true }
+                            .frame(minHeight: 44)
                             .disabled(isBusy)
                         legalFooter
                     }
@@ -122,7 +129,7 @@ struct ProPaywallSheet: View {
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close") { dismiss() }
+                    Button("Close", role: .close) { dismiss() }
                 }
             }
             .task { await store.loadProducts() }
@@ -134,12 +141,11 @@ struct ProPaywallSheet: View {
         .onDisappear { isProPaywallPresented = false }
         .onChange(of: store.hasPro) { wasPro, isPro in
             guard !wasPro, isPro else { return }
-            withAnimation(reduceMotion ? nil : .smooth) {
-                successAnimationToken += 1
-            }
+            successAnimationToken += 1
             successFeedbackToken += 1
         }
         .sensoryFeedback(.success, trigger: successFeedbackToken)
+        .sensoryFeedback(.selection, trigger: selectedPlan)
     }
 
     private var isBusy: Bool { store.isPurchasing || store.isRestoring }
@@ -172,6 +178,18 @@ struct ProPaywallSheet: View {
             && store.products[.yearly]?.subscription?.introductoryOffer?.paymentMode == .freeTrial
     }
 
+    /// Free-trial length from the StoreKit intro offer, e.g. "7 days". Nil when no trial applies.
+    private var yearlyTrialLength: String? {
+        guard hasYearlyTrial, let period = store.products[.yearly]?.subscription?.introductoryOffer?.period,
+            let unit = period.unitName
+        else { return nil }
+        return "\(period.value) \(unit)"
+    }
+
+    private var yearlyBadge: String {
+        yearlyTrialLength.map { "\($0) free · Best value" } ?? "Best value"
+    }
+
     private func planRow(_ plan: ProPlan) -> some View {
         Button {
             selectedPlan = plan
@@ -182,10 +200,11 @@ struct ProPaywallSheet: View {
                         HStack(spacing: 12) {
                             Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
                                 .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                                .contentTransition(.symbolEffect(.replace))
                             Text(plan.title).font(.headline)
                         }
                         if plan == .yearly {
-                            Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                            Text(yearlyBadge)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(Color.accentColor)
                         }
@@ -198,10 +217,11 @@ struct ProPaywallSheet: View {
                     HStack(spacing: 12) {
                         Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                            .contentTransition(.symbolEffect(.replace))
                         VStack(alignment: .leading, spacing: 4) {
                             Text(plan.title).font(.headline)
                             if plan == .yearly {
-                                Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                                Text(yearlyBadge)
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(Color.accentColor)
                             }
@@ -216,6 +236,12 @@ struct ProPaywallSheet: View {
             .padding(16)
             .contentShape(RoundedRectangle(cornerRadius: 20))
             .appGlassRoundedRect(cornerRadius: 20)
+            .overlay {
+                if selectedPlan == plan {
+                    RoundedRectangle(cornerRadius: 20)
+                        .strokeBorder(Color.accentColor, lineWidth: 2)
+                }
+            }
         }
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
@@ -228,14 +254,14 @@ struct ProPaywallSheet: View {
         if store.isPurchasing { return "Purchasing…" }
         if store.isLoadingProducts { return "Loading…" }
         guard let product = store.products[selectedPlan] else { return "Purchase Unavailable" }
-        if selectedPlan == .yearly && hasYearlyTrial { return "Start 7-day free trial" }
+        if selectedPlan == .yearly && hasYearlyTrial { return "Start Free Trial" }
         return selectedPlan == .lifetime ? "Buy lifetime for \(product.displayPrice)" : "Subscribe for \(product.proPrice)"
     }
 
     private var legalFooter: some View {
         VStack(spacing: 10) {
-            if selectedPlan == .yearly && hasYearlyTrial, let product = store.products[.yearly] {
-                Text("7 days free, then \(product.proPrice).")
+            if selectedPlan == .yearly, let trial = yearlyTrialLength, let product = store.products[.yearly] {
+                Text("\(trial) free, then \(product.proPrice).")
             }
             Text(
                 "Payment is charged to your Apple Account at confirmation, or after your free trial. Subscriptions automatically renew unless canceled at least 24 hours before the current period ends. Manage or cancel in your Apple Account settings. Lifetime is a one-time purchase."
@@ -257,8 +283,6 @@ private struct ProPurchaseSuccessView: View {
     let animationToken: Int
     let reduceMotion: Bool
     let dismiss: () -> Void
-
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Group {
@@ -290,7 +314,7 @@ private struct ProPurchaseSuccessView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         AppAccentActionButton(
-            title: actionTitle,
+            title: "Done",
             systemImage: "arrow.right",
             isCompact: false,
             isDisabled: false,
@@ -303,35 +327,25 @@ private struct ProPurchaseSuccessView: View {
             .font(.system(size: 52, weight: .semibold))
             .foregroundStyle(Color.accentColor)
     }
-
-    private var actionTitle: String {
-        guard dynamicTypeSize.isAccessibilitySize else {
-            return context == .general ? "Start using Pro" : "Open \(context.title)"
-        }
-        return switch context {
-        case .insights: "Open Insights"
-        case .ringColors: "Open Ring colors"
-        case .weightTrends: "Open Weight trends"
-        case .healthWeightImport: "Open Health import"
-        case .backup: "Open Backup"
-        case .reminders: "Open Reminders"
-        case .general: "Start Pro"
-        }
-    }
 }
 
 extension Product {
     var proPrice: String {
         guard let period = subscription?.subscriptionPeriod else { return "\(displayPrice) once" }
-        let unit: String
-        switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: return displayPrice
-        }
+        guard let unit = period.unitName else { return displayPrice }
         return "\(displayPrice)/\(period.value == 1 ? "" : "\(period.value) ")\(unit)"
+    }
+}
+
+extension Product.SubscriptionPeriod {
+    var unitName: String? {
+        switch unit {
+        case .day: value == 1 ? "day" : "days"
+        case .week: value == 1 ? "week" : "weeks"
+        case .month: value == 1 ? "month" : "months"
+        case .year: value == 1 ? "year" : "years"
+        @unknown default: nil
+        }
     }
 }
 

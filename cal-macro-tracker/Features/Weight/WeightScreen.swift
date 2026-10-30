@@ -6,6 +6,7 @@ struct WeightScreen: View {
     @Query(sort: \WeightEntry.recordedAt, order: .reverse) private var entries: [WeightEntry]
     @Query private var profiles: [BodyProfile]
     @State private var isPresentingEntry = false
+    @State private var errorMessage: String?
 
     private var unitSystem: GoalUnitSystem { BodyProfile.activeRecord(from: profiles)?.unitSystem ?? .metric }
     private var unitLabel: String { unitSystem == .metric ? "kg" : "lb" }
@@ -17,7 +18,7 @@ struct WeightScreen: View {
                     "No weight entries", systemImage: "scalemass", description: Text("Log a weight to start tracking your progress."))
             } else {
                 ForEach(groupedEntries, id: \.week) { group in
-                    Section(group.week.formatted(.dateTime.month(.abbreviated).day())) {
+                    Section("Week of \(group.week.formatted(.dateTime.month(.abbreviated).day()))") {
                         ForEach(group.entries, id: \.persistentModelID) { entry in
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
@@ -37,13 +38,14 @@ struct WeightScreen: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            BottomPinnedActionBar(title: "Log weight", systemImage: "plus", isDisabled: false) {
+            BottomPinnedActionBar(title: "Log Weight", systemImage: "plus", isDisabled: false) {
                 isPresentingEntry = true
             }
         }
         .navigationTitle("Weight")
         .inlineNavigationTitle()
         .sheet(isPresented: $isPresentingEntry) { WeightEntrySheet() }
+        .errorBanner(message: $errorMessage, title: "Couldn’t Delete Weight")
     }
 
     private var groupedEntries: [(week: Date, entries: [WeightEntry])] {
@@ -59,8 +61,12 @@ struct WeightScreen: View {
     }
 
     private func delete(_ group: [WeightEntry], offsets: IndexSet) {
-        for index in offsets {
-            try? WeightRepository(modelContext: modelContext).delete(group[index])
+        do {
+            for index in offsets {
+                try WeightRepository(modelContext: modelContext).delete(group[index])
+            }
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }

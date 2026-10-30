@@ -69,26 +69,8 @@ struct AddFoodScreen: View {
             remoteSearch.isLoading = false
         }
         .toolbar {
-            ToolbarItem(placement: .appTopBarLeading) {
-                if selectedMode == .search {
-                    Button("Manual") {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            selectedMode = .manual
-                        }
-                    }
-                } else {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.18)) {
-                            selectedMode = .search
-                        }
-                    } label: {
-                        Text("Search")
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .appTopBarTrailing) {
-                Button("Done") { dismiss() }
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") { dismiss() }
             }
         }
         .addFoodSearchable(
@@ -106,11 +88,24 @@ struct AddFoodScreen: View {
                 )
                 .presentationBackground(.clear)
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            modePicker
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
                 scanActionBar
             }
         }
+    }
+
+    private var modePicker: some View {
+        Picker("Mode", selection: $selectedMode) {
+            Text("Search").tag(AddFoodMode.search)
+            Text("Manual").tag(AddFoodMode.manual)
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 
     var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }

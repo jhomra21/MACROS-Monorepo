@@ -10,6 +10,7 @@ struct TargetReviewScreen: View {
     @State private var macroPreset: GoalMacroPreset = .balanced
     @State private var errorMessage: String?
     @State private var completionFeedbackToken = 0
+    @ScaledMetric(relativeTo: .largeTitle) private var calorieFontSize: CGFloat = 48
 
     private var ageYears: Int {
         profile.age ?? 30
@@ -50,7 +51,7 @@ struct TargetReviewScreen: View {
                                 .font(.headline)
                                 .foregroundStyle(.secondary)
                             Text("\(Int(calculatedGoals.calorieGoal.rounded()))")
-                                .font(.system(size: 48, weight: .bold, design: .rounded))
+                                .font(.system(size: calorieFontSize, weight: .bold, design: .rounded))
                             Text("kcal")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -77,15 +78,13 @@ struct TargetReviewScreen: View {
                                 + "\(Int(calculatedGoals.fatGoalGrams)) grams fat"
                         )
 
-                        Form {
-                            Picker("Macro balance", selection: $macroPreset) {
-                                ForEach([GoalMacroPreset.balanced, .highProtein, .lowCarb], id: \.self) { preset in
-                                    Text(preset.title).tag(preset)
-                                }
+                        Picker("Macro balance", selection: $macroPreset) {
+                            ForEach([GoalMacroPreset.balanced, .highProtein, .lowCarb], id: \.self) { preset in
+                                Text(preset.title).tag(preset)
                             }
-                            .pickerStyle(.menu)
                         }
-                        .frame(height: 100)
+                        .pickerStyle(.menu)
+                        .padding(.horizontal, 20)
 
                         if calculatedTarget.isBelowSafeMinimum {
                             Label(
@@ -96,6 +95,12 @@ struct TargetReviewScreen: View {
                             .foregroundStyle(.secondary)
                             .padding(.horizontal)
                         }
+
+                        Text("Targets are estimates, not medical advice. Check with a doctor before making health decisions.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
 
                         NavigationLink {
                             GoalSetupScreen(
@@ -121,7 +126,6 @@ struct TargetReviewScreen: View {
                 action: saveTargets
             )
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
         }
         .background(PlatformColors.groupedBackground)
         .navigationTitle("Your targets")

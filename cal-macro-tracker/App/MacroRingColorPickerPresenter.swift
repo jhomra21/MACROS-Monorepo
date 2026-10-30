@@ -20,7 +20,7 @@ enum MacroRingColorPickerPresenter {
     }
 }
 
-private enum ColorPickerPresenter {
+enum ColorPickerPresenter {
     private static var delegateAssociationKey = 0
 
     static func present(initialColor: Color, onChange: @escaping (UIColor) -> Void, onFinish: @escaping () -> Void) {

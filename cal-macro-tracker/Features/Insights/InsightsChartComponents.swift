@@ -20,7 +20,7 @@ struct InsightsCard<Content: View>: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 24, interactive: false)
+        .appCardBackground(cornerRadius: 24)
     }
 }
 
@@ -50,7 +50,7 @@ struct InsightsChartHeader: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(maxWidth: 148)
+            .fixedSize()
         }
     }
 }
@@ -75,7 +75,7 @@ struct InsightsStatTile: View {
         }
         .padding(12)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: 16, interactive: false)
+        .appCardBackground(cornerRadius: 16)
     }
 }
 

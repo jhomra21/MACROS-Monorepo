@@ -11,6 +11,91 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 App Review Audit Fixes (TestFlight Build 12)
+
+- Added privacy manifests for the app (health, user ID, usage, search history, diagnostics collected for app functionality; UserDefaults CA92.1/1C8F.1, file timestamp C617.1) and the widget (required-reason APIs only). The widget manifest is excluded from the app target's synchronized group.
+- Sharing screen now discloses what is uploaded while sharing is off. Settings gained an About section (Privacy Policy, Terms of Use, Support, bundle version footer). Goal review shows a not-medical-advice note. Build number 11 -> 12. Evidence: `build/app-review-fixes-build12-2026-10-29/REPORT.md`.
+
+## 2026-10-29 TestFlight Build 11
+
+- `CURRENT_PROJECT_VERSION` 10 -> 11 in all six configurations (app, widget, tests); marketing version stays 1.0. Branch merged with `origin/main` (web refresh, no conflicts). Evidence: `build/testflight-build11-release-2026-10-29/REPORT.md`.
+
+## 2026-10-29 E2E Delight Pass Fixes
+
+- Log rows, meal detail and meal editor summaries now say "1 serving" instead of "1 servings" (`QuantityMode.formattedSummary`, inflect).
+- Camera result panel buttons (Edit details, Log, Details, Scan again, Search online, Enter manually, Open Settings) use `.controlSize(.large)`; the old `.frame(minHeight: 44)` sat outside the glass style and rendered 32-34pt tall.
+- `NutrientInputField` stacks title over input at accessibility text sizes so the Settings Daily Goals "kcal" suffix no longer wraps one letter per line.
+- Verified on iPhone 18 Pro iOS 27.0 with the local StoreKit Pro seed (removed afterward, app Free). No iPad simulator exists, so the iPad pass was skipped. Reduce Motion, the medium widget and the Lock Screen were not checked. Report: `build/e2e-delight-2026-10-29/REPORT.md`.
+
+## 2026-10-29 Polish Batch 3c
+
+- Carry-overs: log rows read as one VoiceOver element (name, quantity, time, calories, macros). Backup import sheet uses the shared bottom action bar with Merge as the primary action and Replace All Data as the destructive secondary. Small widget seen in light mode on the Home Screen; dark mode and the gallery card were not checked.
+- Copy: Title Case buttons and section headers in Backup, Health, Weight, Settings, and Insights. Item counts pluralize with inflection. Food label review copy is plain. Macro order is Calories, Protein, Carbs, Fat in Daily Goals and food forms. Reminder copy uses a curly apostrophe. Weight history headers read "Week of ...".
+- Insights: one locked CTA heading "Insights is a Pro feature". Weight card uses the shared accent action button. Chart style picker sizes to content. Nutrient bars use the accent color. Chart grow-in animation removed in favor of a range-change animation.
+- Paywall: the trial length comes from the StoreKit introductory offer and the badge is hidden without one. Restore, Redeem, and Retry have 44-point minimum heights. Plan selection animates with a selection haptic.
+- Onboarding and Reminders: denied notification alerts offer Open Settings. Reminder footers explain when notifications are off. Health footer explains what MACROS reads and writes. The three-reminder cap lives in one constant used by the scheduler and onboarding.
+- Sharing: Start Sharing alert wording, Turn Off Sharing moved to the final destructive section, Share Invite uses a share label with the link as selectable caption, expired-invite footer copy.
+- Surfaces: error banners take a per-call-site title. Day change plays a selection haptic. Manual food entry uses the shared bottom Continue bar.
+- Validation: format check and diff check pass. Debug simulator build succeeds. InsightsAnalyticsTests, ReminderConfigurationTests, ReminderSchedulerTests, BackupRoundTripTests, and ProEntitlementTests pass (68 of 68). Simulator pass on iPhone 18 Pro covered the log row label, Settings footers, Weight button, Sharing footer, paywall plan selection, Insights lock heading, and the small widget on the Home Screen.
+
+## 2026-10-29 Polish Batch 3b
+
+- Dynamic Type: onboarding goal and body-profile rows use a minimum height and stack label over field at accessibility sizes. The fixed Form height on target review is removed. Top bar, paywall hero, and onboarding icon sizes now scale with text. Fat label reads "Fat".
+- Confirmations: deleting a log entry or a saved food asks first with a confirmation dialog. Swipe-to-delete is unchanged. Weight deletes and Health authorization errors show in the error banner. Health sync shows a progress indicator and status text in the section footer.
+- VoiceOver: keyboard toolbar buttons are labeled, log rows include calories and macros, the dashboard day header steps days with adjust actions, the macro legend has a Change Color action, insight charts expose range and average, and goal field labels are buttons.
+- Sheets: weight entry uses medium and large detents with a grabber and the shared keyboard toolbar. Add Food and Edit Entry sheets use the large detent with a grabber. Food pickers show "Choose Foods" with an Add button. The launch placeholder is now a blank background.
+- Widgets: small widget margins widen to 14 and 12 points. Previews show sample values and placeholders are redacted. The Lock Screen widget is named "Macros Lock Screen".
+- Decision: the saved-food delete dialog omits the meal-usage warning because delete is disabled while a food is used in a meal.
+- Decision: the launch error view has no Try Again button because the launch state has no retry path. It shows a close-and-reopen hint instead.
+- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `WidgetAppearanceStorageTests`, `FoodItemLocalSearchTests`, `GoalCalculatorTests`, and `WeightAnalyticsTests` pass 37 of 37. Simulator checks: dashboard and Today pill at the largest accessibility text size, Add Food at default text size, Weight entry keyboard toolbar, and the Delete Entry confirmation. Other device checks are unverified (see the batch 3b report).
+
+## 2026-10-29 Polish Batch 3a
+
+- Native surfaces: content cards (History week card, Insights cards and weight card, onboarding choice and reminder cards, goal rows, body profile rows) use the standard card background through `appCardBackground(cornerRadius:)`. Glass stays on the floating controls: Today pill, Insights range and weight notice, paywall plan buttons, bottom bars, camera controls, and suggestion pills (now 44pt minimum height).
+- Add Food: Cancel is the leading toolbar action, the Search and Manual switch is a segmented control under the title with no animation wrapper, and Done is removed.
+- Dashboard: the top-right actions are two toolbar groups split by a fixed `ToolbarSpacer`, with icon-only labelled buttons.
+- Settings: Pro, Daily Goals (Save and Recalculate share one section), Food Suggestions, Macro Ring Colors, Widget Background, Reminders, Apple Health, Weight, Sharing, saved foods, then Backup last. Locked Pro rows share `ProLockedRow`, which opens the paywall. The Sharing disclaimer stays on the Sharing screen only. The ring Reset button uses a bordered style.
+- Onboarding: the locked additional-reminders card opens the Reminders paywall.
+- Backup: Merge is the primary action and Replace All Data is a destructive glass button. The import sheet and error banner attach to the section.
+- Paywall: the close control uses the system close role, the selected plan has a 2pt accent ring, and the success action reads "Done".
+- Scope: visual and structural changes only. Import summary, the onboarding path, the success CTA, and the Reset button were not reachable on the test device and remain unverified.
+- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `ProEntitlementTests`, `InsightsAnalyticsTests`, and `BackupRoundTripTests` pass 60 of 60 on the iPhone 18 Pro iOS 27.0 simulator.
+
+## 2026-10-29 Polish Batch 2
+
+- Camera options: the ellipsis toggle and its option circles share a `GlassEffectContainer(spacing: 12)` with `glassEffectID` and `matchedGeometry`, so the circles grow out of and collapse back into the toggle. The slide-in transition is removed. The back and shutter controls stay separate glass controls. Under Reduce Motion the change is not animated.
+- Animation scope: the result-expanded animation moved onto the result panel, which also animates its height as the hint, lookup, and result states change. The NavigationStack no longer animates unrelated pushes.
+- Haptics: a medium impact plays when a barcode is detected and lookup starts. The success haptic plays only after a successful log.
+- Result panel: the primary action uses `glassProminent` and secondary actions use `glass`, all with a 44pt minimum height. The missing-nutrients warning has an icon. The line reads "kcal", the servings stepper uses monospaced digits, and the permission-denied copy is one constant. The camera back control is labelled "Close camera". The log-error alert uses a curly apostrophe.
+- Scope: Debug build, `FoodCameraFlowTests`, and simulator checks on the iPhone 18 Pro iOS 27.0. Not verified on a physical device or with VoiceOver. Haptics cannot be observed in the simulator.
+- Validation: `make quality-format-check` and `git diff --check` pass; `FoodCameraFlowTests` passed 25 of 25.
+
+## 2026-10-29 Polish Batch 1
+
+- Review fixes: a widget photo removal that finds the file already gone is now a no-op, so a restore cannot turn a successful background change into an error. Owned orphan `<UUID>.jpg` and `<UUID>.tmp` files are cleared on the next photo write. Full-decode source limit lowered from 100 MP to 40 MP. Settings reads notification denial on appear, so the open-settings button shows after onboarding denial. The camera card reveals on `viewDidAppear` if the presentation check missed. Insights shows a "View weight log" row when the weight card is empty. Widget color rows expose selected state and a spoken "Custom color" label.
+- Motion: Reduce Motion now swaps moves for opacity on the onboarding exit, Today pill, secondary nutrition, and History calendar, and the compact summary no longer scales. Ring expansion uses `.snappy`. Logging a food and the ring's centre calorie number animate with `.smooth` and a numeric text transition. Deleting or logging again animates the row change. The History calendar uses `.smooth(duration: 0.28)` without a duplicate animation. The bottom action label fades only. The paywall success token no longer wraps an animation.
+- Scope: code and simulator checks on the iPhone 18 Pro iOS 27.0 simulator. Not verified on a physical device or with VoiceOver.
+
+## 2026-10-29 TestFlight 1.0 (10) Device Bug Fixes
+
+- Widget rings were invisible on iOS 26+ because `MacroRingSetView` applied `glassEffect` inside WidgetKit content, which the system does not render there. The small and medium Daily Macro widgets now pass `usesGlassEffect: false`, which uses the plain track and progress rings. App call sites keep the glass rings.
+- The Native widget background was `Color.clear`, so a dark Home Screen showed through as black. It now draws `.fill.tertiary`, the standard widget material. Custom color and photo backgrounds are unchanged.
+- Dismissing the Insights weight notice snapped out. The X now animates with `.smooth`, and the notice uses a bottom move plus opacity transition, or opacity only when Reduce Motion is on.
+- Scope: simulator checks on the iPhone 18 Pro iOS 27.0 simulator (Light and Dark Home Screen, Insights dismiss clip). Not verified on a physical device or in the medium widget.
+
+## 2026-10-29 TestFlight Build 10 Upload
+
+- Bumped `CURRENT_PROJECT_VERSION` 9 to 10 in all six project configs (version 1.0 unchanged; the user confirmed ASC's highest build was 9). Fresh archive from HEAD 36fa465 plus the working tree; the exported distribution payload had `get-task-allow=false` for app and widget, correct App Group and HealthKit entitlements, and no StoreKit or test content. Upload succeeded once (delivery `fa71ea80-9926-46fe-b29a-6d4b9a59b913`). Parent verified in App Store Connect that processing is complete and build 10 is available to the internal MACROS Beta group for TestFlight testing; external testing is not enabled. Artifacts: `build/testflight-build10-release-2026-10-29/`.
+
+## 2026-10-29 Widget Background Photo
+
+- Added a device-local photo option to Settings > Widget Background for full-color Home Screen daily macro widgets; Lock Screen and accessory backgrounds remain system-controlled. The imported copy is stored as a protected, backup-excluded file owned by the app. A denied commit preserves an initially Native selection, and replacing the photo removes only the previously owned file.
+- Fixed photo saves rejected by the legacy file-protection query on Simulator. Staging and destination checks now read size and protection through typed URL resource values, after clearing cached values, and fail closed unless protection is exactly `completeUntilFirstUserAuthentication`. There is no simulator-only bypass.
+- Wrote the regression tests before the fix. `WidgetBackgroundPhotoImportTests` covers commit with Restore Default cleanup, denied selection, and replacement. Commit and replacement failed with `writeFailed` before the fix and pass after it.
+- `LocalConfidenceTests` now renders its barcode fixture at an explicit scale-1 format (1,200 x 600 px), so Vision results no longer depend on the simulator display scale. The production scanner is unchanged.
+- Validation: 12 focused tests passed on the iPhone 18 Pro iOS 27.0 simulator (3 new import tests, 7 appearance storage tests, 2 barcode tests). Format lint and build-for-testing passed. Simulator UI checks covered Photo selection, Small and Medium widgets in Light, Dark, Tinted, and Clear, picker Cancel, and Native reset. Pro state came from a temporary local StoreKit test transaction, removed afterward; it was not a real purchase.
+- Not release-accepted. The full suite was not run. Still open: AskToBuy and `Product.purchase` first-process Sandbox routing (the local `SKTestSession` route does not prove it), physical-device file protection, corrupt and oversized photo error UI, StandBy, accessory, and VoiceOver checks, and the App Store Connect next build number. Version 1.0 (9) is unchanged. No commit, push, archive, or upload was made.
+
 ## 2026-10-28 TestFlight Build 9 Preflight
 
 - Prepared the merged camera candidate at version 1.0/build 9; format, signed simulator and Release device builds, StoreKit catalog validation, and 63 targeted tests passed. No archive or upload was performed; details and remaining release checks are in `build/build9-preflight-2026-10-28/QA.md`.

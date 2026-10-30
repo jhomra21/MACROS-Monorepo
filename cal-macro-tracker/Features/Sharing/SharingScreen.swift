@@ -34,18 +34,19 @@ struct SharingScreen: View {
                 }
                 .disabled(isProfileButtonDisabled)
 
-                if isSharingDeviceEnabled {
-                    Button("Turn Off Sharing on This Device", role: .destructive) {
-                        destructiveAction = .turnOffDevice
-                    }
-                }
-
                 Button("Sync Shared Totals Now") {
                     syncNow()
                 }
                 .disabled(!isSharingDeviceEnabled)
             } footer: {
-                Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+                VStack(alignment: .leading, spacing: 8) {
+                    if !isSharingDeviceEnabled {
+                        Text(
+                            "When you enable sharing, your display name and your daily calories, protein, carbs, fat, and number of entries are uploaded to MACROS servers so people you invite can see them. You can stop sharing and delete this data at any time."
+                        )
+                    }
+                    Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+                }
             }
 
             Section("Invite Someone") {
@@ -56,9 +57,12 @@ struct SharingScreen: View {
 
                 if let invite {
                     ShareLink(item: invite.appURL) {
-                        Text(invite.appURL.absoluteString)
-                            .lineLimit(2)
+                        Label("Share Invite", systemImage: "square.and.arrow.up")
                     }
+                    Text(invite.appURL.absoluteString)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
                     Text("Fallback web link: \(invite.url.absoluteString)")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -84,10 +88,16 @@ struct SharingScreen: View {
             } header: {
                 Text("Accept Invite")
             } footer: {
-                Text("If an invite is expired, revoked, or invalid, this invite is unavailable.")
+                Text("Expired or revoked invites can’t be accepted.")
             }
 
             Section {
+                if isSharingDeviceEnabled {
+                    Button("Turn Off Sharing on This Device", role: .destructive) {
+                        destructiveAction = .turnOffDevice
+                    }
+                }
+
                 Button("Stop Sharing My Data", role: .destructive) {
                     destructiveAction = .stopSharing
                 }
@@ -104,7 +114,7 @@ struct SharingScreen: View {
         }
         .navigationTitle("Sharing")
         .inlineNavigationTitle()
-        .errorBanner(message: $errorMessage)
+        .errorBanner(message: $errorMessage, title: "Sharing Failed")
         .alert(
             destructiveAction?.title ?? "",
             isPresented: destructiveActionBinding,
@@ -124,12 +134,12 @@ struct SharingScreen: View {
             "Start Sharing?",
             isPresented: inviteConfirmationBinding,
         ) {
-            Button(isAcceptingInvite ? "Accepting…" : "Yes, Start Sharing") {
+            Button(isAcceptingInvite ? "Accepting…" : "Start Sharing") {
                 acceptInvite(input: inviteConfirmationInput ?? inviteToken)
             }
             .disabled(!isSharingDeviceEnabled || isAcceptingInvite)
 
-            Button("No", role: .cancel) {
+            Button("Cancel", role: .cancel) {
                 inviteConfirmationInput = nil
             }
         } message: {

@@ -85,21 +85,14 @@ struct MealComponentFoodPickerScreen: View {
                 }
             }
         }
-        .navigationTitle("Add Food")
+        .navigationTitle("Choose Foods")
         .inlineNavigationTitle()
         .toolbar {
-            ToolbarItem(placement: .appTopBarTrailing) {
-                Button {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Add", systemImage: "checkmark") {
                     confirmSelectedFoods()
-                } label: {
-                    PickerConfirmButtonLabel(isEnabled: selectedFoodIDs.isEmpty == false)
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.circle)
-                .controlSize(.large)
-                .tint(selectedFoodIDs.isEmpty ? .secondary : .accentColor)
                 .disabled(selectedFoodIDs.isEmpty)
-                .accessibilityLabel("Add selected foods")
             }
         }
         .searchable(text: $searchText, prompt: "Search saved foods")
@@ -258,17 +251,6 @@ struct MealComponentFoodPickerScreen: View {
             remoteSearch.errorMessage = error.localizedDescription
             remoteSearchTask = nil
         }
-    }
-}
-
-private struct PickerConfirmButtonLabel: View {
-    let isEnabled: Bool
-
-    var body: some View {
-        Image(systemName: "checkmark")
-            .font(.system(size: 20, weight: .semibold))
-            .foregroundStyle(.white)
-            .opacity(isEnabled ? 1 : 0.55)
     }
 }
 

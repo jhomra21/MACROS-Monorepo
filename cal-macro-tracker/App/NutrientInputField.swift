@@ -4,6 +4,7 @@ struct NutrientInputField<Field: Hashable>: View {
     let title: String
     let suffix: String
     @Binding var text: String
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private let focusedField: FocusState<Field?>.Binding?
     private let field: Field?
@@ -25,13 +26,14 @@ struct NutrientInputField<Field: Hashable>: View {
     }
 
     var body: some View {
-        LabeledContent(title) {
-            HStack(spacing: 8) {
-                fieldView
-
-                Text(suffix)
-                    .foregroundStyle(.secondary)
-                    .frame(width: suffixWidth, alignment: .leading)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                    inputRow
+                }
+            } else {
+                LabeledContent(title) { inputRow }
             }
         }
         .contentShape(Rectangle())
@@ -48,6 +50,17 @@ struct NutrientInputField<Field: Hashable>: View {
         } else {
             AppNumericTextField<Field>(title, text: $text)
                 .frame(minWidth: 72)
+        }
+    }
+
+    private var inputRow: some View {
+        HStack(spacing: 8) {
+            fieldView
+
+            Text(suffix)
+                .foregroundStyle(.secondary)
+                .frame(width: dynamicTypeSize.isAccessibilitySize ? nil : suffixWidth, alignment: .leading)
+                .fixedSize(horizontal: dynamicTypeSize.isAccessibilitySize, vertical: false)
         }
     }
 

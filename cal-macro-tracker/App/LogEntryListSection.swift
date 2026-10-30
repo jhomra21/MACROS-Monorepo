@@ -21,6 +21,7 @@ struct LogEntryListSection: View {
     let layout: Layout
     let showsHeader: Bool
     let onHeaderSwipeTranslation: ((CGSize) -> Void)?
+    let onHeaderDayStep: ((Int) -> Void)?
     let onDeleteEntry: ((LogEntry) -> Void)?
     let onEditEntry: ((LogEntry) -> Void)?
     let onLogAgain: ((LogEntry) -> Void)?
@@ -36,6 +37,7 @@ struct LogEntryListSection: View {
         layout: Layout = .stackedCards,
         showsHeader: Bool = true,
         onHeaderSwipeTranslation: ((CGSize) -> Void)? = nil,
+        onHeaderDayStep: ((Int) -> Void)? = nil,
         onDeleteEntry: ((LogEntry) -> Void)? = nil,
         onEditEntry: ((LogEntry) -> Void)? = nil,
         onLogAgain: ((LogEntry) -> Void)? = nil
@@ -50,6 +52,7 @@ struct LogEntryListSection: View {
         self.layout = layout
         self.showsHeader = showsHeader
         self.onHeaderSwipeTranslation = onHeaderSwipeTranslation
+        self.onHeaderDayStep = onHeaderDayStep
         self.onDeleteEntry = onDeleteEntry
         self.onEditEntry = onEditEntry
         self.onLogAgain = onLogAgain
@@ -71,20 +74,39 @@ struct LogEntryListSection: View {
             Text(title)
                 .font(.title3.weight(.semibold))
             Spacer()
-            Text("\(entries.count) items")
+            Text("^[\(entries.count) item](inflect: true)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
         .contentShape(Rectangle())
+        let steppable = dayStepAdjustable(content)
 
         if let onHeaderSwipeTranslation {
-            content
+            steppable
                 .simultaneousGesture(
                     DragGesture(minimumDistance: 24)
                         .onEnded { value in
                             onHeaderSwipeTranslation(value.translation)
                         }
                 )
+        } else {
+            steppable
+        }
+    }
+
+    /// VoiceOver adjustable header: increment/decrement step the day without the swipe gesture.
+    @ViewBuilder
+    private func dayStepAdjustable<Content: View>(_ content: Content) -> some View {
+        if let onHeaderDayStep {
+            content
+                .accessibilityElement(children: .combine)
+                .accessibilityAdjustableAction { direction in
+                    switch direction {
+                    case .increment: onHeaderDayStep(1)
+                    case .decrement: onHeaderDayStep(-1)
+                    default: break
+                    }
+                }
         } else {
             content
         }
@@ -208,14 +230,14 @@ struct LogEntryListSection: View {
                     Button("Edit") {
                         onEditEntry(entry)
                     }
-                    .tint(.gray)
+                    .tint(.accentColor)
                 }
 
                 if let onLogAgain, entry.isMealLog == false {
                     Button("Log Again") {
                         onLogAgain(entry)
                     }
-                    .tint(.blue)
+                    .tint(.gray)
                 }
             }
     }

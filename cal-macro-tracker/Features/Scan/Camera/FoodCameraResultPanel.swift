@@ -75,13 +75,16 @@ struct FoodCameraResultPanel: View {
         let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
         let detailsButton = Group {
             if isLabel {
-                Button("Edit details", action: onReview).buttonStyle(.bordered)
+                Button("Edit details", action: onReview)
             } else {
-                Button("Details", action: onDetails).buttonStyle(.bordered)
+                Button("Details", action: onDetails)
             }
         }
+        .buttonStyle(.glass)
+        .controlSize(.large)
         let logButton = Button("Log", action: onLog)
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
             .disabled(isLabel && canLog == false)
         return VStack(alignment: .leading, spacing: 12) {
             if isLabel {
@@ -114,11 +117,15 @@ struct FoodCameraResultPanel: View {
                     Text(note).font(.footnote).foregroundStyle(.secondary)
                 }
                 if missingNutrients.isEmpty == false {
-                    Text(NutritionLabelParser.reviewRequiredNutrientsMessage(missingNutrients))
-                        .font(.footnote).foregroundStyle(.orange)
+                    Label(
+                        NutritionLabelParser.reviewRequiredNutrientsMessage(missingNutrients),
+                        systemImage: "exclamationmark.triangle.fill"
+                    )
+                    .font(.footnote).foregroundStyle(.orange)
                 }
                 Stepper(value: Binding(get: { servings }, set: onChangeServings), in: 0.25...20, step: 0.25) {
                     Text("Servings: \(servings.formatted(.number.precision(.fractionLength(0...2))))")
+                        .monospacedDigit()
                 }
                 ViewThatFits(in: .horizontal) {
                     if missingNutrients.isEmpty {
@@ -131,29 +138,42 @@ struct FoodCameraResultPanel: View {
                             logButton
                         }
                     } else {
-                        Button("Edit details", action: onReview).buttonStyle(.borderedProminent)
+                        Button("Edit details", action: onReview)
+                            .buttonStyle(.glassProminent)
+                            .controlSize(.large)
                     }
                 }
             }
-            Button(isLabel ? "Retake" : "Scan again", action: onRetry).font(.subheadline)
+            Button(isLabel ? "Retake" : "Scan again", action: onRetry)
+                .buttonStyle(.glass)
+                .controlSize(.large)
+                .font(.subheadline)
         }
     }
 
     private func errorPanel(_ message: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(message).font(.subheadline)
-            Button("Scan again", action: onRetry).buttonStyle(.borderedProminent)
+            Button("Scan again", action: onRetry)
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
             Button("Search online", action: onSearch)
+                .buttonStyle(.glass)
+                .controlSize(.large)
             Text("Or photograph the nutrition label instead.").font(.footnote).foregroundStyle(.secondary)
             Button("Enter manually", action: onManual)
+                .buttonStyle(.glass)
+                .controlSize(.large)
             if showSettings {
                 Button("Open Settings", action: onSettings)
+                    .buttonStyle(.glass)
+                    .controlSize(.large)
             }
         }
     }
 
     private func nutritionLine(_ draft: FoodDraft) -> String {
-        "\(draft.caloriesPerServing.formatted(.number.precision(.fractionLength(0...1)))) cal · "
+        "\(draft.caloriesPerServing.formatted(.number.precision(.fractionLength(0...1)))) kcal · "
             + "P \(draft.proteinPerServing.formatted(.number.precision(.fractionLength(0...1))))g · "
             + "C \(draft.carbsPerServing.formatted(.number.precision(.fractionLength(0...1))))g · "
             + "F \(draft.fatPerServing.formatted(.number.precision(.fractionLength(0...1))))g"

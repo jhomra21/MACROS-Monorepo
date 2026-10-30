@@ -22,11 +22,16 @@ struct LoggingStreakLine: View {
     var body: some View {
         if streak > 1 {
             Button(action: onOpenInsights) {
-                Text("\(streak)-day logging streak")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
+                HStack(spacing: 4) {
+                    Text("\(streak)-day logging streak")
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .accessibilityHidden(true)
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("\(streak)-day logging streak. Open Insights.")

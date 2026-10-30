@@ -18,6 +18,7 @@ struct EditLogEntryScreen: View {
     @State private var deleteFeedbackToken = 0
     @State private var isRefreshingNutrients = false
     @State private var canRefreshNutrients = false
+    @State private var isConfirmingDelete = false
     @FocusState private var focusedField: FoodDraftField?
 
     init(entry: LogEntry) {
@@ -105,7 +106,7 @@ struct EditLogEntryScreen: View {
             numericText: $numericText,
             errorMessage: $errorMessage,
             configuration: FoodDraftEditorConfiguration(
-                brandPrompt: "Brand",
+                brandPrompt: "Brand (optional)",
                 gramsPrompt: "Grams per serving",
                 nutritionPresentation: nutritionPresentation
             ),
@@ -138,7 +139,7 @@ struct EditLogEntryScreen: View {
 
             Section {
                 Button("Delete Entry", role: .destructive) {
-                    deleteEntry()
+                    isConfirmingDelete = true
                 }
                 .disabled(isRefreshingNutrients)
             }
@@ -148,6 +149,14 @@ struct EditLogEntryScreen: View {
         .disabled(isRefreshingNutrients)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
         .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+        .confirmationDialog("Delete Entry?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete Entry", role: .destructive) {
+                deleteEntry()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes the entry from your log.")
+        }
         .task(id: nutrientRefreshAvailabilityID) {
             updateNutrientRefreshAvailability()
         }

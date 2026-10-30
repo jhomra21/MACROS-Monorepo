@@ -22,6 +22,8 @@ struct SettingsScreen: View {
 
     var body: some View {
         Form {
+            ProSettingsSection(paywallContext: $paywallContext)
+
             if let goals = activeGoals {
                 SettingsGoalsEditorSection(goals: goals, focusedField: $focusedField)
             }
@@ -32,34 +34,39 @@ struct SettingsScreen: View {
                 Text("Suggest foods from your on-device logging history.")
             }
 
-            ProSettingsSection(paywallContext: $paywallContext)
+            MacroRingColorSettingsSection(
+                proteinHex: $customProteinRingColor,
+                carbHex: $customCarbRingColor,
+                fatHex: $customFatRingColor
+            )
 
-            Section {
-                NavigationLink("Weight") { WeightScreen() }
-            }
+            #if os(iOS)
+            WidgetBackgroundSettingsSection()
+            #endif
+
+            ReminderSettingsSection()
 
             HealthSettingsSection()
 
-            BackupSettingsSection()
-
-            ReminderSettingsSection()
+            Section {
+                NavigationLink {
+                    WeightScreen()
+                } label: {
+                    Label("Weight", systemImage: "scalemass")
+                }
+            } header: {
+                Text("Weight")
+            }
 
             Section {
                 NavigationLink {
                     SharingScreen()
                 } label: {
-                    Text("Sharing")
+                    Label("Sharing", systemImage: "person.2")
                 }
-            } footer: {
-                Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+            } header: {
+                Text("Sharing")
             }
-
-            MacroRingColorSettingsSection(
-                proteinHex: $customProteinRingColor,
-                carbHex: $customCarbRingColor,
-                fatHex: $customFatRingColor,
-                paywallContext: $paywallContext
-            )
 
             SavedFoodsSection(
                 title: "Saved Custom Foods",
@@ -71,6 +78,18 @@ struct SettingsScreen: View {
                 emptyState: "Barcode, label scan, and online packaged foods you save locally will show up here.",
                 descriptor: Self.externalFoodsDescriptor
             )
+
+            BackupSettingsSection()
+
+            Section {
+                Link("Privacy Policy", destination: ProLegalLinks.privacy)
+                Link("Terms of Use", destination: ProLegalLinks.terms)
+                Link("Support", destination: ProLegalLinks.support)
+            } header: {
+                Text("About")
+            } footer: {
+                Text("\(AppBrand.displayName) \(Self.versionDescription)")
+            }
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
@@ -86,6 +105,13 @@ struct SettingsScreen: View {
 
     private var activeGoals: DailyGoals? {
         DailyGoals.activeRecord(from: goals)
+    }
+
+    private static var versionDescription: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(version) (\(build))"
     }
 
     private static var customFoodsDescriptor: FetchDescriptor<FoodItem> {
@@ -118,7 +144,6 @@ private struct MacroRingColorSettingsSection: View {
     @Binding var proteinHex: String
     @Binding var carbHex: String
     @Binding var fatHex: String
-    @Binding var paywallContext: ProPaywallContext?
 
     var body: some View {
         let changedMetrics = changedMetrics
@@ -138,36 +163,14 @@ private struct MacroRingColorSettingsSection: View {
                     }
                 }
             } locked: {
-                Button {
-                    paywallContext = .ringColors
-                } label: {
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Customize Macro Ring Colors")
-                                .foregroundStyle(Color.accentColor)
-                            Text("Included with \(AppBrand.displayName) Pro")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
+                ProLockedRow(title: "Customize Macro Ring Colors", context: .ringColors)
             }
         } header: {
             Text("Macro Ring Colors")
         } footer: {
-            Text(
-                entitlements.canUse(.customMacroRingColors)
-                    ? "Color changes update the dashboard rings immediately."
-                    : "Included with \(AppBrand.displayName) Pro"
-            )
+            if entitlements.canUse(.customMacroRingColors) {
+                Text("Color changes update the dashboard rings immediately.")
+            }
         }
     }
 
@@ -211,7 +214,7 @@ private struct MacroRingColorSettingsSection: View {
                 Button("Reset") {
                     setHex(defaultHex, for: metric)
                 }
-                .buttonStyle(.glass)
+                .buttonStyle(.bordered)
             }
         }
     }

@@ -2,13 +2,14 @@ import SwiftUI
 
 struct ErrorBanner: ViewModifier {
     @Binding var message: String?
+    var title: String
     var retryTitle: String?
     var onRetry: (() -> Void)?
 
     func body(content: Content) -> some View {
         content
             .alert(
-                "Action Failed",
+                title,
                 isPresented: Binding(
                     get: { message != nil },
                     set: { isPresented in
@@ -34,9 +35,10 @@ struct ErrorBanner: ViewModifier {
 extension View {
     func errorBanner(
         message: Binding<String?>,
+        title: String = "Something Went Wrong",
         retryTitle: String? = nil,
         onRetry: (() -> Void)? = nil
     ) -> some View {
-        modifier(ErrorBanner(message: message, retryTitle: retryTitle, onRetry: onRetry))
+        modifier(ErrorBanner(message: message, title: title, retryTitle: retryTitle, onRetry: onRetry))
     }
 }
