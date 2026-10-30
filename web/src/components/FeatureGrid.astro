@@ -1,0 +1,23 @@
+---
+import { site } from '../data/site';
+---
+
+<section id="why" class="section" aria-labelledby="why-title">
+	<div class="container">
+		<div class="section-heading" data-reveal>
+			<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+			<h2 id="why-title" class="headline">Log fast. Check the numbers. Keep your data.</h2>
+			<p class="lead">MACROS removes the friction without hiding the figures that matter.</p>
+		</div>
+		<div class="bento">
+			{
+				site.features.map((feature, index) => (
+					<article class={`bento__card bento__card--${feature.size} card-lift`} data-reveal style={`--reveal-index: ${index}`}>
+						<h3 class="title">{feature.title}</h3>
+						<p>{feature.body}</p>
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>

@@ -12,9 +12,9 @@ import {
 
 <SiteLayout title={`${site.fullName} | Support`} description="Get support for MACROS: Nutrition Tracker.">
 	<section class="page-header">
-		<div class="container">
-			<h1>Need help with the app?</h1>
-			<p>
+		<div class="container page-header__inner">
+			<h1 class="display">Need help with the app?</h1>
+			<p class="lead">
 				Send a support request with your name, email, and a short description of the
 				problem. The request is stored so it can be reviewed and answered.
 			</p>
@@ -24,14 +24,14 @@ import {
 	<section class="section">
 		<div class="container support-layout">
 			<aside class="support-card">
-				<h2>What to include</h2>
+				<h2 class="title">What to include</h2>
 				<ul class="support-list">
 					{site.supportChecklist.map((item) => <li>{item}</li>)}
 				</ul>
 			</aside>
 
 			<div class="support-card">
-				<h2>Contact support</h2>
+				<h2 class="title">Contact support</h2>
 				<p
 					id={supportStatusElementIDs.submitted}
 					class="status status--success status-banner support-status-banner"
@@ -64,7 +64,7 @@ import {
 					data-support-form
 					data-astro-reload
 				>
-					<label style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+					<label class="hp" aria-hidden="true">
 						Leave this field empty
 						<input name="website" type="text" tabindex="-1" autocomplete="off" />
 					</label>
@@ -104,12 +104,12 @@ import {
 							required
 						></textarea>
 						<p class="field-hint" id="message-hint">
-							Please share at least {supportFieldAttributes.message.minLength}
+							Please share at least {supportFieldAttributes.message.minLength}{' '}
 							characters so support has enough detail to help.
 						</p>
 					</div>
 
-					<button class="button" type="submit">Send request</button>
+					<button class="button button--lg" type="submit">Send request</button>
 				</form>
 			</div>
 		</div>

@@ -2,6 +2,22 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Marketing Site Redesign (Apple-style, "The product performs")
+
+### Delivered
+
+- New plain-CSS design system (`src/styles/global.css`, about 18 KB built): light and dark tokens, fluid type, system fonts only, calm reveal motion that is off under reduced motion.
+- Direction "The product performs": app screens shown inside CSS device frames are the page's main material. Hero is a device frame with the waitlist form and privacy note.
+- New components: `DeviceFrame`, `Header`, `Footer`, `Hero`, `FeatureGrid`, `Showcase`, `ProPlans`, `FAQ`, `WaitlistForm`, `WaitlistCta`, `ProseLayout` (sticky table of contents). `SiteLayout` adds a skip link, canonical URL, Open Graph and Twitter meta.
+- All pages restyled: home (hero, why, showcase, plans, FAQ, waitlist), about, privacy, terms (legal text unchanged), support (same fields, validation, and API).
+- Plans: free core, MACROS Pro $2.99/mo or $19.99/yr with a 7-day trial, $49.99 lifetime. Copy never promises AI photo logging, Apple Watch, or iCloud sync.
+- `site.ts` is the single source for copy and images. `public/og.png` comes from `scripts/generate-og.mjs`. `site.appStoreURL` is empty until launch, so no App Store button shows.
+- Open: replace placeholder screenshots with the new captures listed in the TODO in `site.ts`, then rerun the OG script.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), repo oxlint, and `git diff --check -- web` all exit 0. Screenshots for five pages at 390 and 1440 wide in both schemes are in `build/web-redesign-2026-10-29/screens/`.
+
 ## 2026-10-29 Workers Observability and cf Migration Deferral
 
 ### Delivered

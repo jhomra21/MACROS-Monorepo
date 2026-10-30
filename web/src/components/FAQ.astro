@@ -1,0 +1,25 @@
+---
+import { site } from '../data/site';
+---
+
+<section id="faq" class="section section--soft" aria-labelledby="faq-title">
+	<div class="container faq">
+		<div class="section-heading" data-reveal>
+			<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+			<h2 id="faq-title" class="headline">Questions, answered.</h2>
+			<p class="lead">
+				Something missing? <a href="/support">Ask support</a>.
+			</p>
+		</div>
+		<div class="faq__list" data-reveal>
+			{
+				site.faq.map((item) => (
+					<details class="faq-item">
+						<summary>{item.question}</summary>
+						<p>{item.answer}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>

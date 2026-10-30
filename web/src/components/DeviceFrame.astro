@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+	src: ImageMetadata;
+	alt: string;
+	widths?: number[];
+	sizes?: string;
+	eager?: boolean;
+	small?: boolean;
+}
+
+const { src, alt, widths = [280, 560], sizes = '280px', eager = false, small = false } = Astro.props;
+---
+
+<div class:list={['device', small && 'device--sm']}>
+	<div class="device__body">
+		<div class="device__screen">
+			<Image
+				src={src}
+				alt={alt}
+				format="webp"
+				widths={widths}
+				sizes={sizes}
+				loading={eager ? 'eager' : 'lazy'}
+				fetchpriority={eager ? 'high' : 'auto'}
+			/>
+			<span class="device__island" aria-hidden="true"></span>
+		</div>
+	</div>
+</div>

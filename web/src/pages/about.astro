@@ -1,41 +1,42 @@
 ---
 export const prerender = true;
 
+import WaitlistCta from '../components/WaitlistCta.astro';
 import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
 <SiteLayout title={`${site.fullName} | About`} description="Learn what MACROS: Nutrition Tracker is built to do and how the app works.">
 	<section class="page-header">
-		<div class="container">
-			<h1>Designed for simple, accurate daily tracking.</h1>
-			<p>
+		<div class="container page-header__inner">
+			<h1 class="display">Designed for simple, accurate daily tracking.</h1>
+			<p class="lead">
 				The App Store name is MACROS: Nutrition Tracker. In the app it is MACROS, an iPhone-first calorie and macro tracker built around
 				clear daily totals, flexible input methods, and local-first behavior.
 			</p>
 		</div>
 	</section>
 
-	<section class="section">
-		<div class="container detail-grid">
-			<article class="detail-card">
-				<h2>Why it exists</h2>
+	<section class="section" aria-label="The story">
+		<div class="container about-grid">
+			<article class="about-card" data-reveal>
+				<h2 class="title">Why it exists</h2>
 				<p>
 					Tracking should feel fast and trustworthy. The app is focused on removing
 					friction without forcing sign-up or hiding the numbers that matter.
 				</p>
 			</article>
 
-			<article class="detail-card">
-				<h2>Core inputs</h2>
+			<article class="about-card" data-reveal style="--reveal-index: 1">
+				<h2 class="title">Core inputs</h2>
 				<p>
 					One camera view reads barcodes and nutrition labels, and manual entry is
 					always available, so logging still works when a scan fails.
 				</p>
 			</article>
 
-			<article class="detail-card">
-				<h2>What you review</h2>
+			<article class="about-card" data-reveal style="--reveal-index: 2">
+				<h2 class="title">What you review</h2>
 				<p>
 					Each entry is built to surface serving size, quantity, calories, protein,
 					carbs, and fat before it becomes part of your day.
@@ -44,10 +45,13 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		</div>
 	</section>
 
-	<section class="section">
-		<div class="container page-panel">
-			<h2>Product direction</h2>
-			<ul class="support-list">
+	<section class="section section--soft" aria-labelledby="principles-title">
+		<div class="container">
+			<div class="section-heading" data-reveal>
+				<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+				<h2 id="principles-title" class="headline">Product direction</h2>
+			</div>
+			<ul class="principles" data-reveal>
 				<li>No required login to start tracking.</li>
 				<li>Local-first storage for day-to-day use.</li>
 				<li>Editable nutrition data when source information is incomplete.</li>
@@ -55,4 +59,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			</ul>
 		</div>
 	</section>
+
+	<WaitlistCta idPrefix="about" />
 </SiteLayout>
