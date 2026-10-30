@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Compact Dashboard Toolbar (TestFlight Build 13)
+
+- The four dashboard toolbar icons were spread too wide and the glass capsule touched the ring. Restored the build 10 layout without its offset hack: one `ToolbarItem` with an `HStack(spacing: 8)` of 32 pt icon buttons, plus 8 pt top padding on the ring row.
+- "Pops back to the Dashboard after returning" (Settings/Insights): not an app-lifecycle bug. Logs on the iPhone 18 Pro simulator show `.onOpenURL` fires once per URL, never on foreground, and the switcher or icon return keeps the screen. A real MACROS widget tap delivers `calmacrotracker://dashboard` (the widgets' `widgetURL`) and intentionally resets navigation to the Dashboard, so returning to the app by tapping a widget looks like the pop. No code change; the intended behavior is unchanged.
+- Validation: format check, `git diff --check`, Debug build, and AppDayContextTests plus LogEntryQueryTests passed (iPad runner); toolbar screenshots in `build/b13-bugs-2026-10-30/`.
+
 ## 2026-10-30 Weight Chart Y-Axis No Longer Anchors At Zero
 
 - Insights weight trend chart uses `chartYScale(domain: .automatic(includesZero: false))` so narrow weight ranges fill the plot. Validation: format check, `git diff --check`, Debug build passed.
