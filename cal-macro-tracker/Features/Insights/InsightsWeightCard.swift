@@ -137,6 +137,7 @@ struct InsightsWeightCard: View {
                 .interpolationMethod(.catmullRom)
             }
         }
+        .chartYScale(domain: .automatic(includesZero: false))
         .frame(height: 150)
         .accessibilityLabel("Weight trend chart")
     }
