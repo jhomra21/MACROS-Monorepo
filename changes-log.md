@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Debug Demo Data Seeder
+
+- Added a DEBUG-only `DemoDataSeeder` that replaces local data with a fixed sample set (goals, imperial profile, 20 saved foods, 90 days of logs, 20 weigh-ins) through `BackupImporter.apply` in replace mode. Settings gained a DEBUG "Developer" section with Grant/Revoke Debug Pro (moved from Pro settings) and Load Demo Data.
+- Validation: format check, `git diff --check`, Debug build, and BackupRoundTripTests and InsightsAnalyticsTests pass on the iPad fixture; demo E2E on the iPad fixture (evidence in `build/demo-seed-2026-10-30/`).
+
 ## 2026-10-29 TestFlight 12 Owner Feedback Fixes
 
 - Insights: removed the extra "View weight log" card row shown when no weight is in range. The dismissible bottom weight notice is the only weight prompt.
