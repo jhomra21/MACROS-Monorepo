@@ -2,6 +2,17 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-30 Full Design Pass And Sharing Copy Correction
+
+### Delivered
+
+- Copy: the sharing card, the FAQ answer about what leaves the phone, and the privacy sharing paragraph no longer say foods are never shared. They state what this version sends (daily totals). Card title: "Share your day with your people."
+- Hero phone: `DeviceFrame` now passes Astro's `priority` (eager, sync decode, high fetch priority) instead of separate loading props, so the frame is filled at every width. Added a floating glass badge with three macro rings that draw in once (900 ms, staggered, static under reduced motion).
+- Type scale: display, page title (h1 on about, support, legal), headline, subhead and title, lead, body, small, caption, one `.eyebrow` style. Body line-height 1.58, measure capped at 65ch, tabular prices.
+- Spacing and surfaces: `--section-space` clamp(4rem, 9vw, 7.5rem), `--heading-gap`, 24px card radius, a darker `--band` for alternating sections in dark mode, tighter hero-to-section gap.
+- Components: bento hover lift and stronger glow, showcase edge fade with snap on every width, featured plan gradient hairline with trial badge and macro-color checks, FAQ animated open with chevron and hover, glass 60px header with a macro-bar mark, full product name in the footer.
+- Not changed: no deploy, no new dependencies, legal meaning, palette.
+
 ## 2026-10-30 Illustrated Feature Cards And Copy Pass
 
 ### Delivered

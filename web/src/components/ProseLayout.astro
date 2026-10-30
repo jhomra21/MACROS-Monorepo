@@ -34,9 +34,9 @@ const body = html.replace(/<h2([^>]*)>([^<]+)<\/h2>/g, (_match, attributes: stri
 <SiteLayout title={title} description={description}>
 	<div class="container prose-layout">
 		<header class="prose-header">
-			<h1 class="display">{heading}</h1>
+			<h1 class="page-title">{heading}</h1>
 			{lede && <p class="lead">{lede}</p>}
-			<p class="prose-meta">Effective date: {effective}</p>
+			<p class="prose-meta caption">Effective date: {effective}</p>
 		</header>
 		<nav class="prose-toc" aria-label="On this page">
 			<p>On this page</p>

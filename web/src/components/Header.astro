@@ -6,7 +6,10 @@ const currentPath = Astro.url.pathname;
 
 <header class="site-header">
 	<div class="container site-header__inner">
-		<a class="brand" href="/" aria-label={`${site.name} home`}>{site.name}</a>
+		<a class="brand" href="/" aria-label={`${site.name} home`}>
+			<span class="macro-bar macro-bar--mark" aria-hidden="true"><i></i><i></i><i></i></span>
+			{site.name}
+		</a>
 		<nav class="site-nav" aria-label="Primary">
 			<ul class="nav-list">
 				{
