@@ -10,6 +10,7 @@ enum PaidFeature: CaseIterable {
     case backup
     case multipleReminders
     case customWidgetBackground
+    case sharingInvites
 
     var requiredEntitlement: PaidEntitlement {
         .pro

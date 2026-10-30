@@ -141,7 +141,7 @@ struct SharingDashboardScreen: View {
                 systemImage: "person.2",
                 description: Text(
                     sharingSyncService.isDeviceSharingEnabled
-                        ? "Invite someone or accept an invite to see shared macro rings here."
+                        ? "Accept an invite to see shared macro rings here. Creating invites needs MACROS Pro."
                         : "You don’t have sharing enabled yet."
                 )
             )
