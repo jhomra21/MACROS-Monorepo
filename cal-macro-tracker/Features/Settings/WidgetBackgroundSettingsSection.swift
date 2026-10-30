@@ -34,6 +34,7 @@ struct WidgetBackgroundSettingsSection: View {
                     selectionRow(
                         "Color",
                         subtitle: selectionColorDescription,
+                        spokenSubtitle: isColorSelected ? "Custom color" : nil,
                         symbol: "paintpalette",
                         selected: isColorSelected
                     )
@@ -129,6 +130,7 @@ struct WidgetBackgroundSettingsSection: View {
     private func selectionRow(
         _ title: String,
         subtitle: String,
+        spokenSubtitle: String? = nil,
         symbol: String,
         selected: Bool
     ) -> some View {
@@ -142,15 +144,17 @@ struct WidgetBackgroundSettingsSection: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
+                    .accessibilityLabel(spokenSubtitle ?? subtitle)
             }
             Spacer()
             if selected {
                 Image(systemName: "checkmark")
                     .foregroundStyle(Color.accentColor)
-                    .accessibilityLabel("Selected")
+                    .accessibilityHidden(true)
             }
         }
         .contentShape(Rectangle())
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private func select(_ newSelection: WidgetBackgroundSelection) {

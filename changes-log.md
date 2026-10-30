@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 Polish Batch 1
+
+- Review fixes: a widget photo removal that finds the file already gone is now a no-op, so a restore cannot turn a successful background change into an error. Owned orphan `<UUID>.jpg` and `<UUID>.tmp` files are cleared on the next photo write. Full-decode source limit lowered from 100 MP to 40 MP. Settings reads notification denial on appear, so the open-settings button shows after onboarding denial. The camera card reveals on `viewDidAppear` if the presentation check missed. Insights shows a "View weight log" row when the weight card is empty. Widget color rows expose selected state and a spoken "Custom color" label.
+- Motion: Reduce Motion now swaps moves for opacity on the onboarding exit, Today pill, secondary nutrition, and History calendar, and the compact summary no longer scales. Ring expansion uses `.snappy`. Logging a food and the ring's centre calorie number animate with `.smooth` and a numeric text transition. Deleting or logging again animates the row change. The History calendar uses `.smooth(duration: 0.28)` without a duplicate animation. The bottom action label fades only. The paywall success token no longer wraps an animation.
+- Scope: code and simulator checks on the iPhone 18 Pro iOS 27.0 simulator. Not verified on a physical device or with VoiceOver.
+
 ## 2026-10-29 TestFlight 1.0 (10) Device Bug Fixes
 
 - Widget rings were invisible on iOS 26+ because `MacroRingSetView` applied `glassEffect` inside WidgetKit content, which the system does not render there. The small and medium Daily Macro widgets now pass `usesGlassEffect: false`, which uses the plain track and progress rings. App call sites keep the glass rings.

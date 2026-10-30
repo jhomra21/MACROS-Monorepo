@@ -58,7 +58,7 @@ struct HistoryScreen: View {
     }
 
     private func toggleCalendar() {
-        withAnimation(.easeInOut(duration: 0.24)) {
+        withAnimation(.smooth(duration: 0.28)) {
             showsCalendar.toggle()
         }
     }
@@ -89,12 +89,12 @@ private struct HistoryWeekCard: View {
     @Binding var showsCalendar: Bool
     let goals: MacroGoalsSnapshot
     let maximumDay: CalendarDay
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         cardContent
             .appGlassRoundedRect(cornerRadius: showsCalendar ? 28 : 24, interactive: false)
             .clipShape(RoundedRectangle(cornerRadius: showsCalendar ? 28 : 24, style: .continuous))
-            .animation(.easeInOut(duration: 0.24), value: showsCalendar)
     }
 
     @ViewBuilder
@@ -122,7 +122,7 @@ private struct HistoryWeekCard: View {
 
             if showsCalendar {
                 calendarSection
-                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
             }
         }
     }

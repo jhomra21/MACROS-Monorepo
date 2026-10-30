@@ -153,6 +153,7 @@ struct MacroRingSetView: View {
                 VStack(spacing: showsGoalSubtitle ? 4 : 0) {
                     Text(totals.calories.roundedForDisplay)
                         .font(.system(size: centerValueFontSize, weight: .bold, design: .rounded))
+                        .contentTransition(.numericText())
                         .minimumScaleFactor(0.7)
                         .lineLimit(1)
 

@@ -87,6 +87,7 @@ struct MacroDashboardRingPanel: View {
     let colorStyle: MacroRingColorStyle
     let onToggleExpansion: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let collapsedRingDiameter: CGFloat = 269
     private let expandedRingDiameter: CGFloat = 321
 
@@ -108,6 +109,7 @@ struct MacroDashboardRingPanel: View {
                     ringDiameter: expandedRingDiameter,
                     colorStyle: colorStyle
                 )
+                .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
                 .compositingGroup()
                 .scaleEffect(ringScale, anchor: .top)
             }

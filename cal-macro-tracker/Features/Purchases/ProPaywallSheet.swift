@@ -136,9 +136,7 @@ struct ProPaywallSheet: View {
         .onDisappear { isProPaywallPresented = false }
         .onChange(of: store.hasPro) { wasPro, isPro in
             guard !wasPro, isPro else { return }
-            withAnimation(reduceMotion ? nil : .smooth) {
-                successAnimationToken += 1
-            }
+            successAnimationToken += 1
             successFeedbackToken += 1
         }
         .sensoryFeedback(.success, trigger: successFeedbackToken)

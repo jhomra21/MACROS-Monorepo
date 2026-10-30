@@ -224,7 +224,7 @@ struct AppAccentActionLabel: View {
                 Text(title)
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.82))
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                    .transition(.opacity)
             }
         }
         .frame(maxWidth: .infinity)

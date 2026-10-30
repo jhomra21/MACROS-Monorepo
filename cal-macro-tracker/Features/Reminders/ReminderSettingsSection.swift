@@ -67,6 +67,9 @@ struct ReminderSettingsSection: View {
         .sheet(isPresented: $isPresentingPro) {
             ProPaywallSheet(context: .reminders)
         }
+        .task {
+            isDenied = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus == .denied
+        }
     }
 
     private func reminderToggle(

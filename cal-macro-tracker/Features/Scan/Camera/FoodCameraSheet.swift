@@ -581,6 +581,12 @@ private struct CameraPresentationTransitionObserver: UIViewControllerRepresentab
             }
         }
 
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            // Fallback when the presentation identity check missed; reveal is idempotent.
+            if registeredPresentation == false { onPresentationFinished?() }
+        }
+
         override func viewWillDisappear(_ animated: Bool) {
             super.viewWillDisappear(animated)
 

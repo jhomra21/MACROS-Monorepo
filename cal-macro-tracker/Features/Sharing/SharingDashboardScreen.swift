@@ -255,7 +255,7 @@ private struct SharingPreviewPersonRow: View {
 
             if isExpanded {
                 SharingPreviewExpandedSettings(person: person, onOutgoingChanged: onOutgoingChanged, onRemove: onRemove)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(14)

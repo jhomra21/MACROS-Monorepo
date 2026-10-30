@@ -18,7 +18,7 @@ nonisolated struct WidgetPhotoTransfer: Transferable {
 
 nonisolated enum WidgetBackgroundPhotoImport {
     static let maximumInputBytes = 25 * 1_024 * 1_024
-    static let maximumSourcePixels: UInt64 = 100_000_000
+    static let maximumSourcePixels: UInt64 = 40_000_000
     static let maximumOutputPixels = 1_024
     static let maximumJPEGBytes = WidgetAppearanceStorage.maximumPhotoBytes
 
@@ -156,6 +156,7 @@ nonisolated enum WidgetBackgroundPhotoImport {
         }
         do {
             try fileManager.createDirectory(at: parent, withIntermediateDirectories: true)
+            removeOrphanedPhotos(in: parent, keeping: storage.background.photoIdentifier, fileManager: fileManager)
             var directoryValues = URLResourceValues()
             directoryValues.isExcludedFromBackup = true
             var mutableParent = parent
@@ -209,9 +210,23 @@ nonisolated enum WidgetBackgroundPhotoImport {
         }
     }
 
+    /// Deletes app-owned `<UUID>.jpg` and `<UUID>.tmp` files left by interrupted writes. Other names are ignored.
+    private static func removeOrphanedPhotos(in directory: URL, keeping current: UUID?, fileManager: FileManager) {
+        let names = (try? fileManager.contentsOfDirectory(atPath: directory.path)) ?? []
+        for name in names {
+            let url = directory.appendingPathComponent(name)
+            guard ["jpg", "tmp"].contains(url.pathExtension),
+                let identifier = UUID(uuidString: url.deletingPathExtension().lastPathComponent),
+                identifier != current
+            else { continue }
+            try? fileManager.removeItem(at: url)
+        }
+    }
+
     @MainActor
     private static func remove(_ identifier: UUID, storage: WidgetAppearanceStorage) throws {
         guard let url = storage.photoURL(for: identifier) else { throw ImportError.unavailableStorage }
+        guard FileManager.default.fileExists(atPath: url.path) else { return }
         try FileManager.default.removeItem(at: url)
     }
 }
