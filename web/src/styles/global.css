@@ -21,8 +21,8 @@
 	--ink-muted: #66666b;
 	--hairline: rgb(0 0 0 / 0.12);
 	--link: #0066cc;
-	--action-bg: #1d1d1f;
-	--action-ink: #f5f5f7;
+	--action-bg: #007aff;
+	--action-ink: #fff;
 	--header-bg: rgb(255 255 255 / 0.72);
 	--glass-bg: rgb(255 255 255 / 0.78);
 	--glass-edge: rgb(255 255 255 / 0.9);
@@ -90,8 +90,8 @@
 		--ink-muted: #a1a1a6;
 		--hairline: rgb(255 255 255 / 0.14);
 		--link: #2997ff;
-		--action-bg: #f5f5f7;
-		--action-ink: #1d1d1f;
+		--action-bg: #0a84ff;
+		--action-ink: #fff;
 		--header-bg: rgb(0 0 0 / 0.7);
 		--glass-bg: rgb(44 44 46 / 0.72);
 		--glass-edge: rgb(255 255 255 / 0.16);
