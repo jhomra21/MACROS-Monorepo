@@ -94,8 +94,8 @@ export const site = {
 			eyebrow: 'Sharing',
 			glyph: 'people',
 			accent: 'carbs',
-			title: 'Share totals, never foods.',
-			body: 'Invite people to a sharing circle and they see your daily totals. They never see individual foods.',
+			title: 'Share your day with your people.',
+			body: 'Invite people to a sharing circle and they see your daily totals. Sharing individual foods and more stats is coming.',
 			size: 'half',
 		},
 		{
@@ -180,7 +180,7 @@ export const site = {
 		},
 		{
 			question: 'What leaves my phone?',
-			answer: 'Search terms or barcodes go to our food-search service. If you turn on sharing, only your chosen display name and daily nutrition totals are shared, never individual foods.',
+			answer: 'Search terms or barcodes go to our food-search service. If you turn on sharing, this version sends your chosen display name and daily nutrition totals to the people you invite. Individual foods are not sent yet.',
 		},
 	],
 	heroShowcase: {
