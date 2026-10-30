@@ -72,8 +72,9 @@ function drawLabel(text, width) {
 	const w = ctx.measureText(text).width + padX * 2;
 	const h = 60;
 	const x = (width - w) / 2;
-	const y = 118;
-	ctx.fillStyle = 'rgba(0, 0, 0, 0.62)';
+	// Over the Dynamic Island, between the clock and the status icons, so it never covers app content.
+	const y = 20;
+	ctx.fillStyle = '#000';
 	ctx.beginPath();
 	ctx.roundRect(x, y, w, h, 30);
 	ctx.fill();
