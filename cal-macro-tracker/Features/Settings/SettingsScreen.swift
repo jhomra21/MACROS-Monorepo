@@ -90,6 +90,10 @@ struct SettingsScreen: View {
             } footer: {
                 Text("\(AppBrand.displayName) \(Self.versionDescription)")
             }
+
+            #if DEBUG
+            DeveloperSettingsSection()
+            #endif
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)

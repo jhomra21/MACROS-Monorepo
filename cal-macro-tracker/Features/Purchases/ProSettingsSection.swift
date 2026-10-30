@@ -36,11 +36,6 @@ struct ProSettingsSection: View {
             Button("Redeem Code") { isRedeeming = true }
                 .disabled(store.isPurchasing || store.isRestoring)
             PurchaseFeedbackText(feedback: store.feedback)
-            #if DEBUG
-            Button(store.hasPro ? "Revoke Debug Pro" : "Grant Debug Pro") {
-                store.setDebugPro(!store.hasPro)
-            }
-            #endif
         } footer: {
             Text("Purchases are processed by Apple. Restore anytime with the same Apple Account.")
         }
