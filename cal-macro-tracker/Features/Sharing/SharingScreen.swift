@@ -39,7 +39,14 @@ struct SharingScreen: View {
                 }
                 .disabled(!isSharingDeviceEnabled)
             } footer: {
-                Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+                VStack(alignment: .leading, spacing: 8) {
+                    if !isSharingDeviceEnabled {
+                        Text(
+                            "When you enable sharing, your display name and your daily calories, protein, carbs, fat, and number of entries are uploaded to MACROS servers so people you invite can see them. You can stop sharing and delete this data at any time."
+                        )
+                    }
+                    Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+                }
             }
 
             Section("Invite Someone") {

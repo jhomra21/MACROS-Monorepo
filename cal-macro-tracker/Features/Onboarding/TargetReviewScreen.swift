@@ -96,6 +96,12 @@ struct TargetReviewScreen: View {
                             .padding(.horizontal)
                         }
 
+                        Text("Targets are estimates, not medical advice. Check with a doctor before making health decisions.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 20)
+
                         NavigationLink {
                             GoalSetupScreen(
                                 initialDraft: calculatedGoals,

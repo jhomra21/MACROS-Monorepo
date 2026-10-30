@@ -80,6 +80,16 @@ struct SettingsScreen: View {
             )
 
             BackupSettingsSection()
+
+            Section {
+                Link("Privacy Policy", destination: ProLegalLinks.privacy)
+                Link("Terms of Use", destination: ProLegalLinks.terms)
+                Link("Support", destination: ProLegalLinks.support)
+            } header: {
+                Text("About")
+            } footer: {
+                Text("\(AppBrand.displayName) \(Self.versionDescription)")
+            }
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
@@ -95,6 +105,13 @@ struct SettingsScreen: View {
 
     private var activeGoals: DailyGoals? {
         DailyGoals.activeRecord(from: goals)
+    }
+
+    private static var versionDescription: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(version) (\(build))"
     }
 
     private static var customFoodsDescriptor: FetchDescriptor<FoodItem> {
