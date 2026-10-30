@@ -1,0 +1,21 @@
+[before] SEARCH
+  Camera                             Button     x=20 y=816 w=185 h=60
+  Camera                             Image      x=71 y=841 w=14 h=11
+  Camera                             StaticText x=94 y=836 w=62 h=20
+  Cancel                             Button     x=24 y=92 w=77 h=36
+  Search foods on device or online   SearchField x=20 y=142 w=380 h=44
+  Search                             Image      x=32 y=154 w=21 h=19
+  Search                             Button     x=16 y=204 w=194 h=32
+  Manual                             Button     x=210 y=204 w=194 h=32
+  Camera                             Button     x=0 y=810 w=420 h=102
+  Camera                             StaticText x=192 y=836 w=62 h=20
+[before] MANUAL
+  Camera                             Button     x=20 y=816 w=185 h=60
+  Camera                             Image      x=71 y=841 w=14 h=11
+  Camera                             StaticText x=94 y=836 w=62 h=20
+  Cancel                             Button     x=24 y=92 w=77 h=36
+  Search                             Button     x=16 y=150 w=194 h=32
+  Manual                             Button     x=210 y=150 w=194 h=32
+  Food                               StaticText x=20 y=189 w=380 h=40
+  Food                               Image      x=45 y=804 w=15 h=25
+  Continue                           Button     x=20 y=810 w=380 h=60
