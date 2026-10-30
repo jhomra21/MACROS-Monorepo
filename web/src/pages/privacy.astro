@@ -1,66 +1,62 @@
 ---
 export const prerender = true;
 
+import ProseLayout from '../components/ProseLayout.astro';
 import { site } from '../data/site';
-import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
-<SiteLayout title={`${site.fullName} | Privacy Policy`} description="How the MACROS: Nutrition Tracker app and website use and protect information.">
-	<section class="page-header">
-		<div class="container">
-			<h1>Your food log stays yours.</h1>
-			<p>This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request.</p>
-			<p><strong>Effective date: October 25, 2026</strong></p>
-		</div>
+<ProseLayout
+	title={`${site.fullName} | Privacy Policy`}
+	description="How the MACROS: Nutrition Tracker app and website use and protect information."
+	heading="Your food log stays yours."
+	lede="This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request."
+	effective="October 30, 2026"
+>
+	<section>
+		<h2>Information stored on your device</h2>
+		<p>Food logs, saved foods and meals, goals, body profile, and weight entries are stored in the app's protected container on your device. They are not uploaded to our servers. Delete them with the app's in-app controls or by deleting the app. A device backup is controlled by your device and Apple settings.</p>
 	</section>
 
-	<section class="section">
-		<div class="container stack">
-			<article class="page-panel">
-				<h2>Information stored on your device</h2>
-				<p>Food logs, saved foods and meals, goals, body profile, and weight entries are stored in the app's protected container on your device. They are not uploaded to our servers. Delete them with the app's in-app controls or by deleting the app. A device backup is controlled by your device and Apple settings.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Packaged-food search and barcode lookup</h2>
-				<p>When you search online or scan a barcode, the search text or barcode and standard request metadata, including your IP address, are sent to our Cloudflare Worker. The Worker queries Open Food Facts and USDA FoodData Central. Responses may be cached for up to 24 hours. We do not send an account identifier with these requests, and no account is required.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Optional sharing circle</h2>
-				<p>Sharing is off by default. If you enable it, the app sends information to our Convex backend so your invited people can see the daily totals you choose to share. Individual foods and food logs are not sent.</p>
-				<p>The backend stores a random device-generated profile key, your chosen display name, and a secret verifier (not your secret itself), plus profile creation, update, and deletion timestamps. Daily snapshots contain the day, time-zone identifier, calories, protein, fat, carbs, entry count, and update time.</p>
-				<p>To support invitations and access, it also stores invitation token hashes, status, expiry and acceptance timestamps, and the relevant profile references; relationship profile references, pair key, creation and removal timestamps; and sharing grant profile references, relationship, macro-sharing scope, start/end days, and start/end timestamps.</p>
-				<p>You can remove people, stop sharing, or delete your sharing profile in Settings. Profile deletion removes associated snapshots, invitations, relationships, and grants, and tombstones the profile key to prevent reuse.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Apple Health and purchases</h2>
-				<p>Writing nutrition to Apple Health is available to everyone and requires your permission. Importing weight from Apple Health requires MACROS Pro and your permission. Health data stays on your device and is never transmitted to us.</p>
-				<p>Apple handles purchases. The app receives purchase entitlement status so it can provide the features you bought. We do not receive your payment card details.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Reminders</h2>
-				<p>Reminders are scheduled as local notifications on your device. Reminder content and schedules are not sent to our servers.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Website forms and Cloudflare logs</h2>
-				<p>If you join the waitlist, we store your email address. If you submit a support request, we store your name, email address, and message to respond to you. These form submissions are stored in Cloudflare D1 for 12 months and then deleted.</p>
-				<p>Cloudflare processes standard request data, such as IP address and browser/request details, in its logs to deliver and protect the website. Log retention is subject to Cloudflare's operational and security practices.</p>
-				<p>We do not use analytics SDKs or advertising trackers on the website or in the app.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Children</h2>
-				<p>MACROS is not directed to children under 13, and we do not knowingly collect personal information from children under 13 through the website.</p>
-			</article>
-
-			<article class="page-panel">
-				<h2>Your choices and deletion requests</h2>
-				<p>You can use MACROS without creating an account, decline optional search, sharing, or Health features, and manage or delete app data in the app. For deletion of website form submissions or privacy questions, contact us through the <a href="/support">support page</a>. We will use the email address and information you provide to locate and handle the request.</p>
-			</article>
-		</div>
+	<section>
+		<h2>Packaged-food search and barcode lookup</h2>
+		<p>When you search online or scan a barcode, the search text or barcode and standard request metadata, including your IP address, are sent to our Cloudflare Worker. The Worker queries Open Food Facts and USDA FoodData Central. Responses may be cached for up to 24 hours. We do not send an account identifier with these requests, and no account is required.</p>
+		<p>The food-search service also keeps sampled operational logs for about 10% of requests. These logs can include the request URL (the search text or barcode), the IP address, and a coarse location derived from that IP address. We keep them for up to 7 days, for reliability and abuse prevention. These logs are not linked to any sharing profile.</p>
 	</section>
-</SiteLayout>
+
+	<section>
+		<h2>Optional sharing circle</h2>
+		<p>Sharing is off by default. If you enable it, the app sends information to our Convex backend so your invited people can see the daily totals you choose to share. Individual foods and food logs are not sent.</p>
+		<p>Shared totals are linked to your sharing profile (your display name and a device-generated key), which makes them pseudonymous.</p>
+		<p>The backend stores a random device-generated profile key, your chosen display name, and a secret verifier (not your secret itself), plus profile creation, update, and deletion timestamps. Daily snapshots contain the day, time-zone identifier, calories, protein, fat, carbs, entry count, and update time.</p>
+		<p>To support invitations and access, it also stores invitation token hashes, status, expiry and acceptance timestamps, and the relevant profile references; relationship profile references, pair key, creation and removal timestamps; and sharing grant profile references, relationship, macro-sharing scope, start/end days, and start/end timestamps.</p>
+		<p>You can remove people, stop sharing, or delete your sharing profile in Settings. Profile deletion removes associated snapshots, invitations, relationships, and grants, and tombstones the profile key to prevent reuse.</p>
+	</section>
+
+	<section>
+		<h2>Apple Health and purchases</h2>
+		<p>Writing nutrition to Apple Health is available to everyone and requires your permission. Importing weight from Apple Health requires MACROS Pro and your permission. Health data stays on your device and is never transmitted to us.</p>
+		<p>Apple handles purchases. The app receives purchase entitlement status so it can provide the features you bought. We do not receive your payment card details.</p>
+	</section>
+
+	<section>
+		<h2>Reminders</h2>
+		<p>Reminders are scheduled as local notifications on your device. Reminder content and schedules are not sent to our servers.</p>
+	</section>
+
+	<section>
+		<h2>Website forms and Cloudflare logs</h2>
+		<p>If you join the waitlist, we store your email address. If you submit a support request, we store your name, email address, and message to respond to you. These form submissions are stored in Cloudflare D1 for 12 months and then deleted.</p>
+		<p>Cloudflare processes standard request data, such as IP address and browser/request details, in its logs to deliver and protect the website. Log retention is subject to Cloudflare's operational and security practices.</p>
+		<p>We do not use analytics SDKs or advertising trackers on the website or in the app.</p>
+	</section>
+
+	<section>
+		<h2>Children</h2>
+		<p>MACROS is not directed to children under 13, and we do not knowingly collect personal information from children under 13 through the website.</p>
+	</section>
+
+	<section>
+		<h2>Your choices and deletion requests</h2>
+		<p>You can use MACROS without creating an account, decline optional search, sharing, or Health features, and manage or delete app data in the app. For deletion of website form submissions or privacy questions, contact us through the <a href="/support">support page</a>. We will use the email address and information you provide to locate and handle the request.</p>
+	</section>
+</ProseLayout>

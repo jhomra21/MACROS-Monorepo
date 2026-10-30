@@ -1,0 +1,37 @@
+---
+import { site } from '../data/site';
+import DeviceFrame from './DeviceFrame.astro';
+import WaitlistForm from './WaitlistForm.astro';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+	<div class="container hero__grid">
+		<div class="hero__copy">
+			<h1 id="hero-title" class="display" style="--i: 0">{site.hero.title}</h1>
+			<p class="lead" style="--i: 1">{site.hero.lead}</p>
+			<div style="--i: 2; width: 100%">
+				<WaitlistForm idPrefix="hero" />
+			</div>
+			<p class="small hero__note" style="--i: 2">
+				Join the waitlist for the App Store launch. Your email is used for the waitlist only, as described in the{' '}
+				<a href="/privacy">privacy policy</a>.
+			</p>
+			{
+				site.appStoreURL && (
+					<a class="button button--lg" href={site.appStoreURL} style="--i: 2">
+						Download on the App Store
+					</a>
+				)
+			}
+		</div>
+		<div class="hero__visual">
+			<DeviceFrame
+				src={site.heroShowcase.src}
+				alt={site.heroShowcase.alt}
+				widths={[280, 560, 840]}
+				sizes="(max-width: 900px) 280px, 320px"
+				eager
+			/>
+		</div>
+	</div>
+</section>

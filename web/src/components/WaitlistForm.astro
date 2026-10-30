@@ -1,0 +1,196 @@
+---
+import { waitlistFieldAttributes, waitlistStatusMessages } from '../lib/waitlist';
+
+interface Props {
+	idPrefix: string;
+}
+
+const { idPrefix } = Astro.props;
+
+const emailId = `${idPrefix}-waitlist-email`;
+---
+
+<div class="waitlist" data-waitlist>
+	<form class="waitlist-form" action="/api/waitlist" method="POST" data-waitlist-form data-astro-reload>
+		<label class="hp" aria-hidden="true">
+			Leave this field empty
+			<input type="text" name="website" tabindex="-1" autocomplete="off" />
+		</label>
+		<label class="sr-only" for={emailId}>Email address</label>
+		<input
+			id={emailId}
+			type="email"
+			name="email"
+			placeholder="Email address"
+			autocomplete="email"
+			inputmode="email"
+			enterkeyhint="send"
+			required
+			maxlength={waitlistFieldAttributes.email.maxLength}
+			class="waitlist-input"
+		/>
+		<button type="submit" class="button button--lg waitlist-submit">Join the waitlist</button>
+	</form>
+	<p
+		class="status status-banner waitlist-status"
+		role="status"
+		aria-live="polite"
+		data-waitlist-status
+		data-default-message={waitlistStatusMessages.submitted}
+		data-default-error-message={waitlistStatusMessages.error}
+	>
+		{waitlistStatusMessages.submitted}
+	</p>
+</div>
+
+<script>
+	import { getWaitlistEmailValidationMessage, normalizeWaitlistEmail } from '../lib/waitlist-validation';
+	import { formResponseSchema, stringValueSchema } from '../lib/json';
+
+	const STATUS_VISIBLE_MS = 5000;
+
+	function bindWaitlistForm(
+		form: HTMLFormElement,
+		status: HTMLElement,
+		emailControl: HTMLInputElement,
+		submitControl: HTMLButtonElement,
+	) {
+		const defaultSuccessMessage = status.dataset.defaultMessage ?? status.textContent ?? '';
+		const defaultErrorMessage = status.dataset.defaultErrorMessage ?? '';
+		let statusTimeout: number | null = null;
+
+		function hideStatus() {
+			status.classList.remove('status-banner--visible');
+		}
+
+		function showStatus(message: string, tone: 'success' | 'error') {
+			if (statusTimeout !== null) {
+				window.clearTimeout(statusTimeout);
+			}
+
+			status.textContent = message;
+			status.classList.toggle('status--success', tone === 'success');
+			status.classList.toggle('status--error', tone === 'error');
+			status.classList.remove('status-banner--visible');
+			// Force a reflow so the entrance animation restarts for back-to-back messages.
+			void status.offsetWidth;
+			status.classList.add('status-banner--visible');
+
+			statusTimeout = window.setTimeout(() => {
+				hideStatus();
+				statusTimeout = null;
+			}, STATUS_VISIBLE_MS);
+		}
+
+		function clearStatus() {
+			status.textContent = defaultSuccessMessage;
+			status.classList.remove('status--success', 'status--error');
+			hideStatus();
+		}
+
+		function setSubmitEnabled(isEnabled: boolean) {
+			submitControl.disabled = !isEnabled;
+			submitControl.setAttribute('aria-disabled', String(!isEnabled));
+		}
+
+		function syncSubmitState() {
+			const value = normalizeWaitlistEmail(emailControl.value);
+			const message = value.length === 0 ? '' : (getWaitlistEmailValidationMessage(value) ?? '');
+			const isValid = value.length > 0 && message.length === 0;
+
+			emailControl.setCustomValidity(message);
+			setSubmitEnabled(isValid);
+
+			return isValid;
+		}
+
+		async function parseResponse(response: Response) {
+			const parsed = formResponseSchema.safeParse(await response.json().catch(() => null));
+
+			return parsed.success ? parsed.data : null;
+		}
+
+		syncSubmitState();
+
+		form.addEventListener('input', syncSubmitState);
+
+		form.addEventListener('submit', async (event) => {
+			event.preventDefault();
+			clearStatus();
+
+			if (!syncSubmitState()) {
+				if (emailControl.validationMessage) {
+					emailControl.reportValidity();
+				} else {
+					showStatus(defaultErrorMessage, 'error');
+				}
+
+				return;
+			}
+
+			if (!form.reportValidity()) {
+				return;
+			}
+
+			try {
+				const response = await fetch('/api/waitlist', {
+					method: 'POST',
+					headers: {
+						'content-type': 'application/json',
+						accept: 'application/json',
+					},
+					body: JSON.stringify({
+						email: emailControl.value,
+						website: new FormData(form).get('website') ?? '',
+					}),
+				});
+
+				const result = await parseResponse(response);
+
+				if (response.ok) {
+					form.reset();
+					syncSubmitState();
+					showStatus(result?.message ?? defaultSuccessMessage, 'success');
+
+					return;
+				}
+
+				const parsedFieldError = stringValueSchema.safeParse(result?.fieldErrors?.email);
+
+				if (parsedFieldError.success) {
+					emailControl.setCustomValidity(parsedFieldError.data);
+					setSubmitEnabled(false);
+					emailControl.reportValidity();
+				}
+
+				showStatus(result?.message ?? defaultErrorMessage, 'error');
+			} catch {
+				showStatus(defaultErrorMessage, 'error');
+			}
+		});
+	}
+
+	function initWaitlistForms() {
+		for (const form of document.querySelectorAll<HTMLFormElement>('[data-waitlist-form]')) {
+			const status = form.closest('[data-waitlist]')?.querySelector<HTMLElement>('[data-waitlist-status]');
+			const emailControl = form.elements.namedItem('email');
+			const submitControl = form.querySelector<HTMLButtonElement>('.waitlist-submit');
+
+			if (
+				form.dataset.waitlistInitialized === 'true' ||
+				!status ||
+				!(emailControl instanceof HTMLInputElement) ||
+				!submitControl
+			) {
+				continue;
+			}
+
+			form.dataset.waitlistInitialized = 'true';
+			bindWaitlistForm(form, status, emailControl, submitControl);
+		}
+	}
+
+	document.addEventListener('astro:page-load', initWaitlistForms);
+
+	initWaitlistForms();
+</script>

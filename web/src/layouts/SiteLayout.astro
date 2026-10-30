@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -11,65 +13,90 @@ interface Props {
 
 const { title, description } = Astro.props;
 
-const currentPath = Astro.url.pathname;
+const canonicalURL = new URL(Astro.url.pathname, site.url).href;
+
+const ogImageURL = new URL(site.ogImage.src, site.url).href;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+		<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
+		<title>{title}</title>
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
+		<link rel="canonical" href={canonicalURL} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<title>{title}</title>
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content={site.fullName} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:image" content={ogImageURL} />
+		<meta property="og:image:width" content={String(site.ogImage.width)} />
+		<meta property="og:image:height" content={String(site.ogImage.height)} />
+		<meta property="og:image:alt" content={site.ogImage.alt} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageURL} />
+		<meta name="twitter:image:alt" content={site.ogImage.alt} />
 		<ClientRouter />
 	</head>
 	<body>
-		<div class="page-shell">
-			<header class="site-header">
-				<div class="container site-header__inner">
-					<a class="brand" href="/">{site.name}</a>
-					<nav aria-label="Primary navigation">
-						<ul class="nav-list">
-							{
-								site.navItems.map((item) => (
-									<li>
-										<a
-											class:list={[
-												'nav-link',
-												currentPath === item.href && 'nav-link--active',
-											]}
-											href={item.href}
-										>
-											{item.label}
-										</a>
-									</li>
-								))
+		<a class="skip-link" href="#main">Skip to content</a>
+		<Header />
+		<main id="main">
+			<slot />
+		</main>
+		<Footer />
+
+		<script>
+			// Adds .is-revealed once per element as it nears the viewport. CSS only hides
+			// [data-reveal] when scripting is enabled and reduced motion is not requested.
+			function initReveal() {
+				const targets = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-revealed)');
+
+				if (!('IntersectionObserver' in window)) {
+					for (const target of targets) {
+						target.classList.add('is-revealed');
+					}
+
+					return;
+				}
+
+				const observer = new IntersectionObserver(
+					(entries) => {
+						for (const entry of entries) {
+							if (entry.isIntersecting) {
+								const target = entry.target;
+								target.classList.add('is-revealed');
+								observer.unobserve(target);
+								// Drop the reveal transition and delay once settled so later style changes stay instant.
+								target.addEventListener('transitionend', (event) => {
+									// SAFETY: transitionend listeners always receive a TransitionEvent.
+									if (event.target === target && (event as TransitionEvent).propertyName === 'opacity') {
+										target.removeAttribute('data-reveal');
+										target.classList.remove('is-revealed');
+									}
+								});
 							}
-						</ul>
-					</nav>
-				</div>
-			</header>
+						}
+					},
+					{ rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+				);
 
-			<main>
-				<slot />
-			</main>
+				for (const target of targets) {
+					observer.observe(target);
+				}
+			}
 
-			<footer class="site-footer">
-				<div class="container site-footer__inner">
-					<div>
-						<p class="site-footer__title">{site.name}</p>
-						<p class="site-footer__copy">{site.description}</p>
-					</div>
-					<div class="site-footer__links">
-						<a href="/privacy">Privacy policy</a>
-						<a href="/terms">Terms of use</a>
-						<a href="/support">Support</a>
-					</div>
-				</div>
-			</footer>
-		</div>
+			document.addEventListener('astro:page-load', initReveal);
+		</script>
 	</body>
 </html>
