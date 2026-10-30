@@ -57,12 +57,12 @@ Example: https://developer.apple.com/documentation/
 ## Commands
 
 - Simulator budget: keep at most two simulators booted on the Mac. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
-- Simulator inventory (cleaned 2026-10-30): one simulator per device model, latest iOS runtime only (iOS 27.0; the 26.4 runtime and all its devices were deleted). The kept set is:
+- Simulator inventory (cleaned 2026-10-30): exactly one simulator per device model per iOS version, and only the latest iOS runtime (27.0; the 26.4 runtime and all its devices were deleted). The kept set is:
   - `9843E820-3A2A-4599-9206-D224B3035A47` iPhone 18 Pro: the owner's fixture with real app data and widgets. Never erase, reset, or load demo data on it.
   - `D16C3D35-889F-404F-BDD4-C640A6DBC4EF` iPhone 18 Pro Max (`MACROS-iPhone-18-Pro-Max-2026-10-30`): App Store media capture (demo data, 9:41 status bar).
-  - `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB` iPad Air 11-inch (`MACROS-iPad-Air-11-2026-10-29`): disposable test runner; the app runs in iPhone compatibility mode there.
+  - `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB` iPad Air 11-inch (`MACROS-iPad-Air-11-2026-10-29`): test runner; the app runs in iPhone compatibility mode there.
   - Stock iPhone 17, iPhone 17e, and iPhone Air on iOS 27.0, empty.
-  Do not create more simulators for routine work. If a task needs a throwaway device, create it, name it `MACROS-<purpose>-<date>`, and delete it when the task ends.
+  Never create a simulator for a test, QA pass, or any other process. Reuse these devices and modify them per task: erase, reinstall, change settings, or load demo data (DEBUG Settings > Developer) as the task needs, then leave them in a usable state. Clean-install checks go on the iPad test runner or one of the stock iPhones. The owner's iPhone 18 Pro fixture is the one exception: never erase, reset, or seed it. A new simulator is only ever created when a new device model or a newer iOS runtime is needed, and the one it replaces is deleted.
 - Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs the iOS 27.0 simulator runtime, the only one installed (the removed 26.4 runtime rejected catalog activation with `SKInternalErrorDomain Code=3`). Run it with the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
