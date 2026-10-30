@@ -11,6 +11,14 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Sharing Circle Invites Require Pro (TestFlight Build 13)
+
+- Owner rule: a Pro user initiates every connection. Creating an invite link requires Pro (`PaidFeature.sharingInvites`, `ProPaywallContext.sharingInvites`, paywall benefit listed first in its context). Accepting an invite, enabling sharing, saving the display name, syncing totals, revoking, and all stop/delete actions stay free, so a free user can share back with the Pro user who invited them. Free users cannot connect with each other.
+- Sharing screen: the Create Invite Link button and the invite link details sit behind `PaidFeatureGate`; the locked state is a `ProLockedRow`. Revoke Invite stays outside the gate so a lapsed user can still revoke a live invite. The Invite section has a footer stating the rule. The Dashboard share-image button is unrelated and stays free.
+- Empty state on the Sharing dashboard no longer tells free users they can invite someone.
+- `CURRENT_PROJECT_VERSION` 12 -> 13 in all six configurations; marketing version stays 1.0.
+- Validation: see the build 13 evidence report under `build/sharing-pro-b13-2026-10-30/`.
+
 ## 2026-10-30 Debug Demo Data Seeder
 
 - Added a DEBUG-only `DemoDataSeeder` that replaces local data with a fixed sample set (goals, imperial profile, 20 saved foods, 90 days of logs, 20 weigh-ins) through `BackupImporter.apply` in replace mode. Settings gained a DEBUG "Developer" section with Grant/Revoke Debug Pro (moved from Pro settings) and Load Demo Data.

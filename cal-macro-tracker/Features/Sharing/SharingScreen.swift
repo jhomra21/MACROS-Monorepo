@@ -49,31 +49,42 @@ struct SharingScreen: View {
                 }
             }
 
-            Section("Invite Someone") {
-                Button(isCreatingInvite ? "Creating Invite…" : "Create Invite Link") {
-                    createInvite()
+            Section {
+                PaidFeatureGate(.sharingInvites) {
+                    Button(isCreatingInvite ? "Creating Invite…" : "Create Invite Link") {
+                        createInvite()
+                    }
+                    .disabled(!isSharingDeviceEnabled || isCreatingInvite)
+
+                    if let invite {
+                        ShareLink(item: invite.appURL) {
+                            Label("Share Invite", systemImage: "square.and.arrow.up")
+                        }
+                        Text(invite.appURL.absoluteString)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
+                        Text("Fallback web link: \(invite.url.absoluteString)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
+                        Text("Expires \(invite.expiresAt.formatted(date: .abbreviated, time: .shortened)).")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                } locked: {
+                    ProLockedRow(title: "Create Invite Link", context: .sharingInvites)
                 }
-                .disabled(!isSharingDeviceEnabled || isCreatingInvite)
 
                 if let invite {
-                    ShareLink(item: invite.appURL) {
-                        Label("Share Invite", systemImage: "square.and.arrow.up")
-                    }
-                    Text(invite.appURL.absoluteString)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
-                    Text("Fallback web link: \(invite.url.absoluteString)")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
                     Button("Revoke Invite", role: .destructive) {
                         destructiveAction = .revokeInvite(invite)
                     }
-                    Text("Expires \(invite.expiresAt.formatted(date: .abbreviated, time: .shortened)).")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
                 }
+            } header: {
+                Text("Invite Someone")
+            } footer: {
+                Text("Creating invites needs MACROS Pro. Anyone you invite can accept and share back for free.")
             }
 
             Section {
