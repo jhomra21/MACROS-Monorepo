@@ -17,6 +17,7 @@ private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
                 } label: {
                     Image(systemName: "chevron.up")
                 }
+                .accessibilityLabel("Previous field")
                 .disabled(!canMove(offset: -1))
 
                 Button {
@@ -24,6 +25,7 @@ private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
                 } label: {
                     Image(systemName: "chevron.down")
                 }
+                .accessibilityLabel("Next field")
                 .disabled(!canMove(offset: 1))
 
                 Spacer()

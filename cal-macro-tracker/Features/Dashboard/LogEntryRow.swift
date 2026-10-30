@@ -12,6 +12,7 @@ struct LogEntryRow: View {
             carbs: entry.carbsConsumed,
             fat: entry.fatConsumed
         )
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
     }
 
@@ -22,6 +23,11 @@ struct LogEntryRow: View {
 
     private var accessibilityLabel: String {
         let kind = entry.isMealLog ? "Meal" : "Food"
-        return "\(kind), \(entry.foodName), \(entry.quantitySummary), \(entry.dateLogged.timeTitle)"
+        let nutrition =
+            "\(Int(entry.caloriesConsumed.rounded())) calories, "
+            + "\(Int(entry.proteinConsumed.rounded())) grams protein, "
+            + "\(Int(entry.carbsConsumed.rounded())) grams carbs, "
+            + "\(Int(entry.fatConsumed.rounded())) grams fat"
+        return "\(kind), \(entry.foodName), \(entry.quantitySummary), \(entry.dateLogged.timeTitle), \(nutrition)"
     }
 }

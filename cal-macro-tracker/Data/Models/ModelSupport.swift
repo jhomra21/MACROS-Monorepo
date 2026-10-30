@@ -15,7 +15,9 @@ enum QuantityMode: String, Codable, CaseIterable {
     func formattedSummary(amount: Double) -> String {
         switch self {
         case .servings:
-            return "\(amount.roundedForDisplay) servings"
+            let text = amount.roundedForDisplay
+            guard let count = Int(text) else { return "\(text) servings" }
+            return String(AttributedString(localized: "^[\(count) serving](inflect: true)").characters)
         case .grams:
             return "\(amount.roundedForDisplay) g"
         }

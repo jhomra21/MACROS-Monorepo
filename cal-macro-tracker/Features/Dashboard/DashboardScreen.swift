@@ -7,6 +7,7 @@ struct DashboardScreen: View {
     @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
     @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
@@ -62,13 +63,13 @@ struct DashboardScreen: View {
 
                 if daySelection.selectedDay != dayContext.today {
                     todayReturnRow
-                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
                         .zIndex(2)
                 }
 
                 if showsCompactSummary {
                     pinnedCompactSummaryView(totals: snapshot.totals, customRingPalette: customRingPalette)
-                        .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                        .transition(.opacity)
                         .zIndex(1)
                 }
             }
@@ -99,6 +100,7 @@ struct DashboardScreen: View {
             }
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
             .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+            .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
             .errorBanner(message: $errorMessage)
             #if os(iOS)
             .sheet(item: $shareSheetItem) { item in
@@ -147,6 +149,8 @@ struct DashboardScreen: View {
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
+                    .frame(minHeight: 44)
+                    .contentShape(.rect)
             }
             .buttonStyle(.plain)
             .appGlassRoundedRect(cornerRadius: 18)
@@ -187,6 +191,10 @@ struct DashboardScreen: View {
             emptyStyle: .plain,
             layout: .list,
             onHeaderSwipeTranslation: handleDaySwipe,
+            onHeaderDayStep: { offset in
+                guard offset < 0 || daySelection.selectedDay.isToday == false else { return }
+                moveSelection(by: offset)
+            },
             onDeleteEntry: deleteEntry,
             onEditEntry: onEditEntry,
             onLogAgain: logEntryAgain
@@ -223,7 +231,7 @@ struct DashboardScreen: View {
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
                 .padding(.top, 4)
                 .dashboardListRow(bottom: 8)
-                .transition(.opacity.combined(with: .move(edge: .top)))
+                .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
                 .dashboardDaySwipe(dayNavigationGesture)
         }
     }
@@ -238,7 +246,9 @@ struct DashboardScreen: View {
 
     private func deleteEntry(_ entry: LogEntry) {
         do {
-            try logEntryRepository.delete(entry: entry, operation: "Delete dashboard entry")
+            try withAnimation(reduceMotion ? nil : .smooth(duration: 0.3)) {
+                try logEntryRepository.delete(entry: entry, operation: "Delete dashboard entry")
+            }
             errorMessage = nil
             deleteFeedbackToken += 1
         } catch {
@@ -249,11 +259,13 @@ struct DashboardScreen: View {
 
     private func logEntryAgain(_ entry: LogEntry) {
         do {
-            try logEntryRepository.logAgain(
-                entry: entry,
-                loggedAt: daySelection.selectedDay.date(matchingTimeOf: .now),
-                operation: "Log food again"
-            )
+            try withAnimation(reduceMotion ? nil : .smooth(duration: 0.3)) {
+                try logEntryRepository.logAgain(
+                    entry: entry,
+                    loggedAt: daySelection.selectedDay.date(matchingTimeOf: .now),
+                    operation: "Log food again"
+                )
+            }
             errorMessage = nil
             logAgainFeedbackToken += 1
         } catch {
@@ -343,7 +355,7 @@ struct DashboardScreen: View {
     }
 
     private func toggleMacroRingExpansion() {
-        withAnimation(.easeOut(duration: 0.18)) {
+        withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
             isMacroRingExpanded.toggle()
         }
     }

@@ -169,12 +169,9 @@ struct LogFoodScreen: View {
 
             if shouldShowRequiredReviewSection {
                 Section("Required Review") {
-                    Text(
-                        "Missing OCR values must be updated to a value greater than 0, "
-                            + "or explicitly confirmed as intentional 0 values before logging."
-                    )
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    Text("Some values couldn’t be read from the label. Enter them, or confirm they’re 0.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
 
                     ForEach(requiredReviewNutrients, id: \.self) { nutrient in
                         if reviewDraft.isRequiredNutrientPositive(nutrient) == false {
@@ -246,13 +243,15 @@ struct LogFoodScreen: View {
                     }
                     .background(Color.black.opacity(0.95))
                     .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
+                        ToolbarItem(placement: .confirmationAction) {
                             Button("Done") {
                                 showingPreviewImage = false
                             }
                         }
                     }
                 }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
         }
         #endif

@@ -16,7 +16,7 @@ extension FoodCameraSheet {
     }
 
     func resolveBarcode(_ barcode: String) async {
-        feedbackToken += 1
+        detectionFeedbackToken += 1
         do {
             let resolver = BarcodeLookupResolver(foodRepository: foodRepository, client: OpenFoodFactsClient())
             let draft: FoodDraft

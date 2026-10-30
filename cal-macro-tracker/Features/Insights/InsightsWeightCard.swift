@@ -51,65 +51,69 @@ struct InsightsWeightCard: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 0) {
             if let latest = WeightAnalytics.latest(from: points) {
-                HStack {
-                    Text("Weight").font(.headline)
-                    Spacer()
-                    Text("\(displayWeight(latest.weightKg), specifier: "%.1f") \(unitLabel)")
-                        .font(.title3.bold().monospacedDigit())
-                }
-                if entitlements.canUse(.weightTrends), let rate = WeightAnalytics.weeklyRate(from: points) {
-                    Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    if let comparison = WeightAnalytics.comparisonFromSevenDaysAgo(
-                        in: allPoints,
-                        endingOn: latest.day
-                    ) {
-                        let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
-                        Text(
-                            "\(comparison.changeKg >= 0 ? "+" : "")\(displayWeight(comparison.changeKg), specifier: "%.1f") \(unitLabel) \(label)"
-                        )
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    } else {
-                        Text("No weight 7 days ago")
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Weight").font(.headline)
+                        Spacer()
+                        Text("\(displayWeight(latest.weightKg), specifier: "%.1f") \(unitLabel)")
+                            .font(.title3.bold().monospacedDigit())
+                    }
+                    if entitlements.canUse(.weightTrends), let rate = WeightAnalytics.weeklyRate(from: points) {
+                        Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                    }
-                }
-                if points.count > 1 {
-                    ZStack {
-                        PaidFeatureGate(.weightTrends) {
-                            trendChart
-                        } locked: {
-                            trendChart
-                                .blur(radius: 6)
-                                .accessibilityHidden(true)
+                    } else {
+                        if let comparison = WeightAnalytics.comparisonFromSevenDaysAgo(
+                            in: allPoints,
+                            endingOn: latest.day
+                        ) {
+                            let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
+                            Text(
+                                "\(comparison.changeKg >= 0 ? "+" : "")\(displayWeight(comparison.changeKg), specifier: "%.1f") \(unitLabel) \(label)"
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        } else {
+                            Text("No weight 7 days ago")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         }
-                        if !entitlements.canUse(.weightTrends) {
-                            Button {
-                                isPresentingPro = true
-                            } label: {
-                                Label("Unlock weight trends with Pro", systemImage: "lock.fill")
-                                    .frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                    if points.count > 1 {
+                        ZStack {
+                            PaidFeatureGate(.weightTrends) {
+                                trendChart
+                            } locked: {
+                                trendChart
+                                    .blur(radius: 6)
+                                    .accessibilityHidden(true)
                             }
-                            .buttonStyle(.bordered)
+                            if !entitlements.canUse(.weightTrends) {
+                                AppAccentActionButton(
+                                    title: "Unlock Weight Trends", systemImage: "lock.open.fill", isCompact: false
+                                ) {
+                                    isPresentingPro = true
+                                }
+                            }
                         }
                     }
+                    NavigationLink("View weight log") {
+                        WeightScreen()
+                    }
                 }
+                .padding()
+                .appCardBackground(cornerRadius: 24)
             } else {
-                Text(range == .allTime ? "No entries yet" : "No weight logged in this range")
-                    .foregroundStyle(.secondary)
-            }
-            NavigationLink(entries.isEmpty && range == .allTime ? "Log your first weight" : "View weight log") {
-                WeightScreen()
+                NavigationLink("View weight log") {
+                    WeightScreen()
+                }
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .padding()
+                .appCardBackground(cornerRadius: 24)
             }
         }
-        .padding()
-        .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 16))
     }
 
     private var isMetric: Bool {

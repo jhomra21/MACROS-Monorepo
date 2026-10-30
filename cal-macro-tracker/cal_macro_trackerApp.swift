@@ -41,6 +41,7 @@ struct cal_macro_trackerApp: App {
     @State private var pendingOpenRequest: AppOpenRequest?
     @State private var didCompleteForcedGoalSetup = false
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     #if os(iOS)
     @UIApplicationDelegateAdaptor(HomeScreenQuickActionAppDelegate.self) private var appDelegate
     #endif
@@ -60,10 +61,7 @@ struct cal_macro_trackerApp: App {
             Group {
                 switch launchState.phase {
                 case .launching:
-                    Text("💪")
-                        .font(.system(size: 72))
-                        .accessibilityLabel(AppBrand.displayName)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    PlatformColors.groupedBackground
                 case let .ready(modelContainer):
                     ZStack {
                         if shouldShowAppRoot {
@@ -79,7 +77,7 @@ struct cal_macro_trackerApp: App {
                             .transition(
                                 .asymmetric(
                                     insertion: .identity,
-                                    removal: .move(edge: .bottom)
+                                    removal: reduceMotion ? .opacity : .move(edge: .bottom)
                                 )
                                 .animation(.easeOut(duration: 0.22))
                             )

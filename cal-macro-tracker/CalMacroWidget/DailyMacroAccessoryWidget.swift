@@ -6,16 +6,17 @@ struct DailyMacroAccessoryWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(
             kind: SharedAppConfiguration.dailyMacroAccessoryWidgetKind,
-            provider: DailyMacroWidgetProvider()
+            provider: DailyMacroWidgetProvider(includesAppearance: false)
         ) { entry in
             DailyMacroAccessoryWidgetContentView(entry: entry)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 .containerBackground(for: .widget) {
                     AccessoryWidgetBackground()
                 }
                 .widgetURL(AppOpenRequest.dashboard.url)
         }
-        .configurationDisplayName("Daily Macros")
-        .description("Check today's calories and macros from your Lock Screen.")
+        .configurationDisplayName("Macros Lock Screen")
+        .description("Check today’s calories and macros from your Lock Screen.")
         .supportedFamilies([
             .accessoryInline,
             .accessoryCircular,

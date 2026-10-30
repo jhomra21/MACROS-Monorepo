@@ -1,8 +1,5 @@
 import SwiftUI
 import UserNotifications
-#if os(iOS)
-import UIKit
-#endif
 
 struct ReminderSettingsSection: View {
     @AppStorage(AppStorageKeys.reminderEnabled) private var isEnabled = false
@@ -21,10 +18,9 @@ struct ReminderSettingsSection: View {
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.openURL) private var openURL
     @State private var isDenied = false
-    @State private var isPresentingPro = false
 
     var body: some View {
-        Section("Reminders") {
+        Section {
             Toggle("Daily log reminder", isOn: $isEnabled)
                 .onChange(of: isEnabled) { _, enabled in
                     handleReminderChange(enabled, binding: $isEnabled)
@@ -52,20 +48,22 @@ struct ReminderSettingsSection: View {
                         handleReminderChange(enabled, binding: $smartEveningEnabled)
                     }
             } else {
-                Button {
-                    isPresentingPro = true
-                } label: {
-                    Label("Multiple reminders", systemImage: "lock.fill")
+                ProLockedRow(title: "Multiple reminders", context: .reminders)
+            }
+            if isDenied, let settingsURL = AppSettingsURL.url {
+                Button("Open Notification Settings") {
+                    openURL(settingsURL)
                 }
             }
+        } header: {
+            Text("Reminders")
+        } footer: {
             if isDenied {
-                Button("Open notification settings") {
-                    openURL(URL(string: UIApplication.openSettingsURLString)!)
-                }
+                Text("Notifications are off for MACROS. Turn them on in Settings to get reminders.")
             }
         }
-        .sheet(isPresented: $isPresentingPro) {
-            ProPaywallSheet(context: .reminders)
+        .task {
+            isDenied = await UNUserNotificationCenter.current().notificationSettings().authorizationStatus == .denied
         }
     }
 

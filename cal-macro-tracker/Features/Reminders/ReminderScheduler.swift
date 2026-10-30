@@ -9,6 +9,11 @@ struct ReminderDefinition: Equatable {
     let onlyIfNothingLogged: Bool
 }
 
+enum ReminderLimits {
+    /// Most reminders a user can enable, including the daily reminder.
+    static let maxCount = 3
+}
+
 enum ReminderScheduler {
     static func resolveReminders(
         free: ReminderDefinition?,
@@ -21,7 +26,7 @@ enum ReminderScheduler {
             let minuteOfDay = reminder.hour * 60 + reminder.minute
             return scheduledTimes.insert(minuteOfDay).inserted
         }
-        .prefix(hasPro ? 3 : 1)
+        .prefix(hasPro ? ReminderLimits.maxCount : 1)
         .map { $0 }
     }
 
@@ -66,7 +71,7 @@ enum ReminderScheduler {
         let freeReminder =
             defaults.bool(forKey: AppStorageKeys.reminderEnabled)
             ? ReminderDefinition(
-                title: "Log today's meals",
+                title: "Log today’s meals",
                 hour: Self.hour(forKey: AppStorageKeys.reminderHour, default: 20),
                 minute: Self.minute(forKey: AppStorageKeys.reminderMinute),
                 onlyIfNothingLogged: true

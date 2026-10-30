@@ -9,6 +9,7 @@ enum PaidFeature: CaseIterable {
     case healthWeightImport
     case backup
     case multipleReminders
+    case customWidgetBackground
 
     var requiredEntitlement: PaidEntitlement {
         .pro

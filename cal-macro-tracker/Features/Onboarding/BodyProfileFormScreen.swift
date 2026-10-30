@@ -155,6 +155,8 @@ struct BodyProfileFormScreen: View {
     @Binding var profile: BodyProfileDraft
     let onContinue: () -> Void
     @FocusState private var focusedField: ProfileField?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .body) private var rowMinHeight: CGFloat = 58
 
     private enum ProfileField: Hashable {
         case age
@@ -177,6 +179,13 @@ struct BodyProfileFormScreen: View {
             let weight = profile.weightKg
         else { return false }
         return (1...120).contains(age) && height.isFinite && weight.isFinite && height > 0 && weight > 0
+    }
+
+    /// Label-over-field stacking at accessibility sizes so fixed-width fields never clip.
+    private var rowLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout())
     }
 
     private var heightBinding: Binding<String> {
@@ -246,7 +255,6 @@ struct BodyProfileFormScreen: View {
                 }
             )
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
         }
         .navigationTitle("About you")
         .inlineNavigationTitle()
@@ -254,9 +262,8 @@ struct BodyProfileFormScreen: View {
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: keyboardFields)
     }
 
-    @ViewBuilder
     private var profileInputRows: some View {
-        let rows = VStack(spacing: 12) {
+        VStack(spacing: 12) {
             Picker("Sex", selection: $profile.sex) {
                 ForEach(GoalSex.allCases, id: \.self) { sex in
                     Text(sex.title).tag(sex)
@@ -265,7 +272,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Sex")
             .padding(12)
-            .appGlassRoundedRect(cornerRadius: 18)
+            .appCardBackground(cornerRadius: 18)
 
             profileNumericRow("Age", value: $profile.ageText, suffix: "years", field: .age)
             if profile.ageText.isEmpty {
@@ -276,23 +283,29 @@ struct BodyProfileFormScreen: View {
             if profile.unitSystem == .metric {
                 profileNumericRow("Height", value: heightBinding, suffix: "cm", field: .height)
             } else {
-                HStack {
+                rowLayout {
                     Text("Height")
-                    Spacer()
-                    AppNumericTextField("Feet", text: heightBinding, focusedField: $focusedField, field: .heightFeet)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        Spacer()
+                    }
+                    HStack {
+                        AppNumericTextField("Feet", text: heightBinding, focusedField: $focusedField, field: .heightFeet)
+                            .frame(width: 58)
+                            .accessibilityLabel("Height, feet")
+                        Text("ft").foregroundStyle(.secondary)
+                        AppNumericTextField(
+                            "Inches", text: heightInchesBinding, focusedField: $focusedField, field: .heightInches
+                        )
                         .frame(width: 58)
-                        .accessibilityLabel("Height, feet")
-                    Text("ft").foregroundStyle(.secondary)
-                    AppNumericTextField(
-                        "Inches", text: heightInchesBinding, focusedField: $focusedField, field: .heightInches
-                    )
-                    .frame(width: 58)
-                    .accessibilityLabel("Height, inches")
-                    Text("in").foregroundStyle(.secondary)
+                        .accessibilityLabel("Height, inches")
+                        Text("in").foregroundStyle(.secondary)
+                    }
                 }
                 .padding(.horizontal, 16)
-                .frame(height: 58)
-                .appGlassRoundedRect(cornerRadius: 18)
+                .padding(.vertical, 12)
+                .frame(minHeight: rowMinHeight)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .appCardBackground(cornerRadius: 18)
             }
             profileNumericRow(
                 "Weight",
@@ -313,14 +326,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Units")
             .padding(12)
-            .appGlassRoundedRect(cornerRadius: 18)
-        }
-        if #available(iOS 26, macOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                rows
-            }
-        } else {
-            rows
+            .appCardBackground(cornerRadius: 18)
         }
     }
 
@@ -330,17 +336,23 @@ struct BodyProfileFormScreen: View {
         suffix: String,
         field: ProfileField
     ) -> some View {
-        HStack {
+        rowLayout {
             Text(title)
-            Spacer()
-            AppNumericTextField(title, text: value, focusedField: $focusedField, field: field)
-                .frame(width: 100)
-            Text(suffix).foregroundStyle(.secondary).frame(width: 46, alignment: .leading)
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer()
+            }
+            HStack {
+                AppNumericTextField(title, text: value, focusedField: $focusedField, field: field)
+                    .frame(width: 100)
+                Text(suffix).foregroundStyle(.secondary).frame(minWidth: 46, alignment: .leading)
+            }
         }
         .accessibilityElement(children: .contain)
         .padding(.horizontal, 16)
-        .frame(height: 58)
-        .appGlassRoundedRect(cornerRadius: 18)
+        .padding(.vertical, 12)
+        .frame(minHeight: rowMinHeight)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .appCardBackground(cornerRadius: 18)
         .accessibilityLabel(title)
     }
 

@@ -1,8 +1,8 @@
 import SwiftUI
 
 enum AppTopBarStyle {
-    static let titleFont: Font = .system(size: 20, weight: .semibold)
-    static let iconFont: Font = .system(size: 18.75, weight: .medium)
+    static let titleFont: Font = .title2.weight(.semibold)
+    static let iconFont: Font = .body.weight(.medium)
 }
 
 struct AppTopBarLeadingTitle: ToolbarContent {

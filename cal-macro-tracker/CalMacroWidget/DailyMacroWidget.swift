@@ -1,29 +1,59 @@
+import Foundation
 import OSLog
 import SwiftUI
 import WidgetKit
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 struct DailyMacroWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: DailyMacroSnapshot
     let customRingPalette: MacroRingPalette?
+    let appearance: WidgetAppearanceRecord?
+    let proAccess: WidgetProAccess
+    let backgroundPhotoData: Data?
+    var isPlaceholder = false
 }
 
 struct DailyMacroWidgetProvider: TimelineProvider {
     private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "Widget")
+    private let includesAppearance: Bool
+
+    init(includesAppearance: Bool = true) {
+        self.includesAppearance = includesAppearance
+    }
 
     func placeholder(in context: Context) -> DailyMacroWidgetEntry {
+        DailyMacroWidgetEntry(
+            date: .now,
+            snapshot: .empty,
+            customRingPalette: nil,
+            appearance: nil,
+            proAccess: .unknown,
+            backgroundPhotoData: nil,
+            isPlaceholder: true
+        )
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (DailyMacroWidgetEntry) -> Void) {
+        completion(context.isPreview ? sampleEntry : loadEntry())
+    }
+
+    private var sampleEntry: DailyMacroWidgetEntry {
         DailyMacroWidgetEntry(
             date: .now,
             snapshot: DailyMacroSnapshot(
                 totals: NutritionSnapshot(calories: 1_840, protein: 132, fat: 58, carbs: 176),
                 goals: .default
             ),
-            customRingPalette: nil
+            customRingPalette: nil,
+            appearance: nil,
+            proAccess: .unknown,
+            backgroundPhotoData: nil
         )
-    }
-
-    func getSnapshot(in context: Context, completion: @escaping (DailyMacroWidgetEntry) -> Void) {
-        completion(loadEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<DailyMacroWidgetEntry>) -> Void) {
@@ -47,11 +77,34 @@ struct DailyMacroWidgetProvider: TimelineProvider {
             snapshot = .empty
         }
 
+        let appearanceStorage = WidgetAppearanceStorage.shared
+        let appearance = includesAppearance ? appearanceStorage.appearanceRecord : nil
+        let proAccess = includesAppearance ? appearanceStorage.proAccess : .unknown
         return DailyMacroWidgetEntry(
             date: .now,
             snapshot: snapshot,
-            customRingPalette: MacroRingColorStorage.storedPalette()
+            customRingPalette: MacroRingColorStorage.storedPalette(),
+            appearance: appearance,
+            proAccess: proAccess,
+            backgroundPhotoData: includesAppearance ? backgroundPhotoData(for: appearance, access: proAccess) : nil
         )
+    }
+
+    private func backgroundPhotoData(
+        for appearance: WidgetAppearanceRecord?,
+        access: WidgetProAccess
+    ) -> Data? {
+        let storage = WidgetAppearanceStorage.shared
+        guard access == .allowed,
+            let identifier = appearance?.background.photoIdentifier,
+            let url = storage.photoURL(for: identifier),
+            let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+            let size = attributes[.size] as? NSNumber,
+            size.uint64Value <= UInt64(WidgetAppearanceStorage.maximumPhotoBytes),
+            let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+            data.count <= WidgetAppearanceStorage.maximumPhotoBytes
+        else { return nil }
+        return data
     }
 }
 
@@ -59,30 +112,47 @@ struct DailyMacroWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: SharedAppConfiguration.dailyMacroWidgetKind, provider: DailyMacroWidgetProvider()) { entry in
             DailyMacroWidgetContentView(entry: entry)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 .containerBackground(for: .widget) {
-                    Color.clear
+                    DailyMacroWidgetBackground(entry: entry)
                 }
                 .widgetURL(AppOpenRequest.dashboard.url)
         }
         .configurationDisplayName("Daily Macros")
         .description("Track calories and macros at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium])
+        .containerBackgroundRemovable(true)
     }
 }
 
 private struct DailyMacroWidgetContentView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.widgetRenderingMode) private var renderingMode
+    @Environment(\.showsWidgetContainerBackground) private var showsWidgetContainerBackground
+    @Environment(\.colorScheme) private var colorScheme
 
     let entry: DailyMacroWidgetEntry
 
     var body: some View {
-        switch family {
-        case .systemMedium:
-            mediumContent
-        default:
-            smallContent
+        Group {
+            switch family {
+            case .systemMedium:
+                mediumContent
+            default:
+                smallContent
+            }
         }
+        .environment(
+            \.colorScheme,
+            usesCustomBackground ? .dark : colorScheme
+        )
+    }
+
+    private var usesCustomBackground: Bool {
+        entry.customBackground(
+            renderingMode: renderingMode,
+            showsContainerBackground: showsWidgetContainerBackground
+        ) != nil
     }
 
     private var ringColorStyle: MacroRingColorStyle {
@@ -97,8 +167,8 @@ private struct DailyMacroWidgetContentView: View {
 
     private var smallContent: some View {
         GeometryReader { geometry in
-            let horizontalPadding: CGFloat = 8
-            let verticalPadding: CGFloat = 10
+            let horizontalPadding: CGFloat = 14
+            let verticalPadding: CGFloat = 12
             let metricSpacing: CGFloat = 2
             let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
             let columnCount = CGFloat(MacroMetric.allCases.count)
@@ -106,6 +176,7 @@ private struct DailyMacroWidgetContentView: View {
             let columnWidth = max((availableWidth - totalSpacing) / columnCount, 0)
 
             VStack(spacing: 8) {
+                // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
@@ -113,7 +184,8 @@ private struct DailyMacroWidgetContentView: View {
                     centerValueFontSize: 18,
                     minimumLineWidth: 5,
                     showsGoalSubtitle: false,
-                    colorStyle: ringColorStyle
+                    colorStyle: ringColorStyle,
+                    usesGlassEffect: false
                 )
                 .widgetAccentable()
                 .frame(maxWidth: .infinity)
@@ -141,6 +213,7 @@ private struct DailyMacroWidgetContentView: View {
             let columnWidth = max((metricWidth - metricTotalSpacing) / metricCount, 0)
 
             HStack(spacing: ringMetricSpacing) {
+                // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
@@ -148,7 +221,8 @@ private struct DailyMacroWidgetContentView: View {
                     centerValueFontSize: 24,
                     minimumLineWidth: 5,
                     showsGoalSubtitle: false,
-                    colorStyle: ringColorStyle
+                    colorStyle: ringColorStyle,
+                    usesGlassEffect: false
                 )
                 .widgetAccentable()
 
@@ -196,22 +270,15 @@ private struct DailyMacroWidgetContentView: View {
     }
 
     private func smallMetricsRow(columnWidth: CGFloat, spacing: CGFloat) -> some View {
-        HStack(spacing: spacing) {
-            ForEach(MacroMetric.allCases) { metric in
-                smallMetric(metric: metric, fontSize: smallMetricValueFontSize)
-                    .frame(width: columnWidth)
-            }
-        }
-    }
-
-    private func smallMetric(metric: MacroMetric, fontSize: CGFloat) -> some View {
-        MacroSummaryColumnView(
-            metric: metric,
+        MacroSummaryColumnsGrid(
+            metrics: MacroMetric.allCases,
             totals: entry.snapshot.totals,
             goals: entry.snapshot.goals,
-            titleStyle: .short,
-            style: .widgetSmall(valueFontSize: fontSize)
+            style: .widgetSmall(valueFontSize: smallMetricValueFontSize),
+            columnWidth: columnWidth,
+            columnSpacing: spacing
         )
+        .frame(width: columnWidth * CGFloat(MacroMetric.allCases.count) + spacing * CGFloat(MacroMetric.allCases.count - 1))
     }
 
     private func mediumMetric(metric: MacroMetric) -> some View {
@@ -248,6 +315,64 @@ private struct DailyMacroWidgetContentView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
             }
+        }
+    }
+}
+
+private enum CustomWidgetBackground {
+    case color(Color)
+    case photo(Image)
+}
+
+private extension DailyMacroWidgetEntry {
+    /// The Pro background that is actually drawn, or nil when iOS draws the native container.
+    /// Foreground and background both read this so the text scheme always matches the drawn background.
+    func customBackground(renderingMode: WidgetRenderingMode, showsContainerBackground: Bool) -> CustomWidgetBackground? {
+        guard renderingMode == .fullColor, showsContainerBackground, proAccess == .allowed,
+            let selection = appearance?.background
+        else { return nil }
+        switch selection {
+        case .native:
+            return nil
+        case let .color(hex):
+            return Color(hex: hex).map(CustomWidgetBackground.color)
+        case .photo:
+            return photoImage.map(CustomWidgetBackground.photo)
+        }
+    }
+
+    private var photoImage: Image? {
+        guard let data = backgroundPhotoData else { return nil }
+        #if os(iOS)
+        guard let image = UIImage(data: data) else { return nil }
+        return Image(uiImage: image)
+        #elseif os(macOS)
+        guard let image = NSImage(data: data) else { return nil }
+        return Image(nsImage: image)
+        #else
+        return nil
+        #endif
+    }
+}
+
+private struct DailyMacroWidgetBackground: View {
+    @Environment(\.widgetRenderingMode) private var renderingMode
+    @Environment(\.showsWidgetContainerBackground) private var showsWidgetContainerBackground
+
+    let entry: DailyMacroWidgetEntry
+
+    var body: some View {
+        switch entry.customBackground(renderingMode: renderingMode, showsContainerBackground: showsWidgetContainerBackground) {
+        case let .color(color)?:
+            color.overlay(Color.black.opacity(0.82))
+        case let .photo(image)?:
+            image
+                .resizable()
+                .scaledToFill()
+                .overlay(Color.black.opacity(0.82))
+                .clipped()
+        case nil:
+            Rectangle().fill(.fill.tertiary)
         }
     }
 }

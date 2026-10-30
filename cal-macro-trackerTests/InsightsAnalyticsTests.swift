@@ -43,6 +43,84 @@ final class InsightsAnalyticsTests: XCTestCase {
         XCTAssertEqual(InsightsAnalytics.currentStreak(days: [beforeLocalMidnight, afterLocalMidnight], today: afterLocalMidnight), 2)
     }
 
+    func testMonthlyWeightNoticeDistinguishesNeverLoggedFromStale() {
+        let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
+
+        XCTAssertEqual(InsightsWeightNotice.message(latestWeightDate: nil, today: today, dismissedAt: nil), "No weight logged")
+        XCTAssertEqual(
+            InsightsWeightNotice.message(
+                latestWeightDate: date(year: 2026, month: 4, day: 6),
+                today: today,
+                dismissedAt: nil
+            ),
+            "No weight logged in a month"
+        )
+    }
+
+    func testRecentWeightSuppressesNoticeAndCutoffDayIsInclusive() {
+        let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
+
+        for offset in [0, -7, -14] {
+            let latest = today.advanced(byDays: offset)!.startDate
+            XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: latest, today: today, dismissedAt: nil))
+        }
+
+        let cutoff = today.resolvedCalendar.date(byAdding: .month, value: -1, to: today.startDate)!
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: cutoff, today: today, dismissedAt: nil))
+        XCTAssertEqual(
+            InsightsWeightNotice.message(
+                latestWeightDate: today.resolvedCalendar.date(byAdding: .day, value: -1, to: cutoff)!,
+                today: today,
+                dismissedAt: nil
+            ),
+            "No weight logged in a month"
+        )
+    }
+
+    func testDismissalCooldownPersistsForBothNoticeTypesAndExpiresOnCalendarMonthDate() {
+        let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
+        let dismissedAt = today.advanced(byDays: -20)!.startDate
+        let stale = today.advanced(byDays: -60)!.startDate
+
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: nil, today: today, dismissedAt: dismissedAt))
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: stale, today: today, dismissedAt: dismissedAt))
+
+        let expiry = today.resolvedCalendar.date(byAdding: .month, value: 1, to: dismissedAt)!
+        let expiryDay = CalendarDay(date: expiry, calendar: today.resolvedCalendar)
+        XCTAssertEqual(
+            InsightsWeightNotice.message(latestWeightDate: stale, today: expiryDay, dismissedAt: dismissedAt),
+            "No weight logged in a month"
+        )
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: today.startDate, today: expiryDay, dismissedAt: dismissedAt))
+    }
+
+    func testNoticeUsesCalendarMonthAcrossLeapYearEndOfMonthAndDST() {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(secondsFromGMT: 0)!
+        let leapDay = CalendarDay(date: date(year: 2024, month: 2, day: 29), calendar: utc)
+        let leapCutoff = utc.date(byAdding: .month, value: -1, to: leapDay.startDate)!
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: leapCutoff, today: leapDay, dismissedAt: nil))
+        XCTAssertEqual(
+            InsightsWeightNotice.message(
+                latestWeightDate: utc.date(byAdding: .day, value: -1, to: leapCutoff)!,
+                today: leapDay,
+                dismissedAt: nil
+            ),
+            "No weight logged in a month"
+        )
+
+        let monthEnd = CalendarDay(date: date(year: 2026, month: 3, day: 31), calendar: utc)
+        let monthEndCutoff = utc.date(byAdding: .month, value: -1, to: monthEnd.startDate)!
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: monthEndCutoff, today: monthEnd, dismissedAt: nil))
+
+        var pacific = Calendar(identifier: .gregorian)
+        pacific.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let afterDSTDate = pacific.date(from: DateComponents(year: 2026, month: 4, day: 8))!
+        let afterDST = CalendarDay(date: afterDSTDate, calendar: pacific)
+        let dstCutoff = pacific.date(byAdding: .month, value: -1, to: afterDST.startDate)!
+        XCTAssertNil(InsightsWeightNotice.message(latestWeightDate: dstCutoff, today: afterDST, dismissedAt: nil))
+    }
+
     func testRangeBuildsRollingDaysEndingToday() {
         let today = CalendarDay(date: date(year: 2026, month: 5, day: 7))
 
@@ -321,7 +399,11 @@ final class InsightsAnalyticsTests: XCTestCase {
         carbs: Double = 0,
         fiber: Double? = nil
     ) -> InsightsDayPoint {
-        InsightsDayPoint(day: day, snapshot: LogEntryDaySummary.snapshot(for: [entry(day: day, calories: calories, protein: protein, fat: fat, carbs: carbs, fiber: fiber)]))
+        InsightsDayPoint(
+            day: day,
+            snapshot: LogEntryDaySummary.snapshot(for: [
+                entry(day: day, calories: calories, protein: protein, fat: fat, carbs: carbs, fiber: fiber)
+            ]))
     }
 
     private func entry(

@@ -97,18 +97,6 @@ struct SearchFoodListView: View {
     var body: some View {
         List {
             Section {
-                if shouldShowOnlineSearchPrompt {
-                    Button {
-                        onSearchOnline()
-                    } label: {
-                        Label("Search online for “\(searchText.trimmingCharacters(in: .whitespacesAndNewlines))”", systemImage: "globe")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .accessibilityHint("Search online packaged foods for this query")
-                }
-
                 localResultsHeader
                     .environment(\.defaultMinListRowHeight, 0)
                     .listRowInsets(
@@ -273,7 +261,6 @@ struct SearchFoodListView: View {
         Text("On Device")
             .font(.footnote.weight(.semibold))
             .foregroundStyle(.secondary)
-            .textCase(.uppercase)
     }
 
     private var foodRowInsets: EdgeInsets {
@@ -363,11 +350,6 @@ struct SearchFoodListView: View {
         remoteSearch.provider == .openFoodFacts
             && remoteSearch.isLoading == false
             && remoteSearch.hasState
-    }
-
-    private var shouldShowOnlineSearchPrompt: Bool {
-        searchText.trimmingCharacters(in: .whitespacesAndNewlines).count >= 3
-            && localResults.count < 5
     }
 
     private var emptyRemoteSearchMessage: String {
