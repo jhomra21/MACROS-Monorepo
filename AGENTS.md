@@ -56,7 +56,7 @@ Example: https://developer.apple.com/documentation/
 
 ## Commands
 
-- Simulator budget: keep at most two simulators booted on the Mac. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
+- Simulator budget: at most four simulators booted on the Mac, and at most one of them stock (not slimmed). The iPad test runner and the stock iPhone 17, 17e, and Air are slimmed with simslim (`brew install mobai-app/tap/simslim`) using `tools/sim/macros-slim.json`; the owner's iPhone 18 Pro fixture and the iPhone 18 Pro Max media device stay stock. Measured on 2026-10-30 after 180 s settled: about 7.4 GB for a slim iPhone 17 versus about 10.6 GB for the stock iPhone 18 Pro Max. Check a device with `simslim verify <udid> --profile tools/sim/macros-slim.json` (it must be booted) and repair drift with `simslim on <udid> --profile tools/sim/macros-slim.json`. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
 - Simulator inventory (cleaned 2026-10-30): exactly one simulator per device model per iOS version, and only the latest iOS runtime (27.0; the 26.4 runtime and all its devices were deleted). The kept set is:
   - `9843E820-3A2A-4599-9206-D224B3035A47` iPhone 18 Pro: the owner's fixture with real app data and widgets. Never erase, reset, or load demo data on it.
   - `D16C3D35-889F-404F-BDD4-C640A6DBC4EF` iPhone 18 Pro Max (`MACROS-iPhone-18-Pro-Max-2026-10-30`): App Store media capture (demo data, 9:41 status bar).

@@ -1,0 +1,6 @@
+{
+  "name": "macros",
+  "description": "MACROS dev and QA: keep widgets, StoreKit, photos, Health, keychain, notifications",
+  "except": ["widgets", "store", "photos", "health", "icloud"],
+  "keep": []
+}
