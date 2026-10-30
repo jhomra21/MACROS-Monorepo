@@ -222,14 +222,14 @@ struct FoodCameraSheet: View {
             .foregroundStyle(.primary)
             .padding(.top, 12)
             .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 16)
             .layoutPriority(2)
         } else {
             panel
                 .foregroundStyle(.primary)
                 .padding(.top, 12)
                 .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-                .padding(.horizontal, 8)
+                .padding(.horizontal, 16)
         }
     }
 
@@ -270,7 +270,7 @@ struct FoodCameraSheet: View {
         .frame(maxWidth: .infinity, minHeight: 120, maxHeight: .infinity)
         .layoutPriority(0)
         .clipShape(RoundedRectangle(cornerRadius: 28))
-        .padding(8)
+        .padding(16)
         .ignoresSafeArea(edges: .bottom)
         .onAppear {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {

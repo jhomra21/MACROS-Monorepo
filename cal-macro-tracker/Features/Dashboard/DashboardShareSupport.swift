@@ -17,11 +17,7 @@ extension DashboardScreen {
 
             Button("Open Insights", systemImage: "chart.xyaxis.line", action: onOpenInsights)
                 .labelStyle(.iconOnly)
-        }
 
-        ToolbarSpacer(.fixed, placement: .appTopBarTrailing)
-
-        ToolbarItemGroup(placement: .appTopBarTrailing) {
             Button("Open History", systemImage: "calendar", action: onOpenHistory)
                 .labelStyle(.iconOnly)
 

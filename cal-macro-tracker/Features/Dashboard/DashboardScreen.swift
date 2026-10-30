@@ -138,8 +138,6 @@ struct DashboardScreen: View {
 
     private var todayReturnRow: some View {
         HStack {
-            Spacer()
-
             Button {
                 withAnimation(.easeInOut(duration: 0.18)) {
                     daySelection.resetToToday(dayContext.today)
@@ -155,6 +153,8 @@ struct DashboardScreen: View {
             .buttonStyle(.plain)
             .appGlassRoundedRect(cornerRadius: 18)
             .accessibilityLabel("Return to today")
+
+            Spacer()
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
