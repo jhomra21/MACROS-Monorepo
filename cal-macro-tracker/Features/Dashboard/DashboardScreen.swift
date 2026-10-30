@@ -211,6 +211,7 @@ struct DashboardScreen: View {
             colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
             onToggleExpansion: toggleMacroRingExpansion
         )
+        .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
 
