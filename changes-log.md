@@ -20,7 +20,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Widgets: small widget margins widen to 14 and 12 points. Previews show sample values and placeholders are redacted. The Lock Screen widget is named "Macros Lock Screen".
 - Decision: the saved-food delete dialog omits the meal-usage warning because delete is disabled while a food is used in a meal.
 - Decision: the launch error view has no Try Again button because the launch state has no retry path. It shows a close-and-reopen hint instead.
-- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `WidgetAppearanceStorageTests`, `FoodItemLocalSearchTests`, `GoalCalculatorTests`, and `WeightAnalyticsTests` pass 37 of 37. Simulator checks covered the dashboard and Add Food sheet at default and largest accessibility text sizes. Other device checks are unverified (see the batch 3b report).
+- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `WidgetAppearanceStorageTests`, `FoodItemLocalSearchTests`, `GoalCalculatorTests`, and `WeightAnalyticsTests` pass 37 of 37. Simulator checks: dashboard and Today pill at the largest accessibility text size, Add Food at default text size, Weight entry keyboard toolbar, and the Delete Entry confirmation. Other device checks are unverified (see the batch 3b report).
 
 ## 2026-10-29 Polish Batch 3a
 
