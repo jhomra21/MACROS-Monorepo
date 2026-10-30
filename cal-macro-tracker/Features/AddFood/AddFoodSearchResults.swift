@@ -110,15 +110,17 @@ struct SearchFoodListView: View {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
 
-                if isLocalSearchLoading && (searchText.isEmpty || localResults.isEmpty == false) {
-                    HStack {
-                        ProgressView()
-                        Text("Searching on-device foods and meals…")
+                if localResults.isEmpty {
+                    if isLocalSearchLoading {
+                        HStack {
+                            ProgressView()
+                            Text("Searching on-device foods and meals…")
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Text(localEmptyMessage)
                             .foregroundStyle(.secondary)
                     }
-                } else if localResults.isEmpty {
-                    Text(localEmptyMessage)
-                        .foregroundStyle(.secondary)
                 } else {
                     ForEach(localResults) { result in
                         localResultLink(for: result)
