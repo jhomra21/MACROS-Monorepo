@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 TestFlight Build 11
+
+- `CURRENT_PROJECT_VERSION` 10 -> 11 in all six configurations (app, widget, tests); marketing version stays 1.0. Branch merged with `origin/main` (web refresh, no conflicts). Evidence: `build/testflight-build11-release-2026-10-29/REPORT.md`.
+
 ## 2026-10-29 E2E Delight Pass Fixes
 
 - Log rows, meal detail and meal editor summaries now say "1 serving" instead of "1 servings" (`QuantityMode.formattedSummary`, inflect).
