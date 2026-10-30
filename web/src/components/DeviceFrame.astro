@@ -16,15 +16,8 @@ const { src, alt, widths = [280, 560], sizes = '280px', eager = false, small = f
 <div class:list={['device', small && 'device--sm']}>
 	<div class="device__body">
 		<div class="device__screen">
-			<Image
-				src={src}
-				alt={alt}
-				format="webp"
-				widths={widths}
-				sizes={sizes}
-				loading={eager ? 'eager' : 'lazy'}
-				fetchpriority={eager ? 'high' : 'auto'}
-			/>
+			{/* `priority` sets loading="eager", decoding="sync", and fetchpriority="high" together. */}
+			<Image src={src} alt={alt} format="webp" widths={widths} sizes={sizes} priority={eager || undefined} />
 			<span class="device__island" aria-hidden="true"></span>
 		</div>
 	</div>

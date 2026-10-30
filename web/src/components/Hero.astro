@@ -2,6 +2,13 @@
 import { site } from '../data/site';
 import DeviceFrame from './DeviceFrame.astro';
 import WaitlistForm from './WaitlistForm.astro';
+
+// Ring fill as a share of the circle, drawn with pathLength="100" so offsets stay readable.
+const rings = [
+	{ name: 'protein', radius: 26, fill: 78 },
+	{ name: 'carbs', radius: 18, fill: 64 },
+	{ name: 'fat', radius: 10, fill: 46 },
+];
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -9,16 +16,16 @@ import WaitlistForm from './WaitlistForm.astro';
 		<div class="hero__copy">
 			<h1 id="hero-title" class="display" style="--i: 0">{site.hero.title}</h1>
 			<p class="lead" style="--i: 1">{site.hero.lead}</p>
-			<div style="--i: 2; width: 100%">
+			<div class="hero__form" style="--i: 2">
 				<WaitlistForm idPrefix="hero" />
 			</div>
-			<p class="small hero__note" style="--i: 2">
+			<p class="caption hero__note" style="--i: 3">
 				Join the waitlist for the App Store launch. We use your email for the waitlist only. See the{' '}
 				<a href="/privacy">privacy policy</a>.
 			</p>
 			{
 				site.appStoreURL && (
-					<a class="button button--lg" href={site.appStoreURL} style="--i: 2">
+					<a class="button button--lg" href={site.appStoreURL} style="--i: 3">
 						Download on the App Store
 					</a>
 				)
@@ -32,6 +39,27 @@ import WaitlistForm from './WaitlistForm.astro';
 				sizes="(max-width: 900px) 280px, 320px"
 				eager
 			/>
+			<div class="hero__rings" aria-hidden="true">
+				<svg viewBox="0 0 64 64" fill="none" stroke-width="6" stroke-linecap="round">
+					<g transform="rotate(-90 32 32)">
+						{
+							rings.map((ring, index) => (
+								<>
+									<circle class="ring-track" cx="32" cy="32" r={ring.radius} />
+									<circle
+										class={`ring-fill ring-fill--${ring.name}`}
+										cx="32"
+										cy="32"
+										r={ring.radius}
+										pathLength="100"
+										style={`--fill: ${ring.fill}; --ring-i: ${index}`}
+									/>
+								</>
+							))
+						}
+					</g>
+				</svg>
+			</div>
 		</div>
 	</div>
 </section>
