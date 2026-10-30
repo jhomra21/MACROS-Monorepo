@@ -2,6 +2,14 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-30 Illustrated Feature Cards And Copy Pass
+
+### Delivered
+
+- Feature cards: each `features` entry in `site.ts` now has `eyebrow`, `glyph`, and `accent`. New `FeatureGlyph.astro` draws one inline SVG per card (rings, barcode and label, phone with local dot, review checklist, sharing rows, widget mock) in the macro palette. Cards alternate blue, orange, and pink, with a soft corner glow (0.10 light, 0.16 dark) and an accent eyebrow. Eyebrow text uses darker light-mode shades for AA contrast. No new animation.
+- Copy: unslop pass over feature cards, plan summaries, FAQ, support checklist, About, and component strings. Facts, prices, and the privacy and terms pages are unchanged.
+- Validation: check, build, worker tests, oxlint, and `git diff --check` pass; headless Edge screenshots at 390 and 1440, light and dark, reviewed.
+
 ## 2026-10-29 Design-Craft Pass (impeccable, emil-design-eng)
 
 ### Delivered
