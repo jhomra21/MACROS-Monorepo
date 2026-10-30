@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 App Review Audit Fixes (TestFlight Build 12)
+
+- Added privacy manifests for the app (health, user ID, usage, search history, diagnostics collected for app functionality; UserDefaults CA92.1/1C8F.1, file timestamp C617.1) and the widget (required-reason APIs only). The widget manifest is excluded from the app target's synchronized group.
+- Sharing screen now discloses what is uploaded while sharing is off. Settings gained an About section (Privacy Policy, Terms of Use, Support, bundle version footer). Goal review shows a not-medical-advice note. Build number 11 -> 12. Evidence: `build/app-review-fixes-build12-2026-10-29/REPORT.md`.
+
 ## 2026-10-29 TestFlight Build 11
 
 - `CURRENT_PROJECT_VERSION` 10 -> 11 in all six configurations (app, widget, tests); marketing version stays 1.0. Branch merged with `origin/main` (web refresh, no conflicts). Evidence: `build/testflight-build11-release-2026-10-29/REPORT.md`.

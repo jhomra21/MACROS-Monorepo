@@ -57,6 +57,7 @@
 				CalMacroWidget/CalMacroWidgetBundle.swift,
 				CalMacroWidget/DailyMacroAccessoryWidget.swift,
 				CalMacroWidget/DailyMacroWidget.swift,
+				CalMacroWidget/PrivacyInfo.xcprivacy,
 				Shared/AppOpenRequest.swift,
 				Shared/DailyMacroSnapshotLoader.swift,
 				Shared/FoodNutritionRow.swift,
