@@ -78,6 +78,9 @@ struct AddFoodScreen: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }
             }
+            ToolbarItem(placement: .principal) {
+                modePicker
+            }
         }
         .fullScreenCover(isPresented: $isFoodCameraPresented) {
             FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)
@@ -89,9 +92,6 @@ struct AddFoodScreen: View {
                 )
                 .presentationBackground(.clear)
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            modePicker
-        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if selectedMode == .search {
                 scanActionBar
@@ -100,13 +100,12 @@ struct AddFoodScreen: View {
     }
 
     private var modePicker: some View {
-        Picker("Mode", selection: $selectedMode) {
+        Picker("Mode", selection: $selectedMode.animation(.smooth(duration: 0.25))) {
             Text("Search").tag(AddFoodMode.search)
             Text("Manual").tag(AddFoodMode.manual)
         }
         .pickerStyle(.segmented)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .fixedSize()
     }
 
     var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
