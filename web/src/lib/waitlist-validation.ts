@@ -21,7 +21,7 @@ export const waitlistFieldAttributes = {
 } as const;
 
 export const waitlistStatusMessages = {
-	submitted: 'Thanks — you’re on the waitlist.',
+	submitted: 'Thanks, you’re on the waitlist.',
 	alreadyJoined: 'You’re already on the waitlist.',
 	error: 'Something went wrong while joining the waitlist. Please try again.',
 	invalid: 'Please enter a valid email address.',

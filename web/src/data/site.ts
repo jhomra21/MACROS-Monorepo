@@ -15,6 +15,7 @@ export const site = {
 		'MACROS: Nutrition Tracker is a local-first iPhone app for logging calories, protein, carbs, and fat with barcode and nutrition label scanning, fast manual entry, and no account.',
 	// Set this to the App Store listing URL at launch. The header and hero show a download button only when it is non-empty.
 	appStoreURL: '',
+	supportEmail: 'jhonra121@gmail.com',
 	ogImage: {
 		src: '/og.png',
 		alt: 'MACROS: Nutrition Tracker on an iPhone showing daily protein, carbs, and fat rings',
@@ -69,7 +70,7 @@ export const site = {
 		},
 		{
 			title: 'Your food log stays on your iPhone.',
-			body: 'Logs, saved foods, goals, and weight entries live in the app’s protected container, not on our servers.',
+			body: 'Logs, saved foods, goals, and weight entries live in the app\'s protected container, not on our servers.',
 			size: 'narrow',
 		},
 		{
@@ -98,7 +99,7 @@ export const site = {
 		'One daily reminder',
 	],
 	proFeatures: [
-		'Insights charts with ranges from 7D to All',
+		'Insights ranges beyond 7 days',
 		'Weight trends and weight import from Apple Health',
 		'Backup export and import',
 		'Custom macro ring colors',
@@ -122,8 +123,8 @@ export const site = {
 			price: '$19.99',
 			cadence: 'per year',
 			badge: '7-day free trial',
-			summary: 'Insight and control. Also $2.99 per month, without a trial.',
-			highlights: ['Insights charts from 7D to All', 'Weight trends and Apple Health import', 'Backup, ring colors, and smart reminders'],
+			summary: 'Adds insight and control. Also $2.99 per month, with no trial.',
+			highlights: ['Insights ranges beyond 7 days', 'Weight trends and Apple Health import', 'Backup, ring colors, and smart reminders'],
 			featured: true,
 		},
 		{
@@ -149,7 +150,7 @@ export const site = {
 		},
 		{
 			question: 'What is MACROS Pro?',
-			answer: 'Pro adds Insights charts from 7D to All, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders.',
+			answer: 'Pro adds Insights ranges beyond 7 days, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders.',
 		},
 		{
 			question: 'How much does Pro cost?',

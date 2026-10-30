@@ -112,6 +112,7 @@ body {
 	font-synthesis: none;
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
+	overflow-wrap: anywhere;
 }
 
 h1,
@@ -311,8 +312,9 @@ summary {
 	transform: scale(0.97);
 }
 
+/* Disabled keeps the fill and dims only the background, so the label stays at full contrast in both schemes. */
 .button:disabled {
-	opacity: 0.45;
+	background: color-mix(in srgb, var(--action-bg) 65%, transparent);
 	cursor: not-allowed;
 }
 
@@ -358,7 +360,8 @@ summary {
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--space-4);
-	height: var(--header-h);
+	flex-wrap: wrap;
+	min-height: var(--header-h);
 }
 
 .brand {
@@ -380,6 +383,7 @@ summary {
 
 .nav-list {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 }
 
@@ -419,6 +423,7 @@ summary {
 
 .hero__grid {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--space-8);
 	align-items: center;
 }
@@ -553,6 +558,7 @@ summary {
 /* Feature bento */
 .bento {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--space-4);
 }
 
@@ -763,6 +769,7 @@ summary {
 }
 
 .table-wrap {
+	position: relative;
 	overflow-x: auto;
 }
 
@@ -902,6 +909,7 @@ summary {
 }
 
 .waitlist-input {
+	width: 0;
 	flex: 1 1 14rem;
 	min-height: 3.25rem;
 	padding: 0 var(--space-5);
@@ -1058,6 +1066,7 @@ summary {
 /* Support */
 .support-layout {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--space-4);
 	align-items: start;
 }
@@ -1108,7 +1117,8 @@ summary {
 
 .field input,
 .field textarea {
-	width: 100%;
+	width: 0;
+	min-width: 100%;
 	padding: var(--space-3) var(--space-4);
 	background: var(--bg);
 }
@@ -1248,6 +1258,7 @@ summary {
 
 .site-footer__top {
 	display: grid;
+	grid-template-columns: minmax(0, 1fr);
 	gap: var(--space-7);
 	padding-bottom: var(--space-7);
 	border-bottom: 1px solid var(--hairline);
@@ -1267,7 +1278,7 @@ summary {
 
 .site-footer__groups {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
 	gap: var(--space-6);
 }
 

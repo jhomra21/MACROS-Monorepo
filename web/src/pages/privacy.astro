@@ -10,7 +10,7 @@ import { site } from '../data/site';
 	description="How the MACROS: Nutrition Tracker app and website use and protect information."
 	heading="Your food log stays yours."
 	lede="This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request."
-	effective="October 25, 2026"
+	effective="October 30, 2026"
 >
 	<section>
 		<h2>Information stored on your device</h2>
@@ -20,11 +20,13 @@ import { site } from '../data/site';
 	<section>
 		<h2>Packaged-food search and barcode lookup</h2>
 		<p>When you search online or scan a barcode, the search text or barcode and standard request metadata, including your IP address, are sent to our Cloudflare Worker. The Worker queries Open Food Facts and USDA FoodData Central. Responses may be cached for up to 24 hours. We do not send an account identifier with these requests, and no account is required.</p>
+		<p>The food-search service also keeps sampled operational logs for about 10% of requests. These logs can include the request URL (the search text or barcode), the IP address, and a coarse location derived from that IP address. We keep them for up to 7 days, for reliability and abuse prevention. These logs are not linked to any sharing profile.</p>
 	</section>
 
 	<section>
 		<h2>Optional sharing circle</h2>
 		<p>Sharing is off by default. If you enable it, the app sends information to our Convex backend so your invited people can see the daily totals you choose to share. Individual foods and food logs are not sent.</p>
+		<p>Shared totals are linked to your sharing profile (your display name and a device-generated key), which makes them pseudonymous.</p>
 		<p>The backend stores a random device-generated profile key, your chosen display name, and a secret verifier (not your secret itself), plus profile creation, update, and deletion timestamps. Daily snapshots contain the day, time-zone identifier, calories, protein, fat, carbs, entry count, and update time.</p>
 		<p>To support invitations and access, it also stores invitation token hashes, status, expiry and acceptance timestamps, and the relevant profile references; relationship profile references, pair key, creation and removal timestamps; and sharing grant profile references, relationship, macro-sharing scope, start/end days, and start/end timestamps.</p>
 		<p>You can remove people, stop sharing, or delete your sharing profile in Settings. Profile deletion removes associated snapshots, invitations, relationships, and grants, and tombstones the profile key to prevent reuse.</p>
