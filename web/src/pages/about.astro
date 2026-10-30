@@ -6,13 +6,13 @@ import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
 
-<SiteLayout title={`${site.fullName} | About`} description="Learn what MACROS: Nutrition Tracker is built to do and how the app works.">
+<SiteLayout title={`${site.fullName} | About`} description="What MACROS: Nutrition Tracker does and how it works.">
 	<section class="page-header">
 		<div class="container page-header__inner">
-			<h1 class="display">Designed for simple, accurate daily tracking.</h1>
+			<h1 class="display">Simple, accurate daily tracking.</h1>
 			<p class="lead">
-				The App Store name is MACROS: Nutrition Tracker. In the app it is MACROS, an iPhone-first calorie and macro tracker with
-				clear daily totals and local-first storage.
+				MACROS: Nutrition Tracker is the App Store name. In the app it is MACROS, an iPhone calorie and macro tracker that
+				stores your log on the device.
 			</p>
 		</div>
 	</section>
@@ -22,24 +22,24 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 			<article class="about-card" data-reveal>
 				<h2 class="title">Why it exists</h2>
 				<p>
-					Tracking should be fast and trustworthy. MACROS removes friction without
-					requiring sign-up or hiding the numbers that matter.
+					Tracking should be fast and trustworthy. MACROS needs no sign-up and shows
+					every number.
 				</p>
 			</article>
 
 			<article class="about-card" data-reveal style="--reveal-index: 1">
 				<h2 class="title">Core inputs</h2>
 				<p>
-					One camera view reads barcodes and nutrition labels, and manual entry is
-					always available, so logging still works when a scan fails.
+					One camera view reads barcodes and nutrition labels. Manual entry is always
+					there when a scan fails.
 				</p>
 			</article>
 
 			<article class="about-card" data-reveal style="--reveal-index: 2">
 				<h2 class="title">What you review</h2>
 				<p>
-					Each entry shows serving size, quantity, calories, protein, carbs, and
-					fat before it joins your day.
+					Check serving size, quantity, calories, protein, carbs, and fat before an
+					entry joins your day.
 				</p>
 			</article>
 		</div>
@@ -49,13 +49,13 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		<div class="container">
 			<div class="section-heading" data-reveal>
 				<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
-				<h2 id="principles-title" class="headline">Product direction</h2>
+				<h2 id="principles-title" class="headline">What we hold to</h2>
 			</div>
 			<ul class="principles" data-reveal>
-				<li>No required login to start tracking.</li>
-				<li>Local-first storage for day-to-day use.</li>
-				<li>Editable nutrition data when source information is incomplete.</li>
-				<li>Daily summaries that come from what you logged.</li>
+				<li>No login to start tracking.</li>
+				<li>Your log is stored on your device.</li>
+				<li>Every nutrition value is editable when the source data is incomplete.</li>
+				<li>Daily totals come only from what you logged.</li>
 			</ul>
 		</div>
 	</section>
