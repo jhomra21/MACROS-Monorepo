@@ -36,7 +36,7 @@ struct WeightEntrySheet: View {
                 if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
             }
             .sensoryFeedback(.success, trigger: saveFeedbackToken)
-            .navigationTitle("Log weight")
+            .navigationTitle("Log Weight")
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }

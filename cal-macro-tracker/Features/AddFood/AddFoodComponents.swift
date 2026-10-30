@@ -14,6 +14,7 @@ struct ManualFoodEntryScreen: View {
     @State private var draft = FoodDraft()
     @State private var numericText = FoodDraftNumericText(draft: FoodDraft())
     @State private var errorMessage: String?
+    @State private var isPresentingLogFood = false
     @FocusState private var focusedField: FoodDraftField?
 
     var body: some View {
@@ -35,18 +36,23 @@ struct ManualFoodEntryScreen: View {
                 } label: {
                     Label("Create Meal", systemImage: "fork.knife")
                 }
-
-                NavigationLink {
-                    LogFoodScreen(
-                        initialDraft: numericText.finalizedDraft(from: draft) ?? draft,
-                        loggingDay: loggingDay,
-                        onFoodLogged: onFoodLogged
-                    )
-                } label: {
-                    Text("Continue")
-                }
-                .disabled(!canContinue)
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            BottomPinnedActionBar(
+                title: "Continue",
+                systemImage: nil,
+                isDisabled: !canContinue
+            ) {
+                isPresentingLogFood = true
+            }
+        }
+        .navigationDestination(isPresented: $isPresentingLogFood) {
+            LogFoodScreen(
+                initialDraft: numericText.finalizedDraft(from: draft) ?? draft,
+                loggingDay: loggingDay,
+                onFoodLogged: onFoodLogged
+            )
         }
     }
 

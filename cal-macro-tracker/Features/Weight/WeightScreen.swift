@@ -18,7 +18,7 @@ struct WeightScreen: View {
                     "No weight entries", systemImage: "scalemass", description: Text("Log a weight to start tracking your progress."))
             } else {
                 ForEach(groupedEntries, id: \.week) { group in
-                    Section(group.week.formatted(.dateTime.month(.abbreviated).day())) {
+                    Section("Week of \(group.week.formatted(.dateTime.month(.abbreviated).day()))") {
                         ForEach(group.entries, id: \.persistentModelID) { entry in
                             HStack {
                                 VStack(alignment: .leading, spacing: 4) {
@@ -38,14 +38,14 @@ struct WeightScreen: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            BottomPinnedActionBar(title: "Log weight", systemImage: "plus", isDisabled: false) {
+            BottomPinnedActionBar(title: "Log Weight", systemImage: "plus", isDisabled: false) {
                 isPresentingEntry = true
             }
         }
         .navigationTitle("Weight")
         .inlineNavigationTitle()
         .sheet(isPresented: $isPresentingEntry) { WeightEntrySheet() }
-        .errorBanner(message: $errorMessage)
+        .errorBanner(message: $errorMessage, title: "Couldn’t Delete Weight")
     }
 
     private var groupedEntries: [(week: Date, entries: [WeightEntry])] {

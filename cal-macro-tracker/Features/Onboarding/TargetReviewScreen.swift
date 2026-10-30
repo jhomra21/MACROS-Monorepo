@@ -120,7 +120,6 @@ struct TargetReviewScreen: View {
                 action: saveTargets
             )
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
         }
         .background(PlatformColors.groupedBackground)
         .navigationTitle("Your targets")

@@ -49,6 +49,7 @@ struct HistoryScreen: View {
         .onChange(of: dayContext.today) { oldToday, newToday in
             daySelection.syncToday(from: oldToday, to: newToday)
         }
+        .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
         .toolbar {
             ToolbarItem(placement: .appTopBarTrailing) {
                 calendarToolbarButton
@@ -203,6 +204,6 @@ private struct HistoryWeekdayCell: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(day.weekdayAccessibilityTitle))
-        .accessibilityValue(Text("\(snapshot.entries.count) logged items"))
+        .accessibilityValue(Text("^[\(snapshot.entries.count) logged item](inflect: true)"))
     }
 }

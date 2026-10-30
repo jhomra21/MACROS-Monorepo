@@ -78,7 +78,6 @@ struct GoalSetupScreen: View {
                 topPadding: 0,
                 action: saveGoals
             )
-            .padding(.bottom, 8)
         }
     }
 

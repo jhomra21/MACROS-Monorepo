@@ -50,7 +50,7 @@ struct InsightsChartHeader: View {
                 }
             }
             .pickerStyle(.segmented)
-            .frame(maxWidth: 148)
+            .fixedSize()
         }
     }
 }

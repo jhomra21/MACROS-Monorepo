@@ -100,6 +100,7 @@ struct DashboardScreen: View {
             }
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
             .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+            .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
             .errorBanner(message: $errorMessage)
             #if os(iOS)
             .sheet(item: $shareSheetItem) { item in

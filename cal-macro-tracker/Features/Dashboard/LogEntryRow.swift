@@ -12,6 +12,7 @@ struct LogEntryRow: View {
             carbs: entry.carbsConsumed,
             fat: entry.fatConsumed
         )
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilityLabel)
     }
 

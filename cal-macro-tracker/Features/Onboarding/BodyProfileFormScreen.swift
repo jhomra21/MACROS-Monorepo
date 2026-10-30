@@ -255,7 +255,6 @@ struct BodyProfileFormScreen: View {
                 }
             )
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
         }
         .navigationTitle("About you")
         .inlineNavigationTitle()

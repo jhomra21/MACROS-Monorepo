@@ -74,7 +74,7 @@ struct LogEntryListSection: View {
             Text(title)
                 .font(.title3.weight(.semibold))
             Spacer()
-            Text("\(entries.count) items")
+            Text("^[\(entries.count) item](inflect: true)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -230,14 +230,14 @@ struct LogEntryListSection: View {
                     Button("Edit") {
                         onEditEntry(entry)
                     }
-                    .tint(.gray)
+                    .tint(.accentColor)
                 }
 
                 if let onLogAgain, entry.isMealLog == false {
                     Button("Log Again") {
                         onLogAgain(entry)
                     }
-                    .tint(.blue)
+                    .tint(.gray)
                 }
             }
     }

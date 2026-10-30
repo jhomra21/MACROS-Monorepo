@@ -11,6 +11,17 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 Polish Batch 3c
+
+- Carry-overs: log rows read as one VoiceOver element (name, quantity, time, calories, macros). Backup import sheet uses the shared bottom action bar with Merge as the primary action and Replace All Data as the destructive secondary. Small widget seen in light mode on the Home Screen; dark mode and the gallery card were not checked.
+- Copy: Title Case buttons and section headers in Backup, Health, Weight, Settings, and Insights. Item counts pluralize with inflection. Food label review copy is plain. Macro order is Calories, Protein, Carbs, Fat in Daily Goals and food forms. Reminder copy uses a curly apostrophe. Weight history headers read "Week of ...".
+- Insights: one locked CTA heading "Insights is a Pro feature". Weight card uses the shared accent action button. Chart style picker sizes to content. Nutrient bars use the accent color. Chart grow-in animation removed in favor of a range-change animation.
+- Paywall: the trial length comes from the StoreKit introductory offer and the badge is hidden without one. Restore, Redeem, and Retry have 44-point minimum heights. Plan selection animates with a selection haptic.
+- Onboarding and Reminders: denied notification alerts offer Open Settings. Reminder footers explain when notifications are off. Health footer explains what MACROS reads and writes. The three-reminder cap lives in one constant used by the scheduler and onboarding.
+- Sharing: Start Sharing alert wording, Turn Off Sharing moved to the final destructive section, Share Invite uses a share label with the link as selectable caption, expired-invite footer copy.
+- Surfaces: error banners take a per-call-site title. Day change plays a selection haptic. Manual food entry uses the shared bottom Continue bar.
+- Validation: format check and diff check pass. Debug simulator build succeeds. InsightsAnalyticsTests, ReminderConfigurationTests, ReminderSchedulerTests, BackupRoundTripTests, and ProEntitlementTests pass (68 of 68). Simulator pass on iPhone 18 Pro covered the log row label, Settings footers, Weight button, Sharing footer, paywall plan selection, Insights lock heading, and the small widget on the Home Screen.
+
 ## 2026-10-29 Polish Batch 3b
 
 - Dynamic Type: onboarding goal and body-profile rows use a minimum height and stack label over field at accessibility sizes. The fixed Form height on target review is removed. Top bar, paywall hero, and onboarding icon sizes now scale with text. Fat label reads "Fat".

@@ -47,19 +47,22 @@ struct HealthSettingsSection: View {
             } label: {
                 if health.isBackfilling {
                     Label {
-                        Text("Syncing last 30 days")
+                        Text("Syncing Last 30 Days")
                     } icon: {
                         ProgressView()
                     }
                 } else {
-                    Text("Sync last 30 days")
+                    Text("Sync Last 30 Days")
                 }
             }
             .disabled(!writeNutrition || health.isBackfilling)
         } header: {
             Text("Apple Health")
         } footer: {
-            Text(health.statusText)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(health.statusText)
+                Text("MACROS reads and writes only what you allow in the Health app.")
+            }
         }
         .onDisappear {
             Task { await health.cancelBackfill() }
@@ -73,7 +76,8 @@ struct HealthSettingsSection: View {
                         health.clearBackfillError()
                     }
                 }
-            )
+            ),
+            title: "Apple Health Error"
         )
     }
 

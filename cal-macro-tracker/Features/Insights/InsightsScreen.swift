@@ -351,7 +351,7 @@ private struct InsightsRangeQueryResults: View {
 
                 if let isPresentingPro {
                     VStack(spacing: 12) {
-                        Text("Unlock Insights")
+                        Text("Insights is a Pro feature")
                             .font(.title2.bold())
                         Text("Explore your calorie, macro, and nutrient trends.")
                             .multilineTextAlignment(.center)

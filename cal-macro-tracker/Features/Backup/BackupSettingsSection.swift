@@ -17,20 +17,28 @@ struct BackupSettingsSection: View {
     var body: some View {
         Section {
             if entitlements.canUse(.backup) {
-                Button("Export backup") { exportBackup() }
-                    .disabled(isWorking)
-                Button("Export logs as CSV") { exportCSV() }
-                    .disabled(isWorking)
-                Button("Import backup") { isImportingFile = true }
+                Button {
+                    exportBackup()
+                } label: {
+                    workingLabel("Export Backup")
+                }
+                .disabled(isWorking)
+                Button {
+                    exportCSV()
+                } label: {
+                    workingLabel("Export Logs as CSV")
+                }
+                .disabled(isWorking)
+                Button("Import Backup") { isImportingFile = true }
                     .disabled(isWorking)
                     .fileImporter(
                         isPresented: $isImportingFile, allowedContentTypes: [.json],
                         allowsMultipleSelection: false, onCompletion: importFile
                     )
             } else {
-                ProLockedRow(title: "Export backup", context: .backup)
-                ProLockedRow(title: "Export logs as CSV", context: .backup)
-                ProLockedRow(title: "Import backup", context: .backup)
+                ProLockedRow(title: "Export Backup", context: .backup)
+                ProLockedRow(title: "Export Logs as CSV", context: .backup)
+                ProLockedRow(title: "Import Backup", context: .backup)
             }
         } header: {
             Text("Backup")
@@ -52,7 +60,17 @@ struct BackupSettingsSection: View {
                 BackupFileShareSheet(url: url)
             }
         }
-        .errorBanner(message: $errorMessage)
+        .errorBanner(message: $errorMessage, title: "Backup Failed")
+    }
+
+    private func workingLabel(_ title: String) -> some View {
+        HStack {
+            Text(title)
+            if isWorking {
+                Spacer()
+                ProgressView()
+            }
+        }
     }
 
     private func importFile(_ result: Result<[URL], Error>) {

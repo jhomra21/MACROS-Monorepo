@@ -90,6 +90,7 @@ struct ProPaywallSheet: View {
                                     planRow(plan)
                                 }
                             }
+                            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
                         }
                     }
                     if !store.hasPro || store.feedback.isError {
@@ -97,9 +98,10 @@ struct ProPaywallSheet: View {
                     }
                     if !store.hasPro {
                         if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
-                            Button("Retry Purchase Options") {
+                            Button("Retry") {
                                 Task { await store.loadProducts() }
                             }
+                            .frame(minHeight: 44)
                         }
                         AppAccentActionButton(
                             title: purchaseTitle,
@@ -112,8 +114,10 @@ struct ProPaywallSheet: View {
                         Button("Restore Purchases") {
                             Task { await store.restorePurchases() }
                         }
+                        .frame(minHeight: 44)
                         .disabled(isBusy)
                         Button("Redeem Code") { isRedeeming = true }
+                            .frame(minHeight: 44)
                             .disabled(isBusy)
                         legalFooter
                     }
@@ -141,6 +145,7 @@ struct ProPaywallSheet: View {
             successFeedbackToken += 1
         }
         .sensoryFeedback(.success, trigger: successFeedbackToken)
+        .sensoryFeedback(.selection, trigger: selectedPlan)
     }
 
     private var isBusy: Bool { store.isPurchasing || store.isRestoring }
@@ -173,6 +178,18 @@ struct ProPaywallSheet: View {
             && store.products[.yearly]?.subscription?.introductoryOffer?.paymentMode == .freeTrial
     }
 
+    /// Free-trial length from the StoreKit intro offer, e.g. "7 days". Nil when no trial applies.
+    private var yearlyTrialLength: String? {
+        guard hasYearlyTrial, let period = store.products[.yearly]?.subscription?.introductoryOffer?.period,
+            let unit = period.unitName
+        else { return nil }
+        return "\(period.value) \(unit)"
+    }
+
+    private var yearlyBadge: String {
+        yearlyTrialLength.map { "\($0) free · Best value" } ?? "Best value"
+    }
+
     private func planRow(_ plan: ProPlan) -> some View {
         Button {
             selectedPlan = plan
@@ -183,10 +200,11 @@ struct ProPaywallSheet: View {
                         HStack(spacing: 12) {
                             Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
                                 .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                                .contentTransition(.symbolEffect(.replace))
                             Text(plan.title).font(.headline)
                         }
                         if plan == .yearly {
-                            Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                            Text(yearlyBadge)
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(Color.accentColor)
                         }
@@ -199,10 +217,11 @@ struct ProPaywallSheet: View {
                     HStack(spacing: 12) {
                         Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
+                            .contentTransition(.symbolEffect(.replace))
                         VStack(alignment: .leading, spacing: 4) {
                             Text(plan.title).font(.headline)
                             if plan == .yearly {
-                                Text(hasYearlyTrial ? "7 days free · Best value" : "Best value")
+                                Text(yearlyBadge)
                                     .font(.caption.weight(.semibold))
                                     .foregroundStyle(Color.accentColor)
                             }
@@ -235,14 +254,14 @@ struct ProPaywallSheet: View {
         if store.isPurchasing { return "Purchasing…" }
         if store.isLoadingProducts { return "Loading…" }
         guard let product = store.products[selectedPlan] else { return "Purchase Unavailable" }
-        if selectedPlan == .yearly && hasYearlyTrial { return "Start 7-day free trial" }
+        if selectedPlan == .yearly && hasYearlyTrial { return "Start Free Trial" }
         return selectedPlan == .lifetime ? "Buy lifetime for \(product.displayPrice)" : "Subscribe for \(product.proPrice)"
     }
 
     private var legalFooter: some View {
         VStack(spacing: 10) {
-            if selectedPlan == .yearly && hasYearlyTrial, let product = store.products[.yearly] {
-                Text("7 days free, then \(product.proPrice).")
+            if selectedPlan == .yearly, let trial = yearlyTrialLength, let product = store.products[.yearly] {
+                Text("\(trial) free, then \(product.proPrice).")
             }
             Text(
                 "Payment is charged to your Apple Account at confirmation, or after your free trial. Subscriptions automatically renew unless canceled at least 24 hours before the current period ends. Manage or cancel in your Apple Account settings. Lifetime is a one-time purchase."
@@ -313,15 +332,20 @@ private struct ProPurchaseSuccessView: View {
 extension Product {
     var proPrice: String {
         guard let period = subscription?.subscriptionPeriod else { return "\(displayPrice) once" }
-        let unit: String
-        switch period.unit {
-        case .day: unit = period.value == 1 ? "day" : "days"
-        case .week: unit = period.value == 1 ? "week" : "weeks"
-        case .month: unit = period.value == 1 ? "month" : "months"
-        case .year: unit = period.value == 1 ? "year" : "years"
-        @unknown default: return displayPrice
-        }
+        guard let unit = period.unitName else { return displayPrice }
         return "\(displayPrice)/\(period.value == 1 ? "" : "\(period.value) ")\(unit)"
+    }
+}
+
+extension Product.SubscriptionPeriod {
+    var unitName: String? {
+        switch unit {
+        case .day: value == 1 ? "day" : "days"
+        case .week: value == 1 ? "week" : "weeks"
+        case .month: value == 1 ? "month" : "months"
+        case .year: value == 1 ? "year" : "years"
+        @unknown default: nil
+        }
     }
 }
 

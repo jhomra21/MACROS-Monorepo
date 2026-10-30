@@ -106,7 +106,7 @@ struct EditLogEntryScreen: View {
             numericText: $numericText,
             errorMessage: $errorMessage,
             configuration: FoodDraftEditorConfiguration(
-                brandPrompt: "Brand",
+                brandPrompt: "Brand (optional)",
                 gramsPrompt: "Grams per serving",
                 nutritionPresentation: nutritionPresentation
             ),

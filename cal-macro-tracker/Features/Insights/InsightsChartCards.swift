@@ -18,7 +18,6 @@ struct InsightsCaloriesCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var chartStyle = InsightsChartStyle.bars
     @State private var selectedIndex: Double?
-    @State private var hasAnimatedIn = false
 
     private var summary: InsightsMetricSummary {
         InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.calories)
@@ -46,7 +45,7 @@ struct InsightsCaloriesCard: View {
     }
 
     var body: some View {
-        InsightsCard(title: "Calories", subtitle: "Calories compared with your current goal range. Daily totals.") {
+        InsightsCard(title: "Calories", subtitle: "Calories compared with your goal range.") {
             InsightsChartHeader(
                 primary: summary.average.insightsFormattedValue(unit: "kcal avg"),
                 secondary: previousPoints.isEmpty ? nil : summary.comparisonPercent.insightsComparisonText,
@@ -66,20 +65,20 @@ struct InsightsCaloriesCard: View {
                     case .bars:
                         BarMark(
                             x: .value("Day", Double(point.index)),
-                            y: .value("Calories", animatedValue(point.totals.calories))
+                            y: .value("Calories", point.totals.calories)
                         )
                         .foregroundStyle(Color.accentColor.gradient)
                     case .lines:
                         LineMark(
                             x: .value("Day", Double(point.index)),
-                            y: .value("Calories", animatedValue(point.totals.calories))
+                            y: .value("Calories", point.totals.calories)
                         )
                         .foregroundStyle(Color.accentColor)
                         .interpolationMethod(.linear)
 
                         PointMark(
                             x: .value("Day", Double(point.index)),
-                            y: .value("Calories", animatedValue(point.totals.calories))
+                            y: .value("Calories", point.totals.calories)
                         )
                         .foregroundStyle(Color.accentColor)
                     }
@@ -111,24 +110,15 @@ struct InsightsCaloriesCard: View {
                     }
             }
             .frame(height: 220)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: points.map(\.day))
             .accessibilityLabel("Calories chart")
             .accessibilityValue(
                 "\(summary.average.insightsFormattedValue(unit: "kcal avg")), \(points.chartRangeDescription)"
             )
-            .onAppear {
-                guard !hasAnimatedIn else { return }
-                withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                    hasAnimatedIn = true
-                }
-            }
             .onChange(of: points.map(\.day)) {
                 selectedIndex = nil
             }
         }
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
     }
 }
 
@@ -141,7 +131,6 @@ struct InsightsMacrosCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var chartStyle = InsightsChartStyle.bars
     @State private var selectedIndex: Double?
-    @State private var hasAnimatedIn = false
 
     private var proteinSummary: InsightsMetricSummary {
         InsightsAnalytics.metricSummary(current: points, previous: previousPoints, value: \.protein)
@@ -177,7 +166,7 @@ struct InsightsMacrosCard: View {
     }
 
     var body: some View {
-        InsightsCard(title: "Macros", subtitle: "Composition and protein consistency. Daily totals.") {
+        InsightsCard(title: "Macros", subtitle: "Macro split and protein consistency.") {
             InsightsChartHeader(
                 primary: proteinSummary.average.insightsFormattedValue(unit: "g protein avg"),
                 secondary: InsightsAnalytics.proteinAdherence(in: points, proteinGoal: goals.proteinGoalGrams).insightsRateText,
@@ -198,7 +187,7 @@ struct InsightsMacrosCard: View {
                     ForEach(macroSegments) { segment in
                         BarMark(
                             x: .value("Day", Double(segment.point.index)),
-                            y: .value("Grams", animatedValue(segment.value))
+                            y: .value("Grams", segment.value)
                         )
                         .foregroundStyle(by: .value("Macro", segment.metric.title))
                     }
@@ -206,7 +195,7 @@ struct InsightsMacrosCard: View {
                     ForEach(macroSegments) { segment in
                         LineMark(
                             x: .value("Day", Double(segment.point.index)),
-                            y: .value("Grams", animatedValue(segment.value))
+                            y: .value("Grams", segment.value)
                         )
                         .foregroundStyle(by: .value("Macro", segment.metric.title))
                         .interpolationMethod(.linear)
@@ -241,24 +230,15 @@ struct InsightsMacrosCard: View {
                     }
             }
             .frame(height: 240)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: points.map(\.day))
             .accessibilityLabel("Macros chart")
             .accessibilityValue(
                 "\(proteinSummary.average.insightsFormattedValue(unit: "g protein avg")), \(points.chartRangeDescription)"
             )
-            .onAppear {
-                guard !hasAnimatedIn else { return }
-                withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                    hasAnimatedIn = true
-                }
-            }
             .onChange(of: points.map(\.day)) {
                 selectedIndex = nil
             }
         }
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
     }
 }
 
@@ -271,7 +251,6 @@ struct InsightsNutrientsCard: View {
     @State private var selectedNutrient = InsightsNutrient.fiber
     @State private var chartStyle = InsightsChartStyle.bars
     @State private var selectedIndex: Double?
-    @State private var hasAnimatedIn = false
 
     private var summary: InsightsNutrientSummary {
         InsightsAnalytics.nutrientSummary(current: points, previous: previousPoints, nutrient: selectedNutrient)
@@ -299,7 +278,7 @@ struct InsightsNutrientsCard: View {
     }
 
     var body: some View {
-        InsightsCard(title: "Nutrients", subtitle: "\(coverageText) Daily totals.") {
+        InsightsCard(title: "Nutrients", subtitle: coverageText) {
             Picker("Nutrient", selection: $selectedNutrient) {
                 ForEach(InsightsNutrient.allCases) { nutrient in
                     Text(nutrient.shortTitle)
@@ -339,24 +318,24 @@ struct InsightsNutrientsCard: View {
                         if let value {
                             BarMark(
                                 x: .value("Day", Double(point.index)),
-                                y: .value(selectedNutrient.title, animatedValue(value))
+                                y: .value(selectedNutrient.title, value)
                             )
-                            .foregroundStyle(Color.green.gradient)
+                            .foregroundStyle(Color.accentColor.gradient)
                         }
                     case .lines:
                         if let value {
                             LineMark(
                                 x: .value("Day", Double(point.index)),
-                                y: .value(selectedNutrient.title, animatedValue(value))
+                                y: .value(selectedNutrient.title, value)
                             )
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(Color.accentColor)
                             .interpolationMethod(.linear)
 
                             PointMark(
                                 x: .value("Day", Double(point.index)),
-                                y: .value(selectedNutrient.title, animatedValue(value))
+                                y: .value(selectedNutrient.title, value)
                             )
-                            .foregroundStyle(Color.green)
+                            .foregroundStyle(Color.accentColor)
                         }
                     }
                 }
@@ -383,16 +362,11 @@ struct InsightsNutrientsCard: View {
                         }
                 }
                 .frame(height: 220)
+                .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: points.map(\.day))
                 .accessibilityLabel("\(selectedNutrient.title) chart")
                 .accessibilityValue(
                     "\(summary.average.insightsFormattedValue(unit: selectedNutrient.unit)), \(points.chartRangeDescription)"
                 )
-            }
-        }
-        .onAppear {
-            guard !hasAnimatedIn else { return }
-            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
-                hasAnimatedIn = true
             }
         }
         .onChange(of: points.map(\.day)) {
@@ -402,9 +376,5 @@ struct InsightsNutrientsCard: View {
 
     private var coverageText: String {
         "\(selectedNutrient.title) data available on \(summary.availableDayCount)/\(summary.loggedDayCount) logged days."
-    }
-
-    private func animatedValue(_ value: Double) -> Double {
-        reduceMotion || hasAnimatedIn ? value : 0
     }
 }

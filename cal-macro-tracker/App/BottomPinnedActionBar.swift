@@ -15,6 +15,7 @@ struct BottomPinnedActionBar: View {
     let title: String
     let systemImage: String?
     let isDisabled: Bool
+    var isLoading = false
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var topPadding: CGFloat = 10
     var bottomOffset: CGFloat = 0
@@ -59,6 +60,7 @@ struct BottomPinnedActionBar: View {
             systemImage: systemImage,
             isCompact: isCompact,
             isDisabled: isDisabled,
+            isLoading: isLoading,
             labelWidth: buttonWidth,
             action: action
         )
@@ -91,6 +93,7 @@ struct BottomPinnedActionBar: View {
             systemImage: systemImage,
             isCompact: isCompact,
             isDisabled: isDisabled,
+            isLoading: isLoading,
             labelWidth: fallbackLabelWidth,
             action: action
         )
@@ -168,6 +171,7 @@ struct AppAccentActionButton: View {
     let systemImage: String?
     let isCompact: Bool
     var isDisabled = false
+    var isLoading = false
     var labelWidth: CGFloat?
     let action: () -> Void
 
@@ -198,7 +202,7 @@ struct AppAccentActionButton: View {
     }
 
     private var label: some View {
-        AppAccentActionLabel(title: title, systemImage: systemImage, isCompact: isCompact)
+        AppAccentActionLabel(title: title, systemImage: systemImage, isCompact: isCompact, isLoading: isLoading)
             .foregroundStyle(.white)
             .frame(width: labelWidth, alignment: .trailing)
             .frame(maxWidth: labelWidth == nil ? .infinity : nil)
@@ -210,11 +214,15 @@ struct AppAccentActionLabel: View {
     let title: String
     let systemImage: String?
     let isCompact: Bool
+    var isLoading = false
     @ScaledMetric(relativeTo: .caption2) private var badgeSize: CGFloat = 18
 
     var body: some View {
         HStack(spacing: isCompact ? 0 : 8) {
-            if let systemImage {
+            if isLoading {
+                ProgressView()
+                    .tint(.white)
+            } else if let systemImage {
                 filledIcon(systemImage)
             } else if isCompact {
                 Text(title.prefix(1))

@@ -63,8 +63,7 @@ private struct OnboardingWelcomeScreen: View {
             .font(.body)
             .foregroundStyle(.secondary)
             Spacer()
-            BottomPinnedActionBar(title: "Get started", systemImage: nil, isDisabled: false, action: onContinue)
-                .padding(.bottom, 8)
+            BottomPinnedActionBar(title: "Get Started", systemImage: nil, isDisabled: false, action: onContinue)
         }
         .padding(.top, 32)
         .background(PlatformColors.groupedBackground)
@@ -128,7 +127,7 @@ struct OnboardingChoiceScreen: View {
 
 private struct OnboardingRemindersScreen: View {
     @Environment(AppEntitlements.self) private var entitlements
-    @ScaledMetric(relativeTo: .largeTitle) private var brandFontSize: CGFloat = 36
+    @Environment(\.openURL) private var openURL
     @State private var settings = OnboardingReminderSettings()
     @State private var isRequestingPermission = false
     @State private var isShowingPermissionMessage = false
@@ -152,7 +151,7 @@ private struct OnboardingRemindersScreen: View {
     }
 
     private var canEnableProReminder: Bool {
-        entitlements.canUse(.multipleReminders) && selectedCount < 3
+        entitlements.canUse(.multipleReminders) && selectedCount < ReminderLimits.maxCount
     }
 
     var body: some View {
@@ -160,10 +159,6 @@ private struct OnboardingRemindersScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(spacing: 10) {
-                        Text(AppBrand.displayName)
-                            .font(.system(size: brandFontSize, weight: .bold, design: .rounded))
-                            .multilineTextAlignment(.center)
-
                         Text("Choose reminders")
                             .font(.title3)
                             .foregroundStyle(.secondary)
@@ -180,7 +175,7 @@ private struct OnboardingRemindersScreen: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 8)
 
-                    if selectedCount > 3 {
+                    if selectedCount > ReminderLimits.maxCount {
                         Text("Choose no more than three reminders before continuing.")
                             .font(.footnote)
                             .foregroundStyle(.red)
@@ -197,11 +192,11 @@ private struct OnboardingRemindersScreen: View {
             BottomPinnedActionBar(
                 title: "Continue",
                 systemImage: nil,
-                isDisabled: isRequestingPermission || selectedCount > 3,
+                isDisabled: isRequestingPermission || selectedCount > ReminderLimits.maxCount,
+                isLoading: isRequestingPermission,
                 action: continueOnboarding
             )
             .disabled(isRequestingPermission)
-            .padding(.bottom, 8)
         }
         .background(PlatformColors.groupedBackground)
         .navigationTitle("Reminders")
@@ -211,7 +206,10 @@ private struct OnboardingRemindersScreen: View {
             authorizationTask?.cancel()
         }
         .alert("Notifications aren’t enabled", isPresented: $isShowingPermissionMessage) {
-            Button("Continue") { finishOnboarding() }
+            if let settingsURL = AppSettingsURL.url {
+                Button("Open Settings") { openURL(settingsURL) }
+            }
+            Button("Continue", role: .cancel) { finishOnboarding() }
         } message: {
             Text(permissionMessage)
         }

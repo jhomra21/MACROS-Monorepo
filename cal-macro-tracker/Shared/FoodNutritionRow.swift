@@ -22,6 +22,7 @@ struct FoodNutritionRow: View {
                 Text("P \(protein.roundedForDisplay) • C \(carbs.roundedForDisplay) • F \(fat.roundedForDisplay)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                    .monospacedDigit()
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

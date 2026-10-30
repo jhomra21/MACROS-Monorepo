@@ -19,7 +19,7 @@ struct BackupImportSummarySheet: View {
                         LabeledContent("Date range", value: dateRange)
                     }
                 }
-                Section("Data to import") {
+                Section("Data to Import") {
                     countRow("Goals", backup.goals.count)
                     countRow("Body profiles", backup.bodyProfile.count)
                     countRow("Foods", backup.foods.count)
@@ -32,29 +32,22 @@ struct BackupImportSummarySheet: View {
                         Text("\(unmatchedMealItemCount) meal items could not be matched to bundled foods")
                     }
                     if isImporting {
-                        ProgressView("Importing backup…")
+                        ProgressView("Importing Backup…")
                     }
                 } footer: {
                     Text("Merge keeps existing rows with matching IDs. Replace removes your saved data before importing this backup.")
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                VStack(spacing: 10) {
-                    AppAccentActionButton(
-                        title: "Merge", systemImage: "square.and.arrow.down", isCompact: false,
-                        action: { startImport(.merge) }
+                BottomPinnedDualActionBar(
+                    leadingAction: BottomPinnedDualAction(
+                        title: "Merge", systemImage: "square.and.arrow.down", action: { startImport(.merge) }
+                    ),
+                    trailingAction: BottomPinnedDualAction(
+                        title: "Replace All Data", systemImage: "trash", action: { confirmingReplace = true },
+                        role: .destructive
                     )
-                    Button(role: .destructive) {
-                        confirmingReplace = true
-                    } label: {
-                        Label("Replace All Data", systemImage: "trash")
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .buttonStyle(.glass)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
-                .padding(.bottom, 8)
+                )
                 .disabled(isImporting)
             }
             .navigationTitle("Import Backup")

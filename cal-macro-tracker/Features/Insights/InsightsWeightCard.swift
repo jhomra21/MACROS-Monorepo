@@ -91,13 +91,11 @@ struct InsightsWeightCard: View {
                                     .accessibilityHidden(true)
                             }
                             if !entitlements.canUse(.weightTrends) {
-                                Button {
+                                AppAccentActionButton(
+                                    title: "Unlock Weight Trends", systemImage: "lock.open.fill", isCompact: false
+                                ) {
                                     isPresentingPro = true
-                                } label: {
-                                    Label("Unlock weight trends with Pro", systemImage: "lock.fill")
-                                        .frame(maxWidth: .infinity, minHeight: 48)
                                 }
-                                .buttonStyle(.bordered)
                             }
                         }
                     }

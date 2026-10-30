@@ -10,8 +10,8 @@ enum DailyGoalsField: Hashable {
     static let formOrder: [DailyGoalsField] = [
         .calories,
         .protein,
-        .fat,
-        .carbs
+        .carbs,
+        .fat
     ]
 
     var title: String {
@@ -151,7 +151,7 @@ private struct DailyGoalsActionSection: View {
             .disabled(!canSave)
             .opacity(canSave || actionSystemImage != nil ? 1 : 0.55)
 
-            Button("Recalculate targets", systemImage: "arrow.clockwise") {
+            Button("Recalculate Targets", systemImage: "arrow.clockwise") {
                 isPresentingRecalculation = true
             }
         } footer: {
