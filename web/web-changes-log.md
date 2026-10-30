@@ -2,6 +2,26 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## MACROS: Nutrition Tracker Name and Listing Refresh
+
+### Delivered
+
+- Added `site.fullName` (`MACROS: Nutrition Tracker`) for page `<title>` values and meta descriptions. The header, footer, and hero keep the `MACROS` brand.
+- Refreshed the hero subtitle, site description and tagline, Free and Pro lists, and FAQ to the current feature set: one camera view for barcodes and nutrition labels, Insights from 7D to All, Home and Lock Screen widgets, custom widget backgrounds, custom ring colors, and multiple or smart reminders.
+- Corrected the offline FAQ: barcode lookup needs a connection, like packaged-food search.
+- Shows the App Store button only when `site.appStoreURL` is set. It previously showed a "coming soon" placeholder.
+- Removed the Full Unlock screenshot card and relabeled the remaining cards. Added a TODO in `site.ts` that lists the expected new screenshot file names.
+- Updated About, Privacy, Terms, and Support copy. Legal substance (data flows, retention, governing law) is unchanged.
+- Rewrote `docs/app-store/listing.md` for the new name and current features, within Apple's limits.
+
+### Open items
+
+- `src/assets/app-images/app-full-unlock.png` is no longer imported. Delete it with the next screenshot refresh.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, oxlint (run through bun because `make` is not installed on this Windows machine), and `git diff --check -- web docs` passed.
+
 ## Website Foundation
 
 ### Delivered
