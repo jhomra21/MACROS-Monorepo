@@ -14,7 +14,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-30 Add Food Mode Switch Keeps A Stable View Tree
 
 - Cause: `addFoodSearchable` wrapped the whole Add Food screen in an if/else `@ViewBuilder`, so every Search/Manual switch changed the structural identity of the entire subtree and rebuilt the navigation search drawer. On a fresh install the Manual form could lag the picker by about 0.5-1 s (the reported "picker says Manual, content stays"). I could not reproduce a permanent failed switch in 9 simulator attempts.
-- Fix: `.searchable` and `.onSubmit(of: .search)` now sit on `SearchFoodListView` inside the `.search` branch, preserving the stable view tree; Manual still has no search field; the Search/Manual picker now lives in the navigation bar and mode changes animate smoothly over 0.25 seconds, while Camera and its zoom source are unchanged.
+- Fix: `.searchable` and `.onSubmit(of: .search)` now sit on `SearchFoodListView` inside the `.search` branch, preserving the stable view tree; Manual still has no search field; the Search/Manual picker now lives in the navigation bar and mode changes animate smoothly over 0.25 seconds, while Camera and its zoom source are unchanged. During search, existing on-device results stay visible instead of flashing the loading row.
 - Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); 7 cold simulator attempts after the fix showed Manual on the first tap.
 
 ## 2026-10-30 TestFlight Build 14
