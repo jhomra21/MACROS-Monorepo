@@ -5,6 +5,7 @@ struct InsightsScreen: View {
     @Query private var latestWeightEntries: [WeightEntry]
     @Environment(AppDayContext.self) private var dayContext
     @Environment(AppEntitlements.self) private var entitlements
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @AppStorage(AppStorageKeys.insightsSelectedRange)
     private var selectedRangeRawValue = InsightsRange.sevenDays.rawValue
@@ -56,6 +57,7 @@ struct InsightsScreen: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .padding(.bottom, 8)
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
             }
         }
         .sheet(isPresented: $isPresentingPro) {
@@ -146,7 +148,9 @@ struct InsightsScreen: View {
             }
             Spacer(minLength: 0)
             Button {
-                weightNoticeDismissedAt = dayContext.today.startDate.timeIntervalSince1970
+                withAnimation(.smooth) {
+                    weightNoticeDismissedAt = dayContext.today.startDate.timeIntervalSince1970
+                }
             } label: {
                 Image(systemName: "xmark")
                     .font(.caption.weight(.semibold))

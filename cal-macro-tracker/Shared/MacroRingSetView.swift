@@ -15,6 +15,7 @@ struct MacroRingSetView: View {
     let showsGoalSubtitle: Bool
     let colorStyle: MacroRingColorStyle
     let selectedMetric: MacroMetric?
+    let usesGlassEffect: Bool
 
     init(
         totals: NutritionSnapshot,
@@ -24,7 +25,8 @@ struct MacroRingSetView: View {
         minimumLineWidth: CGFloat,
         showsGoalSubtitle: Bool,
         colorStyle: MacroRingColorStyle = .standard,
-        selectedMetric: MacroMetric? = nil
+        selectedMetric: MacroMetric? = nil,
+        usesGlassEffect: Bool = true
     ) {
         self.totals = totals
         self.goals = goals
@@ -34,6 +36,7 @@ struct MacroRingSetView: View {
         self.showsGoalSubtitle = showsGoalSubtitle
         self.colorStyle = colorStyle
         self.selectedMetric = selectedMetric
+        self.usesGlassEffect = usesGlassEffect
     }
 
     private struct RingMetric {
@@ -141,7 +144,8 @@ struct MacroRingSetView: View {
                     progress: metric.progress,
                     trackColor: metric.trackColor,
                     gradientStartColor: metric.gradientStartColor,
-                    gradientEndColor: metric.gradientEndColor
+                    gradientEndColor: metric.gradientEndColor,
+                    usesGlassEffect: usesGlassEffect
                 )
             }
 
@@ -191,6 +195,7 @@ private struct GoalProgressRing: View {
     let trackColor: Color
     let gradientStartColor: Color
     let gradientEndColor: Color
+    let usesGlassEffect: Bool
 
     private var resolvedTrackColor: Color {
         colorScheme == .dark ? trackColor.opacity(0.2) : trackColor.opacity(0.45)
@@ -220,7 +225,7 @@ private struct GoalProgressRing: View {
     }
 
     var body: some View {
-        if #available(iOS 26.0, macOS 26.0, *) {
+        if usesGlassEffect, #available(iOS 26.0, macOS 26.0, *) {
             progressContent
                 .glassEffect(
                     .regular.tint(resolvedTrackColor),

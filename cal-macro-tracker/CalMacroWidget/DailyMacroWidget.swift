@@ -162,6 +162,7 @@ private struct DailyMacroWidgetContentView: View {
             let columnWidth = max((availableWidth - totalSpacing) / columnCount, 0)
 
             VStack(spacing: 8) {
+                // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
@@ -169,7 +170,8 @@ private struct DailyMacroWidgetContentView: View {
                     centerValueFontSize: 18,
                     minimumLineWidth: 5,
                     showsGoalSubtitle: false,
-                    colorStyle: ringColorStyle
+                    colorStyle: ringColorStyle,
+                    usesGlassEffect: false
                 )
                 .widgetAccentable()
                 .frame(maxWidth: .infinity)
@@ -197,6 +199,7 @@ private struct DailyMacroWidgetContentView: View {
             let columnWidth = max((metricWidth - metricTotalSpacing) / metricCount, 0)
 
             HStack(spacing: ringMetricSpacing) {
+                // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
@@ -204,7 +207,8 @@ private struct DailyMacroWidgetContentView: View {
                     centerValueFontSize: 24,
                     minimumLineWidth: 5,
                     showsGoalSubtitle: false,
-                    colorStyle: ringColorStyle
+                    colorStyle: ringColorStyle,
+                    usesGlassEffect: false
                 )
                 .widgetAccentable()
 
@@ -354,7 +358,7 @@ private struct DailyMacroWidgetBackground: View {
                 .overlay(Color.black.opacity(0.82))
                 .clipped()
         case nil:
-            Color.clear
+            Rectangle().fill(.fill.tertiary)
         }
     }
 }
