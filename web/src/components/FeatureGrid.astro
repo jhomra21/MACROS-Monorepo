@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import FeatureGlyph from './FeatureGlyph.astro';
 ---
 
 <section id="why" class="section" aria-labelledby="why-title">
@@ -7,12 +8,18 @@ import { site } from '../data/site';
 		<div class="section-heading" data-reveal>
 			<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
 			<h2 id="why-title" class="headline">Log fast. Check the numbers. Keep your data.</h2>
-			<p class="lead">MACROS makes logging quick without hiding the numbers that matter.</p>
+			<p class="lead">Quick logging, with every number in view.</p>
 		</div>
 		<div class="bento">
 			{
 				site.features.map((feature, index) => (
-					<article class={`bento__card bento__card--${feature.size}`} data-reveal style={`--reveal-index: ${index}`}>
+					<article
+						class={`bento__card bento__card--${feature.size} bento__card--${feature.accent}`}
+						data-reveal
+						style={`--reveal-index: ${index}`}
+					>
+						<FeatureGlyph glyph={feature.glyph} />
+						<p class="bento__eyebrow">{feature.eyebrow}</p>
 						<h3 class="title">{feature.title}</h3>
 						<p>{feature.body}</p>
 					</article>

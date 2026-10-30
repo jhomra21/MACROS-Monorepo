@@ -579,18 +579,119 @@ summary {
 }
 
 .bento__card {
+	--glow: 0.1;
+	--accent-text: var(--accent);
 	display: grid;
-	align-content: end;
+	grid-template-rows: 1fr repeat(3, auto);
 	gap: var(--space-3);
 	min-height: 15rem;
 	padding: var(--space-6);
 	border-radius: var(--radius-lg);
-	background: var(--bg-soft);
+	background:
+		radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) calc(var(--glow) * 100%), transparent), transparent 65%),
+		var(--bg-soft);
+}
+
+.bento__card--protein {
+	--accent: var(--protein);
+	--accent-text: #0062cc;
+}
+
+.bento__card--carbs {
+	--accent: var(--carbs);
+	--accent-text: #9a5700;
+}
+
+.bento__card--fat {
+	--accent: var(--fat);
+	--accent-text: #c42a62;
 }
 
 .bento__card p {
 	color: var(--ink-muted);
 	max-width: 30rem;
+}
+
+.bento__card .bento__eyebrow {
+	color: var(--accent-text);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	line-height: 1.2;
+}
+
+.glyph {
+	width: auto;
+	height: 7rem;
+	max-width: 100%;
+	margin-bottom: var(--space-4);
+	align-self: start;
+	justify-self: start;
+	overflow: visible;
+}
+
+.glyph .g-track {
+	stroke: var(--hairline);
+}
+
+.glyph .g-muted {
+	stroke: var(--ink-muted);
+	opacity: 0.55;
+}
+
+.glyph .g-accent {
+	stroke: var(--accent);
+}
+
+.glyph .g-accent-fill {
+	fill: var(--accent);
+	stroke: none;
+}
+
+.glyph .g-soft {
+	opacity: 0.22;
+}
+
+.glyph .g-protein {
+	stroke: var(--protein);
+}
+
+.glyph .g-carbs {
+	stroke: var(--carbs);
+}
+
+.glyph .g-fat {
+	stroke: var(--fat);
+}
+
+.glyph .g-protein-fill {
+	fill: var(--protein);
+}
+
+.glyph .g-carbs-fill {
+	fill: var(--carbs);
+}
+
+.glyph .g-fat-fill {
+	fill: var(--fat);
+}
+
+@media (prefers-color-scheme: dark) {
+	.bento__card {
+		--glow: 0.16;
+	}
+
+	.bento__card--protein {
+		--accent-text: #4da3ff;
+	}
+
+	.bento__card--carbs {
+		--accent-text: var(--carbs);
+	}
+
+	.bento__card--fat {
+		--accent-text: #ff7aa6;
+	}
 }
 
 @media (min-width: 40rem) {
@@ -605,8 +706,12 @@ summary {
 	}
 
 	.bento__card {
-		min-height: 18rem;
+		min-height: 22rem;
 		padding: var(--space-7);
+	}
+
+	.glyph {
+		height: 9rem;
 	}
 
 	.bento__card--wide {
@@ -619,7 +724,7 @@ summary {
 
 	.bento__card--half {
 		grid-column: span 6;
-		min-height: 14rem;
+		min-height: 20rem;
 	}
 
 	.bento__card--wide .title {
