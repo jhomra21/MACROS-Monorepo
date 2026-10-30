@@ -2,6 +2,20 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-29 Workers Observability and cf Migration Deferral
+
+### Delivered
+
+- Enabled Workers Issues (`observability.issues.enabled`) in `wrangler.jsonc`. Issues processes new traffic only after the next deploy.
+- Set observability to explicit `enabled: true` for logs and traces, and raised head sampling from 0.1 to 1 at every level. Every request is now logged and traced, so log and trace volume rises. Check the cost after the first deploy.
+- Kept Wrangler as the build and deploy tool for `web/`. `cf migrate` was run and reverted. Its output was 4 files and one follow-up (`migrations_dir`), but `cf build` delegates to `astro build` for Astro projects and never writes Worker Build Output. The Cloudflare docs say Astro 6 and later does not build with `cf` during the beta. Re-evaluate when that changes.
+- No `cf` dependency was added. Scripts, `wrangler.jsonc`, `wrangler.api.jsonc`, and `worker-configuration.d.ts` are unchanged apart from the observability block.
+
+### Validation recorded
+
+- `bun run check`, `bun run build`, `bun test src/worker.test.ts` (5 pass), `bun run deploy:dry-run` (no deploy), and the `lint-js` oxlint command (65 files, 0 errors) passed.
+- `observability.issues` is in the Wrangler 4.156.0 config schema. The dry-run bundle does not print observability settings, so the keys were checked against the schema and the Wrangler configuration docs.
+
 ## 2026-10-29 Wrangler 4.156.0 Update
 
 ### Delivered
