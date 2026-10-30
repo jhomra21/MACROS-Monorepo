@@ -95,7 +95,7 @@ export const site = {
 			glyph: 'people',
 			accent: 'carbs',
 			title: 'Share your day with your people.',
-			body: 'Invite people to a sharing circle and they see your daily totals. Sharing individual foods and more stats is coming.',
+			body: 'Invite people with Pro and they see your daily totals. Anyone you invite shares back for free. Sharing individual foods and more stats is coming.',
 			size: 'half',
 		},
 		{
@@ -111,13 +111,14 @@ export const site = {
 		'All food logging, barcode and nutrition label scanning, and online packaged-food search',
 		'Saved foods and meals, and history',
 		'Small and medium Home Screen widgets and a Lock Screen widget',
-		'Daily share card and sharing circle',
+		'Daily share card, and accepting sharing circle invites',
 		'Goal calculator and basic weight log',
 		'Write nutrition to Apple Health',
 		'One daily reminder',
 	],
 	proFeatures: [
 		'Insights ranges beyond 7 days',
+		'Sharing circle invites',
 		'Weight trends and weight import from Apple Health',
 		'Backup export and import',
 		'Custom macro ring colors',
@@ -141,8 +142,8 @@ export const site = {
 			price: '$19.99',
 			cadence: 'per year',
 			badge: '7-day free trial',
-			summary: 'Adds longer insight ranges, weight trends, and backup. Also $2.99 per month, with no trial.',
-			highlights: ['Insights ranges beyond 7 days', 'Weight trends and Apple Health import', 'Backup, ring colors, and smart reminders'],
+			summary: 'Adds longer insight ranges, sharing invites, weight trends, and backup. Also $2.99 per month, with no trial.',
+			highlights: ['Insights ranges beyond 7 days', 'Sharing circle invites', 'Weight trends, backup, and smart reminders'],
 			featured: true,
 		},
 		{
@@ -168,7 +169,7 @@ export const site = {
 		},
 		{
 			question: 'What is MACROS Pro?',
-			answer: 'Pro adds Insights ranges beyond 7 days, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders.',
+			answer: 'Pro adds Insights ranges beyond 7 days, sharing circle invites, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone a Pro user invites can accept and share back for free.',
 		},
 		{
 			question: 'How much does Pro cost?',
