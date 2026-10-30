@@ -11,6 +11,15 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 TestFlight 12 Owner Feedback Fixes
+
+- Insights: removed the extra "View weight log" card row shown when no weight is in range. The dismissible bottom weight notice is the only weight prompt.
+- Dashboard: restored one compact trailing toolbar group (Share, Insights, History, Settings) instead of two groups with a spacer.
+- Dashboard: moved the "Today" return button to the leading side under the date title.
+- Settings: Save Goals and Recalculate Targets are separate sections again, which removes the stray inset separator between them. An alignment-guide attempt had no visible effect and was dropped.
+- Camera: viewport and result-panel insets raised from 8 to 16 points so the frame aligns with the result card. Bottom corners stay clear of the home indicator.
+- Evidence: `build/owner-feedback-b12-2026-10-29/REPORT.md`. Build number unchanged (12).
+
 ## 2026-10-29 App Review Audit Fixes (TestFlight Build 12)
 
 - Added privacy manifests for the app (health, user ID, usage, search history, diagnostics collected for app functionality; UserDefaults CA92.1/1C8F.1, file timestamp C617.1) and the widget (required-reason APIs only). The widget manifest is excluded from the app target's synchronized group.

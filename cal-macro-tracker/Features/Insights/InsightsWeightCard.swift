@@ -105,13 +105,6 @@ struct InsightsWeightCard: View {
                 }
                 .padding()
                 .appCardBackground(cornerRadius: 24)
-            } else {
-                NavigationLink("View weight log") {
-                    WeightScreen()
-                }
-                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                .padding()
-                .appCardBackground(cornerRadius: 24)
             }
         }
     }
