@@ -16,7 +16,9 @@ import { site } from '../data/site';
 				site.faq.map((item) => (
 					<details class="faq-item">
 						<summary>{item.question}</summary>
-						<p>{item.answer}</p>
+						<div class="faq-item__body">
+							<p>{item.answer}</p>
+						</div>
 					</details>
 				))
 			}
