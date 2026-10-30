@@ -56,13 +56,19 @@ Example: https://developer.apple.com/documentation/
 
 ## Commands
 
-- Simulator budget: keep at most two simulators booted on the Mac. Keep protected fixtures local and separate from disposable QA fixtures. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
-- Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs an iOS 27.0 simulator runtime: the iOS 26.4 runtime rejects catalog activation with `SKInternalErrorDomain Code=3`. Use the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
+- Simulator budget: keep at most two simulators booted on the Mac. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
+- Simulator inventory (cleaned 2026-10-30): one simulator per device model, latest iOS runtime only (iOS 27.0; the 26.4 runtime and all its devices were deleted). The kept set is:
+  - `9843E820-3A2A-4599-9206-D224B3035A47` iPhone 18 Pro: the owner's fixture with real app data and widgets. Never erase, reset, or load demo data on it.
+  - `D16C3D35-889F-404F-BDD4-C640A6DBC4EF` iPhone 18 Pro Max (`MACROS-iPhone-18-Pro-Max-2026-10-30`): App Store media capture (demo data, 9:41 status bar).
+  - `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB` iPad Air 11-inch (`MACROS-iPad-Air-11-2026-10-29`): disposable test runner; the app runs in iPhone compatibility mode there.
+  - Stock iPhone 17, iPhone 17e, and iPhone Air on iOS 27.0, empty.
+  Do not create more simulators for routine work. If a task needs a throwaway device, create it, name it `MACROS-<purpose>-<date>`, and delete it when the task ends.
+- Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs the iOS 27.0 simulator runtime, the only one installed (the removed 26.4 runtime rejected catalog activation with `SKInternalErrorDomain Code=3`). Run it with the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
 - Inspect project targets and schemes:
   - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
 - Build the app from the CLI (a build is not a test run):
   - `make quality-build`
-- Run the full iOS Simulator test suite serially with a bounded per-test allowance. Replace the placeholder with an available simulator UUID; never use simulator `39FE5E39-17CE-4395-B141-9E70EBA594BC`:
+- Run the full iOS Simulator test suite serially with a bounded per-test allowance. Replace the placeholder with the iPad Air 11-inch test runner's UUID (above), never the owner's iPhone 18 Pro fixture:
   ```sh
   xcodebuild \
     -project "cal-macro-tracker.xcodeproj" \
