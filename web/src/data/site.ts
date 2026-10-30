@@ -2,9 +2,10 @@ import appAddFoodImage from '../assets/app-images/app-add-food.png';
 import appHistoryImage from '../assets/app-images/app-history.png';
 import appHomeImage from '../assets/app-images/app-home.png';
 import appInsightsImage from '../assets/app-images/app-insights.png';
+import appScanReviewImage from '../assets/app-images/app-scan-review.png';
 import appSettingsImage from '../assets/app-images/app-settings.png';
-import appShareImage from '../assets/app-images/app-share.png';
-import appSharingSettingsImage from '../assets/app-images/app-sharing-settings.png';
+import appSharingImage from '../assets/app-images/app-sharing.png';
+import appWidgetsImage from '../assets/app-images/app-widgets.png';
 
 export const site = {
 	name: 'MACROS',
@@ -188,14 +189,10 @@ export const site = {
 		src: appHomeImage,
 		alt: 'MACROS dashboard with a full day of food logged',
 	},
-	// TODO: Replace these cards with the new captures when they arrive. Drop files with these exact
-	// names into src/assets/app-images/ and update the imports below; no component changes needed:
-	// app-home.png, app-add-food.png, app-camera.png, app-insights.png, app-history.png,
-	// app-settings.png, app-widgets.png, app-paywall.png, app-share.png.
 	screenshots: [
 		{
 			src: appHomeImage,
-			alt: 'MACROS daily dashboard with logged meals and filled macro rings',
+			alt: 'MACROS dashboard with today’s calories and protein, carbs, and fat rings',
 			title: 'Daily macro rings',
 		},
 		{
@@ -204,14 +201,9 @@ export const site = {
 			title: 'Search, scan, or add food',
 		},
 		{
-			src: appSettingsImage,
-			alt: 'MACROS settings screen with goals and saved custom foods',
-			title: 'Goals and saved foods',
-		},
-		{
-			src: appInsightsImage,
-			alt: 'MACROS insights screen with nutrition trends and macro charts',
-			title: 'Insights and trends (Pro)',
+			src: appScanReviewImage,
+			alt: 'MACROS nutrition label scan with the values ready to review before logging',
+			title: 'Review label scans',
 		},
 		{
 			src: appHistoryImage,
@@ -219,14 +211,24 @@ export const site = {
 			title: 'Weekly history',
 		},
 		{
-			src: appSharingSettingsImage,
-			alt: 'MACROS sharing settings screen with invite link controls',
+			src: appInsightsImage,
+			alt: 'MACROS insights with a 30-day weight trend, averages, and a calorie chart',
+			title: 'Insights and trends (Pro)',
+		},
+		{
+			src: appSharingImage,
+			alt: 'MACROS sharing dashboard with daily rings for two people',
 			title: 'Sharing circle',
 		},
 		{
-			src: appShareImage,
-			alt: 'iOS share sheet for a MACROS daily summary image',
-			title: 'Share daily progress',
+			src: appWidgetsImage,
+			alt: 'MACROS small and medium widgets on the iPhone Home Screen',
+			title: 'Home Screen widgets',
+		},
+		{
+			src: appSettingsImage,
+			alt: 'MACROS settings with MACROS Pro, daily goals, and app preferences',
+			title: 'Goals and settings',
 		},
 	],
 	supportChecklist: [

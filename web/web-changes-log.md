@@ -2,6 +2,10 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-10-30 Final App Store Captures
+
+- Replaced the showcase screenshots with final App Store captures, added label-review, sharing, and widget screens, and regenerated `public/og.png` from the updated dashboard.
+
 ## 2026-10-30 Full Design Pass And Sharing Copy Correction
 
 ### Delivered
