@@ -3,7 +3,7 @@ import SwiftUI
 extension DashboardScreen {
     func dashboardToolbarTrailing(snapshot: LogEntryDaySnapshot) -> some ToolbarContent {
         ToolbarItem(placement: .appTopBarTrailing) {
-            HStack(spacing: 8) {
+            HStack(spacing: 0) {
                 #if os(iOS)
                 Button {
                     prepareShare(for: snapshot)
@@ -18,7 +18,6 @@ extension DashboardScreen {
                 toolbarIcon("calendar", label: "Open history", action: onOpenHistory)
                 toolbarIcon("gearshape", label: "Open settings", action: onOpenSettings)
             }
-            .padding(.horizontal, 4)
             .foregroundStyle(.primary)
         }
     }
@@ -27,7 +26,7 @@ extension DashboardScreen {
         Button(action: action) {
             Image(systemName: systemName)
                 .appTopBarIconStyle()
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -40,11 +39,11 @@ extension DashboardScreen {
         if isPreparingShare {
             ProgressView()
                 .controlSize(.small)
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
         } else {
             Image(systemName: "square.and.arrow.up")
                 .appTopBarIconStyle()
-                .frame(width: 32, height: 32)
+                .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
         #endif

@@ -15,6 +15,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Returning to MACROS by tapping a widget popped Settings/Insights back to the Dashboard. Cause: both widgets set `.widgetURL(AppOpenRequest.dashboard.url)`, so every tap delivered `calmacrotracker://dashboard`, and `applyPendingOpenRequest(.dashboard)` reset the navigation stack and sheets. Icon and app-switcher returns never popped (`.onOpenURL` fires once per URL, not on foreground). Fix: removed `widgetURL` from both widgets so WidgetKit simply opens the app, and removed the now-unused `AppOpenRequest.dashboard`, its URL parsing, `dashboardResetToken`, and `DashboardScreen.resetToTodayToken`. `sharing` and `add-food` links are unchanged.
 - The four dashboard toolbar icons were spread too wide and the glass capsule touched the ring. Restored the build 10 layout without its offset hack: one `ToolbarItem` with an `HStack(spacing: 8)` of 32 pt icon buttons, plus 8 pt top padding on the ring row.
+- Toolbar buttons now use 44 pt hit targets (HIG minimum) with zero spacing, so glyph spacing stays compact.
 - Validation: format check, `git diff --check`, Debug build, AppDayContextTests plus LogEntryQueryTests passed (iPad runner); simulator checks (widget tap keeps Settings, cold widget start opens Dashboard, sharing and add-food links) in `build/b13-bugs-2026-10-30/`.
 
 ## 2026-10-30 Weight Chart Y-Axis No Longer Anchors At Zero
