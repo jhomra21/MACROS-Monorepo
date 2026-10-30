@@ -116,7 +116,6 @@ struct DailyMacroWidget: Widget {
                 .containerBackground(for: .widget) {
                     DailyMacroWidgetBackground(entry: entry)
                 }
-                .widgetURL(AppOpenRequest.dashboard.url)
         }
         .configurationDisplayName("Daily Macros")
         .description("Track calories and macros at a glance.")

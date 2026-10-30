@@ -15,7 +15,6 @@ struct DashboardScreen: View {
     @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
         MacroRingColorStorage.defaultFatHex
 
-    let resetToTodayToken: Int
     let cameraTransitionNamespace: Namespace.ID
     let onOpenAddFood: (CalendarDay) -> Void
     let onOpenFoodCamera: (CalendarDay) -> Void
@@ -82,11 +81,6 @@ struct DashboardScreen: View {
             }
             .onChange(of: dayContext.today) { oldToday, newToday in
                 daySelection.syncToday(from: oldToday, to: newToday)
-            }
-            .onChange(of: resetToTodayToken) { _, _ in
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    daySelection.resetToToday(dayContext.today)
-                }
             }
             .toolbar {
                 AppTopBarLeadingTitle(

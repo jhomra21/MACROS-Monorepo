@@ -43,7 +43,6 @@ struct AppRootView: View {
     @Namespace private var cameraTransition
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
-    @State private var dashboardResetToken = 0
     @State private var openRequestToken = 0
 
     init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
@@ -53,7 +52,6 @@ struct AppRootView: View {
     var body: some View {
         NavigationStack(path: $path) {
             DashboardScreen(
-                resetToTodayToken: dashboardResetToken,
                 cameraTransitionNamespace: cameraTransition,
                 onOpenAddFood: { loggingDay in
                     presentSheet(.addFood(.addFood, loggingDay))
@@ -167,9 +165,6 @@ struct AppRootView: View {
         guard let request else { return }
 
         switch request {
-        case .dashboard:
-            resetPresentedState()
-            dashboardResetToken += 1
         case let .addFood(entryPoint):
             presentSheet(.addFood(entryPoint, nil))
         case let .sharing(inviteInput):

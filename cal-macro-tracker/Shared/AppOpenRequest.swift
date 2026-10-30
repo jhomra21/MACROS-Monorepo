@@ -10,7 +10,6 @@ enum AddFoodEntryPoint: String, Hashable, Identifiable {
 }
 
 enum AppOpenRequest: Hashable {
-    case dashboard
     case addFood(AddFoodEntryPoint)
     case sharing(inviteInput: String?)
 
@@ -23,8 +22,6 @@ enum AppOpenRequest: Hashable {
         }
 
         switch components.host {
-        case "dashboard":
-            self = .dashboard
         case "add-food":
             let path = components.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
             let entryPoint = path.isEmpty ? .addFood : AddFoodEntryPoint(rawValue: path)
@@ -44,8 +41,6 @@ enum AppOpenRequest: Hashable {
 
     var url: URL {
         switch self {
-        case .dashboard:
-            return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://dashboard")!
         case let .addFood(entryPoint):
             if entryPoint == .addFood {
                 return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://add-food")!

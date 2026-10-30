@@ -13,7 +13,6 @@ struct DailyMacroAccessoryWidget: Widget {
                 .containerBackground(for: .widget) {
                     AccessoryWidgetBackground()
                 }
-                .widgetURL(AppOpenRequest.dashboard.url)
         }
         .configurationDisplayName("Macros Lock Screen")
         .description("Check today’s calories and macros from your Lock Screen.")
