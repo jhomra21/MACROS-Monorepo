@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 TestFlight Build 14
+
+- Since build 13: the weight chart y-axis no longer starts at zero; widget taps no longer pop the navigation stack (`widgetURL` removed); the compact dashboard toolbar with 44 pt hit targets; and the simslim QA profile (tooling only).
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures).
+
 ## 2026-10-30 simslim QA Simulator Profile
 
 - Added `tools/sim/macros-slim.json` and raised the simulator budget to four (maximum one stock), backed by settled measurements (7.38 GB slim iPhone 17, 10.56 GB stock iPhone 18 Pro Max), 198 passing iPad tests, and four-device measurements. Smoke checks passed except the widget gallery, blocked by UI automation; see `docs/evidence/simslim/`.
