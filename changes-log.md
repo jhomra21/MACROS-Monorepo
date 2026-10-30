@@ -11,6 +11,15 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 Polish Batch 2
+
+- Camera options: the ellipsis toggle and its option circles share a `GlassEffectContainer(spacing: 12)` with `glassEffectID` and `matchedGeometry`, so the circles grow out of and collapse back into the toggle. The slide-in transition is removed. The back and shutter controls stay separate glass controls. Under Reduce Motion the change is not animated.
+- Animation scope: the result-expanded animation moved onto the result panel, which also animates its height as the hint, lookup, and result states change. The NavigationStack no longer animates unrelated pushes.
+- Haptics: a medium impact plays when a barcode is detected and lookup starts. The success haptic plays only after a successful log.
+- Result panel: the primary action uses `glassProminent` and secondary actions use `glass`, all with a 44pt minimum height. The missing-nutrients warning has an icon. The line reads "kcal", the servings stepper uses monospaced digits, and the permission-denied copy is one constant. The camera back control is labelled "Close camera". The log-error alert uses a curly apostrophe.
+- Scope: Debug build, `FoodCameraFlowTests`, and simulator checks on the iPhone 18 Pro iOS 27.0. Not verified on a physical device or with VoiceOver. Haptics cannot be observed in the simulator.
+- Validation: `make quality-format-check` and `git diff --check` pass; `FoodCameraFlowTests` passed 25 of 25.
+
 ## 2026-10-29 Polish Batch 1
 
 - Review fixes: a widget photo removal that finds the file already gone is now a no-op, so a restore cannot turn a successful background change into an error. Owned orphan `<UUID>.jpg` and `<UUID>.tmp` files are cleared on the next photo write. Full-decode source limit lowered from 100 MP to 40 MP. Settings reads notification denial on appear, so the open-settings button shows after onboarding denial. The camera card reveals on `viewDidAppear` if the presentation check missed. Insights shows a "View weight log" row when the weight card is empty. Widget color rows expose selected state and a spoken "Custom color" label.

@@ -8,6 +8,8 @@ import VisionKit
 
 struct FoodCameraSheet: View {
     static let zoomTransitionID = "food-camera"
+    static let cameraAccessDeniedMessage =
+        "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.isPresented) var isPresented
@@ -41,6 +43,7 @@ struct FoodCameraSheet: View {
     @State var storedRecoveryDestination: BarcodeScanLogFoodDestination?
     @State var route: FoodCameraRoute?
     @State var feedbackToken = 0
+    @State var detectionFeedbackToken = 0
     @State var permissionDenied = false
     @State var logError: String?
 
@@ -49,6 +52,7 @@ struct FoodCameraSheet: View {
     @State var torch = FoodCameraTorch()
     @State var torchIsOn = false
     @State private var isCameraOptionsExpanded = false
+    @Namespace private var optionsNamespace
 
     var result: FoodCameraResultPanel.Content { panelContent }
 
@@ -133,11 +137,7 @@ struct FoodCameraSheet: View {
                 if phase == .active, AVCaptureDevice.authorizationStatus(for: .video) == .denied {
                     permissionDenied = true
                     if flow.phase == .scanning {
-                        send(
-                            .contentChanged(
-                                .error(
-                                    "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
-                                )))
+                        send(.contentChanged(.error(Self.cameraAccessDeniedMessage)))
                     }
                 }
                 if phase == .active {
@@ -149,11 +149,7 @@ struct FoodCameraSheet: View {
             .onAppear {
                 permissionDenied = AVCaptureDevice.authorizationStatus(for: .video) == .denied
                 if permissionDenied {
-                    send(
-                        .contentChanged(
-                            .error(
-                                "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
-                            )))
+                    send(.contentChanged(.error(Self.cameraAccessDeniedMessage)))
                 }
             }
             .onAppear {
@@ -161,9 +157,8 @@ struct FoodCameraSheet: View {
             }
             .onDisappear { send(.navigationAway) }
             .sensoryFeedback(.success, trigger: feedbackToken)
+            .sensoryFeedback(.impact(weight: .medium), trigger: detectionFeedbackToken)
             .photosPicker(isPresented: $showingLibraryPicker, selection: $selectedPhoto, matching: .images)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: isCameraOptionsExpanded)
         }
         .background {
             CameraPresentationTransitionObserver(
@@ -177,7 +172,7 @@ struct FoodCameraSheet: View {
             if presented == false { send(.dismissed) }
         }
         .alert(
-            "Couldn't log",
+            "Couldn’t log",
             isPresented: Binding(
                 get: { logError != nil },
                 set: { if $0 == false { logError = nil } }
@@ -252,6 +247,8 @@ struct FoodCameraSheet: View {
             .blur(radius: reduceMotion || cameraCardVisible ? 0 : 8)
             .allowsHitTesting(cameraCardVisible)
             .accessibilityHidden(!cameraCardVisible)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: panelContent)
     }
 
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
@@ -309,92 +306,96 @@ struct FoodCameraSheet: View {
     }
 
     private func cameraControls(bottomSafeAreaInset: CGFloat) -> some View {
-        VStack(alignment: .trailing, spacing: 8) {
-            if isCameraOptionsExpanded {
-                VStack(spacing: 8) {
-                    cameraOptionButton(
-                        systemImage: "photo",
-                        label: "Choose a Photo",
-                        disabled: busy
-                    ) {
-                        guard busy == false else { return }
-                        isCameraOptionsExpanded = false
-                        send(.libraryOpened)
-                        showingLibraryPicker = true
-                    }
-
-                    cameraOptionButton(
-                        systemImage: torchIsOn ? "bolt.fill" : "bolt.slash.fill",
-                        label: torch.isAvailable
-                            ? (torchIsOn ? "Turn Flash Off" : "Turn Flash On")
-                            : "Flash Unavailable",
-                        disabled: torch.isAvailable == false || active == false
-                    ) {
-                        send(.torchToggled)
-                    }
-                }
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-            }
-
-            HStack {
-                Button {
-                    guard isCameraDismissalActive == false else { return }
-                    softenCameraForDismissal()
-                    dismiss()
-                } label: {
-                    Label("Back", systemImage: "chevron.backward")
-                        .labelStyle(.iconOnly)
-                        .frame(width: 40, height: 40)
-                        .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
-                        .frame(width: 44, height: 44)
-                        .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.white)
-                .accessibilityLabel("Close camera")
-                Spacer()
-                Button {
-                    isCameraOptionsExpanded = false
-                    captureLabel()
-                } label: {
-                    ZStack {
-                        Circle()
-                            .stroke(.white.opacity(0.9), lineWidth: 1)
-                        Circle()
-                            .fill(.white)
-                            .frame(width: 54, height: 54)
-                    }
-                    .frame(width: 68, height: 68)
+        HStack {
+            Button {
+                guard isCameraDismissalActive == false else { return }
+                softenCameraForDismissal()
+                dismiss()
+            } label: {
+                Label("Close camera", systemImage: "chevron.backward")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 40, height: 40)
+                    .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
+                    .frame(width: 44, height: 44)
                     .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Photograph nutrition label")
-                .disabled(busy)
-                Spacer()
-
-                Button {
-                    isCameraOptionsExpanded.toggle()
-                } label: {
-                    Image(systemName: isCameraOptionsExpanded ? "xmark" : "ellipsis")
-                        .font(.system(size: 18, weight: .semibold))
-                        .frame(width: 40, height: 40)
-                        .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
-                        .frame(width: 44, height: 44)
-                        .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.white)
-                .accessibilityLabel(isCameraOptionsExpanded ? "Collapse camera options" : "More camera options")
             }
-            .font(.system(size: 17, weight: .semibold))
-            .foregroundStyle(canLiveScan ? .white : .primary)
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            Spacer()
+            Button {
+                isCameraOptionsExpanded = false
+                captureLabel()
+            } label: {
+                ZStack {
+                    Circle()
+                        .stroke(.white.opacity(0.9), lineWidth: 1)
+                    Circle()
+                        .fill(.white)
+                        .frame(width: 54, height: 54)
+                }
+                .frame(width: 68, height: 68)
+                .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Photograph nutrition label")
+            .disabled(busy)
+            Spacer()
+            Color.clear
+                .frame(width: 44, height: 44)
+                .overlay(alignment: .bottom) {
+                    GlassEffectContainer(spacing: 12) {
+                        VStack(spacing: 8) {
+                            if isCameraOptionsExpanded {
+                                cameraOptionButton(
+                                    id: "photo",
+                                    systemImage: "photo",
+                                    label: "Choose a Photo",
+                                    disabled: busy
+                                ) {
+                                    guard busy == false else { return }
+                                    isCameraOptionsExpanded = false
+                                    send(.libraryOpened)
+                                    showingLibraryPicker = true
+                                }
+                                cameraOptionButton(
+                                    id: "torch",
+                                    systemImage: torchIsOn ? "bolt.fill" : "bolt.slash.fill",
+                                    label: torch.isAvailable
+                                        ? (torchIsOn ? "Turn Flash Off" : "Turn Flash On")
+                                        : "Flash Unavailable",
+                                    disabled: torch.isAvailable == false || active == false
+                                ) {
+                                    send(.torchToggled)
+                                }
+                            }
+                            Button {
+                                isCameraOptionsExpanded.toggle()
+                            } label: {
+                                Image(systemName: isCameraOptionsExpanded ? "xmark" : "ellipsis")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .frame(width: 40, height: 40)
+                                    .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
+                                    .glassEffectID("toggle", in: optionsNamespace)
+                                    .frame(width: 44, height: 44)
+                                    .contentShape(Circle())
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.white)
+                            .accessibilityLabel(isCameraOptionsExpanded ? "Collapse camera options" : "More camera options")
+                        }
+                    }
+                    .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: isCameraOptionsExpanded)
+                }
         }
+        .font(.system(size: 17, weight: .semibold))
+        .foregroundStyle(canLiveScan ? .white : .primary)
         .disabled(isCameraDismissalActive)
         .padding(.horizontal, 24)
         .padding(.bottom, 12 + bottomSafeAreaInset)
     }
 
     private func cameraOptionButton(
+        id: String,
         systemImage: String,
         label: String,
         disabled: Bool = false,
@@ -405,6 +406,8 @@ struct FoodCameraSheet: View {
                 .font(.system(size: 17, weight: .semibold))
                 .frame(width: 40, height: 40)
                 .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
+                .glassEffectID(id, in: optionsNamespace)
+                .glassEffectTransition(.matchedGeometry)
                 .frame(width: 44, height: 44)
                 .contentShape(Circle())
         }
