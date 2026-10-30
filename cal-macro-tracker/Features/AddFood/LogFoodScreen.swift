@@ -246,13 +246,15 @@ struct LogFoodScreen: View {
                     }
                     .background(Color.black.opacity(0.95))
                     .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
+                        ToolbarItem(placement: .confirmationAction) {
                             Button("Done") {
                                 showingPreviewImage = false
                             }
                         }
                     }
                 }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
         }
         #endif

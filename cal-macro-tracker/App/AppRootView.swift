@@ -116,6 +116,8 @@ struct AppRootView: View {
             NavigationStack {
                 AppRootSheetContent(destination: destination)
             }
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -215,6 +217,7 @@ private struct AppRootSheetContent: View {
 
 private struct EditLogEntrySheetContent: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
 
     let entryID: PersistentIdentifier
 
@@ -231,6 +234,13 @@ private struct EditLogEntrySheetContent: View {
                 systemImage: "fork.knife.circle",
                 description: Text("This log entry is no longer available.")
             )
+            .navigationTitle("Entry Unavailable")
+            .inlineNavigationTitle()
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
     }
 }

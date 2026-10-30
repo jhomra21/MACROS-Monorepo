@@ -281,13 +281,17 @@ private struct MacroLegendColumn: View {
 
         if canCustomizeColors {
             #if os(iOS)
-            column.overlay {
-                MacroLegendContextMenuInteraction(
-                    metric: metric,
-                    onTap: toggleSelection,
-                    onChangeColor: onChangeColor
-                )
-            }
+            column
+                .accessibilityAction(named: "Change Color") {
+                    onChangeColor(metric)
+                }
+                .overlay {
+                    MacroLegendContextMenuInteraction(
+                        metric: metric,
+                        onTap: toggleSelection,
+                        onChangeColor: onChangeColor
+                    )
+                }
             #else
             column
                 .onTapGesture {

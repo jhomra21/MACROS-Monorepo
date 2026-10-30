@@ -61,10 +61,7 @@ struct cal_macro_trackerApp: App {
             Group {
                 switch launchState.phase {
                 case .launching:
-                    Text("💪")
-                        .font(.system(size: 72))
-                        .accessibilityLabel(AppBrand.displayName)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    PlatformColors.groupedBackground
                 case let .ready(modelContainer):
                     ZStack {
                         if shouldShowAppRoot {

@@ -50,6 +50,7 @@ struct ProPaywallSheet: View {
     @State private var isRedeeming = false
     @State private var successFeedbackToken = 0
     @State private var successAnimationToken = 0
+    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 44
 
     var body: some View {
         NavigationStack {
@@ -66,7 +67,7 @@ struct ProPaywallSheet: View {
                         .transition(successTransition)
                     } else {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 44, weight: .semibold))
+                            .font(.system(size: heroIconSize, weight: .semibold))
                             .foregroundStyle(Color.accentColor)
                             .accessibilityHidden(true)
                         Text(ProLegalLinks.name)

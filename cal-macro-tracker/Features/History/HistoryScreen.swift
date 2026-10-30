@@ -52,7 +52,6 @@ struct HistoryScreen: View {
         .toolbar {
             ToolbarItem(placement: .appTopBarTrailing) {
                 calendarToolbarButton
-                    .padding(.horizontal, 4)
             }
         }
     }
@@ -75,12 +74,10 @@ struct HistoryScreen: View {
     }
 
     private var calendarToolbarButton: some View {
-        Button(action: toggleCalendar) {
-            Image(systemName: "calendar")
-                .appTopBarIconStyle()
-        }
-        .accessibilityLabel("Toggle calendar")
-        .accessibilityValue(showsCalendar ? "Expanded" : "Collapsed")
+        Button("Toggle calendar", systemImage: "calendar", action: toggleCalendar)
+            .labelStyle(.iconOnly)
+            .appTopBarIconStyle()
+            .accessibilityValue(showsCalendar ? "Expanded" : "Collapsed")
     }
 }
 
@@ -172,6 +169,8 @@ private struct HistoryWeekStrip: View {
                 .buttonStyle(.plain)
                 .disabled(!isSelectable)
                 .frame(maxWidth: .infinity)
+                .contentShape(.rect)
+                .frame(minHeight: 44)
             }
         }
     }

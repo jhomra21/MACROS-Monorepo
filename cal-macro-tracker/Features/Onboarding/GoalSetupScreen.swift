@@ -5,6 +5,9 @@ struct GoalSetupScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var goals: [DailyGoals]
     @FocusState private var focusedField: DailyGoalsField?
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @ScaledMetric(relativeTo: .headline) private var rowMinHeight: CGFloat = 62
+    @ScaledMetric(relativeTo: .largeTitle) private var titleFontSize: CGFloat = 36
 
     let onComplete: () -> Void
     let initialDraft: DailyGoalsDraft?
@@ -82,7 +85,7 @@ struct GoalSetupScreen: View {
     private var header: some View {
         VStack(spacing: 10) {
             Text(AppBrand.displayName)
-                .font(.system(size: 36, weight: .bold, design: .rounded))
+                .font(.system(size: titleFontSize, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
 
             Text("Set up your targets")
@@ -103,10 +106,19 @@ struct GoalSetupScreen: View {
     }
 
     private func goalRow(_ field: DailyGoalsField) -> some View {
-        HStack(spacing: 16) {
-            Text(title(for: field))
-                .font(.headline.weight(.semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(spacing: 16))
+
+        return layout {
+            Button(field.title) {
+                focusedField = field
+            }
+            .buttonStyle(.plain)
+            .font(.headline.weight(.semibold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
 
             HStack(spacing: 8) {
                 AppNumericTextField(
@@ -123,12 +135,9 @@ struct GoalSetupScreen: View {
             }
         }
         .padding(.horizontal, 18)
-        .frame(height: 62)
+        .padding(.vertical, 12)
+        .frame(minHeight: rowMinHeight)
         .appCardBackground(cornerRadius: 20)
-        .contentShape(Rectangle())
-        .onTapGesture {
-            focusedField = field
-        }
     }
 
     private func binding(for field: DailyGoalsField) -> Binding<String> {
@@ -136,10 +145,6 @@ struct GoalSetupScreen: View {
             get: { numericText[field] },
             set: { numericText[field] = $0 }
         )
-    }
-
-    private func title(for field: DailyGoalsField) -> String {
-        field == .fat ? "Fats" : field.title
     }
 
     private func loadGoalsIfNeeded() {

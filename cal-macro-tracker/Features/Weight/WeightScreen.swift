@@ -6,6 +6,7 @@ struct WeightScreen: View {
     @Query(sort: \WeightEntry.recordedAt, order: .reverse) private var entries: [WeightEntry]
     @Query private var profiles: [BodyProfile]
     @State private var isPresentingEntry = false
+    @State private var errorMessage: String?
 
     private var unitSystem: GoalUnitSystem { BodyProfile.activeRecord(from: profiles)?.unitSystem ?? .metric }
     private var unitLabel: String { unitSystem == .metric ? "kg" : "lb" }
@@ -44,6 +45,7 @@ struct WeightScreen: View {
         .navigationTitle("Weight")
         .inlineNavigationTitle()
         .sheet(isPresented: $isPresentingEntry) { WeightEntrySheet() }
+        .errorBanner(message: $errorMessage)
     }
 
     private var groupedEntries: [(week: Date, entries: [WeightEntry])] {
@@ -59,8 +61,12 @@ struct WeightScreen: View {
     }
 
     private func delete(_ group: [WeightEntry], offsets: IndexSet) {
-        for index in offsets {
-            try? WeightRepository(modelContext: modelContext).delete(group[index])
+        do {
+            for index in offsets {
+                try WeightRepository(modelContext: modelContext).delete(group[index])
+            }
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 }

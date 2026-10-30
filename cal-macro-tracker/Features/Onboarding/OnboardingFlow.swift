@@ -43,12 +43,13 @@ enum OnboardingStep: Hashable {
 
 private struct OnboardingWelcomeScreen: View {
     let onContinue: () -> Void
+    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 56
 
     var body: some View {
         VStack(spacing: 28) {
             Spacer()
             Image(systemName: "heart.text.clipboard")
-                .font(.system(size: 56, weight: .medium))
+                .font(.system(size: heroIconSize, weight: .medium))
                 .foregroundStyle(.tint)
                 .accessibilityHidden(true)
             Text(AppBrand.displayName)
@@ -127,6 +128,7 @@ struct OnboardingChoiceScreen: View {
 
 private struct OnboardingRemindersScreen: View {
     @Environment(AppEntitlements.self) private var entitlements
+    @ScaledMetric(relativeTo: .largeTitle) private var brandFontSize: CGFloat = 36
     @State private var settings = OnboardingReminderSettings()
     @State private var isRequestingPermission = false
     @State private var isShowingPermissionMessage = false
@@ -159,7 +161,7 @@ private struct OnboardingRemindersScreen: View {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(spacing: 10) {
                         Text(AppBrand.displayName)
-                            .font(.system(size: 36, weight: .bold, design: .rounded))
+                            .font(.system(size: brandFontSize, weight: .bold, design: .rounded))
                             .multilineTextAlignment(.center)
 
                         Text("Choose reminders")

@@ -14,6 +14,7 @@ struct ReusableFoodEditorScreen: View {
     @State private var deleteFeedbackToken = 0
     @State private var isRefreshingNutrients = false
     @State private var referencingMealCount = 0
+    @State private var isConfirmingDelete = false
     @FocusState private var focusedField: FoodDraftField?
 
     init(food: FoodItem) {
@@ -141,7 +142,7 @@ struct ReusableFoodEditorScreen: View {
 
             Section {
                 Button("Delete Food", role: .destructive) {
-                    deleteFood()
+                    isConfirmingDelete = true
                 }
                 .disabled(isRefreshingNutrients || isUsedByMeals)
             }
@@ -151,6 +152,14 @@ struct ReusableFoodEditorScreen: View {
         .disabled(isRefreshingNutrients)
         .sensoryFeedback(.success, trigger: saveFeedbackToken)
         .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+        .confirmationDialog("Delete Food?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete Food", role: .destructive) {
+                deleteFood()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes the food from your saved foods.")
+        }
         .task(id: food.id) {
             refreshMealReferenceCount()
         }

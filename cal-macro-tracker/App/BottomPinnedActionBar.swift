@@ -183,7 +183,7 @@ struct AppAccentActionButton: View {
             }
             .buttonStyle(.plain)
             .disabled(isDisabled)
-            .opacity(isDisabled ? 0.55 : 1)
+            .opacity(isDisabled ? 0.65 : 1)
         } else {
             Button(role: role, action: action) {
                 label
@@ -193,7 +193,7 @@ struct AppAccentActionButton: View {
             }
             .buttonStyle(.plain)
             .disabled(isDisabled)
-            .opacity(isDisabled ? 0.55 : 1)
+            .opacity(isDisabled ? 0.65 : 1)
         }
     }
 
@@ -210,6 +210,7 @@ struct AppAccentActionLabel: View {
     let title: String
     let systemImage: String?
     let isCompact: Bool
+    @ScaledMetric(relativeTo: .caption2) private var badgeSize: CGFloat = 18
 
     var body: some View {
         HStack(spacing: isCompact ? 0 : 8) {
@@ -232,9 +233,9 @@ struct AppAccentActionLabel: View {
 
     private func filledIcon(_ systemImage: String) -> some View {
         Image(systemName: systemImage)
-            .font(.system(size: 10, weight: .bold))
+            .font(.caption2.weight(.bold))
             .foregroundStyle(Color.accentColor)
-            .frame(width: 18, height: 18)
+            .frame(width: badgeSize, height: badgeSize)
             .background(.white, in: Circle())
     }
 }

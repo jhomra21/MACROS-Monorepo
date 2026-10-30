@@ -148,6 +148,8 @@ struct DashboardScreen: View {
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
+                    .frame(minHeight: 44)
+                    .contentShape(.rect)
             }
             .buttonStyle(.plain)
             .appGlassRoundedRect(cornerRadius: 18)
@@ -188,6 +190,10 @@ struct DashboardScreen: View {
             emptyStyle: .plain,
             layout: .list,
             onHeaderSwipeTranslation: handleDaySwipe,
+            onHeaderDayStep: { offset in
+                guard offset < 0 || daySelection.selectedDay.isToday == false else { return }
+                moveSelection(by: offset)
+            },
             onDeleteEntry: deleteEntry,
             onEditEntry: onEditEntry,
             onLogAgain: logEntryAgain

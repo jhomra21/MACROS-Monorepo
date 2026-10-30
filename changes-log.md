@@ -11,6 +11,17 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-29 Polish Batch 3b
+
+- Dynamic Type: onboarding goal and body-profile rows use a minimum height and stack label over field at accessibility sizes. The fixed Form height on target review is removed. Top bar, paywall hero, and onboarding icon sizes now scale with text. Fat label reads "Fat".
+- Confirmations: deleting a log entry or a saved food asks first with a confirmation dialog. Swipe-to-delete is unchanged. Weight deletes and Health authorization errors show in the error banner. Health sync shows a progress indicator and status text in the section footer.
+- VoiceOver: keyboard toolbar buttons are labeled, log rows include calories and macros, the dashboard day header steps days with adjust actions, the macro legend has a Change Color action, insight charts expose range and average, and goal field labels are buttons.
+- Sheets: weight entry uses medium and large detents with a grabber and the shared keyboard toolbar. Add Food and Edit Entry sheets use the large detent with a grabber. Food pickers show "Choose Foods" with an Add button. The launch placeholder is now a blank background.
+- Widgets: small widget margins widen to 14 and 12 points. Previews show sample values and placeholders are redacted. The Lock Screen widget is named "Macros Lock Screen".
+- Decision: the saved-food delete dialog omits the meal-usage warning because delete is disabled while a food is used in a meal.
+- Decision: the launch error view has no Try Again button because the launch state has no retry path. It shows a close-and-reopen hint instead.
+- Validation: format check and `git diff --check` pass; Debug simulator build succeeds; `WidgetAppearanceStorageTests`, `FoodItemLocalSearchTests`, `GoalCalculatorTests`, and `WeightAnalyticsTests` pass 37 of 37. Simulator checks covered the dashboard and Add Food sheet at default and largest accessibility text sizes. Other device checks are unverified (see the batch 3b report).
+
 ## 2026-10-29 Polish Batch 3a
 
 - Native surfaces: content cards (History week card, Insights cards and weight card, onboarding choice and reminder cards, goal rows, body profile rows) use the standard card background through `appCardBackground(cornerRadius:)`. Glass stays on the floating controls: Today pill, Insights range and weight notice, paywall plan buttons, bottom bars, camera controls, and suggestion pills (now 44pt minimum height).

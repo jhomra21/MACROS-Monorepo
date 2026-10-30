@@ -7,7 +7,7 @@ struct AppLaunchErrorView: View {
         ContentUnavailableView(
             "Unable to Start App",
             systemImage: "exclamationmark.triangle",
-            description: Text(message)
+            description: Text("\(message) Close the app completely and open it again.")
         )
         .padding(24)
     }

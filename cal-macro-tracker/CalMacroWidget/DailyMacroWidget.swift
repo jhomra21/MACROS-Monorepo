@@ -15,6 +15,7 @@ struct DailyMacroWidgetEntry: TimelineEntry {
     let appearance: WidgetAppearanceRecord?
     let proAccess: WidgetProAccess
     let backgroundPhotoData: Data?
+    var isPlaceholder = false
 }
 
 struct DailyMacroWidgetProvider: TimelineProvider {
@@ -28,6 +29,22 @@ struct DailyMacroWidgetProvider: TimelineProvider {
     func placeholder(in context: Context) -> DailyMacroWidgetEntry {
         DailyMacroWidgetEntry(
             date: .now,
+            snapshot: .empty,
+            customRingPalette: nil,
+            appearance: nil,
+            proAccess: .unknown,
+            backgroundPhotoData: nil,
+            isPlaceholder: true
+        )
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (DailyMacroWidgetEntry) -> Void) {
+        completion(context.isPreview ? sampleEntry : loadEntry())
+    }
+
+    private var sampleEntry: DailyMacroWidgetEntry {
+        DailyMacroWidgetEntry(
+            date: .now,
             snapshot: DailyMacroSnapshot(
                 totals: NutritionSnapshot(calories: 1_840, protein: 132, fat: 58, carbs: 176),
                 goals: .default
@@ -37,10 +54,6 @@ struct DailyMacroWidgetProvider: TimelineProvider {
             proAccess: .unknown,
             backgroundPhotoData: nil
         )
-    }
-
-    func getSnapshot(in context: Context, completion: @escaping (DailyMacroWidgetEntry) -> Void) {
-        completion(loadEntry())
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<DailyMacroWidgetEntry>) -> Void) {
@@ -99,6 +112,7 @@ struct DailyMacroWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: SharedAppConfiguration.dailyMacroWidgetKind, provider: DailyMacroWidgetProvider()) { entry in
             DailyMacroWidgetContentView(entry: entry)
+                .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 .containerBackground(for: .widget) {
                     DailyMacroWidgetBackground(entry: entry)
                 }
@@ -153,8 +167,8 @@ private struct DailyMacroWidgetContentView: View {
 
     private var smallContent: some View {
         GeometryReader { geometry in
-            let horizontalPadding: CGFloat = 8
-            let verticalPadding: CGFloat = 10
+            let horizontalPadding: CGFloat = 14
+            let verticalPadding: CGFloat = 12
             let metricSpacing: CGFloat = 2
             let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
             let columnCount = CGFloat(MacroMetric.allCases.count)

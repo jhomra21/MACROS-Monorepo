@@ -1,6 +1,14 @@
 import Charts
 import SwiftUI
 
+extension [InsightsDayPoint] {
+    /// Date span for chart accessibility values, e.g. "Oct 1 to Oct 7".
+    fileprivate var chartRangeDescription: String {
+        guard let first, let last else { return "No days" }
+        return "\(first.day.chartLabel) to \(last.day.chartLabel)"
+    }
+}
+
 struct InsightsCaloriesCard: View {
     let points: [InsightsDayPoint]
     let previousPoints: [InsightsDayPoint]
@@ -104,6 +112,9 @@ struct InsightsCaloriesCard: View {
             }
             .frame(height: 220)
             .accessibilityLabel("Calories chart")
+            .accessibilityValue(
+                "\(summary.average.insightsFormattedValue(unit: "kcal avg")), \(points.chartRangeDescription)"
+            )
             .onAppear {
                 guard !hasAnimatedIn else { return }
                 withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
@@ -231,6 +242,9 @@ struct InsightsMacrosCard: View {
             }
             .frame(height: 240)
             .accessibilityLabel("Macros chart")
+            .accessibilityValue(
+                "\(proteinSummary.average.insightsFormattedValue(unit: "g protein avg")), \(points.chartRangeDescription)"
+            )
             .onAppear {
                 guard !hasAnimatedIn else { return }
                 withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28)) {
@@ -370,6 +384,9 @@ struct InsightsNutrientsCard: View {
                 }
                 .frame(height: 220)
                 .accessibilityLabel("\(selectedNutrient.title) chart")
+                .accessibilityValue(
+                    "\(summary.average.insightsFormattedValue(unit: selectedNutrient.unit)), \(points.chartRangeDescription)"
+                )
             }
         }
         .onAppear {
