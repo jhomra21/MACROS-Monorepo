@@ -9,13 +9,13 @@ import {
 	waitlistStatusMessages,
 } from '../lib/waitlist';
 ---
-<SiteLayout title={`${site.name} | Home`} description={site.description}>
+<SiteLayout title={`${site.fullName} | Home`} description={site.description}>
 	<!-- Section 1: Hero -->
 	<section class="section section--macros">
 		<div class="container container--hero">
 			<div class="macros-hero-copy">
 				<h1 class="huge-title">MACROS</h1>
-				<div class="subtitle">Simplest Calorie and Macro tracking app</div>
+				<div class="subtitle">Nutrition Tracker · Calories and macros, no account</div>
 			</div>
 			<div class="macros-hero-visual">
 				<Image
@@ -82,13 +82,11 @@ import {
 					</details>
 				))}
 			</div>
-			<div class="store-badge">
-				{site.appStoreURL ? (
+			{site.appStoreURL && (
+				<div class="store-badge">
 					<a class="button" href={site.appStoreURL}>Download on the App Store</a>
-				) : (
-					<span class="button-secondary" aria-label="App Store link coming soon">App Store link coming soon</span>
-				)}
-			</div>
+				</div>
+			)}
 		</div>
 	</section>
 
