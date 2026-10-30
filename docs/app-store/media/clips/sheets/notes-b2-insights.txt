@@ -1,0 +1,12 @@
+t=0: Today dashboard, 1685 of 2200 kcal, 7 items
+t=1: Today dashboard, idle
+t=2: Today dashboard, finger taps the insights chart icon in the top bar
+t=3: Insights, 30-day range: Weight 180.6 lb with -0.10 lb/week trend, Avg Calories 2057.3 kcal, Avg Protein 126.0 g, Avg Carbs 265.1 g, Avg Fat 55.3 g, Calories bar chart
+t=4: Insights, weight and calories cards, idle
+t=5: Insights, finger on the Avg Fat card, scroll starting
+t=6: Insights scrolled to the macro split chart (126.0 g protein avg, 0/30 logged days, stacked Protein/Carbs/Fat bars) and the Nutrients card
+t=7: Macro split chart and Nutrients card, Fiber selected, No Fiber Data message
+t=8: Macro split chart scrolled, Nutrients card with No Fiber Data, Bars/Lines toggle
+t=9: Macro split chart and Nutrients card, idle
+t=10: Macro split chart and Nutrients card, idle
+t=11: Macro split chart and Nutrients card, idle (final frame at 11.1 s)

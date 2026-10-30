@@ -1,0 +1,11 @@
+t=0: Today dashboard, 1685 of 2200 kcal, 7 items
+t=1: Today dashboard, idle, home indicator visible at bottom
+t=2: Today dashboard, swipe-up from the home indicator starts
+t=3: Home screen: MACROS widgets (small 1685 and medium 1685 with 103 P, 222 C, 48 F), app icons, Safari and Messages in dock
+t=4: Home screen with the MACROS widgets, idle
+t=5: App reopens to Today dashboard, finger on the ring
+t=6: Today dashboard, ring animating in (grey and partially filled)
+t=7: Today dashboard, ring animating
+t=8: Today dashboard, ring drawn in muted grey tones
+t=9: Today dashboard, ring drawn in muted grey tones, idle
+t=10: Today dashboard, ring drawn in muted grey tones, idle (final frame at 10.43 s)

@@ -1,0 +1,15 @@
+t=0: Today dashboard, 1685 of 2200 kcal, 7 items
+t=1: Today dashboard, idle
+t=2: Today dashboard, finger taps the share icon in the top bar
+t=3: Sharing screen slides in: Alex (1310 kcal, P 95g, C 162g, F 34g) and Sam (1100 kcal, P 75g, C 140g, F 27g)
+t=4: Sharing screen, both cards collapsed, idle
+t=5: Sharing screen, idle
+t=6: Sharing screen, finger taps the Alex card
+t=7: Alex card expanded: Sharing with you and You share badges, Share my macros with Alex toggle on, Remove Person in red
+t=8: Alex card expanded, finger on the card
+t=9: Alex card collapsed again, Alex and Sam cards in the list
+t=10: Sharing screen, both cards collapsed, idle
+t=11: Back on Today dashboard, 1685 kcal, 7 items
+t=12: Today dashboard, idle
+t=13: Today dashboard, idle
+t=14: Today dashboard, idle (final frame at 14.17 s)

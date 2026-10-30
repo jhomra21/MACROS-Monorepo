@@ -1,0 +1,16 @@
+t=0: Today dashboard, 1685 of 2200 kcal, 7 items
+t=1: Today dashboard, idle
+t=2: Today dashboard, finger taps the settings gear
+t=3: Settings: MACROS Pro row (Free), Restore Purchases, Redeem Code, Daily Goals 2200 kcal / 150 g / 240 g / 70 g
+t=4: Settings, idle
+t=5: Settings, finger taps the MACROS Pro row, paywall sheet slides up
+t=6: Paywall "MACROS Pro" with feature list, Yearly $19.99/year selected, Monthly $2.99, Lifetime $49.99, Start Free Trial button
+t=7: Paywall feature list, idle
+t=8: Paywall scrolled down: plan list, Start Free Trial, Restore Purchases, Redeem Code, legal text
+t=9: Paywall scrolled down, idle
+t=10: Paywall, finger near the Monthly/Lifetime plan rows, Yearly still selected
+t=11: Paywall, Yearly selected, Start Free Trial visible
+t=12: Paywall, finger taps Close
+t=13: Settings screen, MACROS Pro (Free), Restore Purchases, Redeem Code
+t=14: Settings: Daily Goals, Save Goals (disabled), Recalculate Targets, Food Suggestions toggle on
+t=15: Settings: Food Suggestions on, Macro Ring Colors section below (final frame at 15.9 s)

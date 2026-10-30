@@ -1,0 +1,11 @@
+t=0: Today dashboard, 1685 of 2200 kcal, 7 items, Protein bar / Banana / Almonds rows
+t=1: Today dashboard, idle
+t=2: Today dashboard, finger taps the calendar/history icon in the top bar
+t=3: History view: week strip with Friday selected, day ring 1685, list Protein bar through Oatmeal with banana
+t=4: History list, idle
+t=5: History list, finger touching the list, scroll starting
+t=6: History list scrolled, touch indicator near the top
+t=7: History list scrolled further, Almonds and Banana rows visible
+t=8: History list scrolled, Oatmeal with banana near the bottom
+t=9: History list at the end of the day, idle
+t=10: History list at the end of the day, idle (final frame at 10.47 s)
