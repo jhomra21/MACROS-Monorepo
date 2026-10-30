@@ -23,6 +23,7 @@ struct FoodCameraSheet: View {
 
     @State private var cameraRevealVisible = false
     @State private var cameraCardVisible = false
+    @State private var resultContentHeight: CGFloat = 0
     @State private var isCameraDismissalActive = false
     @State var scannerController: FoodCameraScannerController?
     @State var pendingScannerStart = false
@@ -65,9 +66,10 @@ struct FoodCameraSheet: View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
-                    stagedResultPanel
+                    stagedResultPanel(maxHeight: geometry.size.height * 0.45)
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
+                .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
             }
@@ -185,7 +187,7 @@ struct FoodCameraSheet: View {
     }
 
     @ViewBuilder
-    private var resultPanel: some View {
+    private func resultPanel(maxHeight: CGFloat) -> some View {
         let panel = FoodCameraResultPanel(
             content: displayedResult,
             onChangeServings: { amount in
@@ -214,23 +216,22 @@ struct FoodCameraSheet: View {
             showSettings: permissionDenied,
             onSettings: openSettings
         )
-        if isResultExpanded {
-            ScrollView {
-                panel
-            }
-            .frame(maxHeight: 320)
-            .foregroundStyle(.primary)
-            .padding(.top, 12)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-            .padding(.horizontal, 16)
-            .layoutPriority(2)
-        } else {
+        ScrollView {
             panel
-                .foregroundStyle(.primary)
-                .padding(.top, 12)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-                .padding(.horizontal, 16)
+                .onGeometryChange(for: CGFloat.self) {
+                    $0.size.height
+                } action: {
+                    resultContentHeight = $0
+                }
         }
+        .scrollDisabled(!isResultExpanded)
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(height: min(resultContentHeight, maxHeight))
+        .foregroundStyle(.primary)
+        .padding(.top, 12)
+        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(.horizontal, 16)
+        .layoutPriority(2)
     }
 
     private var displayedResult: FoodCameraResultPanel.Content {
@@ -240,16 +241,19 @@ struct FoodCameraSheet: View {
         return result
     }
 
-    private var stagedResultPanel: some View {
-        resultPanel
+    private func stagedResultPanel(maxHeight: CGFloat) -> some View {
+        resultPanel(maxHeight: maxHeight)
             .opacity(cameraCardVisible ? 1 : 0)
             .offset(y: cameraCardVisible || reduceMotion ? 0 : 56)
             .blur(radius: reduceMotion || cameraCardVisible ? 0 : 8)
             .allowsHitTesting(cameraCardVisible)
             .accessibilityHidden(!cameraCardVisible)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: panelContent)
+            .animation(resultAnimation, value: panelContent)
+            .animation(resultAnimation, value: resultContentHeight)
     }
+
+    // The measured height lands in a later layout pass than the content change, so it needs its own trigger.
+    private var resultAnimation: Animation? { reduceMotion ? nil : .smooth(duration: 0.3) }
 
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
         ZStack {
