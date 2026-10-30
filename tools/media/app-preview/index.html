@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>MACROS app preview renderer</title>
+<style>
+	body { font: 14px/1.5 -apple-system, system-ui, sans-serif; margin: 24px; color: #1d1d1f; max-width: 820px; }
+	label { display: block; margin: 12px 0 4px; font-weight: 600; }
+	textarea { width: 100%; min-height: 120px; font: 12px/1.4 ui-monospace, monospace; }
+	pre { background: #f5f5f7; padding: 12px; border-radius: 8px; white-space: pre-wrap; }
+	canvas { width: 221px; height: 480px; border: 1px solid #ddd; display: block; margin-top: 12px; }
+	button { font: inherit; padding: 8px 16px; border-radius: 999px; border: 0; background: #007aff; color: #fff; }
+</style>
+</head>
+<body>
+<h1>App preview renderer</h1>
+<p>Decodes simulator recordings, scales them to Apple's 886x1920 at 30 fps, adds optional labels and an end card, and downloads an H.264 MP4 with a silent stereo AAC track. Runs entirely in this browser (Mediabunny on WebCodecs).</p>
+
+<label for="files">Clips, in order (.mov or .mp4)</label>
+<input id="files" type="file" multiple accept="video/*" />
+
+<label for="config">Config (JSON)</label>
+<textarea id="config">{
+  "name": "macros-preview-1.mp4",
+  "width": 886,
+  "height": 1920,
+  "fps": 30,
+  "bitrate": 10000000,
+  "clips": [
+    { "start": 0, "end": 28, "label": "" }
+  ],
+  "endCard": { "text": "Some features need MACROS Pro", "seconds": 2 }
+}</textarea>
+
+<p><button id="render">Render</button> <button id="selftest" style="background:#66666b">Self-test (synthetic clip)</button></p>
+<pre id="log">idle</pre>
+<canvas id="canvas" width="886" height="1920"></canvas>
+
+<script type="module">
+import {
+	Input, Output, ALL_FORMATS, BlobSource, BufferTarget, Mp4OutputFormat,
+	CanvasSource, AudioBufferSource, VideoSampleSink, Quality, canEncodeAudio,
+} from 'https://cdn.jsdelivr.net/npm/mediabunny@1.64.0/+esm';
+
+const logEl = document.getElementById('log');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const state = { status: 'idle' };
+window.__previewResult = state;
+
+function log(line) {
+	logEl.textContent += `\n${line}`;
+	state.lastLog = line;
+}
+
+function readConfig() {
+	const config = JSON.parse(document.getElementById('config').value);
+	config.width ??= 886;
+	config.height ??= 1920;
+	config.fps ??= 30;
+	config.bitrate ??= 10e6;
+	config.clips ??= [];
+	config.hardwareAcceleration ??= 'prefer-software';
+	return config;
+}
+
+function drawLabel(text, width) {
+	if (!text) return;
+	ctx.save();
+	ctx.font = '600 34px -apple-system, system-ui, sans-serif';
+	const padX = 28;
+	const w = ctx.measureText(text).width + padX * 2;
+	const h = 60;
+	const x = (width - w) / 2;
+	const y = 118;
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.62)';
+	ctx.beginPath();
+	ctx.roundRect(x, y, w, h, 30);
+	ctx.fill();
+	ctx.fillStyle = '#fff';
+	ctx.textBaseline = 'middle';
+	ctx.fillText(text, x + padX, y + h / 2 + 1);
+	ctx.restore();
+}
+
+function drawEndCard(text, width, height) {
+	ctx.fillStyle = '#000';
+	ctx.fillRect(0, 0, width, height);
+	const rings = [
+		{ r: 150, color: '#ef4f87' }, { r: 112, color: '#ff9f0a' }, { r: 74, color: '#007aff' },
+	];
+	for (const ring of rings) {
+		ctx.beginPath();
+		ctx.lineWidth = 26;
+		ctx.lineCap = 'round';
+		ctx.strokeStyle = ring.color;
+		ctx.arc(width / 2, height / 2 - 150, ring.r, -Math.PI / 2, Math.PI * 1.2);
+		ctx.stroke();
+	}
+	ctx.fillStyle = '#fff';
+	ctx.textAlign = 'center';
+	ctx.font = '700 64px -apple-system, system-ui, sans-serif';
+	ctx.fillText('MACROS', width / 2, height / 2 + 110);
+	ctx.font = '400 40px -apple-system, system-ui, sans-serif';
+	ctx.fillStyle = '#a1a1a6';
+	ctx.fillText(text, width / 2, height / 2 + 190);
+	ctx.textAlign = 'start';
+}
+
+async function render(files, config) {
+	state.status = 'running';
+	const { width, height, fps } = config;
+	canvas.width = width;
+	canvas.height = height;
+	const frameDuration = 1 / fps;
+
+	const output = new Output({ format: new Mp4OutputFormat(), target: new BufferTarget() });
+	const videoSource = new CanvasSource(canvas, {
+		codec: 'avc',
+		quality: new Quality({ bitrate: config.bitrate }),
+		keyFrameInterval: 2,
+		fullCodecString: config.codecString ?? 'avc1.640028',
+		hardwareAcceleration: config.hardwareAcceleration ?? 'no-preference',
+		onEncoderConfig: (encoderConfig) => log(`encoder: ${encoderConfig.codec} ${encoderConfig.width}x${encoderConfig.height} @ ${encoderConfig.bitrate} bps`),
+	});
+	output.addVideoTrack(videoSource, { frameRate: fps });
+
+	const audioOk = await canEncodeAudio('aac', { numberOfChannels: 2, sampleRate: 44100, quality: new Quality({ bitrate: 128e3 }) });
+	let audioSource = null;
+	if (audioOk) {
+		audioSource = new AudioBufferSource({ codec: 'aac', quality: new Quality({ bitrate: 128e3 }) });
+		output.addAudioTrack(audioSource);
+	} else {
+		log('AAC encoder unavailable here; writing video only');
+	}
+	await output.start();
+
+	let outTime = 0;
+	let frames = 0;
+	for (let i = 0; i < config.clips.length; i++) {
+		const clip = config.clips[i];
+		const file = files[i];
+		if (!file) throw new Error(`clip ${i} has no file`);
+		const input = new Input({ formats: ALL_FORMATS, source: new BlobSource(file) });
+		const track = await input.getPrimaryVideoTrack();
+		if (!track) throw new Error(`clip ${i}: no video track`);
+		const firstTimestamp = await track.getFirstTimestamp();
+		const duration = await input.computeDuration();
+		const start = firstTimestamp + (clip.start ?? 0);
+		const end = Math.min(firstTimestamp + (clip.end ?? duration), duration);
+		log(`clip ${i}: ${file.name} ${await track.getDisplayWidth()}x${await track.getDisplayHeight()} duration ${duration.toFixed(2)}s, using ${start.toFixed(2)}-${end.toFixed(2)}s`);
+
+		const sink = new VideoSampleSink(track);
+		const iterator = sink.samples(start, end);
+		let current = null;
+		let next = await iterator.next();
+		for (let t = start; t < end - 1e-6; t += frameDuration) {
+			while (!next.done && next.value.timestamp <= t + 1e-6) {
+				current?.close();
+				current = next.value;
+				next = await iterator.next();
+			}
+			if (!current) {
+				if (next.done) break;
+				current = next.value;
+				next = await iterator.next();
+			}
+			current.drawWithFit(ctx, { fit: 'cover' });
+			drawLabel(clip.label, width);
+			await videoSource.add(outTime, frameDuration);
+			outTime += frameDuration;
+			frames++;
+		}
+		current?.close();
+		if (!next.done) next.value.close();
+		await iterator.return();
+	}
+
+	if (config.endCard?.seconds > 0) {
+		drawEndCard(config.endCard.text ?? '', width, height);
+		const count = Math.round(config.endCard.seconds * fps);
+		for (let k = 0; k < count; k++) {
+			await videoSource.add(outTime, frameDuration, { keyFrame: k === 0 });
+			outTime += frameDuration;
+			frames++;
+		}
+	}
+	videoSource.close();
+
+	if (audioSource) {
+		const sampleRate = 44100;
+		const silence = new AudioBuffer({ numberOfChannels: 2, length: Math.ceil(outTime * sampleRate), sampleRate });
+		await audioSource.add(silence);
+		audioSource.close();
+	}
+
+	await output.finalize();
+	const blob = new Blob([output.target.buffer], { type: 'video/mp4' });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = config.name || 'preview.mp4';
+	a.textContent = `Download ${a.download} (${(blob.size / 1e6).toFixed(1)} MB)`;
+	document.body.appendChild(a);
+	a.click();
+	Object.assign(state, { status: 'done', name: a.download, bytes: blob.size, durationSec: outTime, frames, width, height, fps, audio: Boolean(audioSource) });
+	log(`done: ${a.download}, ${frames} frames, ${outTime.toFixed(2)} s, ${(blob.size / 1e6).toFixed(1)} MB`);
+}
+
+async function makeSyntheticClip() {
+	const w = 1320, h = 2868, seconds = 3, fps = 60;
+	const off = new OffscreenCanvas(w, h);
+	const c = off.getContext('2d');
+	const output = new Output({ format: new Mp4OutputFormat(), target: new BufferTarget() });
+	const source = new CanvasSource(off, { codec: 'avc', quality: new Quality({ bitrate: 8e6 }) });
+	output.addVideoTrack(source, { frameRate: fps });
+	await output.start();
+	for (let i = 0; i < seconds * fps; i++) {
+		c.fillStyle = `hsl(${(i * 2) % 360} 70% 50%)`;
+		c.fillRect(0, 0, w, h);
+		c.fillStyle = '#fff';
+		c.font = '700 160px sans-serif';
+		c.fillText(`frame ${i}`, 120, h / 2);
+		await source.add(i / fps, 1 / fps);
+	}
+	source.close();
+	await output.finalize();
+	return new File([output.target.buffer], 'synthetic.mp4', { type: 'video/mp4' });
+}
+
+document.getElementById('render').onclick = async () => {
+	try {
+		logEl.textContent = 'rendering';
+		const files = [...document.getElementById('files').files];
+		await render(files, readConfig());
+	} catch (error) {
+		state.status = 'error';
+		state.error = String(error?.stack || error);
+		log(`error: ${state.error}`);
+	}
+};
+
+document.getElementById('selftest').onclick = async () => {
+	try {
+		logEl.textContent = 'self-test: building synthetic clip';
+		const file = await makeSyntheticClip();
+		log(`synthetic clip ${(file.size / 1e6).toFixed(1)} MB`);
+		const config = readConfig();
+		config.name = 'selftest.mp4';
+		config.clips = [{ start: 0.5, end: 2.5, label: 'Self-test label' }];
+		config.endCard = { text: 'End card', seconds: 1 };
+		await render([file], config);
+	} catch (error) {
+		state.status = 'error';
+		state.error = String(error?.stack || error);
+		log(`error: ${state.error}`);
+	}
+};
+
+window.__render = async (config) => {
+	const files = [...document.getElementById('files').files];
+	await render(files, config);
+};
+</script>
+</body>
+</html>
