@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 simslim QA Simulator Profile
+
+- Added `tools/sim/macros-slim.json` and raised the simulator budget to four (maximum one stock), backed by settled measurements (7.38 GB slim iPhone 17, 10.56 GB stock iPhone 18 Pro Max), 198 passing iPad tests, and four-device measurements. Smoke checks passed except the widget gallery, blocked by UI automation; see `docs/evidence/simslim/`.
+
 ## 2026-10-30 Widget Taps Keep Your Place; Compact Dashboard Toolbar (TestFlight Build 13)
 
 - Returning to MACROS by tapping a widget popped Settings/Insights back to the Dashboard. Cause: both widgets set `.widgetURL(AppOpenRequest.dashboard.url)`, so every tap delivered `calmacrotracker://dashboard`, and `applyPendingOpenRequest(.dashboard)` reset the navigation stack and sheets. Icon and app-switcher returns never popped (`.onOpenURL` fires once per URL, not on foreground). Fix: removed `widgetURL` from both widgets so WidgetKit simply opens the app, and removed the now-unused `AppOpenRequest.dashboard`, its URL parsing, `dashboardResetToken`, and `DashboardScreen.resetToTodayToken`. `sharing` and `add-food` links are unchanged.
