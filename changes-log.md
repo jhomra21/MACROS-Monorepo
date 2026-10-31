@@ -17,6 +17,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Decision: only completion is persisted, so a killed app restarts from step 1; the tutorial pauses (step kept) while a sheet or History, Insights or Settings is open.
 - Validation: format check, `git diff --check`, and the serial non-StoreKit suite passed; the full run, skip, replay and Reduce Motion were exercised on the simulator. Follow-up fixes hide the dimmed dashboard from accessibility, gate tutorial swipes, restore yesterday's starting date, and place scrollable captions safely around the spotlight, with tutorial actions stacked at accessibility text sizes. The dim layer is the touch sink, the dashboard is hidden from accessibility while the tutorial runs, and only the list's scrolling is disabled so the caption can scroll at large text sizes.
 
+## 2026-10-31 Camera Card Polish
+
+- Redesign: camera results reuse the shared food nutrition row with a 44 pt daily-goal ring, servings/total-weight text and an accessibility-size stacked fallback; center the hint row and remove its extra top inset. Shared-row padding stays 16 pt by default, unchanged for existing Dashboard and Add Food rows.
+- Validation: iPhone Air dark/light screenshots and the Dashboard/Add Food row comparison captured under `build/camera-card-polish/`; Debug build, format check, `git diff --check`, and serial non-StoreKit simulator suite passed (198 tests, 0 failures). Barcode lookup could not connect, so card screenshots use the oat-crunch label fixture. Follow-up fixes compute consumed nutrition once, share the stacked row, normalize serving text and quantities, and keep the camera viewport/card dark in light appearance.
+
 ## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
 
 - Fix: while a result is showing, the shutter and the options menu fade out with an 8 pt downward move (opacity only under Reduce Motion), are not hit-testable and are `accessibilityHidden`; the back chevron stays. They return on Scan again in the same single transaction as the card, viewport, still and overlay button.

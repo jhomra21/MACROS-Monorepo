@@ -17,6 +17,7 @@ struct FoodCameraSheet: View {
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.accessibilityReduceMotion) var reduceMotion
     @Environment(SharingSyncService.self) var sharingSyncService
+    @Query private var goals: [DailyGoals]
 
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
@@ -76,6 +77,7 @@ struct FoodCameraSheet: View {
                 .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
+                .environment(\.colorScheme, .dark)
             }
             .navigationDestination(item: $logDestination) { destination in
                 LogFoodScreen(
@@ -197,6 +199,7 @@ struct FoodCameraSheet: View {
     private func resultPanel(maxHeight: CGFloat) -> some View {
         let panel = FoodCameraResultPanel(
             content: displayedResult,
+            goals: MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)),
             onChangeServings: { amount in
                 send(.servingsChanged(amount))
                 switch result {
@@ -234,7 +237,6 @@ struct FoodCameraSheet: View {
         .scrollBounceBehavior(.basedOnSize)
         .frame(height: min(resultContentHeight, maxHeight))
         .foregroundStyle(.primary)
-        .padding(.top, 12)
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
         .padding(.horizontal, 16)
         .layoutPriority(2)
