@@ -31,6 +31,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Cause: `resultPanel` swapped an if/else (scrolling card vs. plain panel), so SwiftUI replaced the hint with the card in one frame; the clear cover background let Add Food show through; the Details/Log/Scan again buttons sat at natural widths and wrapped.
 - Fix: one stable glass container whose height animates from a measured content height (cap 0.45 of the screen, scroll only when expanded), content crossfades with `.id(kind)` + `.blurReplace`, one animation source (none with Reduce Motion), a solid black backdrop inside the navigation content, and a rebuilt card (name + 44 pt retry, kcal, macro capsules in the standard ring colors, servings row, Details hugging + prominent full-width Log, clearer Logged and error layouts).
+- Review fixes: barcode still capture is guarded by a scan-session token, frozen controls stay hidden throughout interactive dismissal, and the narrow-width macro fallback stacks individual capsules vertically.
 - Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); recordings on the iPhone Air simulator show the card growing over about 14 frames.
 
 ## 2026-10-30 TestFlight Build 15

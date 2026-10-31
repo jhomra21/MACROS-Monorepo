@@ -36,6 +36,7 @@ struct FoodCameraSheet: View {
     @State var labelInitialDraft: FoodDraft?
     @State var flow = FoodCameraFlow()
     @State var processingTask: Task<Void, Never>?
+    @State var barcodeCaptureID: UUID?
     @State var useStillCamera = false
     @State var captureImageData: Data?
     @State var pendingImage: UIImage?
@@ -260,7 +261,7 @@ struct FoodCameraSheet: View {
         reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
     }
 
-    private var isResultFrozen: Bool { isResultExpanded && cameraCardVisible }
+    private var isResultFrozen: Bool { isResultExpanded }
 
     private var resultOverlay: some View {
         let isLabel = if case .label = result { true } else { false }
@@ -479,6 +480,7 @@ struct FoodCameraSheet: View {
                 startScanner()
             case .stopScanning:
                 pendingScannerStart = false
+                barcodeCaptureID = nil
                 scannerController?.stopScanning()
             case .torchOn:
                 torch.set(on: true)

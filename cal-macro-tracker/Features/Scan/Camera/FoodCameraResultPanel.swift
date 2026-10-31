@@ -165,23 +165,26 @@ struct FoodCameraResultPanel: View {
     }
 
     private func macroCapsules(_ draft: FoodDraft) -> some View {
-        let capsules = HStack(spacing: 8) {
-            ForEach(MacroMetric.allCases) { metric in
-                let color = MacroRingPalette.standard.color(for: metric)
-                Text("\(metric.shortTitle) \(grams(metric, in: draft).formatted(.number.precision(.fractionLength(0...1))))g")
-                    .font(.caption.weight(.semibold))
-                    .monospacedDigit()
-                    .fixedSize()
-                    .foregroundStyle(color)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(color.opacity(0.18), in: Capsule())
+        return ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) {
+                ForEach(MacroMetric.allCases) { macroCapsule($0, in: draft) }
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(MacroMetric.allCases) { macroCapsule($0, in: draft) }
             }
         }
-        return ViewThatFits(in: .horizontal) {
-            capsules
-            VStack(alignment: .leading, spacing: 8) { capsules }
-        }
+    }
+
+    private func macroCapsule(_ metric: MacroMetric, in draft: FoodDraft) -> some View {
+        let color = MacroRingPalette.standard.color(for: metric)
+        return Text("\(metric.shortTitle) \(grams(metric, in: draft).formatted(.number.precision(.fractionLength(0...1))))g")
+            .font(.caption.weight(.semibold))
+            .monospacedDigit()
+            .fixedSize()
+            .foregroundStyle(color)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.18), in: Capsule())
     }
 
     private func grams(_ metric: MacroMetric, in draft: FoodDraft) -> Double {
