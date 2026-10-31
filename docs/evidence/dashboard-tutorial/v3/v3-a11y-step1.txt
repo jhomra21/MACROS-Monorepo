@@ -1,0 +1,41 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 38 nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "_TtGC7SwiftUI32NavigationStackHosting"
+@e3 [text] "Today"
+@e4 [button] "Share daily summary" [disabled]
+@e5 [button] "Open insights" [disabled]
+@e6 [button] "Open history" [disabled]
+@e7 [button] "Open settings" [disabled]
+@e8 [collection]
+@e9 [cell] "0"
+@e10 [button] "Expand nutrition details"
+@e11 [text] "of 2200 kcal"
+@e12 [cell]
+@e13 [button] "0"
+@e14 [button] "0"
+@e15 [button] "0"
+@e16 [button] "150"
+@e17 [button] "240"
+@e18 [button] "70"
+@e19 [button] "Protein"
+@e20 [button] "Carbs"
+@e21 [button] "Fat"
+@e22 [cell] "90-day logging streak"
+@e23 [button] "90-day logging streak. Open Insights."
+@e24 [cell] "Today, 0 items"
+@e25 [text] "Today"
+@e26 [text] "0 items"
+@e27 [cell] "No food logged yet"
+@e28 [image] "Fork And Knife In A Circle"
+@e29 [text] "Tap the add button to log your first food today."
+@e30 [scroll-area] [scrollable]
+@e31 [text] "See your sharing circle"
+@e32 [text] "Swipe left on your rings to open Sharing."
+@e33 [button] "Skip"
+@e34 [text] "1 of 4"
+@e35 [button] "Do it for me"
+@e36 [button] "Camera" [disabled]
+@e37 [button] "Add Food" [disabled]
+@e38 [toolbar] "Toolbar"
