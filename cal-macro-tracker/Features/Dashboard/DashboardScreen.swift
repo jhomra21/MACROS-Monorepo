@@ -77,6 +77,7 @@ struct DashboardScreen: View {
             .navigationTitle("")
             .inlineNavigationTitle()
             .accessibilityHidden(tutorial.isRunning)
+            .tutorialAccessibilityMask(tutorial.isRunning)
             .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
                 ZStack {
                     Color.clear
@@ -117,7 +118,6 @@ struct DashboardScreen: View {
             .onChange(of: tutorial.step) { _, step in
                 normalizeState(for: step)
             }
-            .scrollDisabled(tutorial.isRunning)
             .animation(.easeOut(duration: 0.18), value: showsCompactSummary)
             .onAppear {
                 guard daySelection.followsCurrentDay else { return }
@@ -207,6 +207,7 @@ struct DashboardScreen: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .scrollBounceBehavior(.basedOnSize)
+        .scrollDisabled(tutorial.isRunning)
         .contentMargins(.top, 0, for: .scrollContent)
         .background(PlatformColors.groupedBackground)
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
@@ -236,7 +237,6 @@ struct DashboardScreen: View {
             onEditEntry: onEditEntry,
             onLogAgain: logEntryAgain
         )
-        .allowsHitTesting(!tutorial.isRunning)
     }
 
     @ViewBuilder
@@ -268,7 +268,6 @@ struct DashboardScreen: View {
 
         LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
             .dashboardListRow(bottom: 8)
-            .allowsHitTesting(!tutorial.isRunning)
 
         if isMacroRingExpanded {
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
@@ -276,7 +275,6 @@ struct DashboardScreen: View {
                 .dashboardListRow(bottom: 8)
                 .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
                 .dashboardDaySwipe(dayNavigationGesture)
-                .allowsHitTesting(!tutorial.isRunning)
         }
     }
 
@@ -376,6 +374,7 @@ struct DashboardScreen: View {
         .frame(maxWidth: .infinity)
         .disabled(tutorial.isRunning)
         .accessibilityHidden(tutorial.isRunning)
+        .tutorialAccessibilityMask(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -478,5 +477,24 @@ struct DashboardScreen: View {
         case .fat:
             $customFatRingColor
         }
+    }
+}
+
+private struct TutorialAccessibilityMask: ViewModifier {
+    let isRunning: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isRunning {
+            content.accessibilityRepresentation { EmptyView() }
+        } else {
+            content
+        }
+    }
+}
+
+private extension View {
+    func tutorialAccessibilityMask(_ isRunning: Bool) -> some View {
+        modifier(TutorialAccessibilityMask(isRunning: isRunning))
     }
 }

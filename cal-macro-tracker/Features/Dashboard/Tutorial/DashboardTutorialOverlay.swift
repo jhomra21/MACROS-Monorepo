@@ -49,7 +49,8 @@ struct DashboardTutorialOverlay: View {
         ZStack {
             SpotlightShape(cutout: cutout)
                 .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
-                .allowsHitTesting(false)
+                .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
+                .gesture(DragGesture(minimumDistance: 0))
                 .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
                 .accessibilityHidden(true)
 
@@ -106,7 +107,6 @@ struct DashboardTutorialOverlay: View {
         ScrollView {
             card
         }
-        .scrollDisabled(false)
         .scrollIndicators(.hidden)
         .frame(height: regionHeight)
         .position(x: size.width / 2, y: regionCenterY)
