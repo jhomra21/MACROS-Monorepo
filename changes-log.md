@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 21
+
+- Tutorial Done card recap centered like the Welcome screen.
+- Validation: format and diff checks, iPhone 17 light/dark/accessibility screenshots, and serial non-StoreKit iPad suite passed (198 tests, 0 failures).
+
 ## 2026-10-31 TestFlight Build 20
 
 - Pre-submission polish: one shared onboarding header and layout, no bell bounce, Back on Reminders; tutorial spotlight tracks targets with no halo loop, updates text in place, and ends with a What's New-style Done card; camera errors keep the shutter and photo menu, and servings/name edits no longer move the camera layout; includes review fixes.
