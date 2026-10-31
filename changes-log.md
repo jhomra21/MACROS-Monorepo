@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 Camera Card Polish
+
+- Redesign: camera results reuse the shared food nutrition row with a 44 pt daily-goal ring, servings/total-weight text and an accessibility-size stacked fallback; center the hint row and remove its extra top inset. Shared-row padding stays 16 pt by default, unchanged for existing Dashboard and Add Food rows.
+- Validation: iPhone Air dark/light screenshots and the Dashboard/Add Food row comparison captured under `build/camera-card-polish/`; Debug build, format check, `git diff --check`, and serial non-StoreKit simulator suite passed (198 tests, 0 failures). Barcode lookup could not connect, so card screenshots use the oat-crunch label fixture.
+
 ## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
 
 - Fix: while a result is showing, the shutter and the options menu fade out with an 8 pt downward move (opacity only under Reduce Motion), are not hit-testable and are `accessibilityHidden`; the back chevron stays. They return on Scan again in the same single transaction as the card, viewport, still and overlay button.

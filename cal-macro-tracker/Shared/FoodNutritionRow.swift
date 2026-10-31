@@ -1,12 +1,31 @@
 import SwiftUI
 
-struct FoodNutritionRow: View {
-    let name: String
+struct FoodNutritionRow<Title: View>: View {
+    let title: Title
     let subtitle: String?
     let calories: Double
     let protein: Double
     let carbs: Double
     let fat: Double
+    var verticalPadding: CGFloat = 16
+
+    init(
+        subtitle: String?,
+        calories: Double,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        verticalPadding: CGFloat = 16,
+        @ViewBuilder title: () -> Title
+    ) {
+        self.title = title()
+        self.subtitle = subtitle
+        self.calories = calories
+        self.protein = protein
+        self.carbs = carbs
+        self.fat = fat
+        self.verticalPadding = verticalPadding
+    }
 
     var body: some View {
         HStack(spacing: 14) {
@@ -26,7 +45,7 @@ struct FoodNutritionRow: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 16)
+        .padding(.vertical, verticalPadding)
         .contentShape(Rectangle())
     }
 
@@ -34,20 +53,43 @@ struct FoodNutritionRow: View {
     private var leftContent: some View {
         if let subtitle {
             VStack(alignment: .leading, spacing: 6) {
-                nameText
+                titleText
                 Text(subtitle)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
             }
         } else {
-            nameText
+            titleText
         }
     }
 
-    private var nameText: some View {
-        Text(name)
+    private var titleText: some View {
+        title
             .font(.headline)
             .foregroundStyle(.primary)
+    }
+}
+
+extension FoodNutritionRow where Title == Text {
+    init(
+        name: String,
+        subtitle: String?,
+        calories: Double,
+        protein: Double,
+        carbs: Double,
+        fat: Double,
+        verticalPadding: CGFloat = 16
+    ) {
+        self.init(
+            subtitle: subtitle,
+            calories: calories,
+            protein: protein,
+            carbs: carbs,
+            fat: fat,
+            verticalPadding: verticalPadding
+        ) {
+            Text(name)
+        }
     }
 }
