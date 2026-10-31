@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 17
+
+- First-run guided Dashboard tutorial with Settings replay; camera result card now uses the shared food row with a goal ring, serving size text and totals that follow the servings stepper; camera hint text centered; camera stays dark in light mode.
+- Validation: bounded Debug build, format check, diff check, and serial non-StoreKit iPad suite passed (198 tests, 0 failures).
+
 ## 2026-10-31 Dashboard tutorial
 
 - Feature: the first time the Dashboard shows (new and existing users), a dimmed guided overlay spotlights each target, an animated hand demonstrates, and the user performs the real action: swipe left to Sharing, swipe back, swipe right for the previous day, tap Today, tap the rings, then tap Protein, Carbs and Fat. Events advance `DashboardTutorial` only on the current step; Skip and Done persist `hasCompletedDashboardTutorial`. Settings > About has "Show Dashboard Tips" to replay it. Reduce Motion, VoiceOver and Switch Control get a static hand and a prominent action button.
