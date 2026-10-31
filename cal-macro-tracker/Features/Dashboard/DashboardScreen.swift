@@ -75,6 +75,9 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
+            .accessibilityElement(children: tutorial.isRunning ? .ignore : .contain)
+            .accessibilityHidden(tutorial.isRunning)
+            .tutorialAccessibilityMask(tutorial.isRunning)
             .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
                 ZStack {
                     Color.clear
@@ -88,6 +91,7 @@ struct DashboardScreen: View {
                                 step: step,
                                 targetRect: step.target.flatMap { anchors[$0] }.map { proxy[$0] },
                                 size: proxy.size,
+                                safeAreaInsets: proxy.safeAreaInsets,
                                 onAction: performTutorialAction
                             )
                         }
@@ -125,6 +129,8 @@ struct DashboardScreen: View {
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
+                    .accessibilityElement(children: tutorial.isRunning ? .ignore : .contain)
+                    .accessibilityHidden(tutorial.isRunning)
             }
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
             .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
@@ -200,6 +206,7 @@ struct DashboardScreen: View {
             updateCompactSummaryVisibility(for: newOffset)
             updateAddFoodButtonDisplay(for: newOffset)
         }
+        .accessibilityHidden(tutorial.isRunning)
     }
 
     @ViewBuilder
@@ -216,14 +223,12 @@ struct DashboardScreen: View {
             emptyStyle: .plain,
             layout: .list,
             onHeaderSwipeTranslation: handleDaySwipe,
-            onHeaderDayStep: { offset in
-                guard offset < 0 || daySelection.selectedDay.isToday == false else { return }
-                moveSelection(by: offset)
-            },
+            onHeaderDayStep: handleHeaderDayStep,
             onDeleteEntry: deleteEntry,
             onEditEntry: onEditEntry,
             onLogAgain: logEntryAgain
         )
+        .accessibilityHidden(tutorial.isRunning)
     }
 
     @ViewBuilder
@@ -240,6 +245,7 @@ struct DashboardScreen: View {
         .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
+        .accessibilityHidden(tutorial.isRunning)
 
         MacroLegendView(
             totals: snapshot.totals,
@@ -252,6 +258,7 @@ struct DashboardScreen: View {
         .tutorialTarget(.legend)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
+        .accessibilityHidden(tutorial.isRunning)
 
         LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights).dashboardListRow(bottom: 8)
 
@@ -308,11 +315,34 @@ struct DashboardScreen: View {
             return
         }
 
+        if tutorial.isRunning {
+            switch tutorial.step {
+            case .openSharing?:
+                guard translation.width < 0 else { return }
+                onOpenSharing()
+            case .previousDay?:
+                guard translation.width > 0 else { return }
+                moveSelection(by: -1)
+            default:
+                break
+            }
+            return
+        }
+
         if translation.width > 0 {
             moveSelection(by: -1)
         } else {
             moveSelection(by: 1)
         }
+    }
+
+    private func handleHeaderDayStep(_ offset: Int) {
+        if tutorial.isRunning {
+            guard tutorial.step == .previousDay, offset < 0 else { return }
+        } else {
+            guard offset < 0 || daySelection.selectedDay.isToday == false else { return }
+        }
+        moveSelection(by: offset)
     }
 
     private var dashboardBottomBar: some View {
@@ -336,6 +366,8 @@ struct DashboardScreen: View {
         )
         .frame(maxWidth: .infinity)
         .disabled(tutorial.isRunning)
+        .accessibilityHidden(tutorial.isRunning)
+        .tutorialAccessibilityMask(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -393,7 +425,7 @@ struct DashboardScreen: View {
     private func normalizeState(for step: DashboardTutorial.Step?) {
         switch step {
         case .openSharing?, .previousDay?, .expandRing?, .done?:
-            if step == .openSharing { daySelection.resetToToday(dayContext.today) }
+            if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
             withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
@@ -438,5 +470,24 @@ struct DashboardScreen: View {
         case .fat:
             $customFatRingColor
         }
+    }
+}
+
+private struct TutorialAccessibilityMask: ViewModifier {
+    let isRunning: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isRunning {
+            content.accessibilityRepresentation { EmptyView() }
+        } else {
+            content
+        }
+    }
+}
+
+private extension View {
+    func tutorialAccessibilityMask(_ isRunning: Bool) -> some View {
+        modifier(TutorialAccessibilityMask(isRunning: isRunning))
     }
 }

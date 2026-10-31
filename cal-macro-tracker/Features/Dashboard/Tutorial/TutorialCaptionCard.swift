@@ -43,7 +43,6 @@ struct TutorialCaptionCard: View {
         .frame(maxWidth: 420)
         .glassEffect(.regular, in: .rect(cornerRadius: 20))
         .accessibilityElement(children: .contain)
-        .accessibilityAddTraits(.isModal)
         .onChange(of: message, initial: true) {
             AccessibilityNotification.Announcement("\(step.title). \(message)").post()
         }

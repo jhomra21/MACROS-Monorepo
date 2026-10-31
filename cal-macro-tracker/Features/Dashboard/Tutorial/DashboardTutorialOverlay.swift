@@ -22,16 +22,17 @@ struct SpotlightShape: Shape {
 struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
     let targetRect: CGRect?
     let size: CGSize
+    let safeAreaInsets: EdgeInsets
     let onAction: () -> Void
 
     @State private var lastTargetRect: CGRect?
 
     private let cutoutInset: CGFloat = 12
-    private let cardClearance: CGFloat = 190
 
     private var cutout: CGRect {
         guard step.target != nil, let rect = targetRect ?? lastTargetRect else {
@@ -49,15 +50,16 @@ struct DashboardTutorialOverlay: View {
             SpotlightShape(cutout: cutout)
                 .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
                 .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
-                .gesture(DragGesture(minimumDistance: 0))
+                .simultaneousGesture(DragGesture(minimumDistance: 0))
                 .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
                 .accessibilityHidden(true)
 
             if step != .done {
                 TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
                     .id(step)
-                    .position(x: handX(in: cutout), y: cutout.midY)
+                    .position(handPosition(in: cutout))
                     .allowsHitTesting(false)
+                    .accessibilityRepresentation { EmptyView() }
                     .accessibilityHidden(true)
             }
 
@@ -68,12 +70,16 @@ struct DashboardTutorialOverlay: View {
         }
     }
 
-    /// The legend columns share its width equally, so the hand sits over the next untapped macro.
-    private func handX(in cutout: CGRect) -> CGFloat {
+    /// The legend columns share its width equally, or stack vertically at accessibility sizes.
+    private func handPosition(in cutout: CGRect) -> CGPoint {
         guard step == .macros, let next = tutorial.nextMacro, let index = MacroMetric.allCases.firstIndex(of: next)
-        else { return cutout.midX }
-        let columnWidth = (cutout.width - 2 * cutoutInset) / CGFloat(MacroMetric.allCases.count)
-        return cutout.minX + cutoutInset + columnWidth * (CGFloat(index) + 0.5)
+        else { return CGPoint(x: cutout.midX, y: cutout.midY) }
+        guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
+        let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
+        if dynamicTypeSize.isAccessibilitySize {
+            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * fraction)
+        }
+        return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
     }
 
     @ViewBuilder
@@ -81,17 +87,25 @@ struct DashboardTutorialOverlay: View {
         let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : onAction)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
+        let cardThatFits = ViewThatFits(in: .vertical) {
+            card
+            ScrollView { card }
+        }
 
         if step == .done || cutout.isEmpty {
-            card
-        } else if size.height - cutout.maxY >= cardClearance {
-            card
-                .padding(.top, cutout.maxY + 12)
-                .frame(maxHeight: .infinity, alignment: .top)
+            cardThatFits
+                .frame(maxHeight: size.height - safeAreaInsets.top - safeAreaInsets.bottom)
+                .frame(maxHeight: .infinity, alignment: .center)
         } else {
-            card
-                .padding(.bottom, size.height - cutout.minY + 12)
-                .frame(maxHeight: .infinity, alignment: .bottom)
+            let above = max(0, cutout.minY - safeAreaInsets.top - 12)
+            let below = max(0, size.height - safeAreaInsets.bottom - cutout.maxY - 12)
+            let placeBelow = below >= above
+            let availableHeight = max(above, below)
+            cardThatFits
+                .frame(maxHeight: availableHeight)
+                .frame(maxHeight: .infinity, alignment: placeBelow ? .top : .bottom)
+                .padding(.top, placeBelow ? cutout.maxY + 12 : 0)
+                .padding(.bottom, placeBelow ? 0 : size.height - cutout.minY + 12)
         }
     }
 }

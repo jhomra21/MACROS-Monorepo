@@ -83,9 +83,12 @@ struct AppRootView: View {
                     }
                     .overlay(alignment: .bottom) {
                         if tutorial.step == .returnFromSharing {
-                            TutorialCaptionCard(step: .returnFromSharing)
-                                .padding(.horizontal, 20)
-                                .padding(.bottom, 16)
+                            TutorialCaptionCard(step: .returnFromSharing) {
+                                guard path.last == .sharingDashboard else { return }
+                                path.removeLast()
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 16)
                         }
                     }
                 case let .sharing(inviteInput, _):

@@ -90,7 +90,8 @@ final class DashboardTutorial {
             case .backToToday: "Go to Today"
             case .expandRing: "Expand Rings"
             case .macros: nextMacro.map { "Select \($0.title)" }
-            case .returnFromSharing, .done: nil
+            case .returnFromSharing: "Back to Dashboard"
+            case .done: nil
             }
         }
     }
