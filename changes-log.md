@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 20
+
+- Pre-submission polish: one shared onboarding header and layout, no bell bounce, Back on Reminders; tutorial spotlight tracks targets with no halo loop, updates text in place, and ends with a What's New-style Done card; camera errors keep the shutter and photo menu, and servings/name edits no longer move the camera layout; includes review fixes.
+- Validation: bounded Debug build, format check, and serial non-StoreKit iPad suite passed (198 tests, 0 failures).
+
 ## 2026-10-31 Pre-submission polish
 
 - Tutorial: the spotlight morphs only on step changes, tracks moving targets without lag, and collapses until the current target has a rect; static focus outline; caption text updates in place; full-height caption fallback in landscape and AX sizes; Dashboard scrolls to the rings on start; readiness is stored; 44 pt Skip/action targets; Reduce Motion gating. Camera: only barcode and label results freeze the viewport, layout animates on panel kind rather than content, the barcode capture task is tracked and cancelled.
