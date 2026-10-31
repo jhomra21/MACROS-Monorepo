@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 19
+
+- Welcome screen content centered again after build 18 shifted it left.
+- Validation: iPhone 17 light/dark and accessibility-extra-extra-extra-large captures show centered rings and wrapped, scrollable labels; bounded Debug build and format/diff checks passed; serial non-StoreKit iPad suite passed (198 tests, 0 failures).
+
 ## 2026-10-31 TestFlight Build 18
 
 - Tutorial redesign dims the whole screen, shapes the spotlight and focus ring to each target, uses a one-way swipe hand and solid caption card, and ends with a recap; Reminders onboarding is redesigned; Welcome animates macro rings and keeps its labels and Get Started action usable at accessibility sizes.
