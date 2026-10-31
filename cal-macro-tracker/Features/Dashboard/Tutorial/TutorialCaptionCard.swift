@@ -19,7 +19,7 @@ struct TutorialCaptionCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
-    var onAction: (() -> Void)?
+    let onAction: () -> Void
 
     private var message: String { step.message(nextMacro: tutorial.nextMacro) }
     private var prefersProminentAction: Bool { voiceOverEnabled || switchControlEnabled || reduceMotion }
@@ -31,8 +31,6 @@ struct TutorialCaptionCard: View {
                 Text(message).font(.body).foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .id(message)
-            .transition(.blurReplace)
 
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 12) {
@@ -51,7 +49,6 @@ struct TutorialCaptionCard: View {
                 }
             }
         }
-        .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: message)
         .tutorialCardStyle(padding: 20, maxWidth: 420)
         .accessibilityElement(children: .contain)
         .onChange(of: message, initial: true) {
@@ -77,16 +74,23 @@ struct TutorialCaptionCard: View {
             .buttonStyle(.plain)
             .font(.subheadline)
             .foregroundStyle(.secondary)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
     }
 
     @ViewBuilder
     private var actionButton: some View {
-        if let onAction, let title = step.actionTitle(nextMacro: tutorial.nextMacro) {
-            if prefersProminentAction {
-                Button(title, action: onAction).buttonStyle(.borderedProminent).controlSize(.small)
-            } else {
-                Button("Do it for me", action: onAction).buttonStyle(.bordered).controlSize(.small)
+        if let title = step.actionTitle(nextMacro: tutorial.nextMacro) {
+            Group {
+                if prefersProminentAction {
+                    Button(title, action: onAction).buttonStyle(.borderedProminent)
+                } else {
+                    Button("Do it for me", action: onAction).buttonStyle(.bordered)
+                }
             }
+            .controlSize(.small)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
         }
     }
 }
@@ -112,7 +116,7 @@ struct TutorialDoneCard: View {
                 .foregroundStyle(.green)
                 .symbolEffect(.drawOn, isActive: !appeared)
                 .accessibilityHidden(true)
-            Text("You're all set")
+            Text(DashboardTutorial.Step.done.title)
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
                 .padding(.top, 12)
@@ -133,7 +137,7 @@ struct TutorialDoneCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 20)
 
-            Text("Log your first food with Camera or Add Food.")
+            Text(DashboardTutorial.Step.done.message(nextMacro: nil))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -153,9 +157,6 @@ struct TutorialDoneCard: View {
         .onAppear {
             appeared = true
             isDoneFocused = true
-            AccessibilityNotification.Announcement(
-                "You're all set. " + recap.map(\.text).joined(separator: ". ")
-            ).post()
         }
     }
 }

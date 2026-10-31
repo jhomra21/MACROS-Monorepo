@@ -28,10 +28,6 @@ struct Spotlight: Equatable {
     static func collapsed(at point: CGPoint) -> Spotlight {
         Spotlight(rect: CGRect(origin: point, size: .zero), radius: 0)
     }
-
-    func grown(by amount: CGFloat) -> Spotlight {
-        Spotlight(rect: rect.insetBy(dx: -amount, dy: -amount), radius: radius + amount)
-    }
 }
 
 struct SpotlightShape: Shape {
@@ -74,10 +70,12 @@ struct DashboardTutorialOverlay: View {
     let origin: CGPoint
     let size: CGSize
 
-    @State private var lastTargetRect: CGRect?
+    @State private var isVisible = false
     @State private var isDismissing = false
 
     private let captionGap: CGFloat = 16
+    /// Below this the caption no longer fits beside the cutout and takes the full content height instead.
+    private let minimumCaptionRegionHeight: CGFloat = 180
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
@@ -85,8 +83,9 @@ struct DashboardTutorialOverlay: View {
 
     private var targetRect: CGRect? { step.target.flatMap(localFrame) }
 
+    /// Collapsed until the current step's own target has a rect, so a previous target's rect is never reused.
     private var spotlight: Spotlight {
-        guard step.target != nil, let rect = targetRect ?? lastTargetRect else {
+        guard let rect = targetRect, !rect.isEmpty else {
             return .collapsed(at: CGPoint(x: size.width / 2, y: size.height / 2))
         }
         return step.spotlightShape.spotlight(around: rect)
@@ -115,46 +114,32 @@ struct DashboardTutorialOverlay: View {
                     .contentShape(SpotlightShape(spotlight: spotlight, isInverted: true), eoFill: true)
                     .gesture(DragGesture(minimumDistance: 0))
 
-                if step != .done {
-                    focusRing(spotlight)
+                if step != .done, !spotlight.rect.isEmpty {
+                    SpotlightShape(spotlight: spotlight)
+                        .stroke(.white.opacity(0.9), lineWidth: 2)
+                        .allowsHitTesting(false)
                 }
             }
-            .animation(morph, value: spotlight)
-            .animation(morph, value: step == .done)
+            // Only a step change morphs; geometry updates within a step must track moving targets without lag.
+            .animation(morph, value: step)
             .accessibilityHidden(true)
 
-            if step != .done {
+            if step != .done, !spotlight.rect.isEmpty {
                 TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
                     .id(step)
                     .position(handPosition(in: spotlight.rect))
                     .allowsHitTesting(false)
+                    // Both are intentional: the representation mask alone left the hand focusable (device-verified in 7053578).
                     .accessibilityRepresentation { EmptyView() }
                     .accessibilityHidden(true)
             }
 
             caption(cutout: spotlight.rect)
         }
-        .opacity(isDismissing ? 0 : 1)
-        .onChange(of: targetRect, initial: true) { _, rect in
-            if let rect { lastTargetRect = rect }
+        .opacity(isDismissing || !isVisible ? 0 : 1)
+        .onAppear {
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
-    }
-
-    private func focusRing(_ spotlight: Spotlight) -> some View {
-        ZStack {
-            SpotlightShape(spotlight: spotlight)
-                .stroke(.white.opacity(0.9), lineWidth: 2)
-            if !reduceMotion {
-                let halo = spotlight.grown(by: 0.03 * min(spotlight.rect.width, spotlight.rect.height))
-                PhaseAnimator([false, true]) { expanded in
-                    SpotlightShape(spotlight: expanded ? halo : spotlight)
-                        .stroke(.white.opacity(expanded ? 0 : 0.25), lineWidth: 6)
-                } animation: { expanded in
-                    expanded ? .easeOut(duration: 1.6) : nil
-                }
-            }
-        }
-        .allowsHitTesting(false)
     }
 
     /// The legend columns share its width equally, or stack vertically at accessibility sizes.
@@ -174,13 +159,13 @@ struct DashboardTutorialOverlay: View {
     private func caption(cutout: CGRect) -> some View {
         let top = localFrame(.contentArea)?.minY ?? 0
         let bottom = localFrame(.bottomBar)?.minY ?? size.height
-        let isFullHeight = step == .done || cutout.isEmpty
         let above = max(0, cutout.minY - top - captionGap)
         let below = max(0, bottom - cutout.maxY - captionGap)
+        let isFullHeight = step == .done || cutout.isEmpty || max(above, below) < minimumCaptionRegionHeight
         let placeBelow = below >= above
         let regionHeight =
             if isFullHeight {
-                bottom - top
+                max(0, bottom - top)
             } else {
                 placeBelow ? below : above
             }
@@ -199,7 +184,7 @@ struct DashboardTutorialOverlay: View {
                     TutorialCaptionCard(step: step, onAction: { tutorial.performAction?() })
                 }
             }
-            .animation(.smooth(duration: 0.35), value: step == .done)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step == .done)
             .padding(.horizontal, 20)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity)
