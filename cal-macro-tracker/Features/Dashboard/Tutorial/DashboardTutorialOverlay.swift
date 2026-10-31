@@ -49,8 +49,7 @@ struct DashboardTutorialOverlay: View {
         ZStack {
             SpotlightShape(cutout: cutout)
                 .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
-                .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
-                .simultaneousGesture(DragGesture(minimumDistance: 0))
+                .allowsHitTesting(false)
                 .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
                 .accessibilityHidden(true)
 
@@ -77,7 +76,8 @@ struct DashboardTutorialOverlay: View {
         guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
         if dynamicTypeSize.isAccessibilitySize {
-            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * fraction)
+            let stackedFraction = (CGFloat(index) + 0.8) / CGFloat(MacroMetric.allCases.count)
+            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * stackedFraction)
         }
         return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
     }
@@ -87,25 +87,34 @@ struct DashboardTutorialOverlay: View {
         let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : onAction)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
-        let cardThatFits = ViewThatFits(in: .vertical) {
-            card
-            ScrollView { card }
-        }
 
         if step == .done || cutout.isEmpty {
-            cardThatFits
-                .frame(maxHeight: size.height - safeAreaInsets.top - safeAreaInsets.bottom)
-                .frame(maxHeight: .infinity, alignment: .center)
+            ScrollView {
+                card
+            }
+            .scrollDisabled(false)
+            .scrollIndicators(.hidden)
+            .frame(
+                height: size.height - safeAreaInsets.top - safeAreaInsets.bottom,
+                alignment: .center
+            )
+            .position(x: size.width / 2, y: (safeAreaInsets.top + size.height - safeAreaInsets.bottom) / 2)
         } else {
             let above = max(0, cutout.minY - safeAreaInsets.top - 12)
             let below = max(0, size.height - safeAreaInsets.bottom - cutout.maxY - 12)
             let placeBelow = below >= above
-            let availableHeight = max(above, below)
-            cardThatFits
-                .frame(maxHeight: availableHeight)
-                .frame(maxHeight: .infinity, alignment: placeBelow ? .top : .bottom)
-                .padding(.top, placeBelow ? cutout.maxY + 12 : 0)
-                .padding(.bottom, placeBelow ? 0 : size.height - cutout.minY + 12)
+            let regionHeight = placeBelow ? below : above
+            let regionCenterY =
+                placeBelow
+                ? cutout.maxY + 12 + below / 2
+                : safeAreaInsets.top + above / 2
+            ScrollView {
+                card
+            }
+            .scrollDisabled(false)
+            .scrollIndicators(.hidden)
+            .frame(height: regionHeight)
+            .position(x: size.width / 2, y: regionCenterY)
         }
     }
 }
