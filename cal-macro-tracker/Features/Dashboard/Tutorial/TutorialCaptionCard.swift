@@ -5,6 +5,7 @@ struct TutorialCaptionCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     @Environment(\.accessibilitySwitchControlEnabled) private var switchControlEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
     var onAction: (() -> Void)?
@@ -26,15 +27,20 @@ struct TutorialCaptionCard: View {
                 Button("Done", action: finish)
                     .buttonStyle(.glassProminent)
                     .frame(maxWidth: .infinity)
+            } else if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 12) {
+                    stepCount
+                    actionButton
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                    skipButton
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             } else {
                 HStack {
-                    Text("\(step.displayIndex) of \(DashboardTutorial.Step.count)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    stepCount
                     Spacer()
                     actionButton
-                    Button("Skip", action: finish)
-                        .buttonStyle(.glass)
+                    skipButton
                 }
             }
         }
@@ -46,6 +52,17 @@ struct TutorialCaptionCard: View {
         .onChange(of: message, initial: true) {
             AccessibilityNotification.Announcement("\(step.title). \(message)").post()
         }
+    }
+
+    private var stepCount: some View {
+        Text("\(step.displayIndex) of \(DashboardTutorial.Step.count)")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+    }
+
+    private var skipButton: some View {
+        Button("Skip", action: finish)
+            .buttonStyle(.glass)
     }
 
     @ViewBuilder
