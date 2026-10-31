@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 Tutorial and reminders design pass
+
+- Tutorial spotlight now follows its target (circle for the rings, rounded rect for the legend, capsule for the Today pill) and morphs between them; the scrim is darker with a feathered cutout and a breathing focus ring so the highlight reads in light and dark. The caption is a solid elevated card with step dots, and the end screen is a completion card with a recap and Done button.
+- Reminders onboarding has a bell hero, icon-tile rows, a PRO badge on the locked card, and stacks rows at accessibility sizes. Behavior is unchanged.
+- Validated: format check, 198 tests on the iPad runner (StoreKit class skipped), iPhone 17 screenshots in light, dark and 3XL under `docs/evidence/design-pass/`.
+
 ## 2026-10-31 TestFlight Build 17
 
 - First-run guided Dashboard tutorial with Settings replay; camera result card now uses the shared food row with a goal ring, serving size text and totals that follow the servings stepper; camera hint text centered; camera stays dark in light mode.

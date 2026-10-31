@@ -1,20 +1,64 @@
 import SwiftUI
 
-struct SpotlightShape: Shape {
-    var cutout: CGRect
+enum SpotlightShapeKind {
+    case circle, roundedRect(CGFloat), capsule
 
-    var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>> {
-        get { .init(.init(cutout.origin.x, cutout.origin.y), .init(cutout.size.width, cutout.size.height)) }
+    /// Circles hug the target's shorter side so a panel wider than its ring still gets a round cutout.
+    func spotlight(around rect: CGRect) -> Spotlight {
+        switch self {
+        case .circle:
+            let diameter = min(rect.width, rect.height) + 24
+            return Spotlight(
+                rect: CGRect(x: rect.midX - diameter / 2, y: rect.midY - diameter / 2, width: diameter, height: diameter),
+                radius: diameter / 2)
+        case let .roundedRect(radius):
+            return Spotlight(rect: rect.insetBy(dx: -10, dy: -10), radius: radius)
+        case .capsule:
+            let padded = rect.insetBy(dx: -8, dy: -8)
+            return Spotlight(rect: padded, radius: min(padded.width, padded.height) / 2)
+        }
+    }
+}
+
+/// A rounded rectangle; circles and capsules are the radius = min(w, h) / 2 case, so every shape morphs through one value.
+struct Spotlight: Equatable {
+    var rect: CGRect
+    var radius: CGFloat
+
+    static func collapsed(at point: CGPoint) -> Spotlight {
+        Spotlight(rect: CGRect(origin: point, size: .zero), radius: 0)
+    }
+
+    func grown(by amount: CGFloat) -> Spotlight {
+        Spotlight(rect: rect.insetBy(dx: -amount, dy: -amount), radius: radius + amount)
+    }
+}
+
+struct SpotlightShape: Shape {
+    var spotlight: Spotlight
+    /// Fills everything except the cutout (with an even-odd fill); the rect is oversized so a blurred mask does not fade at the screen edges.
+    var isInverted = false
+
+    var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<AnimatablePair<CGFloat, CGFloat>, CGFloat>>
+    {
+        get {
+            .init(
+                .init(spotlight.rect.origin.x, spotlight.rect.origin.y),
+                .init(.init(spotlight.rect.width, spotlight.rect.height), spotlight.radius))
+        }
         set {
-            cutout = CGRect(
-                x: newValue.first.first, y: newValue.first.second,
-                width: newValue.second.first, height: newValue.second.second)
+            spotlight = Spotlight(
+                rect: CGRect(
+                    x: newValue.first.first, y: newValue.first.second,
+                    width: newValue.second.first.first, height: newValue.second.first.second),
+                radius: newValue.second.second)
         }
     }
 
     func path(in rect: CGRect) -> Path {
-        var path = Path(rect)
-        path.addRoundedRect(in: cutout, cornerSize: CGSize(width: 24, height: 24))
+        var path = isInverted ? Path(rect.insetBy(dx: -40, dy: -40)) : Path()
+        path.addRoundedRect(
+            in: spotlight.rect, cornerSize: CGSize(width: spotlight.radius, height: spotlight.radius), style: .continuous)
         return path
     }
 }
@@ -22,6 +66,7 @@ struct SpotlightShape: Shape {
 struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
@@ -30,8 +75,9 @@ struct DashboardTutorialOverlay: View {
     let size: CGSize
 
     @State private var lastTargetRect: CGRect?
+    @State private var isDismissing = false
 
-    private let cutoutInset: CGFloat = 12
+    private let captionGap: CGFloat = 16
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
@@ -39,40 +85,75 @@ struct DashboardTutorialOverlay: View {
 
     private var targetRect: CGRect? { step.target.flatMap(localFrame) }
 
-    private var cutout: CGRect {
+    private var spotlight: Spotlight {
         guard step.target != nil, let rect = targetRect ?? lastTargetRect else {
-            return CGRect(x: size.width / 2, y: size.height / 2, width: 0, height: 0)
+            return .collapsed(at: CGPoint(x: size.width / 2, y: size.height / 2))
         }
-        // Swipe steps get the full screen width so there is room to drag.
-        let base = step.swipeDirection == nil ? rect : CGRect(x: 0, y: rect.minY, width: size.width, height: rect.height)
-        return base.insetBy(dx: -cutoutInset, dy: -cutoutInset)
+        return step.spotlightShape.spotlight(around: rect)
     }
 
+    private var scrimOpacity: Double {
+        let isDark = colorScheme == .dark
+        if step == .done { return isDark ? 0.6 : 0.4 }
+        return isDark ? 0.78 : 0.62
+    }
+
+    private var morph: Animation? { reduceMotion ? nil : .smooth(duration: 0.4) }
+
     var body: some View {
-        let cutout = cutout
+        let spotlight = spotlight
 
         ZStack {
-            SpotlightShape(cutout: cutout)
-                .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
-                .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
-                .gesture(DragGesture(minimumDistance: 0))
-                .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
-                .accessibilityHidden(true)
+            Group {
+                Rectangle()
+                    .fill(.black.opacity(scrimOpacity))
+                    .mask {
+                        SpotlightShape(spotlight: spotlight, isInverted: true)
+                            .fill(style: FillStyle(eoFill: true))
+                            .blur(radius: 3)
+                    }
+                    .contentShape(SpotlightShape(spotlight: spotlight, isInverted: true), eoFill: true)
+                    .gesture(DragGesture(minimumDistance: 0))
+
+                focusRing(spotlight)
+                    .opacity(step == .done ? 0 : 1)
+            }
+            .animation(morph, value: spotlight)
+            .animation(morph, value: step == .done)
+            .accessibilityHidden(true)
 
             if step != .done {
                 TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
                     .id(step)
-                    .position(handPosition(in: cutout))
+                    .position(handPosition(in: spotlight.rect))
                     .allowsHitTesting(false)
                     .accessibilityRepresentation { EmptyView() }
                     .accessibilityHidden(true)
             }
 
-            caption(cutout: cutout)
+            caption(cutout: spotlight.rect)
         }
+        .opacity(isDismissing ? 0 : 1)
         .onChange(of: targetRect, initial: true) { _, rect in
             if let rect { lastTargetRect = rect }
         }
+    }
+
+    private func focusRing(_ spotlight: Spotlight) -> some View {
+        ZStack {
+            SpotlightShape(spotlight: spotlight)
+                .stroke(.white.opacity(0.9), lineWidth: 2)
+            if !reduceMotion {
+                let halo = spotlight.grown(by: 0.03 * min(spotlight.rect.width, spotlight.rect.height))
+                PhaseAnimator([false, true]) { expanded in
+                    SpotlightShape(spotlight: expanded ? halo : spotlight)
+                        .stroke(.white.opacity(expanded ? 0 : 0.25), lineWidth: 6)
+                } animation: { expanded in
+                    expanded ? .easeOut(duration: 1.6) : nil
+                }
+            }
+        }
+        .allowsHitTesting(false)
     }
 
     /// The legend columns share its width equally, or stack vertically at accessibility sizes.
@@ -90,14 +171,11 @@ struct DashboardTutorialOverlay: View {
 
     @ViewBuilder
     private func caption(cutout: CGRect) -> some View {
-        let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : { tutorial.performAction?() })
-            .padding(.horizontal, 20)
-            .frame(maxWidth: .infinity)
         let top = localFrame(.contentArea)?.minY ?? 0
         let bottom = localFrame(.bottomBar)?.minY ?? size.height
         let isFullHeight = step == .done || cutout.isEmpty
-        let above = max(0, cutout.minY - top - 12)
-        let below = max(0, bottom - cutout.maxY - 12)
+        let above = max(0, cutout.minY - top - captionGap)
+        let below = max(0, bottom - cutout.maxY - captionGap)
         let placeBelow = below >= above
         let regionHeight =
             if isFullHeight {
@@ -109,15 +187,34 @@ struct DashboardTutorialOverlay: View {
             if isFullHeight {
                 (top + bottom) / 2
             } else {
-                placeBelow ? cutout.maxY + 12 + below / 2 : top + above / 2
+                placeBelow ? cutout.maxY + captionGap + below / 2 : top + above / 2
             }
         ScrollView {
-            card
+            ZStack {
+                if step == .done {
+                    TutorialDoneCard(onDone: dismiss)
+                        .transition(reduceMotion ? .opacity : .scale(scale: 0.94).combined(with: .opacity))
+                } else {
+                    TutorialCaptionCard(step: step, onAction: { tutorial.performAction?() })
+                }
+            }
+            .animation(.smooth(duration: 0.35), value: step == .done)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
         .defaultScrollAnchor(isFullHeight ? .center : nil)
         .frame(height: regionHeight)
         .position(x: size.width / 2, y: regionCenterY)
+    }
+
+    private func dismiss() {
+        withAnimation(.easeOut(duration: 0.25)) {
+            isDismissing = true
+        } completion: {
+            tutorial.finish()
+        }
     }
 }
 
@@ -131,7 +228,8 @@ private struct TutorialHand: View {
         var offset: Double
     }
 
-    private var symbol: String { swipeDirection == nil ? "hand.tap.fill" : "hand.draw.fill" }
+    private var symbol: String { swipeDirection == nil ? "hand.tap.fill" : "hand.point.up.left.fill" }
+    private let travelDistance: CGFloat = 120
 
     var body: some View {
         if reduceMotion {
@@ -146,11 +244,13 @@ private struct TutorialHand: View {
         } else {
             // The hand starts at the swipe's start point and only jumps back while fully invisible, so it
             // never appears to move against the swipe direction. Every track totals 2.2 s.
-            let travel = 120 * (swipeDirection ?? 0)
+            let direction = swipeDirection ?? 0
+            let travel = travelDistance * direction
             hand
                 .keyframeAnimator(initialValue: Frame(offset: -travel / 2), repeating: true) { content, frame in
                     content
                         .scaleEffect(frame.scale)
+                        .background { trail(frame: frame, direction: direction, travel: travel) }
                         .offset(x: frame.offset)
                         .opacity(frame.opacity)
                 } keyframes: { _ in
@@ -179,9 +279,27 @@ private struct TutorialHand: View {
         }
     }
 
+    /// A fading streak between the swipe's start and the fingertip, brightest at the fingertip.
+    @ViewBuilder
+    private func trail(frame: Frame, direction: CGFloat, travel: CGFloat) -> some View {
+        if direction != 0 {
+            let width = abs(frame.offset + travel / 2)
+            Capsule()
+                .fill(
+                    LinearGradient(
+                        colors: [.white.opacity(0), .white.opacity(0.5)],
+                        startPoint: direction > 0 ? .leading : .trailing,
+                        endPoint: direction > 0 ? .trailing : .leading)
+                )
+                .frame(width: width, height: 8)
+                .offset(x: (-travel / 2 - frame.offset) / 2)
+                .allowsHitTesting(false)
+        }
+    }
+
     private var hand: some View {
         Image(systemName: symbol)
-            .font(.system(size: 52))
+            .font(.system(size: 44))
             .foregroundStyle(.white)
             .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
             .accessibilityHidden(true)

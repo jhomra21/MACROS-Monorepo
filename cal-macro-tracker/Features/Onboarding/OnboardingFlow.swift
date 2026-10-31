@@ -128,6 +128,7 @@ struct OnboardingChoiceScreen: View {
 private struct OnboardingRemindersScreen: View {
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.openURL) private var openURL
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var settings = OnboardingReminderSettings()
     @State private var isRequestingPermission = false
     @State private var isShowingPermissionMessage = false
@@ -135,6 +136,8 @@ private struct OnboardingRemindersScreen: View {
     @State private var didFinish = false
     @State private var authorizationTask: Task<Void, Never>?
     @State private var isPresentingPro = false
+    @State private var appeared = false
+    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 56
 
     let onComplete: () -> Void
 
@@ -157,23 +160,8 @@ private struct OnboardingRemindersScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(spacing: 10) {
-                        Text("Choose reminders")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-
-                        Text(
-                            "A gentle nudge to log your day. Change reminders anytime in Settings. "
-                                + "iOS asks permission only if a reminder is on when you continue."
-                        )
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 8)
+                VStack(alignment: .leading, spacing: 28) {
+                    header
 
                     if selectedCount > ReminderLimits.maxCount {
                         Text("Choose no more than three reminders before continuing.")
@@ -182,6 +170,12 @@ private struct OnboardingRemindersScreen: View {
                     }
 
                     reminderCards
+
+                    Text("iOS asks for permission only if a reminder is on.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 24)
@@ -199,9 +193,10 @@ private struct OnboardingRemindersScreen: View {
             .disabled(isRequestingPermission)
         }
         .background(PlatformColors.groupedBackground)
-        .navigationTitle("Reminders")
+        .navigationTitle("")
         .inlineNavigationTitle()
         .navigationBarBackButtonHidden()
+        .onAppear { appeared = true }
         .onDisappear {
             authorizationTask?.cancel()
         }
@@ -225,36 +220,99 @@ private struct OnboardingRemindersScreen: View {
         }
     }
 
-    private var dailyReminderCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Daily reminder")
-                .font(.headline)
+    private var header: some View {
+        VStack(spacing: 0) {
+            Image(systemName: "bell.badge.fill")
+                .font(.system(size: heroIconSize, weight: .medium))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.tint)
+                .symbolEffect(.bounce, value: appeared)
+                .accessibilityHidden(true)
+            Text("Stay on track")
+                .font(.title.bold())
+                .padding(.top, 16)
+            Text("A gentle nudge to log your day. Change it anytime in Settings.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .padding(.top, 8)
+        }
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity)
+    }
 
-            Toggle("Remind me to log food", isOn: $settings.dailyEnabled)
+    /// Text column starts after the 30 pt tile and its 12 pt gap.
+    private let rowTextInset: CGFloat = 42
 
-            if settings.dailyEnabled {
-                timePicker("Reminder time", hour: $settings.dailyHour, minute: $settings.dailyMinute)
+    @ViewBuilder
+    private func reminderRow<Trailing: View>(
+        _ title: String, subtitle: String, symbol: String, tint: Color,
+        @ViewBuilder trailing: () -> Trailing
+    ) -> some View {
+        let tile = Image(systemName: symbol)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(.white)
+            .frame(width: 30, height: 30)
+            .background(tint, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+            .accessibilityHidden(true)
+        let texts = VStack(alignment: .leading, spacing: 2) {
+            Text(title).font(.headline)
+            Text(subtitle).font(.subheadline).foregroundStyle(.secondary)
+        }
+
+        // At accessibility sizes the tile and control share a line above the text so the text keeps the full width.
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    tile
+                    Spacer(minLength: 8)
+                    trailing()
+                }
+                texts
+            }
+        } else {
+            HStack(spacing: 12) {
+                tile
+                texts
+                Spacer(minLength: 8)
+                trailing()
             }
         }
-        .padding(18)
+    }
+
+    private var dailyReminderCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            reminderRow("Daily reminder", subtitle: "Remind me to log food", symbol: "bell.fill", tint: .accentColor) {
+                Toggle("Daily reminder", isOn: $settings.dailyEnabled).labelsHidden()
+            }
+
+            if settings.dailyEnabled {
+                Divider().padding(.leading, rowTextInset)
+                timePicker("Daily reminder time", hour: $settings.dailyHour, minute: $settings.dailyMinute)
+                    .padding(.leading, rowTextInset)
+            }
+        }
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .appCardBackground(cornerRadius: 20)
     }
 
     private var additionalReminderCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                Text("Additional reminders")
-                    .font(.headline)
-
+            reminderRow(
+                "More reminders", subtitle: "Breakfast, lunch, dinner, evening check-in", symbol: "clock.badge.fill",
+                tint: .orange
+            ) {
                 if !includesProChoices {
-                    Image(systemName: "lock.fill")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .accessibilityHidden(true)
                     Text("PRO")
                         .font(.caption2.weight(.bold))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.tint)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.tint.opacity(0.15), in: Capsule())
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                        .accessibilityHidden(true)
                 }
             }
 
@@ -263,28 +321,29 @@ private struct OnboardingRemindersScreen: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
-                VStack(alignment: .leading, spacing: 12) {
-                    proToggle("Breakfast", enabled: $settings.breakfastEnabled)
-                    if settings.breakfastEnabled {
-                        timePicker("Breakfast reminder time", hour: $settings.breakfastHour, minute: $settings.breakfastMinute)
-                    }
-                    proToggle("Lunch", enabled: $settings.lunchEnabled)
-                    if settings.lunchEnabled {
-                        timePicker("Lunch reminder time", hour: $settings.lunchHour, minute: $settings.lunchMinute)
-                    }
-                    proToggle("Dinner", enabled: $settings.dinnerEnabled)
-                    if settings.dinnerEnabled {
-                        timePicker("Dinner reminder time", hour: $settings.dinnerHour, minute: $settings.dinnerMinute)
-                    }
-                    proToggle("Evening check-in if nothing is logged", enabled: $settings.eveningEnabled)
+                Divider()
+                proToggle("Breakfast", enabled: $settings.breakfastEnabled)
+                if settings.breakfastEnabled {
+                    timePicker("Breakfast reminder time", hour: $settings.breakfastHour, minute: $settings.breakfastMinute)
+                        .padding(.leading, rowTextInset)
                 }
-            } else {
-                Text("Multiple reminders are available with Pro.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Divider()
+                proToggle("Lunch", enabled: $settings.lunchEnabled)
+                if settings.lunchEnabled {
+                    timePicker("Lunch reminder time", hour: $settings.lunchHour, minute: $settings.lunchMinute)
+                        .padding(.leading, rowTextInset)
+                }
+                Divider()
+                proToggle("Dinner", enabled: $settings.dinnerEnabled)
+                if settings.dinnerEnabled {
+                    timePicker("Dinner reminder time", hour: $settings.dinnerHour, minute: $settings.dinnerMinute)
+                        .padding(.leading, rowTextInset)
+                }
+                Divider()
+                proToggle("Evening check-in if nothing is logged", enabled: $settings.eveningEnabled)
             }
         }
-        .padding(18)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .appCardBackground(cornerRadius: 20)
         .contentShape(RoundedRectangle(cornerRadius: 20))
@@ -298,7 +357,7 @@ private struct OnboardingRemindersScreen: View {
 
     private func timePicker(_ title: String, hour: Binding<Int>, minute: Binding<Int>) -> some View {
         DatePicker(
-            title,
+            "Time",
             selection: Binding(
                 get: { Calendar.current.date(from: DateComponents(hour: hour.wrappedValue, minute: minute.wrappedValue)) ?? .now },
                 set: {
@@ -308,6 +367,7 @@ private struct OnboardingRemindersScreen: View {
             ),
             displayedComponents: .hourAndMinute
         )
+        .accessibilityLabel(title)
     }
 
     @ViewBuilder

@@ -50,6 +50,14 @@ final class DashboardTutorial {
             }
         }
 
+        var spotlightShape: SpotlightShapeKind {
+            switch target {
+            case .legend: .roundedRect(22)
+            case .todayPill: .capsule
+            default: .circle
+            }
+        }
+
         /// Horizontal swipe direction the hand demonstrates: -1 left, 1 right, nil for taps.
         var swipeDirection: CGFloat? {
             switch self {
