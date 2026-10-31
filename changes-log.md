@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 23
+
+- Onboarding targets show proposed macro grams as the primary values.
+- Validation: bounded Debug build and serial non-StoreKit iPad suite passed (198 tests, 0 failures); TestFlight preflight and upload completed.
+
 ## 2026-10-31 TestFlight Build 22
 
 - Tutorial Done recap uses directional hand symbols for left, right, and tap actions.
