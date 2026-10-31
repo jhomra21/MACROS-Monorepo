@@ -11,6 +11,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 Tutorial and reminders design pass
+
+- Tutorial spotlight now follows its target (circle for the rings, rounded rect for the legend, capsule for the Today pill) and morphs between them; the scrim is darker with a feathered cutout and a breathing focus ring so the highlight reads in light and dark. The caption is a solid elevated card with step dots, and the end screen is a completion card with a recap and Done button.
+- Reminders onboarding has a bell hero, icon-tile rows, a PRO badge on the locked card, and stacks rows at accessibility sizes. Behavior is unchanged.
+- Onboarding Welcome now opens with independently animated, randomized macro rings.
+- Validated: format check, 198 tests on the iPad runner (StoreKit class skipped), iPhone 17 screenshots in light, dark and 3XL under `docs/evidence/design-pass/`.
+
 ## 2026-10-31 TestFlight Build 17
 
 - First-run guided Dashboard tutorial with Settings replay; camera result card now uses the shared food row with a goal ring, serving size text and totals that follow the servings stepper; camera hint text centered; camera stays dark in light mode.
@@ -21,6 +28,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Feature: the first time the Dashboard shows (new and existing users), a dimmed guided overlay spotlights each target, an animated hand demonstrates, and the user performs the real action: swipe left to Sharing, swipe back, swipe right for the previous day, tap Today, tap the rings, then tap Protein, Carbs and Fat. Events advance `DashboardTutorial` only on the current step; Skip and Done persist `hasCompletedDashboardTutorial`. Settings > About has "Show Dashboard Tips" to replay it. Reduce Motion, VoiceOver and Switch Control get a static hand and a prominent action button.
 - Decision: only completion is persisted, so a killed app restarts from step 1; the tutorial pauses (step kept) while a sheet or History, Insights or Settings is open.
 - Validation: format check, `git diff --check`, and the serial non-StoreKit suite passed; the full run, skip, replay and Reduce Motion were exercised on the simulator. Follow-up fixes hide the dimmed dashboard from accessibility, gate tutorial swipes, restore yesterday's starting date, and place scrollable captions safely around the spotlight, with tutorial actions stacked at accessibility text sizes. The dim layer is the touch sink, the dashboard is hidden from accessibility while the tutorial runs, and only the list's scrolling is disabled so the caption can scroll at large text sizes.
+- Fix: the swipe hand now starts at the swipe's start point and resets only while invisible, so it moves one way; and the overlay moved to `AppRootView` so the navigation and bottom bars are dimmed too (targets report global frames into `DashboardTutorial.frames`, DashboardScreen registers its action via `performAction`, and the done card is centered between the bars).
 
 ## 2026-10-31 Camera Card Polish
 
