@@ -15,6 +15,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - Tutorial spotlight now follows its target (circle for the rings, rounded rect for the legend, capsule for the Today pill) and morphs between them; the scrim is darker with a feathered cutout and a breathing focus ring so the highlight reads in light and dark. The caption is a solid elevated card with step dots, and the end screen is a completion card with a recap and Done button.
 - Reminders onboarding has a bell hero, icon-tile rows, a PRO badge on the locked card, and stacks rows at accessibility sizes. Behavior is unchanged.
+- Onboarding Welcome now opens with independently animated, randomized macro rings.
 - Validated: format check, 198 tests on the iPad runner (StoreKit class skipped), iPhone 17 screenshots in light, dark and 3XL under `docs/evidence/design-pass/`.
 
 ## 2026-10-31 TestFlight Build 17

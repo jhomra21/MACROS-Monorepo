@@ -43,18 +43,34 @@ enum OnboardingStep: Hashable {
 
 private struct OnboardingWelcomeScreen: View {
     let onContinue: () -> Void
-    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 56
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ScaledMetric(relativeTo: .largeTitle) private var heroRingDiameter: CGFloat = 150
+    @State private var heroTotals = NutritionSnapshot.zero
+
+    private static let heroGoals = MacroGoalsSnapshot(
+        calorieGoal: 2_000,
+        proteinGoalGrams: 150,
+        fatGoalGrams: 65,
+        carbGoalGrams: 200
+    )
 
     var body: some View {
         VStack(spacing: 28) {
             Spacer()
-            Image(systemName: "heart.text.clipboard")
-                .font(.system(size: heroIconSize, weight: .medium))
-                .foregroundStyle(.tint)
+            VStack(spacing: 24) {
+                MacroRingSetView(
+                    totals: heroTotals,
+                    goals: Self.heroGoals,
+                    ringDiameter: heroRingDiameter,
+                    centerValueFontSize: nil,
+                    minimumLineWidth: 10,
+                    showsGoalSubtitle: false
+                )
                 .accessibilityHidden(true)
-            Text(AppBrand.displayName)
-                .font(.largeTitle.bold())
-                .multilineTextAlignment(.center)
+                Text(AppBrand.displayName)
+                    .font(.largeTitle.bold())
+                    .multilineTextAlignment(.center)
+            }
             VStack(spacing: 12) {
                 Label("No account needed", systemImage: "person.crop.circle.badge.checkmark")
                 Label("Scan or add any food", systemImage: "barcode.viewfinder")
@@ -68,6 +84,32 @@ private struct OnboardingWelcomeScreen: View {
         .padding(.top, 32)
         .background(PlatformColors.groupedBackground)
         .navigationBarBackButtonHidden()
+        .onAppear {
+            var generator = SystemRandomNumberGenerator()
+            let totals = Self.randomHeroTotals(goals: Self.heroGoals, using: &generator)
+            if reduceMotion {
+                heroTotals = totals
+            } else {
+                withAnimation(.smooth(duration: 1.1).delay(0.15)) {
+                    heroTotals = totals
+                }
+            }
+        }
+    }
+
+    private static func randomHeroTotals<Generator: RandomNumberGenerator>(
+        goals: MacroGoalsSnapshot,
+        using generator: inout Generator
+    ) -> NutritionSnapshot {
+        let protein = goals.proteinGoalGrams * Double.random(in: 0.45...0.92, using: &generator)
+        let carbs = goals.carbGoalGrams * Double.random(in: 0.45...0.92, using: &generator)
+        let fat = goals.fatGoalGrams * Double.random(in: 0.45...0.92, using: &generator)
+        return NutritionSnapshot(
+            calories: protein * 4 + carbs * 4 + fat * 9,
+            protein: protein,
+            fat: fat,
+            carbs: carbs
+        )
     }
 }
 
