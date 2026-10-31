@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 TestFlight Build 18
+
+- Tutorial redesign dims the whole screen, shapes the spotlight and focus ring to each target, uses a one-way swipe hand and solid caption card, and ends with a recap; Reminders onboarding is redesigned; Welcome animates macro rings and keeps its labels and Get Started action usable at accessibility sizes.
+- Validation: bounded Debug build, format check, diff check, and serial non-StoreKit iPad suite passed (198+ tests, 0 failures).
+
 ## 2026-10-31 Tutorial and reminders design pass
 
 - Tutorial spotlight now follows its target (circle for the rings, rounded rect for the legend, capsule for the Today pill) and morphs between them; the scrim is darker with a feathered cutout and a breathing focus ring so the highlight reads in light and dark. The caption is a solid elevated card with step dots, and the end screen is a completion card with a recap and Done button.
