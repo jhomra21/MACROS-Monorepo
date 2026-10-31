@@ -39,6 +39,7 @@ struct FoodCameraSheet: View {
     @State var useStillCamera = false
     @State var captureImageData: Data?
     @State var pendingImage: UIImage?
+    @State var frozenImage: UIImage?
     @State var pendingImageHadNoBarcode = false
     @State var logDestination: FoodCameraLogDestination?
     @State var storedRecoveryDestination: BarcodeScanLogFoodDestination?
@@ -173,7 +174,10 @@ struct FoodCameraSheet: View {
             .frame(width: 0, height: 0)
         }
         .onChange(of: isPresented) { _, presented in
-            if presented == false { send(.dismissed) }
+            if presented == false {
+                frozenImage = nil
+                send(.dismissed)
+            }
         }
         .alert(
             "Couldn’t log",
@@ -277,6 +281,21 @@ struct FoodCameraSheet: View {
             preview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(cameraRevealVisible ? 1 : 0)
+
+            // Result frozen: recognition is stopped, but the capture session stays running on purpose.
+            // DataScannerViewController cannot pause its camera, and tearing it down costs a 0.5-1 s cold start plus
+            // the reveal animation on every Scan again, versus a few seconds of sensor time while a result is shown.
+            // A blurred still covers the live feed instead; blurring a static image is cheap, the live layer is never blurred.
+            if let frozenImage, isResultExpanded, cameraCardVisible {
+                Image(uiImage: frozenImage)
+                    .resizable()
+                    .scaledToFill()
+                    .blur(radius: 12)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .clipped()
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
 
             Color.black.opacity(isResultExpanded && cameraCardVisible ? 0.35 : 0)
                 .allowsHitTesting(false)

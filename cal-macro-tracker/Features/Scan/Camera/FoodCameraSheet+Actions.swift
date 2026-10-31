@@ -11,8 +11,32 @@ extension FoodCameraSheet {
     }
 
     func foundBarcode(_ barcode: String, fromImage: Bool = false) {
-        let event: FoodCameraFlow.Event = fromImage ? .barcodeFromImage(barcode) : .barcodeRecognized(barcode)
-        send(event)
+        guard fromImage == false else {
+            send(.barcodeFromImage(barcode))
+            return
+        }
+        // The frame must be captured before `.barcodeRecognized` stops scanning; on failure the card shows the dim only.
+        frozenImage = nil
+        Task {
+            if flow.phase == .scanning, let scanner = scannerController?.scanner, scanner.isScanning,
+                let photo = try? await scanner.capturePhoto(), flow.phase == .scanning
+            {
+                frozenImage = Self.screenSizedStill(photo)
+            }
+            send(.barcodeRecognized(barcode))
+        }
+    }
+
+    /// Keeps one screen-sized copy instead of the full-resolution capture.
+    static func screenSizedStill(_ image: UIImage) -> UIImage {
+        let longEdge: CGFloat = 1200
+        let scale = min(1, longEdge / max(image.size.width, image.size.height))
+        let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
     }
 
     func resolveBarcode(_ barcode: String) async {
@@ -60,6 +84,7 @@ extension FoodCameraSheet {
             let image = try await scanner.capturePhoto()
             try Task.checkCancellation()
             pendingImage = image
+            frozenImage = Self.screenSizedStill(image)
             send(.photoCaptured)
         } catch {
             guard Task.isCancelled == false else { return }
@@ -70,6 +95,7 @@ extension FoodCameraSheet {
 
     func processPendingImage() async {
         guard let image = pendingImage else { return }
+        frozenImage = Self.screenSizedStill(image)
         do {
             let barcode = try await barcodeScanner.scanBarcode(from: image)
             try Task.checkCancellation()
@@ -203,6 +229,7 @@ extension FoodCameraSheet {
         send(.scanAgain)
         guard flow.phase == .scanning else { return }
         labelInitialDraft = nil
+        frozenImage = nil
         send(.recoveryDestinationChanged(nil))
         send(.contentChanged(.hint("Point at a barcode, or photograph the nutrition label.")))
     }

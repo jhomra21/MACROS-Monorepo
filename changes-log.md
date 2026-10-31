@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Camera Freezes On A Blurred Still
+
+- Decision: `DataScannerViewController` cannot pause its camera, and recreating it costs a 0.5-1 s cold start plus the reveal animation on every Scan again, so the session keeps running (recognition is already stopped) and a blurred, screen-sized still covers the viewport while a result shows. The still comes from `capturePhoto()` at barcode detection (fallback: dim only), the OCR capture, or the imported photo; it is cleared on Scan again and on dismissal.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); the photo-import freeze and unfreeze were recorded on the simulator; the `capturePhoto()` barcode path needs a device.
+
 ## 2026-10-30 Camera Scan Again Moves Into The Viewport
 
 - Cause: the viewport only moved with the card in the same transaction when the height measurement happened to land with it, and Scan again/Retake lived inside the information card, making it taller and busier.
