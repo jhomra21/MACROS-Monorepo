@@ -34,6 +34,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Review fixes: barcode still capture is guarded by a scan-session token, frozen controls stay hidden throughout interactive dismissal, and the narrow-width macro fallback stacks individual capsules vertically.
 - Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); recordings on the iPhone Air simulator show the card growing over about 14 frames.
 
+## 2026-10-30 TestFlight Build 16
+
+- Since build 15: the camera result card grows from the hint banner while the camera frame shrinks in the same animation, with a solid backdrop; the card shows item info with Details and Log; after a scan, the camera picture freezes on the scanned image with Scan again/Retake floating at the top while the shutter and options hide.
+- Validation: Debug build, format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures).
+
 ## 2026-10-30 TestFlight Build 15
 
 - Since build 14: Add Food Search/Manual switch is stable on first tap and lives in the navigation bar with an animated switch; on-device search results no longer flash while typing.
