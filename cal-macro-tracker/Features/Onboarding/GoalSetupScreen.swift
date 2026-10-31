@@ -7,7 +7,6 @@ struct GoalSetupScreen: View {
     @FocusState private var focusedField: DailyGoalsField?
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .headline) private var rowMinHeight: CGFloat = 62
-    @ScaledMetric(relativeTo: .largeTitle) private var titleFontSize: CGFloat = 36
 
     let onComplete: () -> Void
     let initialDraft: DailyGoalsDraft?
@@ -54,6 +53,8 @@ struct GoalSetupScreen: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(PlatformColors.groupedBackground)
+            .navigationTitle("")
+            .inlineNavigationTitle()
             .errorBanner(message: $errorMessage)
             .scrollDismissesKeyboard(.interactively)
             .keyboardNavigationToolbar(focusedField: $focusedField, fields: fieldOrder)
@@ -62,46 +63,35 @@ struct GoalSetupScreen: View {
     }
 
     private var content: some View {
-        VStack(spacing: 28) {
-            Spacer(minLength: 24)
-
-            header
-
-            goalRows
-
-            Spacer()
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: OnboardingLayout.headerSpacing) {
+                    OnboardingHeader(
+                        symbol: "slider.horizontal.3", title: "Set your targets",
+                        subtitle: "Enter your daily calorie and macro goals.")
+                    goalRows
+                }
+                .padding(.horizontal, OnboardingLayout.horizontalInset)
+                .padding(.vertical, OnboardingLayout.verticalPadding)
+            }
+            .scrollBounceBehavior(.basedOnSize)
 
             BottomPinnedActionBar(
                 title: "Continue",
                 systemImage: nil,
                 isDisabled: !canContinue,
-                topPadding: 0,
+                edgeFadeColor: PlatformColors.groupedBackground,
                 action: saveGoals
             )
         }
     }
 
-    private var header: some View {
-        VStack(spacing: 10) {
-            Text(AppBrand.displayName)
-                .font(.system(size: titleFontSize, weight: .bold, design: .rounded))
-                .multilineTextAlignment(.center)
-
-            Text("Set up your targets")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(.horizontal, 24)
-    }
-
     private var goalRows: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: OnboardingLayout.cardSpacing) {
             ForEach(fieldOrder, id: \.self) { field in
                 goalRow(field)
             }
         }
-        .padding(.horizontal, 16)
     }
 
     private func goalRow(_ field: DailyGoalsField) -> some View {
@@ -133,8 +123,7 @@ struct GoalSetupScreen: View {
                     .frame(width: 36, alignment: .leading)
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 12)
+        .padding(16)
         .frame(minHeight: rowMinHeight)
         .appCardBackground(cornerRadius: 20)
     }

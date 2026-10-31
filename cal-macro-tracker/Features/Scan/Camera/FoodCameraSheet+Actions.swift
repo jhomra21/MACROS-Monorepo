@@ -15,18 +15,16 @@ extension FoodCameraSheet {
             send(.barcodeFromImage(barcode))
             return
         }
-        guard barcodeCaptureID == nil else { return }
-        let id = UUID()
-        barcodeCaptureID = id
+        guard barcodeCaptureTask == nil else { return }
         // The frame must be captured before `.barcodeRecognized` stops scanning; on failure the card shows the dim only.
         frozenImage = nil
-        Task {
+        barcodeCaptureTask = Task {
             var photo: UIImage?
             if let scanner = scannerController?.scanner, scanner.isScanning {
                 photo = try? await scanner.capturePhoto()
             }
-            guard barcodeCaptureID == id else { return }
-            barcodeCaptureID = nil
+            guard Task.isCancelled == false else { return }
+            barcodeCaptureTask = nil
             guard flow.phase == .scanning else { return }
             frozenImage = photo.map(Self.screenSizedStill)
             send(.barcodeRecognized(barcode))

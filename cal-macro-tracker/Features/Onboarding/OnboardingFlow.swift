@@ -46,6 +46,7 @@ private struct OnboardingWelcomeScreen: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ScaledMetric(relativeTo: .largeTitle) private var heroRingDiameter: CGFloat = 150
     @State private var heroTotals = NutritionSnapshot.zero
+    @State private var didAnimateHero = false
 
     private static let heroGoals = MacroGoalsSnapshot(
         calorieGoal: 2_000,
@@ -58,8 +59,8 @@ private struct OnboardingWelcomeScreen: View {
         VStack(spacing: 0) {
             GeometryReader { geometry in
                 ScrollView {
-                    VStack(spacing: 28) {
-                        VStack(spacing: 24) {
+                    VStack(spacing: OnboardingLayout.headerSpacing) {
+                        OnboardingHeader(title: AppBrand.displayName, subtitle: nil, isWelcome: true) {
                             MacroRingSetView(
                                 totals: heroTotals,
                                 goals: Self.heroGoals,
@@ -68,10 +69,6 @@ private struct OnboardingWelcomeScreen: View {
                                 minimumLineWidth: 10,
                                 showsGoalSubtitle: false
                             )
-                            .accessibilityHidden(true)
-                            Text(AppBrand.displayName)
-                                .font(.largeTitle.bold())
-                                .multilineTextAlignment(.center)
                         }
                         VStack(spacing: 12) {
                             Label("No account needed", systemImage: "person.crop.circle.badge.checkmark")
@@ -82,18 +79,22 @@ private struct OnboardingWelcomeScreen: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 24)
                     }
-                    .padding(.vertical, 32)
+                    .padding(.horizontal, OnboardingLayout.horizontalInset)
+                    .padding(.vertical, OnboardingLayout.verticalPadding)
                     .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
                 .scrollBounceBehavior(.basedOnSize)
             }
-            BottomPinnedActionBar(title: "Get Started", systemImage: nil, isDisabled: false, action: onContinue)
+            BottomPinnedActionBar(
+                title: "Get Started", systemImage: nil, isDisabled: false,
+                edgeFadeColor: PlatformColors.groupedBackground, action: onContinue)
         }
         .background(PlatformColors.groupedBackground)
         .navigationBarBackButtonHidden()
         .onAppear {
+            guard !didAnimateHero else { return }
+            didAnimateHero = true
             var generator = SystemRandomNumberGenerator()
             let totals = Self.randomHeroTotals(goals: Self.heroGoals, using: &generator)
             if reduceMotion {
@@ -126,21 +127,24 @@ struct OnboardingChoiceScreen: View {
     let onComplete: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("How would you like to set your targets?")
-                .font(.title2.bold())
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            choiceRows
-            Spacer()
+        ScrollView {
+            VStack(spacing: OnboardingLayout.headerSpacing) {
+                OnboardingHeader(
+                    symbol: "slider.horizontal.3", title: "Set your goals",
+                    subtitle: "How would you like to set your targets?")
+                choiceRows
+            }
+            .padding(.horizontal, OnboardingLayout.horizontalInset)
+            .padding(.vertical, OnboardingLayout.verticalPadding)
         }
-        .padding(.top, 32)
-        .navigationTitle("Set your goals")
+        .scrollBounceBehavior(.basedOnSize)
+        .background(PlatformColors.groupedBackground)
+        .navigationTitle("")
         .inlineNavigationTitle()
     }
 
     private var choiceRows: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: OnboardingLayout.cardSpacing) {
             NavigationLink(value: OnboardingStep.aboutYou) {
                 choiceRow("Calculate my targets", subtitle: "Get a starting point based on your routine", symbol: "sparkles")
             }
@@ -151,7 +155,6 @@ struct OnboardingChoiceScreen: View {
             }
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 16)
     }
 
     private func choiceRow(_ title: String, subtitle: String, symbol: String) -> some View {
@@ -169,7 +172,7 @@ struct OnboardingChoiceScreen: View {
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.tertiary)
         }
-        .padding(18)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .appCardBackground(cornerRadius: 20)
         .accessibilityElement(children: .combine)
@@ -187,8 +190,6 @@ private struct OnboardingRemindersScreen: View {
     @State private var didFinish = false
     @State private var authorizationTask: Task<Void, Never>?
     @State private var isPresentingPro = false
-    @State private var appeared = false
-    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 56
 
     let onComplete: () -> Void
 
@@ -211,8 +212,10 @@ private struct OnboardingRemindersScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    header
+                VStack(alignment: .leading, spacing: OnboardingLayout.headerSpacing) {
+                    OnboardingHeader(
+                        symbol: "bell.badge.fill", title: "Stay on track",
+                        subtitle: "A gentle nudge to log your day. Change it anytime in Settings.")
 
                     if selectedCount > ReminderLimits.maxCount {
                         Text("Choose no more than three reminders before continuing.")
@@ -228,9 +231,8 @@ private struct OnboardingRemindersScreen: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 24)
-                .padding(.bottom, 24)
+                .padding(.horizontal, OnboardingLayout.horizontalInset)
+                .padding(.vertical, OnboardingLayout.verticalPadding)
                 .disabled(isRequestingPermission)
             }
 
@@ -239,6 +241,7 @@ private struct OnboardingRemindersScreen: View {
                 systemImage: nil,
                 isDisabled: isRequestingPermission || selectedCount > ReminderLimits.maxCount,
                 isLoading: isRequestingPermission,
+                edgeFadeColor: PlatformColors.groupedBackground,
                 action: continueOnboarding
             )
             .disabled(isRequestingPermission)
@@ -246,8 +249,7 @@ private struct OnboardingRemindersScreen: View {
         .background(PlatformColors.groupedBackground)
         .navigationTitle("")
         .inlineNavigationTitle()
-        .navigationBarBackButtonHidden()
-        .onAppear { appeared = true }
+        .navigationBarBackButtonHidden(isRequestingPermission)
         .onDisappear {
             authorizationTask?.cancel()
         }
@@ -265,30 +267,10 @@ private struct OnboardingRemindersScreen: View {
     }
 
     private var reminderCards: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: OnboardingLayout.cardSpacing) {
             dailyReminderCard
             additionalReminderCard
         }
-    }
-
-    private var header: some View {
-        VStack(spacing: 0) {
-            Image(systemName: "bell.badge.fill")
-                .font(.system(size: heroIconSize, weight: .medium))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.tint)
-                .symbolEffect(.bounce, value: appeared)
-                .accessibilityHidden(true)
-            Text("Stay on track")
-                .font(.title.bold())
-                .padding(.top, 16)
-            Text("A gentle nudge to log your day. Change it anytime in Settings.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .padding(.top, 8)
-        }
-        .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
     }
 
     /// Text column starts after the 30 pt tile and its 12 pt gap.
@@ -347,7 +329,22 @@ private struct OnboardingRemindersScreen: View {
         .appCardBackground(cornerRadius: 20)
     }
 
+    @ViewBuilder
     private var additionalReminderCard: some View {
+        if includesProChoices {
+            additionalReminderCardContent
+        } else {
+            Button {
+                isPresentingPro = true
+            } label: {
+                additionalReminderCardContent.accessibilityElement(children: .combine)
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Opens the Pro paywall")
+        }
+    }
+
+    private var additionalReminderCardContent: some View {
         VStack(alignment: .leading, spacing: 12) {
             reminderRow(
                 "More reminders", subtitle: "Breakfast, lunch, dinner, evening check-in", symbol: "clock.badge.fill",
@@ -398,12 +395,6 @@ private struct OnboardingRemindersScreen: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .appCardBackground(cornerRadius: 20)
         .contentShape(RoundedRectangle(cornerRadius: 20))
-        .onTapGesture {
-            guard !includesProChoices else { return }
-            isPresentingPro = true
-        }
-        .accessibilityAddTraits(includesProChoices ? [] : .isButton)
-        .accessibilityHint(includesProChoices ? "" : "Opens the Pro paywall")
     }
 
     private func timePicker(_ title: String, hour: Binding<Int>, minute: Binding<Int>) -> some View {

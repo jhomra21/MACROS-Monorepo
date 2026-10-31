@@ -19,7 +19,7 @@ struct TutorialCaptionCard: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
-    var onAction: (() -> Void)?
+    let onAction: () -> Void
 
     private var message: String { step.message(nextMacro: tutorial.nextMacro) }
     private var prefersProminentAction: Bool { voiceOverEnabled || switchControlEnabled || reduceMotion }
@@ -31,8 +31,6 @@ struct TutorialCaptionCard: View {
                 Text(message).font(.body).foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .id(message)
-            .transition(.blurReplace)
 
             if dynamicTypeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 12) {
@@ -51,7 +49,6 @@ struct TutorialCaptionCard: View {
                 }
             }
         }
-        .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: message)
         .tutorialCardStyle(padding: 20, maxWidth: 420)
         .accessibilityElement(children: .contain)
         .onChange(of: message, initial: true) {
@@ -77,85 +74,89 @@ struct TutorialCaptionCard: View {
             .buttonStyle(.plain)
             .font(.subheadline)
             .foregroundStyle(.secondary)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
     }
 
     @ViewBuilder
     private var actionButton: some View {
-        if let onAction, let title = step.actionTitle(nextMacro: tutorial.nextMacro) {
-            if prefersProminentAction {
-                Button(title, action: onAction).buttonStyle(.borderedProminent).controlSize(.small)
-            } else {
-                Button("Do it for me", action: onAction).buttonStyle(.bordered).controlSize(.small)
+        if let title = step.actionTitle(nextMacro: tutorial.nextMacro) {
+            Group {
+                if prefersProminentAction {
+                    Button(title, action: onAction).buttonStyle(.borderedProminent)
+                } else {
+                    Button("Do it for me", action: onAction).buttonStyle(.bordered)
+                }
             }
+            .controlSize(.small)
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
         }
     }
 }
 
 struct TutorialDoneCard: View {
-    @ScaledMetric(relativeTo: .largeTitle) private var iconSize: CGFloat = 64
+    @ScaledMetric(relativeTo: .largeTitle) private var checkSize: CGFloat = 56
     @AccessibilityFocusState private var isDoneFocused: Bool
     @State private var appeared = false
 
     let onDone: () -> Void
 
-    private let recap: [(symbol: String, text: String)] = [
-        ("arrow.left", "Swipe left for Sharing"),
-        ("arrow.right", "Swipe right for past days"),
-        ("circle.circle", "Tap the rings for details")
-    ]
-
     var body: some View {
         VStack(spacing: 0) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: iconSize))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(.green)
+                .font(.system(size: checkSize, weight: .regular))
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(.white, .green)
                 .symbolEffect(.drawOn, isActive: !appeared)
                 .accessibilityHidden(true)
-            Text("You're all set")
+            Text(DashboardTutorial.Step.done.title)
                 .font(.title2.bold())
-                .multilineTextAlignment(.center)
-                .padding(.top, 12)
-
-            VStack(alignment: .leading, spacing: 14) {
-                ForEach(recap, id: \.text) { row in
-                    HStack(spacing: 12) {
-                        Image(systemName: row.symbol)
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tint)
-                            .frame(width: 28, height: 28)
-                            .background(.tint.opacity(0.15), in: Circle())
-                            .accessibilityHidden(true)
-                        Text(row.text).font(.subheadline)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 20)
-
-            Text("Log your first food with Camera or Add Food.")
-                .font(.footnote)
+                .padding(.top, 14)
+            Text(DashboardTutorial.Step.done.message(nextMacro: nil))
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.bottom, 20)
+                .padding(.top, 6)
 
-            Button(action: onDone) {
-                Text("Done").frame(maxWidth: .infinity)
+            VStack(alignment: .leading, spacing: 18) {
+                recapRow("hand.draw", "Sharing", "Swipe left on your rings")
+                recapRow("calendar", "Past days", "Swipe right on your rings")
+                recapRow("chart.pie", "Details", "Tap your rings or a macro")
             }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.large)
-            .accessibilityFocused($isDoneFocused)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 24)
+
+            AppAccentActionButton(title: "Done", systemImage: nil, isCompact: false, action: onDone)
+                .padding(.top, 28)
+                .accessibilityFocused($isDoneFocused)
         }
-        .tutorialCardStyle(padding: 24, maxWidth: 360)
+        .multilineTextAlignment(.center)
+        .padding(24)
+        .frame(maxWidth: 360)
+        .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 34, style: .continuous))
+        .shadow(color: .black.opacity(0.18), radius: 24, y: 10)
         .accessibilityElement(children: .contain)
         .sensoryFeedback(.success, trigger: appeared) { _, new in new }
         .onAppear {
             appeared = true
             isDoneFocused = true
-            AccessibilityNotification.Announcement(
-                "You're all set. " + recap.map(\.text).joined(separator: ". ")
-            ).post()
         }
+    }
+
+    private func recapRow(_ symbol: String, _ title: String, _ detail: String) -> some View {
+        HStack(alignment: .center, spacing: 16) {
+            Image(systemName: symbol)
+                .font(.title2)
+                .foregroundStyle(.tint)
+                .frame(width: 32)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.headline)
+                Text(detail).font(.subheadline).foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(.leading)
+        }
+        .accessibilityElement(children: .combine)
     }
 }

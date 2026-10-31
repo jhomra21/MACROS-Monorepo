@@ -41,6 +41,7 @@ struct DashboardScreen: View {
     @State var shareFailureRequest: ShareFailureRequest?
     #endif
 
+    private static let ringRowID = "dashboard-ring-row"
     private let compactSummaryTopPadding: CGFloat = 8
     var currentGoals: MacroGoalsSnapshot { MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)) }
 
@@ -171,8 +172,13 @@ struct DashboardScreen: View {
     }
 
     private func dashboardList(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
-        List {
-            dashboardContent(snapshot: snapshot, customRingPalette: customRingPalette)
+        ScrollViewReader { proxy in
+            List {
+                dashboardContent(snapshot: snapshot, customRingPalette: customRingPalette)
+            }
+            .onChange(of: tutorial.step) { _, step in
+                if step == .openSharing { proxy.scrollTo(Self.ringRowID, anchor: .top) }
+            }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -220,6 +226,7 @@ struct DashboardScreen: View {
             onToggleExpansion: toggleMacroRingExpansion
         )
         .tutorialTarget(.ringPanel, in: tutorial)
+        .id(Self.ringRowID)
         .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
@@ -401,14 +408,14 @@ struct DashboardScreen: View {
     /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
     private func normalizeState(for step: DashboardTutorial.Step?) {
         switch step {
-        case .openSharing?, .previousDay?, .expandRing?, .done?:
+        case .openSharing?, .previousDay?, .expandRing?:
             if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
             withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
             }
         case .macros?:
-            withAnimation(.easeOut(duration: 0.18)) { selectedMacro = nil }
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { selectedMacro = nil }
         default:
             break
         }
@@ -427,7 +434,7 @@ struct DashboardScreen: View {
         case .backToToday?: returnToToday()
         case .expandRing?: toggleMacroRingExpansion()
         case .macros?:
-            withAnimation(.easeOut(duration: 0.18)) { selectedMacro = tutorial.nextMacro }
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { selectedMacro = tutorial.nextMacro }
         default: break
         }
     }

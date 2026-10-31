@@ -12,12 +12,14 @@ enum TutorialTarget: Hashable {
 
 extension View {
     /// Frames are not cleared on disappear: pushing Sharing fires `onDisappear`, and the unchanged geometry
-    /// would never be reported again when the dashboard returns.
+    /// would never be reported again when the dashboard returns. Outside a run only the ring panel keeps
+    /// reporting; the other targets report until the dashboard is ready, which is what starts the run.
     func tutorialTarget(_ target: TutorialTarget, in tutorial: DashboardTutorial) -> some View {
         onGeometryChange(for: CGRect.self) {
             $0.frame(in: .global)
         } action: {
-            tutorial.frames[target] = $0
+            guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel else { return }
+            tutorial.report($0, for: target)
         }
     }
 }
@@ -107,11 +109,20 @@ final class DashboardTutorial {
 
     private(set) var step: Step?
     private(set) var macrosTapped: Set<MacroMetric> = []
-    var frames: [TutorialTarget: CGRect] = [:]
+    private(set) var frames: [TutorialTarget: CGRect] = [:]
+    /// Stored, so views that only need readiness are not invalidated by every frame write.
+    private(set) var isDashboardReady = false
     /// Set by DashboardScreen while it is on screen: runs the current step's action.
     @ObservationIgnored var performAction: (() -> Void)?
 
-    var isDashboardReady: Bool { frames[.ringPanel] != nil }
+    private static let readinessTargets: [TutorialTarget] = [.ringPanel, .legend, .contentArea, .bottomBar]
+
+    func report(_ rect: CGRect, for target: TutorialTarget) {
+        guard frames[target] != rect else { return }
+        frames[target] = rect
+        let isReady = Self.readinessTargets.allSatisfy { frames[$0].map { !$0.isEmpty } ?? false }
+        if isReady != isDashboardReady { isDashboardReady = isReady }
+    }
 
     var isRunning: Bool { step != nil }
 

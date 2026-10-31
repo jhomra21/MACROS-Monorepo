@@ -37,7 +37,7 @@ struct FoodCameraSheet: View {
     @State var labelInitialDraft: FoodDraft?
     @State var flow = FoodCameraFlow()
     @State var processingTask: Task<Void, Never>?
-    @State var barcodeCaptureID: UUID?
+    @State var barcodeCaptureTask: Task<Void, Never>?
     @State var useStillCamera = false
     @State var captureImageData: Data?
     @State var pendingImage: UIImage?
@@ -72,8 +72,8 @@ struct FoodCameraSheet: View {
                     stagedResultPanel(maxHeight: geometry.size.height * 0.45)
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
-                .animation(resultAnimation, value: panelContent)
-                .animation(resultAnimation, value: resultContentHeight)
+                .animation(layoutAnimation, value: panelContent.kind)
+                .animation(layoutAnimation, value: resultContentHeight)
                 .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
@@ -134,6 +134,7 @@ struct FoodCameraSheet: View {
             .onChange(of: showingLibraryPicker) { _, isPresented in
                 guard isPresented == false, selectedPhoto == nil, importingPhoto == false else { return }
                 send(.libraryCancelled)
+                if flow.phase == .scanning { frozenImage = nil }
             }
             .onChange(of: logDestination) { _, destination in
                 if destination != nil { isCameraOptionsExpanded = false }
@@ -258,12 +259,18 @@ struct FoodCameraSheet: View {
             .accessibilityHidden(!cameraCardVisible)
     }
 
-    // One curve for the card, the viewport and the Scan again overlay; Reduce Motion keeps only a short crossfade.
-    private var resultAnimation: Animation {
-        reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
-    }
+    // One curve for the card and the viewport height; Reduce Motion moves nothing and only fades (`cameraFade`).
+    private var layoutAnimation: Animation? { reduceMotion ? nil : .smooth(duration: 0.3) }
 
-    private var isResultFrozen: Bool { isResultExpanded }
+    private var fadeAnimation: Animation { cameraFade(reduceMotion: reduceMotion) }
+
+    /// Only real results freeze the viewport; errors keep the shutter and photo menu usable.
+    private var isResultFrozen: Bool {
+        switch result.kind {
+        case .barcode, .barcodeLogged, .label, .labelLogged: true
+        case .message, .hint, .error: false
+        }
+    }
 
     private var resultOverlay: some View {
         let isLabel = if case .label = result { true } else { false }
@@ -301,15 +308,18 @@ struct FoodCameraSheet: View {
             }
             .clipped()
             .allowsHitTesting(false)
+            .animation(fadeAnimation, value: isResultFrozen)
 
             Color.black.opacity(isResultFrozen ? 0.2 : 0)
                 .allowsHitTesting(false)
+                .animation(fadeAnimation, value: isResultFrozen)
 
             Color.clear.overlay(alignment: .top) {
-                if isResultFrozen {
+                if isResultExpanded {
                     resultOverlay.padding(.top, 16)
                 }
             }
+            .animation(fadeAnimation, value: isResultExpanded)
 
             VStack {
                 Spacer()
@@ -482,7 +492,8 @@ struct FoodCameraSheet: View {
                 startScanner()
             case .stopScanning:
                 pendingScannerStart = false
-                barcodeCaptureID = nil
+                barcodeCaptureTask?.cancel()
+                barcodeCaptureTask = nil
                 scannerController?.stopScanning()
             case .torchOn:
                 torch.set(on: true)
@@ -561,6 +572,10 @@ struct FoodCameraSheet: View {
 
 }
 
+private func cameraFade(reduceMotion: Bool) -> Animation {
+    reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
+}
+
 /// Fades a control out with a small downward move; it stays out of hit testing and VoiceOver while hidden.
 private struct FrozenHidden: ViewModifier {
     let isHidden: Bool
@@ -572,6 +587,7 @@ private struct FrozenHidden: ViewModifier {
             .opacity(isHidden ? 0 : 1)
             .offset(y: isHidden && reduceMotion == false ? 8 : 0)
             .allowsHitTesting(!isHidden)
+            .animation(cameraFade(reduceMotion: reduceMotion), value: isHidden)
     }
 }
 
