@@ -118,13 +118,16 @@ struct TutorialDoneCard: View {
                 .foregroundStyle(.secondary)
                 .padding(.top, 6)
 
-            VStack(alignment: .leading, spacing: 18) {
-                recapRow("hand.draw", "Sharing", "Swipe left on your rings")
-                recapRow("calendar", "Past days", "Swipe right on your rings")
-                recapRow("chart.pie", "Details", "Tap your rings or a macro")
+            VStack(spacing: 12) {
+                Label("Swipe left for Sharing", systemImage: "hand.draw")
+                Label("Swipe right for past days", systemImage: "calendar")
+                Label("Tap the rings for details", systemImage: "chart.pie")
             }
+            .font(.body)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
             .padding(.top, 24)
 
             AppAccentActionButton(title: "Done", systemImage: nil, isCompact: false, action: onDone)
@@ -144,19 +147,4 @@ struct TutorialDoneCard: View {
         }
     }
 
-    private func recapRow(_ symbol: String, _ title: String, _ detail: String) -> some View {
-        HStack(alignment: .center, spacing: 16) {
-            Image(systemName: symbol)
-                .font(.title2)
-                .foregroundStyle(.tint)
-                .frame(width: 32)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.headline)
-                Text(detail).font(.subheadline).foregroundStyle(.secondary)
-            }
-            .multilineTextAlignment(.leading)
-        }
-        .accessibilityElement(children: .combine)
-    }
 }
