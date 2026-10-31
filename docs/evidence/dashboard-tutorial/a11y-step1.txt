@@ -1,0 +1,40 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 36 nodes
+The surface was still changing after open when this tree was read, so it may not match where the surface comes to rest: an element missing from it is not proof of absence.
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "_TtGC7SwiftUI32NavigationStackHosting"
+@e3 [text] "Today"
+@e4 [button] "Share daily summary" [disabled]
+@e5 [button] "Open insights" [disabled]
+@e6 [button] "Open history" [disabled]
+@e7 [button] "Open settings" [disabled]
+@e8 [collection]
+@e9 [cell] "0"
+@e10 [button] "Expand nutrition details"
+@e11 [text] "of 2200 kcal"
+@e12 [cell]
+@e13 [button] "0"
+@e14 [button] "0"
+@e15 [button] "0"
+@e16 [button] "160"
+@e17 [button] "220"
+@e18 [button] "70"
+@e19 [button] "Protein"
+@e20 [button] "Carbs"
+@e21 [button] "Fat"
+@e22 [cell] "Today, 0 items"
+@e23 [text] "Today"
+@e24 [text] "0 items"
+@e25 [cell] "No food logged yet"
+@e26 [image] "Fork And Knife In A Circle"
+@e27 [text] "Tap the add button to log your first food today."
+@e28 [image] "Hand Drawing A Line, Filled"
+@e29 [text] "See your sharing circle"
+@e30 [text] "Swipe left on your rings to open Sharing."
+@e31 [button] "Skip"
+@e32 [text] "1 of 4"
+@e33 [button] "Do it for me"
+@e34 [button] "Camera" [disabled]
+@e35 [button] "Add Food" [disabled]
+@e36 [toolbar] "Toolbar"
