@@ -11,6 +11,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
+
+- Fix: while a result is showing, the shutter and the options menu fade out with an 8 pt downward move (opacity only under Reduce Motion), are not hit-testable and are `accessibilityHidden`; the back chevron stays. They return on Scan again in the same single transaction as the card, viewport, still and overlay button.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); the hide and return were recorded on the simulator.
+
 ## 2026-10-30 Camera Freezes On A Blurred Still
 
 - Decision: `DataScannerViewController` cannot pause its camera, and recreating it costs a 0.5-1 s cold start plus the reveal animation on every Scan again, so the session keeps running (recognition is already stopped) and a sharp (unblurred), screen-sized still with a 0.2 dim covers the viewport while a result shows; the Scan again/Retake glass button sits centered at the top, 16 pt from the viewport edge. The still comes from `capturePhoto()` at barcode detection (fallback: dim only), the OCR capture, or the imported photo; it is cleared on Scan again and on dismissal.

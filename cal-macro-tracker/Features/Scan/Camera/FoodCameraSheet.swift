@@ -260,6 +260,8 @@ struct FoodCameraSheet: View {
         reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
     }
 
+    private var isResultFrozen: Bool { isResultExpanded && cameraCardVisible }
+
     private var resultOverlay: some View {
         let isLabel = if case .label = result { true } else { false }
         return Button(action: resumeScanning) {
@@ -287,7 +289,7 @@ struct FoodCameraSheet: View {
             // the reveal animation on every Scan again, versus a few seconds of sensor time while a result is shown.
             // A sharp still covers the live feed instead; the live layer is never blurred.
             Color.clear.overlay {
-                if let frozenImage, isResultExpanded, cameraCardVisible {
+                if let frozenImage, isResultFrozen {
                     Image(uiImage: frozenImage)
                         .resizable()
                         .scaledToFill()
@@ -297,11 +299,11 @@ struct FoodCameraSheet: View {
             .clipped()
             .allowsHitTesting(false)
 
-            Color.black.opacity(isResultExpanded && cameraCardVisible ? 0.2 : 0)
+            Color.black.opacity(isResultFrozen ? 0.2 : 0)
                 .allowsHitTesting(false)
 
             Color.clear.overlay(alignment: .top) {
-                if isResultExpanded && cameraCardVisible {
+                if isResultFrozen {
                     resultOverlay.padding(.top, 16)
                 }
             }
@@ -385,6 +387,7 @@ struct FoodCameraSheet: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Photograph nutrition label")
             .disabled(busy)
+            .modifier(FrozenHidden(isHidden: isResultFrozen, reduceMotion: reduceMotion))
             Spacer()
             Color.clear
                 .frame(width: 44, height: 44)
@@ -432,6 +435,10 @@ struct FoodCameraSheet: View {
                     }
                     .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: isCameraOptionsExpanded)
                 }
+                .modifier(FrozenHidden(isHidden: isResultFrozen, reduceMotion: reduceMotion))
+        }
+        .onChange(of: isResultFrozen) { _, frozen in
+            if frozen { isCameraOptionsExpanded = false }
         }
         .font(.system(size: 17, weight: .semibold))
         .foregroundStyle(canLiveScan ? .white : .primary)
@@ -548,6 +555,20 @@ struct FoodCameraSheet: View {
         }
     }
 
+}
+
+/// Fades a control out with a small downward move; it stays out of hit testing and VoiceOver while hidden.
+private struct FrozenHidden: ViewModifier {
+    let isHidden: Bool
+    let reduceMotion: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .accessibilityHidden(isHidden)
+            .opacity(isHidden ? 0 : 1)
+            .offset(y: isHidden && reduceMotion == false ? 8 : 0)
+            .allowsHitTesting(!isHidden)
+    }
 }
 
 struct FoodCameraLogDestination: Identifiable, Hashable {
