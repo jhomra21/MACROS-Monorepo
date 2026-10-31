@@ -8,6 +8,7 @@ enum DemoDataSeeder {
     static func seed(into container: ModelContainer, now: Date = .now) async throws {
         try await BackupImporter.apply(makeBackup(now: now), to: container, mode: .replace)
         UserDefaults.standard.set(true, forKey: AppStorageKeys.hasCompletedGoalSetup)
+        UserDefaults.standard.set(true, forKey: AppStorageKeys.hasCompletedDashboardTutorial)
         WidgetTimelineReloader.reloadMacroWidgets()
         NotificationCenter.default.post(name: .remindersDidChange, object: nil)
     }

@@ -11,6 +11,7 @@ struct SettingsScreen: View {
     @Query private var goals: [DailyGoals]
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @AppStorage(AppStorageKeys.isSharingDeviceEnabled) private var isSharingDeviceEnabled = false
+    @AppStorage(AppStorageKeys.hasCompletedDashboardTutorial) private var hasCompletedDashboardTutorial = false
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
     @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
@@ -82,6 +83,9 @@ struct SettingsScreen: View {
             BackupSettingsSection()
 
             Section {
+                Button("Show Dashboard Tips") {
+                    hasCompletedDashboardTutorial = false
+                }
                 Link("Privacy Policy", destination: ProLegalLinks.privacy)
                 Link("Terms of Use", destination: ProLegalLinks.terms)
                 Link("Support", destination: ProLegalLinks.support)

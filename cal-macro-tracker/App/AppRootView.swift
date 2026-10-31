@@ -40,7 +40,9 @@ struct AppRootView: View {
 
     @Binding private var pendingOpenRequest: AppOpenRequest?
 
+    @AppStorage(AppStorageKeys.hasCompletedDashboardTutorial) private var hasCompletedDashboardTutorial = false
     @Namespace private var cameraTransition
+    @State private var tutorial = DashboardTutorial()
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var openRequestToken = 0
@@ -79,10 +81,31 @@ struct AppRootView: View {
                     SharingDashboardScreen {
                         open(.sharing(inviteInput: nil, requestId: 0))
                     }
+                    .overlay(alignment: .bottom) {
+                        if tutorial.step == .returnFromSharing {
+                            TutorialCaptionCard(step: .returnFromSharing)
+                                .padding(.horizontal, 20)
+                                .padding(.bottom, 16)
+                        }
+                    }
                 case let .sharing(inviteInput, _):
                     SharingScreen(initialInviteInput: inviteInput)
                 }
             }
+        }
+        .environment(tutorial)
+        .onChange(of: path) { _, newPath in
+            if newPath.last == .sharingDashboard { tutorial.didOpenSharing() }
+            if newPath.isEmpty { tutorial.didReturnToRoot() }
+        }
+        .onChange(of: canStartTutorial, initial: true) { _, canStart in
+            if canStart { tutorial.start() }
+        }
+        .onChange(of: tutorial.step) { oldStep, newStep in
+            if oldStep != nil, newStep == nil { hasCompletedDashboardTutorial = true }
+        }
+        .onChange(of: hasCompletedDashboardTutorial) { _, hasCompleted in
+            if !hasCompleted { path.removeAll() }
         }
         .sheet(item: nonCameraSheetDestination) { destination in
             sheetPresentation(for: destination)
@@ -117,6 +140,10 @@ struct AppRootView: View {
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+    }
+
+    private var canStartTutorial: Bool {
+        !hasCompletedDashboardTutorial && path.isEmpty && sheetDestination == nil && tutorial.isDashboardReady
     }
 
     private func open(_ route: Route) {

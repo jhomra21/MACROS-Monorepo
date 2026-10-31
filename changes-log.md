@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 Dashboard tutorial
+
+- Feature: the first time the Dashboard shows (new and existing users), a dimmed guided overlay spotlights each target, an animated hand demonstrates, and the user performs the real action: swipe left to Sharing, swipe back, swipe right for the previous day, tap Today, tap the rings, then tap Protein, Carbs and Fat. Events advance `DashboardTutorial` only on the current step; Skip and Done persist `hasCompletedDashboardTutorial`. Settings > About has "Show Dashboard Tips" to replay it. Reduce Motion, VoiceOver and Switch Control get a static hand and a prominent action button.
+- Decision: only completion is persisted, so a killed app restarts from step 1; the tutorial pauses (step kept) while a sheet or History, Insights or Settings is open.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite passed; the full run, skip, replay and Reduce Motion were exercised on the simulator.
+
 ## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
 
 - Fix: while a result is showing, the shutter and the options menu fade out with an 8 pt downward move (opacity only under Reduce Motion), are not hit-testable and are `accessibilityHidden`; the back chevron stays. They return on Scan again in the same single transaction as the card, viewport, still and overlay button.

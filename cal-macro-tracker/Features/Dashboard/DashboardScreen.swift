@@ -8,6 +8,7 @@ struct DashboardScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(DashboardTutorial.self) var tutorial
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
     @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
@@ -74,6 +75,39 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
+            .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
+                ZStack {
+                    Color.clear
+                        .allowsHitTesting(false)
+                        .onChange(of: anchors[.ringPanel] != nil, initial: true) { _, isReady in
+                            tutorial.isDashboardReady = isReady
+                        }
+                    if let step = tutorial.step, step != .returnFromSharing {
+                        GeometryReader { proxy in
+                            DashboardTutorialOverlay(
+                                step: step,
+                                targetRect: step.target.flatMap { anchors[$0] }.map { proxy[$0] },
+                                size: proxy.size,
+                                onAction: performTutorialAction
+                            )
+                        }
+                        .ignoresSafeArea()
+                    }
+                }
+            }
+            .onChange(of: daySelection.selectedDay) { _, day in
+                tutorial.didChangeDay(isToday: day == dayContext.today)
+            }
+            .onChange(of: isMacroRingExpanded) { _, isExpanded in
+                if isExpanded { tutorial.didExpandRing() }
+            }
+            .onChange(of: selectedMacro) { _, metric in
+                if let metric { tutorial.didSelectMacro(metric) }
+            }
+            .onChange(of: tutorial.step) { _, step in
+                normalizeState(for: step)
+            }
+            .scrollDisabled(tutorial.isRunning)
             .animation(.easeOut(duration: 0.18), value: showsCompactSummary)
             .onAppear {
                 guard daySelection.followsCurrentDay else { return }
@@ -132,11 +166,7 @@ struct DashboardScreen: View {
 
     private var todayReturnRow: some View {
         HStack {
-            Button {
-                withAnimation(.easeInOut(duration: 0.18)) {
-                    daySelection.resetToToday(dayContext.today)
-                }
-            } label: {
+            Button(action: returnToToday) {
                 Text("Today")
                     .font(.subheadline.weight(.semibold))
                     .padding(.horizontal, 14)
@@ -147,6 +177,7 @@ struct DashboardScreen: View {
             .buttonStyle(.plain)
             .appGlassRoundedRect(cornerRadius: 18)
             .accessibilityLabel("Return to today")
+            .tutorialTarget(.todayPill)
 
             Spacer()
         }
@@ -205,6 +236,7 @@ struct DashboardScreen: View {
             colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
             onToggleExpansion: toggleMacroRingExpansion
         )
+        .tutorialTarget(.ringPanel)
         .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
@@ -217,6 +249,7 @@ struct DashboardScreen: View {
             canCustomizeColors: entitlements.canUse(.customMacroRingColors),
             onChangeColor: presentColorPicker
         )
+        .tutorialTarget(.legend)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
 
@@ -302,6 +335,7 @@ struct DashboardScreen: View {
             bottomOffset: 6
         )
         .frame(maxWidth: .infinity)
+        .disabled(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -352,6 +386,40 @@ struct DashboardScreen: View {
     private func toggleMacroRingExpansion() {
         withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
             isMacroRingExpanded.toggle()
+        }
+    }
+
+    /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
+    private func normalizeState(for step: DashboardTutorial.Step?) {
+        switch step {
+        case .openSharing?, .previousDay?, .expandRing?, .done?:
+            if step == .openSharing { daySelection.resetToToday(dayContext.today) }
+            withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
+                isMacroRingExpanded = false
+                selectedMacro = nil
+            }
+        case .macros?:
+            withAnimation(.easeOut(duration: 0.18)) { selectedMacro = nil }
+        default:
+            break
+        }
+    }
+
+    private func returnToToday() {
+        withAnimation(.easeInOut(duration: 0.18)) {
+            daySelection.resetToToday(dayContext.today)
+        }
+    }
+
+    private func performTutorialAction() {
+        switch tutorial.step {
+        case .openSharing?: onOpenSharing()
+        case .previousDay?: moveSelection(by: -1)
+        case .backToToday?: returnToToday()
+        case .expandRing?: toggleMacroRingExpansion()
+        case .macros?:
+            withAnimation(.easeOut(duration: 0.18)) { selectedMacro = tutorial.nextMacro }
+        default: break
         }
     }
 
