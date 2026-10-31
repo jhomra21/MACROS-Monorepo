@@ -5,19 +5,20 @@ enum TutorialTarget: Hashable {
     case ringPanel
     case legend
     case todayPill
-}
-
-struct TutorialTargetKey: PreferenceKey {
-    static let defaultValue: [TutorialTarget: Anchor<CGRect>] = [:]
-
-    static func reduce(value: inout Value, nextValue: () -> Value) {
-        value.merge(nextValue(), uniquingKeysWith: { $1 })
-    }
+    /// Layout regions the caption is placed between.
+    case contentArea
+    case bottomBar
 }
 
 extension View {
-    func tutorialTarget(_ target: TutorialTarget) -> some View {
-        anchorPreference(key: TutorialTargetKey.self, value: .bounds) { [target: $0] }
+    /// Frames are not cleared on disappear: pushing Sharing fires `onDisappear`, and the unchanged geometry
+    /// would never be reported again when the dashboard returns.
+    func tutorialTarget(_ target: TutorialTarget, in tutorial: DashboardTutorial) -> some View {
+        onGeometryChange(for: CGRect.self) {
+            $0.frame(in: .global)
+        } action: {
+            tutorial.frames[target] = $0
+        }
     }
 }
 
@@ -98,7 +99,11 @@ final class DashboardTutorial {
 
     private(set) var step: Step?
     private(set) var macrosTapped: Set<MacroMetric> = []
-    var isDashboardReady = false
+    var frames: [TutorialTarget: CGRect] = [:]
+    /// Set by DashboardScreen while it is on screen: runs the current step's action.
+    @ObservationIgnored var performAction: (() -> Void)?
+
+    var isDashboardReady: Bool { frames[.ringPanel] != nil }
 
     var isRunning: Bool { step != nil }
 

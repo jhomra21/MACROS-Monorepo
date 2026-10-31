@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SpotlightShape: Shape {
+    static let cornerRadius: CGFloat = 24
+
     var cutout: CGRect
 
     var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>> {
@@ -14,7 +16,7 @@ struct SpotlightShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         var path = Path(rect)
-        path.addRoundedRect(in: cutout, cornerSize: CGSize(width: 24, height: 24))
+        path.addRoundedRect(in: cutout, cornerSize: CGSize(width: Self.cornerRadius, height: Self.cornerRadius))
         return path
     }
 }
@@ -23,16 +25,22 @@ struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.colorScheme) private var colorScheme
 
     let step: DashboardTutorial.Step
-    let targetRect: CGRect?
+    /// Global position of this overlay's top-left corner; tutorial frames are global.
+    let origin: CGPoint
     let size: CGSize
-    let safeAreaInsets: EdgeInsets
-    let onAction: () -> Void
 
     @State private var lastTargetRect: CGRect?
 
     private let cutoutInset: CGFloat = 12
+
+    private func localFrame(_ target: TutorialTarget) -> CGRect? {
+        tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
+    }
+
+    private var targetRect: CGRect? { step.target.flatMap(localFrame) }
 
     private var cutout: CGRect {
         guard step.target != nil, let rect = targetRect ?? lastTargetRect else {
@@ -48,11 +56,22 @@ struct DashboardTutorialOverlay: View {
 
         ZStack {
             SpotlightShape(cutout: cutout)
-                .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
+                .fill(.black.opacity(colorScheme == .dark ? 0.72 : 0.55), style: FillStyle(eoFill: true))
                 .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
                 .gesture(DragGesture(minimumDistance: 0))
                 .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
                 .accessibilityHidden(true)
+
+            if !cutout.isEmpty {
+                RoundedRectangle(cornerRadius: SpotlightShape.cornerRadius)
+                    .strokeBorder(.white.opacity(colorScheme == .dark ? 0.9 : 0.8), lineWidth: 2)
+                    .shadow(color: .white.opacity(colorScheme == .dark ? 0.45 : 0.25), radius: 8)
+                    .frame(width: cutout.width, height: cutout.height)
+                    .position(x: cutout.midX, y: cutout.midY)
+                    .allowsHitTesting(false)
+                    .accessibilityHidden(true)
+                    .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
+            }
 
             if step != .done {
                 TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
@@ -85,29 +104,32 @@ struct DashboardTutorialOverlay: View {
 
     @ViewBuilder
     private func caption(cutout: CGRect) -> some View {
-        let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : onAction)
+        let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : { tutorial.performAction?() })
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
+        let top = localFrame(.contentArea)?.minY ?? 0
+        let bottom = localFrame(.bottomBar)?.minY ?? size.height
         let isFullHeight = step == .done || cutout.isEmpty
-        let above = max(0, cutout.minY - safeAreaInsets.top - 12)
-        let below = max(0, size.height - safeAreaInsets.bottom - cutout.maxY - 12)
+        let above = max(0, cutout.minY - top - 12)
+        let below = max(0, bottom - cutout.maxY - 12)
         let placeBelow = below >= above
         let regionHeight =
             if isFullHeight {
-                size.height - safeAreaInsets.top - safeAreaInsets.bottom
+                bottom - top
             } else {
                 placeBelow ? below : above
             }
         let regionCenterY =
             if isFullHeight {
-                (safeAreaInsets.top + size.height - safeAreaInsets.bottom) / 2
+                (top + bottom) / 2
             } else {
-                placeBelow ? cutout.maxY + 12 + below / 2 : safeAreaInsets.top + above / 2
+                placeBelow ? cutout.maxY + 12 + below / 2 : top + above / 2
             }
         ScrollView {
             card
         }
         .scrollIndicators(.hidden)
+        .defaultScrollAnchor(isFullHeight ? .center : nil)
         .frame(height: regionHeight)
         .position(x: size.width / 2, y: regionCenterY)
     }
@@ -120,7 +142,7 @@ private struct TutorialHand: View {
     private struct Frame {
         var opacity = 0.0
         var scale = 1.0
-        var offset = 0.0
+        var offset: Double
     }
 
     private var symbol: String { swipeDirection == nil ? "hand.tap.fill" : "hand.draw.fill" }
@@ -136,34 +158,36 @@ private struct TutorialHand: View {
             .font(.system(size: 36, weight: .semibold))
             .foregroundStyle(.white)
         } else {
+            // The hand starts at the swipe's start point and only jumps back while fully invisible, so it
+            // never appears to move against the swipe direction. Every track totals 2.2 s.
+            let travel = 120 * (swipeDirection ?? 0)
             hand
-                .keyframeAnimator(initialValue: Frame(), repeating: true) { content, frame in
+                .keyframeAnimator(initialValue: Frame(offset: -travel / 2), repeating: true) { content, frame in
                     content
                         .scaleEffect(frame.scale)
                         .offset(x: frame.offset)
                         .opacity(frame.opacity)
                 } keyframes: { _ in
-                    let travel = 120 * (swipeDirection ?? 0)
                     KeyframeTrack(\.opacity) {
                         LinearKeyframe(0, duration: 0.01)
                         LinearKeyframe(1, duration: 0.25)
-                        LinearKeyframe(1, duration: 1.0)
+                        LinearKeyframe(1, duration: 0.99)
                         LinearKeyframe(0, duration: 0.25)
-                        LinearKeyframe(0, duration: 0.69)
+                        LinearKeyframe(0, duration: 0.70)
                     }
                     KeyframeTrack(\.scale) {
-                        LinearKeyframe(1, duration: 0.25)
+                        LinearKeyframe(1, duration: 0.26)
                         CubicKeyframe(0.9, duration: 0.2)
                         LinearKeyframe(0.9, duration: 0.8)
-                        CubicKeyframe(1, duration: 0.2)
-                        LinearKeyframe(1, duration: 0.75)
+                        CubicKeyframe(1, duration: 0.24)
+                        LinearKeyframe(1, duration: 0.70)
                     }
                     KeyframeTrack(\.offset) {
                         LinearKeyframe(-travel / 2, duration: 0.45)
-                        CubicKeyframe(travel / 2, duration: 0.8)
-                        LinearKeyframe(travel / 2, duration: 0.2)
+                        CubicKeyframe(travel / 2, duration: 0.80)
+                        LinearKeyframe(travel / 2, duration: 0.30)
                         LinearKeyframe(-travel / 2, duration: 0.01)
-                        LinearKeyframe(-travel / 2, duration: 0.74)
+                        LinearKeyframe(-travel / 2, duration: 0.64)
                     }
                 }
         }

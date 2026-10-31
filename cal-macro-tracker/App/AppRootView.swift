@@ -96,6 +96,14 @@ struct AppRootView: View {
                 }
             }
         }
+        .overlay {
+            if let step = tutorial.step, step != .returnFromSharing, path.isEmpty, sheetDestination == nil {
+                GeometryReader { proxy in
+                    DashboardTutorialOverlay(step: step, origin: proxy.frame(in: .global).origin, size: proxy.size)
+                }
+                .ignoresSafeArea()
+            }
+        }
         .environment(tutorial)
         .onChange(of: path) { _, newPath in
             if newPath.last == .sharingDashboard { tutorial.didOpenSharing() }

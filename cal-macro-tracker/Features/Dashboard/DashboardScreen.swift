@@ -35,7 +35,6 @@ struct DashboardScreen: View {
     @State private var isAddFoodButtonCompact = false
     @State private var selectedMacro: MacroMetric?
     @State private var isMacroRingExpanded = false
-    @State private var bottomBarHeight: CGFloat = 0
     #if os(iOS)
     @State var shareSheetItem: DashboardShareSheetItem?
     @State var isPreparingShare = false
@@ -78,34 +77,9 @@ struct DashboardScreen: View {
             .inlineNavigationTitle()
             .accessibilityHidden(tutorial.isRunning)
             .tutorialAccessibilityMask(tutorial.isRunning)
-            .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
-                ZStack {
-                    Color.clear
-                        .allowsHitTesting(false)
-                        .onChange(of: anchors[.ringPanel] != nil, initial: true) { _, isReady in
-                            tutorial.isDashboardReady = isReady
-                        }
-                    if let step = tutorial.step, step != .returnFromSharing {
-                        GeometryReader { safeArea in
-                            GeometryReader { proxy in
-                                DashboardTutorialOverlay(
-                                    step: step,
-                                    targetRect: step.target.flatMap { anchors[$0] }.map { proxy[$0] },
-                                    size: proxy.size,
-                                    safeAreaInsets: EdgeInsets(
-                                        top: safeArea.safeAreaInsets.top,
-                                        leading: safeArea.safeAreaInsets.leading,
-                                        bottom: safeArea.safeAreaInsets.bottom + bottomBarHeight,
-                                        trailing: safeArea.safeAreaInsets.trailing
-                                    ),
-                                    onAction: performTutorialAction
-                                )
-                            }
-                            .ignoresSafeArea()
-                        }
-                    }
-                }
-            }
+            .tutorialTarget(.contentArea, in: tutorial)
+            .onAppear { tutorial.performAction = performTutorialAction }
+            .onDisappear { tutorial.performAction = nil }
             .onChange(of: daySelection.selectedDay) { _, day in
                 tutorial.didChangeDay(isToday: day == dayContext.today)
             }
@@ -135,11 +109,7 @@ struct DashboardScreen: View {
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
-                    .onGeometryChange(for: CGFloat.self) {
-                        $0.size.height
-                    } action: {
-                        bottomBarHeight = $0
-                    }
+                    .tutorialTarget(.bottomBar, in: tutorial)
             }
             .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
             .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
@@ -192,7 +162,7 @@ struct DashboardScreen: View {
             .buttonStyle(.plain)
             .appGlassRoundedRect(cornerRadius: 18)
             .accessibilityLabel("Return to today")
-            .tutorialTarget(.todayPill)
+            .tutorialTarget(.todayPill, in: tutorial)
 
             Spacer()
         }
@@ -249,7 +219,7 @@ struct DashboardScreen: View {
             colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
             onToggleExpansion: toggleMacroRingExpansion
         )
-        .tutorialTarget(.ringPanel)
+        .tutorialTarget(.ringPanel, in: tutorial)
         .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
@@ -262,7 +232,7 @@ struct DashboardScreen: View {
             canCustomizeColors: entitlements.canUse(.customMacroRingColors),
             onChangeColor: presentColorPicker
         )
-        .tutorialTarget(.legend)
+        .tutorialTarget(.legend, in: tutorial)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
 
