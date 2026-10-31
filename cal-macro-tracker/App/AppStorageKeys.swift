@@ -1,5 +1,6 @@
 enum AppStorageKeys {
     static let hasCompletedGoalSetup = "hasCompletedGoalSetup"
+    static let hasCompletedDashboardTutorial = "hasCompletedDashboardTutorial"
     static let isFoodSuggestionsEnabled = "isFoodSuggestionsEnabled"
     static let commonFoodSeedVersion = "commonFoodSeedVersion"
     static let customProteinRingColor = MacroRingColorStorage.proteinKey

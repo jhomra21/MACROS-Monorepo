@@ -19,6 +19,7 @@ extension DashboardScreen {
                 toolbarIcon("gearshape", label: "Open settings", action: onOpenSettings)
             }
             .foregroundStyle(.primary)
+            .disabled(tutorial.isRunning)
         }
     }
 
