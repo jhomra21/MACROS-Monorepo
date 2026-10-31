@@ -1,0 +1,17 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 14 nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "_TtGC7SwiftUI32NavigationStackHosting"
+@e3 [text] "Today"
+@e4 [button] "Share daily summary" [disabled]
+@e5 [button] "Open insights" [disabled]
+@e6 [button] "Open history" [disabled]
+@e7 [button] "Open settings" [disabled]
+@e8 [scroll-area] [scrollable]
+@e9 [text] "See your sharing circle"
+@e10 [text] "Swipe left on your rings to open Sharing."
+@e11 [button] "Skip"
+@e12 [text] "1 of 4"
+@e13 [button] "Do it for me"
+@e14 [toolbar] "Toolbar"
