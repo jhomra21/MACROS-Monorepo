@@ -82,9 +82,10 @@ private struct OnboardingWelcomeScreen: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
                     }
                     .padding(.vertical, 32)
-                    .frame(minHeight: geometry.size.height, alignment: .center)
+                    .frame(maxWidth: .infinity, minHeight: geometry.size.height)
                 }
                 .scrollBounceBehavior(.basedOnSize)
             }
