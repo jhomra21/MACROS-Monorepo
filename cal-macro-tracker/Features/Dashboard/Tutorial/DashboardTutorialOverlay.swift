@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct SpotlightShape: Shape {
-    static let cornerRadius: CGFloat = 24
-
     var cutout: CGRect
 
     var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>> {
@@ -16,7 +14,7 @@ struct SpotlightShape: Shape {
 
     func path(in rect: CGRect) -> Path {
         var path = Path(rect)
-        path.addRoundedRect(in: cutout, cornerSize: CGSize(width: Self.cornerRadius, height: Self.cornerRadius))
+        path.addRoundedRect(in: cutout, cornerSize: CGSize(width: 24, height: 24))
         return path
     }
 }
@@ -25,7 +23,6 @@ struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.colorScheme) private var colorScheme
 
     let step: DashboardTutorial.Step
     /// Global position of this overlay's top-left corner; tutorial frames are global.
@@ -56,22 +53,11 @@ struct DashboardTutorialOverlay: View {
 
         ZStack {
             SpotlightShape(cutout: cutout)
-                .fill(.black.opacity(colorScheme == .dark ? 0.72 : 0.55), style: FillStyle(eoFill: true))
+                .fill(.black.opacity(0.55), style: FillStyle(eoFill: true))
                 .contentShape(SpotlightShape(cutout: cutout), eoFill: true)
                 .gesture(DragGesture(minimumDistance: 0))
                 .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
                 .accessibilityHidden(true)
-
-            if !cutout.isEmpty {
-                RoundedRectangle(cornerRadius: SpotlightShape.cornerRadius)
-                    .strokeBorder(.white.opacity(colorScheme == .dark ? 0.9 : 0.8), lineWidth: 2)
-                    .shadow(color: .white.opacity(colorScheme == .dark ? 0.45 : 0.25), radius: 8)
-                    .frame(width: cutout.width, height: cutout.height)
-                    .position(x: cutout.midX, y: cutout.midY)
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
-                    .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: cutout)
-            }
 
             if step != .done {
                 TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
