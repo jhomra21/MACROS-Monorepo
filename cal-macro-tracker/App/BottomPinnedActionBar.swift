@@ -21,6 +21,7 @@ struct BottomPinnedActionBar: View {
     var bottomOffset: CGFloat = 0
     var transitionSourceID: String? = nil
     var transitionNamespace: Namespace.ID? = nil
+    var edgeFadeColor: Color = PlatformColors.systemBackground
     let action: () -> Void
 
     @State private var isKeyboardVisible = false
@@ -34,7 +35,7 @@ struct BottomPinnedActionBar: View {
     }
 
     var body: some View {
-        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
+        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset, fadeColor: edgeFadeColor) {
             buttonContent
         }
         .bottomPinnedKeyboardVisibility($isKeyboardVisible)
@@ -219,10 +220,7 @@ struct AppAccentActionLabel: View {
 
     var body: some View {
         HStack(spacing: isCompact ? 0 : 8) {
-            if isLoading {
-                ProgressView()
-                    .tint(.white)
-            } else if let systemImage {
+            if let systemImage {
                 filledIcon(systemImage)
             } else if isCompact {
                 Text(title.prefix(1))
@@ -235,6 +233,11 @@ struct AppAccentActionLabel: View {
                     .foregroundStyle(.white.opacity(0.82))
                     .transition(.opacity)
             }
+        }
+        // The spinner overlays the label, which keeps its space, so the title does not shift when loading starts.
+        .opacity(isLoading ? 0 : 1)
+        .overlay {
+            if isLoading { ProgressView().tint(.white) }
         }
         .frame(maxWidth: .infinity)
     }
@@ -251,11 +254,12 @@ struct AppAccentActionLabel: View {
 struct BottomPinnedActionContainer<Content: View>: View {
     let height: CGFloat
     let bottomOffset: CGFloat
+    var fadeColor: Color = PlatformColors.systemBackground
     @ViewBuilder let content: Content
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            BottomPinnedEdgeFade()
+            BottomPinnedEdgeFade(color: fadeColor)
             content.offset(y: bottomOffset)
         }
         .frame(height: height, alignment: .bottom)
@@ -263,21 +267,19 @@ struct BottomPinnedActionContainer<Content: View>: View {
 }
 
 private struct BottomPinnedEdgeFade: View {
+    let color: Color
+
     var body: some View {
         LinearGradient(
             stops: [
-                .init(color: bottomColor.opacity(0), location: 0),
-                .init(color: bottomColor.opacity(0.72), location: 0.52),
-                .init(color: bottomColor, location: 1)
+                .init(color: color.opacity(0), location: 0),
+                .init(color: color.opacity(0.72), location: 0.52),
+                .init(color: color, location: 1)
             ],
             startPoint: .top,
             endPoint: .bottom
         )
         .ignoresSafeArea(.container, edges: .bottom)
         .allowsHitTesting(false)
-    }
-
-    private var bottomColor: Color {
-        PlatformColors.systemBackground
     }
 }

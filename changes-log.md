@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-31 Pre-submission polish
+
+- Tutorial: the spotlight morphs only on step changes, tracks moving targets without lag, and collapses until the current target has a rect; static focus outline; caption text updates in place; full-height caption fallback in landscape and AX sizes; Dashboard scrolls to the rings on start; readiness is stored; 44 pt Skip/action targets; Reduce Motion gating. Camera: only barcode and label results freeze the viewport, layout animates on panel kind rather than content, the barcode capture task is tracked and cancelled.
+- Onboarding now uses one shared `OnboardingHeader` (static symbol, title, subtitle) and one set of insets, spacing and card radius on every step, with the pinned bar's fade matching the grouped background and no spinner shift. Welcome animates its rings once, Reminders keeps Back (hidden only while the permission request runs) and has no bounce, the locked "More reminders" card is a real button, and Your targets stacks its macro columns at accessibility sizes.
+- Validation: format/diff checks, iPhone 17 frame captures and screenshots, and the serial non-StoreKit iPad suite (198 tests, 0 failures) passed; dark-mode onboarding captures were not obtained (see report).
+
 ## 2026-10-31 TestFlight Build 19
 
 - Welcome screen content centered again after build 18 shifted it left.

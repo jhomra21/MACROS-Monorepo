@@ -204,12 +204,24 @@ struct BodyProfileFormScreen: View {
         VStack(spacing: 0) {
             Form {
                 Section {
+                    OnboardingHeader(
+                        symbol: "person.crop.circle", title: "About you",
+                        subtitle: "Get a starting point based on your body and routine."
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: 0, leading: OnboardingLayout.horizontalInset,
+                            bottom: OnboardingLayout.headerSpacing - 8, trailing: OnboardingLayout.horizontalInset))
+
                     profileInputRows
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
-                } header: {
-                    Text("About you")
+                        .listRowInsets(
+                            EdgeInsets(
+                                top: 8, leading: OnboardingLayout.horizontalInset, bottom: 8,
+                                trailing: OnboardingLayout.horizontalInset))
                 }
 
                 Section("Activity") {
@@ -249,14 +261,15 @@ struct BodyProfileFormScreen: View {
             }
             BottomPinnedActionBar(
                 title: "Review targets", systemImage: nil, isDisabled: !isValid,
+                edgeFadeColor: PlatformColors.groupedBackground,
                 action: {
                     dismissKeyboard($focusedField)
                     onContinue()
                 }
             )
-            .padding(.horizontal, 16)
         }
-        .navigationTitle("About you")
+        .background(PlatformColors.groupedBackground)
+        .navigationTitle("")
         .inlineNavigationTitle()
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: keyboardFields)
@@ -272,7 +285,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Sex")
             .padding(12)
-            .appCardBackground(cornerRadius: 18)
+            .appCardBackground(cornerRadius: 20)
 
             profileNumericRow("Age", value: $profile.ageText, suffix: "years", field: .age)
             if profile.ageText.isEmpty {
@@ -305,7 +318,7 @@ struct BodyProfileFormScreen: View {
                 .padding(.vertical, 12)
                 .frame(minHeight: rowMinHeight)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .appCardBackground(cornerRadius: 18)
+                .appCardBackground(cornerRadius: 20)
             }
             profileNumericRow(
                 "Weight",
@@ -326,7 +339,7 @@ struct BodyProfileFormScreen: View {
             .pickerStyle(.segmented)
             .accessibilityLabel("Units")
             .padding(12)
-            .appCardBackground(cornerRadius: 18)
+            .appCardBackground(cornerRadius: 20)
         }
     }
 
@@ -352,7 +365,7 @@ struct BodyProfileFormScreen: View {
         .padding(.vertical, 12)
         .frame(minHeight: rowMinHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appCardBackground(cornerRadius: 18)
+        .appCardBackground(cornerRadius: 20)
         .accessibilityLabel(title)
     }
 

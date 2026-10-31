@@ -7,6 +7,7 @@ struct TargetReviewScreen: View {
     @Binding var profile: BodyProfileDraft
     let onComplete: () -> Void
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var macroPreset: GoalMacroPreset = .balanced
     @State private var errorMessage: String?
     @State private var completionFeedbackToken = 0
@@ -38,103 +39,114 @@ struct TargetReviewScreen: View {
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
-                VStack(spacing: 24) {
-                    if let calculatedTarget, let calculatedGoals {
-                        let proposedGoals = MacroGoalsSnapshot(
-                            calorieGoal: calculatedGoals.calorieGoal,
-                            proteinGoalGrams: calculatedGoals.proteinGoalGrams,
-                            fatGoalGrams: calculatedGoals.fatGoalGrams,
-                            carbGoalGrams: calculatedGoals.carbGoalGrams
-                        )
-                        VStack(spacing: 4) {
-                            Text("Daily calorie target")
-                                .font(.headline)
-                                .foregroundStyle(.secondary)
-                            Text("\(Int(calculatedGoals.calorieGoal.rounded()))")
-                                .font(.system(size: calorieFontSize, weight: .bold, design: .rounded))
-                            Text("kcal")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(.top, 28)
-
-                        HStack(spacing: 8) {
-                            ForEach(MacroMetric.allCases) { metric in
-                                MacroSummaryColumnView(
-                                    metric: metric,
-                                    totals: .zero,
-                                    goals: proposedGoals,
-                                    titleStyle: .full,
-                                    style: .dashboardCard
-                                )
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .accessibilityElement(children: .ignore)
-                        .accessibilityLabel(
-                            "Proposed goals: \(Int(calculatedGoals.calorieGoal)) calories, "
-                                + "\(Int(calculatedGoals.proteinGoalGrams)) grams protein, "
-                                + "\(Int(calculatedGoals.carbGoalGrams)) grams carbs, "
-                                + "\(Int(calculatedGoals.fatGoalGrams)) grams fat"
-                        )
-
-                        Picker("Macro balance", selection: $macroPreset) {
-                            ForEach([GoalMacroPreset.balanced, .highProtein, .lowCarb], id: \.self) { preset in
-                                Text(preset.title).tag(preset)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .padding(.horizontal, 20)
-
-                        if calculatedTarget.isBelowSafeMinimum {
-                            Label(
-                                "This estimate was raised to a safe minimum of \(Int(calculatedTarget.calories)) kcal.",
-                                systemImage: "info.circle"
-                            )
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal)
-                        }
-
-                        Text("Targets are estimates, not medical advice. Check with a doctor before making health decisions.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
-
-                        NavigationLink {
-                            GoalSetupScreen(
-                                initialDraft: calculatedGoals,
-                                bodyProfile: profile.makeProfile(preset: macroPreset),
-                                onComplete: onComplete
-                            )
-                        } label: {
-                            Text("Adjust manually")
-                                .font(.body.weight(.semibold))
-                                .frame(maxWidth: .infinity)
-                        }
-                        .padding(.horizontal, 20)
-                    } else {
-                        ContentUnavailableView("Check your details", systemImage: "exclamationmark.circle")
-                    }
+                VStack(spacing: OnboardingLayout.headerSpacing) {
+                    OnboardingHeader(
+                        symbol: "target", title: "Your targets", subtitle: "A starting point you can adjust anytime.")
+                    targetContent
                 }
+                .padding(.horizontal, OnboardingLayout.horizontalInset)
+                .padding(.vertical, OnboardingLayout.verticalPadding)
             }
             BottomPinnedActionBar(
                 title: "Continue",
                 systemImage: nil,
                 isDisabled: calculatedGoals == nil,
+                edgeFadeColor: PlatformColors.groupedBackground,
                 action: saveTargets
             )
-            .padding(.horizontal, 16)
         }
         .background(PlatformColors.groupedBackground)
-        .navigationTitle("Your targets")
+        .navigationTitle("")
         .inlineNavigationTitle()
         .errorBanner(message: $errorMessage)
         .sensoryFeedback(.success, trigger: completionFeedbackToken)
         .onAppear {
             if let savedProfile = try? BodyProfileRepository.activeProfile(modelContext: modelContext) {
                 macroPreset = savedProfile.macroPreset
+            }
+        }
+    }
+
+    private var macroColumnLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: OnboardingLayout.cardSpacing))
+            : AnyLayout(HStackLayout(spacing: 8))
+    }
+
+    @ViewBuilder
+    private var targetContent: some View {
+        VStack(spacing: 24) {
+            if let calculatedTarget, let calculatedGoals {
+                let proposedGoals = MacroGoalsSnapshot(
+                    calorieGoal: calculatedGoals.calorieGoal,
+                    proteinGoalGrams: calculatedGoals.proteinGoalGrams,
+                    fatGoalGrams: calculatedGoals.fatGoalGrams,
+                    carbGoalGrams: calculatedGoals.carbGoalGrams
+                )
+                VStack(spacing: 4) {
+                    Text("Daily calorie target")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                    Text("\(Int(calculatedGoals.calorieGoal.rounded()))")
+                        .font(.system(size: calorieFontSize, weight: .bold, design: .rounded))
+                    Text("kcal")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                macroColumnLayout {
+                    ForEach(MacroMetric.allCases) { metric in
+                        MacroSummaryColumnView(
+                            metric: metric,
+                            totals: .zero,
+                            goals: proposedGoals,
+                            titleStyle: .full,
+                            style: .dashboardCard
+                        )
+                    }
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(
+                    "Proposed goals: \(Int(calculatedGoals.calorieGoal)) calories, "
+                        + "\(Int(calculatedGoals.proteinGoalGrams)) grams protein, "
+                        + "\(Int(calculatedGoals.carbGoalGrams)) grams carbs, "
+                        + "\(Int(calculatedGoals.fatGoalGrams)) grams fat"
+                )
+
+                Picker("Macro balance", selection: $macroPreset) {
+                    ForEach([GoalMacroPreset.balanced, .highProtein, .lowCarb], id: \.self) { preset in
+                        Text(preset.title).tag(preset)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                if calculatedTarget.isBelowSafeMinimum {
+                    Label(
+                        "This estimate was raised to a safe minimum of \(Int(calculatedTarget.calories)) kcal.",
+                        systemImage: "info.circle"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
+
+                Text("Targets are estimates, not medical advice. Check with a doctor before making health decisions.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                NavigationLink {
+                    GoalSetupScreen(
+                        initialDraft: calculatedGoals,
+                        bodyProfile: profile.makeProfile(preset: macroPreset),
+                        onComplete: onComplete
+                    )
+                } label: {
+                    Text("Adjust manually")
+                        .font(.body.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                }
+            } else {
+                ContentUnavailableView("Check your details", systemImage: "exclamationmark.circle")
             }
         }
     }
