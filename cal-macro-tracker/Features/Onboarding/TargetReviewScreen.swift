@@ -96,13 +96,7 @@ struct TargetReviewScreen: View {
 
                 macroColumnLayout {
                     ForEach(MacroMetric.allCases) { metric in
-                        MacroSummaryColumnView(
-                            metric: metric,
-                            totals: .zero,
-                            goals: proposedGoals,
-                            titleStyle: .full,
-                            style: .dashboardCard
-                        )
+                        macroColumn(metric, goals: proposedGoals)
                     }
                 }
                 .accessibilityElement(children: .ignore)
@@ -149,6 +143,20 @@ struct TargetReviewScreen: View {
                 ContentUnavailableView("Check your details", systemImage: "exclamationmark.circle")
             }
         }
+    }
+
+    private func macroColumn(_ metric: MacroMetric, goals: MacroGoalsSnapshot) -> some View {
+        VStack(spacing: 4) {
+            Text("\(metric.goal(from: goals).roundedForDisplay) g")
+                .font(.title2.weight(.bold))
+                .fontDesign(.rounded)
+                .monospacedDigit()
+            HStack(spacing: 6) {
+                Circle().fill(metric.accentColor).frame(width: 8, height: 8)
+                Text(metric.title).font(.subheadline).foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private func saveTargets() {
