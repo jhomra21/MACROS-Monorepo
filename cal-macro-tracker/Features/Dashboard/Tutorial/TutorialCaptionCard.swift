@@ -119,9 +119,9 @@ struct TutorialDoneCard: View {
                 .padding(.top, 6)
 
             VStack(spacing: 12) {
-                Label("Swipe left for Sharing", systemImage: "hand.draw")
-                Label("Swipe right for past days", systemImage: "calendar")
-                Label("Tap the rings for details", systemImage: "chart.pie")
+                Label("Swipe left for Sharing", systemImage: "hand.point.left")
+                Label("Swipe right for past days", systemImage: "hand.point.right")
+                Label("Tap the rings for details", systemImage: "hand.tap")
             }
             .font(.body)
             .foregroundStyle(.secondary)
