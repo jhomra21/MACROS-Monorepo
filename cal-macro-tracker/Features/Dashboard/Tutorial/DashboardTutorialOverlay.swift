@@ -87,35 +87,29 @@ struct DashboardTutorialOverlay: View {
         let card = TutorialCaptionCard(step: step, onAction: step == .done ? nil : onAction)
             .padding(.horizontal, 20)
             .frame(maxWidth: .infinity)
-
-        if step == .done || cutout.isEmpty {
-            ScrollView {
-                card
+        let isFullHeight = step == .done || cutout.isEmpty
+        let above = max(0, cutout.minY - safeAreaInsets.top - 12)
+        let below = max(0, size.height - safeAreaInsets.bottom - cutout.maxY - 12)
+        let placeBelow = below >= above
+        let regionHeight =
+            if isFullHeight {
+                size.height - safeAreaInsets.top - safeAreaInsets.bottom
+            } else {
+                placeBelow ? below : above
             }
-            .scrollDisabled(false)
-            .scrollIndicators(.hidden)
-            .frame(
-                height: size.height - safeAreaInsets.top - safeAreaInsets.bottom,
-                alignment: .center
-            )
-            .position(x: size.width / 2, y: (safeAreaInsets.top + size.height - safeAreaInsets.bottom) / 2)
-        } else {
-            let above = max(0, cutout.minY - safeAreaInsets.top - 12)
-            let below = max(0, size.height - safeAreaInsets.bottom - cutout.maxY - 12)
-            let placeBelow = below >= above
-            let regionHeight = placeBelow ? below : above
-            let regionCenterY =
-                placeBelow
-                ? cutout.maxY + 12 + below / 2
-                : safeAreaInsets.top + above / 2
-            ScrollView {
-                card
+        let regionCenterY =
+            if isFullHeight {
+                (safeAreaInsets.top + size.height - safeAreaInsets.bottom) / 2
+            } else {
+                placeBelow ? cutout.maxY + 12 + below / 2 : safeAreaInsets.top + above / 2
             }
-            .scrollDisabled(false)
-            .scrollIndicators(.hidden)
-            .frame(height: regionHeight)
-            .position(x: size.width / 2, y: regionCenterY)
+        ScrollView {
+            card
         }
+        .scrollDisabled(false)
+        .scrollIndicators(.hidden)
+        .frame(height: regionHeight)
+        .position(x: size.width / 2, y: regionCenterY)
     }
 }
 

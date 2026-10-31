@@ -55,101 +55,99 @@ struct DashboardScreen: View {
     }
 
     var body: some View {
-        LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
-            let customRingPalette = customRingPalette
+        GeometryReader { safeAreaProxy in
+            LogEntryDaySnapshotReader(day: daySelection.selectedDay) { snapshot in
+                let customRingPalette = customRingPalette
 
-            ZStack(alignment: .top) {
-                dashboardList(snapshot: snapshot, customRingPalette: customRingPalette)
+                ZStack(alignment: .top) {
+                    dashboardList(snapshot: snapshot, customRingPalette: customRingPalette)
 
-                if daySelection.selectedDay != dayContext.today {
-                    todayReturnRow
-                        .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
-                        .zIndex(2)
-                }
+                    if daySelection.selectedDay != dayContext.today {
+                        todayReturnRow
+                            .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
+                            .zIndex(2)
+                    }
 
-                if showsCompactSummary {
-                    pinnedCompactSummaryView(totals: snapshot.totals, customRingPalette: customRingPalette)
-                        .transition(.opacity)
-                        .zIndex(1)
-                }
-            }
-            .navigationTitle("")
-            .inlineNavigationTitle()
-            .accessibilityElement(children: tutorial.isRunning ? .ignore : .contain)
-            .accessibilityHidden(tutorial.isRunning)
-            .tutorialAccessibilityMask(tutorial.isRunning)
-            .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
-                ZStack {
-                    Color.clear
-                        .allowsHitTesting(false)
-                        .onChange(of: anchors[.ringPanel] != nil, initial: true) { _, isReady in
-                            tutorial.isDashboardReady = isReady
-                        }
-                    if let step = tutorial.step, step != .returnFromSharing {
-                        GeometryReader { proxy in
-                            DashboardTutorialOverlay(
-                                step: step,
-                                targetRect: step.target.flatMap { anchors[$0] }.map { proxy[$0] },
-                                size: proxy.size,
-                                safeAreaInsets: proxy.safeAreaInsets,
-                                onAction: performTutorialAction
-                            )
-                        }
-                        .ignoresSafeArea()
+                    if showsCompactSummary {
+                        pinnedCompactSummaryView(totals: snapshot.totals, customRingPalette: customRingPalette)
+                            .transition(.opacity)
+                            .zIndex(1)
                     }
                 }
+                .navigationTitle("")
+                .inlineNavigationTitle()
+                .accessibilityHidden(tutorial.isRunning)
+                .overlayPreferenceValue(TutorialTargetKey.self) { anchors in
+                    ZStack {
+                        Color.clear
+                            .allowsHitTesting(false)
+                            .onChange(of: anchors[.ringPanel] != nil, initial: true) { _, isReady in
+                                tutorial.isDashboardReady = isReady
+                            }
+                        if let step = tutorial.step, step != .returnFromSharing {
+                            GeometryReader { proxy in
+                                DashboardTutorialOverlay(
+                                    step: step,
+                                    targetRect: step.target.flatMap { anchors[$0] }.map { proxy[$0] },
+                                    size: proxy.size,
+                                    safeAreaInsets: safeAreaProxy.safeAreaInsets,
+                                    onAction: performTutorialAction
+                                )
+                            }
+                            .ignoresSafeArea()
+                        }
+                    }
+                }
+                .onChange(of: daySelection.selectedDay) { _, day in
+                    tutorial.didChangeDay(isToday: day == dayContext.today)
+                }
+                .onChange(of: isMacroRingExpanded) { _, isExpanded in
+                    if isExpanded { tutorial.didExpandRing() }
+                }
+                .onChange(of: selectedMacro) { _, metric in
+                    if let metric { tutorial.didSelectMacro(metric) }
+                }
+                .onChange(of: tutorial.step) { _, step in
+                    normalizeState(for: step)
+                }
+                .scrollDisabled(tutorial.isRunning)
+                .animation(.easeOut(duration: 0.18), value: showsCompactSummary)
+                .onAppear {
+                    guard daySelection.followsCurrentDay else { return }
+                    daySelection.resetToToday(dayContext.today)
+                }
+                .onChange(of: dayContext.today) { oldToday, newToday in
+                    daySelection.syncToday(from: oldToday, to: newToday)
+                }
+                .toolbar {
+                    AppTopBarLeadingTitle(
+                        daySelection.selectedDay.topBarTitle,
+                        compactTitle: daySelection.selectedDay.dayTitle
+                    )
+                    dashboardToolbarTrailing(snapshot: snapshot)
+                }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    dashboardBottomBar
+                }
+                .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
+                .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
+                .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
+                .errorBanner(message: $errorMessage)
+                #if os(iOS)
+                .sheet(item: $shareSheetItem) { item in
+                    ShareSheet(itemSource: item.itemSource)
+                }
+                .alert(item: $shareFailureRequest) { request in
+                    Alert(
+                        title: Text("Something went wrong sharing."),
+                        primaryButton: .default(Text("Retry")) {
+                            prepareShare(day: request.day, snapshot: request.snapshot)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
+                #endif
             }
-            .onChange(of: daySelection.selectedDay) { _, day in
-                tutorial.didChangeDay(isToday: day == dayContext.today)
-            }
-            .onChange(of: isMacroRingExpanded) { _, isExpanded in
-                if isExpanded { tutorial.didExpandRing() }
-            }
-            .onChange(of: selectedMacro) { _, metric in
-                if let metric { tutorial.didSelectMacro(metric) }
-            }
-            .onChange(of: tutorial.step) { _, step in
-                normalizeState(for: step)
-            }
-            .scrollDisabled(tutorial.isRunning)
-            .animation(.easeOut(duration: 0.18), value: showsCompactSummary)
-            .onAppear {
-                guard daySelection.followsCurrentDay else { return }
-                daySelection.resetToToday(dayContext.today)
-            }
-            .onChange(of: dayContext.today) { oldToday, newToday in
-                daySelection.syncToday(from: oldToday, to: newToday)
-            }
-            .toolbar {
-                AppTopBarLeadingTitle(
-                    daySelection.selectedDay.topBarTitle,
-                    compactTitle: daySelection.selectedDay.dayTitle
-                )
-                dashboardToolbarTrailing(snapshot: snapshot)
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                dashboardBottomBar
-                    .accessibilityElement(children: tutorial.isRunning ? .ignore : .contain)
-                    .accessibilityHidden(tutorial.isRunning)
-            }
-            .sensoryFeedback(.success, trigger: logAgainFeedbackToken)
-            .sensoryFeedback(.impact(weight: .medium), trigger: deleteFeedbackToken)
-            .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
-            .errorBanner(message: $errorMessage)
-            #if os(iOS)
-            .sheet(item: $shareSheetItem) { item in
-                ShareSheet(itemSource: item.itemSource)
-            }
-            .alert(item: $shareFailureRequest) { request in
-                Alert(
-                    title: Text("Something went wrong sharing."),
-                    primaryButton: .default(Text("Retry")) {
-                        prepareShare(day: request.day, snapshot: request.snapshot)
-                    },
-                    secondaryButton: .cancel()
-                )
-            }
-            #endif
         }
     }
 
@@ -206,7 +204,6 @@ struct DashboardScreen: View {
             updateCompactSummaryVisibility(for: newOffset)
             updateAddFoodButtonDisplay(for: newOffset)
         }
-        .accessibilityHidden(tutorial.isRunning)
     }
 
     @ViewBuilder
@@ -228,7 +225,7 @@ struct DashboardScreen: View {
             onEditEntry: onEditEntry,
             onLogAgain: logEntryAgain
         )
-        .accessibilityHidden(tutorial.isRunning)
+        .allowsHitTesting(!tutorial.isRunning)
     }
 
     @ViewBuilder
@@ -245,7 +242,6 @@ struct DashboardScreen: View {
         .padding(.top, 8)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
-        .accessibilityHidden(tutorial.isRunning)
 
         MacroLegendView(
             totals: snapshot.totals,
@@ -258,9 +254,10 @@ struct DashboardScreen: View {
         .tutorialTarget(.legend)
         .dashboardListRow(bottom: 0)
         .dashboardDaySwipe(dayNavigationGesture)
-        .accessibilityHidden(tutorial.isRunning)
 
-        LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights).dashboardListRow(bottom: 8)
+        LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
+            .dashboardListRow(bottom: 8)
+            .allowsHitTesting(!tutorial.isRunning)
 
         if isMacroRingExpanded {
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
@@ -268,6 +265,7 @@ struct DashboardScreen: View {
                 .dashboardListRow(bottom: 8)
                 .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
                 .dashboardDaySwipe(dayNavigationGesture)
+                .allowsHitTesting(!tutorial.isRunning)
         }
     }
 
@@ -367,7 +365,6 @@ struct DashboardScreen: View {
         .frame(maxWidth: .infinity)
         .disabled(tutorial.isRunning)
         .accessibilityHidden(tutorial.isRunning)
-        .tutorialAccessibilityMask(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -470,24 +467,5 @@ struct DashboardScreen: View {
         case .fat:
             $customFatRingColor
         }
-    }
-}
-
-private struct TutorialAccessibilityMask: ViewModifier {
-    let isRunning: Bool
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if isRunning {
-            content.accessibilityRepresentation { EmptyView() }
-        } else {
-            content
-        }
-    }
-}
-
-private extension View {
-    func tutorialAccessibilityMask(_ isRunning: Bool) -> some View {
-        modifier(TutorialAccessibilityMask(isRunning: isRunning))
     }
 }
