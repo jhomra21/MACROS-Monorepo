@@ -25,8 +25,9 @@ extension FoodCameraSheet {
             if let scanner = scannerController?.scanner, scanner.isScanning {
                 photo = try? await scanner.capturePhoto()
             }
-            guard barcodeCaptureID == id, flow.phase == .scanning else { return }
+            guard barcodeCaptureID == id else { return }
             barcodeCaptureID = nil
+            guard flow.phase == .scanning else { return }
             frozenImage = photo.map(Self.screenSizedStill)
             send(.barcodeRecognized(barcode))
         }
