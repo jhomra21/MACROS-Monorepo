@@ -14,7 +14,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-10-31 Camera Card Polish
 
 - Redesign: camera results reuse the shared food nutrition row with a 44 pt daily-goal ring, servings/total-weight text and an accessibility-size stacked fallback; center the hint row and remove its extra top inset. Shared-row padding stays 16 pt by default, unchanged for existing Dashboard and Add Food rows.
-- Validation: iPhone Air dark/light screenshots and the Dashboard/Add Food row comparison captured under `build/camera-card-polish/`; Debug build, format check, `git diff --check`, and serial non-StoreKit simulator suite passed (198 tests, 0 failures). Barcode lookup could not connect, so card screenshots use the oat-crunch label fixture.
+- Validation: iPhone Air dark/light screenshots and the Dashboard/Add Food row comparison captured under `build/camera-card-polish/`; Debug build, format check, `git diff --check`, and serial non-StoreKit simulator suite passed (198 tests, 0 failures). Barcode lookup could not connect, so card screenshots use the oat-crunch label fixture. Follow-up fixes compute consumed nutrition once, share the stacked row, normalize serving text and quantities, and keep the camera viewport/card dark in light appearance.
 
 ## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
 

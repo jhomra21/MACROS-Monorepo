@@ -29,8 +29,8 @@ struct FoodCameraResultPanel: View {
         }
     }
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let content: Content
     let goals: MacroGoalsSnapshot
@@ -109,6 +109,12 @@ struct FoodCameraResultPanel: View {
         notes: [String] = [],
         missingNutrients: [RequiredNutritionReviewNutrient] = []
     ) -> some View {
+        let totals = NutritionSnapshot(
+            calories: draft.caloriesPerServing * servings,
+            protein: draft.proteinPerServing * servings,
+            fat: draft.fatPerServing * servings,
+            carbs: draft.carbsPerServing * servings
+        )
         if logged {
             VStack(alignment: .leading, spacing: 4) {
                 Label {
@@ -118,15 +124,17 @@ struct FoodCameraResultPanel: View {
                 }
                 .font(.headline)
                 Text(draft.name).foregroundStyle(.secondary)
-                Text(
-                    "\(servingDescription(draft, servings: servings) ?? "\(servings.roundedForDisplay) servings") · \((draft.caloriesPerServing * servings).roundedForDisplay) kcal"
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+                let quantity = "\(servings.roundedForDisplay) \(servings == 1 ? "serving" : "servings")"
+                let summary =
+                    ([quantity, servingDescription(draft, servings: servings)].compactMap { $0 }
+                    + ["\(totals.calories.roundedForDisplay) kcal"]).joined(separator: " · ")
+                Text(summary)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         } else {
             VStack(alignment: .leading, spacing: 0) {
-                foodNutritionRow(draft, servings: servings, isLabel: isLabel)
+                foodNutritionRow(draft, isLabel: isLabel, totals: totals)
                     .accessibilityElement(children: isLabel ? .contain : .combine)
                     .padding(.bottom, 14)
                 ForEach(Array(notes.enumerated()), id: \.offset) { _, note in
@@ -154,14 +162,9 @@ struct FoodCameraResultPanel: View {
         }
     }
 
-    private func macroRing(_ draft: FoodDraft, servings: Double) -> some View {
+    private func macroRing(_ totals: NutritionSnapshot) -> some View {
         MacroRingSetView(
-            totals: NutritionSnapshot(
-                calories: draft.caloriesPerServing * servings,
-                protein: draft.proteinPerServing * servings,
-                fat: draft.fatPerServing * servings,
-                carbs: draft.carbsPerServing * servings
-            ),
+            totals: totals,
             goals: goals,
             ringDiameter: 44,
             centerValueFontSize: nil,
@@ -172,36 +175,25 @@ struct FoodCameraResultPanel: View {
     }
 
     @ViewBuilder
-    private func foodNutritionRow(_ draft: FoodDraft, servings: Double, isLabel: Bool) -> some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            VStack(alignment: .leading, spacing: 8) {
-                foodTitle(draft, isLabel: isLabel)
-                if isLabel == false, draft.brand.isEmpty == false {
-                    Text(draft.brand)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                Text("\((draft.caloriesPerServing * servings).roundedForDisplay) kcal")
-                    .font(.headline.weight(.semibold))
-                Text(
-                    "P \((draft.proteinPerServing * servings).roundedForDisplay) • C \((draft.carbsPerServing * servings).roundedForDisplay) • F \((draft.fatPerServing * servings).roundedForDisplay)"
-                )
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+    private func foodNutritionRow(
+        _ draft: FoodDraft,
+        isLabel: Bool,
+        totals: NutritionSnapshot
+    ) -> some View {
+        HStack {
+            if dynamicTypeSize.isAccessibilitySize == false {
+                macroRing(totals)
             }
-        } else {
-            HStack(alignment: .center, spacing: 12) {
-                macroRing(draft, servings: servings)
-                FoodNutritionRow(
-                    subtitle: isLabel ? nil : draft.brand.isEmpty ? nil : draft.brand,
-                    calories: draft.caloriesPerServing * servings,
-                    protein: draft.proteinPerServing * servings,
-                    carbs: draft.carbsPerServing * servings,
-                    fat: draft.fatPerServing * servings,
-                    verticalPadding: 0
-                ) {
-                    foodTitle(draft, isLabel: isLabel)
-                }
+            FoodNutritionRow(
+                subtitle: isLabel ? nil : draft.brand.isEmpty ? nil : draft.brand,
+                calories: totals.calories,
+                protein: totals.protein,
+                carbs: totals.carbs,
+                fat: totals.fat,
+                verticalPadding: 0,
+                isStacked: dynamicTypeSize.isAccessibilitySize
+            ) {
+                foodTitle(draft, isLabel: isLabel)
             }
         }
     }
@@ -220,19 +212,23 @@ struct FoodCameraResultPanel: View {
     }
 
     private func servingDescription(_ draft: FoodDraft, servings: Double) -> String? {
+        let cleaned = draft.servingDescription.replacingOccurrences(
+            of: #"^\s*serving\s*size\b[:\s-]*"#,
+            with: "",
+            options: [.regularExpression, .caseInsensitive]
+        )
         let description =
-            draft.servingDescription == FoodDraft.defaultServingDescription ? nil : draft.servingDescription
+            cleaned.isEmpty || cleaned == FoodDraft.defaultServingDescription ? nil : cleaned
         let grams = draft.gramsPerServing
         let oneServing: String?
         switch (description, grams) {
         case let (description?, grams?):
-            let gramsText = grams.roundedForDisplay
-            let includesGrams =
-                description.range(
-                    of: "(?<![\\d.])\(NSRegularExpression.escapedPattern(for: gramsText))\\s*g\\b",
-                    options: [.regularExpression, .caseInsensitive]
-                ) != nil
-            oneServing = includesGrams ? description : "\(description) (\(gramsText) g)"
+            let embedded = NutritionLabelParser.firstMatch(
+                in: description,
+                pattern: "\\b\(NutritionLabelParser.capturedNumberPattern)\\s*g\\b"
+            )
+            let includesGrams = embedded.map { abs($0 - grams) < 0.05 } ?? false
+            oneServing = includesGrams ? description : "\(description) (\(grams.roundedForDisplay) g)"
         case let (nil, grams?):
             oneServing = "\(grams.roundedForDisplay) g"
         case let (description?, nil):

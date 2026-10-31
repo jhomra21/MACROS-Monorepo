@@ -8,6 +8,7 @@ struct FoodNutritionRow<Title: View>: View {
     let carbs: Double
     let fat: Double
     var verticalPadding: CGFloat = 16
+    var isStacked: Bool = false
 
     init(
         subtitle: String?,
@@ -16,6 +17,7 @@ struct FoodNutritionRow<Title: View>: View {
         carbs: Double,
         fat: Double,
         verticalPadding: CGFloat = 16,
+        isStacked: Bool = false,
         @ViewBuilder title: () -> Title
     ) {
         self.title = title()
@@ -25,28 +27,40 @@ struct FoodNutritionRow<Title: View>: View {
         self.carbs = carbs
         self.fat = fat
         self.verticalPadding = verticalPadding
+        self.isStacked = isStacked
     }
 
     var body: some View {
-        HStack(spacing: 14) {
-            leftContent
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 6) {
-                Text("\(calories.roundedForDisplay) kcal")
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .monospacedDigit()
-                Text("P \(protein.roundedForDisplay) • C \(carbs.roundedForDisplay) • F \(fat.roundedForDisplay)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+        Group {
+            if isStacked {
+                VStack(alignment: .leading, spacing: 8) {
+                    leftContent
+                    nutritionContent(alignment: .leading)
+                }
+            } else {
+                HStack(spacing: 14) {
+                    leftContent
+                    Spacer()
+                    nutritionContent(alignment: .trailing)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, verticalPadding)
         .contentShape(Rectangle())
+    }
+
+    private func nutritionContent(alignment: HorizontalAlignment) -> some View {
+        VStack(alignment: alignment, spacing: 6) {
+            Text("\(calories.roundedForDisplay) kcal")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(.primary)
+                .monospacedDigit()
+            Text("P \(protein.roundedForDisplay) • C \(carbs.roundedForDisplay) • F \(fat.roundedForDisplay)")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
+        }
     }
 
     @ViewBuilder
@@ -79,7 +93,8 @@ extension FoodNutritionRow where Title == Text {
         protein: Double,
         carbs: Double,
         fat: Double,
-        verticalPadding: CGFloat = 16
+        verticalPadding: CGFloat = 16,
+        isStacked: Bool = false
     ) {
         self.init(
             subtitle: subtitle,
@@ -87,7 +102,8 @@ extension FoodNutritionRow where Title == Text {
             protein: protein,
             carbs: carbs,
             fat: fat,
-            verticalPadding: verticalPadding
+            verticalPadding: verticalPadding,
+            isStacked: isStacked
         ) {
             Text(name)
         }

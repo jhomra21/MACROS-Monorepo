@@ -77,6 +77,7 @@ struct FoodCameraSheet: View {
                 .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
+                .environment(\.colorScheme, .dark)
             }
             .navigationDestination(item: $logDestination) { destination in
                 LogFoodScreen(
