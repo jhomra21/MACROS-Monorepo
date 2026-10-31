@@ -69,6 +69,8 @@ struct FoodCameraSheet: View {
                     stagedResultPanel(maxHeight: geometry.size.height * 0.45)
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
+                .animation(resultAnimation, value: panelContent)
+                .animation(resultAnimation, value: resultContentHeight)
                 .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
@@ -210,7 +212,6 @@ struct FoodCameraSheet: View {
             onLog: logBarcode,
             onDetails: showDetails,
             onReview: showLabelReview,
-            onRetry: resumeScanning,
             onManual: showManualRecovery,
             onSearch: { route = .search },
             showSettings: permissionDenied,
@@ -248,12 +249,26 @@ struct FoodCameraSheet: View {
             .blur(radius: reduceMotion || cameraCardVisible ? 0 : 8)
             .allowsHitTesting(cameraCardVisible)
             .accessibilityHidden(!cameraCardVisible)
-            .animation(resultAnimation, value: panelContent)
-            .animation(resultAnimation, value: resultContentHeight)
     }
 
-    // The measured height lands in a later layout pass than the content change, so it needs its own trigger.
-    private var resultAnimation: Animation? { reduceMotion ? nil : .smooth(duration: 0.3) }
+    // One curve for the card, the viewport and the Scan again overlay; Reduce Motion keeps only a short crossfade.
+    private var resultAnimation: Animation {
+        reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
+    }
+
+    private var resultOverlay: some View {
+        let isLabel = if case .label = result { true } else { false }
+        return Button(action: resumeScanning) {
+            Label(isLabel ? "Retake" : "Scan again", systemImage: "arrow.counterclockwise")
+                .font(.headline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+        }
+        .buttonStyle(.glassProminent)
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
+        .transition(reduceMotion ? .opacity : .scale(scale: 0.9).combined(with: .opacity))
+    }
 
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
         ZStack {
@@ -262,7 +277,15 @@ struct FoodCameraSheet: View {
             preview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(cameraRevealVisible ? 1 : 0)
-                .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
+
+            Color.black.opacity(isResultExpanded && cameraCardVisible ? 0.35 : 0)
+                .allowsHitTesting(false)
+
+            Color.clear.overlay {
+                if isResultExpanded && cameraCardVisible {
+                    resultOverlay
+                }
+            }
 
             VStack {
                 Spacer()

@@ -30,6 +30,7 @@ struct FoodCameraResultPanel: View {
     }
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let content: Content
     let onChangeServings: (Double) -> Void
@@ -37,7 +38,6 @@ struct FoodCameraResultPanel: View {
     let onLog: () -> Void
     let onDetails: () -> Void
     let onReview: () -> Void
-    let onRetry: () -> Void
     let onManual: () -> Void
     let onSearch: () -> Void
     var showSettings: Bool = false
@@ -69,7 +69,7 @@ struct FoodCameraResultPanel: View {
             }
         }
         .id(content.kind)
-        .transition(.blurReplace)
+        .transition(reduceMotion ? AnyTransition.opacity : AnyTransition(.blurReplace))
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(16)
     }
@@ -109,7 +109,7 @@ struct FoodCameraResultPanel: View {
         missingNutrients: [RequiredNutritionReviewNutrient] = []
     ) -> some View {
         if logged {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
                 Label {
                     Text("Logged")
                 } icon: {
@@ -117,7 +117,6 @@ struct FoodCameraResultPanel: View {
                 }
                 .font(.headline)
                 Text(draft.name).foregroundStyle(.secondary)
-                wideButton(isLabel ? "Retake" : "Scan again", action: onRetry)
             }
         } else {
             VStack(alignment: .leading, spacing: 12) {
@@ -149,31 +148,19 @@ struct FoodCameraResultPanel: View {
             isLabel
             ? (draft.servingDescription == FoodDraft.defaultServingDescription ? nil : draft.servingDescription)
             : [draft.brand, draft.servingDescription].filter { $0.isEmpty == false }.joined(separator: " · ")
-        return HStack(alignment: .top, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                if isLabel {
-                    TextField("Name", text: Binding(get: { draft.name }, set: onChangeName))
-                        .font(.headline)
-                        .submitLabel(.done)
-                } else {
-                    Text(draft.name)
-                        .font(.headline)
-                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 2)
-                }
-                if let subtitle {
-                    Text(subtitle).font(.footnote).foregroundStyle(.secondary)
-                }
+        return VStack(alignment: .leading, spacing: 2) {
+            if isLabel {
+                TextField("Name", text: Binding(get: { draft.name }, set: onChangeName))
+                    .font(.headline)
+                    .submitLabel(.done)
+            } else {
+                Text(draft.name)
+                    .font(.headline)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? 3 : 2)
             }
-            Spacer(minLength: 0)
-            Button(action: onRetry) {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.system(size: 17, weight: .semibold))
-                    .frame(width: 44, height: 44)
-                    .glassEffect(.regular.interactive(), in: Circle())
-                    .contentShape(Circle())
+            if let subtitle {
+                Text(subtitle).font(.footnote).foregroundStyle(.secondary)
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isLabel ? "Retake" : "Scan again")
         }
     }
 
@@ -241,9 +228,6 @@ struct FoodCameraResultPanel: View {
             Text(message).font(.subheadline)
             if showSettings {
                 wideButton("Open Settings", action: onSettings)
-                wideButton("Scan again", prominent: false, action: onRetry)
-            } else {
-                wideButton("Scan again", action: onRetry)
             }
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 12) {

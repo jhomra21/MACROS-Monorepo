@@ -11,6 +11,12 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Camera Scan Again Moves Into The Viewport
+
+- Cause: the viewport only moved with the card in the same transaction when the height measurement happened to land with it, and Scan again/Retake lived inside the information card, making it taller and busier.
+- Fix: the `.animation` modifiers (`value: panelContent`, `value: resultContentHeight`) now sit on the VStack holding card and viewport, so both resize in one transaction; one curve (`.smooth(duration: 0.3)`, 0.15 s ease-out crossfade under Reduce Motion). While a result shows, the viewport gets a 0.35 black dim over the preview (not the controls) and a centered glass-prominent "Scan again"/"Retake" button (scale 0.9 + opacity, opacity only with Reduce Motion). The card no longer has any retry button; the live-preview layer has no blur.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures).
+
 ## 2026-10-30 Camera Result Card Morphs From The Hint
 
 - Cause: `resultPanel` swapped an if/else (scrolling card vs. plain panel), so SwiftUI replaced the hint with the card in one frame; the clear cover background let Add Food show through; the Details/Log/Scan again buttons sat at natural widths and wrapped.
