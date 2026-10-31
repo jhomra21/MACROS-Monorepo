@@ -285,24 +285,24 @@ struct FoodCameraSheet: View {
             // Result frozen: recognition is stopped, but the capture session stays running on purpose.
             // DataScannerViewController cannot pause its camera, and tearing it down costs a 0.5-1 s cold start plus
             // the reveal animation on every Scan again, versus a few seconds of sensor time while a result is shown.
-            // A blurred still covers the live feed instead; blurring a static image is cheap, the live layer is never blurred.
-            if let frozenImage, isResultExpanded, cameraCardVisible {
-                Image(uiImage: frozenImage)
-                    .resizable()
-                    .scaledToFill()
-                    .blur(radius: 12)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .clipped()
-                    .allowsHitTesting(false)
-                    .transition(.opacity)
+            // A sharp still covers the live feed instead; the live layer is never blurred.
+            Color.clear.overlay {
+                if let frozenImage, isResultExpanded, cameraCardVisible {
+                    Image(uiImage: frozenImage)
+                        .resizable()
+                        .scaledToFill()
+                        .transition(.opacity)
+                }
             }
+            .clipped()
+            .allowsHitTesting(false)
 
-            Color.black.opacity(isResultExpanded && cameraCardVisible ? 0.35 : 0)
+            Color.black.opacity(isResultExpanded && cameraCardVisible ? 0.2 : 0)
                 .allowsHitTesting(false)
 
-            Color.clear.overlay {
+            Color.clear.overlay(alignment: .top) {
                 if isResultExpanded && cameraCardVisible {
-                    resultOverlay
+                    resultOverlay.padding(.top, 16)
                 }
             }
 
