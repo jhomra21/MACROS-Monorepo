@@ -115,8 +115,9 @@ struct DashboardTutorialOverlay: View {
                     .contentShape(SpotlightShape(spotlight: spotlight, isInverted: true), eoFill: true)
                     .gesture(DragGesture(minimumDistance: 0))
 
-                focusRing(spotlight)
-                    .opacity(step == .done ? 0 : 1)
+                if step != .done {
+                    focusRing(spotlight)
+                }
             }
             .animation(morph, value: spotlight)
             .animation(morph, value: step == .done)

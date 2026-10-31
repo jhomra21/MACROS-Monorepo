@@ -55,33 +55,41 @@ private struct OnboardingWelcomeScreen: View {
     )
 
     var body: some View {
-        VStack(spacing: 28) {
-            Spacer()
-            VStack(spacing: 24) {
-                MacroRingSetView(
-                    totals: heroTotals,
-                    goals: Self.heroGoals,
-                    ringDiameter: heroRingDiameter,
-                    centerValueFontSize: nil,
-                    minimumLineWidth: 10,
-                    showsGoalSubtitle: false
-                )
-                .accessibilityHidden(true)
-                Text(AppBrand.displayName)
-                    .font(.largeTitle.bold())
-                    .multilineTextAlignment(.center)
+        VStack(spacing: 0) {
+            GeometryReader { geometry in
+                ScrollView {
+                    VStack(spacing: 28) {
+                        VStack(spacing: 24) {
+                            MacroRingSetView(
+                                totals: heroTotals,
+                                goals: Self.heroGoals,
+                                ringDiameter: min(heroRingDiameter, 180),
+                                centerValueFontSize: nil,
+                                minimumLineWidth: 10,
+                                showsGoalSubtitle: false
+                            )
+                            .accessibilityHidden(true)
+                            Text(AppBrand.displayName)
+                                .font(.largeTitle.bold())
+                                .multilineTextAlignment(.center)
+                        }
+                        VStack(spacing: 12) {
+                            Label("No account needed", systemImage: "person.crop.circle.badge.checkmark")
+                            Label("Scan or add any food", systemImage: "barcode.viewfinder")
+                            Label("Your data stays on your phone", systemImage: "iphone")
+                        }
+                        .fixedSize(horizontal: false, vertical: true)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    }
+                    .padding(.vertical, 32)
+                    .frame(minHeight: geometry.size.height, alignment: .center)
+                }
+                .scrollBounceBehavior(.basedOnSize)
             }
-            VStack(spacing: 12) {
-                Label("No account needed", systemImage: "person.crop.circle.badge.checkmark")
-                Label("Scan or add any food", systemImage: "barcode.viewfinder")
-                Label("Your data stays on your phone", systemImage: "iphone")
-            }
-            .font(.body)
-            .foregroundStyle(.secondary)
-            Spacer()
             BottomPinnedActionBar(title: "Get Started", systemImage: nil, isDisabled: false, action: onContinue)
         }
-        .padding(.top, 32)
         .background(PlatformColors.groupedBackground)
         .navigationBarBackButtonHidden()
         .onAppear {
