@@ -23,6 +23,7 @@ struct FoodCameraSheet: View {
 
     @State private var cameraRevealVisible = false
     @State private var cameraCardVisible = false
+    @State private var resultContentHeight: CGFloat = 0
     @State private var isCameraDismissalActive = false
     @State var scannerController: FoodCameraScannerController?
     @State var pendingScannerStart = false
@@ -35,9 +36,11 @@ struct FoodCameraSheet: View {
     @State var labelInitialDraft: FoodDraft?
     @State var flow = FoodCameraFlow()
     @State var processingTask: Task<Void, Never>?
+    @State var barcodeCaptureID: UUID?
     @State var useStillCamera = false
     @State var captureImageData: Data?
     @State var pendingImage: UIImage?
+    @State var frozenImage: UIImage?
     @State var pendingImageHadNoBarcode = false
     @State var logDestination: FoodCameraLogDestination?
     @State var storedRecoveryDestination: BarcodeScanLogFoodDestination?
@@ -65,9 +68,12 @@ struct FoodCameraSheet: View {
         NavigationStack {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
-                    stagedResultPanel
+                    stagedResultPanel(maxHeight: geometry.size.height * 0.45)
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
+                .animation(resultAnimation, value: panelContent)
+                .animation(resultAnimation, value: resultContentHeight)
+                .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
                 .toolbar(.hidden, for: .navigationBar)
             }
@@ -169,7 +175,10 @@ struct FoodCameraSheet: View {
             .frame(width: 0, height: 0)
         }
         .onChange(of: isPresented) { _, presented in
-            if presented == false { send(.dismissed) }
+            if presented == false {
+                frozenImage = nil
+                send(.dismissed)
+            }
         }
         .alert(
             "Couldn’t log",
@@ -185,7 +194,7 @@ struct FoodCameraSheet: View {
     }
 
     @ViewBuilder
-    private var resultPanel: some View {
+    private func resultPanel(maxHeight: CGFloat) -> some View {
         let panel = FoodCameraResultPanel(
             content: displayedResult,
             onChangeServings: { amount in
@@ -208,29 +217,27 @@ struct FoodCameraSheet: View {
             onLog: logBarcode,
             onDetails: showDetails,
             onReview: showLabelReview,
-            onRetry: resumeScanning,
             onManual: showManualRecovery,
             onSearch: { route = .search },
             showSettings: permissionDenied,
             onSettings: openSettings
         )
-        if isResultExpanded {
-            ScrollView {
-                panel
-            }
-            .frame(maxHeight: 320)
-            .foregroundStyle(.primary)
-            .padding(.top, 12)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-            .padding(.horizontal, 16)
-            .layoutPriority(2)
-        } else {
+        ScrollView {
             panel
-                .foregroundStyle(.primary)
-                .padding(.top, 12)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24))
-                .padding(.horizontal, 16)
+                .onGeometryChange(for: CGFloat.self) {
+                    $0.size.height
+                } action: {
+                    resultContentHeight = $0
+                }
         }
+        .scrollDisabled(!isResultExpanded)
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(height: min(resultContentHeight, maxHeight))
+        .foregroundStyle(.primary)
+        .padding(.top, 12)
+        .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .padding(.horizontal, 16)
+        .layoutPriority(2)
     }
 
     private var displayedResult: FoodCameraResultPanel.Content {
@@ -240,15 +247,34 @@ struct FoodCameraSheet: View {
         return result
     }
 
-    private var stagedResultPanel: some View {
-        resultPanel
+    private func stagedResultPanel(maxHeight: CGFloat) -> some View {
+        resultPanel(maxHeight: maxHeight)
             .opacity(cameraCardVisible ? 1 : 0)
             .offset(y: cameraCardVisible || reduceMotion ? 0 : 56)
             .blur(radius: reduceMotion || cameraCardVisible ? 0 : 8)
             .allowsHitTesting(cameraCardVisible)
             .accessibilityHidden(!cameraCardVisible)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: isResultExpanded)
-            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: panelContent)
+    }
+
+    // One curve for the card, the viewport and the Scan again overlay; Reduce Motion keeps only a short crossfade.
+    private var resultAnimation: Animation {
+        reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
+    }
+
+    private var isResultFrozen: Bool { isResultExpanded }
+
+    private var resultOverlay: some View {
+        let isLabel = if case .label = result { true } else { false }
+        return Button(action: resumeScanning) {
+            Label(isLabel ? "Retake" : "Scan again", systemImage: "arrow.counterclockwise")
+                .font(.headline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+        }
+        .buttonStyle(.glassProminent)
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
+        .transition(reduceMotion ? .opacity : .scale(scale: 0.9).combined(with: .opacity))
     }
 
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
@@ -258,7 +284,30 @@ struct FoodCameraSheet: View {
             preview
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .opacity(cameraRevealVisible ? 1 : 0)
-                .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
+
+            // Result frozen: recognition is stopped, but the capture session stays running on purpose.
+            // DataScannerViewController cannot pause its camera, and tearing it down costs a 0.5-1 s cold start plus
+            // the reveal animation on every Scan again, versus a few seconds of sensor time while a result is shown.
+            // A sharp still covers the live feed instead; the live layer is never blurred.
+            Color.clear.overlay {
+                if let frozenImage, isResultFrozen {
+                    Image(uiImage: frozenImage)
+                        .resizable()
+                        .scaledToFill()
+                        .transition(.opacity)
+                }
+            }
+            .clipped()
+            .allowsHitTesting(false)
+
+            Color.black.opacity(isResultFrozen ? 0.2 : 0)
+                .allowsHitTesting(false)
+
+            Color.clear.overlay(alignment: .top) {
+                if isResultFrozen {
+                    resultOverlay.padding(.top, 16)
+                }
+            }
 
             VStack {
                 Spacer()
@@ -339,6 +388,7 @@ struct FoodCameraSheet: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Photograph nutrition label")
             .disabled(busy)
+            .modifier(FrozenHidden(isHidden: isResultFrozen, reduceMotion: reduceMotion))
             Spacer()
             Color.clear
                 .frame(width: 44, height: 44)
@@ -386,6 +436,10 @@ struct FoodCameraSheet: View {
                     }
                     .animation(reduceMotion ? nil : .smooth(duration: 0.28), value: isCameraOptionsExpanded)
                 }
+                .modifier(FrozenHidden(isHidden: isResultFrozen, reduceMotion: reduceMotion))
+        }
+        .onChange(of: isResultFrozen) { _, frozen in
+            if frozen { isCameraOptionsExpanded = false }
         }
         .font(.system(size: 17, weight: .semibold))
         .foregroundStyle(canLiveScan ? .white : .primary)
@@ -426,6 +480,7 @@ struct FoodCameraSheet: View {
                 startScanner()
             case .stopScanning:
                 pendingScannerStart = false
+                barcodeCaptureID = nil
                 scannerController?.stopScanning()
             case .torchOn:
                 torch.set(on: true)
@@ -502,6 +557,20 @@ struct FoodCameraSheet: View {
         }
     }
 
+}
+
+/// Fades a control out with a small downward move; it stays out of hit testing and VoiceOver while hidden.
+private struct FrozenHidden: ViewModifier {
+    let isHidden: Bool
+    let reduceMotion: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .accessibilityHidden(isHidden)
+            .opacity(isHidden ? 0 : 1)
+            .offset(y: isHidden && reduceMotion == false ? 8 : 0)
+            .allowsHitTesting(!isHidden)
+    }
 }
 
 struct FoodCameraLogDestination: Identifiable, Hashable {

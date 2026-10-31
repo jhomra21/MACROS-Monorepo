@@ -11,6 +11,34 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-10-30 Camera Controls Hide While The Picture Is Frozen
+
+- Fix: while a result is showing, the shutter and the options menu fade out with an 8 pt downward move (opacity only under Reduce Motion), are not hit-testable and are `accessibilityHidden`; the back chevron stays. They return on Scan again in the same single transaction as the card, viewport, still and overlay button.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); the hide and return were recorded on the simulator.
+
+## 2026-10-30 Camera Freezes On A Blurred Still
+
+- Decision: `DataScannerViewController` cannot pause its camera, and recreating it costs a 0.5-1 s cold start plus the reveal animation on every Scan again, so the session keeps running (recognition is already stopped) and a sharp (unblurred), screen-sized still with a 0.2 dim covers the viewport while a result shows; the Scan again/Retake glass button sits centered at the top, 16 pt from the viewport edge. The still comes from `capturePhoto()` at barcode detection (fallback: dim only), the OCR capture, or the imported photo; it is cleared on Scan again and on dismissal.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); the photo-import freeze and unfreeze were recorded on the simulator; the `capturePhoto()` barcode path needs a device.
+
+## 2026-10-30 Camera Scan Again Moves Into The Viewport
+
+- Cause: the viewport only moved with the card in the same transaction when the height measurement happened to land with it, and Scan again/Retake lived inside the information card, making it taller and busier.
+- Fix: the `.animation` modifiers (`value: panelContent`, `value: resultContentHeight`) now sit on the VStack holding card and viewport, so both resize in one transaction; one curve (`.smooth(duration: 0.3)`, 0.15 s ease-out crossfade under Reduce Motion). While a result shows, the viewport gets a 0.35 black dim over the preview (not the controls) and a centered glass-prominent "Scan again"/"Retake" button (scale 0.9 + opacity, opacity only with Reduce Motion). The card no longer has any retry button; the live-preview layer has no blur.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures).
+
+## 2026-10-30 Camera Result Card Morphs From The Hint
+
+- Cause: `resultPanel` swapped an if/else (scrolling card vs. plain panel), so SwiftUI replaced the hint with the card in one frame; the clear cover background let Add Food show through; the Details/Log/Scan again buttons sat at natural widths and wrapped.
+- Fix: one stable glass container whose height animates from a measured content height (cap 0.45 of the screen, scroll only when expanded), content crossfades with `.id(kind)` + `.blurReplace`, one animation source (none with Reduce Motion), a solid black backdrop inside the navigation content, and a rebuilt card (name + 44 pt retry, kcal, macro capsules in the standard ring colors, servings row, Details hugging + prominent full-width Log, clearer Logged and error layouts).
+- Review fixes: barcode still capture is guarded by a scan-session token, frozen controls stay hidden throughout interactive dismissal, and the narrow-width macro fallback stacks individual capsules vertically.
+- Validation: format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures); recordings on the iPhone Air simulator show the card growing over about 14 frames.
+
+## 2026-10-30 TestFlight Build 16
+
+- Since build 15: the camera result card grows from the hint banner while the camera frame shrinks in the same animation, with a solid backdrop; the card shows item info with Details and Log; after a scan, the camera picture freezes on the scanned image with Scan again/Retake floating at the top while the shutter and options hide.
+- Validation: Debug build, format check, `git diff --check`, and the serial non-StoreKit suite on the iPad runner passed (198 tests, 0 failures).
+
 ## 2026-10-30 TestFlight Build 15
 
 - Since build 14: Add Food Search/Manual switch is stable on first tap and lives in the navigation bar with an animated switch; on-device search results no longer flash while typing.
