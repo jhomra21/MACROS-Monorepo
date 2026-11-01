@@ -128,7 +128,27 @@ test("build 23 exact wire shapes remain frozen and foods default off", async () 
   expect(person.foodsShared).toBe(false);
   expect(Object.keys(person.snapshot!).sort()).toEqual(Object.keys({ ...snapshot, updatedAt: 0 }).sort());
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
-  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([]);
+  const personDay = await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day });
+  expect(Object.keys(personDay.snapshot!).sort()).toEqual(Object.keys({ ...snapshot, updatedAt: 0 }).sort());
+  expect(personDay.foods).toEqual([]);
+});
+
+test("daily goals round-trip to dashboard and personDay, and build 23 upserts preserve them", async () => {
+  const { t, owner, viewer, ids } = await connected();
+  const goals = { calorieGoal: 2_100, proteinGoal: 145, carbsGoal: 230, fatGoal: 65 };
+  await owner.mutation(api.sharing.syncMyDay, { snapshot: { ...snapshot, ...goals } });
+
+  const dashboardSnapshot = (await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0].snapshot;
+  expect(dashboardSnapshot).toMatchObject(goals);
+  const personDaySnapshot = (await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).snapshot;
+  expect(personDaySnapshot).toMatchObject(goals);
+
+  await owner.mutation(api.sharing.upsertMyDailySnapshot, snapshot);
+  const stored = await t.run(ctx =>
+    ctx.db.query("dailySnapshots").withIndex("by_owner_day", q => q.eq("ownerProfileId", ids[0]).eq("day", day)).unique(),
+  );
+  expect(stored).toMatchObject(goals);
+  expect((await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0].snapshot).toMatchObject(goals);
 });
 
 test("food scope patches in place, unchanged day arrays keep updatedAt, and off deletes immediately", async () => {

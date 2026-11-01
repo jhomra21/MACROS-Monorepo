@@ -158,6 +158,10 @@ struct cal_macro_trackerApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .healthSettingsDidChange)) { _ in
                 requestServiceRefresh()
             }
+            .onReceive(NotificationCenter.default.publisher(for: .dailyGoalsDidChange)) { _ in
+                guard case let .ready(container) = launchState.phase else { return }
+                sharingSyncService.syncAfterDailyTotalsChange(container: container)
+            }
             .onOpenURL { url in
                 pendingOpenRequest = nil
                 DispatchQueue.main.async {

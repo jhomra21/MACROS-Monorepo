@@ -195,6 +195,44 @@ final class SharingFoodPayloadTests: XCTestCase {
         XCTAssertNotEqual(payloadA.stableHash, base.stableHash)
     }
 
+    @MainActor
+    func testDailyGoalsAreIncludedInPayloadAndStableHash() throws {
+        let container = try ModelContainer(
+            for: DailyGoals.self, FoodItem.self, Meal.self, MealComponent.self,
+            LoggedMealComponentSnapshot.self, LogEntry.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        let context = ModelContext(container)
+        context.insert(DailyGoals(calorieGoal: 2_100, proteinGoalGrams: 145, fatGoalGrams: 65, carbGoalGrams: 230))
+        try context.save()
+        let payload = try SharingUploadCoordinator().payload(
+            container: container,
+            date: .now,
+            calendar: .current,
+            includeFoods: false
+        )
+        let snapshotArguments = try XCTUnwrap(payload.convexArguments["snapshot"] as? [String: Any])
+        XCTAssertEqual(snapshotArguments["calorieGoal"] as? Double, 2_100)
+        XCTAssertEqual(snapshotArguments["proteinGoal"] as? Double, 145)
+        XCTAssertEqual(snapshotArguments["carbsGoal"] as? Double, 230)
+        XCTAssertEqual(snapshotArguments["fatGoal"] as? Double, 65)
+
+        let changedGoal = SharingDailySnapshotPayload(
+            day: payload.day,
+            timeZoneId: payload.timeZoneId,
+            calories: payload.calories,
+            protein: payload.protein,
+            fat: payload.fat,
+            carbs: payload.carbs,
+            entryCount: payload.entryCount,
+            calorieGoal: 2_200,
+            proteinGoal: payload.proteinGoal,
+            carbsGoal: payload.carbsGoal,
+            fatGoal: payload.fatGoal
+        )
+        XCTAssertNotEqual(payload.stableHash, changedGoal.stableHash)
+    }
+
     func testFoodsAreOmittedWhenNoRecipientHasFoodScope() {
         let payload = SharingDailySnapshotPayload(
             day: "2026-11-01",
@@ -239,5 +277,45 @@ final class SharingFoodPayloadTests: XCTestCase {
         XCTAssertFalse(person.foodsShared)
         XCTAssertFalse(person.connectionPaused)
         XCTAssertEqual(person.outgoingScope, .macros)
+    }
+
+    func testSharedDailySnapshotDecodesGoalsAndLegacySnapshots() throws {
+        let legacySnapshot = """
+        {
+          "day": "2026-11-01",
+          "timeZoneId": "UTC",
+          "calories": 1200,
+          "protein": 100,
+          "fat": 50,
+          "carbs": 140,
+          "entryCount": 3,
+          "updatedAt": 1
+        }
+        """
+        let goalsSnapshot = """
+        {
+          "day": "2026-11-01",
+          "timeZoneId": "UTC",
+          "calories": 1200,
+          "protein": 100,
+          "fat": 50,
+          "carbs": 140,
+          "entryCount": 3,
+          "updatedAt": 1,
+          "calorieGoal": 2100,
+          "proteinGoal": 145,
+          "carbsGoal": 230,
+          "fatGoal": 65
+        }
+        """
+
+        let legacy = try JSONDecoder().decode(SharedDailySnapshot.self, from: Data(legacySnapshot.utf8))
+        let withGoals = try JSONDecoder().decode(SharedDailySnapshot.self, from: Data(goalsSnapshot.utf8))
+
+        XCTAssertNil(legacy.macroGoalsSnapshot)
+        XCTAssertEqual(
+            withGoals.macroGoalsSnapshot,
+            MacroGoalsSnapshot(calorieGoal: 2_100, proteinGoalGrams: 145, fatGoalGrams: 65, carbGoalGrams: 230)
+        )
     }
 }

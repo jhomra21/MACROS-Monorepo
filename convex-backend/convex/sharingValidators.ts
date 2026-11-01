@@ -21,6 +21,8 @@ export const okResult = v.object({ ok: v.boolean() });
 export const snapshotFields = {
   day: v.string(), timeZoneId: v.string(), calories: v.number(),
   protein: v.number(), fat: v.number(), carbs: v.number(), entryCount: v.number(),
+  calorieGoal: v.optional(v.number()), proteinGoal: v.optional(v.number()),
+  carbsGoal: v.optional(v.number()), fatGoal: v.optional(v.number()),
 };
 
 export const snapshotInput = v.object(snapshotFields);

@@ -30,6 +30,7 @@ struct SharingPersonScreen: View {
             }
 
             if let snapshot = personDay?.snapshot {
+                let sharedGoals = snapshot.macroGoalsSnapshot
                 let totals = NutritionSnapshot(
                     calories: snapshot.calories,
                     protein: snapshot.protein,
@@ -39,7 +40,7 @@ struct SharingPersonScreen: View {
                 Section("Today") {
                     MacroRingSetView(
                         totals: totals,
-                        goals: .default,
+                        goals: sharedGoals ?? .empty,
                         ringDiameter: 156,
                         centerValueFontSize: 24,
                         minimumLineWidth: 10,
@@ -47,14 +48,25 @@ struct SharingPersonScreen: View {
                         usesGlassEffect: false
                     )
                     .frame(maxWidth: .infinity)
-                    MacroSummaryColumnsGrid(
-                        metrics: [.protein, .carbs, .fat],
-                        totals: totals,
-                        goals: .default,
-                        style: .compact,
-                        columnWidth: 88,
-                        columnSpacing: 8
-                    )
+                    if let sharedGoals {
+                        MacroSummaryColumnsGrid(
+                            metrics: [.protein, .carbs, .fat],
+                            totals: totals,
+                            goals: sharedGoals,
+                            style: .compact,
+                            columnWidth: 88,
+                            columnSpacing: 8
+                        )
+                    } else {
+                        HStack(spacing: 16) {
+                            Text("P \(totals.protein.roundedForDisplay) g")
+                            Text("C \(totals.carbs.roundedForDisplay) g")
+                            Text("F \(totals.fat.roundedForDisplay) g")
+                        }
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                    }
                 }
             } else {
                 Section("Today") {

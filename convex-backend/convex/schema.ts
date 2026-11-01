@@ -60,6 +60,10 @@ export default defineSchema({
     fat: v.number(),
     carbs: v.number(),
     entryCount: v.number(),
+    calorieGoal: v.optional(v.number()),
+    proteinGoal: v.optional(v.number()),
+    carbsGoal: v.optional(v.number()),
+    fatGoal: v.optional(v.number()),
     updatedAt: v.number(),
   }).index("by_owner_day", ["ownerProfileId", "day"]),
 

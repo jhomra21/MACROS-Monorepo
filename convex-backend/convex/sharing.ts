@@ -374,6 +374,10 @@ export const sharingDashboard = query({
             fat: snapshot.fat,
             carbs: snapshot.carbs,
             entryCount: snapshot.entryCount,
+            ...(snapshot.calorieGoal === undefined ? {} : { calorieGoal: snapshot.calorieGoal }),
+            ...(snapshot.proteinGoal === undefined ? {} : { proteinGoal: snapshot.proteinGoal }),
+            ...(snapshot.carbsGoal === undefined ? {} : { carbsGoal: snapshot.carbsGoal }),
+            ...(snapshot.fatGoal === undefined ? {} : { fatGoal: snapshot.fatGoal }),
             updatedAt: snapshot.updatedAt,
           },
         };
@@ -420,7 +424,14 @@ export const personDay = query({
     return {
       snapshot: snapshot == null ? null : {
         day: snapshot.day, timeZoneId: snapshot.timeZoneId, calories: snapshot.calories, protein: snapshot.protein,
-        fat: snapshot.fat, carbs: snapshot.carbs, entryCount: snapshot.entryCount, updatedAt: snapshot.updatedAt,
+        fat: snapshot.fat,
+        carbs: snapshot.carbs,
+        entryCount: snapshot.entryCount,
+        ...(snapshot.calorieGoal === undefined ? {} : { calorieGoal: snapshot.calorieGoal }),
+        ...(snapshot.proteinGoal === undefined ? {} : { proteinGoal: snapshot.proteinGoal }),
+        ...(snapshot.carbsGoal === undefined ? {} : { carbsGoal: snapshot.carbsGoal }),
+        ...(snapshot.fatGoal === undefined ? {} : { fatGoal: snapshot.fatGoal }),
+        updatedAt: snapshot.updatedAt,
       },
       foods: (foodDay?.foods ?? []).slice().sort((a, b) => a.sortIndex - b.sortIndex),
     };

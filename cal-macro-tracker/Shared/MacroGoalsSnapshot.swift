@@ -12,6 +12,7 @@ struct MacroGoalsSnapshot: Hashable {
         fatGoalGrams: DailyGoalsDefaults.fatGoalGrams,
         carbGoalGrams: DailyGoalsDefaults.carbGoalGrams
     )
+    static let empty = MacroGoalsSnapshot(calorieGoal: 0, proteinGoalGrams: 0, fatGoalGrams: 0, carbGoalGrams: 0)
 
     init(
         calorieGoal: Double = DailyGoalsDefaults.calorieGoal,

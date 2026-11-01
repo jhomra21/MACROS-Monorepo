@@ -10,9 +10,12 @@ struct SharingUploadCoordinator {
         includeFoods: Bool
     ) throws -> SharingDailySnapshotPayload {
         let localSnapshot = try DailyMacroSnapshotLoader.loadNutrition(for: date, in: container, calendar: calendar)
+        let context = ModelContext(container)
+        let currentGoals = MacroGoalsSnapshot(
+            goals: DailyGoals.activeRecord(from: try context.fetch(FetchDescriptor<DailyGoals>()))
+        )
         let foods: [SharedFoodPayload]?
         if includeFoods {
-            let context = ModelContext(container)
             let entries = try context.fetch(LogEntryQuery.descriptor(for: CalendarDay(date: date, calendar: calendar)))
                 .sorted {
                     $0.dateLogged == $1.dateLogged
@@ -33,7 +36,11 @@ struct SharingUploadCoordinator {
             fat: localSnapshot.totals.fat,
             carbs: localSnapshot.totals.carbs,
             entryCount: localSnapshot.entryCount,
-            foods: foods
+            foods: foods,
+            calorieGoal: currentGoals.calorieGoal,
+            proteinGoal: currentGoals.proteinGoalGrams,
+            carbsGoal: currentGoals.carbGoalGrams,
+            fatGoal: currentGoals.fatGoalGrams
         )
     }
 }

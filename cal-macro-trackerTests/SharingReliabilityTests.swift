@@ -427,6 +427,7 @@ final class SharingReliabilityTests: XCTestCase {
         let day = CalendarDay(date: .now)
         f.service.startDashboardSubscription(for: day)
         await f.remote.dashboardStarted(count: 1)
+        await Task.yield()
         await observeChange(read: { _ = f.service.shouldShowDashboardLoading }) {
             f.remote.streams[0].send(SharingDashboard(people: []))
         }

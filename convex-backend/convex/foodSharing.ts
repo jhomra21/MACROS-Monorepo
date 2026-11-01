@@ -106,7 +106,16 @@ export async function syncDay(ctx: MutationCtx, owner: Id<"profiles">, snapshot:
   const existing = await ctx.db.query("dailySnapshots")
     .withIndex("by_owner_day", q => q.eq("ownerProfileId", owner).eq("day", snapshot.day)).unique();
 
-  const fields = { ...snapshot, ownerProfileId: owner, updatedAt: now };
+  const { calorieGoal, proteinGoal, carbsGoal, fatGoal, ...snapshotFields } = snapshot;
+  const fields = {
+    ...snapshotFields,
+    ...(calorieGoal === undefined ? {} : { calorieGoal }),
+    ...(proteinGoal === undefined ? {} : { proteinGoal }),
+    ...(carbsGoal === undefined ? {} : { carbsGoal }),
+    ...(fatGoal === undefined ? {} : { fatGoal }),
+    ownerProfileId: owner,
+    updatedAt: now,
+  };
   const snapshotId = existing?._id ?? await ctx.db.insert("dailySnapshots", fields);
 
   if (existing) await ctx.db.patch(existing._id, fields);

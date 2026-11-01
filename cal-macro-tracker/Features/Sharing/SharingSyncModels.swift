@@ -110,6 +110,53 @@ struct SharedDailySnapshot: Decodable, Equatable {
     let carbs: Double
     let entryCount: Int
     let updatedAt: Double
+    let calorieGoal: Double?
+    let proteinGoal: Double?
+    let carbsGoal: Double?
+    let fatGoal: Double?
+
+    private enum CodingKeys: String, CodingKey {
+        case day, timeZoneId, calories, protein, fat, carbs, entryCount, updatedAt
+        case calorieGoal, proteinGoal, carbsGoal, fatGoal
+    }
+
+    init(
+        day: String,
+        timeZoneId: String,
+        calories: Double,
+        protein: Double,
+        fat: Double,
+        carbs: Double,
+        entryCount: Int,
+        updatedAt: Double,
+        calorieGoal: Double? = nil,
+        proteinGoal: Double? = nil,
+        carbsGoal: Double? = nil,
+        fatGoal: Double? = nil
+    ) {
+        self.day = day
+        self.timeZoneId = timeZoneId
+        self.calories = calories
+        self.protein = protein
+        self.fat = fat
+        self.carbs = carbs
+        self.entryCount = entryCount
+        self.updatedAt = updatedAt
+        self.calorieGoal = calorieGoal
+        self.proteinGoal = proteinGoal
+        self.carbsGoal = carbsGoal
+        self.fatGoal = fatGoal
+    }
+
+    var macroGoalsSnapshot: MacroGoalsSnapshot? {
+        guard let calorieGoal, let proteinGoal, let carbsGoal, let fatGoal else { return nil }
+        return MacroGoalsSnapshot(
+            calorieGoal: calorieGoal,
+            proteinGoalGrams: proteinGoal,
+            fatGoalGrams: fatGoal,
+            carbGoalGrams: carbsGoal
+        )
+    }
 }
 
 struct SharingInvite: Equatable {
@@ -129,6 +176,10 @@ struct SharingDailySnapshotPayload {
     let carbs: Double
     let entryCount: Int
     let foods: [SharedFoodPayload]?
+    let calorieGoal: Double?
+    let proteinGoal: Double?
+    let carbsGoal: Double?
+    let fatGoal: Double?
 
     init(
         day: String,
@@ -138,7 +189,11 @@ struct SharingDailySnapshotPayload {
         fat: Double,
         carbs: Double,
         entryCount: Int,
-        foods: [SharedFoodPayload]? = nil
+        foods: [SharedFoodPayload]? = nil,
+        calorieGoal: Double? = nil,
+        proteinGoal: Double? = nil,
+        carbsGoal: Double? = nil,
+        fatGoal: Double? = nil
     ) {
         self.day = day
         self.timeZoneId = timeZoneId
@@ -148,10 +203,14 @@ struct SharingDailySnapshotPayload {
         self.carbs = carbs
         self.entryCount = entryCount
         self.foods = foods
+        self.calorieGoal = calorieGoal
+        self.proteinGoal = proteinGoal
+        self.carbsGoal = carbsGoal
+        self.fatGoal = fatGoal
     }
 
     var convexArguments: [String: ConvexEncodable?] {
-        let snapshot: [String: ConvexEncodable?] = [
+        var snapshot: [String: ConvexEncodable?] = [
             "day": day,
             "timeZoneId": timeZoneId,
             "calories": calories,
@@ -160,6 +219,10 @@ struct SharingDailySnapshotPayload {
             "carbs": carbs,
             "entryCount": Double(entryCount)
         ]
+        if let calorieGoal { snapshot["calorieGoal"] = calorieGoal }
+        if let proteinGoal { snapshot["proteinGoal"] = proteinGoal }
+        if let carbsGoal { snapshot["carbsGoal"] = carbsGoal }
+        if let fatGoal { snapshot["fatGoal"] = fatGoal }
         var arguments: [String: ConvexEncodable?] = [
             "snapshot": snapshot
         ]
@@ -177,7 +240,11 @@ struct SharingDailySnapshotPayload {
             String(protein.bitPattern),
             String(fat.bitPattern),
             String(carbs.bitPattern),
-            String(entryCount)
+            String(entryCount),
+            calorieGoal.map { String($0.bitPattern) } ?? "no-calorie-goal",
+            proteinGoal.map { String($0.bitPattern) } ?? "no-protein-goal",
+            carbsGoal.map { String($0.bitPattern) } ?? "no-carbs-goal",
+            fatGoal.map { String($0.bitPattern) } ?? "no-fat-goal"
         ]
         let foodInput = (foods ?? [])
             .sorted { $0.sortIndex == $1.sortIndex ? $0.localEntryId < $1.localEntryId : $0.sortIndex < $1.sortIndex }

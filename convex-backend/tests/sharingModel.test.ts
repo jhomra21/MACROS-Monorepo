@@ -85,6 +85,27 @@ describe("sharing input validation", () => {
     ).toThrow("Day must be yyyy-MM-dd.");
   });
 
+  it("accepts optional goals and rejects goals outside finite bounds", () => {
+    const valid = {
+      day: "2026-05-06",
+      timeZoneId: "UTC",
+      calories: 1200,
+      protein: 100,
+      fat: 50,
+      carbs: 140,
+      entryCount: 3,
+      calorieGoal: 0,
+      proteinGoal: 50_000,
+      carbsGoal: 200,
+      fatGoal: 70,
+    };
+    expect(() => assertValidSnapshot(valid)).not.toThrow();
+    expect(() => assertValidSnapshot({ ...valid, calorieGoal: -1 })).toThrow("calorieGoal");
+    expect(() => assertValidSnapshot({ ...valid, proteinGoal: 50_001 })).toThrow("proteinGoal");
+    expect(() => assertValidSnapshot({ ...valid, carbsGoal: Number.NaN })).toThrow("carbsGoal");
+    expect(() => assertValidSnapshot({ ...valid, fatGoal: Number.POSITIVE_INFINITY })).toThrow("fatGoal");
+  });
+
   it("limits dashboard day keys to the server-current window", () => {
     const now = new Date("2026-05-07T12:00:00.000Z");
     expect(() => assertCurrentDayKey("2026-05-06", now)).not.toThrow();

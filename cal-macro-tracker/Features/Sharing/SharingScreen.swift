@@ -38,7 +38,7 @@ struct SharingScreen: View {
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(
-                        "MACROS shares your display name, today’s calories, protein, carbs, fat, and entry count with people you choose. Food names, amounts, calories, and macros are shared only with people you explicitly enable for food sharing."
+                        "MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries to people you choose. Food names, amounts, calories, and macros are shared only with people you explicitly enable for food sharing."
                     )
                     Text("Shared information is best-effort and is not medical advice.")
                 }

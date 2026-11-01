@@ -1,17 +1,10 @@
-import SwiftData
 import SwiftUI
 
 struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharingSyncService
     @State private var dashboardErrorMessage: String?
-    @Query private var goals: [DailyGoals]
-
     let onOpenSharingSettings: () -> Void
-
-    private var currentGoals: MacroGoalsSnapshot {
-        MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
-    }
 
     var body: some View {
         ScrollView {
@@ -42,7 +35,7 @@ struct SharingDashboardScreen: View {
                         NavigationLink {
                             SharingPersonScreen(person: person)
                         } label: {
-                            SharingPersonRow(person: person, goals: currentGoals)
+                            SharingPersonRow(person: person)
                         }
                         .accessibilityHint("View \(person.displayName)’s shared day and sharing settings")
                     }
@@ -82,7 +75,10 @@ struct SharingDashboardScreen: View {
 
 private struct SharingPersonRow: View {
     let person: SharingPerson
-    let goals: MacroGoalsSnapshot
+
+    private var goals: MacroGoalsSnapshot {
+        person.snapshot?.macroGoalsSnapshot ?? .empty
+    }
 
     private var totals: NutritionSnapshot {
         guard let snapshot = person.snapshot else { return .zero }
@@ -154,8 +150,7 @@ private struct SharingPersonRow: View {
                     foodsShared: true,
                     outgoingScope: .macrosAndFoods,
                     connectionPaused: false
-                ),
-                goals: .default
+                )
             )
         }
         .navigationTitle("Sharing")
