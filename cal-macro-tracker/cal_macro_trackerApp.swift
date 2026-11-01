@@ -108,7 +108,10 @@ struct cal_macro_trackerApp: App {
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
-                Task { await purchaseStore.refreshEntitlements() }
+                Task {
+                    await purchaseStore.refreshEntitlements()
+                    await purchaseStore.onEntitlementsChanged?()
+                }
                 requestServiceRefresh()
             }
             .onChange(of: proServiceEntitlements) { _, _ in
@@ -211,7 +214,7 @@ struct cal_macro_trackerApp: App {
                     expiresAt: purchase.expiresAt
                 )
             } catch {
-                // Purchase state will be retried after the next StoreKit refresh.
+                // Purchase state is retried after the next entitlement refresh.
             }
         }
     }

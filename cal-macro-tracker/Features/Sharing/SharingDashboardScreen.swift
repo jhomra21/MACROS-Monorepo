@@ -4,6 +4,7 @@ import SwiftUI
 struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharingSyncService
+    @State private var dashboardErrorMessage: String?
     @Query private var goals: [DailyGoals]
 
     let onOpenSharingSettings: () -> Void
@@ -67,12 +68,13 @@ struct SharingDashboardScreen: View {
                 .accessibilityLabel("Open sharing settings")
             }
         }
-        .errorBanner(
-            message: Binding(
-                get: { sharingSyncService.dashboardErrorMessage },
-                set: { _ in }
-            ), retryTitle: "Retry"
-        ) {
+        .onChange(of: sharingSyncService.dashboardErrorMessage) { _, error in
+            dashboardErrorMessage = error
+        }
+        .onAppear {
+            dashboardErrorMessage = sharingSyncService.dashboardErrorMessage
+        }
+        .errorBanner(message: $dashboardErrorMessage, retryTitle: "Retry") {
             sharingSyncService.startDashboardSubscription(for: dayContext.today)
         }
     }

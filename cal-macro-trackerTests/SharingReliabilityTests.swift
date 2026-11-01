@@ -119,6 +119,127 @@ final class SharingReliabilityTests: XCTestCase {
         XCTAssertNil(f.remote.committed?.convexArguments["foods"] ?? nil)
     }
 
+    func testPausedConnectionBlocksFoodUpload() async throws {
+        let f = try fixture()
+        f.service.startDashboardSubscription(for: CalendarDay(date: .now))
+        await f.remote.dashboardStarted(count: 1)
+        await observeChange(read: { _ = f.service.dashboard.people }) {
+            f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: true)]))
+        }
+        try await f.service.uploadTodaySnapshot(container: f.container)
+        XCTAssertNil(f.remote.committed?.foods)
+    }
+
+    func testFoodUploadHashInvalidatesWhenEligibilityEndsAndReturns() async throws {
+        let f = try fixture()
+        f.service.startDashboardSubscription(for: CalendarDay(date: .now))
+        await f.remote.dashboardStarted(count: 1)
+        await observeChange(read: { _ = f.service.dashboard.people }) {
+            f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: false)]))
+        }
+        try await f.service.uploadTodaySnapshot(container: f.container)
+        XCTAssertNotNil(f.store.lastUploadedSnapshotHash)
+
+        f.remote.failUpload = true
+        let failedUpload = expectation(description: "macros-only replacement fails")
+        withObservationTracking({ _ = f.service.uploadErrorMessage }) { failedUpload.fulfill() }
+        f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macros, paused: false)]))
+        await fulfillment(of: [failedUpload], timeout: 2)
+        XCTAssertNil(f.store.lastUploadedSnapshotHash)
+
+        f.remote.failUpload = false
+        f.remote.delayUpload = true
+        await observeChange(read: { _ = f.service.dashboard.people }) {
+            f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: false)]))
+        }
+        await f.remote.uploadStarted()
+        f.remote.releaseUpload()
+        await f.service.syncTodayIfConfigured(container: f.container)
+        XCTAssertEqual(f.remote.uploads.count, 3)
+        XCTAssertNotNil(f.remote.committed?.foods)
+    }
+
+    func testPurchaseDedupeResetsAfterIdentityDisable() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        try await f.service.submitPurchase(
+            signedTransaction: "transaction",
+            signedRenewalInfo: "renewal",
+            transactionID: 55,
+            expiresAt: nil
+        )
+        XCTAssertEqual(f.remote.purchaseSubmissions, 1)
+
+        try await f.service.disableSharingOnDevice(ownerDay: today)
+        try await f.service.enableSharing(displayName: "QA", container: f.container)
+        try await f.service.submitPurchase(
+            signedTransaction: "transaction",
+            signedRenewalInfo: "renewal",
+            transactionID: 55,
+            expiresAt: nil
+        )
+
+        XCTAssertEqual(f.remote.purchaseSubmissions, 2)
+    }
+
+    func testScopeRollbackDoesNotSubmitAnotherWrite() async throws {
+        let f = try fixture()
+        var selection = SharingScopeSelection(scope: .macros)
+        XCTAssertTrue(selection.beginWrite(.macrosAndFoods))
+        f.remote.failScopeWrite = true
+        do {
+            try await f.service.setOutgoingScope(
+                to: "person",
+                scope: .macrosAndFoods,
+                ownerDay: CalendarDay(date: .now)
+            )
+            XCTFail("Expected scope write failure")
+        } catch {}
+        selection.rejectWrite()
+
+        XCTAssertEqual(selection.selected, .macros)
+        XCTAssertFalse(selection.beginWrite(selection.selected))
+        XCTAssertEqual(f.remote.scopeWrites, 1)
+    }
+
+    func testSuccessfulScopeWriteWaitsForDashboardAndUploadsOnce() async throws {
+        let f = try fixture()
+        try f.setCalories(30)
+        f.service.startDashboardSubscription(for: CalendarDay(date: .now))
+        await f.remote.dashboardStarted(count: 1)
+        f.remote.setScopeDashboard = SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: false)])
+        try await f.service.setOutgoingScope(
+            to: "person",
+            scope: .macrosAndFoods,
+            ownerDay: CalendarDay(date: .now),
+            container: f.container
+        )
+        XCTAssertTrue(f.remote.uploads.isEmpty)
+
+        await observeChange(read: { _ = f.service.dashboard.people }) {
+            f.remote.streams[0].send(f.remote.setScopeDashboard!)
+        }
+        await f.service.syncTodayIfConfigured(container: f.container)
+
+        XCTAssertEqual(f.remote.uploads.count, 1)
+        XCTAssertNotNil(f.remote.committed?.foods)
+    }
+
+    private func sharingPerson(scope: SharingOutgoingScope, paused: Bool) -> SharingPerson {
+        SharingPerson(
+            relationshipId: "relationship",
+            profileId: "person",
+            displayName: "Alex",
+            incomingActive: true,
+            outgoingActive: scope != .off,
+            scope: SharingScope(macros: true),
+            snapshot: nil,
+            foodsShared: false,
+            outgoingScope: scope,
+            connectionPaused: paused
+        )
+    }
+
     func testDeletionDuringCommittedDelayedUploadCannotRepopulateMetadata() async throws {
         let f = try fixture()
         f.remote.delayUpload = true
@@ -511,6 +632,10 @@ private final class ControlledSharingRemote: SharingRemote {
     private var startObserver: (Int, CheckedContinuation<Void, Never>)?
     private var cancelObserver: (Int, CheckedContinuation<Void, Never>)?
     var authenticatedNames: [String] = []
+    var purchaseSubmissions = 0
+    var setScopeDashboard: SharingDashboard?
+    var failScopeWrite = false
+    var scopeWrites = 0
 
     func authenticate(displayName: String) async throws {
         authentications += 1
@@ -536,6 +661,9 @@ private final class ControlledSharingRemote: SharingRemote {
         await withCheckedContinuation { authReleaseObserver = $0 }
     }
     func updateDisplayName(_ displayName: String) async throws {}
+    func submitPurchase(signedTransaction: String, signedRenewalInfo: String?) async throws {
+        purchaseSubmissions += 1
+    }
     func upsertDailySnapshot(_ payload: SharingDailySnapshotPayload) async throws {
         uploads.append(payload)
         if delayUpload {
@@ -588,6 +716,10 @@ private final class ControlledSharingRemote: SharingRemote {
     func revokeInvite(id: String) async throws {}
     func acceptInvite(tokenHash: String, ownerDay: CalendarDay) async throws {}
     func setOutgoingSharing(to profileId: String, enabled: Bool, ownerDay: CalendarDay) async throws {}
+    func setOutgoingScope(to profileId: String, scope: SharingOutgoingScope, ownerDay: CalendarDay) async throws {
+        scopeWrites += 1
+        if failScopeWrite { throw QAError.injected }
+    }
     func stopSharingMyData(ownerDay: CalendarDay) async throws {
         grantStops += 1
         if delayStopGrants {

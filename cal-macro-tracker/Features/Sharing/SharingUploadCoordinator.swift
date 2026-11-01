@@ -19,7 +19,8 @@ struct SharingUploadCoordinator {
                         ? $0.id.uuidString < $1.id.uuidString
                         : $0.dateLogged < $1.dateLogged
                 }
-            foods = entries.enumerated().map { SharedFoodPayload(entry: $0.element, sortIndex: $0.offset) }
+            // Share the first 100 entries in dashboard sort order.
+            foods = entries.prefix(100).enumerated().map { SharedFoodPayload(entry: $0.element, sortIndex: $0.offset) }
         } else {
             foods = nil
         }

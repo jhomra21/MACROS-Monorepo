@@ -26,6 +26,51 @@ struct SharingPerson: Decodable, Equatable, Identifiable {
     let connectionPaused: Bool
 
     var id: String { relationshipId }
+
+    private enum CodingKeys: String, CodingKey {
+        case relationshipId, profileId, displayName, incomingActive, outgoingActive
+        case scope, snapshot, foodsShared, outgoingScope, connectionPaused
+    }
+
+    init(
+        relationshipId: String,
+        profileId: String,
+        displayName: String,
+        incomingActive: Bool,
+        outgoingActive: Bool,
+        scope: SharingScope,
+        snapshot: SharedDailySnapshot?,
+        foodsShared: Bool,
+        outgoingScope: SharingOutgoingScope,
+        connectionPaused: Bool
+    ) {
+        self.relationshipId = relationshipId
+        self.profileId = profileId
+        self.displayName = displayName
+        self.incomingActive = incomingActive
+        self.outgoingActive = outgoingActive
+        self.scope = scope
+        self.snapshot = snapshot
+        self.foodsShared = foodsShared
+        self.outgoingScope = outgoingScope
+        self.connectionPaused = connectionPaused
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        relationshipId = try container.decode(String.self, forKey: .relationshipId)
+        profileId = try container.decode(String.self, forKey: .profileId)
+        displayName = try container.decode(String.self, forKey: .displayName)
+        incomingActive = try container.decode(Bool.self, forKey: .incomingActive)
+        outgoingActive = try container.decode(Bool.self, forKey: .outgoingActive)
+        scope = try container.decode(SharingScope.self, forKey: .scope)
+        snapshot = try container.decodeIfPresent(SharedDailySnapshot.self, forKey: .snapshot)
+        foodsShared = try container.decodeIfPresent(Bool.self, forKey: .foodsShared) ?? false
+        connectionPaused = try container.decodeIfPresent(Bool.self, forKey: .connectionPaused) ?? false
+        outgoingScope =
+            try container.decodeIfPresent(SharingOutgoingScope.self, forKey: .outgoingScope)
+            ?? (outgoingActive ? .macros : .off)
+    }
 }
 
 enum SharingOutgoingScope: String, Decodable, Equatable {
@@ -170,8 +215,8 @@ struct SharedFoodPayload: Equatable {
     ) {
         self.localEntryId = localEntryId
         self.sortIndex = sortIndex
-        self.name = String(name.trimmingCharacters(in: .whitespacesAndNewlines).prefix(80))
-        self.quantityText = String(quantityText.trimmingCharacters(in: .whitespacesAndNewlines).prefix(40))
+        self.name = Self.truncate(name.trimmingCharacters(in: .whitespacesAndNewlines), utf16Limit: 80)
+        self.quantityText = Self.truncate(quantityText.trimmingCharacters(in: .whitespacesAndNewlines), utf16Limit: 40)
         self.calories = calories
         self.protein = protein
         self.carbs = carbs
@@ -191,6 +236,18 @@ struct SharedFoodPayload: Equatable {
         )
     }
 
+    private static func truncate(_ value: String, utf16Limit: Int) -> String {
+        var result = ""
+        var utf16Count = 0
+        for character in value {
+            let characterLength = String(character).utf16.count
+            guard utf16Count + characterLength <= utf16Limit else { break }
+            result.append(character)
+            utf16Count += characterLength
+        }
+        return result
+    }
+
     var convexArguments: [String: ConvexEncodable?] {
         [
             "localEntryId": localEntryId,
@@ -208,14 +265,19 @@ struct SharedFoodPayload: Equatable {
 struct PurchaseSubmissionDeduplicator {
     private(set) var submittedKeys = Set<String>()
 
-    mutating func insert(transactionID: UInt64, expiresAt: Date?) -> Bool {
+    mutating func insert(transactionID: UInt64, expiresAt: Date?, renewalInfo: String?) -> Bool {
         let expiryKey = expiresAt.map { String($0.timeIntervalSince1970) } ?? "lifetime"
-        return submittedKeys.insert("\(transactionID):\(expiryKey)").inserted
+        return submittedKeys.insert("\(transactionID):\(expiryKey):\(renewalKey(renewalInfo))").inserted
     }
 
-    mutating func remove(transactionID: UInt64, expiresAt: Date?) {
+    mutating func remove(transactionID: UInt64, expiresAt: Date?, renewalInfo: String?) {
         let expiryKey = expiresAt.map { String($0.timeIntervalSince1970) } ?? "lifetime"
-        submittedKeys.remove("\(transactionID):\(expiryKey)")
+        submittedKeys.remove("\(transactionID):\(expiryKey):\(renewalKey(renewalInfo))")
+    }
+
+    private func renewalKey(_ renewalInfo: String?) -> String {
+        guard let renewalInfo else { return "none" }
+        return SHA256.hash(data: Data(renewalInfo.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 }
 

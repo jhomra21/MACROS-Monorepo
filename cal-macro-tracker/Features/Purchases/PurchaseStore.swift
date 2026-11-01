@@ -95,6 +95,7 @@ final class PurchaseStore {
             for await _ in Product.SubscriptionInfo.Status.updates {
                 guard !Task.isCancelled else { return }
                 await self?.refreshEntitlements()
+                await self?.onEntitlementsChanged?()
             }
         }
         await refreshEntitlements()
@@ -263,7 +264,7 @@ final class PurchaseStore {
         for await group in Product.SubscriptionInfo.Status.all {
             for status in group.statuses {
                 guard case let .verified(transaction) = status.transaction,
-                    case let .verified(renewal) = status.renewalInfo,
+                    case .verified = status.renewalInfo,
                     ProSource(productID: transaction.productID)?.isSubscription == true
                 else { continue }
                 renewalByOriginalID[transaction.originalID] = status.renewalInfo.jwsRepresentation

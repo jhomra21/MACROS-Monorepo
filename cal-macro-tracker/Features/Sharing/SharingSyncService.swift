@@ -36,14 +36,15 @@ final class SharingSyncService {
     private var credentialCleanupTask: Task<Void, Error>?
     private var purchaseDeduplicator = PurchaseSubmissionDeduplicator()
     private var lastUploadContainer: ModelContainer?
+    private var pendingScopeSync: (profileId: String, scope: SharingOutgoingScope)?
 
     private struct UploadRequest {
         let container: ModelContainer
         let date: Date?
         let calendar: Calendar?
-        let includeFoods: Bool?
     }
     private var dashboardSubscriptionDay: CalendarDay?
+    private var hasReceivedDashboard = false
     private var dashboardSubscriptionTask: Task<Void, Never>?
     private var dashboardSubscriptionAttemptId: UUID?
     var isDeviceSharingEnabled: Bool {
@@ -74,7 +75,7 @@ final class SharingSyncService {
 
         do {
             try await requestUpload(
-                UploadRequest(container: container, date: nil, calendar: nil, includeFoods: nil)
+                UploadRequest(container: container, date: nil, calendar: nil)
             ).value
         } catch {
             // The drain owns error/status updates, including stale-identity suppression.
@@ -83,7 +84,7 @@ final class SharingSyncService {
 
     func syncAfterDailyTotalsChange(container: ModelContainer) {
         guard isDeviceSharingEnabled else { return }
-        _ = requestUpload(UploadRequest(container: container, date: nil, calendar: nil, includeFoods: nil))
+        _ = requestUpload(UploadRequest(container: container, date: nil, calendar: nil))
     }
 
     func enableSharing(displayName: String, container: ModelContainer) async throws {
@@ -120,7 +121,7 @@ final class SharingSyncService {
     ) async throws {
         guard isDeviceSharingEnabled else { return }
         try await requestUpload(
-            UploadRequest(container: container, date: date, calendar: calendar, includeFoods: nil)
+            UploadRequest(container: container, date: date, calendar: calendar)
         ).value
     }
 
@@ -164,11 +165,9 @@ final class SharingSyncService {
             uploadDirty = false
             let calendar = request.calendar ?? .current
             let date = request.date ?? .now
-            let shouldShareFoods =
-                request.includeFoods
-                ?? dashboard.people.contains {
-                    !$0.connectionPaused && $0.outgoingScope == .macrosAndFoods
-                }
+            let shouldShareFoods = dashboard.people.contains {
+                !$0.connectionPaused && $0.outgoingScope == .macrosAndFoods
+            }
             let payload = try uploadCoordinator.payload(
                 container: request.container,
                 date: date,
@@ -242,7 +241,8 @@ final class SharingSyncService {
         let displayName = storedDisplayName
         dashboardSubscriptionAttemptId = attemptId
         let remoteClient = remoteClient
-        dashboardSubscriptionTask = Task { @MainActor [weak self, remoteClient] in
+        let dashboardFeed = dashboardFeed
+        dashboardSubscriptionTask = Task { @MainActor [weak self, remoteClient, dashboardFeed] in
             defer { self?.finishDashboardSubscription(attemptId: attemptId) }
 
             do {
@@ -271,14 +271,25 @@ final class SharingSyncService {
             !$0.connectionPaused && $0.outgoingScope == .macrosAndFoods
         }
         isDashboardLoading = false
-        if self.dashboard != dashboard { self.dashboard = dashboard }
         let sharesFoodsNow = dashboard.people.contains {
             !$0.connectionPaused && $0.outgoingScope == .macrosAndFoods
         }
-        if sharesFoodsNow && !previouslySharedFoods, let lastUploadContainer {
-            _ = requestUpload(
-                UploadRequest(container: lastUploadContainer, date: nil, calendar: nil, includeFoods: true)
-            )
+        let eligibilityEnded =
+            previouslySharedFoods && !sharesFoodsNow
+            || (!hasReceivedDashboard && !sharesFoodsNow && lastUploadedSnapshotHash != nil)
+        hasReceivedDashboard = true
+        if eligibilityEnded {
+            lastUploadedSnapshotHash = nil
+            localStateStore.lastUploadedSnapshotHash = nil
+        }
+        let scopeSyncReady =
+            pendingScopeSync.map { pending in
+                dashboard.people.contains { $0.profileId == pending.profileId && $0.outgoingScope == pending.scope }
+            } ?? false
+        if scopeSyncReady { pendingScopeSync = nil }
+        if self.dashboard != dashboard { self.dashboard = dashboard }
+        if sharesFoodsNow != previouslySharedFoods || eligibilityEnded || scopeSyncReady, let lastUploadContainer {
+            _ = requestUpload(UploadRequest(container: lastUploadContainer, date: nil, calendar: nil))
         }
         if dashboardErrorMessage != nil { dashboardErrorMessage = nil }
     }
@@ -305,6 +316,7 @@ final class SharingSyncService {
         isDashboardLoading = false
         if clearDashboard {
             dashboard = SharingDashboard(people: [])
+            hasReceivedDashboard = false
         }
     }
 
@@ -347,17 +359,16 @@ final class SharingSyncService {
         ownerDay: CalendarDay,
         container: ModelContainer? = nil
     ) async throws {
+        let generation = identityGeneration
         try await authenticateForOperation()
         try await accountActions.setOutgoingScope(profileId: profileId, scope: scope, ownerDay: ownerDay)
-        if scope == .macrosAndFoods, let container {
-            _ = requestUpload(
-                UploadRequest(
-                    container: container,
-                    date: nil,
-                    calendar: nil,
-                    includeFoods: true
-                )
-            )
+        try checkIdentity(generation)
+        pendingScopeSync = (profileId, scope)
+        if dashboard.people.contains(where: { $0.profileId == profileId && $0.outgoingScope == scope }),
+            let uploadContainer = container ?? lastUploadContainer
+        {
+            pendingScopeSync = nil
+            _ = requestUpload(UploadRequest(container: uploadContainer, date: nil, calendar: nil))
         }
     }
 
@@ -372,13 +383,26 @@ final class SharingSyncService {
         expiresAt: Date?
     ) async throws {
         guard isDeviceSharingEnabled,
-            purchaseDeduplicator.insert(transactionID: transactionID, expiresAt: expiresAt)
+            purchaseDeduplicator.insert(
+                transactionID: transactionID,
+                expiresAt: expiresAt,
+                renewalInfo: signedRenewalInfo
+            )
         else { return }
+        let generation = identityGeneration
         do {
             try await authenticateForOperation()
+            try checkIdentity(generation)
             try await accountActions.submitPurchase(transaction: signedTransaction, renewalInfo: signedRenewalInfo)
+            try checkIdentity(generation)
         } catch {
-            purchaseDeduplicator.remove(transactionID: transactionID, expiresAt: expiresAt)
+            if identityGeneration == generation {
+                purchaseDeduplicator.remove(
+                    transactionID: transactionID,
+                    expiresAt: expiresAt,
+                    renewalInfo: signedRenewalInfo
+                )
+            }
             throw error
         }
     }
@@ -428,6 +452,8 @@ final class SharingSyncService {
     private func disableLocalSharing() {
         localStateStore.isDeviceSharingEnabled = false
         identityGeneration = UUID()
+        purchaseDeduplicator = PurchaseSubmissionDeduplicator()
+        pendingScopeSync = nil
         uploadTask?.cancel()
         uploadTask = nil
         uploadAttemptId = nil

@@ -5,20 +5,19 @@ import SwiftUI
 struct SharingPersonScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharing
-    @Environment(AppEntitlements.self) private var entitlements
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     let person: SharingPerson
 
     @State private var personDay: SharingPersonDay?
     @State private var errorMessage: String?
-    @State private var selectedScope: SharingOutgoingScope
+    @State private var scopeSelection: SharingScopeSelection
     @State private var showingRemovalConfirmation = false
     @State private var showingProUpgrade = false
 
     init(person: SharingPerson) {
         self.person = person
-        _selectedScope = State(initialValue: person.outgoingScope)
+        _scopeSelection = State(initialValue: SharingScopeSelection(scope: person.outgoingScope))
     }
 
     var body: some View {
@@ -85,16 +84,20 @@ struct SharingPersonScreen: View {
             }
 
             Section("What \(person.displayName) sees from you") {
-                Picker("Sharing scope", selection: $selectedScope) {
+                Picker(
+                    "Sharing scope",
+                    selection: Binding(
+                        get: { scopeSelection.selected },
+                        set: { updateScope($0) }
+                    )
+                ) {
                     Text("Nothing").tag(SharingOutgoingScope.off)
                     Text("Macros").tag(SharingOutgoingScope.macros)
-                    Text("Macros + Foods").tag(SharingOutgoingScope.macrosAndFoods)
+                    Text("Macros + Foods").tag(SharingOutgoingScope.macrosAndFoods).disabled(person.connectionPaused)
                 }
                 .pickerStyle(.segmented)
+                .disabled(scopeSelection.isWriteInFlight)
                 .accessibilityLabel("What \(person.displayName) sees from you")
-                .onChange(of: selectedScope) { _, newValue in
-                    updateScope(newValue)
-                }
             }
 
             Section {
@@ -128,6 +131,7 @@ struct SharingPersonScreen: View {
             Text("This removes the relationship for both people. Reconnecting requires a new invite.")
         }
         .task(id: dayContext.today.sharingDayKey) {
+            personDay = nil
             guard sharing.isDeviceSharingEnabled, !person.connectionPaused else { return }
             do {
                 let updates = try await sharing.personDayUpdates(profileId: person.profileId, day: dayContext.today)
@@ -137,12 +141,23 @@ struct SharingPersonScreen: View {
                 }
             } catch is CancellationError {
             } catch {
+                personDay = nil
                 errorMessage = error.localizedDescription
             }
+        }
+        .onChange(of: sharing.isDeviceSharingEnabled) { _, isEnabled in
+            if !isEnabled { personDay = nil }
+        }
+        .onChange(of: sharing.dashboard) { _, _ in
+            if !sharing.isDeviceSharingEnabled { personDay = nil }
+        }
+        .onChange(of: person.outgoingScope) { _, newScope in
+            scopeSelection.acceptServerScope(newScope)
         }
     }
 
     private func updateScope(_ scope: SharingOutgoingScope) {
+        guard scopeSelection.beginWrite(scope) else { return }
         Task {
             do {
                 try await sharing.setOutgoingScope(
@@ -151,11 +166,46 @@ struct SharingPersonScreen: View {
                     ownerDay: dayContext.today,
                     container: modelContext.container
                 )
+                scopeSelection.confirmWrite(scope)
             } catch {
                 errorMessage = error.localizedDescription
-                selectedScope = person.outgoingScope
+                scopeSelection.rejectWrite()
             }
         }
+    }
+}
+
+struct SharingScopeSelection: Equatable {
+    private(set) var selected: SharingOutgoingScope
+    private(set) var confirmed: SharingOutgoingScope
+    private(set) var isWriteInFlight = false
+
+    init(scope: SharingOutgoingScope) {
+        selected = scope
+        confirmed = scope
+    }
+
+    mutating func beginWrite(_ scope: SharingOutgoingScope) -> Bool {
+        guard !isWriteInFlight, scope != confirmed else { return false }
+        selected = scope
+        isWriteInFlight = true
+        return true
+    }
+
+    mutating func confirmWrite(_ scope: SharingOutgoingScope) {
+        selected = scope
+        confirmed = scope
+        isWriteInFlight = false
+    }
+
+    mutating func rejectWrite() {
+        selected = confirmed
+        isWriteInFlight = false
+    }
+
+    mutating func acceptServerScope(_ scope: SharingOutgoingScope) {
+        selected = scope
+        confirmed = scope
     }
 }
 
