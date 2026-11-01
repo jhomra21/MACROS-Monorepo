@@ -366,20 +366,7 @@ export const sharingDashboard = query({
           foodsShared: visible && incoming?.scope.foods === true,
           connectionPaused: !active,
           outgoingScope,
-          snapshot: snapshot == null ? null : {
-            day: snapshot.day,
-            timeZoneId: snapshot.timeZoneId,
-            calories: snapshot.calories,
-            protein: snapshot.protein,
-            fat: snapshot.fat,
-            carbs: snapshot.carbs,
-            entryCount: snapshot.entryCount,
-            ...(snapshot.calorieGoal === undefined ? {} : { calorieGoal: snapshot.calorieGoal }),
-            ...(snapshot.proteinGoal === undefined ? {} : { proteinGoal: snapshot.proteinGoal }),
-            ...(snapshot.carbsGoal === undefined ? {} : { carbsGoal: snapshot.carbsGoal }),
-            ...(snapshot.fatGoal === undefined ? {} : { fatGoal: snapshot.fatGoal }),
-            updatedAt: snapshot.updatedAt,
-          },
+          snapshot: snapshot == null ? null : snapshotDTO(snapshot),
         };
       }),
     );
@@ -408,11 +395,14 @@ export const personDay = query({
 
     if (!relationships.some(row => row.removedAt == null)) throw new Error("Relationship unavailable.");
 
-    if (!await activeConnection(ctx, viewer._id, other._id)) throw new Error("Connection paused.");
+    if (!await activeConnection(ctx, viewer._id, other._id)) {
+      return { visibility: "paused" as const, snapshot: null, foods: [] };
+    }
+
     const incoming = await openGrantBetween(ctx, other._id, viewer._id);
 
     if (!incoming?.scope.macros || !isDayVisibleFromIntervals(args.day, args.ownerToday, [incoming])) {
-      throw new Error("Shared day unavailable.");
+      return { visibility: "notShared" as const, snapshot: null, foods: [] };
     }
 
     const snapshot = await ctx.db.query("dailySnapshots").withIndex("by_owner_day",
@@ -422,21 +412,48 @@ export const personDay = query({
       q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique() : null;
 
     return {
-      snapshot: snapshot == null ? null : {
-        day: snapshot.day, timeZoneId: snapshot.timeZoneId, calories: snapshot.calories, protein: snapshot.protein,
-        fat: snapshot.fat,
-        carbs: snapshot.carbs,
-        entryCount: snapshot.entryCount,
-        ...(snapshot.calorieGoal === undefined ? {} : { calorieGoal: snapshot.calorieGoal }),
-        ...(snapshot.proteinGoal === undefined ? {} : { proteinGoal: snapshot.proteinGoal }),
-        ...(snapshot.carbsGoal === undefined ? {} : { carbsGoal: snapshot.carbsGoal }),
-        ...(snapshot.fatGoal === undefined ? {} : { fatGoal: snapshot.fatGoal }),
-        updatedAt: snapshot.updatedAt,
-      },
+      visibility: "shared" as const,
+      snapshot: snapshot == null ? null : snapshotDTO(snapshot),
       foods: (foodDay?.foods ?? []).slice().sort((a, b) => a.sortIndex - b.sortIndex),
     };
   },
 });
+
+function snapshotDTO(snapshot: {
+  day: string;
+  timeZoneId: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  entryCount: number;
+  calorieGoal?: number;
+  proteinGoal?: number;
+  carbsGoal?: number;
+  fatGoal?: number;
+  updatedAt: number;
+}) {
+  const result: typeof snapshot = {
+    day: snapshot.day,
+    timeZoneId: snapshot.timeZoneId,
+    calories: snapshot.calories,
+    protein: snapshot.protein,
+    fat: snapshot.fat,
+    carbs: snapshot.carbs,
+    entryCount: snapshot.entryCount,
+    updatedAt: snapshot.updatedAt,
+  };
+
+  if (snapshot.calorieGoal !== undefined) result.calorieGoal = snapshot.calorieGoal;
+
+  if (snapshot.proteinGoal !== undefined) result.proteinGoal = snapshot.proteinGoal;
+
+  if (snapshot.carbsGoal !== undefined) result.carbsGoal = snapshot.carbsGoal;
+
+  if (snapshot.fatGoal !== undefined) result.fatGoal = snapshot.fatGoal;
+
+  return result;
+}
 
 async function relationshipForPair(ctx: MutationCtx, profileAId: Id<"profiles">, profileBId: Id<"profiles">) {
   const profileA = await ctx.db.get(profileAId);

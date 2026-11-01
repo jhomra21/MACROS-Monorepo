@@ -48,5 +48,6 @@ export const dashboardResult = v.object({
 });
 
 export const personDayResult = v.object({
+  visibility: v.union(v.literal("shared"), v.literal("notShared"), v.literal("paused")),
   snapshot: v.union(snapshotDTO, v.null()), foods: v.array(foodInput),
 });

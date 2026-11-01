@@ -49,9 +49,13 @@ export function assertValidSnapshot(input: SnapshotInput): void {
   assertNumberInRange(input.fat, 0, 10_000, "fat");
   assertNumberInRange(input.carbs, 0, 10_000, "carbs");
   assertNumberInRange(input.entryCount, 0, 1_000, "entryCount");
+
   if (input.calorieGoal !== undefined) assertNumberInRange(input.calorieGoal, 0, 50_000, "calorieGoal");
+
   if (input.proteinGoal !== undefined) assertNumberInRange(input.proteinGoal, 0, 50_000, "proteinGoal");
+
   if (input.carbsGoal !== undefined) assertNumberInRange(input.carbsGoal, 0, 50_000, "carbsGoal");
+
   if (input.fatGoal !== undefined) assertNumberInRange(input.fatGoal, 0, 50_000, "fatGoal");
 }
 

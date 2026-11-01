@@ -187,7 +187,7 @@ final class LogEntry {
     var quantitySummary: String {
         if isMealLog {
             let amount = servingsConsumed ?? 0
-            return "\(amount.roundedForDisplay) meal\(amount == 1 ? "" : "s")"
+            return "\(amount.servingsForDisplay) meal\(amount == 1 ? "" : "s")"
         }
 
         guard quantityModeKind == .servings else {
@@ -196,7 +196,7 @@ final class LogEntry {
         let description = servingDescription.trimmingCharacters(in: .whitespacesAndNewlines)
         let serving = gramsPerServing.map { "\(description) (\($0.roundedForDisplay) g)" } ?? description
         let amount = servingsConsumed ?? 0
-        return amount == 1 ? serving : "\(amount.roundedForDisplay) × \(serving)"
+        return amount == 1 ? serving : "\(amount.servingsForDisplay) × \(serving)"
     }
 
     private static func trimmedText(from value: String?) -> String? {

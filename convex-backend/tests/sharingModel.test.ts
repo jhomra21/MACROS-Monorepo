@@ -99,6 +99,7 @@ describe("sharing input validation", () => {
       carbsGoal: 200,
       fatGoal: 70,
     };
+
     expect(() => assertValidSnapshot(valid)).not.toThrow();
     expect(() => assertValidSnapshot({ ...valid, calorieGoal: -1 })).toThrow("calorieGoal");
     expect(() => assertValidSnapshot({ ...valid, proteinGoal: 50_001 })).toThrow("proteinGoal");

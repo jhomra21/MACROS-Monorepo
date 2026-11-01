@@ -85,6 +85,14 @@ private struct SharingPersonRow: View {
         return NutritionSnapshot(calories: snapshot.calories, protein: snapshot.protein, fat: snapshot.fat, carbs: snapshot.carbs)
     }
 
+    private var incomingStatus: String {
+        guard person.incomingActive, !person.connectionPaused else {
+            return "Not sharing with you"
+        }
+        guard person.snapshot != nil else { return "Sharing with you" }
+        return totalsLine
+    }
+
     private var status: String {
         if person.connectionPaused { return "Paused, needs MACROS Pro" }
         return switch person.outgoingScope {
@@ -96,20 +104,28 @@ private struct SharingPersonRow: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            MacroRingSetView(
-                totals: totals,
-                goals: goals,
-                ringDiameter: 68,
-                centerValueFontSize: 15,
-                minimumLineWidth: 5,
-                showsGoalSubtitle: false,
-                usesGlassEffect: false
-            )
-            .accessibilityHidden(true)
+            if person.incomingActive && !person.connectionPaused, person.snapshot != nil {
+                MacroRingSetView(
+                    totals: totals,
+                    goals: goals,
+                    ringDiameter: 68,
+                    centerValueFontSize: 15,
+                    minimumLineWidth: 5,
+                    showsGoalSubtitle: false,
+                    usesGlassEffect: false
+                )
+                .accessibilityHidden(true)
+            } else {
+                Image(systemName: person.connectionPaused ? "pause.circle" : "person.crop.circle")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 68, height: 68)
+                    .accessibilityHidden(true)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(person.displayName)
                     .font(.headline)
-                Text(totalsLine)
+                Text(incomingStatus)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Text(status)

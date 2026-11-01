@@ -97,6 +97,45 @@ final class SharingFoodPayloadTests: XCTestCase {
         XCTAssertEqual(SharedFoodPayload(entry: entry, sortIndex: 0).quantityText, "2 × 1 cup (40 g)")
     }
 
+    func testServingQuantitySummaryPreservesUpToTwoDecimalPlaces() {
+        func entry(servings: Double) -> LogEntry {
+            LogEntry(
+                dateLogged: .now,
+                foodName: "Oats",
+                source: .custom,
+                servingDescription: "cup",
+                caloriesPerServing: 150,
+                proteinPerServing: 5,
+                fatPerServing: 3,
+                carbsPerServing: 27,
+                quantityMode: .servings,
+                servingsConsumed: servings,
+                caloriesConsumed: 150 * servings,
+                proteinConsumed: 5 * servings,
+                fatConsumed: 3 * servings,
+                carbsConsumed: 27 * servings
+            )
+        }
+
+        XCTAssertEqual(entry(servings: 1.25).quantitySummary, "1.25 × cup")
+        XCTAssertEqual(entry(servings: 1.5).quantitySummary, "1.5 × cup")
+        XCTAssertEqual(entry(servings: 2).quantitySummary, "2 × cup")
+    }
+
+    func testPersonDayVisibilityDefaultsToSharedAndDecodesCurrentStates() throws {
+        func decode(_ visibility: String?) throws -> SharingPersonDay {
+            let visibilityField = visibility.map { "\"visibility\":\"\($0)\"," } ?? ""
+            return try JSONDecoder().decode(
+                SharingPersonDay.self,
+                from: Data("{\(visibilityField)\"snapshot\":null,\"foods\":[]}".utf8)
+            )
+        }
+
+        XCTAssertEqual(try decode(nil).visibility, .shared)
+        XCTAssertEqual(try decode("notShared").visibility, .notShared)
+        XCTAssertEqual(try decode("paused").visibility, .paused)
+    }
+
     @MainActor
     func testUploadPayloadCapsFoodsAtFirstHundredBySortIndex() throws {
         let container = try ModelContainer(

@@ -97,8 +97,32 @@ struct SharedFood: Decodable, Equatable, Identifiable {
 }
 
 struct SharingPersonDay: Decodable, Equatable {
+    enum Visibility: String, Decodable {
+        case shared
+        case notShared
+        case paused
+    }
+
+    let visibility: Visibility
     let snapshot: SharedDailySnapshot?
     let foods: [SharedFood]
+
+    private enum CodingKeys: String, CodingKey {
+        case visibility, snapshot, foods
+    }
+
+    init(visibility: Visibility = .shared, snapshot: SharedDailySnapshot?, foods: [SharedFood]) {
+        self.visibility = visibility
+        self.snapshot = snapshot
+        self.foods = foods
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        visibility = try container.decodeIfPresent(Visibility.self, forKey: .visibility) ?? .shared
+        snapshot = try container.decodeIfPresent(SharedDailySnapshot.self, forKey: .snapshot)
+        foods = try container.decode([SharedFood].self, forKey: .foods)
+    }
 }
 
 struct SharedDailySnapshot: Decodable, Equatable {

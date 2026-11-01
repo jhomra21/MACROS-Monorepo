@@ -51,6 +51,9 @@ test("registered authentication and unrelated visibility", async () => {
   await expect(t.mutation(api.sharing.createInvite, { tokenHash: "a".repeat(64) })).rejects.toThrow("Authentication");
   await expect(t.mutation(api.sharing.upsertMyDailySnapshot, snapshot)).rejects.toThrow("Authentication");
   await expect(t.query(api.sharing.sharingDashboard, { day, ownerToday: day })).rejects.toThrow("Authentication");
+  await expect(t.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).rejects.toThrow(
+    "Authentication",
+  );
   await expect(t.mutation(api.sharing.deleteMySharingProfile, {})).rejects.toThrow("Authentication");
   await expect(t.mutation(api.sharing.removePerson, { otherProfileId: ids[0], ownerDay: day })).rejects.toThrow("Authentication");
   await expect(t.withIdentity({ subject: "absent" }).mutation(api.sharing.updateDisplayName, { displayName: "QA" })).rejects.toThrow("unavailable");
@@ -144,9 +147,11 @@ test("daily goals round-trip to dashboard and personDay, and build 23 upserts pr
   expect(personDaySnapshot).toMatchObject(goals);
 
   await owner.mutation(api.sharing.upsertMyDailySnapshot, snapshot);
+
   const stored = await t.run(ctx =>
     ctx.db.query("dailySnapshots").withIndex("by_owner_day", q => q.eq("ownerProfileId", ids[0]).eq("day", day)).unique(),
   );
+
   expect(stored).toMatchObject(goals);
   expect((await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0].snapshot).toMatchObject(goals);
 });
@@ -186,12 +191,25 @@ test("Pro flag gates invites and pauses both ways; flag off and either person's 
   expect(person.connectionPaused).toBe(true);
   expect(person.foodsShared).toBe(false);
   expect(person.snapshot).toBeNull();
-  await expect(viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).rejects.toThrow("paused");
+  expect(await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).toEqual({
+    visibility: "paused", snapshot: null, foods: [],
+  });
   await viewer.action(api.entitlements.submitPurchase, { signedTransaction: purchase() });
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
   expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toHaveLength(1);
   await t.run(ctx => ctx.db.patch(setting, { sharingRequirePro: false }));
   await owner.mutation(api.sharing.createInvite, { tokenHash: "7".repeat(64) });
+});
+
+test("personDay returns notShared when inbound grant is absent or ends", async () => {
+  const { owner, viewer, ids } = await connected();
+  const personDay = () => viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day });
+  await owner.mutation(api.sharing.setOutgoingSharingForPerson, { toProfileId: ids[1], enabled: false, ownerDay: day });
+  expect(await personDay()).toEqual({ visibility: "notShared", snapshot: null, foods: [] });
+  await owner.mutation(api.sharing.setOutgoingSharingForPerson, { toProfileId: ids[1], enabled: true, ownerDay: day });
+  expect((await personDay()).visibility).toBe("shared");
+  await owner.mutation(api.sharing.setOutgoingSharingForPerson, { toProfileId: ids[1], enabled: false, ownerDay: day });
+  expect(await personDay()).toEqual({ visibility: "notShared", snapshot: null, foods: [] });
 });
 
 test("personDay rejects past days, removed relationships, deleted people and strangers", async () => {
@@ -203,6 +221,15 @@ test("personDay rejects past days, removed relationships, deleted people and str
   await t.run(ctx => ctx.db.patch(ids[0], { deletedAt: Date.now() }));
   await expect(viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).rejects.toThrow("unavailable");
   await expect(owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [] })).rejects.toThrow("unavailable");
+});
+
+test("personDay rejects a deleted related profile", async () => {
+  const { t, viewer, ids } = await connected();
+  await t.run(ctx => ctx.db.patch(ids[0], { deletedAt: Date.now() }));
+
+  await expect(viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).rejects.toThrow(
+    "unavailable",
+  );
 });
 
 test("100 food cap, bounded fields, unique local IDs and user/day isolation", async () => {
