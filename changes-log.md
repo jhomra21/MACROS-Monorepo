@@ -21,6 +21,13 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added per-person food payload sync, signed StoreKit entitlement submission, ConvexMobile 0.8.2, a people hub, a live person screen, and simplified sharing settings.
 - Validation: bounded Debug simulator build, Swift format, diff check, 25 sharing-focused tests, and 203 non-StoreKit tests passed. People empty-state captures are in `build/sharing-v2/ui/`, but the reused simulator unexpectedly had Sharing enabled, so they do not satisfy the requested sharing-off/no-server-call condition; Settings captures and preview rendering remain unverified.
 
+## 2026-11-01 TestFlight Build 24
+
+- Per-person sharing (Nothing / Macros / Macros + Foods) with live food lists, shared daily goals, server-verified Pro (enforcement off), and redesigned People / Person / Sharing Settings.
+- Dashboard ring: whole ring tappable, smooth expand/collapse, “Food” header, “of N g” legend, and consistent spacing.
+- Serving amounts display to 2 decimals.
+- Validation: bounded Debug build, format/JS lint/diff checks, backend 20 unit + 69 integration tests, and serial non-StoreKit iPad suite (217 tests, 0 failures) passed.
+
 ## 2026-10-31 TestFlight Build 23
 
 - Onboarding targets show proposed macro grams as the primary values.
