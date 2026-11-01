@@ -2,6 +2,37 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  settings: defineTable({ sharingRequirePro: v.boolean() }),
+
+  entitlements: defineTable({
+    profileId: v.id("profiles"),
+    productId: v.string(),
+    originalTransactionId: v.string(),
+    expiresAt: v.optional(v.number()),
+    revokedAt: v.optional(v.number()),
+    environment: v.union(v.literal("Production"), v.literal("Sandbox")),
+    verifiedAt: v.number(),
+  })
+    .index("by_profile", ["profileId"])
+    .index("by_original_transaction", ["originalTransactionId"]),
+
+  sharedFoodEntries: defineTable({
+    ownerProfileId: v.id("profiles"),
+    day: v.string(),
+    localEntryId: v.string(),
+    sortIndex: v.number(),
+    name: v.string(),
+    quantityText: v.string(),
+    calories: v.number(),
+    protein: v.number(),
+    carbs: v.number(),
+    fat: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_owner_day_sort", ["ownerProfileId", "day", "sortIndex"])
+    .index("by_owner_local", ["ownerProfileId", "localEntryId"])
+    .index("by_day", ["day"]),
+
   profiles: defineTable({
     profileKey: v.string(),
     displayName: v.string(),
@@ -59,13 +90,14 @@ export default defineSchema({
     relationshipId: v.id("shareRelationships"),
     fromProfileId: v.id("profiles"),
     toProfileId: v.id("profiles"),
-    scope: v.object({ macros: v.boolean() }),
+    scope: v.object({ macros: v.boolean(), foods: v.optional(v.boolean()) }),
     startDay: v.string(),
     endDay: v.optional(v.string()),
     startedAt: v.number(),
     endedAt: v.optional(v.number()),
   })
     .index("by_from_to", ["fromProfileId", "toProfileId"])
+    .index("by_from_to_ended", ["fromProfileId", "toProfileId", "endedAt"])
     .index("by_to_from", ["toProfileId", "fromProfileId"])
     .index("by_relationship", ["relationshipId"]),
 });
