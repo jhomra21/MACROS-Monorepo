@@ -30,7 +30,7 @@ import { site } from '../data/site';
 		<p>The backend stores a random device-generated profile key, your chosen display name, and a secret verifier (not your secret itself), plus profile creation, update, and deletion timestamps. Daily snapshots contain the day, time-zone identifier, calories, protein, fat, carbs, entry count, and update time.</p>
 		<p>To support invitations and access, it also stores invitation token hashes, status, expiry and acceptance timestamps, and the relevant profile references; relationship profile references, pair key, creation and removal timestamps; and sharing grant profile references, relationship, sharing scope, start/end days, and start/end timestamps.</p>
 		<p>A connection works while at least one of the two people has MACROS Pro, and creating an invite requires Pro. To confirm Pro, the app sends Apple’s signed purchase record to our server; it contains Apple transaction IDs, not personal data.</p>
-		<p>You can remove people, stop sharing, or delete your sharing profile in Settings. Profile deletion removes associated snapshots, invitations, relationships, and grants, and tombstones the profile key to prevent reuse.</p>
+		<p>You can remove people, stop sharing, or delete your sharing profile in Settings. Profile deletion removes associated snapshots, shared foods, invitations, relationships, grants, and purchase links, and tombstones the profile key to prevent reuse. Apple purchase records (transaction IDs, product, dates, and refund status) are kept after deletion so a refunded purchase cannot be used again; they contain no name or contact details.</p>
 	</section>
 
 	<section>

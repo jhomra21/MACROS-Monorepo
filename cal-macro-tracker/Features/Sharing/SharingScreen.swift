@@ -38,14 +38,12 @@ struct SharingScreen: View {
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(
-                        "Sharing is optional and off by default; when enabled, we send your display name and today’s calories, protein, carbs, fat, and entry count to our Convex backend, and viewers see today only."
+                        "Sharing is off by default. When it's on, MACROS sends your display name and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day."
                     )
                     Text(
-                        "For each person, choose Nothing, Macros, or Macros + Foods; the latter sends today’s food names, amounts, calories, protein, carbs, and fat. Food uploads happen only while you share foods with at least one person; foods are deleted from the server when sharing stops and older days are deleted, while logged times, notes, photos, and barcodes are never sent."
+                        "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them."
                     )
-                    Text(
-                        "Invites need Pro, connections work while either person has Pro, and Apple’s signed purchase record (transaction IDs, not personal data) is sent to our server to confirm Pro; you can stop sharing with everyone, remove a person, or delete your profile anytime, which removes stored totals and foods; sharing is best-effort, not medical advice."
-                    )
+                    Text("A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice.")
                 }
             }
 
