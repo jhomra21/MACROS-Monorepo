@@ -182,7 +182,7 @@ export const site = {
 		},
 		{
 			question: 'What leaves my phone?',
-			answer: 'Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only.',
+			answer: 'Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, optional daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only.',
 		},
 	],
 	heroShowcase: {
