@@ -131,18 +131,22 @@ test("build 23 exact wire shapes remain frozen and foods default off", async () 
   expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([]);
 });
 
-test("food scope patches in place, diffs unchanged rows, and off deletes immediately", async () => {
+test("food scope patches in place, unchanged day arrays keep updatedAt, and off deletes immediately", async () => {
   const { t, owner, viewer, ids } = await connected();
   const before = await t.run(ctx => ctx.db.query("shareGrantIntervals").collect());
   await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
-  const stored = await t.run(ctx => ctx.db.query("sharedFoodEntries").collect());
+  const stored = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
+  expect(stored).toHaveLength(1);
+  expect(stored[0].foods).toEqual([food]);
   vi.setSystemTime(Date.now() + 1000);
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toEqual(stored);
+  const unchanged = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
+  expect(unchanged).toEqual(stored);
+  expect(unchanged[0].updatedAt).toBe(stored[0].updatedAt);
   expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([food]);
   await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macros", ownerDay: day });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toEqual([]);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toEqual([]);
   expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([]);
   const after = await t.run(ctx => ctx.db.query("shareGrantIntervals").collect());
   expect(after).toHaveLength(1);
@@ -157,7 +161,7 @@ test("Pro flag gates invites and pauses both ways; flag off and either person's 
   const setting = await t.run(ctx => ctx.db.insert("settings", { sharingRequirePro: true }));
   await expect(owner.mutation(api.sharing.createInvite, { tokenHash: "7".repeat(64) })).rejects.toThrow("Pro");
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toEqual([]);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toEqual([]);
   const person = (await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0];
   expect(person.connectionPaused).toBe(true);
   expect(person.foodsShared).toBe(false);
@@ -194,12 +198,14 @@ test("100 food cap, bounded fields, unique local IDs and user/day isolation", as
 
   await expect(owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food, food] })).rejects.toThrow();
   await stranger.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toHaveLength(100);
+  const stored = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
+  expect(stored).toHaveLength(1);
+  expect(stored[0].foods).toHaveLength(100);
   const detail = await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day });
   expect(detail.foods.map(f => f.sortIndex)).toEqual(Array.from({ length: 100 }, (_, i) => i));
   vi.setSystemTime(new Date("2026-10-14T12:00:00Z"));
   await owner.mutation(api.sharing.syncMyDay, { snapshot: { ...snapshot, day: "2026-10-14" }, foods: [food] });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toHaveLength(1);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toHaveLength(1);
   await expect(viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: "2026-10-14" })).rejects.toThrow();
 });
 
@@ -208,7 +214,7 @@ test("batched deletion drains every owned table beyond 100 rows", async () => {
   await t.run(async ctx => {
     for (let i = 0; i < 205; i++) {
       await ctx.db.insert("dailySnapshots", { ...snapshot, ownerProfileId: ids[0], day: `old-${i}`, updatedAt: 0 });
-      await ctx.db.insert("sharedFoodEntries", { ...food, ownerProfileId: ids[0], day: `old-${i}`, updatedAt: 0 });
+      await ctx.db.insert("sharedFoodDays", { foods: [food], ownerProfileId: ids[0], day: `old-${i}`, updatedAt: 0 });
       await ctx.db.insert("purchaseLinks", { profileId: ids[0], originalTransactionId: `t-${i}` });
       await ctx.db.insert("profileQuotas", { profileId: ids[0], dayKey: `old-${i}`, invitesCreated: 0, snapshotUpserts: 0, displayNameUpdates: 0 });
     }
@@ -217,7 +223,7 @@ test("batched deletion drains every owned table beyond 100 rows", async () => {
   expect((await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people).toEqual([]);
   await t.finishAllScheduledFunctions(() => vi.runAllTimers());
   expect(await t.run(async ctx => Promise.all([
-    ctx.db.query("dailySnapshots").collect(), ctx.db.query("sharedFoodEntries").collect(),
+    ctx.db.query("dailySnapshots").collect(), ctx.db.query("sharedFoodDays").collect(),
     ctx.db.query("purchaseLinks").collect(), ctx.db.query("profileQuotas").collect(),
     ctx.db.query("shareGrantIntervals").collect(), ctx.db.query("shareRelationships").collect(),
     ctx.db.query("shareInvites").collect(),
@@ -287,15 +293,22 @@ test("notification HTTP ordering, grace, expiry, refund, renewal, and unknown tr
   expect((await t.fetch("/appstore/notifications", { method: "POST", body: JSON.stringify({ signedPayload: "garbage" }) })).status).toBe(400);
 });
 
-test("weekly bounded sweeper deletes only foods older than two days", async () => {
+test("weekly bounded sweeper deletes all food days before today, retaining today and future days", async () => {
   const { t, ids } = await fixture();
   await t.run(async ctx => {
-    for (let i = 0; i < 205; i++) await ctx.db.insert("sharedFoodEntries", { ...food, localEntryId: `old-${i}`, day: "2026-10-10", ownerProfileId: ids[0], updatedAt: 0 });
-    await ctx.db.insert("sharedFoodEntries", { ...food, day: "2026-10-11", ownerProfileId: ids[0], updatedAt: 0 });
+    for (let i = 0; i < 205; i++) {
+      const oldDay = new Date(Date.UTC(2025, 0, i + 1)).toISOString().slice(0, 10);
+      await ctx.db.insert("sharedFoodDays", { foods: [food], day: oldDay, ownerProfileId: ids[0], updatedAt: 0 });
+    }
+
+    for (const value of ["2026-10-12", day, "2026-10-14"]) {
+      await ctx.db.insert("sharedFoodDays", { foods: [food], day: value, ownerProfileId: ids[0], updatedAt: 0 });
+    }
   });
   await t.mutation(internal.foodCleanup.sweep, {});
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toHaveLength(108);
   await t.finishAllScheduledFunctions(() => vi.runAllTimers());
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toHaveLength(1);
+  expect((await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).map(row => row.day)).toEqual([day, "2026-10-14"]);
 });
 
 test("stale purchases cannot revive a refund for existing or newly attached profiles", async () => {
@@ -395,24 +408,107 @@ test("scope without ownerDay uses server today; other recipients keep foods unti
 
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
   await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macros" });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toHaveLength(1);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toHaveLength(1);
   expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([]);
   expect((await stranger.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toHaveLength(1);
   await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[2], scope: "off" });
-  expect(await t.run(ctx => ctx.db.query("sharedFoodEntries").collect())).toEqual([]);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toEqual([]);
 });
 
-test("food diffs patch and delete by local ID without crossing owner or day", async () => {
+test("food day replacement preserves document identity and removes omitted foods", async () => {
   const { t, owner, viewer, ids } = await connected();
   await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food, { ...food, localEntryId: "food-2" }] });
-  const before = await t.run(ctx => ctx.db.query("sharedFoodEntries").collect());
+  const before = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
+  vi.setSystemTime(Date.now() + 1000);
   await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [{ ...food, calories: 200 }] });
-  const after = await t.run(ctx => ctx.db.query("sharedFoodEntries").collect());
+  const after = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
   expect(after).toHaveLength(1);
-  expect(after[0]._id).toBe(before.find(row => row.localEntryId === food.localEntryId)?._id);
-  expect(after[0].calories).toBe(200);
+  expect(after[0]._id).toBe(before[0]._id);
+  expect(after[0].updatedAt).toBeGreaterThan(before[0].updatedAt);
+  expect(after[0].foods).toEqual([{ ...food, calories: 200 }]);
+  await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [] });
+  expect((await t.run(ctx => ctx.db.query("sharedFoodDays").collect()))[0].foods).toEqual([]);
+  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([]);
   await expect(viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day: "2026-10-10", ownerToday: "2026-10-10" })).rejects.toThrow("current-day");
+});
+
+test("canonical food arrays ignore property and input order, keeping updatedAt unchanged", async () => {
+  const { t, owner, viewer, ids } = await connected();
+  await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
+  const second = { ...food, localEntryId: "food-2", sortIndex: 2 };
+  await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [second, food] });
+  const stored = await t.run(ctx => ctx.db.query("sharedFoodDays").unique());
+  expect(stored).toMatchObject({ foods: [food, second], updatedAt: expect.any(Number) });
+  vi.setSystemTime(Date.now() + 1000);
+
+  const reorderedFields = {
+    fat: food.fat, carbs: food.carbs, protein: food.protein, calories: food.calories,
+    quantityText: food.quantityText, name: food.name, sortIndex: food.sortIndex, localEntryId: food.localEntryId,
+  };
+
+  await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [reorderedFields, second] });
+  const unchanged = await t.run(ctx => ctx.db.query("sharedFoodDays").unique());
+  expect(unchanged?._id).toBe(stored?._id);
+  expect(unchanged?.updatedAt).toBe(stored?.updatedAt);
+  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([food, second]);
+  await owner.mutation(api.sharing.upsertMyDailySnapshot, snapshot);
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").unique())).toEqual(unchanged);
+});
+
+test("food day documents isolate two sharing owners and never embed foods in profiles, totals, or dashboard", async () => {
+  const { t, owner, viewer, stranger, ids } = await connected();
+  await stranger.mutation(api.sharing.createInvite, { tokenHash: "a".repeat(64) });
+  await viewer.mutation(api.sharing.acceptInvite, { tokenHash: "a".repeat(64), ownerDay: day });
+
+  for (const sender of [owner, stranger]) {
+    await sender.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
+  }
+
+  await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
+  const otherFood = { ...food, name: "Stranger's food", calories: 999 };
+  await stranger.mutation(api.sharing.syncMyDay, { snapshot, foods: [otherFood] });
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toHaveLength(2);
+  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([food]);
+  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[2], day, ownerToday: day })).foods).toEqual([otherFood]);
+  await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macros", ownerDay: day });
+  expect((await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).map(row => row.ownerProfileId)).toEqual([ids[2]]);
+  const dashboard = await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day });
+
+  for (const person of dashboard.people) {
+    expect(person).not.toHaveProperty("foods");
+    expect(person.snapshot).not.toHaveProperty("foods");
+  }
+
+  for (const profile of await t.run(ctx => ctx.db.query("profiles").collect())) expect(profile).not.toHaveProperty("foods");
+
+  for (const totals of await t.run(ctx => ctx.db.query("dailySnapshots").collect())) expect(totals).not.toHaveProperty("foods");
+  // SAFETY: deliberately sends an unsupported private field to verify the food whitelist rejects it.
+  const invalidFood = { ...food, notes: "must not be stored" };
+  await expect(stranger.mutation(api.sharing.syncMyDay, { snapshot, foods: [invalidFood] })).rejects.toThrow();
+});
+
+test("first sync removes old owner food days in bounded batches, preserving other users and current/future days", async () => {
+  const { t, owner, ids } = await connected();
+  await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
+  await t.run(async ctx => {
+    for (let i = 0; i < 205; i++) {
+      const oldDay = new Date(Date.UTC(2025, 0, i + 1)).toISOString().slice(0, 10);
+      await ctx.db.insert("sharedFoodDays", { ownerProfileId: ids[0], day: oldDay, foods: [food], updatedAt: 0 });
+    }
+
+    await ctx.db.insert("sharedFoodDays", { ownerProfileId: ids[0], day: "2026-10-14", foods: [food], updatedAt: 0 });
+    await ctx.db.insert("sharedFoodDays", { ownerProfileId: ids[2], day: "2026-10-12", foods: [food], updatedAt: 0 });
+  });
+  await owner.mutation(api.sharing.syncMyDay, { snapshot, foods: [food] });
+  expect(await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).toHaveLength(108);
+  await t.finishAllScheduledFunctions(() => vi.runAllTimers());
+  const remaining = await t.run(ctx => ctx.db.query("sharedFoodDays").collect());
+  expect(remaining).toHaveLength(3);
+  expect(remaining.map(row => row.day).sort()).toEqual(["2026-10-12", day, "2026-10-14"]);
+  await owner.mutation(api.sharing.deleteMySharingProfile, {});
+  await t.finishAllScheduledFunctions(() => vi.runAllTimers());
+  expect((await t.run(ctx => ctx.db.query("sharedFoodDays").collect())).map(row => row.ownerProfileId)).toEqual([ids[2]]);
 });
 
 test("bootstrap rejects malformed JSON, non-string fields and invalid bounds with 400", async () => {

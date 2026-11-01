@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { renewalFields, transactionFields } from "./sharingValidators";
+import { foodInput, renewalFields, transactionFields } from "./sharingValidators";
 
 export default defineSchema({
   settings: defineTable({ sharingRequirePro: v.boolean() }),
@@ -24,21 +24,14 @@ export default defineSchema({
     profileId: v.id("profiles"), active: v.boolean(), activeUntil: v.optional(v.number()),
   }).index("by_profile", ["profileId"]),
 
-  sharedFoodEntries: defineTable({
+  // Bounded to 100 validated foods by syncDay, separate from dashboard totals.
+  sharedFoodDays: defineTable({
     ownerProfileId: v.id("profiles"),
     day: v.string(),
-    localEntryId: v.string(),
-    sortIndex: v.number(),
-    name: v.string(),
-    quantityText: v.string(),
-    calories: v.number(),
-    protein: v.number(),
-    carbs: v.number(),
-    fat: v.number(),
+    foods: v.array(foodInput),
     updatedAt: v.number(),
   })
-    .index("by_owner_day_sort", ["ownerProfileId", "day", "sortIndex"])
-    .index("by_owner_local", ["ownerProfileId", "localEntryId"])
+    .index("by_owner_day", ["ownerProfileId", "day"])
     .index("by_day", ["day"]),
 
   profiles: defineTable({

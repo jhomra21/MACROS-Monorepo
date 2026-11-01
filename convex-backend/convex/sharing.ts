@@ -7,7 +7,7 @@ import { internal } from "./_generated/api";
 import { requireCurrentProfile } from "./authHelpers";
 import { activeConnection, connectionActive, hasPro, requireProEnabled } from "./proModel";
 import { recomputeProfile } from "./proStatus";
-import { clearFoodsWithoutRecipients, foodDTO, openGrantBetween, syncDay } from "./foodSharing";
+import { clearFoodsWithoutRecipients, openGrantBetween, syncDay } from "./foodSharing";
 import { dashboardResult, foodInput, okResult, personDayResult, scopeName, snapshotFields, snapshotInput, snapshotResult } from "./sharingValidators";
 import {
   assertCurrentDayKey,
@@ -414,15 +414,15 @@ export const personDay = query({
     const snapshot = await ctx.db.query("dailySnapshots").withIndex("by_owner_day",
       q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique();
 
-    const foods = incoming.scope.foods === true ? await ctx.db.query("sharedFoodEntries").withIndex("by_owner_day_sort",
-      q => q.eq("ownerProfileId", other._id).eq("day", args.day)).take(100) : [];
+    const foodDay = incoming.scope.foods === true ? await ctx.db.query("sharedFoodDays").withIndex("by_owner_day",
+      q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique() : null;
 
     return {
       snapshot: snapshot == null ? null : {
         day: snapshot.day, timeZoneId: snapshot.timeZoneId, calories: snapshot.calories, protein: snapshot.protein,
         fat: snapshot.fat, carbs: snapshot.carbs, entryCount: snapshot.entryCount, updatedAt: snapshot.updatedAt,
       },
-      foods: foods.map(foodDTO),
+      foods: (foodDay?.foods ?? []).slice().sort((a, b) => a.sortIndex - b.sortIndex),
     };
   },
 });

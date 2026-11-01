@@ -9,7 +9,7 @@ async function nextBatch(ctx: MutationCtx, id: Id<"profiles">, stage: number) {
     case 0: return await ctx.db.query("shareInvites").withIndex("by_owner_status", q => q.eq("ownerProfileId", id)).take(100);
     case 1: return await ctx.db.query("shareInvites").withIndex("by_accepted_by", q => q.eq("acceptedByProfileId", id)).take(100);
     case 2: return await ctx.db.query("dailySnapshots").withIndex("by_owner_day", q => q.eq("ownerProfileId", id)).take(100);
-    case 3: return await ctx.db.query("sharedFoodEntries").withIndex("by_owner_day_sort", q => q.eq("ownerProfileId", id)).take(100);
+    case 3: return await ctx.db.query("sharedFoodDays").withIndex("by_owner_day", q => q.eq("ownerProfileId", id)).take(100);
     case 4: return await ctx.db.query("shareGrantIntervals").withIndex("by_from_to", q => q.eq("fromProfileId", id)).take(100);
     case 5: return await ctx.db.query("shareGrantIntervals").withIndex("by_to_from", q => q.eq("toProfileId", id)).take(100);
     case 6: return await ctx.db.query("shareRelationships").withIndex("by_profile_a", q => q.eq("profileAId", id)).take(100);

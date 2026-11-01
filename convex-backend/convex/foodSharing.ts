@@ -41,10 +41,10 @@ async function relationshipAllowsFoods(ctx: QueryCtx, relationship: Doc<"shareRe
 }
 
 export async function deleteDayFoods(ctx: MutationCtx, owner: Id<"profiles">, day: string) {
-  const rows = await ctx.db.query("sharedFoodEntries")
-    .withIndex("by_owner_day_sort", q => q.eq("ownerProfileId", owner).eq("day", day)).take(100);
+  const stored = await ctx.db.query("sharedFoodDays")
+    .withIndex("by_owner_day", q => q.eq("ownerProfileId", owner).eq("day", day)).unique();
 
-  await Promise.all(rows.map(row => ctx.db.delete(row._id)));
+  if (stored) await ctx.db.delete(stored._id);
 }
 
 export async function clearFoodsWithoutRecipients(ctx: MutationCtx, owner: Id<"profiles">, day: string) {
@@ -69,28 +69,30 @@ function validateFoods(foods: FoodInput[]) {
   }
 }
 
-export function foodDTO(row: FoodInput): FoodInput {
+function foodDTO(row: FoodInput): FoodInput {
   return {
     localEntryId: row.localEntryId, sortIndex: row.sortIndex, name: row.name, quantityText: row.quantityText,
     calories: row.calories, protein: row.protein, carbs: row.carbs, fat: row.fat,
   };
 }
 
-async function diffFoods(ctx: MutationCtx, owner: Id<"profiles">, day: string, foods: FoodInput[], now: number) {
-  const rows = await ctx.db.query("sharedFoodEntries")
-    .withIndex("by_owner_day_sort", q => q.eq("ownerProfileId", owner).eq("day", day)).take(100);
+function canonicalFoods(foods: FoodInput[]): FoodInput[] {
+  // Fix both object-key and array order before serialization. Convex object
+  // decoding and client upload order need not preserve either.
+  return foods.map(foodDTO).sort((a, b) =>
+    a.sortIndex - b.sortIndex || (a.localEntryId < b.localEntryId ? -1 : a.localEntryId > b.localEntryId ? 1 : 0));
+}
 
-  const existing = new Map(rows.map(row => [row.localEntryId, row]));
+async function replaceFoods(ctx: MutationCtx, owner: Id<"profiles">, day: string, foods: FoodInput[], now: number) {
+  const stored = await ctx.db.query("sharedFoodDays")
+    .withIndex("by_owner_day", q => q.eq("ownerProfileId", owner).eq("day", day)).unique();
 
-  for (const food of foods) {
-    const row = existing.get(food.localEntryId);
-    existing.delete(food.localEntryId);
+  const canonical = canonicalFoods(foods);
 
-    if (!row) await ctx.db.insert("sharedFoodEntries", { ...food, ownerProfileId: owner, day, updatedAt: now });
-    else if (JSON.stringify(foodDTO(row)) !== JSON.stringify(foodDTO(food))) await ctx.db.patch(row._id, { ...food, updatedAt: now });
+  if (!stored) await ctx.db.insert("sharedFoodDays", { ownerProfileId: owner, day, foods: canonical, updatedAt: now });
+  else if (JSON.stringify(canonicalFoods(stored.foods)) !== JSON.stringify(canonical)) {
+    await ctx.db.patch(stored._id, { foods: canonical, updatedAt: now });
   }
-
-  await Promise.all([...existing.values()].map(row => ctx.db.delete(row._id)));
 }
 
 export async function syncDay(ctx: MutationCtx, owner: Id<"profiles">, snapshot: SnapshotInput, foods?: FoodInput[]) {
@@ -113,14 +115,14 @@ export async function syncDay(ctx: MutationCtx, owner: Id<"profiles">, snapshot:
     await ctx.scheduler.runAfter(0, internal.foodCleanup.deleteOwnerBeforeDay, { ownerProfileId: owner, day: snapshot.day });
 
     // The first bounded batch is immediate; the job drains any legacy leftovers.
-    const old = await ctx.db.query("sharedFoodEntries")
-      .withIndex("by_owner_day_sort", q => q.eq("ownerProfileId", owner).lt("day", snapshot.day)).take(100);
+    const old = await ctx.db.query("sharedFoodDays")
+      .withIndex("by_owner_day", q => q.eq("ownerProfileId", owner).lt("day", snapshot.day)).take(100);
 
     await Promise.all(old.map(row => ctx.db.delete(row._id)));
   }
 
   if (await hasActiveFoodGrant(ctx, owner, snapshot.day)) {
-    if (foods !== undefined) await diffFoods(ctx, owner, snapshot.day, foods, now);
+    if (foods !== undefined) await replaceFoods(ctx, owner, snapshot.day, foods, now);
   } else await deleteDayFoods(ctx, owner, snapshot.day);
 
   return { snapshotId };
