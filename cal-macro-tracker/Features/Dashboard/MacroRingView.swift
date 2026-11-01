@@ -6,6 +6,7 @@ struct MacroRingView: View {
     let selectedMetric: MacroMetric?
     let ringDiameter: CGFloat
     let colorStyle: MacroRingColorStyle
+    @ScaledMetric(relativeTo: .largeTitle) private var centerValueFontSize: CGFloat = 42
 
     init(
         totals: NutritionSnapshot,
@@ -26,7 +27,7 @@ struct MacroRingView: View {
             totals: totals,
             goals: goals,
             ringDiameter: ringDiameter,
-            centerValueFontSize: 42,
+            centerValueFontSize: centerValueFontSize,
             minimumLineWidth: 5,
             showsGoalSubtitle: true,
             colorStyle: colorStyle,
@@ -88,33 +89,18 @@ struct MacroDashboardRingPanel: View {
     let onToggleExpansion: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let collapsedRingDiameter: CGFloat = 269
-    private let expandedRingDiameter: CGFloat = 321
-
-    private var ringScale: CGFloat {
-        isExpanded ? 1 : collapsedRingDiameter / expandedRingDiameter
-    }
-
-    private var bottomPadding: CGFloat {
-        isExpanded ? 0 : collapsedRingDiameter - expandedRingDiameter
-    }
 
     var body: some View {
         Button(action: onToggleExpansion) {
-            ZStack(alignment: .top) {
-                MacroRingView(
-                    totals: totals,
-                    goals: goals,
-                    selectedMetric: selectedMacro,
-                    ringDiameter: expandedRingDiameter,
-                    colorStyle: colorStyle
-                )
-                .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
-                .compositingGroup()
-                .scaleEffect(ringScale, anchor: .top)
-            }
-            .frame(width: expandedRingDiameter, height: expandedRingDiameter, alignment: .top)
-            .padding(.bottom, bottomPadding)
+            MacroRingView(
+                totals: totals,
+                goals: goals,
+                selectedMetric: selectedMacro,
+                ringDiameter: isExpanded ? 321 : 269,
+                colorStyle: colorStyle
+            )
+            .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
+            .contentShape(Circle())
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
@@ -126,12 +112,11 @@ struct SecondaryNutritionDetailsView: View {
     let snapshot: SecondaryNutritionSnapshot
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .center, spacing: 14) {
+        LazyVGrid(columns: columns, alignment: .center, spacing: 12) {
             ForEach(SecondaryNutritionMetric.allCases) { metric in
                 secondaryNutrientColumn(metric)
             }
         }
-        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -144,7 +129,7 @@ struct SecondaryNutritionDetailsView: View {
     }
 
     private func secondaryNutrientColumn(_ metric: SecondaryNutritionMetric) -> some View {
-        VStack(alignment: .center, spacing: 2) {
+        VStack(alignment: .center, spacing: 4) {
             Text(metric.displayValue(from: snapshot))
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(metric.value(from: snapshot) == nil ? .secondary : .primary)
@@ -153,7 +138,7 @@ struct SecondaryNutritionDetailsView: View {
                 .minimumScaleFactor(0.75)
 
             Text(metric.title)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -233,7 +218,7 @@ struct MacroLegendView: View {
         let layout =
             isStacked
             ? AnyLayout(VStackLayout(spacing: 0))
-            : AnyLayout(HStackLayout(spacing: 24))
+            : AnyLayout(HStackLayout(spacing: 12))
 
         layout {
             ForEach(MacroMetric.allCases) { metric in
@@ -244,7 +229,7 @@ struct MacroLegendView: View {
                     selectedMacro: $selectedMacro,
                     color: palette?.color(for: metric),
                     canCustomizeColors: canCustomizeColors,
-                    verticalPadding: isStacked ? 8 : 16,
+                    verticalPadding: isStacked ? 8 : 12,
                     onChangeColor: onChangeColor
                 )
             }

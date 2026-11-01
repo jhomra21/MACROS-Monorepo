@@ -217,42 +217,44 @@ struct DashboardScreen: View {
 
     @ViewBuilder
     private func macroRows(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
-        MacroDashboardRingPanel(
-            totals: snapshot.totals,
-            goals: currentGoals,
-            selectedMacro: selectedMacro,
-            isExpanded: isMacroRingExpanded,
-            colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
-            onToggleExpansion: toggleMacroRingExpansion
-        )
-        .tutorialTarget(.ringPanel, in: tutorial)
+        VStack(spacing: 0) {
+            MacroDashboardRingPanel(
+                totals: snapshot.totals,
+                goals: currentGoals,
+                selectedMacro: selectedMacro,
+                isExpanded: isMacroRingExpanded,
+                colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
+                onToggleExpansion: toggleMacroRingExpansion
+            )
+            .tutorialTarget(.ringPanel, in: tutorial)
+
+            MacroLegendView(
+                totals: snapshot.totals,
+                goals: currentGoals,
+                selectedMacro: $selectedMacro,
+                palette: customRingPalette,
+                canCustomizeColors: entitlements.canUse(.customMacroRingColors),
+                onChangeColor: presentColorPicker
+            )
+            .tutorialTarget(.legend, in: tutorial)
+
+            LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
+
+            if isMacroRingExpanded {
+                SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                    .padding(.top, 12)
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity.animation(.easeIn(duration: 0.2).delay(0.15)),
+                            removal: .opacity.animation(.easeOut(duration: 0.12))
+                        )
+                    )
+            }
+        }
         .id(Self.ringRowID)
         .padding(.top, 8)
-        .dashboardListRow(bottom: 0)
+        .dashboardListRow(bottom: 8)
         .dashboardDaySwipe(dayNavigationGesture)
-
-        MacroLegendView(
-            totals: snapshot.totals,
-            goals: currentGoals,
-            selectedMacro: $selectedMacro,
-            palette: customRingPalette,
-            canCustomizeColors: entitlements.canUse(.customMacroRingColors),
-            onChangeColor: presentColorPicker
-        )
-        .tutorialTarget(.legend, in: tutorial)
-        .dashboardListRow(bottom: 0)
-        .dashboardDaySwipe(dayNavigationGesture)
-
-        LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
-            .dashboardListRow(bottom: 8)
-
-        if isMacroRingExpanded {
-            SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
-                .padding(.top, 4)
-                .dashboardListRow(bottom: 8)
-                .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
-                .dashboardDaySwipe(dayNavigationGesture)
-        }
     }
 
     private var pinnedCompactSummaryDayNavigationGesture: some Gesture {
@@ -400,9 +402,13 @@ struct DashboardScreen: View {
     }
 
     private func toggleMacroRingExpansion() {
-        withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
+        withAnimation(expansionAnimation) {
             isMacroRingExpanded.toggle()
         }
+    }
+
+    private var expansionAnimation: Animation? {
+        reduceMotion ? nil : .smooth(duration: 0.35)
     }
 
     /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
@@ -410,7 +416,7 @@ struct DashboardScreen: View {
         switch step {
         case .openSharing?, .previousDay?, .expandRing?:
             if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
-            withAnimation(reduceMotion ? nil : .snappy(duration: 0.3)) {
+            withAnimation(expansionAnimation) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
             }

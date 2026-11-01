@@ -15,6 +15,7 @@ struct DailyShareCardView: View {
             macroSummary
 
             SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                .padding(.horizontal, 16)
                 .padding(.top, 8)
 
             footer

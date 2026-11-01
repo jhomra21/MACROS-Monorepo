@@ -6,10 +6,10 @@ enum MacroRingColorStyle {
     case custom(MacroRingPalette)
 }
 
-struct MacroRingSetView: View {
+struct MacroRingSetView: View, Animatable {
     let totals: NutritionSnapshot
     let goals: MacroGoalsSnapshot
-    let ringDiameter: CGFloat
+    var ringDiameter: CGFloat
     let centerValueFontSize: CGFloat?
     let minimumLineWidth: CGFloat
     let showsGoalSubtitle: Bool
@@ -37,6 +37,12 @@ struct MacroRingSetView: View {
         self.colorStyle = colorStyle
         self.selectedMetric = selectedMetric
         self.usesGlassEffect = usesGlassEffect
+    }
+
+    /// Lets the dashboard resize the rings by animating the real diameter, so layout and glass stay in step.
+    var animatableData: CGFloat {
+        get { ringDiameter }
+        set { ringDiameter = newValue }
     }
 
     private struct RingMetric {
@@ -160,6 +166,8 @@ struct MacroRingSetView: View {
                     if showsGoalSubtitle {
                         Text("of \(goals.calorieGoal.roundedForDisplay) kcal")
                             .font(.subheadline)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
                             .foregroundStyle(.secondary)
                     }
                 }
