@@ -207,7 +207,7 @@ private struct GoalProgressRing: View {
     let usesGlassEffect: Bool
 
     private var resolvedTrackColor: Color {
-        colorScheme == .dark ? trackColor.opacity(0.2) : trackColor.opacity(0.45)
+        colorScheme == .dark ? trackColor.opacity(0.4) : trackColor.opacity(0.45)
     }
 
     private var usesOverlapRenderer: Bool {

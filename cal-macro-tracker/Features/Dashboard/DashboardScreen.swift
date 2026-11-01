@@ -199,7 +199,7 @@ struct DashboardScreen: View {
         macroRows(snapshot: snapshot, customRingPalette: customRingPalette)
 
         LogEntryListSection(
-            title: daySelection.selectedDay.dayTitle,
+            title: "Food",
             emptyTitle: "No food logged yet",
             emptySystemImage: "fork.knife.circle",
             emptyDescription: emptyLogDescription,
@@ -240,20 +240,17 @@ struct DashboardScreen: View {
 
             LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
 
-            if isMacroRingExpanded {
+            RevealLayout(progress: isMacroRingExpanded ? 1 : 0) {
                 SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
                     .padding(.top, 12)
-                    .transition(
-                        .asymmetric(
-                            insertion: .opacity.animation(.easeIn(duration: 0.2).delay(0.15)),
-                            removal: .opacity.animation(.easeOut(duration: 0.12))
-                        )
-                    )
+                    .opacity(isMacroRingExpanded ? 1 : 0)
+                    .accessibilityHidden(!isMacroRingExpanded)
             }
+            .clipped()
         }
         .id(Self.ringRowID)
         .padding(.top, 8)
-        .dashboardListRow(bottom: 8)
+        .dashboardListRow(bottom: 12)
         .dashboardDaySwipe(dayNavigationGesture)
     }
 
@@ -460,6 +457,25 @@ struct DashboardScreen: View {
         case .fat:
             $customFatRingColor
         }
+    }
+}
+
+/// Reports its single child's height scaled by `progress`, so the hero grows in the same animated layout pass as the ring.
+private struct RevealLayout: Layout {
+    var progress: CGFloat
+
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let size = subviews.first?.sizeThatFits(proposal) ?? .zero
+        return CGSize(width: size.width, height: size.height * progress)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
     }
 }
 

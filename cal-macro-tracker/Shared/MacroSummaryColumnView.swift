@@ -25,6 +25,7 @@ struct MacroSummaryColumnView: View {
         let showsOverGoalIndicatorInValueLine: Bool
         let showsOverGoalDeltaInGoalLine: Bool
         let showsTitleAfterValues: Bool
+        var showsGoalUnit = false
     }
 
     let metric: MacroMetric
@@ -130,11 +131,15 @@ struct MacroSummaryColumnView: View {
             .allowsTightening(true)
     }
 
+    private var goalText: String {
+        style.showsGoalUnit ? "of \(presentation.goalValueText) g" : presentation.goalValueText
+    }
+
     @ViewBuilder
     var goalLine: some View {
         if style.showsOverGoalDeltaInGoalLine, let overGoalValueText = presentation.overGoalValueText {
             HStack(spacing: style.goalSpacing) {
-                Text(presentation.goalValueText)
+                Text(goalText)
                     .foregroundStyle(style.baselineColor)
                     .lineLimit(1)
                     .minimumScaleFactor(style.baselineMinimumScaleFactor)
@@ -148,7 +153,7 @@ struct MacroSummaryColumnView: View {
             .font(style.baselineFont)
             .monospacedDigit()
         } else {
-            Text(presentation.goalValueText)
+            Text(goalText)
                 .font(style.baselineFont)
                 .foregroundStyle(style.baselineColor)
                 .monospacedDigit()

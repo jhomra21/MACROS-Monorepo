@@ -103,8 +103,15 @@ struct MacroDashboardRingPanel: View {
             .contentShape(Circle())
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(UndimmedButtonStyle())
         .accessibilityLabel(isExpanded ? "Collapse nutrition details" : "Expand nutrition details")
+    }
+}
+
+/// `.plain` dims the whole label while pressed, which reads as a flash over the rings.
+private struct UndimmedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }
 

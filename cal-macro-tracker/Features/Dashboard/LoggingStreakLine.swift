@@ -25,11 +25,11 @@ struct LoggingStreakLine: View {
                 HStack(spacing: 4) {
                     Text("\(streak)-day logging streak")
                     Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .imageScale(.small)
                         .accessibilityHidden(true)
                 }
-                .font(.footnote)
+                .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .padding(.vertical, 4)
                 .frame(maxWidth: .infinity, alignment: .center)

@@ -19,7 +19,8 @@ extension MacroSummaryColumnView.Style {
         deltaWeight: .bold,
         showsOverGoalIndicatorInValueLine: false,
         showsOverGoalDeltaInGoalLine: true,
-        showsTitleAfterValues: true
+        showsTitleAfterValues: true,
+        showsGoalUnit: true
     )
 
     static let compact = MacroSummaryColumnView.Style(
