@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-11-01 Camera Viewport Corners
+
+- Camera viewport keeps its 28 pt top corners and uses display-concentric bottom corners.
+
 ## 2026-11-01 Sharing v2 backend (unreleased)
 
 - Added opt-in per-person food sharing, reactive Pro enforcement (off by default), Apple-signed purchase/grace verification, ordered server notifications, bounded cleanup/deletion, and validated APIs while preserving build 23 response shapes.

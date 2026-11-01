@@ -330,7 +330,13 @@ struct FoodCameraSheet: View {
         }
         .frame(maxWidth: .infinity, minHeight: 120, maxHeight: .infinity)
         .layoutPriority(0)
-        .clipShape(RoundedRectangle(cornerRadius: 28))
+        .clipShape(
+            .rect(
+                uniformBottomCorners: .concentric,
+                topLeadingCorner: .fixed(28),
+                topTrailingCorner: .fixed(28)
+            )
+        )
         .padding(16)
         .ignoresSafeArea(edges: .bottom)
         .onAppear {
