@@ -28,7 +28,7 @@ Confirm the legal owner details before submission. Apple's limits: name 30 chara
   • No account required.
   • Food logs are stored on your device.
   • Packaged-food search and barcode lookup use an internet connection.
-  • Sharing with a circle is optional and shares daily totals, not individual foods.
+  • Sharing is optional and off by default. Choose Nothing, Macros, or Macros + Foods separately for each person.
   • Writing nutrition to Apple Health is free.
 
   MACROS PRO
@@ -49,7 +49,7 @@ Confirm the legal owner details before submission. Apple's limits: name 30 chara
 
 - Food logging works without an account.
 - Barcode and nutrition label scanning use the camera, so test them on a physical iPhone. The Simulator has no camera.
-- To review sharing, install the app on two sandbox devices, enable Sharing on device A, create an invitation, then accept it on device B. Sharing is optional and sends daily totals rather than individual foods. Sharing needs two devices.
+- To review sharing, install the app on two sandbox devices, enable Sharing on device A, create an invitation, then accept it on device B. Sharing is optional and off by default; creating an invite requires Pro, but a connection works while either person has Pro. Choose Nothing, Macros, or Macros + Foods for each person. Sharing needs two devices.
 - Pro gates are visible in Settings. Review them without purchasing; paid products and subscription behavior are configured separately in App Store Connect.
 - Apple Health requires user permission and a device with Health available. Writing nutrition is free; importing weight from Apple Health is a Pro feature. Reviewers can test the free path without purchasing.
 

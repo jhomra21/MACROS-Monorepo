@@ -38,9 +38,14 @@ struct SharingScreen: View {
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(
-                        "MACROS shares your display name, today’s calories, protein, carbs, fat, and entry count with people you choose. Food names, amounts, calories, and macros are shared only with people you explicitly enable for food sharing."
+                        "Sharing is optional and off by default; when enabled, we send your display name and today’s calories, protein, carbs, fat, and entry count to our Convex backend, and viewers see today only."
                     )
-                    Text("Shared information is best-effort and is not medical advice.")
+                    Text(
+                        "For each person, choose Nothing, Macros, or Macros + Foods; the latter sends today’s food names, amounts, calories, protein, carbs, and fat. Food uploads happen only while you share foods with at least one person; foods are deleted from the server when sharing stops and older days are deleted, while logged times, notes, photos, and barcodes are never sent."
+                    )
+                    Text(
+                        "Invites need Pro, connections work while either person has Pro, and Apple’s signed purchase record (transaction IDs, not personal data) is sent to our server to confirm Pro; you can stop sharing with everyone, remove a person, or delete your profile anytime, which removes stored totals and foods; sharing is best-effort, not medical advice."
+                    )
                 }
             }
 
