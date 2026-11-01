@@ -16,6 +16,11 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Added opt-in per-person food sharing, reactive Pro enforcement (off by default), Apple-signed purchase/grace verification, ordered server notifications, bounded cleanup/deletion, and validated APIs while preserving build 23 response shapes.
 - Validation: backend typecheck, 19 unit tests, 41 integration tests, JS lint, and local isolate/Node bundling passed; all deployment, smoke, and deployment-based Sandbox verification skipped by owner instruction.
 
+## Sharing v2 app (unreleased)
+
+- Added per-person food payload sync, signed StoreKit entitlement submission, ConvexMobile 0.8.2, a people hub, a live person screen, and simplified sharing settings.
+- Validation: bounded Debug simulator build, Swift format, diff check, 25 sharing-focused tests, and 203 non-StoreKit tests passed. People empty-state captures are in `build/sharing-v2/ui/`, but the reused simulator unexpectedly had Sharing enabled, so they do not satisfy the requested sharing-off/no-server-call condition; Settings captures and preview rendering remain unverified.
+
 ## 2026-10-31 TestFlight Build 23
 
 - Onboarding targets show proposed macro grams as the primary values.

@@ -109,6 +109,16 @@ final class SharingReliabilityTests: XCTestCase {
         XCTAssertEqual(f.remote.uploads.count, 2)
     }
 
+    func testUploadOmitsFoodsWhenNobodyHasFoodSharingEnabled() async throws {
+        let f = try fixture()
+        try f.setCalories(100)
+
+        try await f.service.uploadTodaySnapshot(container: f.container)
+
+        XCTAssertNil(f.remote.committed?.foods)
+        XCTAssertNil(f.remote.committed?.convexArguments["foods"] ?? nil)
+    }
+
     func testDeletionDuringCommittedDelayedUploadCannotRepopulateMetadata() async throws {
         let f = try fixture()
         f.remote.delayUpload = true
