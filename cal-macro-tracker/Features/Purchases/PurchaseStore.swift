@@ -25,6 +25,13 @@ struct EntitlementSnapshot {
     var subscriptionStatuses: [String: ProSubscriptionStatus] = [:]
 }
 
+struct ProPurchaseSubmission {
+    let transactionID: UInt64
+    let expiresAt: Date?
+    let signedTransaction: String
+    let signedRenewalInfo: String?
+}
+
 @MainActor
 @Observable
 final class PurchaseStore {
@@ -50,6 +57,7 @@ final class PurchaseStore {
     private(set) var isRestoring = false
     private(set) var feedback: Feedback?
     private(set) var subscriptionStatuses: [String: ProSubscriptionStatus] = [:]
+    var onEntitlementsChanged: (@MainActor () async -> Void)?
 
     var hasPro: Bool { entitlements.hasPro }
 
@@ -87,9 +95,11 @@ final class PurchaseStore {
             for await _ in Product.SubscriptionInfo.Status.updates {
                 guard !Task.isCancelled else { return }
                 await self?.refreshEntitlements()
+                await self?.onEntitlementsChanged?()
             }
         }
         await refreshEntitlements()
+        await onEntitlementsChanged?()
     }
 
     func stop() {
@@ -141,6 +151,7 @@ final class PurchaseStore {
                     return
                 }
                 let resolution = await refreshEntitlements()
+                await onEntitlementsChanged?()
                 await transaction.finish()
                 feedback =
                     resolution.hasPro ? .status("Purchase complete.") : .error("Purchase has not granted access. Please restore purchases.")
@@ -166,6 +177,7 @@ final class PurchaseStore {
         do {
             try await AppStore.sync()
             let resolution = await refreshEntitlements()
+            await onEntitlementsChanged?()
             feedback = .status(resolution.hasPro ? "Purchases restored." : "No Pro purchases were found for this Apple Account.")
         } catch {
             feedback = .error("Restore could not be completed.")
@@ -247,6 +259,35 @@ final class PurchaseStore {
         return EntitlementSnapshot(resolution: AppEntitlements.resolve(from: facts), subscriptionStatuses: statuses)
     }
 
+    func currentProPurchaseSubmissions() async -> [ProPurchaseSubmission] {
+        var renewalByOriginalID: [UInt64: String] = [:]
+        for await group in Product.SubscriptionInfo.Status.all {
+            for status in group.statuses {
+                guard case let .verified(transaction) = status.transaction,
+                    case .verified = status.renewalInfo,
+                    ProSource(productID: transaction.productID)?.isSubscription == true
+                else { continue }
+                renewalByOriginalID[transaction.originalID] = status.renewalInfo.jwsRepresentation
+            }
+        }
+
+        var submissions: [ProPurchaseSubmission] = []
+        for await result in Transaction.currentEntitlements {
+            guard case let .verified(transaction) = result,
+                ProSource(productID: transaction.productID) != nil
+            else { continue }
+            submissions.append(
+                ProPurchaseSubmission(
+                    transactionID: transaction.id,
+                    expiresAt: transaction.expirationDate,
+                    signedTransaction: result.jwsRepresentation,
+                    signedRenewalInfo: renewalByOriginalID[transaction.originalID]
+                )
+            )
+        }
+        return submissions
+    }
+
     #if DEBUG
     func setDebugPro(_ isUnlocked: Bool) {
         entitlements.update(EntitlementResolution(source: isUnlocked ? .lifetime : nil, expiration: nil, hasActiveSubscription: false))
@@ -263,6 +304,7 @@ final class PurchaseStore {
             ProSource(productID: transaction.productID) != nil
         else { return }
         await refreshEntitlements()
+        await onEntitlementsChanged?()
         await transaction.finish()
     }
 }

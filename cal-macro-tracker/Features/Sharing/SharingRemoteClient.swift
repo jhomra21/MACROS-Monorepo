@@ -21,13 +21,28 @@ protocol SharingRemote {
     func updateDisplayName(_ displayName: String) async throws
     func upsertDailySnapshot(_ payload: SharingDailySnapshotPayload) async throws
     func dashboard(for day: CalendarDay) -> AnyPublisher<SharingDashboard, Error>
+    func personDay(profileId: String, day: CalendarDay) -> AnyPublisher<SharingPersonDay, Error>
     func createInvite(tokenHash: String) async throws -> (inviteId: String, expiresAt: Date)
     func revokeInvite(id: String) async throws
     func acceptInvite(tokenHash: String, ownerDay: CalendarDay) async throws
     func setOutgoingSharing(to profileId: String, enabled: Bool, ownerDay: CalendarDay) async throws
+    func setOutgoingScope(to profileId: String, scope: SharingOutgoingScope, ownerDay: CalendarDay) async throws
+    func submitPurchase(signedTransaction: String, signedRenewalInfo: String?) async throws
     func stopSharingMyData(ownerDay: CalendarDay) async throws
     func removePerson(_ profileId: String, ownerDay: CalendarDay) async throws
     func deleteSharingProfile() async throws
+}
+
+extension SharingRemote {
+    func personDay(profileId: String, day: CalendarDay) -> AnyPublisher<SharingPersonDay, Error> {
+        Empty(completeImmediately: true).eraseToAnyPublisher()
+    }
+
+    func setOutgoingScope(to profileId: String, scope: SharingOutgoingScope, ownerDay: CalendarDay) async throws {
+        try await setOutgoingSharing(to: profileId, enabled: scope != .off, ownerDay: ownerDay)
+    }
+
+    func submitPurchase(signedTransaction: String, signedRenewalInfo: String?) async throws {}
 }
 
 @MainActor
@@ -52,9 +67,21 @@ struct SharingRemoteClient: SharingRemote {
 
     func upsertDailySnapshot(_ payload: SharingDailySnapshotPayload) async throws {
         let _: UpsertDailySnapshotResponse = try await authService.client.mutation(
-            "sharing:upsertMyDailySnapshot",
+            "sharing:syncMyDay",
             with: payload.convexArguments
         )
+    }
+
+    func personDay(profileId: String, day: CalendarDay) -> AnyPublisher<SharingPersonDay, Error> {
+        let dayKey = day.sharingDayKey
+        return authService.client
+            .subscribe(
+                to: "sharing:personDay",
+                with: ["otherProfileId": profileId, "day": dayKey, "ownerToday": dayKey],
+                yielding: SharingPersonDay.self
+            )
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
     }
 
     func dashboard(for day: CalendarDay) -> AnyPublisher<SharingDashboard, Error> {
@@ -91,11 +118,21 @@ struct SharingRemoteClient: SharingRemote {
         )
     }
 
-    func setOutgoingSharing(to profileId: String, enabled: Bool, ownerDay: CalendarDay) async throws {
+    func setOutgoingScope(to profileId: String, scope: SharingOutgoingScope, ownerDay: CalendarDay) async throws {
         let _: SharingMutationStatus = try await authService.client.mutation(
-            "sharing:setOutgoingSharingForPerson",
-            with: ["toProfileId": profileId, "enabled": enabled, "ownerDay": ownerDay.sharingDayKey]
+            "sharing:setOutgoingScope",
+            with: ["otherProfileId": profileId, "scope": scope.rawValue, "ownerDay": ownerDay.sharingDayKey]
         )
+    }
+
+    func setOutgoingSharing(to profileId: String, enabled: Bool, ownerDay: CalendarDay) async throws {
+        try await setOutgoingScope(to: profileId, scope: enabled ? .macros : .off, ownerDay: ownerDay)
+    }
+
+    func submitPurchase(signedTransaction: String, signedRenewalInfo: String?) async throws {
+        var arguments: [String: ConvexEncodable?] = ["signedTransaction": signedTransaction]
+        arguments["signedRenewalInfo"] = signedRenewalInfo
+        let _: SharingMutationStatus = try await authService.client.action("entitlements:submitPurchase", with: arguments)
     }
 
     func stopSharingMyData(ownerDay: CalendarDay) async throws {

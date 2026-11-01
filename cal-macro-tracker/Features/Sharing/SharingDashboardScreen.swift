@@ -1,346 +1,174 @@
-import SwiftData
 import SwiftUI
 
 struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
-    @Environment(AppEntitlements.self) private var entitlements
     @Environment(SharingSyncService.self) private var sharingSyncService
-    @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
-        MacroRingColorStorage.defaultProteinHex
-    @AppStorage(AppStorageKeys.customCarbRingColor, store: .macroRingColors) private var customCarbRingColor =
-        MacroRingColorStorage.defaultCarbHex
-    @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
-        MacroRingColorStorage.defaultFatHex
-
+    @State private var dashboardErrorMessage: String?
     let onOpenSharingSettings: () -> Void
-
-    @Query private var goals: [DailyGoals]
-    @State private var expandedSharingPersonId: String?
-    @State private var personPendingRemoval: SharingPerson?
-    @State private var errorMessage: String?
-    @State private var errorSource: ErrorSource?
-
-    private enum ErrorSource: Equatable {
-        case dashboardSubscription
-        case mutation
-    }
-
-    private var currentGoals: MacroGoalsSnapshot {
-        MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals))
-    }
-
-    private var customRingPalette: MacroRingPalette? {
-        guard entitlements.canUse(.customMacroRingColors) else { return nil }
-        return MacroRingColorStorage(
-            proteinHex: customProteinRingColor,
-            carbHex: customCarbRingColor,
-            fatHex: customFatRingColor
-        )
-        .customPalette
-    }
 
     var body: some View {
         ScrollView {
-            sharingPreviewRows
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 24)
+            LazyVStack(spacing: 12) {
+                if sharingSyncService.shouldShowDashboardLoading {
+                    ProgressView("Loading sharing…")
+                } else if sharingSyncService.dashboard.people.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "person.2")
+                            .font(.largeTitle)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                        Text("No sharing yet")
+                            .font(.title2.weight(.semibold))
+                            .multilineTextAlignment(.center)
+                        Text("Invite someone or accept an invite to see their macros here.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                        Button("Open Sharing Settings", action: onOpenSharingSettings)
+                            .buttonStyle(.borderedProminent)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 32)
+                } else {
+                    ForEach(sharingSyncService.dashboard.people) { person in
+                        NavigationLink {
+                            SharingPersonScreen(person: person)
+                        } label: {
+                            SharingPersonRow(person: person)
+                        }
+                        .accessibilityHint("View \(person.displayName)’s shared day and sharing settings")
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
         .scrollBounceBehavior(.basedOnSize)
-        .background(PlatformColors.groupedBackground)
         .navigationTitle("Sharing")
         .inlineNavigationTitle()
         .toolbar {
-            ToolbarItem(placement: .appTopBarTrailing) {
+            ToolbarItemGroup(placement: .appTopBarTrailing) {
+                Button(action: onOpenSharingSettings) {
+                    Image(systemName: "plus")
+                        .appTopBarIconStyle()
+                }
+                .accessibilityLabel("Invite someone")
                 Button(action: onOpenSharingSettings) {
                     Image(systemName: "gearshape")
                         .appTopBarIconStyle()
                 }
-                .buttonStyle(.plain)
                 .accessibilityLabel("Open sharing settings")
             }
         }
-        .errorBanner(
-            message: $errorMessage,
-            retryTitle: errorSource == .dashboardSubscription ? "Retry" : nil,
-            onRetry: retryDashboardSubscription
-        )
-        .onChange(of: sharingSyncService.dashboardErrorMessage) { _, message in
-            if let message {
-                errorMessage = message
-                errorSource = .dashboardSubscription
-            } else if errorSource == .dashboardSubscription {
-                errorMessage = nil
-                errorSource = nil
-            }
+        .onChange(of: sharingSyncService.dashboardErrorMessage) { _, error in
+            dashboardErrorMessage = error
         }
         .onAppear {
-            errorMessage = sharingSyncService.dashboardErrorMessage
-            errorSource = sharingSyncService.dashboardErrorMessage == nil ? nil : .dashboardSubscription
+            dashboardErrorMessage = sharingSyncService.dashboardErrorMessage
         }
-        .alert(
-            "Remove \(personPendingRemoval?.displayName ?? "Person")?",
-            isPresented: personPendingRemovalBinding
-        ) {
-            if let person = personPendingRemoval {
-                Button("Remove Person", role: .destructive) {
-                    removePerson(person)
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This removes the relationship for both people. Reconnecting requires a new invite.")
+        .errorBanner(message: $dashboardErrorMessage, retryTitle: "Retry") {
+            sharingSyncService.startDashboardSubscription(for: dayContext.today)
         }
-    }
-
-    private var personPendingRemovalBinding: Binding<Bool> {
-        Binding(
-            get: { personPendingRemoval != nil },
-            set: { if !$0 { personPendingRemoval = nil } }
-        )
-    }
-
-    private var sharingPreviewRows: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Today")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 2)
-
-            if sharingSyncService.shouldShowDashboardLoading {
-                sharingLoadingState
-            } else if sharingSyncService.dashboard.people.isEmpty {
-                sharingEmptyState
-            } else {
-                ForEach(Array(sharingSyncService.dashboard.people.enumerated()), id: \.element.id) { index, person in
-                    SharingPreviewPersonRow(
-                        person: person,
-                        goals: currentGoals,
-                        ringColorPalette: customRingPalette,
-                        entranceDelay: min(Double(index) * 0.045, 0.16),
-                        isExpanded: expandedSharingPersonId == person.id,
-                        onToggleExpansion: {
-                            toggleSharingPersonExpansion(person)
-                        },
-                        onOutgoingChanged: { enabled in
-                            setOutgoingSharing(for: person, enabled: enabled)
-                        },
-                        onRemove: {
-                            personPendingRemoval = person
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    private var sharingEmptyState: some View {
-        VStack(spacing: 12) {
-            ContentUnavailableView(
-                "No sharing yet",
-                systemImage: "person.2",
-                description: Text(
-                    sharingSyncService.isDeviceSharingEnabled
-                        ? "Accept an invite to see shared macro rings here. Creating invites needs MACROS Pro."
-                        : "You don’t have sharing enabled yet."
-                )
-            )
-
-            AppAccentActionButton(
-                title: sharingSyncService.isDeviceSharingEnabled ? "Open Sharing Settings" : "Enable Sharing",
-                systemImage: nil,
-                isCompact: false
-            ) {
-                onOpenSharingSettings()
-            }
-        }
-        .padding(.vertical, 24)
-        .frame(maxWidth: .infinity)
-    }
-
-    private var sharingLoadingState: some View {
-        VStack(spacing: 12) {
-            ProgressView()
-            Text("Loading sharing…")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.vertical, 32)
-        .frame(maxWidth: .infinity)
-    }
-
-    private func toggleSharingPersonExpansion(_ person: SharingPerson) {
-        withAnimation(.smooth(duration: 0.24)) {
-            expandedSharingPersonId = expandedSharingPersonId == person.id ? nil : person.id
-        }
-    }
-
-    private func setOutgoingSharing(for person: SharingPerson, enabled: Bool) {
-        Task {
-            do {
-                try await sharingSyncService.setOutgoingSharing(to: person.profileId, enabled: enabled, ownerDay: dayContext.today)
-                errorMessage = nil
-                errorSource = nil
-            } catch {
-                errorMessage = error.localizedDescription
-                errorSource = .mutation
-            }
-        }
-    }
-
-    private func removePerson(_ person: SharingPerson) {
-        Task {
-            do {
-                try await sharingSyncService.removePerson(person.profileId, ownerDay: dayContext.today)
-                errorMessage = nil
-                errorSource = nil
-            } catch {
-                errorMessage = error.localizedDescription
-                errorSource = .mutation
-            }
-        }
-    }
-
-    private func retryDashboardSubscription() {
-        errorMessage = nil
-        errorSource = nil
-        sharingSyncService.startDashboardSubscription(for: dayContext.today)
     }
 }
 
-private struct SharingPreviewPersonRow: View {
+private struct SharingPersonRow: View {
     let person: SharingPerson
-    let goals: MacroGoalsSnapshot
-    let ringColorPalette: MacroRingPalette?
-    let entranceDelay: Double
-    let isExpanded: Bool
-    let onToggleExpansion: () -> Void
-    let onOutgoingChanged: (Bool) -> Void
-    let onRemove: () -> Void
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var hasAppeared = false
+    private var goals: MacroGoalsSnapshot {
+        person.snapshot?.macroGoalsSnapshot ?? .empty
+    }
 
     private var totals: NutritionSnapshot {
         guard let snapshot = person.snapshot else { return .zero }
-        return NutritionSnapshot(
-            calories: snapshot.calories,
-            protein: snapshot.protein,
-            fat: snapshot.fat,
-            carbs: snapshot.carbs
-        )
+        return NutritionSnapshot(calories: snapshot.calories, protein: snapshot.protein, fat: snapshot.fat, carbs: snapshot.carbs)
+    }
+
+    private var incomingStatus: String {
+        guard person.incomingActive, !person.connectionPaused else {
+            return "Not sharing with you"
+        }
+        guard person.snapshot != nil else { return "Sharing with you" }
+        return totalsLine
+    }
+
+    private var status: String {
+        if person.connectionPaused { return "Paused, needs MACROS Pro" }
+        return switch person.outgoingScope {
+        case .off: "You don’t share with \(person.displayName)"
+        case .macros: "Sees your macros"
+        case .macrosAndFoods: "Sees your macros and foods"
+        }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: isExpanded ? 14 : 0) {
-            Button(action: onToggleExpansion) {
-                HStack(spacing: 14) {
-                    CompactMacroRingView(
-                        totals: totals,
-                        goals: goals,
-                        colorStyle: ringColorPalette.map(MacroRingColorStyle.custom) ?? .standard
-                    )
-                    .frame(width: 72, height: 72)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(person.displayName)
-                            .font(.headline)
-                        Text(subtitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .contentShape(Rectangle())
+        HStack(spacing: 16) {
+            if person.incomingActive && !person.connectionPaused, person.snapshot != nil {
+                MacroRingSetView(
+                    totals: totals,
+                    goals: goals,
+                    ringDiameter: 68,
+                    centerValueFontSize: 15,
+                    minimumLineWidth: 5,
+                    showsGoalSubtitle: false,
+                    usesGlassEffect: false
+                )
+                .accessibilityHidden(true)
+            } else {
+                Image(systemName: person.connectionPaused ? "pause.circle" : "person.crop.circle")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 68, height: 68)
+                    .accessibilityHidden(true)
             }
-            .buttonStyle(.plain)
-            .accessibilityHint(isExpanded ? "Collapse sharing controls" : "Expand sharing controls")
-
-            if isExpanded {
-                SharingPreviewExpandedSettings(person: person, onOutgoingChanged: onOutgoingChanged, onRemove: onRemove)
-                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
+            VStack(alignment: .leading, spacing: 4) {
+                Text(person.displayName)
+                    .font(.headline)
+                Text(incomingStatus)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(status)
+                    .font(.footnote)
+                    .foregroundStyle(person.connectionPaused ? .orange : .secondary)
             }
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .appGlassRoundedRect(cornerRadius: isExpanded ? 28 : 22, interactive: true)
-        .compositingGroup()
-        .scaleEffect(entranceScale, anchor: .center)
-        .opacity(hasAppeared ? 1 : 0)
-        .animation(entranceAnimation, value: hasAppeared)
-        .onAppear(perform: animateInIfNeeded)
+        .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
     }
 
-    private var subtitle: String {
-        guard let snapshot = person.snapshot else { return "No totals shared yet today" }
-        return
-            "\(snapshot.calories.roundedForDisplay) kcal · P \(snapshot.protein.roundedForDisplay)g · C \(snapshot.carbs.roundedForDisplay)g · F \(snapshot.fat.roundedForDisplay)g"
-    }
-
-    private var entranceScale: CGFloat {
-        reduceMotion || hasAppeared ? 1 : 0.94
-    }
-
-    private var entranceAnimation: Animation {
-        reduceMotion
-            ? .easeOut(duration: 0.18)
-            : .spring(response: 0.34, dampingFraction: 0.86).delay(entranceDelay)
-    }
-
-    private func animateInIfNeeded() {
-        guard !hasAppeared else { return }
-        hasAppeared = true
+    private var totalsLine: String {
+        "\(totals.calories.roundedForDisplay) kcal · P \(totals.protein.roundedForDisplay)g · C \(totals.carbs.roundedForDisplay)g · F \(totals.fat.roundedForDisplay)g"
     }
 }
 
-private struct SharingPreviewExpandedSettings: View {
-    let person: SharingPerson
-    let onOutgoingChanged: (Bool) -> Void
-    let onRemove: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Divider()
-
-            HStack(spacing: 10) {
-                SharingPreviewStatusPill(title: "Sharing with you", isActive: person.incomingActive)
-                SharingPreviewStatusPill(title: "You share", isActive: person.outgoingActive)
-            }
-
-            Toggle("Share my macros with \(person.displayName)", isOn: outgoingBinding)
-                .font(.subheadline.weight(.semibold))
-                .toggleStyle(.switch)
-                .padding(.top, 2)
-
-            Button("Remove Person", role: .destructive, action: onRemove)
-                .font(.subheadline.weight(.semibold))
+#Preview("Sharing People") {
+    NavigationStack {
+        List {
+            SharingPersonRow(
+                person: SharingPerson(
+                    relationshipId: "preview",
+                    profileId: "preview-profile",
+                    displayName: "Alex",
+                    incomingActive: true,
+                    outgoingActive: true,
+                    scope: SharingScope(macros: true),
+                    snapshot: SharedDailySnapshot(
+                        day: "2026-11-01",
+                        timeZoneId: "America/Los_Angeles",
+                        calories: 1_650,
+                        protein: 120,
+                        fat: 55,
+                        carbs: 180,
+                        entryCount: 4,
+                        updatedAt: 0
+                    ),
+                    foodsShared: true,
+                    outgoingScope: .macrosAndFoods,
+                    connectionPaused: false
+                )
+            )
         }
-    }
-
-    private var outgoingBinding: Binding<Bool> {
-        Binding(
-            get: { person.outgoingActive },
-            set: { onOutgoingChanged($0) }
-        )
-    }
-}
-
-private struct SharingPreviewStatusPill: View {
-    let title: String
-    let isActive: Bool
-
-    var body: some View {
-        HStack(spacing: 5) {
-            Image(systemName: isActive ? "checkmark.circle.fill" : "minus.circle")
-            Text(title)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(isActive ? .green : .secondary)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .frame(maxWidth: .infinity)
-        .background(.secondary.opacity(0.10), in: Capsule())
+        .navigationTitle("Sharing")
     }
 }

@@ -10,10 +10,10 @@ const jsonValueSchema = z.json();
 type JsonValue = z.infer<typeof jsonValueSchema>;
 
 const bootstrapRequestSchema = z.object({
-  profileKey: z.json().optional(),
-  secretHash: z.json().optional(),
-  displayName: z.json().optional(),
-}).catch({});
+  profileKey: z.string().min(16).max(128).regex(/^[A-Za-z0-9_-]+$/),
+  secretHash: z.string().regex(/^[a-f0-9]{64}$/),
+  displayName: z.string().trim().min(1).max(40).regex(/^[^\p{Cc}\p{Cf}]+$/u).optional(),
+}).strict();
 
 http.route({
   path: "/v1/bootstrap-profile",
@@ -26,15 +26,41 @@ http.route({
       return json({ error: "Unauthorized." }, 401);
     }
 
-    const body = bootstrapRequestSchema.parse(await request.json());
+    let body;
+
+    try {
+      body = bootstrapRequestSchema.parse(await request.json());
+    } catch {
+      return json({ error: "Invalid bootstrap body." }, 400);
+    }
 
     const result = await ctx.runMutation(internal.bootstrap.registerOrVerifyProfile, {
-      profileKey: String(body.profileKey ?? ""),
-      secretHash: String(body.secretHash ?? ""),
-      displayName: body.displayName == null ? undefined : String(body.displayName),
+      profileKey: body.profileKey,
+      secretHash: body.secretHash,
+      displayName: body.displayName,
     });
 
     return json(result, 200);
+  }),
+});
+
+http.route({
+  path: "/appstore/notifications",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    let record;
+
+    try {
+      const body = z.object({ signedPayload: z.string().min(1).max(100_000) }).strict().parse(await request.json());
+      record = await ctx.runAction(internal.appleVerification.verifyNotification, body);
+    } catch {
+      return json({ error: "Invalid App Store notification." }, 400);
+    }
+
+    // Database failures must remain 5xx so Apple retries delivery.
+    if (record) await ctx.runMutation(internal.entitlementRecords.applyNotification, record);
+
+    return json({ ok: true }, 200);
   }),
 });
 

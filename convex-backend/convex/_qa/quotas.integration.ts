@@ -118,5 +118,6 @@ test("profile deletion removes that profile's quota rows", async () => {
   await owner.mutation(api.sharing.createInvite, { tokenHash: "c".repeat(64) });
   expect(await t.run(async (ctx) => ctx.db.query("profileQuotas").take(10))).toHaveLength(1);
   await owner.mutation(api.sharing.deleteMySharingProfile, {});
+  await t.finishAllScheduledFunctions(() => vi.runAllTimers());
   expect(await t.run(async (ctx) => ctx.db.query("profileQuotas").take(10))).toHaveLength(0);
 });

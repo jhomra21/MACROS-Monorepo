@@ -101,13 +101,17 @@ struct cal_macro_trackerApp: App {
                 #endif
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
+                purchaseStore.onEntitlementsChanged = { await submitSharingEntitlementsIfEnabled() }
                 await purchaseStore.start()
                 requestServiceRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
-                Task { await purchaseStore.refreshEntitlements() }
+                Task {
+                    await purchaseStore.refreshEntitlements()
+                    await purchaseStore.onEntitlementsChanged?()
+                }
                 requestServiceRefresh()
             }
             .onChange(of: proServiceEntitlements) { _, _ in
@@ -115,6 +119,7 @@ struct cal_macro_trackerApp: App {
             }
             .onChange(of: isSharingDeviceEnabled) { _, _ in
                 sharingSyncService.startDashboardSubscription(for: dayContext.today)
+                Task { await submitSharingEntitlementsIfEnabled() }
             }
             .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
                 refreshDayAndStartSharingDashboardSubscription()
@@ -152,6 +157,10 @@ struct cal_macro_trackerApp: App {
             }
             .onReceive(NotificationCenter.default.publisher(for: .healthSettingsDidChange)) { _ in
                 requestServiceRefresh()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .dailyGoalsDidChange)) { _ in
+                guard case let .ready(container) = launchState.phase else { return }
+                sharingSyncService.syncAfterDailyTotalsChange(container: container)
             }
             .onOpenURL { url in
                 pendingOpenRequest = nil
@@ -195,6 +204,22 @@ struct cal_macro_trackerApp: App {
         sharingSyncService.startDashboardSubscription(for: dayContext.today)
         if case let .ready(container) = launchState.phase {
             sharingSyncService.syncAfterDailyTotalsChange(container: container)
+        }
+    }
+
+    private func submitSharingEntitlementsIfEnabled() async {
+        guard sharingSyncService.isDeviceSharingEnabled else { return }
+        for purchase in await purchaseStore.currentProPurchaseSubmissions() {
+            do {
+                try await sharingSyncService.submitPurchase(
+                    signedTransaction: purchase.signedTransaction,
+                    signedRenewalInfo: purchase.signedRenewalInfo,
+                    transactionID: purchase.transactionID,
+                    expiresAt: purchase.expiresAt
+                )
+            } catch {
+                // Purchase state is retried after the next entitlement refresh.
+            }
         }
     }
 

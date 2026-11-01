@@ -25,27 +25,22 @@ struct SharingScreen: View {
     var body: some View {
         Form {
             Section {
+                Toggle("Sharing", isOn: sharingToggleBinding)
+
                 TextField("Display name", text: $sharingDisplayName)
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
-
-                Button(profileButtonTitle) {
-                    saveProfile()
+                    .disabled(!isSharingDeviceEnabled)
+                if isSharingDeviceEnabled {
+                    Button(profileButtonTitle, action: saveProfile)
+                        .disabled(isProfileButtonDisabled)
                 }
-                .disabled(isProfileButtonDisabled)
-
-                Button("Sync Shared Totals Now") {
-                    syncNow()
-                }
-                .disabled(!isSharingDeviceEnabled)
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
-                    if !isSharingDeviceEnabled {
-                        Text(
-                            "When you enable sharing, your display name and your daily calories, protein, carbs, fat, and number of entries are uploaded to MACROS servers so people you invite can see them. You can stop sharing and delete this data at any time."
-                        )
-                    }
-                    Text("Shared totals are best-effort and may be delayed. They are not medical advice.")
+                    Text(
+                        "MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries to people you choose. Food names, amounts, calories, and macros are shared only with people you explicitly enable for food sharing."
+                    )
+                    Text("Shared information is best-effort and is not medical advice.")
                 }
             }
 
@@ -103,13 +98,7 @@ struct SharingScreen: View {
             }
 
             Section {
-                if isSharingDeviceEnabled {
-                    Button("Turn Off Sharing on This Device", role: .destructive) {
-                        destructiveAction = .turnOffDevice
-                    }
-                }
-
-                Button("Stop Sharing My Data", role: .destructive) {
+                Button("Stop Sharing With Everyone", role: .destructive) {
                     destructiveAction = .stopSharing
                 }
                 .disabled(!isSharingDeviceEnabled)
@@ -186,6 +175,25 @@ struct SharingScreen: View {
         )
     }
 
+    private var sharingToggleBinding: Binding<Bool> {
+        Binding(
+            get: { isSharingDeviceEnabled },
+            set: { enabled in
+                if enabled {
+                    saveProfile()
+                } else {
+                    Task {
+                        do {
+                            try await sharingSyncService.disableSharingOnDevice(ownerDay: dayContext.today)
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
+                    }
+                }
+            }
+        )
+    }
+
     private var profileButtonTitle: String {
         if isSavingProfile {
             return isSharingDeviceEnabled ? "Saving…" : "Enabling…"
@@ -205,13 +213,6 @@ struct SharingScreen: View {
         !isSharingDeviceEnabled
             || inviteToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             || isAcceptingInvite
-    }
-
-    private func syncNow() {
-        Task {
-            await sharingSyncService.syncTodayIfConfigured(container: modelContext.container)
-            errorMessage = sharingSyncService.uploadErrorMessage
-        }
     }
 
     private func saveProfile() {
@@ -287,8 +288,6 @@ struct SharingScreen: View {
                 switch action {
                 case let .revokeInvite(invite):
                     try await revokeInviteAndClear(invite)
-                case .turnOffDevice:
-                    try await sharingSyncService.disableSharingOnDevice(ownerDay: dayContext.today)
                 case .stopSharing:
                     try await sharingSyncService.stopSharingMyData(ownerDay: dayContext.today)
                 case .deleteProfile:
@@ -317,7 +316,6 @@ struct SharingScreen: View {
 
 private enum SharingDestructiveAction: Identifiable {
     case revokeInvite(SharingInvite)
-    case turnOffDevice
     case stopSharing
     case deleteProfile
 
@@ -325,8 +323,6 @@ private enum SharingDestructiveAction: Identifiable {
         switch self {
         case let .revokeInvite(invite):
             "revoke-invite-\(invite.inviteId)"
-        case .turnOffDevice:
-            "turn-off-device"
         case .stopSharing:
             "stop-sharing"
         case .deleteProfile:
@@ -338,8 +334,6 @@ private enum SharingDestructiveAction: Identifiable {
         switch self {
         case .revokeInvite:
             "Revoke invite?"
-        case .turnOffDevice:
-            "Turn off sharing on this device?"
         case .stopSharing:
             "Stop sharing your data?"
         case .deleteProfile:
@@ -351,8 +345,6 @@ private enum SharingDestructiveAction: Identifiable {
         switch self {
         case .revokeInvite:
             "Revoke Invite"
-        case .turnOffDevice:
-            "Turn Off Sharing"
         case .stopSharing:
             "Stop Sharing"
         case .deleteProfile:
@@ -364,8 +356,6 @@ private enum SharingDestructiveAction: Identifiable {
         switch self {
         case .revokeInvite:
             "This invite link will stop working. You can create a new invite later."
-        case .turnOffDevice:
-            "This stops uploads and closes outgoing sharing grants. You can re-enable sharing later with this device identity."
         case .stopSharing:
             "This closes all outgoing sharing grants. Existing people remain connected, but your totals will not be shared until you re-enable a person."
         case .deleteProfile:

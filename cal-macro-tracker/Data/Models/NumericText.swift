@@ -51,6 +51,10 @@ enum NumericText {
 }
 
 extension Double {
+    var servingsForDisplay: String {
+        formatted(.number.precision(.fractionLength(0...2)))
+    }
+
     var hasVisiblePositiveDisplayValue: Bool {
         guard self > 0 else { return false }
 

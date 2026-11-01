@@ -1,16 +1,19 @@
-import { internalMutation, mutation, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 import { consumeProfileQuota } from "./quotas";
 import { internal } from "./_generated/api";
 import { requireCurrentProfile } from "./authHelpers";
+import { activeConnection, connectionActive, hasPro, requireProEnabled } from "./proModel";
+import { recomputeProfile } from "./proStatus";
+import { clearFoodsWithoutRecipients, openGrantBetween, syncDay } from "./foodSharing";
+import { dashboardResult, foodInput, okResult, personDayResult, scopeName, snapshotFields, snapshotInput, snapshotResult } from "./sharingValidators";
 import {
   assertCurrentDayKey,
   MACROS_SCOPE,
   assertDayKey,
   assertTokenHash,
-  assertValidSnapshot,
   canonicalPairKey,
   closeIntervalEndDay,
   isDayVisibleFromIntervals,
@@ -19,26 +22,9 @@ import {
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
-const QUOTA_DELETE_BATCH_SIZE = 100;
-
-export const deleteProfileQuotaBatch = internalMutation({
-  args: { profileId: v.id("profiles") },
-  handler: async (ctx, args) => {
-    const quotas = await ctx.db
-      .query("profileQuotas")
-      .withIndex("by_profile_id_and_day_key", (q) => q.eq("profileId", args.profileId))
-      .take(QUOTA_DELETE_BATCH_SIZE);
-
-    await Promise.all(quotas.map((quota) => ctx.db.delete(quota._id)));
-
-    if (quotas.length === QUOTA_DELETE_BATCH_SIZE) {
-      await ctx.scheduler.runAfter(0, internal.sharing.deleteProfileQuotaBatch, args);
-    }
-  },
-});
-
 export const updateDisplayName = mutation({
   args: { displayName: v.string() },
+  returns: okResult,
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     const displayName = normalizeDisplayName(args.displayName);
@@ -51,10 +37,15 @@ export const updateDisplayName = mutation({
 
 export const createInvite = mutation({
   args: { tokenHash: v.string() },
+  returns: v.object({ inviteId: v.id("shareInvites"), expiresAt: v.number() }),
   handler: async (ctx, args) => {
     assertTokenHash(args.tokenHash);
     const profile = await requireCurrentProfile(ctx);
     const now = Date.now();
+
+    if (await requireProEnabled(ctx) && !await hasPro(ctx, profile._id)) {
+      throw new Error("MACROS Pro is required to create an invite.");
+    }
 
     const matches = await ctx.db
       .query("shareInvites")
@@ -96,6 +87,7 @@ export const createInvite = mutation({
 
 export const revokePendingInvite = mutation({
   args: { inviteId: v.id("shareInvites") },
+  returns: okResult,
   handler: async (ctx, args) => {
     const profile = await requireCurrentProfile(ctx);
     const invite = await ctx.db.get(args.inviteId);
@@ -112,6 +104,7 @@ export const revokePendingInvite = mutation({
 
 export const acceptInvite = mutation({
   args: { tokenHash: v.string(), ownerDay: v.string() },
+  returns: v.record(v.string(), v.string()),
   handler: async (ctx, args) => {
     assertDayKey(args.ownerDay);
     assertTokenHash(args.tokenHash);
@@ -182,36 +175,50 @@ export const acceptInvite = mutation({
 
 export const setOutgoingSharingForPerson = mutation({
   args: { toProfileId: v.id("profiles"), enabled: v.boolean(), ownerDay: v.string() },
-  handler: async (ctx, args) => {
-    assertDayKey(args.ownerDay);
-    const profile = await requireCurrentProfile(ctx);
-    const relationship = await relationshipForPair(ctx, profile._id, args.toProfileId);
-
-    if (relationship == null || relationship.removedAt != null) {
-      throw new Error("Relationship unavailable.");
-    }
-
-    if (args.enabled) {
-      if ((await openGrantBetween(ctx, profile._id, args.toProfileId)) == null) {
-        await ctx.db.insert("shareGrantIntervals", {
-          relationshipId: relationship._id,
-          fromProfileId: profile._id,
-          toProfileId: args.toProfileId,
-          scope: MACROS_SCOPE,
-          startDay: args.ownerDay,
-          startedAt: Date.now(),
-        });
-      }
-    } else {
-      await closeOpenGrants(ctx, profile._id, args.toProfileId, args.ownerDay);
-    }
-
-    return { ok: true };
-  },
+  returns: okResult,
+  handler: async (ctx, args) => changeOutgoingScope(ctx, args.toProfileId, args.enabled ? "macros" : "off", args.ownerDay),
 });
+
+export const setOutgoingScope = mutation({
+  args: { otherProfileId: v.id("profiles"), scope: scopeName, ownerDay: v.optional(v.string()) },
+  returns: okResult,
+  handler: async (ctx, args) => changeOutgoingScope(ctx, args.otherProfileId, args.scope, args.ownerDay ?? new Date().toISOString().slice(0, 10)),
+});
+
+async function changeOutgoingScope(
+  ctx: MutationCtx, otherProfileId: Id<"profiles">, scope: "off" | "macros" | "macrosAndFoods", ownerDay: string,
+) {
+  assertDayKey(ownerDay);
+  const profile = await requireCurrentProfile(ctx);
+  const other = await ctx.db.get(otherProfileId);
+  const relationship = await relationshipForPair(ctx, profile._id, otherProfileId);
+
+  if (!other || other.deletedAt != null || relationship == null || relationship.removedAt != null) {
+    throw new Error("Relationship unavailable.");
+  }
+
+  const open = await openGrantBetween(ctx, profile._id, otherProfileId);
+
+  if (scope === "off") {
+    await closeOpenGrants(ctx, profile._id, otherProfileId, ownerDay);
+  } else if (open?.scope.macros) {
+    await ctx.db.patch(open._id, { scope: { macros: true, foods: scope === "macrosAndFoods" } });
+  } else {
+    if (open) await closeOpenGrants(ctx, profile._id, otherProfileId, ownerDay);
+    await ctx.db.insert("shareGrantIntervals", {
+      relationshipId: relationship._id, fromProfileId: profile._id, toProfileId: otherProfileId,
+      scope: { macros: true, foods: scope === "macrosAndFoods" }, startDay: ownerDay, startedAt: Date.now(),
+    });
+  }
+
+  if (scope !== "macrosAndFoods") await clearFoodsWithoutRecipients(ctx, profile._id, ownerDay);
+
+  return { ok: true };
+}
 
 export const stopSharingMyData = mutation({
   args: { ownerDay: v.string() },
+  returns: okResult,
   handler: async (ctx, args) => {
     assertDayKey(args.ownerDay);
     const profile = await requireCurrentProfile(ctx);
@@ -231,6 +238,7 @@ export const stopSharingMyData = mutation({
           }),
         ),
     );
+    await clearFoodsWithoutRecipients(ctx, profile._id, args.ownerDay);
 
     return { ok: true };
   },
@@ -238,6 +246,7 @@ export const stopSharingMyData = mutation({
 
 export const removePerson = mutation({
   args: { otherProfileId: v.id("profiles"), ownerDay: v.string() },
+  returns: okResult,
   handler: async (ctx, args) => {
     assertDayKey(args.ownerDay);
     const profile = await requireCurrentProfile(ctx);
@@ -258,120 +267,36 @@ export const removePerson = mutation({
       ...grants.map((grant) => ctx.db.delete(grant._id)),
       ctx.db.patch(relationship._id, { removedAt: now }),
     ]);
+    await clearFoodsWithoutRecipients(ctx, profile._id, args.ownerDay);
+    await clearFoodsWithoutRecipients(ctx, args.otherProfileId, args.ownerDay);
 
     return { ok: true };
   },
 });
 
 export const upsertMyDailySnapshot = mutation({
-  args: {
-    day: v.string(),
-    timeZoneId: v.string(),
-    calories: v.number(),
-    protein: v.number(),
-    fat: v.number(),
-    carbs: v.number(),
-    entryCount: v.number(),
-  },
-  handler: async (ctx, args) => {
-    const profile = await requireCurrentProfile(ctx);
-    assertValidSnapshot(args);
-    await consumeProfileQuota(ctx, profile._id, "snapshotUpserts");
-    const now = Date.now();
+  args: snapshotFields,
+  returns: snapshotResult,
+  handler: async (ctx, args) => syncDay(ctx, (await requireCurrentProfile(ctx))._id, args),
+});
 
-    const existing = await ctx.db
-      .query("dailySnapshots")
-      .withIndex("by_owner_day", (q) => q.eq("ownerProfileId", profile._id).eq("day", args.day))
-      .unique();
-
-    const snapshot = { ownerProfileId: profile._id, ...args, updatedAt: now };
-
-    if (existing != null) {
-      await ctx.db.patch(existing._id, snapshot);
-
-      return { snapshotId: existing._id };
-    }
-
-    return { snapshotId: await ctx.db.insert("dailySnapshots", snapshot) };
-  },
+export const syncMyDay = mutation({
+  args: { snapshot: snapshotInput, foods: v.optional(v.array(foodInput)) },
+  returns: snapshotResult,
+  handler: async (ctx, args) => syncDay(ctx, (await requireCurrentProfile(ctx))._id, args.snapshot, args.foods),
 });
 
 export const deleteMySharingProfile = mutation({
   args: {},
-  handler: async (ctx) => {
+  returns: okResult,
+  handler: async ctx => {
     const profile = await requireCurrentProfile(ctx);
     const now = Date.now();
-
-    const ownedInvites = (
-      await Promise.all(
-        (["pending", "accepted", "revoked"] as const).map((status) =>
-          ctx.db
-            .query("shareInvites")
-            .withIndex("by_owner_status", (q) => q.eq("ownerProfileId", profile._id).eq("status", status))
-            .collect(),
-        ),
-      )
-    ).flat();
-
-    const acceptedInvites = await ctx.db
-      .query("shareInvites")
-      .withIndex("by_accepted_by", (q) => q.eq("acceptedByProfileId", profile._id))
-      .collect();
-
-    const ownedSnapshots = await ctx.db
-      .query("dailySnapshots")
-      .withIndex("by_owner_day", (q) => q.eq("ownerProfileId", profile._id))
-      .collect();
-
-    const quotas = await ctx.db
-      .query("profileQuotas")
-      .withIndex("by_profile_id_and_day_key", (q) => q.eq("profileId", profile._id))
-      .take(100);
-
-    const outgoing = await ctx.db
-      .query("shareGrantIntervals")
-      .withIndex("by_from_to", (q) => q.eq("fromProfileId", profile._id))
-      .collect();
-
-    const incoming = await ctx.db
-      .query("shareGrantIntervals")
-      .withIndex("by_to_from", (q) => q.eq("toProfileId", profile._id))
-      .collect();
-
-    const relationships = [
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_a", (q) => q.eq("profileAId", profile._id)).collect()),
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_b", (q) => q.eq("profileBId", profile._id)).collect()),
-    ];
-
-    const relationshipGrants = (
-      await Promise.all(
-        relationships.map((relationship) =>
-          ctx.db.query("shareGrantIntervals").withIndex("by_relationship", (q) => q.eq("relationshipId", relationship._id)).collect(),
-        ),
-      )
-    ).flat();
-
-    const grants = uniqueById([...outgoing, ...incoming, ...relationshipGrants]);
-    const invites = uniqueById([...ownedInvites, ...acceptedInvites]);
-
-    await Promise.all([
-      ...invites.map((invite) => ctx.db.delete(invite._id)),
-      ...ownedSnapshots.map((snapshot) => ctx.db.delete(snapshot._id)),
-      ...quotas.map((quota) => ctx.db.delete(quota._id)),
-      ...grants.map((grant) => ctx.db.delete(grant._id)),
-      ...relationships.map((relationship) => ctx.db.delete(relationship._id)),
-    ]);
-
-    if (quotas.length === 100) {
-      await ctx.scheduler.runAfter(0, internal.sharing.deleteProfileQuotaBatch, { profileId: profile._id });
-    }
-
     await ctx.db.patch(profile._id, {
-      displayName: "Deleted sharing profile",
-      secretHash: `deleted:${profile._id}`,
-      deletedAt: now,
-      updatedAt: now,
+      displayName: "Deleted sharing profile", secretHash: `deleted:${profile._id}`, deletedAt: now, updatedAt: now,
     });
+    await recomputeProfile(ctx, profile._id);
+    await ctx.scheduler.runAfter(0, internal.profileDeletion.deleteBatch, { profileId: profile._id, stage: 0 });
 
     return { ok: true };
   },
@@ -379,6 +304,7 @@ export const deleteMySharingProfile = mutation({
 
 export const sharingDashboard = query({
   args: { day: v.string(), ownerToday: v.string() },
+  returns: dashboardResult,
   handler: async (ctx, args) => {
     assertDayKey(args.day);
     assertDayKey(args.ownerToday);
@@ -390,10 +316,16 @@ export const sharingDashboard = query({
     assertCurrentDayKey(args.day);
     const viewer = await requireCurrentProfile(ctx);
 
-    const relationships = [
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_a", (q) => q.eq("profileAId", viewer._id)).collect()),
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_b", (q) => q.eq("profileBId", viewer._id)).collect()),
-    ].filter((relationship) => relationship.removedAt == null);
+    const requirePro = await requireProEnabled(ctx);
+    const viewerPro = await hasPro(ctx, viewer._id);
+
+    const asA = await ctx.db.query("shareRelationships").withIndex("by_profile_a_removed",
+      q => q.eq("profileAId", viewer._id).eq("removedAt", undefined)).take(100);
+
+    const asB = await ctx.db.query("shareRelationships").withIndex("by_profile_b_removed",
+      q => q.eq("profileBId", viewer._id).eq("removedAt", undefined)).take(100 - asA.length);
+
+    const relationships = [...asA, ...asB];
 
     const people = await Promise.all(
       relationships.map(async (relationship) => {
@@ -404,17 +336,15 @@ export const sharingDashboard = query({
           return null;
         }
 
-        const incoming = await ctx.db
-          .query("shareGrantIntervals")
-          .withIndex("by_from_to", (q) => q.eq("fromProfileId", otherId).eq("toProfileId", viewer._id))
-          .collect();
+        const [incoming, outgoing, otherPro] = await Promise.all([
+          openGrantBetween(ctx, otherId, viewer._id), openGrantBetween(ctx, viewer._id, otherId),
+          requirePro && !viewerPro ? hasPro(ctx, otherId) : false,
+        ]);
 
-        const outgoing = await ctx.db
-          .query("shareGrantIntervals")
-          .withIndex("by_from_to", (q) => q.eq("fromProfileId", viewer._id).eq("toProfileId", otherId))
-          .collect();
+        const active = connectionActive(requirePro, viewerPro, otherPro);
 
-        const visible = isDayVisibleFromIntervals(args.day, args.ownerToday, incoming);
+        const visible = active && !!incoming?.scope.macros &&
+          isDayVisibleFromIntervals(args.day, args.ownerToday, [incoming]);
 
         const snapshot = visible
           ? await ctx.db
@@ -423,23 +353,20 @@ export const sharingDashboard = query({
               .unique()
           : null;
 
+        const outgoingScope: "off" | "macros" | "macrosAndFoods" = !outgoing?.scope.macros
+          ? "off" : outgoing.scope.foods ? "macrosAndFoods" : "macros";
+
         return {
           relationshipId: relationship._id,
           profileId: otherId,
           displayName: other.displayName,
-          incomingActive: incoming.some((grant) => grant.endedAt == null),
-          outgoingActive: outgoing.some((grant) => grant.endedAt == null),
+          incomingActive: incoming != null,
+          outgoingActive: outgoing != null,
           scope: MACROS_SCOPE,
-          snapshot: snapshot == null ? null : {
-            day: snapshot.day,
-            timeZoneId: snapshot.timeZoneId,
-            calories: snapshot.calories,
-            protein: snapshot.protein,
-            fat: snapshot.fat,
-            carbs: snapshot.carbs,
-            entryCount: snapshot.entryCount,
-            updatedAt: snapshot.updatedAt,
-          },
+          foodsShared: visible && incoming?.scope.foods === true,
+          connectionPaused: !active,
+          outgoingScope,
+          snapshot: snapshot == null ? null : snapshotDTO(snapshot),
         };
       }),
     );
@@ -449,6 +376,84 @@ export const sharingDashboard = query({
     };
   },
 });
+
+export const personDay = query({
+  args: { otherProfileId: v.id("profiles"), day: v.string(), ownerToday: v.string() },
+  returns: personDayResult,
+  handler: async (ctx, args) => {
+    assertDayKey(args.ownerToday);
+
+    if (args.day !== args.ownerToday) throw new Error("Person day is current-day only.");
+    assertCurrentDayKey(args.day);
+    const viewer = await requireCurrentProfile(ctx);
+    const other = await ctx.db.get(args.otherProfileId);
+
+    if (!other || other.deletedAt != null || other._id === viewer._id) throw new Error("Relationship unavailable.");
+
+    const relationships = await ctx.db.query("shareRelationships").withIndex("by_pair_key",
+      q => q.eq("pairKey", canonicalPairKey(viewer.profileKey, other.profileKey))).collect();
+
+    if (!relationships.some(row => row.removedAt == null)) throw new Error("Relationship unavailable.");
+
+    if (!await activeConnection(ctx, viewer._id, other._id)) {
+      return { visibility: "paused" as const, snapshot: null, foods: [] };
+    }
+
+    const incoming = await openGrantBetween(ctx, other._id, viewer._id);
+
+    if (!incoming?.scope.macros || !isDayVisibleFromIntervals(args.day, args.ownerToday, [incoming])) {
+      return { visibility: "notShared" as const, snapshot: null, foods: [] };
+    }
+
+    const snapshot = await ctx.db.query("dailySnapshots").withIndex("by_owner_day",
+      q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique();
+
+    const foodDay = incoming.scope.foods === true ? await ctx.db.query("sharedFoodDays").withIndex("by_owner_day",
+      q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique() : null;
+
+    return {
+      visibility: "shared" as const,
+      snapshot: snapshot == null ? null : snapshotDTO(snapshot),
+      foods: (foodDay?.foods ?? []).slice().sort((a, b) => a.sortIndex - b.sortIndex),
+    };
+  },
+});
+
+function snapshotDTO(snapshot: {
+  day: string;
+  timeZoneId: string;
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  entryCount: number;
+  calorieGoal?: number;
+  proteinGoal?: number;
+  carbsGoal?: number;
+  fatGoal?: number;
+  updatedAt: number;
+}) {
+  const result: typeof snapshot = {
+    day: snapshot.day,
+    timeZoneId: snapshot.timeZoneId,
+    calories: snapshot.calories,
+    protein: snapshot.protein,
+    fat: snapshot.fat,
+    carbs: snapshot.carbs,
+    entryCount: snapshot.entryCount,
+    updatedAt: snapshot.updatedAt,
+  };
+
+  if (snapshot.calorieGoal !== undefined) result.calorieGoal = snapshot.calorieGoal;
+
+  if (snapshot.proteinGoal !== undefined) result.proteinGoal = snapshot.proteinGoal;
+
+  if (snapshot.carbsGoal !== undefined) result.carbsGoal = snapshot.carbsGoal;
+
+  if (snapshot.fatGoal !== undefined) result.fatGoal = snapshot.fatGoal;
+
+  return result;
+}
 
 async function relationshipForPair(ctx: MutationCtx, profileAId: Id<"profiles">, profileBId: Id<"profiles">) {
   const profileA = await ctx.db.get(profileAId);
@@ -490,34 +495,19 @@ async function consolidatedRelationshipForPairKey(ctx: MutationCtx, pairKey: str
   return primary;
 }
 
-async function openGrantBetween(ctx: MutationCtx, fromProfileId: Id<"profiles">, toProfileId: Id<"profiles">) {
-  const grants = await ctx.db
-    .query("shareGrantIntervals")
-    .withIndex("by_from_to", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId))
-    .collect();
-
-  return grants.find((grant) => grant.endedAt == null) ?? null;
-}
-
 async function closeOpenGrants(ctx: MutationCtx, fromProfileId: Id<"profiles">, toProfileId: Id<"profiles">, ownerDay: string) {
   const grants = await ctx.db
     .query("shareGrantIntervals")
-    .withIndex("by_from_to", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId))
+    .withIndex("by_from_to_ended", (q) => q.eq("fromProfileId", fromProfileId).eq("toProfileId", toProfileId).eq("endedAt", undefined))
     .collect();
 
   const now = Date.now();
   await Promise.all(
-    grants
-      .filter((grant) => grant.endedAt == null)
-      .map((grant) =>
-        ctx.db.patch(grant._id, {
-          endDay: closeIntervalEndDay(ownerDay),
-          endedAt: now,
-        }),
-      ),
+    grants.map((grant) =>
+      ctx.db.patch(grant._id, {
+        endDay: closeIntervalEndDay(ownerDay),
+        endedAt: now,
+      }),
+    ),
   );
-}
-
-function uniqueById<T extends { _id: string }>(documents: T[]) {
-  return [...new Map(documents.map((document) => [document._id, document])).values()];
 }

@@ -23,6 +23,7 @@ struct DailyGoalsRepository {
         }
 
         WidgetTimelineReloader.reloadMacroWidgets()
+        NotificationCenter.default.post(name: .dailyGoalsDidChange, object: nil)
     }
 
     static func normalizeGoalsRecordsIfNeeded(modelContext: ModelContext) throws {
@@ -40,4 +41,8 @@ struct DailyGoalsRepository {
             modelContext.delete(duplicateGoals)
         }
     }
+}
+
+extension Notification.Name {
+    static let dailyGoalsDidChange = Notification.Name("dailyGoalsDidChange")
 }
