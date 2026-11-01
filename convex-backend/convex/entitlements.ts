@@ -15,9 +15,11 @@ export const submitPurchase = action({
     const transaction = await verifier.transaction(args.signedTransaction);
     const renewal = args.signedRenewalInfo ? await verifier.renewal(args.signedRenewalInfo) : undefined;
     const record = purchaseRecord(transaction, renewal);
-    await ctx.runMutation(internal.entitlementRecords.storePurchase, {
-      profileId, ...record, transactionSignedAt: transaction.signedDate ?? 0,
-    });
+    const result = await ctx.runMutation(internal.entitlementRecords.storePurchase, { profileId, ...record });
+
+    if (result === "revoked") throw new Error("Purchase transaction is revoked.");
+
+    if (result === "profileLimit") throw new Error("A purchase can be used by at most 5 profiles.");
 
     return { ok: true };
   },

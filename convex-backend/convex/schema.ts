@@ -1,36 +1,37 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { foodInput, renewalFields, transactionFields } from "./sharingValidators";
 
 export default defineSchema({
   settings: defineTable({ sharingRequirePro: v.boolean() }),
 
-  entitlements: defineTable({
-    profileId: v.id("profiles"),
-    productId: v.string(),
-    originalTransactionId: v.string(),
-    expiresAt: v.optional(v.number()),
-    revokedAt: v.optional(v.number()),
-    environment: v.union(v.literal("Production"), v.literal("Sandbox")),
-    verifiedAt: v.number(),
-  })
-    .index("by_profile", ["profileId"])
-    .index("by_original_transaction", ["originalTransactionId"]),
+  // Retained anti-replay state, never deleted with profiles. These records hold
+  // no personal data beyond Apple's transaction IDs and purchase metadata.
+  appleTransactions: defineTable(transactionFields)
+    .index("by_transaction", ["transactionId"])
+    .index("by_original", ["originalTransactionId"]),
 
-  sharedFoodEntries: defineTable({
+  appleRenewals: defineTable({
+    originalTransactionId: v.string(),
+    ...renewalFields,
+  }).index("by_original", ["originalTransactionId"]),
+
+  purchaseLinks: defineTable({
+    originalTransactionId: v.string(), profileId: v.id("profiles"),
+  }).index("by_original", ["originalTransactionId"]).index("by_profile", ["profileId"]),
+
+  proStatus: defineTable({
+    profileId: v.id("profiles"), active: v.boolean(), activeUntil: v.optional(v.number()),
+  }).index("by_profile", ["profileId"]),
+
+  // Bounded to 100 validated foods by syncDay, separate from dashboard totals.
+  sharedFoodDays: defineTable({
     ownerProfileId: v.id("profiles"),
     day: v.string(),
-    localEntryId: v.string(),
-    sortIndex: v.number(),
-    name: v.string(),
-    quantityText: v.string(),
-    calories: v.number(),
-    protein: v.number(),
-    carbs: v.number(),
-    fat: v.number(),
+    foods: v.array(foodInput),
     updatedAt: v.number(),
   })
-    .index("by_owner_day_sort", ["ownerProfileId", "day", "sortIndex"])
-    .index("by_owner_local", ["ownerProfileId", "localEntryId"])
+    .index("by_owner_day", ["ownerProfileId", "day"])
     .index("by_day", ["day"]),
 
   profiles: defineTable({
@@ -84,7 +85,9 @@ export default defineSchema({
   })
     .index("by_pair_key", ["pairKey"])
     .index("by_profile_a", ["profileAId"])
-    .index("by_profile_b", ["profileBId"]),
+    .index("by_profile_b", ["profileBId"])
+    .index("by_profile_a_removed", ["profileAId", "removedAt"])
+    .index("by_profile_b_removed", ["profileBId", "removedAt"]),
 
   shareGrantIntervals: defineTable({
     relationshipId: v.id("shareRelationships"),

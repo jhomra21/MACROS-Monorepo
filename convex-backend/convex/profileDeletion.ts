@@ -9,13 +9,14 @@ async function nextBatch(ctx: MutationCtx, id: Id<"profiles">, stage: number) {
     case 0: return await ctx.db.query("shareInvites").withIndex("by_owner_status", q => q.eq("ownerProfileId", id)).take(100);
     case 1: return await ctx.db.query("shareInvites").withIndex("by_accepted_by", q => q.eq("acceptedByProfileId", id)).take(100);
     case 2: return await ctx.db.query("dailySnapshots").withIndex("by_owner_day", q => q.eq("ownerProfileId", id)).take(100);
-    case 3: return await ctx.db.query("sharedFoodEntries").withIndex("by_owner_day_sort", q => q.eq("ownerProfileId", id)).take(100);
+    case 3: return await ctx.db.query("sharedFoodDays").withIndex("by_owner_day", q => q.eq("ownerProfileId", id)).take(100);
     case 4: return await ctx.db.query("shareGrantIntervals").withIndex("by_from_to", q => q.eq("fromProfileId", id)).take(100);
     case 5: return await ctx.db.query("shareGrantIntervals").withIndex("by_to_from", q => q.eq("toProfileId", id)).take(100);
     case 6: return await ctx.db.query("shareRelationships").withIndex("by_profile_a", q => q.eq("profileAId", id)).take(100);
     case 7: return await ctx.db.query("shareRelationships").withIndex("by_profile_b", q => q.eq("profileBId", id)).take(100);
     case 8: return await ctx.db.query("profileQuotas").withIndex("by_profile_id_and_day_key", q => q.eq("profileId", id)).take(100);
-    case 9: return await ctx.db.query("entitlements").withIndex("by_profile", q => q.eq("profileId", id)).take(100);
+    case 9: return await ctx.db.query("purchaseLinks").withIndex("by_profile", q => q.eq("profileId", id)).take(100);
+    case 10: return await ctx.db.query("proStatus").withIndex("by_profile", q => q.eq("profileId", id)).take(100);
     default: return [];
   }
 }
@@ -30,7 +31,7 @@ export const deleteBatch = internalMutation({
     await Promise.all(rows.map(row => ctx.db.delete(row._id)));
     const stage = rows.length === 100 ? args.stage : args.stage + 1;
 
-    if (stage <= 9) await ctx.scheduler.runAfter(0, internal.profileDeletion.deleteBatch, { profileId: args.profileId, stage });
+    if (stage <= 10) await ctx.scheduler.runAfter(0, internal.profileDeletion.deleteBatch, { profileId: args.profileId, stage });
 
     return null;
   },

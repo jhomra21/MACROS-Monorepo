@@ -25,6 +25,7 @@ import type * as foodCleanup from "../foodCleanup.js";
 import type * as foodSharing from "../foodSharing.js";
 import type * as http from "../http.js";
 import type * as proModel from "../proModel.js";
+import type * as proStatus from "../proStatus.js";
 import type * as profileDeletion from "../profileDeletion.js";
 import type * as quotas from "../quotas.js";
 import type * as sharing from "../sharing.js";
@@ -52,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   foodSharing: typeof foodSharing;
   http: typeof http;
   proModel: typeof proModel;
+  proStatus: typeof proStatus;
   profileDeletion: typeof profileDeletion;
   quotas: typeof quotas;
   sharing: typeof sharing;
