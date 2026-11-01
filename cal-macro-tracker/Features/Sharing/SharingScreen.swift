@@ -38,9 +38,12 @@ struct SharingScreen: View {
             } footer: {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(
-                        "MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries to people you choose. Food names, amounts, calories, and macros are shared only with people you explicitly enable for food sharing."
+                        "Sharing is off by default. When it's on, MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day."
                     )
-                    Text("Shared information is best-effort and is not medical advice.")
+                    Text(
+                        "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them."
+                    )
+                    Text("A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice.")
                 }
             }
 

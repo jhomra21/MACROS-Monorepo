@@ -96,7 +96,7 @@ export const site = {
 			glyph: 'people',
 			accent: 'carbs',
 			title: 'Share your day with your people.',
-			body: 'Invite people with Pro and they see your daily totals. Anyone you invite shares back for free. Sharing individual foods and more stats is coming.',
+			body: 'Sharing is optional and off by default. Invite people with Pro, then choose Nothing, Macros, or Macros + Foods for each person; connections work while either person has Pro.',
 			size: 'half',
 		},
 		{
@@ -182,7 +182,7 @@ export const site = {
 		},
 		{
 			question: 'What leaves my phone?',
-			answer: 'Search terms or barcodes go to our food-search service. If you turn on sharing, this version sends your chosen display name and daily nutrition totals to the people you invite. Individual foods are not sent yet.',
+			answer: 'Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only.',
 		},
 	],
 	heroShowcase: {
