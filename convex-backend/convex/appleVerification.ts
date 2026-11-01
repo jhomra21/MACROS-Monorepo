@@ -4,11 +4,11 @@ import { v } from "convex/values";
 import { internalAction } from "./_generated/server";
 import { AppleVerifier } from "./_lib/appleVerifier.node";
 import { notificationRecord } from "./_lib/purchasePolicy";
-import { entitlementFields } from "./sharingValidators";
+import { purchaseValidator } from "./sharingValidators";
 
 export const verifyNotification = internalAction({
   args: { signedPayload: v.string() },
-  returns: v.union(v.object(entitlementFields), v.null()),
+  returns: v.union(purchaseValidator, v.null()),
   handler: async (_ctx, args) => {
     const verifier = new AppleVerifier();
     const notification = await verifier.notification(args.signedPayload);

@@ -1,14 +1,18 @@
 import type { JWSTransactionDecodedPayload, JWSRenewalInfoDecodedPayload, ResponseBodyV2DecodedPayload } from "@apple/app-store-server-library";
-import { PRO_PRODUCTS } from "../proModel";
 import type { Infer } from "convex/values";
-import { entitlementValidator } from "../sharingValidators";
+import { PRO_PRODUCTS } from "../proModel";
+import { purchaseValidator } from "../sharingValidators";
 
-export function purchaseRecord(transaction: JWSTransactionDecodedPayload, renewal?: JWSRenewalInfoDecodedPayload): Infer<typeof entitlementValidator> {
-  const { productId, originalTransactionId, environment, signedDate } = transaction;
+export function purchaseRecord(
+  transaction: JWSTransactionDecodedPayload, renewal?: JWSRenewalInfoDecodedPayload,
+): Infer<typeof purchaseValidator> {
+  const { transactionId, productId, originalTransactionId, environment, signedDate } = transaction;
 
   if (!productId || !PRO_PRODUCTS.has(productId)) throw new Error("Unsupported Pro product.");
 
-  if (!originalTransactionId || originalTransactionId.length > 128) throw new Error("Invalid transaction.");
+  if (!transactionId || transactionId.length > 128 || !originalTransactionId || originalTransactionId.length > 128) {
+    throw new Error("Invalid transaction.");
+  }
 
   if (environment !== "Production" && environment !== "Sandbox") throw new Error("Unsupported Apple environment.");
 
@@ -16,56 +20,60 @@ export function purchaseRecord(transaction: JWSTransactionDecodedPayload, renewa
 
   if (transaction.bundleId !== "juan-test.cal-macro-tracker") throw new Error("Invalid bundle.");
 
-  if (renewal) assertMatchingRenewal(transaction, renewal);
   const lifetime = productId === "macros.pro.lifetime";
 
   if (!lifetime && !Number.isFinite(transaction.expiresDate)) throw new Error("Missing expiry.");
-  const expiresAt = lifetime ? undefined : Math.max(transaction.expiresDate ?? 0, renewal?.gracePeriodExpiresDate ?? 0);
-  // Use Apple's signed clock, not receipt time, to prevent old purchases reviving refunds.
-  const verifiedAt = Math.max(signedDate ?? 0, renewal?.signedDate ?? 0);
+
+  if (renewal) {
+    if (renewal.originalTransactionId !== originalTransactionId || renewal.environment !== environment ||
+      renewal.productId !== productId) throw new Error("Renewal transaction mismatch.");
+
+    if (!Number.isFinite(renewal.signedDate)) throw new Error("Missing renewal signedDate.");
+  }
 
   return {
-    productId, originalTransactionId, environment,
-    expiresAt, revokedAt: transaction.revocationDate, verifiedAt,
+    transaction: {
+      transactionId, productId, originalTransactionId, environment,
+      expiresAt: lifetime ? undefined : transaction.expiresDate,
+      revokedAt: transaction.revocationDate, transactionSignedDate: signedDate!,
+    },
+    renewal: renewal && {
+      gracePeriodExpiresAt: renewal.gracePeriodExpiresDate, autoRenewStatus: renewal.autoRenewStatus,
+      renewalSignedDate: renewal.signedDate!,
+    },
   };
-}
-
-function assertMatchingRenewal(transaction: JWSTransactionDecodedPayload, renewal: JWSRenewalInfoDecodedPayload) {
-  if (renewal.originalTransactionId !== transaction.originalTransactionId ||
-    renewal.environment !== transaction.environment || renewal.productId !== transaction.productId) {
-    throw new Error("Renewal transaction mismatch.");
-  }
 }
 
 export function notificationRecord(
   notification: ResponseBodyV2DecodedPayload,
   transaction: JWSTransactionDecodedPayload,
   renewal?: JWSRenewalInfoDecodedPayload,
-): Infer<typeof entitlementValidator> | null {
+): Infer<typeof purchaseValidator> | null {
   if (transaction.environment !== notification.data?.environment || !Number.isFinite(notification.signedDate)) {
     throw new Error("Notification context mismatch.");
   }
 
   if (!PRO_PRODUCTS.has(transaction.productId ?? "")) return null;
   const record = purchaseRecord(transaction, renewal);
-  const verifiedAt = notification.signedDate ?? 0;
 
+  // Each signed object owns its watermark. The outer notification clock must
+  // never advance transaction coverage or renewal state.
   switch (notification.notificationType) {
-    case "EXPIRED":
-      return { ...record, verifiedAt, expiresAt: Math.min(transaction.expiresDate ?? verifiedAt, verifiedAt) };
     case "REFUND":
     case "REVOKE":
-      return { ...record, verifiedAt, revokedAt: transaction.revocationDate ?? verifiedAt };
+      record.transaction.revokedAt = transaction.revocationDate ?? notification.signedDate;
+      break;
+    case "REFUND_REVERSED":
+      record.transaction.revokedAt = undefined;
+      break;
     case "DID_FAIL_TO_RENEW":
-      if (notification.subtype !== "GRACE_PERIOD") return null;
+      if (notification.subtype === "GRACE_PERIOD" && !Number.isFinite(renewal?.gracePeriodExpiresDate)) {
+        throw new Error("Missing grace expiry.");
+      }
 
-      if (!Number.isFinite(renewal?.gracePeriodExpiresDate)) throw new Error("Missing grace expiry.");
-
-      return { ...record, verifiedAt, expiresAt: renewal?.gracePeriodExpiresDate };
-    case "DID_RENEW":
-    case "SUBSCRIBED":
-      return { ...record, verifiedAt };
-    default:
-      return null;
+      break;
   }
+
+  // Even notifications that don't grant access can carry newer signed state.
+  return record;
 }

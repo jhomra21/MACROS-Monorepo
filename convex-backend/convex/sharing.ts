@@ -1,11 +1,12 @@
-import { internalMutation, mutation, query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import type { MutationCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 import { consumeProfileQuota } from "./quotas";
 import { internal } from "./_generated/api";
 import { requireCurrentProfile } from "./authHelpers";
-import { activeConnection, hasPro, proEntitlements, requireProEnabled } from "./proModel";
+import { activeConnection, connectionActive, hasPro, requireProEnabled } from "./proModel";
+import { recomputeProfile } from "./proStatus";
 import { clearFoodsWithoutRecipients, foodDTO, openGrantBetween, syncDay } from "./foodSharing";
 import { dashboardResult, foodInput, okResult, personDayResult, scopeName, snapshotFields, snapshotInput, snapshotResult } from "./sharingValidators";
 import {
@@ -20,24 +21,6 @@ import {
 } from "./sharingModel";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
-
-const QUOTA_DELETE_BATCH_SIZE = 100;
-
-export const deleteProfileQuotaBatch = internalMutation({
-  args: { profileId: v.id("profiles") },
-  handler: async (ctx, args) => {
-    const quotas = await ctx.db
-      .query("profileQuotas")
-      .withIndex("by_profile_id_and_day_key", (q) => q.eq("profileId", args.profileId))
-      .take(QUOTA_DELETE_BATCH_SIZE);
-
-    await Promise.all(quotas.map((quota) => ctx.db.delete(quota._id)));
-
-    if (quotas.length === QUOTA_DELETE_BATCH_SIZE) {
-      await ctx.scheduler.runAfter(0, internal.sharing.deleteProfileQuotaBatch, args);
-    }
-  },
-});
 
 export const updateDisplayName = mutation({
   args: { displayName: v.string() },
@@ -60,7 +43,7 @@ export const createInvite = mutation({
     const profile = await requireCurrentProfile(ctx);
     const now = Date.now();
 
-    if (await requireProEnabled(ctx) && !hasPro(profile._id, now, await proEntitlements(ctx, profile._id, now))) {
+    if (await requireProEnabled(ctx) && !await hasPro(ctx, profile._id)) {
       throw new Error("MACROS Pro is required to create an invite.");
     }
 
@@ -312,6 +295,7 @@ export const deleteMySharingProfile = mutation({
     await ctx.db.patch(profile._id, {
       displayName: "Deleted sharing profile", secretHash: `deleted:${profile._id}`, deletedAt: now, updatedAt: now,
     });
+    await recomputeProfile(ctx, profile._id);
     await ctx.scheduler.runAfter(0, internal.profileDeletion.deleteBatch, { profileId: profile._id, stage: 0 });
 
     return { ok: true };
@@ -332,10 +316,16 @@ export const sharingDashboard = query({
     assertCurrentDayKey(args.day);
     const viewer = await requireCurrentProfile(ctx);
 
-    const relationships = [
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_a", (q) => q.eq("profileAId", viewer._id)).collect()),
-      ...(await ctx.db.query("shareRelationships").withIndex("by_profile_b", (q) => q.eq("profileBId", viewer._id)).collect()),
-    ].filter((relationship) => relationship.removedAt == null);
+    const requirePro = await requireProEnabled(ctx);
+    const viewerPro = await hasPro(ctx, viewer._id);
+
+    const asA = await ctx.db.query("shareRelationships").withIndex("by_profile_a_removed",
+      q => q.eq("profileAId", viewer._id).eq("removedAt", undefined)).take(100);
+
+    const asB = await ctx.db.query("shareRelationships").withIndex("by_profile_b_removed",
+      q => q.eq("profileBId", viewer._id).eq("removedAt", undefined)).take(100 - asA.length);
+
+    const relationships = [...asA, ...asB];
 
     const people = await Promise.all(
       relationships.map(async (relationship) => {
@@ -346,10 +336,12 @@ export const sharingDashboard = query({
           return null;
         }
 
-        const [incoming, outgoing, active] = await Promise.all([
+        const [incoming, outgoing, otherPro] = await Promise.all([
           openGrantBetween(ctx, otherId, viewer._id), openGrantBetween(ctx, viewer._id, otherId),
-          activeConnection(ctx, viewer._id, otherId),
+          requirePro && !viewerPro ? hasPro(ctx, otherId) : false,
         ]);
+
+        const active = connectionActive(requirePro, viewerPro, otherPro);
 
         const visible = active && !!incoming?.scope.macros &&
           isDayVisibleFromIntervals(args.day, args.ownerToday, [incoming]);

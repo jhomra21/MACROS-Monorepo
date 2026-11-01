@@ -98,7 +98,7 @@ const food = { localEntryId: "food-1", sortIndex: 0, name: "Oats", quantityText:
 
 const purchase = (id = "transaction-1", extra = {}) => JSON.stringify({
   bundleId: "juan-test.cal-macro-tracker", environment: "Sandbox", productId: "macros.pro.monthly",
-  originalTransactionId: id, expiresDate: Date.now() + 60_000, signedDate: Date.now(), ...extra,
+  transactionId: id, originalTransactionId: id, expiresDate: Date.now() + 60_000, signedDate: Date.now(), ...extra,
 });
 
 async function connected() {
@@ -209,7 +209,7 @@ test("batched deletion drains every owned table beyond 100 rows", async () => {
     for (let i = 0; i < 205; i++) {
       await ctx.db.insert("dailySnapshots", { ...snapshot, ownerProfileId: ids[0], day: `old-${i}`, updatedAt: 0 });
       await ctx.db.insert("sharedFoodEntries", { ...food, ownerProfileId: ids[0], day: `old-${i}`, updatedAt: 0 });
-      await ctx.db.insert("entitlements", { profileId: ids[0], productId: "macros.pro.lifetime", originalTransactionId: `t-${i}`, environment: "Sandbox", verifiedAt: 0 });
+      await ctx.db.insert("purchaseLinks", { profileId: ids[0], originalTransactionId: `t-${i}` });
       await ctx.db.insert("profileQuotas", { profileId: ids[0], dayKey: `old-${i}`, invitesCreated: 0, snapshotUpserts: 0, displayNameUpdates: 0 });
     }
   });
@@ -218,7 +218,7 @@ test("batched deletion drains every owned table beyond 100 rows", async () => {
   await t.finishAllScheduledFunctions(() => vi.runAllTimers());
   expect(await t.run(async ctx => Promise.all([
     ctx.db.query("dailySnapshots").collect(), ctx.db.query("sharedFoodEntries").collect(),
-    ctx.db.query("entitlements").collect(), ctx.db.query("profileQuotas").collect(),
+    ctx.db.query("purchaseLinks").collect(), ctx.db.query("profileQuotas").collect(),
     ctx.db.query("shareGrantIntervals").collect(), ctx.db.query("shareRelationships").collect(),
     ctx.db.query("shareInvites").collect(),
   ]))).toEqual([[], [], [], [], [], [], []]);
@@ -239,7 +239,7 @@ test("purchase cap is five distinct profiles and retries do not consume slots", 
     else await call;
   }
 
-  expect(await t.run(ctx => ctx.db.query("entitlements").collect())).toHaveLength(5);
+  expect(await t.run(ctx => ctx.db.query("purchaseLinks").collect())).toHaveLength(5);
 });
 
 test("grace counts as Pro; expired, revoked, unknown products and mismatched renewal do not grant Pro", async () => {
@@ -263,25 +263,25 @@ test("notification HTTP ordering, grace, expiry, refund, renewal, and unknown tr
   const send = async (type: string, signedDate: number, originalTransactionId = "notify", subtype?: string) => t.fetch("/appstore/notifications", {
     method: "POST", body: JSON.stringify({ signedPayload: JSON.stringify({
       notificationType: type, subtype, signedDate, data: { environment: "Sandbox",
-        signedTransactionInfo: purchase(originalTransactionId, { expiresDate: start + 5000, signedDate }),
-        signedRenewalInfo: JSON.stringify({ environment: "Sandbox", originalTransactionId, productId: "macros.pro.monthly", gracePeriodExpiresDate: start + 100_000, signedDate }),
+        signedTransactionInfo: purchase(originalTransactionId, { expiresDate: type === "EXPIRED" ? start : start + 5000, signedDate }),
+        signedRenewalInfo: JSON.stringify({ environment: "Sandbox", originalTransactionId, productId: "macros.pro.monthly",
+          gracePeriodExpiresDate: type === "EXPIRED" ? undefined : start + 100_000, signedDate }),
       },
     }) }),
   });
 
   expect((await send("REFUND", start + 10)).status).toBe(200);
   expect((await send("DID_RENEW", start + 5)).status).toBe(200);
-  let row = (await t.run(ctx => ctx.db.query("entitlements").collect()))[0];
+  let row = (await t.run(ctx => ctx.db.query("appleTransactions").collect()))[0];
   expect(row.revokedAt).toBeDefined();
-  expect(row.verifiedAt).toBe(start + 10);
+  expect(row.transactionSignedDate).toBe(start + 10);
   expect((await send("DID_RENEW", start + 20)).status).toBe(200);
-  row = (await t.run(ctx => ctx.db.query("entitlements").collect()))[0];
+  row = (await t.run(ctx => ctx.db.query("appleTransactions").collect()))[0];
   expect(row.revokedAt).toBeUndefined();
   expect((await send("DID_FAIL_TO_RENEW", start + 30, "notify", "GRACE_PERIOD")).status).toBe(200);
-  row = (await t.run(ctx => ctx.db.query("entitlements").collect()))[0];
-  expect(row.expiresAt).toBe(start + 100_000);
+  expect((await t.run(ctx => ctx.db.query("appleRenewals").collect()))[0].gracePeriodExpiresAt).toBe(start + 100_000);
   expect((await send("EXPIRED", start + 40)).status).toBe(200);
-  row = (await t.run(ctx => ctx.db.query("entitlements").collect()))[0];
+  row = (await t.run(ctx => ctx.db.query("appleTransactions").collect()))[0];
   expect(row.expiresAt).toBeLessThanOrEqual(start + 40);
   expect((await send("SUBSCRIBED", start + 50, "unknown")).status).toBe(200);
   expect((await t.fetch("/appstore/notifications", { method: "POST", body: JSON.stringify({ signedPayload: "garbage" }) })).status).toBe(400);
@@ -299,20 +299,23 @@ test("weekly bounded sweeper deletes only foods older than two days", async () =
 });
 
 test("stale purchases cannot revive a refund for existing or newly attached profiles", async () => {
-  const { t, owner, viewer, ids } = await fixture();
+  const { t, owner, viewer } = await fixture();
   const signedTransaction = purchase("refunded");
   await owner.action(api.entitlements.submitPurchase, { signedTransaction });
   await t.mutation(internal.entitlementRecords.applyNotification, {
-    productId: "macros.pro.monthly", originalTransactionId: "refunded", environment: "Sandbox",
-    expiresAt: Date.now() + 60_000, revokedAt: Date.now() + 10, verifiedAt: Date.now() + 10,
+    transaction: {
+      transactionId: "refunded", productId: "macros.pro.monthly", originalTransactionId: "refunded", environment: "Sandbox",
+      expiresAt: Date.now() + 60_000, revokedAt: Date.now() + 10, transactionSignedDate: Date.now() + 10,
+    },
   });
-  await owner.action(api.entitlements.submitPurchase, { signedTransaction });
-  await viewer.action(api.entitlements.submitPurchase, { signedTransaction });
-  const rows = await t.run(ctx => ctx.db.query("entitlements").collect());
-  expect(rows).toHaveLength(2);
+  await expect(owner.action(api.entitlements.submitPurchase, { signedTransaction })).rejects.toThrow("revoked");
+  await expect(viewer.action(api.entitlements.submitPurchase, { signedTransaction })).rejects.toThrow("revoked");
+  const rows = await t.run(ctx => ctx.db.query("appleTransactions").collect());
+  expect(rows).toHaveLength(1);
 
   for (const row of rows) expect(row.revokedAt).toBe(Date.now() + 10);
-  expect(rows.find(row => row.profileId === ids[1])?.verifiedAt).toBe(Date.now() + 10);
+  expect(rows[0].transactionSignedDate).toBe(Date.now() + 10);
+  expect(await t.run(ctx => ctx.db.query("purchaseLinks").collect())).toHaveLength(1);
 });
 
 test("a new verified renewal updates every profile attached to that purchase", async () => {
@@ -324,8 +327,12 @@ test("a new verified renewal updates every profile attached to that purchase", a
   await owner.action(api.entitlements.submitPurchase, {
     signedTransaction: purchase("renewed", { signedDate: Date.now() + 10, expiresDate }),
   });
-  const rows = await t.run(ctx => ctx.db.query("entitlements").collect());
-  expect(rows.map(row => row.expiresAt)).toEqual([expiresDate, expiresDate]);
+  const rows = await t.run(ctx => ctx.db.query("appleTransactions").collect());
+  expect(rows.map(row => row.expiresAt)).toEqual([expiresDate]);
+  expect(await t.run(ctx => ctx.db.query("proStatus").collect())).toEqual([
+    expect.objectContaining({ active: true, activeUntil: expiresDate }),
+    expect.objectContaining({ active: true, activeUntil: expiresDate }),
+  ]);
 });
 
 test("a newer renewal JWS cannot clear a refund using an older transaction", async () => {
@@ -333,26 +340,28 @@ test("a newer renewal JWS cannot clear a refund using an older transaction", asy
   const signedTransaction = purchase("refund-renewal");
   await owner.action(api.entitlements.submitPurchase, { signedTransaction });
   await t.mutation(internal.entitlementRecords.applyNotification, {
-    productId: "macros.pro.monthly", originalTransactionId: "refund-renewal", environment: "Sandbox",
-    revokedAt: Date.now() + 10, verifiedAt: Date.now() + 10,
+    transaction: {
+      transactionId: "refund-renewal", productId: "macros.pro.monthly", originalTransactionId: "refund-renewal", environment: "Sandbox",
+      revokedAt: Date.now() + 10, transactionSignedDate: Date.now() + 10,
+    },
   });
-  await owner.action(api.entitlements.submitPurchase, {
+  await expect(owner.action(api.entitlements.submitPurchase, {
     signedTransaction,
     signedRenewalInfo: JSON.stringify({
       productId: "macros.pro.monthly", originalTransactionId: "refund-renewal", environment: "Sandbox",
       gracePeriodExpiresDate: Date.now() + 60_000, signedDate: Date.now() + 20,
     }),
-  });
-  const row = (await t.run(ctx => ctx.db.query("entitlements").collect()))[0];
+  })).rejects.toThrow("revoked");
+  const row = (await t.run(ctx => ctx.db.query("appleTransactions").collect()))[0];
   expect(row.revokedAt).toBe(Date.now() + 10);
 });
 
 test("lifetime grants Pro without expiry; revoked purchases never do", async () => {
   const { t, owner, viewer } = await fixture();
   await t.run(ctx => ctx.db.insert("settings", { sharingRequirePro: true }));
-  await viewer.action(api.entitlements.submitPurchase, {
+  await expect(viewer.action(api.entitlements.submitPurchase, {
     signedTransaction: purchase("revoked", { revocationDate: Date.now() - 1 }),
-  });
+  })).rejects.toThrow("revoked");
   await expect(viewer.mutation(api.sharing.createInvite, { tokenHash: "4".repeat(64) })).rejects.toThrow("Pro");
   await owner.action(api.entitlements.submitPurchase, {
     signedTransaction: purchase("lifetime", { productId: "macros.pro.lifetime", expiresDate: undefined }),
@@ -372,7 +381,7 @@ test("verified non-Pro notifications are acknowledged without granting an entitl
   });
 
   expect(response.status).toBe(200);
-  expect(await t.run(ctx => ctx.db.query("entitlements").collect())).toEqual([]);
+  expect(await t.run(ctx => ctx.db.query("appleTransactions").collect())).toEqual([]);
 });
 
 test("scope without ownerDay uses server today; other recipients keep foods until the last one turns off", async () => {

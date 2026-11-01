@@ -1,12 +1,20 @@
 import { v } from "convex/values";
 
-export const entitlementFields = {
-  productId: v.string(), originalTransactionId: v.string(),
+export const transactionFields = {
+  transactionId: v.string(), productId: v.string(), originalTransactionId: v.string(),
   expiresAt: v.optional(v.number()), revokedAt: v.optional(v.number()),
-  environment: v.union(v.literal("Production"), v.literal("Sandbox")), verifiedAt: v.number(),
+  environment: v.union(v.literal("Production"), v.literal("Sandbox")), transactionSignedDate: v.number(),
 };
 
-export const entitlementValidator = v.object(entitlementFields);
+export const renewalFields = {
+  gracePeriodExpiresAt: v.optional(v.number()), autoRenewStatus: v.optional(v.number()), renewalSignedDate: v.number(),
+};
+
+export const purchaseFields = {
+  transaction: v.object(transactionFields), renewal: v.optional(v.object(renewalFields)),
+};
+
+export const purchaseValidator = v.object(purchaseFields);
 
 export const okResult = v.object({ ok: v.boolean() });
 
