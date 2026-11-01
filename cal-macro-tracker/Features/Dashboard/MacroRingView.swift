@@ -92,14 +92,17 @@ struct MacroDashboardRingPanel: View {
 
     var body: some View {
         Button(action: onToggleExpansion) {
+            let ringDiameter: CGFloat = isExpanded ? 321 : 269
+            let outerStrokeWidth = max(5, ringDiameter * 0.08)
             MacroRingView(
                 totals: totals,
                 goals: goals,
                 selectedMetric: selectedMacro,
-                ringDiameter: isExpanded ? 321 : 269,
+                ringDiameter: ringDiameter,
                 colorStyle: colorStyle
             )
             .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
+            .padding(outerStrokeWidth / 2)
             .contentShape(Circle())
             .frame(maxWidth: .infinity)
         }
