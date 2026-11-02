@@ -1,0 +1,2 @@
+ON:  cd /Users/juan/.t3/worktrees/cal-macro-tracker/sharing-ui/convex-backend && CONVEX_DEPLOYMENT=dev:energized-pigeon-822 bunx convex import --append --table settings ../build/sharing-paused-live-3/settings-on.jsonl --yes
+OFF: cd /Users/juan/.t3/worktrees/cal-macro-tracker/sharing-ui/convex-backend && CONVEX_DEPLOYMENT=dev:energized-pigeon-822 bunx convex import --replace --table settings ../build/sharing-paused-live-3/settings-empty.jsonl --yes

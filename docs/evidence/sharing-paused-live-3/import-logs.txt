@@ -1,0 +1,103 @@
+== run1 ON
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 1      | 0 of 0 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+✔ Added 1 documents to table "settings".
+== run1 OFF
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 0      | 1 of 1 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+✔ Added 0 documents to table "settings".
+== run2 ON
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 1      | 0 of 0 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+- Importing
+
+- Importing "settings"
+
+✔ Imported "settings" (1 documents)
+- Imported "settings" (1 documents)
+
+✔ Added 1 documents to table "settings".
+== run2 OFF
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 0      | 1 of 1 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+✔ Added 0 documents to table "settings".
+== run3 ON
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-on.jsonl (27 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 1      | 0 of 0 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+✔ Added 1 documents to table "settings".
+== run3 OFF
+Resolving dependencies
+Resolved, downloaded and extracted [2]
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+- Importing ../build/sharing-paused-live-3/settings-empty.jsonl (0 bytes)
+
+Import change summary:
+table    | create | delete |
+----------------------------
+settings | 0      | 1 of 1 |
+Once the import has started, it will run in the background.
+Interrupting `npx convex import` will not cancel it.
+- Importing
+
+✔ Added 0 documents to table "settings".

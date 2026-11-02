@@ -1,0 +1,30 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 26 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Test B"
+@e3 [button] "Sharing"
+@e4 [text] "Test B"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [cell] "Today"
+@e7 [cell] "529.6"
+@e8 [text] "Protein, 10.0 grams, goal 160 grams"
+@e9 [text] "Carbs, 69.5 grams, goal 220 grams"
+@e10 [text] "Fat, 24.0 grams, goal 70 grams"
+@e11 [cell] "Foods"
+@e12 [cell] "Yogurt, Soy, 153 kcal, 1 6 oz container (170 g) · P 8.2g · C 20.9g · F 4.5g"
+@e13 [text] "Yogurt, Soy"
+@e14 [text] "153 kcal"
+@e15 [text] "1 6 oz container (170 g) · P 8.2g · C 20.9g · F 4.5g"
+@e16 [cell] "Yuca Fries, 376.6 kcal, 1 cup (140 g) · P 1.7g · C 48.6g · F 19.5g"
+@e17 [text] "Yuca Fries"
+@e18 [text] "376.6 kcal"
+@e19 [text] "1 cup (140 g) · P 1.7g · C 48.6g · F 19.5g"
+@e20 [cell] "What Test B sees from you"
+@e21 [cell]
+@e22 [segmented-control] "What Test B sees from you"
+@e23 [button] "Nothing"
+@e24 [button] "Macros" [selected]
+@e25 [button] "Macros + Foods"
+@e26 [toolbar] "Toolbar"

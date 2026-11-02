@@ -1,0 +1,25 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 21 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Test A"
+@e3 [button] "Sharing"
+@e4 [text] "Test A"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [cell] "Sharing is paused because neither person has MACROS Pro."
+@e7 [image] "Pause"
+@e8 [cell]
+@e9 [button] "Upgrade to MACROS Pro"
+@e10 [cell] "Today"
+@e11 [cell] "Sharing is paused"
+@e12 [image] "Pause"
+@e13 [cell] "What Test A sees from you"
+@e14 [cell]
+@e15 [segmented-control] "What Test A sees from you"
+@e16 [button] "Nothing"
+@e17 [button] "Macros"
+@e18 [button] "Macros + Foods" [selected]
+@e19 [cell]
+@e20 [button] "Remove Test A"
+@e21 [toolbar] "Toolbar"
