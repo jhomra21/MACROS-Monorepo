@@ -11,6 +11,11 @@ struct FoodCameraSheet: View {
     static let cameraAccessDeniedMessage =
         "Camera access is off. Allow camera access in Settings, or choose a photo from your library."
 
+    private static let sideButtonDiameter: CGFloat = 44
+    private static let shutterDiameter: CGFloat = 66
+    private static let shutterDiscDiameter: CGFloat = 52
+    private static let shutterHitDiameter: CGFloat = 68
+
     @Environment(\.dismiss) var dismiss
     @Environment(\.isPresented) var isPresented
     @Environment(\.modelContext) var modelContext
@@ -381,9 +386,8 @@ struct FoodCameraSheet: View {
             } label: {
                 Label("Close camera", systemImage: "chevron.backward")
                     .labelStyle(.iconOnly)
-                    .frame(width: 40, height: 40)
-                    .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
-                    .frame(width: 44, height: 44)
+                    .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
+                    .glassEffect(.clear.interactive(), in: Circle())
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)
@@ -393,15 +397,13 @@ struct FoodCameraSheet: View {
                 isCameraOptionsExpanded = false
                 captureLabel()
             } label: {
-                ZStack {
-                    Circle()
-                        .stroke(.white.opacity(0.9), lineWidth: 1)
-                    Circle()
-                        .fill(.white)
-                        .frame(width: 54, height: 54)
-                }
-                .frame(width: 68, height: 68)
-                .contentShape(Circle())
+                Circle()
+                    .fill(.white)
+                    .frame(width: Self.shutterDiscDiameter, height: Self.shutterDiscDiameter)
+                    .frame(width: Self.shutterDiameter, height: Self.shutterDiameter)
+                    .glassEffect(.clear.interactive(), in: Circle())
+                    .frame(width: Self.shutterHitDiameter, height: Self.shutterHitDiameter)
+                    .contentShape(Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Photograph nutrition label")
@@ -441,10 +443,9 @@ struct FoodCameraSheet: View {
                             } label: {
                                 Image(systemName: isCameraOptionsExpanded ? "xmark" : "ellipsis")
                                     .font(.system(size: 18, weight: .semibold))
-                                    .frame(width: 40, height: 40)
-                                    .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
+                                    .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
+                                    .glassEffect(.clear.interactive(), in: Circle())
                                     .glassEffectID("toggle", in: optionsNamespace)
-                                    .frame(width: 44, height: 44)
                                     .contentShape(Circle())
                             }
                             .buttonStyle(.plain)
@@ -476,11 +477,10 @@ struct FoodCameraSheet: View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.system(size: 17, weight: .semibold))
-                .frame(width: 40, height: 40)
-                .glassEffect(.regular.tint(.black.opacity(0.55)).interactive(), in: Circle())
+                .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
+                .glassEffect(.clear.interactive(), in: Circle())
                 .glassEffectID(id, in: optionsNamespace)
                 .glassEffectTransition(.matchedGeometry)
-                .frame(width: 44, height: 44)
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
