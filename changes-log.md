@@ -17,6 +17,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - Person screen: rings and legend were two List rows, so the List drew a separator between them. They are now one row using the dashboard `of N g` legend style; the no-goals P/C/F fallback, paused, not-shared, and foods states are kept.
 - Sharing list: people render in a `List` (primary name, secondary totals, orange paused status) instead of accent-tinted links in a `ScrollView`. The `+` button is now a Menu: Create Invite (Pro-gated, shares the link through the system sheet) and Accept Invite (opens the existing Sharing settings flow). Backup and invite share the new `URLShareSheet`.
 - Validation: format check, build, and 217 tests passed on the iPad runner. Visual evidence on iPhone 17 used a temporary, uncommitted mock sharing backend, not the dev Convex backend. Evidence: `docs/evidence/sharing-ui/REPORT.md` on `docs/asc-review-screenshots`.
+- Person screen reopen: the empty state flashed (about 0.2 s) on every visit because the day was cleared and the auth token re-fetched; `SharingSyncService` now caches the last-known day in memory (dropped on pause, revoke, removal, scope loss, day change, sign-out) and skips repeat auth, verified on two simulators against dev Convex with 225 tests passing (`docs/evidence/sharing-person-cache/REPORT.md`).
 
 ## 2026-11-01 Camera Viewport Corners
 

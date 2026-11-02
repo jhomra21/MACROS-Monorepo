@@ -32,6 +32,8 @@ final class SharingSyncService {
     private var uploadRequest: UploadRequest?
     private var uploadDirty = false
     private var identityGeneration = UUID()
+    private var authenticatedGeneration: UUID?
+    private var personDays: [PersonDayKey: SharingPersonDay] = [:]
     private var profileDeletionTask: Task<Void, Error>?
     private var credentialCleanupTask: Task<Void, Error>?
     private var purchaseDeduplicator = PurchaseSubmissionDeduplicator()
@@ -42,6 +44,10 @@ final class SharingSyncService {
         let container: ModelContainer
         let date: Date?
         let calendar: Calendar?
+    }
+    private struct PersonDayKey: Hashable {
+        let profileId: String
+        let day: String
     }
     private var dashboardSubscriptionDay: CalendarDay?
     private var hasReceivedDashboard = false
@@ -214,8 +220,12 @@ final class SharingSyncService {
             throw SharingOperationError.cleanupPending
         }
         let generation = identityGeneration
+        // The Convex client refreshes its own token, so one exchange per identity is enough.
+        // Each exchange is a network round trip to the auth worker.
+        if displayName == nil, authenticatedGeneration == generation { return }
         try await remoteClient.authenticate(displayName: displayName ?? storedDisplayName)
         try checkIdentity(generation)
+        authenticatedGeneration = generation
     }
 
     func startDashboardSubscription(for day: CalendarDay) {
@@ -239,6 +249,7 @@ final class SharingSyncService {
         isDashboardLoading = dashboard.people.isEmpty
         let attemptId = UUID()
         let displayName = storedDisplayName
+        let generation = identityGeneration
         dashboardSubscriptionAttemptId = attemptId
         let remoteClient = remoteClient
         let dashboardFeed = dashboardFeed
@@ -248,6 +259,7 @@ final class SharingSyncService {
             do {
                 try await remoteClient.authenticate(displayName: displayName)
                 guard !Task.isCancelled, self?.isCurrentDashboardSubscriptionAttempt(attemptId) == true else { return }
+                self?.authenticatedGeneration = generation
                 let values = dashboardFeed.dashboard(for: day).values
                 for try await dashboard in values {
                     guard !Task.isCancelled else { return }
@@ -288,6 +300,7 @@ final class SharingSyncService {
             } ?? false
         if scopeSyncReady { pendingScopeSync = nil }
         if self.dashboard != dashboard { self.dashboard = dashboard }
+        prunePersonDays(to: dashboard)
         if sharesFoodsNow != previouslySharedFoods || eligibilityEnded || scopeSyncReady, let lastUploadContainer {
             _ = requestUpload(UploadRequest(container: lastUploadContainer, date: nil, calendar: nil))
         }
@@ -317,7 +330,32 @@ final class SharingSyncService {
         if clearDashboard {
             dashboard = SharingDashboard(people: [])
             hasReceivedDashboard = false
+            personDays = [:]
         }
+    }
+
+    /// Last known shared day for a person, shown while the live subscription reconnects.
+    func cachedPersonDay(profileId: String, day: CalendarDay) -> SharingPersonDay? {
+        personDays[PersonDayKey(profileId: profileId, day: day.sharingDayKey)]
+    }
+
+    func cachePersonDay(_ value: SharingPersonDay, profileId: String, day: CalendarDay) {
+        guard isDeviceSharingEnabled else { return }
+        let key = PersonDayKey(profileId: profileId, day: day.sharingDayKey)
+        let cached = value.visibility == .shared ? value : nil
+        if personDays[key] != cached { personDays[key] = cached }
+    }
+
+    /// Keeps only days the dashboard still says are visible, and drops foods once the person stops sharing them.
+    private func prunePersonDays(to dashboard: SharingDashboard) {
+        let pruned = personDays.compactMap { key, value -> (PersonDayKey, SharingPersonDay)? in
+            guard let person = dashboard.people.first(where: { $0.profileId == key.profileId }),
+                person.incomingActive, !person.connectionPaused
+            else { return nil }
+            return (key, person.foodsShared ? value : SharingPersonDay(snapshot: value.snapshot, foods: []))
+        }
+        let result = Dictionary(uniqueKeysWithValues: pruned)
+        if personDays != result { personDays = result }
     }
 
     func pendingInvite() throws -> SharingInvite? {
@@ -427,6 +465,7 @@ final class SharingSyncService {
     func removePerson(_ profileId: String, ownerDay: CalendarDay) async throws {
         try await authenticateForOperation()
         try await accountActions.removePerson(profileId: profileId, ownerDay: ownerDay)
+        personDays = personDays.filter { $0.key.profileId != profileId }
     }
 
     func deleteSharingProfile() async throws {

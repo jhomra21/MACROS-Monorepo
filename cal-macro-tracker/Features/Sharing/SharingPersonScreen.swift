@@ -9,8 +9,8 @@ struct SharingPersonScreen: View {
     @Environment(\.dismiss) private var dismiss
     let person: SharingPerson
 
-    @State private var personDay: SharingPersonDay?
     @State private var personDayVisibility: SharingPersonDay.Visibility?
+    @State private var isLoadingPersonDay = true
     @State private var errorMessage: String?
     @State private var scopeSelection: SharingScopeSelection
     @State private var showingRemovalConfirmation = false
@@ -18,6 +18,20 @@ struct SharingPersonScreen: View {
 
     private var currentPerson: SharingPerson {
         sharing.dashboard.people.first { $0.profileId == person.profileId } ?? person
+    }
+
+    private var personDay: SharingPersonDay? {
+        sharing.cachedPersonDay(profileId: person.profileId, day: dayContext.today)
+    }
+
+    /// The live day when cached, otherwise the dashboard snapshot, which the server leaves empty unless the day is visible.
+    private var displayedSnapshot: SharedDailySnapshot? {
+        guard !isPaused, !isNotShared else { return nil }
+        return personDay?.snapshot ?? currentPerson.snapshot
+    }
+
+    private var isAwaitingPersonDay: Bool {
+        isLoadingPersonDay && personDay == nil
     }
 
     init(person: SharingPerson) {
@@ -34,7 +48,7 @@ struct SharingPersonScreen: View {
                 }
             }
 
-            if let snapshot = personDay?.snapshot {
+            if let snapshot = displayedSnapshot {
                 let sharedGoals = snapshot.macroGoalsSnapshot
                 let totals = NutritionSnapshot(
                     calories: snapshot.calories,
@@ -78,20 +92,26 @@ struct SharingPersonScreen: View {
                 }
             } else {
                 Section("Today") {
-                    ContentUnavailableView(
-                        isPaused
-                            ? "Sharing is paused"
-                            : isNotShared
-                                ? "\(currentPerson.displayName) isn't sharing with you"
-                                : currentPerson.incomingActive
-                                    ? "No macros shared today" : "\(currentPerson.displayName) isn't sharing with you",
-                        systemImage: isPaused ? "pause.circle" : "chart.pie"
-                    )
+                    if isAwaitingPersonDay && !isPaused && !isNotShared {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 240)
+                    } else {
+                        ContentUnavailableView(
+                            isPaused
+                                ? "Sharing is paused"
+                                : isNotShared ? "\(currentPerson.displayName) isn't sharing with you" : "No macros shared today",
+                            systemImage: isPaused ? "pause.circle" : "chart.pie"
+                        )
+                    }
                 }
             }
 
             if currentPerson.foodsShared && !isNotShared && !isPaused {
                 Section("Foods") {
+                    if isAwaitingPersonDay {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                    }
                     ForEach(personDay?.foods ?? []) { food in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
@@ -162,38 +182,32 @@ struct SharingPersonScreen: View {
             id:
                 "\(dayContext.today.sharingDayKey)-\(currentPerson.profileId)-\(currentPerson.incomingActive)-\(currentPerson.connectionPaused)-\(sharing.isDeviceSharingEnabled)"
         ) {
-            personDay = nil
             personDayVisibility = nil
+            isLoadingPersonDay = true
             guard sharing.isDeviceSharingEnabled, currentPerson.incomingActive, !currentPerson.connectionPaused else { return }
             do {
-                let updates = try await sharing.personDayUpdates(profileId: currentPerson.profileId, day: dayContext.today)
+                let day = dayContext.today
+                let updates = try await sharing.personDayUpdates(profileId: currentPerson.profileId, day: day)
                 for try await value in updates.values {
                     try Task.checkCancellation()
                     personDayVisibility = value.visibility
-                    if value.visibility == .shared {
-                        personDay = value
-                    } else {
-                        personDay = nil
-                    }
+                    sharing.cachePersonDay(value, profileId: currentPerson.profileId, day: day)
+                    isLoadingPersonDay = false
                 }
             } catch is CancellationError {
             } catch {
-                personDay = nil
+                isLoadingPersonDay = false
                 errorMessage = error.localizedDescription
             }
         }
         .onChange(of: sharing.isDeviceSharingEnabled) { _, isEnabled in
-            if !isEnabled {
-                personDay = nil
-                personDayVisibility = nil
-            }
+            if !isEnabled { personDayVisibility = nil }
         }
         .onChange(of: sharing.dashboard) { _, dashboard in
             guard let updatedPerson = dashboard.people.first(where: { $0.profileId == person.profileId }),
                 updatedPerson.incomingActive, !updatedPerson.connectionPaused,
                 sharing.isDeviceSharingEnabled
             else {
-                personDay = nil
                 personDayVisibility = nil
                 return
             }
