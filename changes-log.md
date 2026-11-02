@@ -11,6 +11,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+- 2026-11-02: Add Food camera’s matched zoom source now wraps the final clipped, sized capsule; opening from expanded mode starts at the full button. Compact mode and dismiss transitions are unchanged.
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
 ## 2026-11-01 Reusable sharing invite link

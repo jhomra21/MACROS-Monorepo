@@ -65,9 +65,12 @@ struct BottomPinnedActionBar: View {
             labelWidth: buttonWidth,
             action: action
         )
-        return transitionSource(for: button)
-            .clipped()
-            .frame(width: buttonWidth, height: compactButtonSize)
+        let sizedButton = GlassEffectContainer(spacing: 0) {
+            button
+        }
+        .clipped()
+        .frame(width: buttonWidth, height: compactButtonSize)
+        return transitionSource(for: sizedButton)
             .padding(.horizontal, horizontalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)
@@ -77,10 +80,7 @@ struct BottomPinnedActionBar: View {
     @ViewBuilder
     private func transitionSource(for button: some View) -> some View {
         if let sourceID = transitionSourceID, let namespace = transitionNamespace {
-            GlassEffectContainer(spacing: 0) {
-                button
-            }
-            .matchedTransitionSource(id: sourceID, in: namespace) {
+            button.matchedTransitionSource(id: sourceID, in: namespace) {
                 $0.clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
             }
         } else {
