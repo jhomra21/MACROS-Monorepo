@@ -3,10 +3,16 @@ import Foundation
 struct SharingLocalStateStore {
     let defaults: UserDefaults
     let tokenStore: any SharingInviteTokenStorage
+    let identityStore: SharingIdentityStore
 
-    init(defaults: UserDefaults = .standard, tokenStore: (any SharingInviteTokenStorage)? = nil) {
+    init(
+        defaults: UserDefaults = .standard,
+        tokenStore: (any SharingInviteTokenStorage)? = nil,
+        identityStore: SharingIdentityStore = SharingIdentityStore()
+    ) {
         self.defaults = defaults
         self.tokenStore = tokenStore ?? SharingInviteTokenStore()
+        self.identityStore = identityStore
     }
     var isDeviceSharingEnabled: Bool {
         get { defaults.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
@@ -73,6 +79,14 @@ struct SharingLocalStateStore {
             return nil
         }
 
+        // Unbound links from older builds may already have been consumed.
+        guard let ownerKey = defaults.string(forKey: AppStorageKeys.sharingPendingInviteProfileKey),
+            ownerKey == (try identityStore.load())?.profileKey
+        else {
+            try clearPendingInvite()
+            return nil
+        }
+
         let expiresAt = Date(timeIntervalSince1970: defaults.double(forKey: AppStorageKeys.sharingPendingInviteExpiresAt))
         guard expiresAt > .now else {
             try clearPendingInvite()
@@ -93,10 +107,12 @@ struct SharingLocalStateStore {
     }
 
     func savePendingInvite(_ invite: SharingInvite) throws {
+        let profileKey = try identityStore.load()?.profileKey
         try tokenStore.saveToken(invite.token)
         defaults.set(invite.inviteId, forKey: AppStorageKeys.sharingPendingInviteId)
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteToken)
         defaults.set(invite.expiresAt.timeIntervalSince1970, forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
+        defaults.set(profileKey, forKey: AppStorageKeys.sharingPendingInviteProfileKey)
         isInviteCleanupPending = false
     }
 
@@ -105,6 +121,7 @@ struct SharingLocalStateStore {
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteId)
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteToken)
         defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
+        defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteProfileKey)
         try tokenStore.deleteToken()
         isInviteCleanupPending = false
     }

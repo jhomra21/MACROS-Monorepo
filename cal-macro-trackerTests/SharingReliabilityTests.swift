@@ -579,17 +579,60 @@ final class SharingReliabilityTests: XCTestCase {
         let f = try fixture()
         let secure = SharingInviteTokenStore(service: "SharingReliability.\(UUID())")
         defer { try? secure.deleteToken() }
-        let store = SharingLocalStateStore(defaults: f.defaults, tokenStore: secure)
+        let store = SharingLocalStateStore(defaults: f.defaults, tokenStore: secure, identityStore: f.identityStore)
         f.seedLegacyInvite()
         let invite = try XCTUnwrap(store.pendingInvite())
         XCTAssertTrue(f.defaults.string(forKey: AppStorageKeys.sharingPendingInviteToken) == nil)
         XCTAssertTrue(try secure.loadToken() != nil)
-        let cold = SharingLocalStateStore(defaults: f.defaults, tokenStore: secure)
+        let cold = SharingLocalStateStore(defaults: f.defaults, tokenStore: secure, identityStore: f.identityStore)
         XCTAssertEqual(try cold.pendingInvite()?.inviteId, invite.inviteId)
         let service = SharingSyncService(remoteClient: f.remote, credentialCleanup: f.cleanup, localStateStore: cold)
         try await service.revokeInvite(invite)
         XCTAssertNil(try secure.loadToken())
         XCTAssertNil(try cold.pendingInvite())
+    }
+
+    func testCreateInviteReusesCurrentIdentityLinkAcrossServiceRestartWithoutNetwork() async throws {
+        let f = try fixture()
+        let first = try await f.service.createInvite()
+        let calls = f.remote.authentications
+        let cold = SharingSyncService(remoteClient: f.remote, credentialCleanup: f.cleanup, localStateStore: f.store)
+        let second = try await cold.createInvite()
+        XCTAssertEqual(first.appURL, second.appURL)
+        XCTAssertEqual(first.inviteId, second.inviteId)
+        XCTAssertEqual(first.expiresAt, second.expiresAt)
+        XCTAssertEqual(f.remote.invitesCreated, 1)
+        XCTAssertEqual(f.remote.authentications, calls)
+    }
+
+    func testCreateInviteReplacesExpiredNearExpiryAndUnboundLegacyLinks() async throws {
+        for remaining in [-1.0, 1800.0, 3600.0] {
+            let f = try fixture()
+            try f.store.savePendingInvite(
+                f.store.makeInvite(inviteId: "old", token: "old-token", expiresAt: .now.addingTimeInterval(remaining)))
+            let next = try await f.service.createInvite()
+            XCTAssertNotEqual(next.token, "old-token")
+            XCTAssertEqual(f.remote.invitesCreated, 1)
+        }
+        let f = try fixture()
+        f.seedLegacyInvite()
+        f.defaults.removeObject(forKey: AppStorageKeys.sharingPendingInviteProfileKey)
+        f.defaults.set(Date.now.addingTimeInterval(86400).timeIntervalSince1970, forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
+        _ = try await f.service.createInvite()
+        XCTAssertEqual(f.remote.invitesCreated, 1)
+    }
+
+    func testCreateInviteDoesNotReuseAfterIdentityChangeOrRevocation() async throws {
+        let f = try fixture()
+        let first = try await f.service.createInvite()
+        try f.identityStore.save(SharingIdentity(profileKey: "replacement", profileSecret: "synthetic"))
+        XCTAssertNil(try f.service.pendingInvite())
+        let replacement = try await f.service.createInvite()
+        XCTAssertNotEqual(first.token, replacement.token)
+        try await f.service.revokeInvite(replacement)
+        let renewed = try await f.service.createInvite()
+        XCTAssertNotEqual(replacement.token, renewed.token)
+        XCTAssertEqual(f.remote.invitesCreated, 3)
     }
 
     func testFailedSecureMigrationRetainsLegacyTokenAndThrows() throws {
@@ -644,12 +687,15 @@ private final class Fixture {
     let remote = ControlledSharingRemote()
     let cleanup = ControlledCleanup()
     let tokens = ControlledTokens()
+    let identityStore: SharingIdentityStore
     let store: SharingLocalStateStore
     let service: SharingSyncService
 
     init() throws {
         defaults = UserDefaults(suiteName: suite)!
-        store = SharingLocalStateStore(defaults: defaults, tokenStore: tokens)
+        identityStore = SharingIdentityStore(service: suite)
+        try identityStore.save(SharingIdentity(profileKey: "fixture", profileSecret: "synthetic"))
+        store = SharingLocalStateStore(defaults: defaults, tokenStore: tokens, identityStore: identityStore)
         store.isDeviceSharingEnabled = true
         container = try ModelContainer(
             for: DailyGoals.self, FoodItem.self, Meal.self, MealComponent.self,
@@ -678,11 +724,15 @@ private final class Fixture {
 
     func seedLegacyInvite() {
         defaults.set("qa", forKey: AppStorageKeys.sharingPendingInviteId)
+        defaults.set("fixture", forKey: AppStorageKeys.sharingPendingInviteProfileKey)
         defaults.set(UUID().uuidString, forKey: AppStorageKeys.sharingPendingInviteToken)
         defaults.set(Date.now.addingTimeInterval(3600).timeIntervalSince1970, forKey: AppStorageKeys.sharingPendingInviteExpiresAt)
     }
 
-    deinit { defaults.removePersistentDomain(forName: suite) }
+    deinit {
+        defaults.removePersistentDomain(forName: suite)
+        try? identityStore.delete()
+    }
 }
 
 @MainActor
@@ -764,6 +814,7 @@ private final class ControlledSharingRemote: SharingRemote {
     var setScopeDashboard: SharingDashboard?
     var failScopeWrite = false
     var scopeWrites = 0
+    var invitesCreated = 0
 
     func authenticate(displayName: String) async throws {
         authentications += 1
@@ -839,7 +890,8 @@ private final class ControlledSharingRemote: SharingRemote {
         await withCheckedContinuation { cancelObserver = (count, $0) }
     }
     func createInvite(tokenHash: String) async throws -> (inviteId: String, expiresAt: Date) {
-        ("qa", .now.addingTimeInterval(3600))
+        invitesCreated += 1
+        return ("qa-\(invitesCreated)", .now.addingTimeInterval(7 * 86400))
     }
     func revokeInvite(id: String) async throws {}
     func acceptInvite(tokenHash: String, ownerDay: CalendarDay) async throws {}
