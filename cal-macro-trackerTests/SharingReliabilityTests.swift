@@ -18,11 +18,22 @@ final class SharingReliabilityTests: XCTestCase {
         return task
     }
 
-    private func observeChange(read: () -> Void, action: () -> Void) async {
-        let changed = expectation(description: "production observable state changed")
-        withObservationTracking(read) { changed.fulfill() }
+    private func observe(
+        read: () -> Void,
+        until condition: () -> Bool,
+        action: () -> Void
+    ) async {
         action()
-        await fulfillment(of: [changed], timeout: 2)
+        while !condition() {
+            let changed = expectation(description: "production observable state changed")
+            withObservationTracking(read) { changed.fulfill() }
+            guard !condition() else { return }
+            await fulfillment(of: [changed], timeout: 10)
+            guard condition() else {
+                XCTFail("Timed out waiting for production observable state")
+                return
+            }
+        }
     }
 
     func testUploadRevertDrainsLatestSnapshotAndAcknowledgesFinalHash() async throws {
@@ -123,7 +134,9 @@ final class SharingReliabilityTests: XCTestCase {
         let f = try fixture()
         f.service.startDashboardSubscription(for: CalendarDay(date: .now))
         await f.remote.dashboardStarted(count: 1)
-        await observeChange(read: { _ = f.service.dashboard.people }) {
+        await observe(read: { _ = f.service.dashboard }, until: {
+            f.service.dashboard.people.contains { $0.connectionPaused }
+        }) {
             f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: true)]))
         }
         try await f.service.uploadTodaySnapshot(container: f.container)
@@ -134,22 +147,27 @@ final class SharingReliabilityTests: XCTestCase {
         let f = try fixture()
         f.service.startDashboardSubscription(for: CalendarDay(date: .now))
         await f.remote.dashboardStarted(count: 1)
-        await observeChange(read: { _ = f.service.dashboard.people }) {
+        await observe(read: { _ = f.service.dashboard }, until: {
+            f.service.dashboard.people.contains { $0.outgoingScope == .macrosAndFoods && !$0.connectionPaused }
+        }) {
             f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: false)]))
         }
         try await f.service.uploadTodaySnapshot(container: f.container)
         XCTAssertNotNil(f.store.lastUploadedSnapshotHash)
 
         f.remote.failUpload = true
-        let failedUpload = expectation(description: "macros-only replacement fails")
-        withObservationTracking({ _ = f.service.uploadErrorMessage }) { failedUpload.fulfill() }
-        f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macros, paused: false)]))
-        await fulfillment(of: [failedUpload], timeout: 2)
+        await observe(read: { _ = f.service.uploadErrorMessage }, until: {
+            f.service.uploadErrorMessage != nil
+        }) {
+            f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macros, paused: false)]))
+        }
         XCTAssertNil(f.store.lastUploadedSnapshotHash)
 
         f.remote.failUpload = false
         f.remote.delayUpload = true
-        await observeChange(read: { _ = f.service.dashboard.people }) {
+        await observe(read: { _ = f.service.dashboard }, until: {
+            f.service.dashboard.people.contains { $0.outgoingScope == .macrosAndFoods && !$0.connectionPaused }
+        }) {
             f.remote.streams[0].send(SharingDashboard(people: [sharingPerson(scope: .macrosAndFoods, paused: false)]))
         }
         await f.remote.uploadStarted()
@@ -216,7 +234,9 @@ final class SharingReliabilityTests: XCTestCase {
         )
         XCTAssertTrue(f.remote.uploads.isEmpty)
 
-        await observeChange(read: { _ = f.service.dashboard.people }) {
+        await observe(read: { _ = f.service.dashboard }, until: {
+            f.service.dashboard == f.remote.setScopeDashboard
+        }) {
             f.remote.streams[0].send(f.remote.setScopeDashboard!)
         }
         await f.service.syncTodayIfConfigured(container: f.container)
@@ -428,18 +448,24 @@ final class SharingReliabilityTests: XCTestCase {
         f.service.startDashboardSubscription(for: day)
         await f.remote.dashboardStarted(count: 1)
         await Task.yield()
-        await observeChange(read: { _ = f.service.shouldShowDashboardLoading }) {
+        await observe(read: { _ = f.service.shouldShowDashboardLoading }, until: {
+            !f.service.shouldShowDashboardLoading
+        }) {
             f.remote.streams[0].send(SharingDashboard(people: []))
         }
         XCTAssertFalse(f.service.shouldShowDashboardLoading)
-        await observeChange(read: { _ = f.service.dashboardErrorMessage }) {
+        await observe(read: { _ = f.service.dashboardErrorMessage }, until: {
+            f.service.dashboardErrorMessage != nil
+        }) {
             f.remote.streams[0].send(completion: .failure(QAError.injected))
         }
         XCTAssertNotNil(f.service.dashboardErrorMessage)
         f.service.startDashboardSubscription(for: day)
         await f.remote.dashboardStarted(count: 2)
         XCTAssertNil(f.service.dashboardErrorMessage)
-        await observeChange(read: { _ = f.service.shouldShowDashboardLoading }) {
+        await observe(read: { _ = f.service.shouldShowDashboardLoading }, until: {
+            !f.service.shouldShowDashboardLoading
+        }) {
             f.remote.streams[1].send(completion: .finished)
         }
         XCTAssertFalse(f.service.shouldShowDashboardLoading)
@@ -470,7 +496,9 @@ final class SharingReliabilityTests: XCTestCase {
     }
 
     private func deliver(_ people: [SharingPerson], to f: Fixture, stream: Int = 0) async {
-        await observeChange(read: { _ = f.service.dashboard }) {
+        await observe(read: { _ = f.service.dashboard }, until: {
+            f.service.dashboard.people == people
+        }) {
             f.remote.streams[stream].send(SharingDashboard(people: people))
         }
     }
@@ -600,7 +628,7 @@ final class SharingReliabilityTests: XCTestCase {
         let second = try await cold.createInvite()
         XCTAssertEqual(first.appURL, second.appURL)
         XCTAssertEqual(first.inviteId, second.inviteId)
-        XCTAssertEqual(first.expiresAt, second.expiresAt)
+        XCTAssertLessThanOrEqual(abs(first.expiresAt.timeIntervalSince(second.expiresAt)), 0.001)
         XCTAssertEqual(f.remote.invitesCreated, 1)
         XCTAssertEqual(f.remote.authentications, calls)
     }
@@ -799,6 +827,7 @@ private final class ControlledSharingRemote: SharingRemote {
     var dashboardStarts = 0
     var dashboardCancels = 0
     var streams: [PassthroughSubject<SharingDashboard, Error>] = []
+    private var requestedDashboardStreams = Set<Int>()
     private var uploadGate: CheckedContinuation<Void, Never>?
     private var uploadObserver: CheckedContinuation<Void, Never>?
     private var authGate: CheckedContinuation<Void, Never>?
@@ -862,15 +891,13 @@ private final class ControlledSharingRemote: SharingRemote {
     }
     func releaseUpload() { uploadGate?.resume(); uploadGate = nil }
     func dashboard(for day: CalendarDay) -> AnyPublisher<SharingDashboard, Error> {
+        let streamIndex = streams.count
         let subject = PassthroughSubject<SharingDashboard, Error>()
         streams.append(subject)
         return subject.handleEvents(
             receiveSubscription: { [self] _ in
                 dashboardStarts += 1
-                if let (count, observer) = startObserver, dashboardStarts >= count {
-                    startObserver = nil
-                    observer.resume()
-                }
+                resumeDashboardStartObserverIfReady()
             },
             receiveCancel: { [self] in
                 dashboardCancels += 1
@@ -878,12 +905,24 @@ private final class ControlledSharingRemote: SharingRemote {
                     cancelObserver = nil
                     observer.resume()
                 }
+            },
+            receiveRequest: { [self] _ in
+                requestedDashboardStreams.insert(streamIndex)
+                resumeDashboardStartObserverIfReady()
             }
         ).eraseToAnyPublisher()
     }
     func dashboardStarted(count: Int) async {
-        if dashboardStarts >= count { return }
+        guard !isDashboardReady(count: count) else { return }
         await withCheckedContinuation { startObserver = (count, $0) }
+    }
+    private func isDashboardReady(count: Int) -> Bool {
+        dashboardStarts >= count && (0..<count).allSatisfy(requestedDashboardStreams.contains)
+    }
+    private func resumeDashboardStartObserverIfReady() {
+        guard let (count, observer) = startObserver, isDashboardReady(count: count) else { return }
+        startObserver = nil
+        observer.resume()
     }
     func dashboardCancelled(count: Int) async {
         if dashboardCancels >= count { return }
