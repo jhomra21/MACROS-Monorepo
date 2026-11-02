@@ -1,0 +1,120 @@
+$ bun run build && bun run db:migrations:apply:remote && wrangler deploy
+$ wrangler types && astro check && tsc --noEmit && astro build
+
+ ⛅️ wrangler 4.156.0
+────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+09:55:22 [types] Generated 54ms
+09:55:22 [check] Getting diagnostics for Astro files in /Users/juan/.t3/worktrees/cal-macro-tracker/release-b27/web...
+Result (31 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+
+09:55:25 [types] Generated 19ms
+09:55:25 [build] output: "static"
+09:55:25 [build] mode: "static"
+09:55:25 [build] directory: /Users/juan/.t3/worktrees/cal-macro-tracker/release-b27/web/dist/
+09:55:25 [build] Collecting build info...
+09:55:25 [build] ✓ Completed in 29ms.
+09:55:25 [build] Building static entrypoints...
+09:55:25 [vite] ✓ built in 240ms
+09:55:25 [vite] ✓ built in 27ms
+09:55:25 [build] Rearranging server assets...
+
+ generating static routes
+09:55:25   ├─ /about/index.html (+7ms)
+09:55:25   ├─ /privacy/index.html (+2ms)
+09:55:25   ├─ /support/index.html (+1ms)
+09:55:25   ├─ /terms/index.html (+1ms)
+09:55:25   ├─ /index.html (+5ms)
+09:55:25 ✓ Completed in 24ms.
+
+ generating optimized images
+09:55:25 [vite] ✓ built in 6ms
+09:55:25   ▶ /_astro/app-scan-review.D5PHkOuh_ZYRtdq.webp (before: 282kB, after: 5kB) (+369ms) (1/27)
+09:55:25   ▶ /_astro/app-sharing.CnUHKwBP_15xP7a.webp (before: 308kB, after: 3kB) (+369ms) (2/27)
+09:55:25   ▶ /_astro/app-history.CfBOktqC_146kMf.webp (before: 416kB, after: 9kB) (+369ms) (3/27)
+09:55:25   ▶ /_astro/app-add-food.xmll2--R_Oi9ne.webp (before: 343kB, after: 9kB) (+369ms) (4/27)
+09:55:25   ▶ /_astro/app-settings.CRYwcGZL_unYKo.webp (before: 248kB, after: 7kB) (+369ms) (5/27)
+09:55:25   ▶ /_astro/app-insights.ipkPaDOK_ZyaGw7.webp (before: 522kB, after: 10kB) (+416ms) (6/27)
+09:55:25   ▶ /_astro/app-home.Dpw9aNx-_1GF9A9.webp (before: 863kB, after: 14kB) (+416ms) (7/27)
+09:55:25   ▶ /_astro/app-widgets.DraQI13T_ipQw0.webp (before: 3617kB, after: 13kB) (+416ms) (8/27)
+09:55:25   ▶ /_astro/app-scan-review.D5PHkOuh_Z19Cwcp.webp (before: 282kB, after: 14kB) (+47ms) (9/27)
+09:55:25   ▶ /_astro/app-sharing.CnUHKwBP_ZgJbAJ.webp (before: 308kB, after: 10kB) (+47ms) (10/27)
+09:55:26   ▶ /_astro/app-history.CfBOktqC_ZibFUE.webp (before: 416kB, after: 22kB) (+110ms) (11/27)
+09:55:26   ▶ /_astro/app-add-food.xmll2--R_Z1OJp4J.webp (before: 343kB, after: 22kB) (+110ms) (12/27)
+09:55:26   ▶ /_astro/app-settings.CRYwcGZL_Z29DyGz.webp (before: 248kB, after: 20kB) (+110ms) (13/27)
+09:55:26   ▶ /_astro/app-insights.ipkPaDOK_1QXROQ.webp (before: 522kB, after: 27kB) (+64ms) (14/27)
+09:55:26   ▶ /_astro/app-home.Dpw9aNx-_Z1NRLiE.webp (before: 863kB, after: 33kB) (+64ms) (15/27)
+09:55:26   ▶ /_astro/app-widgets.DraQI13T_Z13RabT.webp (before: 3617kB, after: 33kB) (+241ms) (16/27)
+09:55:26   ▶ /_astro/app-scan-review.D5PHkOuh_1liWvk.webp (before: 282kB, after: 45kB) (+241ms) (17/27)
+09:55:26   ▶ /_astro/app-sharing.CnUHKwBP_Z2jyavP.webp (before: 308kB, after: 34kB) (+241ms) (18/27)
+09:55:26   ▶ /_astro/app-history.CfBOktqC_21EyaD.webp (before: 416kB, after: 73kB) (+177ms) (19/27)
+09:55:26   ▶ /_astro/app-add-food.xmll2--R_Z1UD8AW.webp (before: 343kB, after: 71kB) (+177ms) (20/27)
+09:55:26   ▶ /_astro/app-home.Dpw9aNx-_5lFst.webp (before: 863kB, after: 53kB) (+220ms) (21/27)
+09:55:26   ▶ /_astro/app-settings.CRYwcGZL_Z1RgJc0.webp (before: 248kB, after: 66kB) (+230ms) (22/27)
+09:55:26   ▶ /_astro/app-insights.ipkPaDOK_TtLCM.webp (before: 522kB, after: 84kB) (+247ms) (23/27)
+09:55:26   ▶ /_astro/app-home.Dpw9aNx-_1BF2LU.webp (before: 863kB, after: 11kB) (+31ms) (24/27)
+09:55:26   ▶ /_astro/app-home.Dpw9aNx-_Z2sRzpJ.webp (before: 863kB, after: 28kB) (+51ms) (25/27)
+09:55:26   ▶ /_astro/app-widgets.DraQI13T_Z1lBINf.webp (before: 3617kB, after: 118kB) (+193ms) (26/27)
+09:55:26   ▶ /_astro/app-home.Dpw9aNx-_Z2697Eg.webp (before: 863kB, after: 86kB) (+139ms) (27/27)
+09:55:26 ✓ Completed in 920ms.
+
+09:55:26 [build] ✓ Completed in 1.23s.
+09:55:26 [build] 5 page(s) built in 1.26s
+09:55:26 [build] Complete!
+$ wrangler d1 migrations apply SUPPORT_DB --remote
+
+ ⛅️ wrangler 4.156.0 (update available 4.156.2)
+───────────────────────────────────────────────
+Resource location: remote
+
+✅ No migrations to apply!
+
+ ⛅️ wrangler 4.156.0 (update available 4.156.2)
+───────────────────────────────────────────────
+🌀 Building list of assets...
+✨ Read 46 files from the assets directory /Users/juan/.t3/worktrees/cal-macro-tracker/release-b27/web/dist
+🌀 Starting asset upload...
+No updated asset files to upload. Proceeding with deployment...
+Total Upload: 791.45 KiB / gzip: 127.91 KiB
+Worker Startup Time: 22 ms
+Your Worker has access to the following bindings:
+Binding                                               Resource
+env.SUPPORT_DB (cal-macro-tracker-support)            D1 Database
+env.SUPPORT_LIMITER (5 requests/60s)                  Rate Limit
+env.WAITLIST_LIMITER (5 requests/60s)                 Rate Limit
+env.ASSETS                                            Assets
+
+Uploaded macros-web (5.66 sec)
+Deployed macros-web triggers (0.89 sec)
+  https://macros-web.jhonra121.workers.dev
+  schedule: 17 3 * * *
+Current Version ID: 6c0265a2-58bd-4306-ba42-fffc2ba180aa

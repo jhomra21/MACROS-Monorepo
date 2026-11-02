@@ -1,0 +1,12 @@
+Website deployment verification
+URL: https://macros-web.jhonra121.workers.dev/privacy
+HTTP status: 200 (FetchUrl)
+Live HTML saved as deployed-privacy.html
+Verified: Anyone with your invite link can connect until it expires after 7 days or you revoke it.
+
+URL: https://macros-web.jhonra121.workers.dev/
+HTTP status: 200 (FetchUrl)
+Live HTML saved as deployed-home.html; the Pro FAQ is on this source page.
+Verified: Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it.
+
+Wrangler deployment version: 6c0265a2-58bd-4306-ba42-fffc2ba180aa
