@@ -264,8 +264,8 @@ struct FoodCameraSheet: View {
             .accessibilityHidden(!cameraCardVisible)
     }
 
-    // One curve for the card and the viewport height; Reduce Motion moves nothing and only fades (`cameraFade`).
-    private var layoutAnimation: Animation? { reduceMotion ? nil : .smooth(duration: 0.3) }
+    // Let initial measurements settle during the zoom before animating result-driven layout changes.
+    private var layoutAnimation: Animation? { cameraCardVisible && !reduceMotion ? .smooth(duration: 0.3) : nil }
 
     private var fadeAnimation: Animation { cameraFade(reduceMotion: reduceMotion) }
 
