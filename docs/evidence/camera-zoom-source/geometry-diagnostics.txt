@@ -1,0 +1,9 @@
+Temporary, uncommitted onGeometryChange/NSLog diagnostics from the iPhone 17 simulator:
+
+2026-11-02 11:03:43.760 CAMERA_ZOOM_SOURCE_FRAME (-80.0, -28.0, 60.0, 60.0)
+2026-11-02 11:03:43.919 CAMERA_ZOOM_SOURCE_FRAME (20.0, 778.0, 362.0, 60.0)
+2026-11-02 11:04:00.806 CAMERA_ZOOM_TAP_COMPACT false
+2026-11-02 11:08:25.656 CAMERA_ZOOM_SOURCE_FRAME (322.0, 778.0, 60.0, 60.0)
+2026-11-02 11:08:57.890 CAMERA_ZOOM_TAP_COMPACT true
+
+The expanded source occupied the visible button's full 362 × 60 pt rectangle at the tap, and the compact source occupied the trailing 60 × 60 pt circle. The mode remained stable while opening. This ruled out a width/mode transition race and focused the fix on registering the already-clipped, already-sized visible control as the matched source rather than the inner glass container.
