@@ -291,15 +291,6 @@ struct FoodCameraSheet: View {
         .transition(reduceMotion ? .opacity : .scale(scale: 0.9).combined(with: .opacity))
     }
 
-    /// HIG: clear glass over bright media needs a 35% dark dimming layer behind it to keep the white icons legible.
-    private var controlsDimmingLayer: some View {
-        LinearGradient(colors: [.clear, .black.opacity(0.35)], startPoint: .top, endPoint: .bottom)
-            .frame(height: 220)
-            .opacity(isResultFrozen ? 0 : 1)
-            .animation(fadeAnimation, value: isResultFrozen)
-            .allowsHitTesting(false)
-    }
-
     private func cameraViewport(bottomSafeAreaInset: CGFloat) -> some View {
         ZStack {
             Color(uiColor: .darkGray)
@@ -339,7 +330,6 @@ struct FoodCameraSheet: View {
                 Spacer()
                 cameraControls(bottomSafeAreaInset: bottomSafeAreaInset)
             }
-            .background(alignment: .bottom) { controlsDimmingLayer }
             .opacity(cameraRevealVisible ? 1 : 0)
             .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
         }
