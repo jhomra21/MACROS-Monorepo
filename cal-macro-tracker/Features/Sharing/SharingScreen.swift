@@ -82,7 +82,9 @@ struct SharingScreen: View {
             } header: {
                 Text("Invite Someone")
             } footer: {
-                Text("Creating invites needs MACROS Pro. Anyone you invite can accept and share back for free.")
+                Text(
+                    "Creating invites needs MACROS Pro. Anyone with your link can connect and share back for free until it expires after 7 days or you revoke it. Create Invite shows the same link while it’s valid. To replace it, revoke it first."
+                )
             }
 
             Section {

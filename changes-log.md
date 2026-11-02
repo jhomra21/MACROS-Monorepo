@@ -13,6 +13,15 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
+## 2026-11-01 Reusable sharing invite link
+
+- One link can connect multiple people until its original 7-day expiry or revocation. Repeat acceptance keeps the existing relationship and open grant; removed pairs can reconnect. Legacy accepted invites remain blocked, and function signatures and the 20/day creation quota are unchanged.
+- Create Invite reuses the device's saved, identity-bound link with more than one hour remaining, without a server call. Unbound legacy links, changed identities, and expired/near-expiry links get a new issuance. Settings already supports deliberate replacement: Revoke Invite, then Create Invite Link.
+- Security trade-off: anyone holding the link can connect or reconnect until expiry/revocation; removing a person does not cancel the link. New acceptances do not write single-recipient metadata, so deleting an acceptor cannot delete the owner's reusable link. Existing accepted metadata stays in the schema for old documents. Expiry is checked on acceptance; the only cleanup cron sweeps foods, and owner deletion already deletes all owned invites.
+- Recommend a future per-invite acceptance rate limit to bound link-leak abuse. The current quota model is per-profile creation/upload/name counters, not per-invite, so no acceptance quota was added.
+- Copy: Sharing settings explains reuse, 7-day expiry, revocation and replacement; Remove Person warns about reconnection via a live link; the website Pro FAQ and privacy policy explain reusable bearer links. Website deployment is needed for that copy, but is not part of this change.
+- Validation: 20 backend unit, 75 integration, and 228 serial non-StoreKit iPad tests passed with build/format/JS lint; dev-only deploy, healthy before/after insights, disposable HTTP smoke, and A/B live reuse/reacceptance evidence passed (`docs/evidence/reusable-invite/REPORT.md` on `docs/asc-review-screenshots`).
+
 ## 2026-11-01 Add Food Zoom and Paused Sharing Scope
 
 - Dashboard "Add Food" now zooms the sheet out of the button and back on dismiss, like Camera. Only the button uses the new `.dashboardAddFood` destination; deep links, quick actions, and scan entry points keep the plain sheet. The shared transition namespace is now `dashboardTransition`. Sheet detent, drag indicator, and swipe-to-dismiss are unchanged.

@@ -170,7 +170,7 @@ export const site = {
 		},
 		{
 			question: 'What is MACROS Pro?',
-			answer: 'Pro adds Insights ranges beyond 7 days, sharing circle invites, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone a Pro user invites can accept and share back for free.',
+			answer: 'Pro adds Insights ranges beyond 7 days, sharing circle invites, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it.',
 		},
 		{
 			question: 'How much does Pro cost?',

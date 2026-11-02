@@ -366,6 +366,9 @@ final class SharingSyncService {
     func createInvite() async throws -> SharingInvite {
         if let profileDeletionTask { try await profileDeletionTask.value }
         try await finishPendingCredentialCleanup()
+        if let invite = try pendingInvite(), invite.expiresAt > .now.addingTimeInterval(3600) {
+            return invite
+        }
         let generation = identityGeneration
         try await remoteClient.authenticate(displayName: storedDisplayName)
         try checkIdentity(generation)

@@ -11,6 +11,7 @@ enum AppStorageKeys {
     static let sharingPendingInviteId = "sharingPendingInviteId"
     static let sharingPendingInviteToken = "sharingPendingInviteToken"
     static let sharingPendingInviteExpiresAt = "sharingPendingInviteExpiresAt"
+    static let sharingPendingInviteProfileKey = "sharingPendingInviteProfileKey"
     static let sharingLastUploadStatus = "sharingLastUploadStatus"
     static let sharingLastUploadDate = "sharingLastUploadDate"
     static let sharingLastUploadedSnapshotHash = "sharingLastUploadedSnapshotHash"

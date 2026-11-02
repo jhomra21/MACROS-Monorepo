@@ -67,7 +67,7 @@ test("accept/replay, duplicate grants, snapshots, disabling, removal and deletio
   await owner.mutation(api.sharing.createInvite, { tokenHash: hash });
   await expect(owner.mutation(api.sharing.acceptInvite, { tokenHash: hash, ownerDay: day })).rejects.toThrow("unavailable");
   await viewer.mutation(api.sharing.acceptInvite, { tokenHash: hash, ownerDay: day });
-  await expect(stranger.mutation(api.sharing.acceptInvite, { tokenHash: hash, ownerDay: day })).rejects.toThrow("unavailable");
+  await viewer.mutation(api.sharing.acceptInvite, { tokenHash: hash, ownerDay: day });
 
   for (let i = 0; i < 2; i++) await owner.mutation(api.sharing.setOutgoingSharingForPerson, { toProfileId: ids[1], enabled: true, ownerDay: day });
   const first = await owner.mutation(api.sharing.upsertMyDailySnapshot, snapshot);
@@ -722,14 +722,14 @@ test.each(["revoked", "expired", "two-live", "foreign-history"])(
       expect(await t.run(async ctx => ctx.db.query("shareGrantIntervals").collect())).toEqual([]);
     } else {
       await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
-      await expect(viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day })).rejects.toThrow("unavailable");
+      await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
       const after = await t.run(async ctx => ctx.db.query("shareInvites").collect());
       expect(after.find(row => row._id === before[1]._id)).toEqual(before[1]);
     }
   },
 );
 
-test("an accepted invite hash cannot replay through a same-owner pending duplicate", async () => {
+test.each([false, true])("legacy accepted hashes stay blocked (pending duplicate: %s)", async duplicate => {
   const { t, ids, viewer } = await fixture();
   const tokenHash = "d".repeat(64);
   await t.run(async ctx => {
@@ -757,13 +757,13 @@ test("an accepted invite hash cannot replay through a same-owner pending duplica
       acceptedAt: Date.now() - 500,
       acceptedByProfileId: ids[2],
     });
-    await ctx.db.insert("shareInvites", {
-      ownerProfileId: ids[0],
-      tokenHash,
-      status: "pending",
-      expiresAt: Date.now() + 10_000,
-      createdAt: Date.now(),
-    });
+
+    if (duplicate) {
+      await ctx.db.insert("shareInvites", {
+        ownerProfileId: ids[0], tokenHash, status: "pending",
+        expiresAt: Date.now() + 10_000, createdAt: Date.now(),
+      });
+    }
   });
 
   const before = await t.run(async ctx => ({
@@ -778,4 +778,59 @@ test("an accepted invite hash cannot replay through a same-owner pending duplica
     relationships: await ctx.db.query("shareRelationships").collect(),
     grants: await ctx.db.query("shareGrantIntervals").collect(),
   }))).toEqual(before);
+});
+
+test("one live invite accepts two people, replays without writes, and revives a removed pair", async () => {
+  const { t, owner, viewer, stranger, ids } = await fixture();
+  const tokenHash = "e".repeat(64);
+  const invite = await owner.mutation(api.sharing.createInvite, { tokenHash });
+  const first = await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
+  await stranger.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
+
+  const state = () => t.run(async ctx => ({
+    invites: await ctx.db.query("shareInvites").collect(),
+    relationships: await ctx.db.query("shareRelationships").collect(),
+    grants: await ctx.db.query("shareGrantIntervals").collect(),
+    quotas: await ctx.db.query("profileQuotas").collect(),
+  }));
+
+  const before = await state();
+  expect(before.relationships).toHaveLength(2);
+  expect(before.grants).toHaveLength(2);
+  expect(before.invites[0]).toMatchObject({ status: "pending", expiresAt: invite.expiresAt });
+  expect(before.invites[0].acceptedByProfileId).toBeUndefined();
+  expect(before.invites[0].acceptedAt).toBeUndefined();
+  vi.setSystemTime(Date.now() + 1000);
+  expect(await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day })).toEqual(first);
+  expect(await owner.mutation(api.sharing.createInvite, { tokenHash })).toEqual(invite);
+  expect(await state()).toEqual(before);
+  await viewer.mutation(api.sharing.removePerson, { otherProfileId: ids[0], ownerDay: day });
+  expect(await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day })).toEqual(first);
+  const revived = await state();
+  expect(revived.relationships).toHaveLength(2);
+  expect(revived.grants).toHaveLength(2);
+  expect(revived.relationships.every(row => row.removedAt == null)).toBe(true);
+  await viewer.mutation(api.sharing.deleteMySharingProfile, {});
+  await t.finishAllScheduledFunctions(() => vi.runAllTimers());
+  expect(await t.run(ctx => ctx.db.get(invite.inviteId))).toMatchObject({ status: "pending" });
+});
+
+test.each(["expired", "revoked", "deleted", "missing"])("used link rejects after owner/link becomes %s", async kind => {
+  const { t, owner, viewer, stranger, ids } = await fixture();
+  const tokenHash = "f".repeat(64);
+  const invite = await owner.mutation(api.sharing.createInvite, { tokenHash });
+  await viewer.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
+
+  if (kind === "expired") vi.setSystemTime(invite.expiresAt);
+
+  if (kind === "revoked") await owner.mutation(api.sharing.revokePendingInvite, { inviteId: invite.inviteId });
+
+  if (kind === "deleted") await owner.mutation(api.sharing.deleteMySharingProfile, {});
+
+  if (kind === "missing") await t.run(ctx => ctx.db.delete(ids[0]));
+
+  await expect(stranger.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day })).rejects.toThrow("unavailable");
+  expect(await t.run(async ctx => (await ctx.db.query("shareRelationships").collect()).length)).toBe(1);
+
+  if (kind === "deleted") await t.finishAllScheduledFunctions(() => vi.runAllTimers());
 });

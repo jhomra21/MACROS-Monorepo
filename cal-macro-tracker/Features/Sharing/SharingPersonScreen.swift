@@ -188,7 +188,9 @@ struct SharingPersonScreen: View {
                 }
             }
         } message: {
-            Text("This removes the relationship for both people. Reconnecting requires a new invite.")
+            Text(
+                "This removes the relationship for both people. Anyone with your invite link can reconnect until it expires or you revoke it in Sharing settings."
+            )
         }
         .task(
             id:

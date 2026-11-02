@@ -25,40 +25,77 @@ type SmokeUser = {
 };
 
 async function main() {
+  const users: SmokeUser[] = [];
+
+  try {
+    await runSmoke(users);
+  } finally {
+    const cleanup = await Promise.allSettled(users.map(user => user.client.mutation(api.sharing.deleteMySharingProfile, {})));
+    const failed = cleanup.filter(result => result.status === "rejected");
+    assert(failed.length === 0, `Disposable profile cleanup failed for ${failed.length} profiles.`);
+    console.log(`Cleaned up ${users.length} disposable profiles.`);
+  }
+}
+
+async function runSmoke(users: SmokeUser[]) {
   const suffix = Date.now().toString(36).slice(-6);
   const userA = await createUser(`Smoke A ${suffix}`);
+  users.push(userA);
   const userB = await createUser(`Smoke B ${suffix}`);
+  users.push(userB);
   const userC = await createUser(`Smoke C ${suffix}`);
+  users.push(userC);
   const unauthenticatedClient = new ConvexHttpClient(convexUrl!);
 
   await uploadSnapshot(userA, { calories: 321, protein: 30, carbs: 40, fat: 9, entryCount: 2 });
   await uploadSnapshot(userB, { calories: 222, protein: 20, carbs: 10, fat: 8, entryCount: 1 });
 
   const inviteToken = crypto.randomUUID().replaceAll("-", "");
-  await userA.client.mutation(api.sharing.createInvite, { tokenHash: await sha256Hex(inviteToken) });
-  await userB.client.mutation(api.sharing.acceptInvite, { tokenHash: await sha256Hex(inviteToken), ownerDay: day });
+  const tokenHash = await sha256Hex(inviteToken);
+  const invite = await userA.client.mutation(api.sharing.createInvite, { tokenHash });
+  await userB.client.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
 
   const dashboardForB = await userB.client.query(api.sharing.sharingDashboard, { day, ownerToday: day });
   const aFromB = expectPerson(dashboardForB, userA.displayName);
   assert(aFromB.incomingActive, "A should be sharing with B after invite acceptance.");
   assert(!aFromB.outgoingActive, "B should not share back until reciprocal sharing is enabled.");
   assert(aFromB.snapshot?.calories === 321, "B should see A's uploaded snapshot.");
-  await expectQueryFailure(
+  await expectFailure(
     () => userB.client.query(api.sharing.sharingDashboard, { day: previousDay(day), ownerToday: day }),
     "Dashboard query should reject non-current-day snapshot requests.",
   );
   const historicalDay = previousDay(previousDay(day));
-  await expectQueryFailure(
+  await expectFailure(
     () => userB.client.query(api.sharing.sharingDashboard, { day: historicalDay, ownerToday: historicalDay }),
     "Dashboard query should not trust caller-supplied historical ownerToday values.",
   );
 
-  await expectQueryFailure(
+  await expectFailure(
     () => unauthenticatedClient.query(api.sharing.sharingDashboard, { day, ownerToday: day }),
     "Unauthenticated dashboard queries should fail.",
   );
   const dashboardForC = await userC.client.query(api.sharing.sharingDashboard, { day, ownerToday: day });
   assert(dashboardForC.people.length === 0, "Unrelated profiles should not see sharing relationships or snapshots.");
+
+  const secondAcceptance = await userB.client.mutation(api.sharing.acceptInvite, {
+    tokenHash, ownerDay: day,
+  });
+
+  assert(secondAcceptance.relationshipId === aFromB.relationshipId, "Repeat acceptance should keep the same relationship.");
+  assert((await userB.client.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people.length === 1,
+    "Repeat acceptance should not duplicate the dashboard person.");
+  await userC.client.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day });
+  const secondAcceptor = expectPerson(await userC.client.query(api.sharing.sharingDashboard, { day, ownerToday: day }), userA.displayName);
+  assert(secondAcceptor.incomingActive && secondAcceptor.snapshot?.calories === 321,
+    "A second person should accept the same link and see A's totals.");
+  const retry = await userA.client.mutation(api.sharing.createInvite, { tokenHash });
+  assert(retry.inviteId === invite.inviteId && retry.expiresAt === invite.expiresAt, "Same hash should keep invite and expiry.");
+  console.log("Two acceptors and repeat acceptance passed.");
+  await userA.client.mutation(api.sharing.revokePendingInvite, { inviteId: invite.inviteId });
+  await expectFailure(
+    () => userC.client.mutation(api.sharing.acceptInvite, { tokenHash, ownerDay: day }),
+    "Revoked link should not authorize, even for a previous acceptor.",
+  );
 
   const dashboardForA = await userA.client.query(api.sharing.sharingDashboard, { day, ownerToday: day });
   const bFromA = expectPerson(dashboardForA, userB.displayName);
@@ -98,8 +135,9 @@ async function main() {
     ownerDay: day,
   });
   const reconnectInviteToken = crypto.randomUUID().replaceAll("-", "");
-  await userA.client.mutation(api.sharing.createInvite, { tokenHash: await sha256Hex(reconnectInviteToken) });
-  await userB.client.mutation(api.sharing.acceptInvite, { tokenHash: await sha256Hex(reconnectInviteToken), ownerDay: day });
+  const reconnectHash = await sha256Hex(reconnectInviteToken);
+  await userA.client.mutation(api.sharing.createInvite, { tokenHash: reconnectHash });
+  await userB.client.mutation(api.sharing.acceptInvite, { tokenHash: reconnectHash, ownerDay: day });
   const reconnectedDashboardForB = await userB.client.query(api.sharing.sharingDashboard, { day, ownerToday: day });
   const reconnectedAFromB = expectPerson(reconnectedDashboardForB, userA.displayName);
   assert(reconnectedAFromB.incomingActive, "Reconnected A should share with B after a new invite.");
@@ -114,12 +152,12 @@ async function main() {
   });
 
   await userB.client.mutation(api.sharing.deleteMySharingProfile, {});
-  await expectQueryFailure(
+  users.splice(users.indexOf(userB), 1);
+  await expectFailure(
     () => userB.client.query(api.sharing.sharingDashboard, { day, ownerToday: day }),
     "Deleted profile's existing token should no longer authorize sharing queries.",
   );
   await expectTokenExchangeFailure(userB, "Deleted profile credentials should not recreate the same cloud identity.");
-  await userC.client.mutation(api.sharing.deleteMySharingProfile, {});
   const afterDeleteDashboardForA = await userA.client.query(api.sharing.sharingDashboard, { day, ownerToday: day });
   assert(
     afterDeleteDashboardForA.people.every((person) => person.displayName !== userB.displayName),
@@ -127,6 +165,11 @@ async function main() {
   );
 
   await userA.client.mutation(api.sharing.deleteMySharingProfile, {});
+  users.splice(users.indexOf(userA), 1);
+  await expectFailure(
+    () => userC.client.mutation(api.sharing.acceptInvite, { tokenHash: reconnectHash, ownerDay: day }),
+    "A deleted owner's link should not authorize.",
+  );
   console.log("Sharing smoke passed.");
 }
 
@@ -184,7 +227,7 @@ function assert(condition: boolean, message: string): asserts condition {
   }
 }
 
-async function expectQueryFailure(query: () => Promise<FunctionReturnType<typeof api.sharing.sharingDashboard>>, message: string) {
+async function expectFailure<T>(query: () => Promise<T>, message: string) {
   try {
     await query();
   } catch {
