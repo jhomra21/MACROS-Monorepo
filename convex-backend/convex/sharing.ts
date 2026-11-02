@@ -372,7 +372,7 @@ export const sharingDashboard = query({
 });
 
 export const personDay = query({
-  args: { otherProfileId: v.id("profiles"), day: v.string(), ownerToday: v.string() },
+  args: { otherProfileId: v.id("profiles"), day: v.string(), ownerToday: v.string(), includeFoods: v.optional(v.boolean()) },
   returns: personDayResult,
   handler: async (ctx, args) => {
     assertDayKey(args.ownerToday);
@@ -402,7 +402,7 @@ export const personDay = query({
     const snapshot = await ctx.db.query("dailySnapshots").withIndex("by_owner_day",
       q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique();
 
-    const foodDay = incoming.scope.foods === true ? await ctx.db.query("sharedFoodDays").withIndex("by_owner_day",
+    const foodDay = args.includeFoods !== false && incoming.scope.foods === true ? await ctx.db.query("sharedFoodDays").withIndex("by_owner_day",
       q => q.eq("ownerProfileId", other._id).eq("day", args.day)).unique() : null;
 
     return {
