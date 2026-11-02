@@ -104,29 +104,38 @@ final class SharingAuthService: SharingCredentialCleanup {
     private let authProvider: SharingAuthProvider
     private let identityStore: SharingIdentityStore
     let client: ConvexClientWithAuth<SharingAuthSession>
+    private let migrationError: Error?
     private(set) var session: SharingAuthSession?
     private var identityGeneration = UUID()
     private var authenticationTask: Task<SharingAuthSession, Error>?
 
     init(
-        configuration: SharingConfiguration.Type = SharingConfiguration.self,
         identityStore: SharingIdentityStore? = nil
     ) {
         let identityStore = identityStore ?? SharingIdentityStore()
+        do {
+            try identityStore.migrateToAccessGroup()
+            migrationError = nil
+        } catch {
+            migrationError = error
+            try? SharedPersonWidgetStorage.shared.invalidate(disabling: true)
+            WidgetTimelineReloader.reloadSharedPersonWidgets()
+        }
         let authProvider = SharingAuthProvider(
             identityStore: identityStore,
-            authBaseURL: configuration.authBaseURL
+            authBaseURL: SharedAppConfiguration.authBaseURL
         )
         self.authProvider = authProvider
         self.identityStore = identityStore
         self.client = ConvexClientWithAuth(
-            deploymentUrl: configuration.convexDeploymentURL,
+            deploymentUrl: SharedAppConfiguration.convexDeploymentURL,
             authProvider: authProvider
         )
     }
 
     @discardableResult
     func authenticate(displayName: String = "Me") async throws -> SharingAuthSession {
+        if let migrationError { throw migrationError }
         if let authenticationTask { return try await authenticationTask.value }
         let generation = identityGeneration
         authProvider.setDisplayName(displayName)
@@ -146,6 +155,8 @@ final class SharingAuthService: SharingCredentialCleanup {
     }
 
     func clearLocalIdentity() async throws {
+        try SharedPersonWidgetStorage.shared.invalidate(disabling: true)
+        WidgetTimelineReloader.reloadSharedPersonWidgets()
         identityGeneration = UUID()
         authProvider.invalidateIdentity()
         session = nil

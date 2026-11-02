@@ -97,14 +97,15 @@ final class AppEntitlements {
 
     func update(_ resolution: EntitlementResolution) {
         let widgetAccess = WidgetProAccess.projected(hasPro: resolution.hasPro)
-        let previouslyHadWidgetAccess = WidgetAppearanceStorage.shared.proAccess == .allowed
+        let previousWidgetAccess = WidgetAppearanceStorage.shared.proAccess
         hasPro = resolution.hasPro
         proSource = resolution.source
         proExpirationDate = resolution.expiration
         hasActiveSubscription = resolution.hasActiveSubscription
         if WidgetAppearanceStorage.shared.writeProAccess(widgetAccess),
-            previouslyHadWidgetAccess != (widgetAccess == .allowed)
+            previousWidgetAccess != widgetAccess
         {
+            if widgetAccess == .denied { try? SharedPersonWidgetStorage.shared.invalidate() }
             WidgetTimelineReloader.reloadMacroWidgets()
         }
     }

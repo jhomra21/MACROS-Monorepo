@@ -103,6 +103,43 @@ struct SharingScreen: View {
             }
 
             Section {
+                PaidFeatureGate(.sharedPersonWidget) {
+                    Picker(
+                        "Default person",
+                        selection: Binding(
+                            get: { sharingSyncService.defaultWidgetProfileId },
+                            set: { profileId in
+                                do {
+                                    try sharingSyncService.setDefaultWidgetPerson(profileId)
+                                } catch {
+                                    errorMessage = error.localizedDescription
+                                }
+                            }
+                        )
+                    ) {
+                        Text("None").tag(String?.none)
+                        ForEach(sharingSyncService.dashboard.people) { person in
+                            Text(person.displayName).tag(Optional(person.profileId))
+                        }
+                    }
+                    .disabled(!isSharingDeviceEnabled)
+                } locked: {
+                    ProLockedRow(title: "Shared Widgets", context: .sharedPersonWidget)
+                }
+            } header: {
+                Text("Shared Widgets")
+            } footer: {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(
+                        "Widgets set to Default follow this person. Choose a different person in Edit Widget to keep a widget fixed. Use a Smart Stack to switch between widgets."
+                    )
+                    Text(
+                        "Shared widgets refresh today's macros and goals in the background, about every 30 minutes. Names and nutrition may appear while your device is locked. Protected local copies expire at midnight; removal is best-effort until the next update."
+                    )
+                }
+            }
+
+            Section {
                 Button("Stop Sharing With Everyone", role: .destructive) {
                     destructiveAction = .stopSharing
                 }
