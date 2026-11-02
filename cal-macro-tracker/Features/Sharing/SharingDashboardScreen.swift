@@ -3,53 +3,47 @@ import SwiftUI
 struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharingSyncService
+    @Environment(AppEntitlements.self) private var entitlements
     @State private var dashboardErrorMessage: String?
+    @State private var inviteErrorMessage: String?
+    @State private var createdInvite: SharingInvite?
+    @State private var isCreatingInvite = false
+    @State private var showingProUpgrade = false
     let onOpenSharingSettings: () -> Void
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                if sharingSyncService.shouldShowDashboardLoading {
-                    ProgressView("Loading sharing…")
-                } else if sharingSyncService.dashboard.people.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "person.2")
-                            .font(.largeTitle)
-                            .foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
-                        Text("No sharing yet")
-                            .font(.title2.weight(.semibold))
-                            .multilineTextAlignment(.center)
-                        Text("Invite someone or accept an invite to see their macros here.")
-                            .font(.body)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                        Button("Open Sharing Settings", action: onOpenSharingSettings)
-                            .buttonStyle(.borderedProminent)
+        Group {
+            if sharingSyncService.shouldShowDashboardLoading {
+                ProgressView("Loading sharing…")
+            } else if sharingSyncService.dashboard.people.isEmpty {
+                ContentUnavailableView {
+                    Label("No sharing yet", systemImage: "person.2")
+                } description: {
+                    Text("Invite someone or accept an invite to see their macros here.")
+                } actions: {
+                    Button("Open Sharing Settings", action: onOpenSharingSettings)
+                        .buttonStyle(.borderedProminent)
+                }
+            } else {
+                List(sharingSyncService.dashboard.people) { person in
+                    NavigationLink {
+                        SharingPersonScreen(person: person)
+                    } label: {
+                        SharingPersonRow(person: person)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 32)
-                } else {
-                    ForEach(sharingSyncService.dashboard.people) { person in
-                        NavigationLink {
-                            SharingPersonScreen(person: person)
-                        } label: {
-                            SharingPersonRow(person: person)
-                        }
-                        .accessibilityHint("View \(person.displayName)’s shared day and sharing settings")
-                    }
+                    .accessibilityHint("View \(person.displayName)’s shared day and sharing settings")
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
         }
-        .scrollBounceBehavior(.basedOnSize)
         .navigationTitle("Sharing")
         .inlineNavigationTitle()
         .toolbar {
             ToolbarItemGroup(placement: .appTopBarTrailing) {
-                Button(action: onOpenSharingSettings) {
+                Menu {
+                    Button("Create Invite", systemImage: "link.badge.plus", action: createInvite)
+                        .disabled(isCreatingInvite)
+                    Button("Accept Invite", systemImage: "person.badge.plus", action: onOpenSharingSettings)
+                } label: {
                     Image(systemName: "plus")
                         .appTopBarIconStyle()
                 }
@@ -69,6 +63,35 @@ struct SharingDashboardScreen: View {
         }
         .errorBanner(message: $dashboardErrorMessage, retryTitle: "Retry") {
             sharingSyncService.startDashboardSubscription(for: dayContext.today)
+        }
+        .errorBanner(message: $inviteErrorMessage, title: "Invite Failed")
+        .sheet(isPresented: $showingProUpgrade) {
+            ProPaywallSheet(context: .sharingInvites)
+        }
+        #if os(iOS)
+        .sheet(item: $createdInvite) { invite in
+            URLShareSheet(url: invite.appURL)
+        }
+        #endif
+    }
+
+    private func createInvite() {
+        guard sharingSyncService.isDeviceSharingEnabled else {
+            onOpenSharingSettings()
+            return
+        }
+        guard entitlements.canUse(.sharingInvites) else {
+            showingProUpgrade = true
+            return
+        }
+        isCreatingInvite = true
+        Task {
+            do {
+                createdInvite = try await sharingSyncService.createInvite()
+            } catch {
+                inviteErrorMessage = error.localizedDescription
+            }
+            isCreatingInvite = false
         }
     }
 }
