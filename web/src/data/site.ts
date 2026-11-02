@@ -5,6 +5,7 @@ import appInsightsImage from '../assets/app-images/app-insights.png';
 import appScanReviewImage from '../assets/app-images/app-scan-review.png';
 import appSettingsImage from '../assets/app-images/app-settings.png';
 import appSharingImage from '../assets/app-images/app-sharing.png';
+import appSharingPersonImage from '../assets/app-images/app-sharing-person.png';
 import appWidgetsImage from '../assets/app-images/app-widgets.png';
 
 export const site = {
@@ -187,38 +188,43 @@ export const site = {
 	],
 	heroShowcase: {
 		src: appHomeImage,
-		alt: 'MACROS dashboard with a full day of food logged',
+		alt: 'MACROS dashboard with a full day logged, macro goals, and a centered streak',
 	},
 	screenshots: [
 		{
 			src: appHomeImage,
-			alt: 'MACROS dashboard with today’s calories and protein, carbs, and fat rings',
-			title: 'Daily macro rings',
+			alt: 'MACROS dashboard with a full day logged, Food list, macro rings, goals, and streak',
+			title: 'Today’s food and macros',
 		},
 		{
 			src: appAddFoodImage,
-			alt: 'MACROS add food screen with search, common foods, barcode scan, and label scan actions',
-			title: 'Search, scan, or add food',
+			alt: 'Add Food with search, recent and common foods, and camera actions',
+			title: 'Add food',
 		},
 		{
 			src: appScanReviewImage,
-			alt: 'MACROS nutrition label scan with the values ready to review before logging',
-			title: 'Review label scans',
+			alt: 'Nutrition label scan result in the camera with the detected serving and nutrients ready to review',
+			title: 'Review a label scan',
 		},
 		{
 			src: appHistoryImage,
-			alt: 'MACROS history screen with a full week of logged food progress',
-			title: 'Weekly history',
+			alt: 'History for November 2 with the week selector, daily macro totals, and logged foods',
+			title: 'Daily history',
 		},
 		{
 			src: appInsightsImage,
-			alt: 'MACROS insights with a 30-day weight trend, averages, and a calorie chart',
+			alt: 'Pro Insights showing a 30-day weight trend, calorie and macro averages, and a calorie chart',
 			title: 'Insights and trends (Pro)',
 		},
 		{
 			src: appSharingImage,
-			alt: 'MACROS sharing dashboard with daily rings for two people',
-			title: 'Sharing circle',
+			alt: 'Sharing list with Alex and Sam, their daily macro totals, and what each person sees',
+			title: 'Share with your people',
+		},
+		{
+			src: appSharingPersonImage,
+			alt: 'Alex’s shared day with macro rings, goals, food entries, and sharing controls',
+			title: 'What Alex shares',
 		},
 		{
 			src: appWidgetsImage,
@@ -227,8 +233,8 @@ export const site = {
 		},
 		{
 			src: appSettingsImage,
-			alt: 'MACROS settings with MACROS Pro, daily goals, and app preferences',
-			title: 'Goals and settings',
+			alt: 'Settings showing MACROS Pro, calorie and macro goals, and food suggestions',
+			title: 'Settings and goals',
 		},
 	],
 	supportChecklist: [

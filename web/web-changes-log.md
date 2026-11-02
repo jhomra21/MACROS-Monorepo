@@ -2,6 +2,13 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-02 Build 27 App Screenshot Refresh
+
+- Replaced the home, Add Food, label review, history, Pro Insights, settings, and Sharing list screenshots with iPhone 18 Pro Max captures from the build 27 Debug app.
+- Added the new Alex person-sharing screen to the website and README. Sharing uses the temporary `-sharingUIHarness` Debug-only fixture with Alex and Sam; no Convex production data or disposable server profiles were used.
+- Compared a fresh Home Screen capture from build 27 with the October 30 widget image. The small and medium widget appearance is unchanged, so kept `app-widgets.png`.
+- Updated screenshot titles and alt text to describe the screens, aligned README images with the website set, removed unused calendar, share-sheet, sharing-settings, and Full Unlock images, and regenerated `public/og.png` from the new home screenshot.
+
 ## 2026-10-30 Final App Store Captures
 
 - Replaced the showcase screenshots with final App Store captures, added label-review, sharing, and widget screens, and regenerated `public/og.png` from the updated dashboard.

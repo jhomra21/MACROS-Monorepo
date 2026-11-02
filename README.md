@@ -28,31 +28,39 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Settings
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-settings.png" alt="Settings screen with daily goals and saved foods" width="220" />
-  &nbsp;&nbsp;
-  <img src="web/src/assets/app-images/app-full-unlock.png" alt="Full Unlock purchase screen" width="220" />
+  <img src="web/src/assets/app-images/app-settings.png" alt="Settings with MACROS Pro, daily goals, and food suggestions" width="220" />
+</p>
+
+### Label review
+
+<p align="center">
+  <img src="web/src/assets/app-images/app-scan-review.png" alt="Nutrition label scan result ready to review" width="220" />
 </p>
 
 ### Insights
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-insights.png" alt="Insights screen with nutrition charts and macro trends" width="220" />
+  <img src="web/src/assets/app-images/app-insights.png" alt="Pro Insights with 30-day nutrition charts and macro trends" width="220" />
 </p>
 
 ### History
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-history.png" alt="History screen showing a full logged week" width="220" />
-  &nbsp;&nbsp;
-  <img src="web/src/assets/app-images/app-calendar.png" alt="Expanded calendar history screen" width="220" />
+  <img src="web/src/assets/app-images/app-history.png" alt="Daily history with macro totals and logged foods" width="220" />
 </p>
 
 ### Sharing
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-sharing-settings.png" alt="Sharing settings with invite link controls" width="220" />
+  <img src="web/src/assets/app-images/app-sharing.png" alt="Sharing list with Alex and Sam and their daily macro totals" width="220" />
   &nbsp;&nbsp;
-  <img src="web/src/assets/app-images/app-share.png" alt="Native iOS share sheet for daily summary" width="220" />
+  <img src="web/src/assets/app-images/app-sharing-person.png" alt="Alex’s shared macro rings, foods, and sharing controls" width="220" />
+</p>
+
+### Widgets
+
+<p align="center">
+  <img src="web/src/assets/app-images/app-widgets.png" alt="MACROS small and medium Home Screen widgets" width="220" />
 </p>
 
 ## Features
