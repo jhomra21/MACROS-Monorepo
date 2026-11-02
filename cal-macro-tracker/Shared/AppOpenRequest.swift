@@ -1,6 +1,6 @@
 import Foundation
 
-enum AddFoodEntryPoint: String, Hashable, Identifiable {
+nonisolated enum AddFoodEntryPoint: String, Hashable, Identifiable, Sendable {
     case addFood = "add-food"
     case scanBarcode = "scan-barcode"
     case scanLabel = "scan-label"
@@ -9,9 +9,10 @@ enum AddFoodEntryPoint: String, Hashable, Identifiable {
     var id: String { rawValue }
 }
 
-enum AppOpenRequest: Hashable {
+nonisolated enum AppOpenRequest: Hashable, Sendable {
     case addFood(AddFoodEntryPoint)
     case sharing(inviteInput: String?)
+    case sharingPerson(profileId: String)
 
     init?(url: URL) {
         guard
@@ -29,7 +30,11 @@ enum AppOpenRequest: Hashable {
             self = .addFood(entryPoint)
         case "sharing":
             let pathComponents = components.path.split(separator: "/").map(String.init)
-            if pathComponents.first == "invite", let token = pathComponents.dropFirst().first {
+            if pathComponents.count == 2, pathComponents.first == "person",
+                let profileId = pathComponents.last
+            {
+                self = .sharingPerson(profileId: profileId)
+            } else if pathComponents.first == "invite", let token = pathComponents.dropFirst().first {
                 self = .sharing(inviteInput: token)
             } else {
                 self = .sharing(inviteInput: nil)
@@ -52,6 +57,10 @@ enum AppOpenRequest: Hashable {
                 return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://sharing/invite/\(inviteInput)")!
             }
             return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://sharing")!
+        case let .sharingPerson(profileId):
+            return URL(string: "\(SharedAppConfiguration.deepLinkScheme)://sharing")!
+                .appendingPathComponent("person")
+                .appendingPathComponent(profileId)
         }
     }
 }

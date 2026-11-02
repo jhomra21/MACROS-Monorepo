@@ -38,6 +38,7 @@ struct AppRootView: View {
         case insights
         case settings
         case sharingDashboard
+        case sharingPerson(String)
         case sharing(inviteInput: String?, requestId: Int)
     }
 
@@ -96,6 +97,8 @@ struct AppRootView: View {
                     }
                 case let .sharing(inviteInput, _):
                     SharingScreen(initialInviteInput: inviteInput)
+                case let .sharingPerson(profileId):
+                    SharingPersonLinkDestination(profileId: profileId)
                 }
             }
         }
@@ -222,6 +225,9 @@ struct AppRootView: View {
             DispatchQueue.main.async {
                 path.append(.sharing(inviteInput: inviteInput, requestId: requestId))
             }
+        case let .sharingPerson(profileId):
+            sheetDestination = nil
+            path = [.sharingDashboard, .sharingPerson(profileId)]
         }
 
         pendingOpenRequest = nil
