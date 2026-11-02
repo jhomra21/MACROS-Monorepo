@@ -141,7 +141,10 @@ struct SharingPersonScreen: View {
                 ) {
                     Text("Nothing").tag(SharingOutgoingScope.off)
                     Text("Macros").tag(SharingOutgoingScope.macros)
-                    Text("Macros + Foods").tag(SharingOutgoingScope.macrosAndFoods).disabled(isPaused)
+                    // A segmented Picker ignores per-segment .disabled, so the option is omitted instead.
+                    if !isPaused || scopeSelection.selected == .macrosAndFoods {
+                        Text("Macros + Foods").tag(SharingOutgoingScope.macrosAndFoods)
+                    }
                 }
                 .pickerStyle(.segmented)
                 .disabled(scopeSelection.isWriteInFlight)
@@ -218,7 +221,7 @@ struct SharingPersonScreen: View {
     }
 
     private func updateScope(_ scope: SharingOutgoingScope) {
-        guard scopeSelection.beginWrite(scope) else { return }
+        guard scope != .macrosAndFoods || !isPaused, scopeSelection.beginWrite(scope) else { return }
         Task {
             do {
                 try await sharing.setOutgoingScope(
