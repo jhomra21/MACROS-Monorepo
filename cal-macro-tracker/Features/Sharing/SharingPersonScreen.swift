@@ -7,6 +7,7 @@ struct SharingPersonScreen: View {
     @Environment(SharingSyncService.self) private var sharing
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let person: SharingPerson
 
     @State private var personDayVisibility: SharingPersonDay.Visibility?
@@ -68,6 +69,7 @@ struct SharingPersonScreen: View {
                             showsGoalSubtitle: false,
                             usesGlassEffect: false
                         )
+                        .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
                         if let sharedGoals {
                             MacroSummaryColumnsGrid(
                                 metrics: [.protein, .carbs, .fat],
@@ -77,14 +79,19 @@ struct SharingPersonScreen: View {
                                 columnWidth: 92,
                                 columnSpacing: 8
                             )
+                            .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
                         } else {
                             HStack(spacing: 16) {
                                 Text("P \(totals.protein.roundedForDisplay) g")
+                                    .contentTransition(.numericText())
                                 Text("C \(totals.carbs.roundedForDisplay) g")
+                                    .contentTransition(.numericText())
                                 Text("F \(totals.fat.roundedForDisplay) g")
+                                    .contentTransition(.numericText())
                             }
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -119,6 +126,7 @@ struct SharingPersonScreen: View {
                                 Spacer()
                                 Text("\(food.calories.roundedForDisplay) kcal")
                                     .foregroundStyle(.secondary)
+                                    .contentTransition(.numericText())
                             }
                             Text(
                                 "\(food.quantityText) · P \(food.protein.roundedForDisplay)g · C \(food.carbs.roundedForDisplay)g · F \(food.fat.roundedForDisplay)g"
@@ -128,6 +136,7 @@ struct SharingPersonScreen: View {
                         }
                         .accessibilityElement(children: .combine)
                     }
+                    .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: personDay?.foods)
                 }
             }
 

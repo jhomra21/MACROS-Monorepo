@@ -4,6 +4,7 @@ struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(AppEntitlements.self) private var entitlements
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dashboardErrorMessage: String?
     @State private var inviteErrorMessage: String?
     @State private var createdInvite: SharingInvite?
@@ -33,6 +34,7 @@ struct SharingDashboardScreen: View {
                     }
                     .accessibilityHint("View \(person.displayName)’s shared day and sharing settings")
                 }
+                .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: sharingSyncService.dashboard)
             }
         }
         .navigationTitle("Sharing")
@@ -151,6 +153,7 @@ private struct SharingPersonRow: View {
                 Text(incomingStatus)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .contentTransition(.numericText())
                 Text(status)
                     .font(.footnote)
                     .foregroundStyle(person.connectionPaused ? .orange : .secondary)

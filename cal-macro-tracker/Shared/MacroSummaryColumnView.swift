@@ -126,6 +126,7 @@ struct MacroSummaryColumnView: View {
         return Text(presentation.currentValueText)
             .font(style.valueFont)
             .foregroundStyle(style.valueColor)
+            .contentTransition(.numericText())
             .lineLimit(1)
             .minimumScaleFactor(style.valueMinimumScaleFactor)
             .allowsTightening(true)

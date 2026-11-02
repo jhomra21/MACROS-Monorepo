@@ -11,6 +11,8 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+- 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
+
 ## 2026-11-01 Add Food Zoom and Paused Sharing Scope
 
 - Dashboard "Add Food" now zooms the sheet out of the button and back on dismiss, like Camera. Only the button uses the new `.dashboardAddFood` destination; deep links, quick actions, and scan entry points keep the plain sheet. The shared transition namespace is now `dashboardTransition`. Sheet detent, drag indicator, and swipe-to-dismiss are unchanged.
