@@ -1,0 +1,38 @@
+$ wrangler types && astro check && tsc --noEmit
+
+ ⛅️ wrangler 4.156.0
+────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+06:57:18 [types] Generated 55ms
+06:57:18 [check] Getting diagnostics for Astro files in /Users/juan/.t3/worktrees/cal-macro-tracker/reusable-invite/web...
+Result (31 files): 
+- 0 errors
+- 0 warnings
+- 0 hints
+

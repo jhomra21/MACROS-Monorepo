@@ -1,0 +1,19 @@
+$ vitest run --config vitest.qa.config.ts
+
+ RUN  v5.0.5 /Users/juan/.t3/worktrees/cal-macro-tracker/reusable-invite/convex-backend
+
+(node:82334) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82333) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82332) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ convex/_qa/quotas.integration.ts (5 tests) 110ms
+ ✓ convex/_qa/purchaseReview.integration.ts (22 tests) 147ms
+ ✓ convex/_qa/sharing.integration.ts (48 tests) 202ms
+
+ Test Files  3 passed (3)
+      Tests  75 passed (75)
+   Start at  06:57:14
+   Duration  429ms (tests 53%, transform 18%, import 18%, environment 10%, worker 1%)
+

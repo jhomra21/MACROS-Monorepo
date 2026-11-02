@@ -1,0 +1,526 @@
+Accessibility hierarchy retrieved successfully:
+```json
+[
+  {
+    "AXFrame" : "{{0, 0}, {390, 844}}",
+    "AXUniqueId" : null,
+    "frame" : {
+      "y" : 0,
+      "x" : 0,
+      "width" : 390,
+      "height" : 844
+    },
+    "role_description" : "application",
+    "AXLabel" : "MACROS",
+    "content_required" : false,
+    "type" : "Application",
+    "title" : null,
+    "help" : null,
+    "custom_actions" : [
+
+    ],
+    "AXValue" : null,
+    "enabled" : true,
+    "role" : "AXApplication",
+    "children" : [
+      {
+        "AXFrame" : "{{16, 47}, {44, 44}}",
+        "AXUniqueId" : "BackButton",
+        "frame" : {
+          "y" : 47,
+          "x" : 16,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "back button",
+        "AXLabel" : "Back",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{164.33333333333334, 58.666666666666664}, {61.333333333333343, 20.666666666666664}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 58.666666666666664,
+          "x" : 164.33333333333334,
+          "width" : 61.333333333333343,
+          "height" : 20.666666666666664
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Sharing",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 13}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 13,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "switch",
+        "AXLabel" : "Sharing",
+        "content_required" : false,
+        "type" : "CheckBox",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "1",
+        "enabled" : true,
+        "role" : "AXCheckBox",
+        "children" : [
+
+        ],
+        "subrole" : "AXSwitch",
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 80}, {326, 22}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 80,
+          "x" : 32,
+          "width" : 326,
+          "height" : 22
+        },
+        "role_description" : "text field",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "TextField",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "Test B",
+        "enabled" : true,
+        "role" : "AXTextField",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 117}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 117,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Save Display Name",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 177}, {324.33333333333331, 63.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 177,
+          "x" : 32,
+          "width" : 324.33333333333331,
+          "height" : 63.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "Sharing is off by default. When it's on, MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 270}, {324.66666666666663, 79.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 270,
+          "x" : 32,
+          "width" : 324.66666666666663,
+          "height" : 79.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 357.66666666666669}, {325.33333333333331, 47.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 357.66666666666669,
+          "x" : 32,
+          "width" : 325.33333333333331,
+          "height" : 47.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 411.33333333333331}, {358, 40.333333333333314}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 411.33333333333331,
+          "x" : 16,
+          "width" : 358,
+          "height" : 40.333333333333314
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Invite Someone",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 451.66666666666663}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 451.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Create Invite Link",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 503.66666666666663}, {358, 93.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 503.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 93.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Creating invites needs MACROS Pro. Anyone with your link can connect and share back for free until it expires after 7 days or you revoke it. Create Invite shows the same link while it’s valid. To replace it, revoke it first.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 597.33333333333337}, {358, 40.333333333333371}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 597.33333333333337,
+          "x" : 16,
+          "width" : 358,
+          "height" : 40.333333333333371
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Accept Invite",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 652.66666666666674}, {326, 22}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 652.66666666666674,
+          "x" : 32,
+          "width" : 326,
+          "height" : 22
+        },
+        "role_description" : "text field",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "TextField",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "Invite token or link",
+        "enabled" : true,
+        "role" : "AXTextField",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 710.33333333333337}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 710.33333333333337,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Accept Invite",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : false,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 762.33333333333337}, {358, 29.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 762.33333333333337,
+          "x" : 16,
+          "width" : 358,
+          "height" : 29.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Expired or revoked invites can’t be accepted.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 809.66666666666663}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 809.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Stop Sharing With Everyone",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 861.66666666666663}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 861.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Delete Sharing Profile",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 913.66666666666663}, {358, 61.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 913.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 61.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Deleting your sharing profile permanently removes cloud sharing data and relationships. Local food and log data stays on this device.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      }
+    ],
+    "subrole" : null,
+    "pid" : 53196
+  }
+]
+```
+Tips:
+- Use frame coordinates for tap/swipe (center: x+width/2, y+height/2)
+- If a debugger is attached, ensure the app is running (not stopped on breakpoints)
+- Screenshots are for visual verification only
+
+Next steps:
+1. Refresh after layout changes: xcodebuildmcp simulator snapshot-ui --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"
+2. Tap on element: xcodebuildmcp ui-automation tap --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975" --x "0" --y "0"
+3. Take screenshot for verification: xcodebuildmcp simulator screenshot --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"

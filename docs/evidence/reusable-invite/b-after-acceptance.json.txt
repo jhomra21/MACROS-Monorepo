@@ -1,0 +1,580 @@
+Accessibility hierarchy retrieved successfully:
+```json
+[
+  {
+    "AXFrame" : "{{0, 0}, {390, 844}}",
+    "AXUniqueId" : null,
+    "frame" : {
+      "y" : 0,
+      "x" : 0,
+      "width" : 390,
+      "height" : 844
+    },
+    "role_description" : "application",
+    "AXLabel" : "MACROS",
+    "content_required" : false,
+    "type" : "Application",
+    "title" : null,
+    "help" : null,
+    "custom_actions" : [
+
+    ],
+    "AXValue" : null,
+    "enabled" : true,
+    "role" : "AXApplication",
+    "children" : [
+      {
+        "AXFrame" : "{{16.000000000000004, 55.833333333333329}, {60.333333333333329, 26.333333333333329}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 55.833333333333329,
+          "x" : 16.000000000000004,
+          "width" : 60.333333333333329,
+          "height" : 26.333333333333329
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Today",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{194, 47}, {44, 44}}",
+        "AXUniqueId" : "square.and.arrow.up",
+        "frame" : {
+          "y" : 47,
+          "x" : 194,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "button",
+        "AXLabel" : "Share daily summary",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{238, 47}, {44, 44}}",
+        "AXUniqueId" : "chart.xyaxis.line",
+        "frame" : {
+          "y" : 47,
+          "x" : 238,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "button",
+        "AXLabel" : "Open insights",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{282, 47}, {44, 44}}",
+        "AXUniqueId" : "calendar",
+        "frame" : {
+          "y" : 47,
+          "x" : 282,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "button",
+        "AXLabel" : "Open history",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{326, 47}, {44, 44}}",
+        "AXUniqueId" : "gearshape",
+        "frame" : {
+          "y" : 47,
+          "x" : 326,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "button",
+        "AXLabel" : "Open settings",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{49.666666666666664, 109}, {290.66666666666663, 290.66666666666663}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 109,
+          "x" : 49.666666666666664,
+          "width" : 290.66666666666663,
+          "height" : 290.66666666666663
+        },
+        "role_description" : "button",
+        "AXLabel" : "Expand nutrition details",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{68, 411.59333333333336}, {12.666666666666671, 24}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 411.59333333333336,
+          "x" : 68,
+          "width" : 12.666666666666671,
+          "height" : 24
+        },
+        "role_description" : "button",
+        "AXLabel" : "0",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{188.66666666666669, 411.59333333333336}, {12.666666666666657, 24}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 411.59333333333336,
+          "x" : 188.66666666666669,
+          "width" : 12.666666666666657,
+          "height" : 24
+        },
+        "role_description" : "button",
+        "AXLabel" : "0",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{48.5, 439.59333333333336}, {51.666666666666657, 15.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 439.59333333333336,
+          "x" : 48.5,
+          "width" : 51.666666666666657,
+          "height" : 15.666666666666686
+        },
+        "role_description" : "button",
+        "AXLabel" : "of 160 g",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{169.16666666666669, 439.59333333333336}, {51.666666666666657, 15.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 439.59333333333336,
+          "x" : 169.16666666666669,
+          "width" : 51.666666666666657,
+          "height" : 15.666666666666686
+        },
+        "role_description" : "button",
+        "AXLabel" : "of 220 g",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{58.166666666666671, 459.26000000000005}, {50.333333333333329, 18}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 459.26000000000005,
+          "x" : 58.166666666666671,
+          "width" : 50.333333333333329,
+          "height" : 18
+        },
+        "role_description" : "button",
+        "AXLabel" : "Protein",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{309.33333333333337, 411.59333333333336}, {12.666666666666686, 24}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 411.59333333333336,
+          "x" : 309.33333333333337,
+          "width" : 12.666666666666686,
+          "height" : 24
+        },
+        "role_description" : "button",
+        "AXLabel" : "0",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{293.83333333333337, 439.59333333333336}, {43.666666666666686, 15.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 439.59333333333336,
+          "x" : 293.83333333333337,
+          "width" : 43.666666666666686,
+          "height" : 15.666666666666686
+        },
+        "role_description" : "button",
+        "AXLabel" : "of 70 g",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{183, 459.26000000000005}, {42, 18}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 459.26000000000005,
+          "x" : 183,
+          "width" : 42,
+          "height" : 18
+        },
+        "role_description" : "button",
+        "AXLabel" : "Carbs",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{313.66666666666669, 459.26000000000005}, {22, 18}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 459.26000000000005,
+          "x" : 313.66666666666669,
+          "width" : 22,
+          "height" : 18
+        },
+        "role_description" : "button",
+        "AXLabel" : "Fat",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+          "Change Color"
+        ],
+        "AXValue" : "",
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{0, 501.33333333333331}, {390, 51.999999999999943}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 501.33333333333331,
+          "x" : 0,
+          "width" : 390,
+          "height" : 51.999999999999943
+        },
+        "role_description" : "text",
+        "AXLabel" : "Food, 0 items",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{106.33333587646484, 584.66668701171875}, {177.33331298828125, 87.5}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 584.66668701171875,
+          "x" : 106.33333587646484,
+          "width" : 177.33331298828125,
+          "height" : 87.5
+        },
+        "role_description" : "text",
+        "AXLabel" : "No food logged yet",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{61.166666666666686, 675.16666666666663}, {267.66666666666663, 48.999999999999886}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 675.16666666666663,
+          "x" : 61.166666666666686,
+          "width" : 267.66666666666663,
+          "height" : 48.999999999999886
+        },
+        "role_description" : "text",
+        "AXLabel" : "Tap the add button to log your first food today.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{20, 748}, {170, 60}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 748,
+          "x" : 20,
+          "width" : 170,
+          "height" : 60
+        },
+        "role_description" : "button",
+        "AXLabel" : "Camera",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{200, 748}, {170, 60}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 748,
+          "x" : 200,
+          "width" : 170,
+          "height" : 60
+        },
+        "role_description" : "button",
+        "AXLabel" : "Add Food",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      }
+    ],
+    "subrole" : null,
+    "pid" : 53196
+  }
+]
+```
+Tips:
+- Use frame coordinates for tap/swipe (center: x+width/2, y+height/2)
+- If a debugger is attached, ensure the app is running (not stopped on breakpoints)
+- Screenshots are for visual verification only
+
+Next steps:
+1. Refresh after layout changes: xcodebuildmcp simulator snapshot-ui --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"
+2. Tap on element: xcodebuildmcp ui-automation tap --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975" --x "0" --y "0"
+3. Take screenshot for verification: xcodebuildmcp simulator screenshot --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"

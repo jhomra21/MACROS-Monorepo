@@ -1,0 +1,20 @@
+(node:50476) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Provisioned a dev deployment and saved its:
+    client URL as CONVEX_URL
+    HTTP actions URL as CONVEX_SITE_URL
+ to .env.local
+
+Write your Convex functions in convex/
+Give us feedback at https://convex.dev/community or support@convex.dev
+View the Convex dashboard at https://dashboard.convex.dev/d/energized-pigeon-822
+
+▌ Developing against deployment:
+▌ [Development] juan-martinez-9198d:macros-convex-backend:dev/juan-martinez (dev) (dashboard: https://dashboard.convex.dev/t/juan-martinez-9198d/macros-convex-backend/energized-pigeon-822)
+▌ └─ https://energized-pigeon-822.convex.cloud
+- Preparing Convex functions...
+
+[36mA minor update is available for Convex[39m [2m(1.48.0 → 1.49.0)[22m
+[2mChangelog:[22m [4mhttps://github.com/get-convex/convex-js/blob/main/CHANGELOG.md#changelog[24m
+Your Convex AI files are out of date. Run npx convex ai-files update to get the latest.
+✔ 21:17:00 Convex functions ready! (3.3s)

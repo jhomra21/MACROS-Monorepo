@@ -1,0 +1,144 @@
+$ vitest run --config vitest.qa.config.ts
+
+ RUN  v5.0.5 /Users/juan/.t3/worktrees/cal-macro-tracker/reusable-invite/convex-backend
+
+(node:46452) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46453) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46454) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ convex/_qa/quotas.integration.ts (5 tests) 419ms
+ ✓ convex/_qa/purchaseReview.integration.ts (22 tests) 682ms
+ ❯ convex/_qa/sharing.integration.ts (48 tests | 5 failed) 867ms
+   ✓ registered authentication and unrelated visibility 57ms
+   × accept/replay, duplicate grants, snapshots, disabling, removal and deletion 6ms
+   ✓ build 23 exact wire shapes remain frozen and foods default off 38ms
+   ✓ daily goals round-trip to dashboard and personDay, and build 23 upserts preserve them 37ms
+   ✓ food scope patches in place, unchanged day arrays keep updatedAt, and off deletes immediately 9ms
+   ✓ Pro flag gates invites and pauses both ways; flag off and either person's Pro resume 11ms
+   ✓ personDay returns notShared when inbound grant is absent or ends 3ms
+   ✓ personDay rejects past days, removed relationships, deleted people and strangers 2ms
+   ✓ personDay rejects a deleted related profile 1ms
+   ✓ 100 food cap, bounded fields, unique local IDs and user/day isolation 47ms
+   ✓ batched deletion drains every owned table beyond 100 rows 169ms
+   ✓ purchase cap is five distinct profiles and retries do not consume slots 5ms
+   ✓ grace counts as Pro; expired, revoked, unknown products and mismatched renewal do not grant Pro 2ms
+   ✓ notification HTTP ordering, grace, expiry, refund, renewal, and unknown transaction 200 187ms
+   ✓ weekly bounded sweeper deletes all food days before today, retaining today and future days 33ms
+   ✓ stale purchases cannot revive a refund for existing or newly attached profiles 47ms
+   ✓ a new verified renewal updates every profile attached to that purchase 6ms
+   ✓ a newer renewal JWS cannot clear a refund using an older transaction 4ms
+   ✓ lifetime grants Pro without expiry; revoked purchases never do 2ms
+   ✓ verified non-Pro notifications are acknowledged without granting an entitlement 1ms
+   ✓ scope without ownerDay uses server today; other recipients keep foods until the last one turns off 3ms
+   ✓ food day replacement preserves document identity and removes omitted foods 2ms
+   ✓ canonical food arrays ignore property and input order, keeping updatedAt unchanged 14ms
+   ✓ food day documents isolate two sharing owners and never embed foods in profiles, totals, or dashboard 12ms
+   ✓ first sync removes old owner food days in bounded batches, preserving other users and current/future days 53ms
+   ✓ bootstrap rejects malformed JSON, non-string fields and invalid bounds with 400 24ms
+   ✓ revocation and exact expiry reject without relationship mutation 6ms
+   ✓ snapshot bounds and UTC timezone day window use framework clock 13ms
+   ✓ renewed invites consolidate relationships and supersede pending invites 2ms
+   ✓ snapshot identity cannot be overridden through public mutation arguments 0ms
+   ✓ actual bootstrap HTTP router protects mutations and verifies credentials 8ms
+   ✓ identical live invite retry is a write-free no-op with original expiry 2ms
+   ✓ issuing a foreign hash rejects before touching other pending invites 2ms
+   ✓ issuing a revoked hash rejects before touching other pending invites 2ms
+   ✓ issuing a accepted hash rejects before touching other pending invites 28ms
+   ✓ issuing a expired hash rejects before touching other pending invites 7ms
+   ✓ issuing a duplicates hash rejects before touching other pending invites 1ms
+   × historical revoked rows never authorize; only one same-owner live candidate may be accepted 4ms
+   × historical expired rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ historical two-live rows never authorize; only one same-owner live candidate may be accepted 3ms
+   ✓ historical foreign-history rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ legacy accepted hashes stay blocked (pending duplicate: false) 3ms
+   ✓ legacy accepted hashes stay blocked (pending duplicate: true) 1ms
+   × one live invite accepts two people, replays without writes, and revives a removed pair 1ms
+   ✓ used link rejects after owner/link becomes expired 1ms
+   × used link rejects after owner/link becomes revoked 1ms
+   ✓ used link rejects after owner/link becomes deleted 3ms
+   ✓ used link rejects after owner/link becomes missing 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  convex/_qa/sharing.integration.ts > accept/replay, duplicate grants, snapshots, disabling, removal and deletion
+Error: Invite is unavailable.
+ ❯ handler convex/sharing.ts:124:13
+    122|     if (live.length !== 1 || matches.some((row) =>
+    123|       row.status === "accepted" || row.ownerProfileId !== invite.owner…
+    124|       throw new Error("Invite is unavailable.");
+       |             ^
+    125|     }
+    126|
+ ❯ invokeFunction node_modules/convex/src/server/impl/registration_impl.ts:90:14
+ ❯ invokeMutation node_modules/convex/src/server/impl/registration_impl.ts:70:18
+ ❯ runMutationWithHandler node_modules/convex-test/dist/index.js:2254:31
+ ❯ Object.mutationFromPath node_modules/convex-test/dist/index.js:2397:32
+ ❯ mutation node_modules/convex-test/dist/index.js:2445:20
+ ❯ convex/_qa/sharing.integration.ts:70:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  convex/_qa/sharing.integration.ts > historical revoked rows never authorize; only one same-owner live candidate may be accepted
+ FAIL  convex/_qa/sharing.integration.ts > historical expired rows never authorize; only one same-owner live candidate may be accepted
+Error: Invite is unavailable.
+ ❯ handler convex/sharing.ts:124:13
+    122|     if (live.length !== 1 || matches.some((row) =>
+    123|       row.status === "accepted" || row.ownerProfileId !== invite.owner…
+    124|       throw new Error("Invite is unavailable.");
+       |             ^
+    125|     }
+    126|
+ ❯ invokeFunction node_modules/convex/src/server/impl/registration_impl.ts:90:14
+ ❯ invokeMutation node_modules/convex/src/server/impl/registration_impl.ts:70:18
+ ❯ runMutationWithHandler node_modules/convex-test/dist/index.js:2254:31
+ ❯ Object.mutationFromPath node_modules/convex-test/dist/index.js:2397:32
+ ❯ mutation node_modules/convex-test/dist/index.js:2445:20
+ ❯ convex/_qa/sharing.integration.ts:725:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  convex/_qa/sharing.integration.ts > one live invite accepts two people, replays without writes, and revives a removed pair
+Error: Invite is unavailable.
+ ❯ handler convex/sharing.ts:124:13
+    122|     if (live.length !== 1 || matches.some((row) =>
+    123|       row.status === "accepted" || row.ownerProfileId !== invite.owner…
+    124|       throw new Error("Invite is unavailable.");
+       |             ^
+    125|     }
+    126|
+ ❯ invokeFunction node_modules/convex/src/server/impl/registration_impl.ts:90:14
+ ❯ invokeMutation node_modules/convex/src/server/impl/registration_impl.ts:70:18
+ ❯ runMutationWithHandler node_modules/convex-test/dist/index.js:2254:31
+ ❯ Object.mutationFromPath node_modules/convex-test/dist/index.js:2397:32
+ ❯ mutation node_modules/convex-test/dist/index.js:2445:20
+ ❯ convex/_qa/sharing.integration.ts:787:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  convex/_qa/sharing.integration.ts > used link rejects after owner/link becomes revoked
+Error: Invite is unavailable.
+ ❯ handler convex/sharing.ts:96:13
+     94|
+     95|     if (invite == null || invite.ownerProfileId !== profile._id || inv…
+     96|       throw new Error("Invite is unavailable.");
+       |             ^
+     97|     }
+     98|
+ ❯ invokeFunction node_modules/convex/src/server/impl/registration_impl.ts:90:14
+ ❯ invokeMutation node_modules/convex/src/server/impl/registration_impl.ts:70:18
+ ❯ runMutationWithHandler node_modules/convex-test/dist/index.js:2254:31
+ ❯ Object.mutationFromPath node_modules/convex-test/dist/index.js:2397:32
+ ❯ mutation node_modules/convex-test/dist/index.js:2445:20
+ ❯ convex/_qa/sharing.integration.ts:821:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  5 failed | 70 passed (75)
+   Start at  21:11:38
+   Duration  1.48s (tests 60%, transform 22%, import 10%, environment 8%, worker 1%)
+
+error: script "test:integration" exited with code 1

@@ -1,0 +1,418 @@
+Accessibility hierarchy retrieved successfully:
+```json
+[
+  {
+    "AXFrame" : "{{0, 0}, {390, 844}}",
+    "AXUniqueId" : null,
+    "frame" : {
+      "y" : 0,
+      "x" : 0,
+      "width" : 390,
+      "height" : 844
+    },
+    "role_description" : "application",
+    "AXLabel" : "MACROS",
+    "content_required" : false,
+    "type" : "Application",
+    "title" : null,
+    "help" : null,
+    "custom_actions" : [
+
+    ],
+    "AXValue" : null,
+    "enabled" : true,
+    "role" : "AXApplication",
+    "children" : [
+      {
+        "AXFrame" : "{{16, 47}, {44, 44}}",
+        "AXUniqueId" : "BackButton",
+        "frame" : {
+          "y" : 47,
+          "x" : 16,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "back button",
+        "AXLabel" : "Back",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{164.33333333333334, 58.666666666666664}, {61.333333333333343, 20.666666666666664}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 58.666666666666664,
+          "x" : 164.33333333333334,
+          "width" : 61.333333333333343,
+          "height" : 20.666666666666664
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Sharing",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 136}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 136,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "switch",
+        "AXLabel" : "Sharing",
+        "content_required" : false,
+        "type" : "CheckBox",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "1",
+        "enabled" : true,
+        "role" : "AXCheckBox",
+        "children" : [
+
+        ],
+        "subrole" : "AXSwitch",
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 203}, {326, 22}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 203,
+          "x" : 32,
+          "width" : 326,
+          "height" : 22
+        },
+        "role_description" : "text field",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "TextField",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "Test B",
+        "enabled" : true,
+        "role" : "AXTextField",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 240}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 240,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Save Display Name",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 300}, {324.33333333333331, 63.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 300,
+          "x" : 32,
+          "width" : 324.33333333333331,
+          "height" : 63.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "Sharing is off by default. When it's on, MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 371.66666666666669}, {324.66666666666663, 79.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 371.66666666666669,
+          "x" : 32,
+          "width" : 324.66666666666663,
+          "height" : 79.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{32, 459.33333333333337}, {325.33333333333331, 47.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 459.33333333333337,
+          "x" : 32,
+          "width" : 325.33333333333331,
+          "height" : 47.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 513}, {358, 40.333333333333371}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 513,
+          "x" : 16,
+          "width" : 358,
+          "height" : 40.333333333333371
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Invite Someone",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 553.33333333333326}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 553.33333333333326,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Create Invite Link",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 605.33333333333326}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 605.33333333333326,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Share Invite",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 657.33333333333337}, {358, 81.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 657.33333333333337,
+          "x" : 16,
+          "width" : 358,
+          "height" : 81.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "calmacrotracker:\/\/sharing\/invite\/JX7wl2EPNgbsN55V1sPsZeR8bH2ZSugaHsmxcvnKmV8",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 739}, {358, 99.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 739,
+          "x" : 16,
+          "width" : 358,
+          "height" : 99.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Fallback web link: https:\/\/macros-auth.jhonra121.workers.dev\/invite\/JX7wl2EPNgbsN55V1sPsZeR8bH2ZSugaHsmxcvnKmV8",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 838.66666666666663}, {358, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 838.66666666666663,
+          "x" : 16,
+          "width" : 358,
+          "height" : 52
+        },
+        "role_description" : "text",
+        "AXLabel" : "Expires Nov 8, 2026 at 9:22 PM.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      }
+    ],
+    "subrole" : null,
+    "pid" : 53196
+  }
+]
+```
+Tips:
+- Use frame coordinates for tap/swipe (center: x+width/2, y+height/2)
+- If a debugger is attached, ensure the app is running (not stopped on breakpoints)
+- Screenshots are for visual verification only
+
+Next steps:
+1. Refresh after layout changes: xcodebuildmcp simulator snapshot-ui --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"
+2. Tap on element: xcodebuildmcp ui-automation tap --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975" --x "0" --y "0"
+3. Take screenshot for verification: xcodebuildmcp simulator screenshot --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"

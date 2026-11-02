@@ -1,0 +1,31 @@
+$ tsc --noEmit && bun test
+bun test v1.4.2 (744846f84)
+
+tests/appleVerifier.test.ts:
+(pass) Apple verifier boundary > rejects unsupported environment XCODE before verification [0.95ms]
+(pass) Apple verifier boundary > rejects unsupported environment LOCAL_TESTING before verification [0.01ms]
+(pass) Apple verifier boundary > rejects unsupported environment Xcode before verification
+(pass) Apple verifier boundary > rejects unsupported environment %s before verification
+(pass) Apple verifier boundary > routes Production only to its matching verifier [0.65ms]
+(pass) Apple verifier boundary > routes Sandbox only to its matching verifier [0.02ms]
+(pass) Apple verifier boundary > rejects a verified wrong bundle at the boundary [0.19ms]
+(pass) Apple verifier boundary > rejects garbage and forged JWS in both real Apple verifiers [1.06ms]
+(pass) Apple verifier boundary > constructs Apple's offline verifiers from the committed DER root [0.17ms]
+(pass) Apple verifier boundary > rejects a correctly signed synthetic JWS without an Apple certificate chain [0.83ms]
+(pass) Apple verifier boundary > uses the same DER bytes embedded in the deployable bundle [1.40ms]
+
+tests/sharingModel.test.ts:
+(pass) sharing model privacy rules > canonicalizes profile pairs and blocks self relationships [1.06ms]
+(pass) sharing model privacy rules > hides the current day when an interval has been closed [0.99ms]
+(pass) sharing model privacy rules > keeps prior allowed days visible while excluding disabled gaps [0.09ms]
+(pass) sharing model privacy rules > closes same-day disables at the previous day for visibility [0.05ms]
+(pass) sharing input validation > normalizes display names [0.07ms]
+(pass) sharing input validation > bounds snapshot payloads broadly [5.18ms]
+(pass) sharing input validation > rejects invalid calendar day keys [0.03ms]
+(pass) sharing input validation > accepts optional goals and rejects goals outside finite bounds [0.33ms]
+(pass) sharing input validation > limits dashboard day keys to the server-current window [0.30ms]
+
+ 20 pass
+ 0 fail
+ 37 expect() calls
+Ran 20 tests across 2 files. [114.00ms]

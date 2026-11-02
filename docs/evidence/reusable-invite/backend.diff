@@ -1,0 +1,26 @@
+diff --git a/convex-backend/convex/sharing.ts b/convex-backend/convex/sharing.ts
+index 974885e..7214e92 100644
+--- a/convex-backend/convex/sharing.ts
++++ b/convex-backend/convex/sharing.ts
+@@ -118,7 +118,7 @@ export const acceptInvite = mutation({
+     const live = matches.filter((invite) => invite.status === "pending" && invite.expiresAt > Date.now());
+     const [invite] = live;
+ 
+-    // A consumed hash never authorizes again, even if a pending duplicate exists.
++    // Live links are reusable; legacy accepted hashes still never authorize again.
+     if (live.length !== 1 || matches.some((row) =>
+       row.status === "accepted" || row.ownerProfileId !== invite.ownerProfileId)) {
+       throw new Error("Invite is unavailable.");
+@@ -163,12 +163,6 @@ export const acceptInvite = mutation({
+       });
+     }
+ 
+-    await ctx.db.patch(invite._id, {
+-      status: "accepted",
+-      acceptedAt: now,
+-      acceptedByProfileId: viewer._id,
+-    });
+-
+     return { relationshipId };
+   },
+ });

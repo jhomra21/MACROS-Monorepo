@@ -1,0 +1,94 @@
+Accessibility hierarchy retrieved successfully:
+```json
+[
+  {
+    "AXFrame" : "{{0, 0}, {390, 844}}",
+    "AXUniqueId" : null,
+    "frame" : {
+      "y" : 0,
+      "x" : 0,
+      "width" : 390,
+      "height" : 844
+    },
+    "role_description" : "application",
+    "AXLabel" : "MACROS",
+    "content_required" : false,
+    "type" : "Application",
+    "title" : null,
+    "help" : null,
+    "custom_actions" : [
+
+    ],
+    "AXValue" : null,
+    "enabled" : true,
+    "role" : "AXApplication",
+    "children" : [
+      {
+        "AXFrame" : "{{0, 47}, {390, 54}}",
+        "AXUniqueId" : "Sharing",
+        "frame" : {
+          "y" : 47,
+          "x" : 0,
+          "width" : 390,
+          "height" : 54
+        },
+        "role_description" : "Nav bar",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "Group",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXGroup",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      },
+      {
+        "AXFrame" : "{{16, 136}, {358, 114}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 136,
+          "x" : 16,
+          "width" : 358,
+          "height" : 114
+        },
+        "role_description" : "button",
+        "AXLabel" : "Test A, 0 kcal · P 0g · C 0g · F 0g, Sees your macros and foods",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : "View Test A’s shared day and sharing settings",
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 53196
+      }
+    ],
+    "subrole" : null,
+    "pid" : 53196
+  }
+]
+```
+Tips:
+- Use frame coordinates for tap/swipe (center: x+width/2, y+height/2)
+- If a debugger is attached, ensure the app is running (not stopped on breakpoints)
+- Screenshots are for visual verification only
+
+Next steps:
+1. Refresh after layout changes: xcodebuildmcp simulator snapshot-ui --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"
+2. Tap on element: xcodebuildmcp ui-automation tap --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975" --x "0" --y "0"
+3. Take screenshot for verification: xcodebuildmcp simulator screenshot --simulator-id "F976E800-DA1F-4F20-B755-DFD964E33975"

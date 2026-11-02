@@ -1,0 +1,5 @@
+(node:49369) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+No issues found. The deployment is healthy over the last 72 hours.
+
+Dashboard: https://dashboard.convex.dev/d/energized-pigeon-822?view=insights

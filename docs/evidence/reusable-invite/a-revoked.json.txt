@@ -1,0 +1,499 @@
+Accessibility hierarchy retrieved successfully:
+```json
+[
+  {
+    "AXFrame" : "{{0, 0}, {402, 874}}",
+    "AXUniqueId" : null,
+    "frame" : {
+      "y" : 0,
+      "x" : 0,
+      "width" : 402,
+      "height" : 874
+    },
+    "role_description" : "application",
+    "AXLabel" : "MACROS",
+    "content_required" : false,
+    "type" : "Application",
+    "title" : null,
+    "help" : null,
+    "custom_actions" : [
+
+    ],
+    "AXValue" : null,
+    "enabled" : true,
+    "role" : "AXApplication",
+    "children" : [
+      {
+        "AXFrame" : "{{16, 62}, {44, 44}}",
+        "AXUniqueId" : "BackButton",
+        "frame" : {
+          "y" : 62,
+          "x" : 16,
+          "width" : 44,
+          "height" : 44
+        },
+        "role_description" : "back button",
+        "AXLabel" : "Back",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{170.33333333333334, 73.666666666666657}, {61.333333333333343, 20.666666666666671}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 73.666666666666657,
+          "x" : 170.33333333333334,
+          "width" : 61.333333333333343,
+          "height" : 20.666666666666671
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Sharing",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{32, 2.6666666666666714}, {338, 22}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 2.6666666666666714,
+          "x" : 32,
+          "width" : 338,
+          "height" : 22
+        },
+        "role_description" : "text field",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "TextField",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "Test A",
+        "enabled" : true,
+        "role" : "AXTextField",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 39.666666666666671}, {370, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 39.666666666666671,
+          "x" : 16,
+          "width" : 370,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Save Display Name",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{32, 99.666666666666686}, {338, 63.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 99.666666666666686,
+          "x" : 32,
+          "width" : 338,
+          "height" : 63.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "Sharing is off by default. When it's on, MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{32, 171.33333333333337}, {338, 79.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 171.33333333333337,
+          "x" : 32,
+          "width" : 338,
+          "height" : 79.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{32, 259}, {329.66666666666663, 47.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 259,
+          "x" : 32,
+          "width" : 329.66666666666663,
+          "height" : 47.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 312.66666666666669}, {370, 40.333333333333314}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 312.66666666666669,
+          "x" : 16,
+          "width" : 370,
+          "height" : 40.333333333333314
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Invite Someone",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 353}, {370, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 353,
+          "x" : 16,
+          "width" : 370,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Create Invite Link",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 405}, {370, 77.666666666666686}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 405,
+          "x" : 16,
+          "width" : 370,
+          "height" : 77.666666666666686
+        },
+        "role_description" : "text",
+        "AXLabel" : "Creating invites needs MACROS Pro. Anyone with your link can connect and share back for free until it expires after 7 days or you revoke it. Create Invite shows the same link while it’s valid. To replace it, revoke it first.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 482.66666666666669}, {370, 40.333333333333314}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 482.66666666666669,
+          "x" : 16,
+          "width" : 370,
+          "height" : 40.333333333333314
+        },
+        "role_description" : "heading",
+        "AXLabel" : "Accept Invite",
+        "content_required" : false,
+        "type" : "Heading",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXHeading",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{32, 538}, {338, 22}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 538,
+          "x" : 32,
+          "width" : 338,
+          "height" : 22
+        },
+        "role_description" : "text field",
+        "AXLabel" : null,
+        "content_required" : false,
+        "type" : "TextField",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : "Invite token or link",
+        "enabled" : true,
+        "role" : "AXTextField",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 575}, {370, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 575,
+          "x" : 16,
+          "width" : 370,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Accept Invite",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : false,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 627}, {370, 29.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 627,
+          "x" : 16,
+          "width" : 370,
+          "height" : 29.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Expired or revoked invites can’t be accepted.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 674.33333333333326}, {370, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 674.33333333333326,
+          "x" : 16,
+          "width" : 370,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Stop Sharing With Everyone",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 726.33333333333326}, {370, 52}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 726.33333333333326,
+          "x" : 16,
+          "width" : 370,
+          "height" : 52
+        },
+        "role_description" : "button",
+        "AXLabel" : "Delete Sharing Profile",
+        "content_required" : false,
+        "type" : "Button",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXButton",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      },
+      {
+        "AXFrame" : "{{16, 778.33333333333326}, {370, 61.666666666666629}}",
+        "AXUniqueId" : null,
+        "frame" : {
+          "y" : 778.33333333333326,
+          "x" : 16,
+          "width" : 370,
+          "height" : 61.666666666666629
+        },
+        "role_description" : "text",
+        "AXLabel" : "Deleting your sharing profile permanently removes cloud sharing data and relationships. Local food and log data stays on this device.",
+        "content_required" : false,
+        "type" : "StaticText",
+        "title" : null,
+        "help" : null,
+        "custom_actions" : [
+
+        ],
+        "AXValue" : null,
+        "enabled" : true,
+        "role" : "AXStaticText",
+        "children" : [
+
+        ],
+        "subrole" : null,
+        "pid" : 74787
+      }
+    ],
+    "subrole" : null,
+    "pid" : 74787
+  }
+]
+```
+Tips:
+- Use frame coordinates for tap/swipe (center: x+width/2, y+height/2)
+- If a debugger is attached, ensure the app is running (not stopped on breakpoints)
+- Screenshots are for visual verification only
+
+Next steps:
+1. Refresh after layout changes: xcodebuildmcp simulator snapshot-ui --simulator-id "918D29B9-97D3-42C0-9C47-00605E01E8DB"
+2. Tap on element: xcodebuildmcp ui-automation tap --simulator-id "918D29B9-97D3-42C0-9C47-00605E01E8DB" --x "0" --y "0"
+3. Take screenshot for verification: xcodebuildmcp simulator screenshot --simulator-id "918D29B9-97D3-42C0-9C47-00605E01E8DB"

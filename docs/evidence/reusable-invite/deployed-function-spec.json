@@ -1,0 +1,1500 @@
+{
+  "url": "https://energized-pigeon-822.convex.cloud",
+  "functions": [
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "displayName": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": true
+          },
+          "profileKey": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "secretHash": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "bootstrap.js:registerOrVerifyProfile",
+      "returns": null,
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "functionType": "HttpAction",
+      "method": "POST",
+      "path": "/v1/bootstrap-profile"
+    },
+    {
+      "functionType": "HttpAction",
+      "method": "POST",
+      "path": "/appstore/notifications"
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "displayName": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:updateDisplayName",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "tokenHash": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:createInvite",
+      "returns": {
+        "type": "object",
+        "value": {
+          "expiresAt": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "inviteId": {
+            "fieldType": {
+              "tableName": "shareInvites",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "inviteId": {
+            "fieldType": {
+              "tableName": "shareInvites",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:revokePendingInvite",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "ownerDay": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "tokenHash": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:acceptInvite",
+      "returns": {
+        "keys": {
+          "type": "string"
+        },
+        "type": "record",
+        "values": {
+          "fieldType": {
+            "type": "string"
+          },
+          "optional": false
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "enabled": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          },
+          "ownerDay": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "toProfileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:setOutgoingSharingForPerson",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "otherProfileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          },
+          "ownerDay": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": true
+          },
+          "scope": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "literal",
+                  "value": "off"
+                },
+                {
+                  "type": "literal",
+                  "value": "macros"
+                },
+                {
+                  "type": "literal",
+                  "value": "macrosAndFoods"
+                }
+              ]
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:setOutgoingScope",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "ownerDay": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:stopSharingMyData",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "otherProfileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          },
+          "ownerDay": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:removePerson",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "calorieGoal": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": true
+          },
+          "calories": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "carbs": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "carbsGoal": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": true
+          },
+          "day": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "entryCount": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "fat": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "fatGoal": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": true
+          },
+          "protein": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          },
+          "proteinGoal": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": true
+          },
+          "timeZoneId": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:upsertMyDailySnapshot",
+      "returns": {
+        "type": "object",
+        "value": {
+          "snapshotId": {
+            "fieldType": {
+              "tableName": "dailySnapshots",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "foods": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "calories": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "carbs": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "fat": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "localEntryId": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "name": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "protein": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "quantityText": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "sortIndex": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": true
+          },
+          "snapshot": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "calorieGoal": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "calories": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "carbs": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "carbsGoal": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "day": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "entryCount": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "fat": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "fatGoal": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "protein": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                },
+                "proteinGoal": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "timeZoneId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:syncMyDay",
+      "returns": {
+        "type": "object",
+        "value": {
+          "snapshotId": {
+            "fieldType": {
+              "tableName": "dailySnapshots",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {}
+      },
+      "functionType": "Mutation",
+      "identifier": "sharing.js:deleteMySharingProfile",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "day": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "ownerToday": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Query",
+      "identifier": "sharing.js:sharingDashboard",
+      "returns": {
+        "type": "object",
+        "value": {
+          "people": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "connectionPaused": {
+                    "fieldType": {
+                      "type": "boolean"
+                    },
+                    "optional": false
+                  },
+                  "displayName": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "foodsShared": {
+                    "fieldType": {
+                      "type": "boolean"
+                    },
+                    "optional": false
+                  },
+                  "incomingActive": {
+                    "fieldType": {
+                      "type": "boolean"
+                    },
+                    "optional": false
+                  },
+                  "outgoingActive": {
+                    "fieldType": {
+                      "type": "boolean"
+                    },
+                    "optional": false
+                  },
+                  "outgoingScope": {
+                    "fieldType": {
+                      "type": "union",
+                      "value": [
+                        {
+                          "type": "literal",
+                          "value": "off"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "macros"
+                        },
+                        {
+                          "type": "literal",
+                          "value": "macrosAndFoods"
+                        }
+                      ]
+                    },
+                    "optional": false
+                  },
+                  "profileId": {
+                    "fieldType": {
+                      "tableName": "profiles",
+                      "type": "id"
+                    },
+                    "optional": false
+                  },
+                  "relationshipId": {
+                    "fieldType": {
+                      "tableName": "shareRelationships",
+                      "type": "id"
+                    },
+                    "optional": false
+                  },
+                  "scope": {
+                    "fieldType": {
+                      "type": "object",
+                      "value": {
+                        "macros": {
+                          "fieldType": {
+                            "type": "boolean"
+                          },
+                          "optional": false
+                        }
+                      }
+                    },
+                    "optional": false
+                  },
+                  "snapshot": {
+                    "fieldType": {
+                      "type": "union",
+                      "value": [
+                        {
+                          "type": "object",
+                          "value": {
+                            "calorieGoal": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": true
+                            },
+                            "calories": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            },
+                            "carbs": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            },
+                            "carbsGoal": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": true
+                            },
+                            "day": {
+                              "fieldType": {
+                                "type": "string"
+                              },
+                              "optional": false
+                            },
+                            "entryCount": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            },
+                            "fat": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            },
+                            "fatGoal": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": true
+                            },
+                            "protein": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            },
+                            "proteinGoal": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": true
+                            },
+                            "timeZoneId": {
+                              "fieldType": {
+                                "type": "string"
+                              },
+                              "optional": false
+                            },
+                            "updatedAt": {
+                              "fieldType": {
+                                "type": "number"
+                              },
+                              "optional": false
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "day": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "otherProfileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          },
+          "ownerToday": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Query",
+      "identifier": "sharing.js:personDay",
+      "returns": {
+        "type": "object",
+        "value": {
+          "foods": {
+            "fieldType": {
+              "type": "array",
+              "value": {
+                "type": "object",
+                "value": {
+                  "calories": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "carbs": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "fat": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "localEntryId": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "name": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "protein": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  },
+                  "quantityText": {
+                    "fieldType": {
+                      "type": "string"
+                    },
+                    "optional": false
+                  },
+                  "sortIndex": {
+                    "fieldType": {
+                      "type": "number"
+                    },
+                    "optional": false
+                  }
+                }
+              }
+            },
+            "optional": false
+          },
+          "snapshot": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "object",
+                  "value": {
+                    "calorieGoal": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "calories": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    },
+                    "carbs": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    },
+                    "carbsGoal": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "day": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "entryCount": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    },
+                    "fat": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    },
+                    "fatGoal": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "protein": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    },
+                    "proteinGoal": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "timeZoneId": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "updatedAt": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "optional": false
+          },
+          "visibility": {
+            "fieldType": {
+              "type": "union",
+              "value": [
+                {
+                  "type": "literal",
+                  "value": "shared"
+                },
+                {
+                  "type": "literal",
+                  "value": "notShared"
+                },
+                {
+                  "type": "literal",
+                  "value": "paused"
+                }
+              ]
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "signedPayload": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Action",
+      "identifier": "appleVerification.js:verifyNotification",
+      "returns": {
+        "type": "union",
+        "value": [
+          {
+            "type": "object",
+            "value": {
+              "renewal": {
+                "fieldType": {
+                  "type": "object",
+                  "value": {
+                    "autoRenewStatus": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "gracePeriodExpiresAt": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "renewalSignedDate": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                "optional": true
+              },
+              "transaction": {
+                "fieldType": {
+                  "type": "object",
+                  "value": {
+                    "environment": {
+                      "fieldType": {
+                        "type": "union",
+                        "value": [
+                          {
+                            "type": "literal",
+                            "value": "Production"
+                          },
+                          {
+                            "type": "literal",
+                            "value": "Sandbox"
+                          }
+                        ]
+                      },
+                      "optional": false
+                    },
+                    "expiresAt": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "originalTransactionId": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "productId": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "revokedAt": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": true
+                    },
+                    "transactionId": {
+                      "fieldType": {
+                        "type": "string"
+                      },
+                      "optional": false
+                    },
+                    "transactionSignedDate": {
+                      "fieldType": {
+                        "type": "number"
+                      },
+                      "optional": false
+                    }
+                  }
+                },
+                "optional": false
+              }
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {}
+      },
+      "functionType": "Query",
+      "identifier": "entitlementRecords.js:currentProfile",
+      "returns": {
+        "tableName": "profiles",
+        "type": "id"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "profileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          },
+          "renewal": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "autoRenewStatus": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "gracePeriodExpiresAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "renewalSignedDate": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": true
+          },
+          "transaction": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "environment": {
+                  "fieldType": {
+                    "type": "union",
+                    "value": [
+                      {
+                        "type": "literal",
+                        "value": "Production"
+                      },
+                      {
+                        "type": "literal",
+                        "value": "Sandbox"
+                      }
+                    ]
+                  },
+                  "optional": false
+                },
+                "expiresAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "originalTransactionId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "productId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "revokedAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "transactionId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "transactionSignedDate": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "entitlementRecords.js:storePurchase",
+      "returns": {
+        "type": "union",
+        "value": [
+          {
+            "type": "literal",
+            "value": "accepted"
+          },
+          {
+            "type": "literal",
+            "value": "revoked"
+          },
+          {
+            "type": "literal",
+            "value": "profileLimit"
+          }
+        ]
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "renewal": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "autoRenewStatus": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "gracePeriodExpiresAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "renewalSignedDate": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": true
+          },
+          "transaction": {
+            "fieldType": {
+              "type": "object",
+              "value": {
+                "environment": {
+                  "fieldType": {
+                    "type": "union",
+                    "value": [
+                      {
+                        "type": "literal",
+                        "value": "Production"
+                      },
+                      {
+                        "type": "literal",
+                        "value": "Sandbox"
+                      }
+                    ]
+                  },
+                  "optional": false
+                },
+                "expiresAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "originalTransactionId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "productId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "revokedAt": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": true
+                },
+                "transactionId": {
+                  "fieldType": {
+                    "type": "string"
+                  },
+                  "optional": false
+                },
+                "transactionSignedDate": {
+                  "fieldType": {
+                    "type": "number"
+                  },
+                  "optional": false
+                }
+              }
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "entitlementRecords.js:applyNotification",
+      "returns": {
+        "type": "null"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "signedRenewalInfo": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": true
+          },
+          "signedTransaction": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Action",
+      "identifier": "entitlements.js:submitPurchase",
+      "returns": {
+        "type": "object",
+        "value": {
+          "ok": {
+            "fieldType": {
+              "type": "boolean"
+            },
+            "optional": false
+          }
+        }
+      },
+      "visibility": {
+        "kind": "public"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "day": {
+            "fieldType": {
+              "type": "string"
+            },
+            "optional": false
+          },
+          "ownerProfileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "foodCleanup.js:deleteOwnerBeforeDay",
+      "returns": {
+        "type": "null"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {}
+      },
+      "functionType": "Mutation",
+      "identifier": "foodCleanup.js:sweep",
+      "returns": {
+        "type": "null"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "profileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "proStatus.js:recompute",
+      "returns": {
+        "type": "null"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    },
+    {
+      "args": {
+        "type": "object",
+        "value": {
+          "profileId": {
+            "fieldType": {
+              "tableName": "profiles",
+              "type": "id"
+            },
+            "optional": false
+          },
+          "stage": {
+            "fieldType": {
+              "type": "number"
+            },
+            "optional": false
+          }
+        }
+      },
+      "functionType": "Mutation",
+      "identifier": "profileDeletion.js:deleteBatch",
+      "returns": {
+        "type": "null"
+      },
+      "visibility": {
+        "kind": "internal"
+      }
+    }
+  ]
+}
