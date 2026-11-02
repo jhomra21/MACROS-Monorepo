@@ -1,5 +1,6 @@
 import { ConvexHttpClient } from "convex/browser";
 import type { FunctionReturnType } from "convex/server";
+import { z } from "zod";
 import { api } from "../convex/_generated/api";
 
 const authBaseUrl = process.env.MACROS_AUTH_URL ?? "https://macros-auth.jhonra121.workers.dev";
@@ -11,6 +12,7 @@ const day = new Date().toISOString().slice(0, 10);
 if (convexUrl == null) {
   throw new Error("CONVEX_URL is required. Run with the convex-backend .env.local loaded.");
 }
+
 if (convexUrl !== "https://energized-pigeon-822.convex.cloud") {
   throw new Error("This disposable smoke run is restricted to dev energized-pigeon-822.");
 }
@@ -66,15 +68,25 @@ async function runSmoke(users: SmokeUser[]) {
   assert(aFromB.snapshot?.calories === 321, "B should see A's uploaded snapshot.");
   await rawPersonDay(userC.token, aFromB.profileId, "stranger", "error");
   await rawPersonDay(undefined, aFromB.profileId, "unauthenticated", "error");
+  const invalidSignature = userB.token.split(".");
+
+  invalidSignature[2] = (invalidSignature[2][0] === "A" ? "B" : "A") + invalidSignature[2].slice(1);
+  await rawPersonDay(invalidSignature.join("."), aFromB.profileId, "bad signature JWT", "error");
   const expiredFile = process.env.MACROS_EXPIRED_JWT_FILE;
+
   if (expiredFile != null) {
     const expiredToken = (await Bun.file(expiredFile).text()).trim();
-    const claims = JSON.parse(Buffer.from(expiredToken.split(".")[1], "base64url").toString());
-    assert(typeof claims.exp === "number" && claims.exp * 1000 < Date.now(), "Expired fixture must be expired.");
+
+    const claims = z.object({ exp: z.number().finite() }).parse(
+      JSON.parse(Buffer.from(expiredToken.split(".")[1], "base64url").toString()),
+    );
+
+    assert(claims.exp * 1000 < Date.now(), "Expired fixture must be expired.");
     await rawPersonDay(expiredToken, aFromB.profileId, "expired JWT", "error");
   } else {
     console.log("BLOCKED expired JWT: no genuinely signed expired fixture (MACROS_EXPIRED_JWT_FILE).");
   }
+
   const aProfile = (await userA.client.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0];
   await rawPersonDay(userA.token, aProfile.profileId, "ungranted direction", "notShared");
   await userA.client.mutation(api.sharing.setOutgoingScope, {
@@ -236,24 +248,37 @@ async function rawPersonDay(
   otherProfileId: string,
   label: string,
   expected: "error" | "shared" | "notShared",
-  includeFoods?: boolean,
+  includeFoods = false,
 ) {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (token != null) headers.Authorization = `Bearer ${token}`;
+  const headers = new Headers({ "Content-Type": "application/json" });
+
+  if (token != null) headers.set("Authorization", `Bearer ${token}`);
+
   const response = await fetch(`${convexUrl}/api/query`, {
     method: "POST", headers,
     body: JSON.stringify({ path: "sharing:personDay", args: { otherProfileId, day, ownerToday: day, includeFoods }, format: "json" }),
   });
-  const envelope = await response.json() as {
-    status: string; value?: { visibility: string; snapshot: unknown; foods: unknown[] };
-  };
-  console.log(`Raw personDay ${label}: HTTP ${response.status}, envelope ${envelope.status}, visibility ${envelope.value?.visibility ?? "none"}`);
+
+  const envelope = z.discriminatedUnion("status", [
+    z.object({ status: z.literal("error") }),
+    z.object({ status: z.literal("success"), value: z.object({
+      visibility: z.enum(["shared", "notShared", "paused"]), snapshot: z.unknown(), foods: z.array(z.unknown()),
+    }) }),
+  ]).parse(await response.json());
+
+  const visibility = envelope.status === "success" ? envelope.value.visibility : "none";
+
+  console.log(`Raw personDay ${label}: HTTP ${response.status}, envelope ${envelope.status}, visibility ${visibility}`);
+
   if (expected === "error") {
     assert(envelope.status === "error", `${label} must reject with a decoded error envelope.`);
+
     return;
   }
-  assert(envelope.status === "success" && envelope.value?.visibility === expected, `${label} must return ${expected}.`);
+
+  assert(envelope.status === "success" && envelope.value.visibility === expected, `${label} must return ${expected}.`);
   assert(envelope.value.foods.length === 0, `${label} must not return foods.`);
+
   if (expected === "notShared") assert(envelope.value.snapshot == null, `${label} must not return nutrition.`);
 }
 

@@ -8,6 +8,29 @@ final class SharedPersonWidgetTests: XCTestCase {
     // across DST; refresh must not cross midnight; identity migration must preserve
     // bytes, verify before deleting, be idempotent, and leave legacy operations
     // unscoped. Fresh identities use the group; invite-like items stay private.
+    // Owner-added expiry failure inventory: expired, exactly-five-minute,
+    // nonfinite, wrong-deployment, wrong-identity, or wrong-generation JWT cache
+    // entries must trigger refresh rather than be sent to Convex.
+    func testExtensionTokenExpiryAndDeploymentPolicy() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let generation = UUID()
+        for (seconds, usable) in [(-1.0, false), (299, false), (300, false), (301, true), (.infinity, false)] {
+            let cache = SharedWidgetTokenCache(
+                token: "synthetic-not-a-jwt", expiresAt: now.addingTimeInterval(seconds).timeIntervalSince1970 * 1000,
+                profileKey: "synthetic-profile", deploymentURL: SharedAppConfiguration.convexDeploymentURL,
+                generation: generation
+            )
+            XCTAssertEqual(cache.isUsable(profileKey: "synthetic-profile", generation: generation, now: now), usable)
+            XCTAssertFalse(cache.isUsable(profileKey: "other-profile", generation: generation, now: now))
+            XCTAssertFalse(cache.isUsable(profileKey: "synthetic-profile", generation: UUID(), now: now))
+        }
+        let wrongDeployment = SharedWidgetTokenCache(
+            token: "synthetic-not-a-jwt", expiresAt: now.addingTimeInterval(3600).timeIntervalSince1970 * 1000,
+            profileKey: "synthetic-profile", deploymentURL: "https://fixture.invalid", generation: generation
+        )
+        XCTAssertFalse(wrongDeployment.isUsable(profileKey: "synthetic-profile", generation: generation, now: now))
+    }
+
     func testCalendarMidnightAndRefreshAcrossDST() throws {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/Los_Angeles"))
