@@ -90,7 +90,7 @@ struct DailyMacroWidgetProvider: TimelineProvider {
         )
     }
 
-    private func backgroundPhotoData(
+    func backgroundPhotoData(
         for appearance: WidgetAppearanceRecord?,
         access: WidgetProAccess
     ) -> Data? {
@@ -124,13 +124,15 @@ struct DailyMacroWidget: Widget {
     }
 }
 
-private struct DailyMacroWidgetContentView: View {
+struct DailyMacroWidgetContentView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.widgetRenderingMode) private var renderingMode
     @Environment(\.showsWidgetContainerBackground) private var showsWidgetContainerBackground
     @Environment(\.colorScheme) private var colorScheme
 
     let entry: DailyMacroWidgetEntry
+    var personName: String? = nil
+    var freshness: String? = nil
 
     var body: some View {
         Group {
@@ -167,19 +169,25 @@ private struct DailyMacroWidgetContentView: View {
     private var smallContent: some View {
         GeometryReader { geometry in
             let horizontalPadding: CGFloat = 14
-            let verticalPadding: CGFloat = 12
+            let verticalPadding: CGFloat = personName == nil ? 12 : 2
             let metricSpacing: CGFloat = 2
             let availableWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
             let columnCount = CGFloat(MacroMetric.allCases.count)
             let totalSpacing = metricSpacing * (columnCount - 1)
             let columnWidth = max((availableWidth - totalSpacing) / columnCount, 0)
 
-            VStack(spacing: 8) {
+            VStack(spacing: personName == nil ? 8 : 3) {
+                if let personName {
+                    Text(personName)
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(1)
+                        .privacySensitive()
+                }
                 // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
-                    ringDiameter: 80,
+                    ringDiameter: personName == nil ? 80 : min(64, max(40, geometry.size.height - 96)),
                     centerValueFontSize: 18,
                     minimumLineWidth: 5,
                     showsGoalSubtitle: false,
@@ -191,6 +199,12 @@ private struct DailyMacroWidgetContentView: View {
 
                 smallMetricsRow(columnWidth: columnWidth, spacing: metricSpacing)
                     .frame(width: availableWidth)
+                if let freshness {
+                    Text(freshness)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
@@ -201,39 +215,57 @@ private struct DailyMacroWidgetContentView: View {
     private var mediumContent: some View {
         GeometryReader { geometry in
             let horizontalPadding: CGFloat = 16
-            let verticalPadding: CGFloat = 14
+            let verticalPadding: CGFloat = personName == nil ? 14 : 4
+            let headerHeight: CGFloat = personName == nil ? 0 : 32
             let ringMetricSpacing: CGFloat = 24
             let contentWidth = max(geometry.size.width - (horizontalPadding * 2), 0)
-            let ringDiameter = min(112, max(92, geometry.size.height - (verticalPadding * 2)))
+            let ringDiameter = min(112, max(personName == nil ? 92 : 64, geometry.size.height - (verticalPadding * 2) - headerHeight))
             let metricWidth = max(contentWidth - ringDiameter - ringMetricSpacing, 0)
             let metricSpacing: CGFloat = 10
             let metricCount = CGFloat(MacroMetric.allCases.count)
             let metricTotalSpacing = metricSpacing * (metricCount - 1)
             let columnWidth = max((metricWidth - metricTotalSpacing) / metricCount, 0)
 
-            HStack(spacing: ringMetricSpacing) {
-                // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
-                MacroRingSetView(
-                    totals: entry.snapshot.totals,
-                    goals: entry.snapshot.goals,
-                    ringDiameter: ringDiameter,
-                    centerValueFontSize: 24,
-                    minimumLineWidth: 5,
-                    showsGoalSubtitle: false,
-                    colorStyle: ringColorStyle,
-                    usesGlassEffect: false
-                )
-                .widgetAccentable()
-
-                HStack(alignment: .center, spacing: metricSpacing) {
-                    ForEach(MacroMetric.allCases) { metric in
-                        mediumMetric(metric: metric)
-                            .frame(width: columnWidth, alignment: .center)
+            VStack(alignment: .leading, spacing: personName == nil ? 0 : 4) {
+                if let personName {
+                    HStack {
+                        Text(personName)
+                            .font(.caption.weight(.semibold))
+                            .lineLimit(1)
+                            .privacySensitive()
+                        Spacer(minLength: 4)
+                        if let freshness {
+                            Text(freshness)
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                 }
-                .frame(width: metricWidth, alignment: .center)
+                HStack(spacing: ringMetricSpacing) {
+                    // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
+                    MacroRingSetView(
+                        totals: entry.snapshot.totals,
+                        goals: entry.snapshot.goals,
+                        ringDiameter: ringDiameter,
+                        centerValueFontSize: 24,
+                        minimumLineWidth: 5,
+                        showsGoalSubtitle: false,
+                        colorStyle: ringColorStyle,
+                        usesGlassEffect: false
+                    )
+                    .widgetAccentable()
 
-                Spacer(minLength: 0)
+                    HStack(alignment: .center, spacing: metricSpacing) {
+                        ForEach(MacroMetric.allCases) { metric in
+                            mediumMetric(metric: metric)
+                                .frame(width: columnWidth, alignment: .center)
+                        }
+                    }
+                    .frame(width: metricWidth, alignment: .center)
+
+                    Spacer(minLength: 0)
+                }
             }
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
@@ -273,7 +305,7 @@ private struct DailyMacroWidgetContentView: View {
             metrics: MacroMetric.allCases,
             totals: entry.snapshot.totals,
             goals: entry.snapshot.goals,
-            style: .widgetSmall(valueFontSize: smallMetricValueFontSize),
+            style: .widgetSmall(valueFontSize: smallMetricValueFontSize, hidesMissingGoals: personName != nil),
             columnWidth: columnWidth,
             columnSpacing: spacing
         )
@@ -295,12 +327,14 @@ private struct DailyMacroWidgetContentView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
 
-                Text(presentation.goalValueText)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                if personName == nil || metric.goal(from: entry.snapshot.goals) > 0 {
+                    Text(presentation.goalValueText)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
             }
 
             VStack(spacing: 1) {
@@ -354,7 +388,7 @@ private extension DailyMacroWidgetEntry {
     }
 }
 
-private struct DailyMacroWidgetBackground: View {
+struct DailyMacroWidgetBackground: View {
     @Environment(\.widgetRenderingMode) private var renderingMode
     @Environment(\.showsWidgetContainerBackground) private var showsWidgetContainerBackground
 

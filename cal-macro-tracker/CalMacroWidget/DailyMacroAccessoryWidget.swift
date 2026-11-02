@@ -24,20 +24,45 @@ struct DailyMacroAccessoryWidget: Widget {
     }
 }
 
-private struct DailyMacroAccessoryWidgetContentView: View {
+struct DailyMacroAccessoryWidgetContentView: View {
     @Environment(\.widgetFamily) private var family
 
     let entry: DailyMacroWidgetEntry
+    var personName: String? = nil
+    var freshness: String? = nil
+    var offline = false
 
     var body: some View {
-        switch family {
-        case .accessoryCircular:
-            circularContent
-        case .accessoryRectangular:
-            rectangularContent
-        default:
-            inlineContent
+        Group {
+            switch family {
+            case .accessoryCircular:
+                circularContent
+                    .overlay(alignment: .bottom) {
+                        if let personName {
+                            Text(personName + (offline ? " · Offline" : ""))
+                                .font(.system(size: 11))
+                                .lineLimit(1)
+                                .privacySensitive()
+                                .offset(y: 4)
+                        }
+                    }
+            case .accessoryRectangular:
+                VStack(alignment: .leading, spacing: 2) {
+                    if let personName {
+                        HStack {
+                            Text(personName).font(.caption.weight(.semibold)).privacySensitive()
+                            Spacer(minLength: 2)
+                            if let freshness { Text(freshness).font(.system(size: 11)) }
+                        }
+                        .lineLimit(1)
+                    }
+                    rectangularContent
+                }
+            default:
+                inlineContent
+            }
         }
+        .accessibilityValue(freshness ?? "")
     }
 
     private var inlineContent: some View {
@@ -56,21 +81,26 @@ private struct DailyMacroAccessoryWidgetContentView: View {
     }
 
     private var rectangularContent: some View {
-        HStack(spacing: 6) {
-            ForEach(MacroMetric.allCases) { metric in
-                MacroSummaryColumnView(
-                    metric: metric,
-                    totals: entry.snapshot.totals,
-                    goals: entry.snapshot.goals,
-                    titleStyle: .short,
-                    style: .accessoryRectangular
-                )
+        var style = MacroSummaryColumnView.Style.accessoryRectangular
+        style.hidesMissingGoals = personName != nil
+        return
+            HStack(spacing: 6) {
+                ForEach(MacroMetric.allCases) { metric in
+                    MacroSummaryColumnView(
+                        metric: metric,
+                        totals: entry.snapshot.totals,
+                        goals: entry.snapshot.goals,
+                        titleStyle: .short,
+                        style: style
+                    )
+                }
             }
-        }
     }
 
     private var inlineSummary: String {
-        "\(entry.snapshot.totals.calories.roundedForDisplay) cal · \(compactMacroSummary)"
+        let prefix = personName.map { "\($0) · " } ?? ""
+        let suffix = offline ? " · Offline" : " · \(compactMacroSummary)"
+        return "\(prefix)\(entry.snapshot.totals.calories.roundedForDisplay) cal\(suffix)"
     }
 
     private var compactMacroSummary: String {
