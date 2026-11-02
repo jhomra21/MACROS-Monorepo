@@ -1,0 +1,11 @@
+# TestFlight 1.0 (28), 2026-11-02
+
+- Baseline: `origin/main` was `f099cb70a7aa2b28cdd5b1e73d53f522cd2325b9` (web screenshots on top of build 27).
+- Add Food camera zoom merge: `992ca8d` (`origin/fix/add-food-camera-zoom-source`, source `95e0d69183386824cf453dbf5c7f06324d8680a4`).
+- Sharing reliability deflake merge: `b0422ee` (`origin/test/deflake-sharing-reliability`, source `a8e0057b9149b3d2ff74c25210bd8f032a528c18`). No conflicts. The merge diff touches only `FoodCameraSheet.swift`, `SharingReliabilityTests.swift`, and `changes-log.md` (64 insertions, 24 deletions). `BottomPinnedActionBar.swift` and `web/` are identical to `origin/main`.
+- Build bump commit: `8ebd989d2743e5c0d940248c77f893b8cf385d7b` (`chore: bump build 28`), pushed `main` SHA `8ebd989d2743e5c0d940248c77f893b8cf385d7b`. `CURRENT_PROJECT_VERSION` is 28 in all six project configurations; marketing version remains 1.0. Total diff against baseline: 4 files changed, 70 insertions(+), 30 deletions(-).
+- Validation: `make quality-format-check` and `make quality-build` passed. The serial iPad suite passed 228 tests with 0 failures. `PurchaseStoreStoreKitTests` was skipped as requested; no retries were needed.
+- Archive and export: `MACROS-1.0-28.xcarchive`; archive and local export succeeded using Xcode 26.4.1. App and widget bundle versions are 28; both exported bundles are Apple Distribution signed with `get-task-allow=false`. App Group entitlement is present on both, HealthKit is present on the app, and no `.storekit` or `.xctest` payloads are present.
+- Preflight export uses `destination=export` and `manageAppVersionAndBuildNumber=false`; upload export uses `destination=upload` and `manageAppVersionAndBuildNumber=false`. Upload export completed once; Xcode reported “Upload succeeded” and “Uploaded package is processing.” Delivery identifier: `183620e7-0a1b-41f8-a46d-d24f352aad02`.
+- IPA SHA-256 (local App Store export): `567e2a5c939c7c2b6b982b92fb56da7b9414f518794b264359fb54d46b212aab` (`build/testflight-b28/export-local/MACROS.ipa`).
+- Owner iPhone Air `844B72D7-D128-4607-AB2E-6C14B024618F`: installed the pushed SHA's Debug build after uninstalling and reinstalling; simulator was not erased. The Dashboard screenshot is `dashboard.png`. The Air Simulator window was opened before interaction; no other simulator window was clicked.
