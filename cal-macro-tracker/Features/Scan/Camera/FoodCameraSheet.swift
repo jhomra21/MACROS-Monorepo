@@ -332,7 +332,7 @@ struct FoodCameraSheet: View {
         .layoutPriority(0)
         .clipShape(
             .rect(
-                uniformBottomCorners: .concentric,
+                uniformBottomCorners: .concentric(minimum: 28),
                 topLeadingCorner: .fixed(28),
                 topTrailingCorner: .fixed(28)
             )

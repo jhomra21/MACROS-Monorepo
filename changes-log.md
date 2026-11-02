@@ -13,7 +13,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 
 ## 2026-11-01 Camera Viewport Corners
 
-- Camera viewport keeps its 28 pt top corners and uses display-concentric bottom corners.
+- Camera viewport keeps its 28 pt top corners and uses display-concentric bottom corners, with a 28 pt minimum during zoom transitions.
 
 ## 2026-11-01 Sharing v2 backend (unreleased)
 
