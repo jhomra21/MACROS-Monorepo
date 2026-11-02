@@ -43,35 +43,38 @@ struct SharingPersonScreen: View {
                     carbs: snapshot.carbs
                 )
                 Section("Today") {
-                    MacroRingSetView(
-                        totals: totals,
-                        goals: sharedGoals ?? .empty,
-                        ringDiameter: 156,
-                        centerValueFontSize: 24,
-                        minimumLineWidth: 10,
-                        showsGoalSubtitle: false,
-                        usesGlassEffect: false
-                    )
-                    .frame(maxWidth: .infinity)
-                    if let sharedGoals {
-                        MacroSummaryColumnsGrid(
-                            metrics: [.protein, .carbs, .fat],
+                    // One row: separate rows would draw a separator between the rings and the legend.
+                    VStack(spacing: 20) {
+                        MacroRingSetView(
                             totals: totals,
-                            goals: sharedGoals,
-                            style: .compact,
-                            columnWidth: 88,
-                            columnSpacing: 8
+                            goals: sharedGoals ?? .empty,
+                            ringDiameter: 180,
+                            centerValueFontSize: 30,
+                            minimumLineWidth: 10,
+                            showsGoalSubtitle: false,
+                            usesGlassEffect: false
                         )
-                    } else {
-                        HStack(spacing: 16) {
-                            Text("P \(totals.protein.roundedForDisplay) g")
-                            Text("C \(totals.carbs.roundedForDisplay) g")
-                            Text("F \(totals.fat.roundedForDisplay) g")
+                        if let sharedGoals {
+                            MacroSummaryColumnsGrid(
+                                metrics: [.protein, .carbs, .fat],
+                                totals: totals,
+                                goals: sharedGoals,
+                                style: .dashboardCard,
+                                columnWidth: 92,
+                                columnSpacing: 8
+                            )
+                        } else {
+                            HStack(spacing: 16) {
+                                Text("P \(totals.protein.roundedForDisplay) g")
+                                Text("C \(totals.carbs.roundedForDisplay) g")
+                                Text("F \(totals.fat.roundedForDisplay) g")
+                            }
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         }
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
                 }
             } else {
                 Section("Today") {
