@@ -57,7 +57,7 @@ struct BackupSettingsSection: View {
                     errorMessage: $errorMessage
                 )
             case let .share(url):
-                BackupFileShareSheet(url: url)
+                URLShareSheet(url: url)
             }
         }
         .errorBanner(message: $errorMessage, title: "Backup Failed")
@@ -164,15 +164,3 @@ private enum BackupPresentation: Identifiable {
         }
     }
 }
-
-#if os(iOS)
-private struct BackupFileShareSheet: UIViewControllerRepresentable {
-    let url: URL
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
-}
-#endif

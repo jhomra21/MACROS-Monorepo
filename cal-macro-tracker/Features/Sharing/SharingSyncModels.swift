@@ -183,7 +183,8 @@ struct SharedDailySnapshot: Decodable, Equatable {
     }
 }
 
-struct SharingInvite: Equatable {
+struct SharingInvite: Equatable, Identifiable {
+    var id: String { inviteId }
     let inviteId: String
     let token: String
     let url: URL

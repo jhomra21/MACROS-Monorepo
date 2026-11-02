@@ -448,6 +448,133 @@ final class SharingReliabilityTests: XCTestCase {
         f.service.stopDashboardSubscription(clearDashboard: true)
     }
 
+    private func person(
+        _ profileId: String, incoming: Bool = true, paused: Bool = false, foods: Bool = true
+    ) -> SharingPerson {
+        SharingPerson(
+            relationshipId: "rel-\(profileId)", profileId: profileId, displayName: profileId,
+            incomingActive: incoming, outgoingActive: true, scope: SharingScope(macros: true),
+            snapshot: nil, foodsShared: foods, outgoingScope: .macros, connectionPaused: paused)
+    }
+
+    private func sharedDay(_ day: CalendarDay, foodNames: [String] = ["Eggs", "Toast"]) -> SharingPersonDay {
+        SharingPersonDay(
+            snapshot: SharedDailySnapshot(
+                day: day.sharingDayKey, timeZoneId: "UTC", calories: 500, protein: 30, fat: 20, carbs: 40,
+                entryCount: foodNames.count, updatedAt: 1),
+            foods: foodNames.enumerated().map {
+                SharedFood(
+                    localEntryId: "\($0.offset)", sortIndex: $0.offset, name: $0.element, quantityText: "1",
+                    calories: 100, protein: 1, carbs: 1, fat: 1)
+            })
+    }
+
+    private func deliver(_ people: [SharingPerson], to f: Fixture, stream: Int = 0) async {
+        await observeChange(read: { _ = f.service.dashboard }) {
+            f.remote.streams[stream].send(SharingDashboard(people: people))
+        }
+    }
+
+    private func startedDashboard(_ f: Fixture, day: CalendarDay) async {
+        f.service.startDashboardSubscription(for: day)
+        await f.remote.dashboardStarted(count: 1)
+        await Task.yield()
+    }
+
+    func testReopenedPersonReadsLastKnownDayAndOnlyForThatPersonAndDay() throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        XCTAssertEqual(f.service.cachedPersonDay(profileId: "alex", day: today), sharedDay(today))
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "sam", day: today))
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today.advanced(byDays: 1)!))
+    }
+
+    func testNonSharedValueEvictsCachedDay() throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        f.service.cachePersonDay(SharingPersonDay(visibility: .notShared, snapshot: nil, foods: []), profileId: "alex", day: today)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        f.service.cachePersonDay(SharingPersonDay(visibility: .paused, snapshot: nil, foods: []), profileId: "alex", day: today)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+    }
+
+    func testDashboardEvictsRevokedPausedAndRemovedPeopleAndStripsFoodsWhenScopeDrops() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        await startedDashboard(f, day: today)
+        for id in ["alex", "sam", "kim", "lee"] {
+            f.service.cachePersonDay(sharedDay(today), profileId: id, day: today)
+        }
+        await deliver(
+            [person("alex"), person("sam", incoming: false), person("kim", paused: true), person("lee", foods: false)],
+            to: f)
+        XCTAssertEqual(f.service.cachedPersonDay(profileId: "alex", day: today), sharedDay(today))
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "sam", day: today))
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "kim", day: today))
+        let macrosOnly = try XCTUnwrap(f.service.cachedPersonDay(profileId: "lee", day: today))
+        XCTAssertEqual(macrosOnly.snapshot, sharedDay(today).snapshot)
+        XCTAssertTrue(macrosOnly.foods.isEmpty)
+        await deliver([], to: f)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+    }
+
+    func testRemovePersonDropsCachedDay() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        f.service.cachePersonDay(sharedDay(today), profileId: "sam", day: today)
+        try await f.service.removePerson("alex", ownerDay: today)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+        XCTAssertNotNil(f.service.cachedPersonDay(profileId: "sam", day: today))
+    }
+
+    func testDayRolloverDropsCachedDays() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        await startedDashboard(f, day: today)
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        f.service.startDashboardSubscription(for: today.advanced(byDays: 1)!)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+    }
+
+    func testSignOutAndDisabledSharingDropCachedDaysAndRefuseNewOnes() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        try await f.service.deleteSharingProfile()
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+        f.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        XCTAssertNil(f.service.cachedPersonDay(profileId: "alex", day: today))
+
+        let g = try fixture()
+        g.service.cachePersonDay(sharedDay(today), profileId: "alex", day: today)
+        try await g.service.disableSharingOnDevice(ownerDay: today)
+        XCTAssertNil(g.service.cachedPersonDay(profileId: "alex", day: today))
+    }
+
+    func testPersonDayUpdatesSkipsAuthenticationWhileIdentityIsUnchanged() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        _ = try await f.service.personDayUpdates(profileId: "alex", day: today)
+        _ = try await f.service.personDayUpdates(profileId: "alex", day: today)
+        XCTAssertEqual(f.remote.authentications, 1)
+        try await f.service.deleteSharingProfile()
+        let afterIdentityChange = f.remote.authentications
+        _ = try await f.service.personDayUpdates(profileId: "alex", day: today)
+        XCTAssertEqual(f.remote.authentications, afterIdentityChange + 1)
+    }
+
+    func testDashboardAuthenticationAlsoCoversPersonDayUpdates() async throws {
+        let f = try fixture()
+        let today = CalendarDay(date: .now)
+        await startedDashboard(f, day: today)
+        _ = try await f.service.personDayUpdates(profileId: "alex", day: today)
+        XCTAssertEqual(f.remote.authentications, 1)
+    }
+
     func testSecureInviteMigrationColdLoadAndRevokeCleanup() async throws {
         let f = try fixture()
         let secure = SharingInviteTokenStore(service: "SharingReliability.\(UUID())")
