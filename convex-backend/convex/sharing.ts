@@ -118,7 +118,7 @@ export const acceptInvite = mutation({
     const live = matches.filter((invite) => invite.status === "pending" && invite.expiresAt > Date.now());
     const [invite] = live;
 
-    // A consumed hash never authorizes again, even if a pending duplicate exists.
+    // Live links are reusable; legacy accepted hashes still never authorize again.
     if (live.length !== 1 || matches.some((row) =>
       row.status === "accepted" || row.ownerProfileId !== invite.ownerProfileId)) {
       throw new Error("Invite is unavailable.");
@@ -162,12 +162,6 @@ export const acceptInvite = mutation({
         startedAt: now,
       });
     }
-
-    await ctx.db.patch(invite._id, {
-      status: "accepted",
-      acceptedAt: now,
-      acceptedByProfileId: viewer._id,
-    });
 
     return { relationshipId };
   },
