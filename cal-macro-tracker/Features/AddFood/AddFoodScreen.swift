@@ -2,6 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct AddFoodScreen: View {
+    static let zoomTransitionID = "add-food"
+
     @Environment(\.dismiss) private var dismiss
     @Query private var recentLogEntries: [LogEntry]
 

@@ -3,6 +3,7 @@ import SwiftUI
 
 private enum AppRootSheetDestination: Identifiable, Hashable {
     case addFood(AddFoodEntryPoint, CalendarDay?)
+    case dashboardAddFood(CalendarDay)
     case foodCamera(CalendarDay?)
     case editLogEntry(PersistentIdentifier)
 
@@ -12,13 +13,15 @@ private enum AppRootSheetDestination: Identifiable, Hashable {
             true
         case let .addFood(entryPoint, _):
             entryPoint == .scanBarcode || entryPoint == .scanLabel
-        case .editLogEntry:
+        case .dashboardAddFood, .editLogEntry:
             false
         }
     }
 
     var id: String {
         switch self {
+        case let .dashboardAddFood(loggingDay):
+            "dashboard-add-food:\(String(describing: loggingDay))"
         case let .addFood(entryPoint, loggingDay):
             "add-food:\(entryPoint.rawValue):\(String(describing: loggingDay))"
         case let .foodCamera(loggingDay):
@@ -41,7 +44,7 @@ struct AppRootView: View {
     @Binding private var pendingOpenRequest: AppOpenRequest?
 
     @AppStorage(AppStorageKeys.hasCompletedDashboardTutorial) private var hasCompletedDashboardTutorial = false
-    @Namespace private var cameraTransition
+    @Namespace private var dashboardTransition
     @State private var tutorial = DashboardTutorial()
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
@@ -54,9 +57,9 @@ struct AppRootView: View {
     var body: some View {
         NavigationStack(path: $path) {
             DashboardScreen(
-                cameraTransitionNamespace: cameraTransition,
+                transitionNamespace: dashboardTransition,
                 onOpenAddFood: { loggingDay in
-                    presentSheet(.addFood(.addFood, loggingDay))
+                    presentSheet(.dashboardAddFood(loggingDay))
                 },
                 onOpenFoodCamera: { loggingDay in
                     presentSheet(.foodCamera(loggingDay))
@@ -139,18 +142,25 @@ struct AppRootView: View {
         switch destination {
         case .foodCamera:
             AppRootSheetContent(destination: destination)
-                .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: cameraTransition))
+                .navigationTransition(.zoom(sourceID: FoodCameraSheet.zoomTransitionID, in: dashboardTransition))
                 .presentationBackground(.clear)
         case let .addFood(entryPoint, _) where entryPoint == .scanBarcode || entryPoint == .scanLabel:
             AppRootSheetContent(destination: destination)
                 .presentationBackground(.clear)
+        case .dashboardAddFood:
+            navigationStackSheet(for: destination)
+                .navigationTransition(.zoom(sourceID: AddFoodScreen.zoomTransitionID, in: dashboardTransition))
         default:
-            NavigationStack {
-                AppRootSheetContent(destination: destination)
-            }
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
+            navigationStackSheet(for: destination)
         }
+    }
+
+    private func navigationStackSheet(for destination: AppRootSheetDestination) -> some View {
+        NavigationStack {
+            AppRootSheetContent(destination: destination)
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
     }
 
     private var canStartTutorial: Bool {
@@ -225,6 +235,8 @@ private struct AppRootSheetContent: View {
 
     var body: some View {
         switch destination {
+        case let .dashboardAddFood(loggingDay):
+            AddFoodScreen(loggingDay: loggingDay)
         case let .addFood(entryPoint, loggingDay):
             switch entryPoint {
             case .addFood:
