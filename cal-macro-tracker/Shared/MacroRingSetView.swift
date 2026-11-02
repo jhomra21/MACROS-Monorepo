@@ -236,10 +236,18 @@ private struct GoalProgressRing: View {
     var body: some View {
         if usesGlassEffect, #available(iOS 26.0, macOS 26.0, *) {
             progressContent
-                .glassEffect(
-                    .regular.tint(resolvedTrackColor),
-                    in: Circle().stroke(style: StrokeStyle(lineWidth: lineWidth))
-                )
+                .background {
+                    // Glass on a stroked-path shape draws an edge line down the track and at each
+                    // seam, so glass the filled disc and cut the band out with a mask instead.
+                    Color.clear
+                        .frame(width: diameter + lineWidth, height: diameter + lineWidth)
+                        .glassEffect(.regular.tint(resolvedTrackColor), in: Circle())
+                        .mask {
+                            Circle()
+                                .stroke(style: StrokeStyle(lineWidth: lineWidth))
+                                .frame(width: diameter, height: diameter)
+                        }
+                }
         } else {
             ZStack {
                 Circle()
