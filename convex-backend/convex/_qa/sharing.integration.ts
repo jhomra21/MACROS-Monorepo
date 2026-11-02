@@ -156,6 +156,20 @@ test("daily goals round-trip to dashboard and personDay, and build 23 upserts pr
   expect((await viewer.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0].snapshot).toMatchObject(goals);
 });
 
+test("widget personDay omits foods without changing goals or existing callers", async () => {
+  const { owner, viewer, ids } = await connected();
+  const goals = { calorieGoal: 2100, proteinGoal: 145, carbsGoal: 230, fatGoal: 65 };
+  await owner.mutation(api.sharing.setOutgoingScope, { otherProfileId: ids[1], scope: "macrosAndFoods", ownerDay: day });
+  await owner.mutation(api.sharing.syncMyDay, { snapshot: { ...snapshot, ...goals }, foods: [food] });
+  const args = { otherProfileId: ids[0], day, ownerToday: day, includeFoods: false };
+  const widget = await viewer.query(api.sharing.personDay, args);
+  expect(widget.visibility).toBe("shared");
+  expect(widget.snapshot).toMatchObject({ ...snapshot, ...goals });
+  expect(widget.foods).toEqual([]);
+  expect((await viewer.query(api.sharing.personDay, { ...args, includeFoods: true })).foods).toEqual([food]);
+  expect((await viewer.query(api.sharing.personDay, { otherProfileId: ids[0], day, ownerToday: day })).foods).toEqual([food]);
+});
+
 test("food scope patches in place, unchanged day arrays keep updatedAt, and off deletes immediately", async () => {
   const { t, owner, viewer, ids } = await connected();
   const before = await t.run(ctx => ctx.db.query("shareGrantIntervals").collect());
