@@ -13,7 +13,7 @@
 ## Findings
 
 - Push/first frame: `before/person-first-frame.png` shows the baseline zero/empty state. `after/person-first-frame.png` shows the current 600 kcal, macro totals, and food row already present on the first captured updated screen, with no zero-value loading flash.
-- Baseline update: `before/person-add-correct.mp4` captured the person screen while B logged the probe. It contains the pre-update and post-update states without intermediate ring or number motion. `before/frames/person-add-*.png` are 30 fps contact sheets derived from that clip.
+- Baseline update: `before/person-add-correct.mp4` captured the person screen while B logged the probe. The simulator recorder emitted only two distinct frames (before and after), so the 30 fps contact sheets in `before/frames/person-add-*.png` duplicate those frames and cannot establish whether the baseline interpolated between them.
 - Updated Sharing-list insertion: `after/dashboard-add.mp4` captured B logging the probe while A remained on the Sharing list. `after/frames/dashboard-add-*.png` show the row totals and small rings advancing from zero to 600 kcal.
 - Updated person screen: `after/person-remove.mp4` captured B deleting the probe while A remained on Test B’s person screen. The 30 fps sheets in `after/frames/person-remove-*.png` show the calorie value changing from 600 to 0, the rings shrinking, and the food row leaving.
 - Updated Sharing list: `after/dashboard-delete.mp4` captured the same deletion with A on the Sharing list. Its sheets in `after/frames/dashboard-delete-*.png` show the small rings and totals line changing from 600 kcal to 0.
