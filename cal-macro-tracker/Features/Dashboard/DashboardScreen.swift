@@ -16,7 +16,7 @@ struct DashboardScreen: View {
     @AppStorage(AppStorageKeys.customFatRingColor, store: .macroRingColors) private var customFatRingColor =
         MacroRingColorStorage.defaultFatHex
 
-    let cameraTransitionNamespace: Namespace.ID
+    let transitionNamespace: Namespace.ID
     let onOpenAddFood: (CalendarDay) -> Void
     let onOpenFoodCamera: (CalendarDay) -> Void
     let onEditEntry: (LogEntry) -> Void
@@ -339,9 +339,10 @@ struct DashboardScreen: View {
             trailingAction: BottomPinnedDualAction(
                 title: "Add Food",
                 systemImage: "plus",
-                action: { onOpenAddFood(daySelection.selectedDay) }
+                action: { onOpenAddFood(daySelection.selectedDay) },
+                transitionSourceID: AddFoodScreen.zoomTransitionID
             ),
-            transitionNamespace: cameraTransitionNamespace,
+            transitionNamespace: transitionNamespace,
             displayMode: isAddFoodButtonCompact ? .compactIcon : .expanded,
             compactActionsAreHorizontal: true,
             topPadding: 0,
