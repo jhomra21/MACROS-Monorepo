@@ -34,7 +34,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Label review
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-scan-review.png" alt="Nutrition label scan result ready to review" width="220" />
+  <img src="web/src/assets/app-images/app-scan-review.png" alt="Camera label scan review for Oat Crunch Cereal showing a 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, Log and Edit details buttons, and the scanned Nutrition Facts label" width="220" />
 </p>
 
 ### Insights

@@ -2,6 +2,12 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-02 Label Scan Screenshot Retake
+
+- Replaced the label-review screenshot with a 1320 × 2868 iPhone 18 Pro Max capture showing the OCR-detected “Oat Crunch Cereal,” its 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, and the Log/Edit details actions without the missing-name warning.
+- Used a generated cereal-label photo with the product name printed above its Nutrition Facts panel. OCR identified the name from the printed title; no app code or screenshot pixels were edited.
+- Updated the screenshot title and alt text in `src/data/site.ts`, and kept the README image description in sync.
+
 ## 2026-11-02 Build 27 App Screenshot Refresh
 
 - Replaced the home, Add Food, label review, history, Pro Insights, settings, and Sharing list screenshots with iPhone 18 Pro Max captures from the build 27 Debug app.

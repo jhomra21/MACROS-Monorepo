@@ -203,8 +203,8 @@ export const site = {
 		},
 		{
 			src: appScanReviewImage,
-			alt: 'Nutrition label scan result in the camera with the detected serving and nutrients ready to review',
-			title: 'Review a label scan',
+			alt: 'Camera label scan review for Oat Crunch Cereal showing a 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, Log and Edit details buttons, and the scanned Nutrition Facts label',
+			title: 'Oat Crunch Cereal label scan',
 		},
 		{
 			src: appHistoryImage,
