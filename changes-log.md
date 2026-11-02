@@ -14,7 +14,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 ## 2026-11-01 Camera Viewport Corners
 
 - Camera viewport keeps its 28 pt top corners and uses display-concentric bottom corners, with a 28 pt minimum during zoom transitions.
-- Camera side buttons use untinted clear Liquid Glass (44 pt) and the shutter is a 66 pt interactive glass ring around a 52 pt white disc, sized from the owner's ChatGPT camera screenshot, over the HIG 35% dimming gradient for bright scenes.
+- Camera side buttons use untinted regular Liquid Glass (44 pt; the sheet is forced dark, so it reads as smoked glass) and the shutter is a 66 pt interactive clear glass ring around a 52 pt white disc, sized from the owner's ChatGPT camera screenshot, over the HIG 35% dimming gradient for bright scenes.
 
 ## 2026-11-01 Sharing v2 backend (unreleased)
 

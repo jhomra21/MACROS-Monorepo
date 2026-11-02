@@ -397,7 +397,7 @@ struct FoodCameraSheet: View {
                 Label("Close camera", systemImage: "chevron.backward")
                     .labelStyle(.iconOnly)
                     .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
-                    .glassEffect(.clear.interactive(), in: Circle())
+                    .glassEffect(.regular.interactive(), in: Circle())
                     .contentShape(Circle())
             }
             .buttonStyle(.plain)
@@ -454,7 +454,7 @@ struct FoodCameraSheet: View {
                                 Image(systemName: isCameraOptionsExpanded ? "xmark" : "ellipsis")
                                     .font(.system(size: 18, weight: .semibold))
                                     .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
-                                    .glassEffect(.clear.interactive(), in: Circle())
+                                    .glassEffect(.regular.interactive(), in: Circle())
                                     .glassEffectID("toggle", in: optionsNamespace)
                                     .contentShape(Circle())
                             }
@@ -488,7 +488,7 @@ struct FoodCameraSheet: View {
             Image(systemName: systemImage)
                 .font(.system(size: 17, weight: .semibold))
                 .frame(width: Self.sideButtonDiameter, height: Self.sideButtonDiameter)
-                .glassEffect(.clear.interactive(), in: Circle())
+                .glassEffect(.regular.interactive(), in: Circle())
                 .glassEffectID(id, in: optionsNamespace)
                 .glassEffectTransition(.matchedGeometry)
                 .contentShape(Circle())
