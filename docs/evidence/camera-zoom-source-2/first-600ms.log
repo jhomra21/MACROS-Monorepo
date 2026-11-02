@@ -1,0 +1,199 @@
+
+## original: tap addFood compact=false (tap epoch 1793643356.84067)
++   0.00ms tap addFood compact=false
++ 212.81ms viewport (16.0, 16.0, 220.0, 120.0)
++ 212.86ms resultHeight 0.0 -> 1250.0
++ 212.88ms container (0.0, 0.0, 0.0, 0.0)
++ 213.06ms viewport appear reveal=false resultHeight=1250.0
++ 233.70ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 233.74ms container (0.0, 168.0, 402.0, 672.0)
++ 241.41ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++ 241.44ms container (0.0, 62.0, 402.0, 778.0)
++ 295.69ms resultHeight 1250.0 -> 490.0
++ 310.48ms resultHeight 490.0 -> 230.0
++ 313.52ms viewport (16.166666666666657, 308.0, 370.0, 550.0)
++ 327.16ms resultHeight 230.0 -> 150.0
++ 330.70ms viewport (16.166666666666657, 228.0, 370.0, 630.0)
++ 343.59ms resultHeight 150.0 -> 110.0
++ 346.73ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 360.32ms resultHeight 110.0 -> 90.0
++ 364.08ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
++ 426.95ms resultHeight 90.0 -> 70.0
++ 429.93ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
+
+## original: tap addFood compact=true (tap epoch 1793643362.9033751)
++   0.00ms tap addFood compact=true
++  50.64ms viewport (16.0, 16.0, 220.0, 120.0)
++  50.67ms resultHeight 0.0 -> 1250.0
++  50.68ms container (0.0, 0.0, 0.0, 0.0)
++  52.63ms viewport appear reveal=false resultHeight=1250.0
++  89.93ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++  89.97ms container (0.0, 168.0, 402.0, 672.0)
++ 100.45ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++ 100.50ms container (0.0, 62.0, 402.0, 778.0)
++ 149.76ms resultHeight 1250.0 -> 590.0
++ 164.24ms resultHeight 590.0 -> 250.0
++ 166.42ms viewport (16.166666666666657, 328.0, 370.0, 530.0)
++ 180.75ms resultHeight 250.0 -> 150.0
++ 182.88ms viewport (16.166666666666657, 228.0, 370.0, 630.0)
++ 197.51ms resultHeight 150.0 -> 110.0
++ 199.87ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 214.20ms resultHeight 110.0 -> 90.0
++ 216.67ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
++ 280.79ms resultHeight 90.0 -> 70.0
++ 283.07ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
+
+## original: tap dashboard camera (tap epoch 1793643442.1018538)
++   0.00ms tap dashboard camera
++ 297.92ms viewport (16.0, 16.0, 220.0, 120.0)
++ 297.97ms resultHeight 0.0 -> 1250.0
++ 298.00ms container (0.0, 0.0, 0.0, 0.0)
++ 299.64ms viewport appear reveal=false resultHeight=1250.0
++ 336.04ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 336.08ms container (0.0, 168.0, 402.0, 672.0)
++ 352.74ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++ 352.79ms container (0.0, 62.0, 402.0, 778.0)
++ 451.23ms resultHeight 1250.0 -> 370.0
++ 465.99ms resultHeight 370.0 -> 190.0
++ 468.44ms viewport (16.166666666666657, 268.0, 370.0, 590.0)
++ 482.59ms resultHeight 190.0 -> 150.0
++ 485.35ms viewport (16.166666666666657, 228.0, 370.0, 630.0)
++ 499.15ms resultHeight 150.0 -> 110.0
++ 501.64ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 515.89ms resultHeight 110.0 -> 90.0
++ 518.70ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
++ 582.51ms resultHeight 90.0 -> 70.0
++ 585.06ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
+
+## first-fix: tap addFood compact=false (tap epoch 1793643185.731055)
++   0.00ms tap addFood compact=false
++ 362.79ms viewport (16.0, 16.0, 220.0, 120.0)
++ 364.32ms resultHeight 0.0 -> 1250.0
++ 364.41ms container (0.0, 0.0, 0.0, 0.0)
++ 366.42ms viewport appear reveal=false resultHeight=1250.0
++ 402.56ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 402.60ms container (0.0, 168.0, 402.0, 672.0)
++ 418.11ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++ 418.15ms container (0.0, 62.0, 402.0, 778.0)
++ 470.16ms resultHeight 1250.0 -> 590.0
++ 486.40ms resultHeight 590.0 -> 250.0
++ 490.12ms viewport (16.166666666666657, 328.0, 370.0, 530.0)
++ 503.01ms resultHeight 250.0 -> 150.0
++ 506.62ms viewport (16.166666666666657, 228.0, 370.0, 630.0)
++ 519.73ms resultHeight 150.0 -> 110.0
++ 525.08ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 552.97ms resultHeight 110.0 -> 90.0
++ 558.99ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
+
+## first-fix: tap addFood compact=true (tap epoch 1793643246.600883)
++   0.00ms tap addFood compact=true
++  18.59ms viewport (16.0, 16.0, 220.0, 120.0)
++  18.66ms resultHeight 0.0 -> 1250.0
++  18.67ms container (0.0, 0.0, 0.0, 0.0)
++  18.78ms viewport appear reveal=false resultHeight=1250.0
++  30.43ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++  30.48ms container (0.0, 168.0, 402.0, 672.0)
++  37.62ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++  37.66ms container (0.0, 62.0, 402.0, 778.0)
++  83.65ms resultHeight 1250.0 -> 710.0
++ 100.27ms resultHeight 710.0 -> 290.0
++ 102.77ms viewport (16.166666666666657, 368.0, 370.0, 490.0)
++ 116.52ms resultHeight 290.0 -> 190.0
++ 119.26ms viewport (16.166666666666657, 268.0, 370.0, 590.0)
++ 133.03ms resultHeight 190.0 -> 130.0
++ 135.19ms viewport (16.166666666666657, 208.0, 370.0, 650.0)
++ 149.67ms resultHeight 130.0 -> 110.0
++ 152.17ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 166.54ms resultHeight 110.0 -> 90.0
++ 169.06ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
++ 216.35ms resultHeight 90.0 -> 70.0
++ 218.57ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
+
+## first-fix: tap dashboard camera (tap epoch 1793643270.989733)
++   0.00ms tap dashboard camera
++ 113.13ms viewport (16.0, 16.0, 220.0, 120.0)
++ 113.22ms resultHeight 0.0 -> 1250.0
++ 113.24ms container (0.0, 0.0, 0.0, 0.0)
++ 113.39ms viewport appear reveal=false resultHeight=1250.0
++ 132.14ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 132.20ms container (0.0, 168.0, 402.0, 672.0)
++ 142.36ms viewport (16.166666666666657, 428.1, 370.0, 429.9)
++ 142.40ms container (0.0, 62.0, 402.0, 778.0)
++ 194.92ms resultHeight 1250.0 -> 1070.0
++ 211.50ms resultHeight 1070.0 -> 350.0
++ 214.59ms viewport (16.166666666666657, 428.0, 370.0, 430.0)
++ 227.70ms resultHeight 350.0 -> 190.0
++ 230.74ms viewport (16.166666666666657, 268.0, 370.0, 590.0)
++ 244.30ms resultHeight 190.0 -> 130.0
++ 247.28ms viewport (16.166666666666657, 208.0, 370.0, 650.0)
++ 261.08ms resultHeight 130.0 -> 110.0
++ 264.58ms viewport (16.166666666666657, 188.0, 370.0, 670.0)
++ 277.77ms resultHeight 110.0 -> 90.0
++ 280.93ms viewport (16.166666666666657, 168.0, 370.0, 690.0)
++ 344.20ms resultHeight 90.0 -> 70.0
++ 346.67ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
+
+## candidate: tap addFood compact=false (tap epoch 1793643466.667886)
++   0.00ms tap addFood compact=false
++  76.56ms viewport (16.0, 16.0, 220.0, 120.0)
++  76.62ms resultHeight 0.0 -> 1250.0
++  76.64ms container (0.0, 0.0, 0.0, 0.0)
++  76.80ms viewport appear reveal=false resultHeight=1250.0
++  94.68ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++  94.74ms resultHeight 1250.0 -> 70.0
++  94.76ms container (0.0, 168.0, 402.0, 672.0)
++  96.84ms viewport (16.166666666666657, 254.0, 370.0, 604.0)
++ 104.36ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
++ 104.40ms container (0.0, 62.0, 402.0, 778.0)
+
+## candidate: tap addFood compact=true (tap epoch 1793643529.424392)
++   0.00ms tap addFood compact=true
++  18.75ms viewport (16.0, 16.0, 220.0, 120.0)
++  18.78ms resultHeight 0.0 -> 1250.0
++  18.80ms container (0.0, 0.0, 0.0, 0.0)
++  18.88ms viewport appear reveal=false resultHeight=1250.0
++  28.87ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++  28.90ms resultHeight 1250.0 -> 70.0
++  28.91ms container (0.0, 168.0, 402.0, 672.0)
++  30.14ms viewport (16.166666666666657, 254.0, 370.0, 604.0)
++  35.53ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
++  35.56ms container (0.0, 62.0, 402.0, 778.0)
+
+## candidate: tap dashboard camera (tap epoch 1793643554.703156)
++   0.00ms tap dashboard camera
++ 138.88ms viewport (16.0, 16.0, 220.0, 120.0)
++ 138.97ms resultHeight 0.0 -> 1250.0
++ 139.01ms container (0.0, 0.0, 0.0, 0.0)
++ 139.23ms viewport appear reveal=false resultHeight=1250.0
++ 155.33ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 155.35ms resultHeight 1250.0 -> 70.0
++ 155.36ms container (0.0, 168.0, 402.0, 672.0)
++ 156.86ms viewport (16.166666666666657, 254.0, 370.0, 604.0)
++ 166.93ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
++ 166.95ms container (0.0, 62.0, 402.0, 778.0)
+
+## candidate: tap addFood compact=false (tap epoch 1793643666.48418)
++   0.00ms tap addFood compact=false
++ 194.34ms viewport (16.0, 16.0, 220.0, 120.0)
++ 194.37ms resultHeight 0.0 -> 1250.0
++ 194.39ms container (0.0, 0.0, 0.0, 0.0)
++ 194.85ms viewport appear reveal=false resultHeight=1250.0
++ 209.31ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 209.33ms resultHeight 1250.0 -> 70.0
++ 209.35ms container (0.0, 168.0, 402.0, 672.0)
++ 211.00ms viewport (16.166666666666657, 254.0, 370.0, 604.0)
++ 218.87ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
++ 218.89ms container (0.0, 62.0, 402.0, 778.0)
+
+## candidate: tap addFood compact=false (tap epoch 1793643865.339993)
++   0.00ms tap addFood compact=false
++  87.17ms viewport (16.0, 16.0, 220.0, 120.0)
++  87.21ms resultHeight 0.0 -> 1250.0
++  87.22ms container (0.0, 0.0, 0.0, 0.0)
++  88.42ms viewport appear reveal=false resultHeight=1250.0
++ 107.11ms viewport (16.166666666666657, 486.40000000000003, 370.0, 371.59999999999997)
++ 107.14ms resultHeight 1250.0 -> 70.0
++ 107.15ms container (0.0, 168.0, 402.0, 672.0)
++ 108.49ms viewport (16.166666666666657, 254.0, 370.0, 604.0)
++ 118.77ms viewport (16.166666666666657, 148.0, 370.0, 710.0)
++ 118.80ms container (0.0, 62.0, 402.0, 778.0)

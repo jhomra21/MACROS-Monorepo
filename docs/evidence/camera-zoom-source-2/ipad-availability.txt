@@ -1,0 +1,3 @@
+Preflight command: ps -axo pid,etime,command | grep xcodebuild
+Actual xcodebuild processes targeting assigned iPad: 0
+Other simulator jobs left untouched. Raw process output remains in the local build directory.

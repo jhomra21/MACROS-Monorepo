@@ -1,0 +1,97 @@
+diff --git a/cal-macro-tracker/App/AppRootView.swift b/cal-macro-tracker/App/AppRootView.swift
+index d59ab52..7ff6a38 100644
+--- a/cal-macro-tracker/App/AppRootView.swift
++++ b/cal-macro-tracker/App/AppRootView.swift
+@@ -59,9 +59,11 @@ struct AppRootView: View {
+             DashboardScreen(
+                 transitionNamespace: dashboardTransition,
+                 onOpenAddFood: { loggingDay in
++                    cameraZoomProbe("tap dashboard addFood")
+                     presentSheet(.dashboardAddFood(loggingDay))
+                 },
+                 onOpenFoodCamera: { loggingDay in
++                    cameraZoomProbe("tap dashboard camera")
+                     presentSheet(.foodCamera(loggingDay))
+                 },
+                 onEditEntry: { entry in
+diff --git a/cal-macro-tracker/Features/AddFood/AddFoodScreen.swift b/cal-macro-tracker/Features/AddFood/AddFoodScreen.swift
+index 8140b69..9e832c1 100644
+--- a/cal-macro-tracker/Features/AddFood/AddFoodScreen.swift
++++ b/cal-macro-tracker/Features/AddFood/AddFoodScreen.swift
+@@ -131,6 +131,7 @@ struct AddFoodScreen: View {
+             transitionSourceID: cameraTransitionSourceID,
+             transitionNamespace: cameraTransition,
+             action: {
++                cameraZoomProbe("tap addFood compact=\(isScanActionBarCompact)")
+                 isFoodCameraPresented = true
+             }
+         )
+diff --git a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+index 4c40773..8f3fa6b 100644
+--- a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
++++ b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+@@ -77,13 +77,16 @@ struct FoodCameraSheet: View {
+                     stagedResultPanel(maxHeight: geometry.size.height * 0.45)
+                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
+                 }
+-                .animation(layoutAnimation, value: panelContent.kind)
+-                .animation(layoutAnimation, value: resultContentHeight)
++                .animation(cameraCardVisible ? layoutAnimation : nil, value: panelContent.kind)
++                .animation(cameraCardVisible ? layoutAnimation : nil, value: resultContentHeight)
+                 .background { Color.black.ignoresSafeArea() }
+                 .containerBackground(.clear, for: .navigation)
+                 .toolbar(.hidden, for: .navigationBar)
+                 .environment(\.colorScheme, .dark)
+             }
++            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
++                cameraZoomProbe("container \($0)")
++            }
+             .navigationDestination(item: $logDestination) { destination in
+                 LogFoodScreen(
+                     initialDraft: destination.draft,
+@@ -236,6 +239,7 @@ struct FoodCameraSheet: View {
+                 .onGeometryChange(for: CGFloat.self) {
+                     $0.size.height
+                 } action: {
++                    cameraZoomProbe("resultHeight \(resultContentHeight) -> \($0)")
+                     resultContentHeight = $0
+                 }
+         }
+@@ -334,6 +338,9 @@ struct FoodCameraSheet: View {
+             .blur(radius: reduceMotion || cameraRevealVisible ? 0 : 8)
+         }
+         .frame(maxWidth: .infinity, minHeight: 120, maxHeight: .infinity)
++        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: {
++            cameraZoomProbe("viewport \($0)")
++        }
+         .layoutPriority(0)
+         .clipShape(
+             .rect(
+@@ -345,6 +352,7 @@ struct FoodCameraSheet: View {
+         .padding(16)
+         .ignoresSafeArea(edges: .bottom)
+         .onAppear {
++            cameraZoomProbe("viewport appear reveal=\(cameraRevealVisible) resultHeight=\(resultContentHeight)")
+             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+                 cameraRevealVisible = true
+             }
+@@ -352,6 +360,7 @@ struct FoodCameraSheet: View {
+     }
+ 
+     private func revealCameraCard() {
++        cameraZoomProbe("presentation finished resultHeight=\(resultContentHeight)")
+         isCameraDismissalActive = false
+         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.22)) {
+             cameraCardVisible = true
+@@ -578,6 +587,11 @@ struct FoodCameraSheet: View {
+ 
+ }
+ 
++func cameraZoomProbe(_ message: String) {
++    print("ZOOM \(Date().timeIntervalSince1970) \(message)")
++    fflush(stdout)
++}
++
+ private func cameraFade(reduceMotion: Bool) -> Animation {
+     reduceMotion ? .easeOut(duration: 0.15) : .smooth(duration: 0.3)
+ }
