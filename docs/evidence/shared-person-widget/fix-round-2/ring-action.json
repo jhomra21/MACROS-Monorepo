@@ -1,0 +1,11 @@
+{
+  "customProteinRingColor": "#FEFB41",
+  "customCarbRingColor": "#EB8005",
+  "customFatRingColor": "#E62E70",
+  "proAccess": {
+    "access": "allowed",
+    "version": 1
+  },
+  "actionStartUTC": "2026-11-03T16:24:34Z",
+  "capturedAtUTC": "2026-11-03T16:24:39.219295+00:00"
+}

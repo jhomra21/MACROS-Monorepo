@@ -1,0 +1,31 @@
+$ tsc --noEmit && bun test
+bun test v1.4.2 (744846f84)
+
+tests/appleVerifier.test.ts:
+(pass) Apple verifier boundary > rejects unsupported environment XCODE before verification [11.39ms]
+(pass) Apple verifier boundary > rejects unsupported environment LOCAL_TESTING before verification [0.05ms]
+(pass) Apple verifier boundary > rejects unsupported environment Xcode before verification [0.01ms]
+(pass) Apple verifier boundary > rejects unsupported environment %s before verification
+(pass) Apple verifier boundary > routes Production only to its matching verifier [0.84ms]
+(pass) Apple verifier boundary > routes Sandbox only to its matching verifier [0.03ms]
+(pass) Apple verifier boundary > rejects a verified wrong bundle at the boundary [0.11ms]
+(pass) Apple verifier boundary > rejects garbage and forged JWS in both real Apple verifiers [2.05ms]
+(pass) Apple verifier boundary > constructs Apple's offline verifiers from the committed DER root [0.24ms]
+(pass) Apple verifier boundary > rejects a correctly signed synthetic JWS without an Apple certificate chain [2.31ms]
+(pass) Apple verifier boundary > uses the same DER bytes embedded in the deployable bundle [5.46ms]
+
+tests/sharingModel.test.ts:
+(pass) sharing model privacy rules > canonicalizes profile pairs and blocks self relationships [0.04ms]
+(pass) sharing model privacy rules > hides the current day when an interval has been closed [0.73ms]
+(pass) sharing model privacy rules > keeps prior allowed days visible while excluding disabled gaps [0.04ms]
+(pass) sharing model privacy rules > closes same-day disables at the previous day for visibility [0.04ms]
+(pass) sharing input validation > normalizes display names [0.54ms]
+(pass) sharing input validation > bounds snapshot payloads broadly [14.46ms]
+(pass) sharing input validation > rejects invalid calendar day keys [0.04ms]
+(pass) sharing input validation > accepts optional goals and rejects goals outside finite bounds [1.43ms]
+(pass) sharing input validation > limits dashboard day keys to the server-current window [0.36ms]
+
+ 20 pass
+ 0 fail
+ 37 expect() calls
+Ran 20 tests across 2 files. [250.00ms]

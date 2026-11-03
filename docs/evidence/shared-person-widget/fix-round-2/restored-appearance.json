@@ -1,0 +1,15 @@
+{
+  "customProteinRingColor": "#2466E6",
+  "customCarbRingColor": "#EB8005",
+  "customFatRingColor": "#E62E70",
+  "background": {
+    "version": 1,
+    "background": {
+      "native": {}
+    }
+  },
+  "proAccess": {
+    "access": "allowed",
+    "version": 1
+  }
+}
