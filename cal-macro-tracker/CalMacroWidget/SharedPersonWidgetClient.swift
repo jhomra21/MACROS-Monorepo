@@ -149,8 +149,9 @@ actor SharedPersonWidgetClient {
     }
 
     private static func send(_ request: URLRequest, session: URLSession) async throws -> (Data, HTTPURLResponse) {
-        let (data, response) = try await session.data(for: request)
+        let (bytes, response) = try await session.bytes(for: request)
         guard let response = response as? HTTPURLResponse else { throw SharedWidgetFetchError.transient() }
+        guard response.expectedContentLength <= 32768 else { throw SharedWidgetFetchError.transient() }
         if response.statusCode == 429 || response.statusCode >= 500 {
             let retryAfter = response.value(forHTTPHeaderField: "Retry-After").flatMap { value -> Date? in
                 if let seconds = Double(value), seconds.isFinite, seconds >= 0 {
@@ -162,7 +163,11 @@ actor SharedPersonWidgetClient {
             }
             throw SharedWidgetFetchError.transient(retryAfter: retryAfter)
         }
-        guard data.count <= 32768 else { throw SharedWidgetFetchError.transient() }
+        var data = Data()
+        for try await byte in bytes {
+            guard data.count < 32768 else { throw SharedWidgetFetchError.transient() }
+            data.append(byte)
+        }
         return (data, response)
     }
 }

@@ -7,7 +7,15 @@ struct SharingPersonLinkDestination: View {
 
     var body: some View {
         Group {
-            if sharing.hasReceivedDashboard {
+            if !sharing.isDeviceSharingEnabled {
+                ContentUnavailableView {
+                    Label("Sharing is off", systemImage: "person.2.slash")
+                } description: {
+                    Text("Turn on sharing on this device to view shared macros.")
+                } actions: {
+                    Link("Open Sharing", destination: AppOpenRequest.sharing(inviteInput: nil).url)
+                }
+            } else if sharing.hasReceivedDashboard {
                 if let person = sharing.dashboard.people.first(where: { $0.profileId == profileId }) {
                     SharingPersonScreen(person: person)
                 } else {

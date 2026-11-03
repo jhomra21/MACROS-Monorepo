@@ -5,13 +5,13 @@ import Security
 import WidgetKit
 
 nonisolated enum SharedPersonWidgetStatus: Sendable {
-    case shared, noData, openApp, disabled, proLocked, proUnknown, reconnect, locked
+    case shared, noData, openApp, invalidated, disabled, proLocked, proUnknown, reconnect, locked
     case noPeople, noDefault, unavailable, paused, notShared, failed
 
     var message: String {
         switch self {
         case .shared, .noData: "No macros shared today"
-        case .openApp: "Open MACROS"
+        case .openApp, .invalidated: "Open MACROS"
         case .disabled: "Sharing is off on this device"
         case .proLocked: "Shared widgets need MACROS Pro"
         case .proUnknown: "Open MACROS to check Pro"
@@ -50,11 +50,11 @@ nonisolated struct SharedPersonWidgetEntry: TimelineEntry, Sendable {
     var isPlaceholder = false
     var layoutEntry: DailyMacroWidgetEntry?
 
-    @MainActor func prepared(includesAppearance: Bool) -> Self {
+    @MainActor func prepared(includesAppearance: Bool, proAccess: WidgetProAccess? = nil) -> Self {
         var entry = self
         let storage = WidgetAppearanceStorage.shared
         let appearance = includesAppearance ? storage.appearanceRecord : nil
-        let access = includesAppearance ? storage.proAccess : .unknown
+        let access = proAccess ?? (includesAppearance ? storage.proAccess : .unknown)
         entry.layoutEntry = DailyMacroWidgetEntry(
             date: date, snapshot: snapshot?.dailySnapshot ?? DailyMacroSnapshot(totals: .zero, goals: .empty),
             customRingPalette: includesAppearance ? MacroRingColorStorage.storedPalette() : nil,
@@ -105,6 +105,7 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
         newDay.snapshot = nil
         newDay.offline = false
         if entry.status == .shared { newDay.status = .noData }
+        newDay = await newDay.prepared(includesAppearance: includesAppearance, proAccess: .unknown)
         let refresh: Date
         switch entry.status {
         case .openApp, .disabled, .proLocked, .proUnknown, .noPeople, .noDefault, .unavailable, .reconnect:
@@ -124,7 +125,8 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
             requested = min(requested, expiration)
             entries = [
                 entry,
-                await SharedPersonWidgetEntry(date: expiration, status: .proUnknown).prepared(includesAppearance: includesAppearance)
+                await SharedPersonWidgetEntry(date: expiration, status: .proUnknown)
+                    .prepared(includesAppearance: includesAppearance, proAccess: .unknown)
             ]
         }
         Self.logger.info(
@@ -154,10 +156,7 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
                 entry.status = access == .denied ? .proLocked : .proUnknown
                 return (entry, nil)
             }
-            guard let selection = configuration.person?.id else {
-                entry.status = .unavailable
-                return (entry, nil)
-            }
+            let selection = configuration.person?.id ?? "default"
             let selectedId = selection == "default" ? control.defaultProfileId : selection
             guard !control.people.isEmpty else {
                 entry.status = .noPeople
@@ -242,7 +241,7 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
     }
 
     private func invalidatedEntry() -> SharedPersonWidgetEntry {
-        SharedPersonWidgetEntry(date: .now, status: .openApp)
+        SharedPersonWidgetEntry(date: .now, status: .invalidated)
     }
 
     private var sample: SharedPersonWidgetEntry {

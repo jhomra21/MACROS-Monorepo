@@ -1,5 +1,6 @@
 import ConvexMobile
 import Foundation
+import OSLog
 
 struct SharingAuthSession: Decodable {
     let token: String
@@ -22,6 +23,7 @@ private struct SharingTokenRequest: Encodable {
 private struct SharingTokenErrorResponse: Decodable {}
 
 private final class SharingAuthProvider: AuthProvider {
+    private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "SharingAuth")
     typealias T = SharingAuthSession
 
     private let identityStore: SharingIdentityStore
@@ -63,7 +65,11 @@ private final class SharingAuthProvider: AuthProvider {
     private func tokenExchange(onIdToken: @Sendable @escaping (String?) -> Void) async throws -> SharingAuthSession {
         let generation = identityGeneration
         // Sharing identity is intentionally device-local and non-recoverable if Keychain data is lost.
-        try identityStore.migrateToAccessGroup()
+        do {
+            try identityStore.migrateToAccessGroup()
+        } catch {
+            Self.logger.error("Widget identity migration failed: \(error.localizedDescription, privacy: .public)")
+        }
         let identity = try identityStore.loadOrCreate()
         let url = authBaseURL.appending(path: "v1/token")
         var request = jsonClient.makeRequest(url: url)

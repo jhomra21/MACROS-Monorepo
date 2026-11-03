@@ -561,7 +561,7 @@ final class SharingSyncService {
         guard defaultWidgetProfileId != profileId else { return }
         var next = widgetControl
         next.defaultProfileId = profileId
-        try writeWidgetControl(next, invalidate: true)
+        try writeWidgetControl(next)
     }
 
     private func publishWidgetControl(invalidate: Bool = false, reload: Bool = false) {

@@ -16,6 +16,7 @@ private struct ContentViewPreview: View {
                 AppRootView()
                     .modelContainer(modelContainer)
                     .environment(AppDayContext())
+                    .environment(SharingSyncService(authService: SharingAuthService()))
             } else {
                 AppLaunchErrorView(message: "Unable to create preview model container.")
             }

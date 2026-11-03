@@ -105,7 +105,7 @@ struct DailyMacroAccessoryWidgetContentView: View {
 
     private var inlineSummary: String {
         if let personName {
-            return "\(personName) · \(entry.snapshot.totals.calories.roundedForDisplay) cal"
+            return offline ? "\(personName) · Offline" : "\(personName) · \(entry.snapshot.totals.calories.roundedForDisplay) cal"
         }
         return "\(entry.snapshot.totals.calories.roundedForDisplay) cal · \(compactMacroSummary)"
     }

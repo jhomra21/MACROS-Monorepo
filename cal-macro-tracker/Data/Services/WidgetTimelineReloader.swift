@@ -10,4 +10,9 @@ enum WidgetTimelineReloader {
         WidgetCenter.shared.reloadTimelines(ofKind: SharedAppConfiguration.sharedPersonMacroWidgetKind)
         WidgetCenter.shared.reloadTimelines(ofKind: SharedAppConfiguration.sharedPersonMacroAccessoryWidgetKind)
     }
+
+    static func reloadAppearanceWidgets() {
+        reloadMacroWidgets()
+        WidgetCenter.shared.reloadTimelines(ofKind: SharedAppConfiguration.sharedPersonMacroWidgetKind)
+    }
 }

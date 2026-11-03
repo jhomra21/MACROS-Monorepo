@@ -14,7 +14,7 @@ enum MacroRingColorPickerPresenter {
             didChangeColor = true
         } onFinish: {
             if didChangeColor {
-                WidgetTimelineReloader.reloadMacroWidgets()
+                WidgetTimelineReloader.reloadAppearanceWidgets()
             }
         }
     }
