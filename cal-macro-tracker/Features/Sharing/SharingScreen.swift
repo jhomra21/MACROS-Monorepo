@@ -118,8 +118,8 @@ struct SharingScreen: View {
                         )
                     ) {
                         Text("None").tag(String?.none)
-                        ForEach(sharingSyncService.dashboard.people) { person in
-                            Text(person.displayName).tag(Optional(person.profileId))
+                        ForEach(sharingSyncService.widgetPeople) { person in
+                            Text(person.name).tag(Optional(person.id))
                         }
                     }
                     .disabled(!isSharingDeviceEnabled)
@@ -134,7 +134,7 @@ struct SharingScreen: View {
                         "Widgets set to Default follow this person. Choose a different person in Edit Widget to keep a widget fixed. Use a Smart Stack to switch between widgets."
                     )
                     Text(
-                        "Shared widgets refresh today's macros and goals in the background, about every 30 minutes. Names and nutrition may appear while your device is locked. Protected local copies expire at midnight; removal is best-effort until the next update."
+                        "Shared widgets refresh today's macros and goals in the background, about every 30 minutes. Widgets mark names and nutrition as private; iOS Lock Screen privacy settings control their visibility while locked. Protected local copies expire at midnight; removal is best-effort until the next update."
                     )
                 }
             }

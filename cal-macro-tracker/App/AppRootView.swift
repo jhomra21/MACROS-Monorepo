@@ -33,6 +33,7 @@ private enum AppRootSheetDestination: Identifiable, Hashable {
 }
 
 struct AppRootView: View {
+    @Environment(SharingSyncService.self) private var sharing
     private enum Route: Hashable {
         case history
         case insights
@@ -227,7 +228,10 @@ struct AppRootView: View {
             }
         case let .sharingPerson(profileId):
             sheetDestination = nil
-            path = [.sharingDashboard, .sharingPerson(profileId)]
+            path =
+                sharing.isDeviceSharingEnabled
+                ? [.sharingDashboard, .sharingPerson(profileId)]
+                : [.sharing(inviteInput: nil, requestId: openRequestToken)]
         }
 
         pendingOpenRequest = nil

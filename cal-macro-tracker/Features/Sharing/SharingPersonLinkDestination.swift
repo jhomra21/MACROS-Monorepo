@@ -7,9 +7,7 @@ struct SharingPersonLinkDestination: View {
 
     var body: some View {
         Group {
-            if !sharing.isDeviceSharingEnabled {
-                SharingScreen()
-            } else if sharing.hasResolvedDashboard {
+            if sharing.hasReceivedDashboard {
                 if let person = sharing.dashboard.people.first(where: { $0.profileId == profileId }) {
                     SharingPersonScreen(person: person)
                 } else {
