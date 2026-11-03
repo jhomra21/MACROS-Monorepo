@@ -34,6 +34,7 @@ struct HealthSettingsSection: View {
                         if enabled {
                             Task {
                                 await requestAuthorization(readWeight: true)
+                                guard readWeight, entitlements.canUse(.healthWeightImport) else { return }
                                 health.restartWeightObservation(container: modelContext.container)
                                 NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
                             }
