@@ -22,7 +22,7 @@ Release stays blocked until 1.0 approval and the production cutover.
 - [x] Paired live E2E, build-28 in-place upgrade, five installed families, picker, default isolation, and person links.
 - [x] Natural extension refresh observed; A and B restored and verified on the unchanged slim profile, then shut down.
 - [x] Final suite includes token freshness; defensive review and requirements 1–11 self-review complete (`REVIEW.md`); no proven redundant code found.
-- [ ] Evidence copied and pushed to the designated documentation branch.
+- [x] Evidence copied and pushed to the designated documentation branch.
 
 ## Evidence and constraints
 
