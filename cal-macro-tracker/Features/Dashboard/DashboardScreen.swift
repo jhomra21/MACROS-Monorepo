@@ -24,6 +24,7 @@ struct DashboardScreen: View {
     let onOpenInsights: () -> Void
     let onOpenSettings: () -> Void
     let onOpenSharing: () -> Void
+    let onShareUIStateChange: (Bool) -> Void
 
     @Query private var goals: [DailyGoals]
 
@@ -44,6 +45,14 @@ struct DashboardScreen: View {
     private static let ringRowID = "dashboard-ring-row"
     private let compactSummaryTopPadding: CGFloat = 8
     var currentGoals: MacroGoalsSnapshot { MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)) }
+
+    private var isShareUIUp: Bool {
+        #if os(iOS)
+        shareSheetItem != nil || shareFailureRequest != nil || isPreparingShare
+        #else
+        false
+        #endif
+    }
 
     private var customRingPalette: MacroRingPalette? {
         guard entitlements.canUse(.customMacroRingColors) else { return nil }
@@ -100,6 +109,9 @@ struct DashboardScreen: View {
             }
             .onChange(of: dayContext.today) { oldToday, newToday in
                 daySelection.syncToday(from: oldToday, to: newToday)
+            }
+            .onChange(of: isShareUIUp, initial: true) { _, isUp in
+                onShareUIStateChange(isUp)
             }
             .toolbar {
                 AppTopBarLeadingTitle(

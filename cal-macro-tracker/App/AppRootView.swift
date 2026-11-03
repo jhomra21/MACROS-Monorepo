@@ -48,6 +48,7 @@ struct AppRootView: View {
     @State private var tutorial = DashboardTutorial()
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
+    @State private var isDashboardShareUIUp = false
     @State private var openRequestToken = 0
 
     init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
@@ -70,7 +71,8 @@ struct AppRootView: View {
                 onOpenHistory: { open(.history) },
                 onOpenInsights: { open(.insights) },
                 onOpenSettings: { open(.settings) },
-                onOpenSharing: { open(.sharingDashboard) }
+                onOpenSharing: { open(.sharingDashboard) },
+                onShareUIStateChange: { isDashboardShareUIUp = $0 }
             )
             .navigationDestination(for: Route.self) { route in
                 switch route {
@@ -134,7 +136,11 @@ struct AppRootView: View {
             applyPendingOpenRequest(pendingOpenRequest)
             await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
-        .modifier(ReviewPromptModifier())
+        .modifier(
+            ReviewPromptModifier(
+                isTodayIdle: path.isEmpty && sheetDestination == nil && tutorial.step == nil && !isDashboardShareUIUp
+            )
+        )
     }
 
     @ViewBuilder
