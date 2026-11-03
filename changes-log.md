@@ -14,6 +14,14 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - 2026-11-02: Camera result-layout animations now wait for the presentation to finish, so provisional first measurements cannot animate the viewport in from the left during the Add Food zoom. Reverted the ineffective source modifier-order change; later result sizing, staged reveal, Reduce Motion, compact mode, and dismissal are preserved.
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
+## 2026-11-02 Shared-person widgets (branch only, not released)
+
+- Added separate configurable Pro shared-person widgets for small, medium, inline, circular, and rectangular families, reusing the existing layouts and glass-free ring renderer. Default selections follow Sharing settings; explicit selections stay fixed. Own-day widgets remain URL-free.
+- The extension independently fetches today's authorized macros and actual goals about every 30 minutes, without foods or push. Midnight entries blank yesterday; protected, backup-excluded last-good files are limited to the current day and app-written generation. Authoritative denial purges cached nutrition; offline rendered widgets cannot be remotely retracted instantly.
+- Identity migration copies and verifies the existing private Keychain item into the existing App Group before deleting only the verified old group copy. Fresh installs add there too. Build 25 and newer upgrades and TestFlight downgrades remain safe: legacy unscoped reads find the migrated item, updates edit it in place, and deletes remove it. No second sharing profile is created. Invite tokens remain private; JWTs are extension-private and bound to identity, generation, and deployment.
+- `sharing:personDay` accepts optional `includeFoods` (default true); false skips the food-day read and returns an empty foods array. The additive change was deployed only to dev energized-pigeon-822. Both targets share deployment/auth constants, still pointing to dev.
+- Release gate: do not merge/upload before 1.0 approval and the production cutover. The eventual release must use the cutover deployment and matching Worker audience; no production, website, or App Store Connect changes were made here.
+
 ## 2026-11-01 Reusable sharing invite link
 
 - One link can connect multiple people until its original 7-day expiry or revocation. Repeat acceptance keeps the existing relationship and open grant; removed pairs can reconnect. Legacy accepted invites remain blocked, and function signatures and the 20/day creation quota are unchanged.

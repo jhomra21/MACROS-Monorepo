@@ -1,0 +1,22 @@
+After the natural-refresh capture, simulator A
+(918D29B9-97D3-42C0-9C47-00605E01E8DB) was restored with:
+
+  simslim on 918D29B9-97D3-42C0-9C47-00605E01E8DB --profile tools/sim/macros-slim.json
+  simslim verify 918D29B9-97D3-42C0-9C47-00605E01E8DB --profile tools/sim/macros-slim.json
+
+Restore output: “disabling 110 background services”; “Reconfiguring 2 background
+services while the simulator is off”; “Done. Simulator reconfigured and rebooted
+slim.”
+Verification: “matches the profile: all expected disable overrides are applied.”
+The full command outputs are preserved locally in
+build/shared-widget/slim-restore-A-final.log and
+build/shared-widget/slim-verify-A-final.log.
+
+Simulator B (F976E800-DA1F-4F20-B755-DFD964E33975) was unchanged during E2E.
+It was re-applied to the profile; simslim reported “Already slim. Nothing to
+change.” Verification: “matches the profile: all expected disable overrides
+are applied.” Outputs are in build/shared-widget/slim-restore-B-final.log and
+build/shared-widget/slim-verify-B-final.log.
+
+A and B are both shut down. Neither was erased. The profile file was not changed.
+The owner’s reserved Air simulator was not touched.

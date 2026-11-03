@@ -34,29 +34,32 @@ approval and the production cutover. Only dev `energized-pigeon-822` is in scope
 
 ## Required artifacts
 
-Statuses below start **pending**, not passed. Record filenames and results as
-evidence is collected. Every committed artifact must be under 5 MB; larger output
+See REPORT.md for setup, limitations, and the service restoration log.
+Every committed artifact must be under 5 MB; larger output
 belongs under `build/shared-widget/`.
 
 | Artifact | Expected filenames | Status |
 | --- | --- | --- |
-| Shared with goals, five families | `01-small-shared.png`, `02-medium-shared.png`, `03-inline-shared.png`, `04-circular-shared.png`, `05-rectangular-shared.png` | pending |
-| Not shared, five families | `06-small-not-shared.png` through `10-rectangular-not-shared.png` | pending |
-| Pro locked, five families | `11-small-pro-locked.png` through `15-rectangular-pro-locked.png` | pending |
-| Offline with last-good, five families | `16-small-offline.png` through `20-rectangular-offline.png` | pending |
-| Native Edit Widget Person picker | `21-person-picker.png` | pending |
-| Default and explicit before/after default change | `22-default-before.png`, `23-explicit-before.png`, `24-default-after.png`, `25-explicit-after.png` | pending |
-| Natural extension refresh, request and entry timestamps | `26-extension-refresh.txt` | pending |
-| Cold and warm person links | `27-cold-link.png`, `28-warm-link.png` | pending |
-| Raw API negatives, red then green | `29-smoke-red.txt`, `30-smoke-green.txt` | pending |
-| Build-28 in-place migration, no re-pairing | `31-migration.md`, `32-migration-before.png`, `33-migration-after.png` | pending |
+| Shared with goals, five families | `01-small-shared.png`, `02-medium-shared.png`, `03-inline-shared.png`, `04-circular-shared.png`, `05-rectangular-shared.png` | passed, real installed widgets |
+| Not shared, five families | `06-small-not-shared.png` through `10-rectangular-not-shared.png` | passed, B's directional grant ended; cache purged |
+| Pro locked, five families | `11-small-pro-locked.png` through `15-rectangular-pro-locked.png` | passed, existing Debug Pro projection |
+| Offline with last-good, five families | `16-small-offline.png` through `20-rectangular-offline.png` | blocked, Network Link Conditioner absent; no fabricated files |
+| Native Edit Widget Person picker | `21-person-picker.png` | passed, Default and Test B |
+| Default and explicit before/after default change | `22-default-before.png`, `23-explicit-before.png`, `24-default-after.png`, `25-explicit-after.png` | passed, medium Default becomes no-default; explicit small stays Test B |
+| Natural extension refresh, request and entry timestamps | `26-extension-refresh.txt`, `26-after-refresh.png` | observed, extension request and entry followed the scheduled refresh; server nutrition was unchanged |
+| Simulator profile restoration | `34-simslim-restore.txt` | passed, A and B verified on the unchanged slim profile and shut down |
+| Cold and warm person links | `27-cold-link.png`, `28-warm-link.png` | passed, direct native URL opens resolve live person |
+| Raw API negatives, red then green | `29-smoke-red.txt`, `30-smoke-green.txt` | available cases passed; signed-expiry fixture blocked; bad signature passed |
+| Build-28 in-place migration, no re-pairing | `31-migration.md`, `32-migration-before.png`, `33-migration-after.png` | passed, existing connection plus independent extension fetch |
 
 ## Repeatable procedure
 
 Use A `918D29B9-97D3-42C0-9C47-00605E01E8DB` (Test A, never erase),
 B `F976E800-DA1F-4F20-B755-DFD964E33975` (Test B), and the iPad runner
 `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB`. At most two task simulators besides
-the owner's Air may be booted. Shut down devices this task boots.
+the owner's Air were used for paired E2E. The owner later clarified the total
+budget is four; the iPad full suite runs before/after E2E, not concurrently.
+Shut down devices this task boots. Never touch the owner's Air.
 
 1. Install build 28 on A, enable sharing, pair with B through + > Create Invite
    and `simctl openurl`, then Start Sharing. Capture the existing relationship.
@@ -67,7 +70,9 @@ the owner's Air may be booted. Shut down devices this task boots.
 3. Capture the matrix using actual sharing grants and the existing Pro projection.
    Change the default and prove the explicit instance remains unchanged.
 4. Leave the app closed and observe a natural extension request and new entry.
-   Open cold and warm person links and verify the resolved person screen.
+   Compare the extension request/entry timestamps and “Updated” labels; record
+   whether the server-side nutrition changed. Open cold and warm person links
+   and verify the resolved person screen.
 5. For offline capture use macOS Network Link Conditioner **100% Loss**, if
    installed, restoring it immediately. If absent, mark these cells blocked.
 6. Run `CONVEX_DEPLOYMENT=dev:energized-pigeon-822 bun run smoke:sharing`.
