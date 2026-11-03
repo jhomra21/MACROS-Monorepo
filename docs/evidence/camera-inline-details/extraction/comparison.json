@@ -1,0 +1,92 @@
+[
+  {
+    "scenario": "e12-manual",
+    "app_pixel_difference_bounds": null,
+    "tree_identical": true,
+    "tree_comparable": true,
+    "snapshot_schemas": [
+      "UIKit-class-role",
+      "UIKit-class-role"
+    ],
+    "tree_comparison": "compared",
+    "changed_pixel_count": 0,
+    "maximum_rgb_difference": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "scenario": "e12-saved",
+    "app_pixel_difference_bounds": null,
+    "tree_identical": true,
+    "tree_comparable": true,
+    "snapshot_schemas": [
+      "UIKit-class-role",
+      "UIKit-class-role"
+    ],
+    "tree_comparison": "compared",
+    "changed_pixel_count": 0,
+    "maximum_rgb_difference": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "scenario": "e12-grams",
+    "app_pixel_difference_bounds": null,
+    "tree_identical": true,
+    "tree_comparable": true,
+    "snapshot_schemas": [
+      "UIKit-class-role",
+      "UIKit-class-role"
+    ],
+    "tree_comparison": "compared",
+    "changed_pixel_count": 0,
+    "maximum_rgb_difference": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "scenario": "e12-search",
+    "app_pixel_difference_bounds": null,
+    "tree_identical": true,
+    "tree_comparable": true,
+    "snapshot_schemas": [
+      "UIKit-class-role",
+      "UIKit-class-role"
+    ],
+    "tree_comparison": "compared",
+    "changed_pixel_count": 0,
+    "maximum_rgb_difference": [
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "scenario": "e12-common-copy",
+    "app_pixel_difference_bounds": [
+      18,
+      694,
+      372,
+      766
+    ],
+    "tree_identical": true,
+    "tree_comparable": true,
+    "snapshot_schemas": [
+      "UIKit-class-role",
+      "UIKit-class-role"
+    ],
+    "tree_comparison": "compared",
+    "changed_pixel_count": 1751,
+    "maximum_rgb_difference": [
+      18,
+      9,
+      2
+    ]
+  }
+]

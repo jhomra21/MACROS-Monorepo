@@ -1,0 +1,15 @@
+Test Suite 'Selected tests' started at 2026-11-03 11:12:16.630.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-03 11:12:16.632.
+Test Suite 'CameraCardLayoutTests' started at 2026-11-03 11:12:16.633.
+Test Suite 'CameraCardLayoutTests' passed at 2026-11-03 11:12:21.102.
+Test Suite 'FoodCameraFlowTests' started at 2026-11-03 11:12:21.103.
+Test Suite 'FoodCameraFlowTests' passed at 2026-11-03 11:12:21.127.
+	 Executed 28 tests, with 0 failures (0 unexpected) in 0.015 (0.024) seconds
+Test Suite 'FoodLogEditorStateTests' started at 2026-11-03 11:12:21.128.
+Test Suite 'FoodLogEditorStateTests' passed at 2026-11-03 11:12:21.147.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.016 (0.019) seconds
+Test Suite 'cal-macro-trackerTests.xctest' passed at 2026-11-03 11:12:21.147.
+	 Executed 39 tests, with 0 failures (0 unexpected) in 4.499 (4.514) seconds
+Test Suite 'Selected tests' passed at 2026-11-03 11:12:21.147.
+	 Executed 39 tests, with 0 failures (0 unexpected) in 4.499 (4.517) seconds
+** TEST SUCCEEDED **

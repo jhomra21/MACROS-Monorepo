@@ -1,0 +1,1570 @@
+{
+  "nodes": [
+    {
+      "enabled": true,
+      "label": "MACROS",
+      "rect": {
+        "x": 0,
+        "height": 844,
+        "width": 390,
+        "y": 0
+      },
+      "index": 0,
+      "depth": 0,
+      "hittable": false,
+      "type": "Application",
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "parentIndex": 0,
+      "enabled": true,
+      "label": "Next keyboard",
+      "rect": {
+        "x": 0,
+        "height": 844,
+        "width": 390,
+        "y": 0
+      },
+      "index": 1,
+      "depth": 1,
+      "hittable": true,
+      "type": "Window",
+      "ref": "e2",
+      "kind": "window"
+    },
+    {
+      "parentIndex": 1,
+      "enabled": true,
+      "label": "Next keyboard",
+      "rect": {
+        "x": 0,
+        "height": 844,
+        "width": 390,
+        "y": 0
+      },
+      "index": 2,
+      "depth": 2,
+      "hittable": true,
+      "type": "Other",
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 2,
+      "enabled": true,
+      "label": "Next keyboard",
+      "rect": {
+        "y": 516,
+        "height": 328,
+        "x": 0,
+        "width": 390
+      },
+      "index": 3,
+      "depth": 3,
+      "hittable": true,
+      "type": "Other",
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 3,
+      "enabled": true,
+      "rect": {
+        "y": 516,
+        "height": 44,
+        "x": 0,
+        "width": 390
+      },
+      "index": 4,
+      "depth": 4,
+      "hittable": true,
+      "identifier": "SystemInputAssistantView",
+      "type": "Other",
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 4,
+      "enabled": true,
+      "label": "Typing Predictions",
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "height": 44,
+        "y": 516
+      },
+      "index": 5,
+      "depth": 5,
+      "hittable": true,
+      "type": "Other",
+      "ref": "e6",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 5,
+      "enabled": true,
+      "label": "Typing Predictions",
+      "rect": {
+        "x": 0,
+        "height": 44,
+        "width": 390,
+        "y": 516
+      },
+      "index": 6,
+      "depth": 6,
+      "identifier": "CenterPageView",
+      "hittable": true,
+      "type": "Other",
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 6,
+      "enabled": true,
+      "rect": {
+        "y": 516,
+        "x": 0,
+        "width": 390,
+        "height": 44
+      },
+      "index": 7,
+      "depth": 7,
+      "hittable": true,
+      "type": "ScrollView",
+      "ref": "e8",
+      "kind": "scroll-area"
+    },
+    {
+      "parentIndex": 6,
+      "enabled": true,
+      "label": "Of",
+      "rect": {
+        "y": 516,
+        "x": 0,
+        "width": 390,
+        "height": 44
+      },
+      "index": 8,
+      "depth": 7,
+      "hittable": true,
+      "type": "Other",
+      "ref": "e9",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "label": "Of",
+      "index": 9,
+      "depth": 8,
+      "hittable": true,
+      "rect": {
+        "y": 516,
+        "x": 0,
+        "width": 130,
+        "height": 44
+      },
+      "enabled": true,
+      "parentIndex": 8,
+      "ref": "e10",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Is",
+      "index": 10,
+      "depth": 8,
+      "hittable": true,
+      "rect": {
+        "y": 516,
+        "x": 130,
+        "width": 130,
+        "height": 44
+      },
+      "enabled": true,
+      "parentIndex": 8,
+      "ref": "e11",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "In",
+      "index": 11,
+      "depth": 8,
+      "hittable": true,
+      "rect": {
+        "x": 260,
+        "y": 516,
+        "width": 130,
+        "height": 44
+      },
+      "enabled": true,
+      "parentIndex": 8,
+      "ref": "e12",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "label": "Padding-Left",
+      "index": 12,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "y": 560,
+        "width": 390,
+        "height": 226
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e13",
+      "kind": "other"
+    },
+    {
+      "type": "Keyboard",
+      "label": "Padding-Left",
+      "index": 13,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "y": 560,
+        "width": 390,
+        "height": 226
+      },
+      "enabled": true,
+      "parentIndex": 12,
+      "ref": "e14",
+      "kind": "keyboard"
+    },
+    {
+      "type": "Other",
+      "label": "Padding-Left",
+      "index": 14,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "y": 560,
+        "width": 390,
+        "height": 226
+      },
+      "identifier": "UIKeyboardLayoutStar Preview",
+      "enabled": true,
+      "parentIndex": 13,
+      "ref": "e15",
+      "kind": "other"
+    },
+    {
+      "type": "Key",
+      "label": "Padding-Left",
+      "index": 15,
+      "depth": 7,
+      "hittable": false,
+      "rect": {
+        "x": 0,
+        "width": 0,
+        "y": 560,
+        "height": 0
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e16",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "Padding-Right",
+      "index": 16,
+      "depth": 7,
+      "hittable": false,
+      "rect": {
+        "y": 560,
+        "x": 0,
+        "width": 0,
+        "height": 0
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e17",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "Q",
+      "index": 17,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "x": 4.666666666666657,
+        "width": 38,
+        "y": 567,
+        "height": 54
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e18",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "W",
+      "index": 18,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "x": 42.66666666666666,
+        "width": 38.33333333333334,
+        "y": 567,
+        "height": 54
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e19",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "E",
+      "index": 19,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 80.99999999999999,
+        "y": 567,
+        "width": 38.33333333333333
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e20",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "R",
+      "index": 20,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 119.3333333333333,
+        "y": 567,
+        "width": 38.33333333333333
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e21",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "T",
+      "index": 21,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 157.66666666666666,
+        "y": 567,
+        "width": 38.33333333333334
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e22",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "Y",
+      "index": 22,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 196,
+        "y": 567,
+        "width": 38.33333333333334
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e23",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "U",
+      "index": 23,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 234.33333333333334,
+        "y": 567,
+        "width": 38.33333333333334
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e24",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "I",
+      "index": 24,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 272.66666666666663,
+        "y": 567,
+        "width": 38.333333333333314
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e25",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "O",
+      "index": 25,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 311,
+        "y": 567,
+        "width": 38.333333333333314
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e26",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "P",
+      "index": 26,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 349.33333333333326,
+        "y": 567,
+        "width": 38.333333333333314
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e27",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "A",
+      "index": 27,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 23.66666666666666,
+        "y": 621,
+        "width": 38.33333333333334
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e28",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "S",
+      "index": 28,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "height": 54,
+        "x": 61.999999999999986,
+        "y": 621,
+        "width": 38.33333333333333
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e29",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "label": "D",
+      "index": 29,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "y": 621,
+        "x": 100.33333333333331,
+        "width": 38.33333333333334,
+        "height": 54
+      },
+      "enabled": true,
+      "parentIndex": 14,
+      "ref": "e30",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 621,
+        "x": 138.66666666666666,
+        "width": 38.33333333333334,
+        "height": 54
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "label": "F",
+      "enabled": true,
+      "index": 30,
+      "ref": "e31",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 621,
+        "x": 177,
+        "width": 38,
+        "height": 54
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "label": "G",
+      "enabled": true,
+      "index": 31,
+      "ref": "e32",
+      "kind": "key"
+    },
+    {
+      "enabled": true,
+      "rect": {
+        "width": 38.33333333333334,
+        "y": 621,
+        "height": 54,
+        "x": 215
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "type": "Key",
+      "label": "H",
+      "index": 32,
+      "ref": "e33",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "height": 54,
+        "x": 253.33333333333337,
+        "y": 621,
+        "width": 38.333333333333314
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "label": "J",
+      "enabled": true,
+      "index": 33,
+      "ref": "e34",
+      "kind": "key"
+    },
+    {
+      "index": 34,
+      "rect": {
+        "width": 38.333333333333314,
+        "y": 621,
+        "height": 54,
+        "x": 291.66666666666663
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "type": "Key",
+      "label": "K",
+      "ref": "e35",
+      "kind": "key"
+    },
+    {
+      "index": 35,
+      "rect": {
+        "width": 38.333333333333314,
+        "y": 621,
+        "height": 54,
+        "x": 330
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "type": "Key",
+      "label": "L",
+      "ref": "e36",
+      "kind": "key"
+    },
+    {
+      "label": "shift",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 4.666666666666657,
+        "width": 49.666666666666664
+      },
+      "type": "Button",
+      "parentIndex": 14,
+      "depth": 7,
+      "selected": true,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "shift",
+      "index": 36,
+      "ref": "e37",
+      "kind": "button"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 61.999999999999986,
+        "width": 38.33333333333333
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "Z",
+      "index": 37,
+      "ref": "e38",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 100.33333333333331,
+        "width": 38.33333333333334
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "X",
+      "index": 38,
+      "ref": "e39",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 138.66666666666666,
+        "width": 38.33333333333334
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "C",
+      "index": 39,
+      "ref": "e40",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 177,
+        "width": 38
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "V",
+      "index": 40,
+      "ref": "e41",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 215,
+        "width": 38.33333333333334
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "B",
+      "index": 41,
+      "ref": "e42",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 253.33333333333337,
+        "width": 38.333333333333314
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "N",
+      "index": 42,
+      "ref": "e43",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 291.66666666666663,
+        "width": 38.333333333333314
+      },
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "label": "M",
+      "index": 43,
+      "ref": "e44",
+      "kind": "key"
+    },
+    {
+      "label": "delete",
+      "rect": {
+        "y": 675,
+        "height": 54,
+        "x": 337.66666666666663,
+        "width": 50
+      },
+      "type": "Key",
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "delete",
+      "index": 44,
+      "ref": "e45",
+      "kind": "key"
+    },
+    {
+      "label": "numbers",
+      "rect": {
+        "y": 729,
+        "height": 54,
+        "x": 4.666666666666657,
+        "width": 47.666666666666664
+      },
+      "type": "Key",
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "more",
+      "index": 45,
+      "ref": "e46",
+      "kind": "key"
+    },
+    {
+      "label": "Emoji",
+      "rect": {
+        "y": 729,
+        "height": 54,
+        "x": 52.33333333333333,
+        "width": 48
+      },
+      "type": "Button",
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "emoji",
+      "index": 46,
+      "ref": "e47",
+      "kind": "button"
+    },
+    {
+      "label": "space",
+      "rect": {
+        "y": 729,
+        "height": 54,
+        "x": 100.3333333333333,
+        "width": 191.33333333333331
+      },
+      "type": "Key",
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "space",
+      "index": 47,
+      "ref": "e48",
+      "kind": "key"
+    },
+    {
+      "label": "done",
+      "rect": {
+        "y": 729,
+        "height": 54,
+        "x": 291.66666666666663,
+        "width": 96
+      },
+      "type": "Button",
+      "parentIndex": 14,
+      "depth": 7,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "Done",
+      "index": 48,
+      "ref": "e49",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 560,
+        "height": 284,
+        "x": 0,
+        "width": 390
+      },
+      "parentIndex": 3,
+      "depth": 4,
+      "hittable": true,
+      "enabled": true,
+      "label": "Next keyboard",
+      "index": 49,
+      "ref": "e50",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 775.6989567998571,
+        "height": 68.30104320014289,
+        "x": 8.47726568115926,
+        "width": 68.0852958475086
+      },
+      "value": "English & Espa\u00f1ol",
+      "parentIndex": 49,
+      "depth": 5,
+      "hittable": true,
+      "enabled": true,
+      "label": "Next keyboard",
+      "index": 50,
+      "ref": "e51",
+      "kind": "button"
+    },
+    {
+      "depth": 5,
+      "identifier": "dictation",
+      "enabled": true,
+      "type": "Button",
+      "parentIndex": 49,
+      "rect": {
+        "y": 775.3656234665239,
+        "height": 68.63437653347614,
+        "x": 313.43743847133214,
+        "width": 68.08529584750863
+      },
+      "index": 51,
+      "hittable": true,
+      "label": "Dictate",
+      "ref": "e52",
+      "kind": "button"
+    },
+    {
+      "parentIndex": 0,
+      "identifier": "inputView",
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 516,
+        "height": 328,
+        "x": 0,
+        "width": 390
+      },
+      "index": 52,
+      "hittable": true,
+      "depth": 1,
+      "ref": "e53",
+      "kind": "other"
+    },
+    {
+      "depth": 1,
+      "parentIndex": 0,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 53,
+      "hittable": true,
+      "label": "Toolbar",
+      "ref": "e54",
+      "kind": "other"
+    },
+    {
+      "depth": 2,
+      "parentIndex": 53,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 54,
+      "hittable": true,
+      "label": "Close camera",
+      "ref": "e55",
+      "kind": "other"
+    },
+    {
+      "depth": 3,
+      "parentIndex": 54,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 55,
+      "hittable": true,
+      "label": "Vertical scroll bar, 2 pages",
+      "ref": "e56",
+      "kind": "other"
+    },
+    {
+      "depth": 4,
+      "parentIndex": 55,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 56,
+      "hittable": true,
+      "label": "OCR could not confidently detect the food name. Add it before saving.",
+      "ref": "e57",
+      "kind": "other"
+    },
+    {
+      "depth": 5,
+      "parentIndex": 56,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 57,
+      "hittable": true,
+      "label": "Second Inline Item",
+      "ref": "e58",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 57,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "type": "Image",
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "y": 0,
+        "height": 566.6666666666666
+      },
+      "index": 58,
+      "hittable": true,
+      "depth": 6,
+      "ref": "e59",
+      "kind": "image"
+    },
+    {
+      "depth": 6,
+      "identifier": "camera-result-card",
+      "enabled": true,
+      "type": "ScrollView",
+      "parentIndex": 57,
+      "hiddenContentBelow": true,
+      "rect": {
+        "width": 358,
+        "x": 16,
+        "y": 0,
+        "height": 258
+      },
+      "index": 59,
+      "hittable": true,
+      "label": "Second Inline Item",
+      "ref": "e60",
+      "kind": "scroll-area"
+    },
+    {
+      "depth": 7,
+      "parentIndex": 59,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 358,
+        "x": 16,
+        "y": 47,
+        "height": 211
+      },
+      "index": 60,
+      "hittable": true,
+      "label": "Second Inline Item",
+      "ref": "e61",
+      "kind": "other"
+    },
+    {
+      "depth": 8,
+      "parentIndex": 60,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 327.6666564941406,
+        "x": 30.33333396911621,
+        "y": 61.2400016784668,
+        "height": 74.09332275390625
+      },
+      "index": 61,
+      "hittable": true,
+      "label": "Second Inline Item",
+      "ref": "e62",
+      "kind": "other"
+    },
+    {
+      "depth": 9,
+      "parentIndex": 61,
+      "enabled": true,
+      "type": "TextField",
+      "value": "Second Inline Item",
+      "rect": {
+        "width": 274,
+        "x": 84,
+        "y": 64,
+        "height": 42
+      },
+      "index": 62,
+      "focused": true,
+      "hittable": true,
+      "label": "Second Inline Item",
+      "password": false,
+      "editable": true,
+      "ref": "e63",
+      "kind": "text-field"
+    },
+    {
+      "parentIndex": 62,
+      "identifier": "_UITextSelectionRangeAdjustmentContainerView",
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 0,
+        "x": 84,
+        "y": 62,
+        "height": 0
+      },
+      "index": 63,
+      "hittable": false,
+      "depth": 10,
+      "ref": "e64",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 63,
+      "identifier": "com.apple.text.grabber.leading",
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 0,
+        "x": 84,
+        "y": 62,
+        "height": 0
+      },
+      "index": 64,
+      "hittable": false,
+      "depth": 11,
+      "ref": "e65",
+      "kind": "other"
+    },
+    {
+      "depth": 10,
+      "parentIndex": 62,
+      "enabled": true,
+      "type": "Other",
+      "value": "0%",
+      "rect": {
+        "width": 274,
+        "x": 84,
+        "y": 82,
+        "height": 21
+      },
+      "index": 65,
+      "hittable": true,
+      "label": "Horizontal scroll bar, 1 page",
+      "ref": "e66",
+      "kind": "other"
+    },
+    {
+      "depth": 9,
+      "parentIndex": 61,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 68.33333333333333,
+        "x": 32,
+        "y": 115,
+        "height": 20.333333333333314
+      },
+      "index": 66,
+      "hittable": true,
+      "label": "190 kcal",
+      "ref": "e67",
+      "kind": "text"
+    },
+    {
+      "depth": 9,
+      "parentIndex": 61,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 19.999999999999986,
+        "x": 112.33333333333333,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671
+      },
+      "index": 67,
+      "hittable": true,
+      "label": "P 5",
+      "ref": "e68",
+      "kind": "text"
+    },
+    {
+      "depth": 9,
+      "parentIndex": 61,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 29.333333333333343,
+        "x": 144.33333333333331,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671
+      },
+      "index": 68,
+      "hittable": true,
+      "label": "C 36",
+      "ref": "e69",
+      "kind": "text"
+    },
+    {
+      "depth": 9,
+      "parentIndex": 61,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 19.333333333333343,
+        "x": 185.66666666666666,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671
+      },
+      "index": 69,
+      "hittable": true,
+      "label": "F 3",
+      "ref": "e70",
+      "kind": "text"
+    },
+    {
+      "depth": 8,
+      "parentIndex": 60,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 326,
+        "x": 32,
+        "y": 149.33333333333331,
+        "height": 33.666666666666686
+      },
+      "index": 70,
+      "hittable": true,
+      "label": "OCR could not confidently detect the food name. Add it before saving.",
+      "ref": "e71",
+      "kind": "text"
+    },
+    {
+      "depth": 8,
+      "parentIndex": 60,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 66.33333333333333,
+        "x": 32,
+        "y": 215.16666666666669,
+        "height": 20.333333333333343
+      },
+      "index": 71,
+      "hittable": true,
+      "label": "Servings",
+      "ref": "e72",
+      "kind": "text"
+    },
+    {
+      "label": "1",
+      "index": 72,
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 10.333333333333343,
+        "x": 245.66666666666663,
+        "y": 215.16666666666669,
+        "height": 20.333333333333343
+      },
+      "parentIndex": 60,
+      "depth": 8,
+      "ref": "e73",
+      "kind": "text"
+    },
+    {
+      "label": "Servings",
+      "index": 73,
+      "hittable": true,
+      "enabled": true,
+      "type": "Stepper",
+      "rect": {
+        "width": 94,
+        "x": 264,
+        "y": 209.33333333333331,
+        "height": 32
+      },
+      "value": "1",
+      "parentIndex": 60,
+      "depth": 8,
+      "ref": "e74",
+      "kind": "stepper"
+    },
+    {
+      "label": "Servings, Decrement",
+      "index": 74,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 47,
+        "x": 264,
+        "y": 209.33333333333331,
+        "height": 32
+      },
+      "value": "1",
+      "parentIndex": 73,
+      "identifier": "Decrement",
+      "depth": 9,
+      "ref": "e75",
+      "kind": "button"
+    },
+    {
+      "label": "Servings, Increment",
+      "index": 75,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 47,
+        "x": 311,
+        "y": 209.33333333333331,
+        "height": 32
+      },
+      "value": "1",
+      "parentIndex": 73,
+      "identifier": "Increment",
+      "depth": 9,
+      "ref": "e76",
+      "kind": "button"
+    },
+    {
+      "label": "1 cup (40g) each",
+      "index": 76,
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 102.66666666666666,
+        "x": 32,
+        "y": 245.33333333333334,
+        "height": 12.666666666666657
+      },
+      "parentIndex": 60,
+      "depth": 8,
+      "ref": "e77",
+      "kind": "text"
+    },
+    {
+      "label": "Vertical scroll bar, 2 pages",
+      "index": 77,
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 30,
+        "x": 341,
+        "y": 31.329999999999984,
+        "height": 226.67000000000002
+      },
+      "value": "0%",
+      "parentIndex": 59,
+      "depth": 7,
+      "ref": "e78",
+      "kind": "other"
+    },
+    {
+      "label": "Close camera",
+      "index": 78,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 44,
+        "x": 24,
+        "y": 70,
+        "height": 44
+      },
+      "parentIndex": 57,
+      "identifier": "camera-viewport",
+      "depth": 6,
+      "ref": "e79",
+      "kind": "button"
+    },
+    {
+      "label": "Close camera",
+      "index": 79,
+      "hittable": true,
+      "enabled": true,
+      "type": "Image",
+      "rect": {
+        "width": 44,
+        "x": 24,
+        "y": 70,
+        "height": 44
+      },
+      "parentIndex": 78,
+      "identifier": "chevron.backward",
+      "depth": 7,
+      "ref": "e80",
+      "kind": "image"
+    },
+    {
+      "label": "Retake",
+      "index": 80,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 120.33333333333331,
+        "x": 135,
+        "y": 66,
+        "height": 51.66666666666666
+      },
+      "parentIndex": 57,
+      "identifier": "camera-viewport",
+      "depth": 6,
+      "ref": "e81",
+      "kind": "button"
+    },
+    {
+      "label": "Retake",
+      "index": 81,
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 120.33333333333331,
+        "x": 135,
+        "y": 66,
+        "height": 51.66666666666666
+      },
+      "parentIndex": 80,
+      "depth": 7,
+      "ref": "e82",
+      "kind": "text"
+    },
+    {
+      "label": "Counterclockwise Curved Arrow",
+      "index": 82,
+      "hittable": true,
+      "enabled": true,
+      "type": "Image",
+      "rect": {
+        "width": 15,
+        "x": 156.33333333333334,
+        "y": 82.33333333333333,
+        "height": 18.33333396911621
+      },
+      "parentIndex": 80,
+      "identifier": "arrow.counterclockwise",
+      "depth": 7,
+      "ref": "e83",
+      "kind": "image"
+    },
+    {
+      "label": "Photograph nutrition label",
+      "index": 83,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 68,
+        "x": 161,
+        "y": 66,
+        "height": 68
+      },
+      "parentIndex": 57,
+      "identifier": "camera-viewport",
+      "depth": 6,
+      "ref": "e84",
+      "kind": "button"
+    },
+    {
+      "label": "More camera options",
+      "index": 84,
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "rect": {
+        "width": 44,
+        "x": 322,
+        "y": 78,
+        "height": 44
+      },
+      "parentIndex": 57,
+      "identifier": "camera-viewport",
+      "depth": 6,
+      "ref": "e85",
+      "kind": "button"
+    },
+    {
+      "label": "More",
+      "index": 85,
+      "hittable": true,
+      "enabled": true,
+      "type": "Image",
+      "rect": {
+        "width": 44,
+        "x": 322,
+        "y": 78,
+        "height": 44
+      },
+      "parentIndex": 84,
+      "identifier": "ellipsis",
+      "depth": 7,
+      "ref": "e86",
+      "kind": "image"
+    },
+    {
+      "label": "Toolbar",
+      "index": 86,
+      "hittable": true,
+      "enabled": true,
+      "type": "Toolbar",
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "y": 0,
+        "height": 844
+      },
+      "parentIndex": 53,
+      "identifier": "Toolbar",
+      "depth": 2,
+      "ref": "e87",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 87,
+    "totalNodeCount": 87,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "visible",
+    "frame": {
+      "x": 0,
+      "y": 560,
+      "width": 390,
+      "height": 226
+    }
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 217.47910976409912,
+      "presentationMs": 0.41794776916503906
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 7,
+      "droppedNodeCount": 3
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 83,
+      "p50Ms": 125,
+      "p95Ms": 349,
+      "maxMs": 529,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 83
+      }
+    }
+  },
+  "refsGeneration": 978150
+}

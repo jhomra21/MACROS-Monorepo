@@ -1,0 +1,26 @@
+Test Suite 'Selected tests' started at 2026-11-03 11:08:12.376.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-03 11:08:12.376.
+Test Suite 'FoodCameraFlowTests' started at 2026-11-03 11:08:12.376.
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodCameraFlowTests.swift:35: error: -[cal_macro_trackerTests.FoodCameraFlowTests testInactiveRecoveryDraftDoesNotRestartCamera] : XCTAssertEqual failed: ("recovering") is not equal to ("showingBarcode")
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodCameraFlowTests.swift:10: error: -[cal_macro_trackerTests.FoodCameraFlowTests testRecoveryDraftOpeningAllowsOneLogThenScanAgain] : XCTAssertEqual failed: ("recovering") is not equal to ("showingBarcode")
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodCameraFlowTests.swift:13: error: -[cal_macro_trackerTests.FoodCameraFlowTests testRecoveryDraftOpeningAllowsOneLogThenScanAgain] : XCTAssertEqual failed: ("1.0") is not equal to ("2.0")
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodCameraFlowTests.swift:14: error: -[cal_macro_trackerTests.FoodCameraFlowTests testRecoveryDraftOpeningAllowsOneLogThenScanAgain] : XCTAssertEqual failed: ("[]") is not equal to ("[cal_macro_tracker.FoodCameraFlow.Effect.log(servings: 2.0)]")
+Test Suite 'FoodCameraFlowTests' failed at 2026-11-03 11:08:12.765.
+	 Executed 28 tests, with 4 failures (0 unexpected) in 0.376 (0.388) seconds
+Test Suite 'FoodLogEditorStateTests' started at 2026-11-03 11:08:12.766.
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:61: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testConfirmedZeroAndReusableToggleAreDirty] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:65: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testConfirmedZeroAndReusableToggleAreDirty] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:36: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testInvalidNumericTokenIsDirtyEvenWhenParsedValueMatches] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:51: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testModeAndGramsChangesAreDirty] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:55: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testModeAndGramsChangesAreDirty] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:14: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testNameEditAndRevert] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:28: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testNutrientEditAndRevert] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:77: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testRenamedLabelBaselineIsSeparateFromOriginalDraft] : XCTAssertTrue failed
+/Users/juan/.t3/worktrees/cal-macro-tracker/camera-inline/cal-macro-trackerTests/FoodLogEditorStateTests.swift:43: error: -[cal_macro_trackerTests.FoodLogEditorStateTests testServingsOnlyChangeAndRevert] : XCTAssertTrue failed
+Test Suite 'FoodLogEditorStateTests' failed at 2026-11-03 11:08:12.797.
+	 Executed 10 tests, with 9 failures (0 unexpected) in 0.027 (0.030) seconds
+Test Suite 'cal-macro-trackerTests.xctest' failed at 2026-11-03 11:08:12.797.
+	 Executed 38 tests, with 13 failures (0 unexpected) in 0.403 (0.421) seconds
+Test Suite 'Selected tests' failed at 2026-11-03 11:08:12.797.
+	 Executed 38 tests, with 13 failures (0 unexpected) in 0.403 (0.421) seconds
+** TEST FAILED **

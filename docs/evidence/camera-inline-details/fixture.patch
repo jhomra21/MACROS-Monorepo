@@ -1,0 +1,50 @@
+diff --git a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+--- a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
++++ b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+@@ -162,4 +162,46 @@
+                 if permissionDenied {
+                     send(.contentChanged(.error(Self.cameraAccessDeniedMessage)))
+                 }
++                #if DEBUG
++                let arguments = ProcessInfo.processInfo.arguments
++                if let index = arguments.firstIndex(of: "-CameraLayoutFixture"), arguments.count > index + 1 {
++                    var draft = FoodDraft()
++                    draft.name = "Fajita Flour Tortillas"
++                    draft.brand = "Guerrero"
++                    draft.servingDescription = "1 tortilla (37 g)"
++                    draft.gramsPerServing = 37
++                    draft.caloriesPerServing = 160
++                    draft.proteinPerServing = 2
++                    draft.carbsPerServing = 17
++                    draft.fatPerServing = 5
++                    let fixture = arguments[index + 1]
++                    let isLabel = fixture.hasPrefix("label")
++                    if isLabel {
++                        _ = flow.reduce(.imagePicked)
++                        _ = flow.reduce(.ocrFinished)
++                    } else {
++                        _ = flow.reduce(.barcodeRecognized("layout-fixture"))
++                        _ = flow.reduce(.lookupFinished)
++                    }
++                    let servingsIndex = arguments.firstIndex(of: "-CameraLayoutServings")
++                    let amount = servingsIndex.flatMap { Double(arguments[$0 + 1]) } ?? 1
++                    _ = flow.reduce(.servingsChanged(amount))
++                    if fixture == "label-missing" {
++                        draft.source = .labelScan
++                        draft.caloriesPerServing = 0
++                        draft.proteinPerServing = 0
++                        panelContent = .label(draft, notes: ["Required review fixture"], missingNutrients: [.calories, .protein], servings: amount, logged: false)
++                    } else if fixture == "recovery" {
++                        _ = flow.reduce(.scanAgain)
++                        _ = flow.reduce(.barcodeRecognized("fixture-unknown"))
++                        _ = flow.reduce(.lookupFailed("fixture-unknown"))
++                        recoveryDestination = BarcodeManualFallbackFactory.destination(for: "fixture-unknown")
++                        panelContent = .error("No food found for this barcode.")
++                    } else {
++                        panelContent = isLabel
++                            ? .label(draft, notes: [], missingNutrients: [], servings: amount, logged: false)
++                            : .barcode(draft, servings: amount, logged: false)
++                    }
++                }
++                #endif
+             }

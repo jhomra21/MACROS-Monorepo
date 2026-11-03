@@ -3,6 +3,7 @@ import SwiftUI
 private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
     let focusedField: FocusState<Field?>.Binding
     let fields: [Field]
+    let onFocusRequest: ((Field) -> Void)?
 
     private var currentIndex: Int? {
         guard let focusedField = focusedField.wrappedValue else { return nil }
@@ -47,17 +48,22 @@ private struct KeyboardNavigationToolbar<Field: Hashable>: ToolbarContent {
         guard let currentIndex else { return }
         let nextIndex = currentIndex + offset
         guard fields.indices.contains(nextIndex) else { return }
-        focusedField.wrappedValue = fields[nextIndex]
+        if let onFocusRequest {
+            onFocusRequest(fields[nextIndex])
+        } else {
+            focusedField.wrappedValue = fields[nextIndex]
+        }
     }
 }
 
 extension View {
     func keyboardNavigationToolbar<Field: Hashable>(
         focusedField: FocusState<Field?>.Binding,
-        fields: [Field]
+        fields: [Field],
+        onFocusRequest: ((Field) -> Void)? = nil
     ) -> some View {
         toolbar {
-            KeyboardNavigationToolbar(focusedField: focusedField, fields: fields)
+            KeyboardNavigationToolbar(focusedField: focusedField, fields: fields, onFocusRequest: onFocusRequest)
         }
     }
 }

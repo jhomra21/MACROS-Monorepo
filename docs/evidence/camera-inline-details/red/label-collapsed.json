@@ -1,0 +1,629 @@
+{
+  "nodes": [
+    {
+      "depth": 0,
+      "type": "Application",
+      "enabled": true,
+      "label": "MACROS",
+      "index": 0,
+      "hittable": false,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "depth": 1,
+      "type": "Other",
+      "enabled": true,
+      "label": "Toolbar",
+      "index": 1,
+      "hittable": true,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 0,
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "depth": 2,
+      "type": "Other",
+      "enabled": true,
+      "label": "Retake",
+      "index": 2,
+      "hittable": true,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 1,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "depth": 3,
+      "type": "Other",
+      "enabled": true,
+      "label": "Vertical scroll bar, 1 page",
+      "index": 3,
+      "hittable": true,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 2,
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "depth": 4,
+      "type": "Other",
+      "enabled": true,
+      "label": "OCR could not confidently detect the food name. Add it before saving.",
+      "index": 4,
+      "hittable": true,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 3,
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "depth": 5,
+      "type": "Other",
+      "enabled": true,
+      "label": "190 kcal",
+      "index": 5,
+      "hittable": true,
+      "rect": {
+        "height": 844,
+        "y": 0,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 4,
+      "ref": "e6",
+      "kind": "other"
+    },
+    {
+      "depth": 6,
+      "type": "ScrollView",
+      "enabled": true,
+      "label": "Horizontal scroll bar, 1 page",
+      "index": 6,
+      "hittable": true,
+      "rect": {
+        "height": 363,
+        "y": 0,
+        "width": 358,
+        "x": 16
+      },
+      "parentIndex": 5,
+      "ref": "e7",
+      "kind": "scroll-area"
+    },
+    {
+      "depth": 7,
+      "type": "Other",
+      "enabled": true,
+      "index": 7,
+      "hittable": true,
+      "rect": {
+        "height": 316,
+        "y": 47,
+        "width": 358,
+        "x": 16
+      },
+      "parentIndex": 6,
+      "ref": "e8",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 8,
+      "type": "Other",
+      "enabled": true,
+      "index": 8,
+      "hittable": true,
+      "rect": {
+        "height": 74.09332275390625,
+        "y": 61.2400016784668,
+        "width": 327.6666564941406,
+        "x": 30.33333396911621
+      },
+      "parentIndex": 7,
+      "ref": "e9",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "TextField",
+      "parentIndex": 8,
+      "rect": {
+        "height": 22,
+        "y": 74,
+        "width": 274,
+        "x": 84
+      },
+      "index": 9,
+      "hittable": true,
+      "depth": 9,
+      "enabled": true,
+      "placeholder": "Food name",
+      "password": false,
+      "editable": true,
+      "ref": "e10",
+      "kind": "text-field",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Other",
+      "parentIndex": 9,
+      "rect": {
+        "height": 11,
+        "y": 82,
+        "width": 274,
+        "x": 84
+      },
+      "index": 10,
+      "hittable": true,
+      "depth": 10,
+      "enabled": true,
+      "value": "0%",
+      "ref": "e11",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "StaticText",
+      "label": "190 kcal",
+      "parentIndex": 8,
+      "hittable": true,
+      "index": 11,
+      "rect": {
+        "height": 20.333333333333314,
+        "y": 115,
+        "width": 68.33333333333333,
+        "x": 32
+      },
+      "depth": 9,
+      "enabled": true,
+      "ref": "e12",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "P 5",
+      "parentIndex": 8,
+      "hittable": true,
+      "index": 12,
+      "rect": {
+        "height": 15.666666666666671,
+        "y": 117.33333333333333,
+        "width": 19.999999999999986,
+        "x": 112.33333333333333
+      },
+      "depth": 9,
+      "enabled": true,
+      "ref": "e13",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "C 36",
+      "parentIndex": 8,
+      "hittable": true,
+      "index": 13,
+      "rect": {
+        "height": 15.666666666666671,
+        "y": 117.33333333333333,
+        "width": 29.333333333333343,
+        "x": 144.33333333333331
+      },
+      "depth": 9,
+      "enabled": true,
+      "ref": "e14",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "F 3",
+      "parentIndex": 8,
+      "hittable": true,
+      "index": 14,
+      "rect": {
+        "height": 15.666666666666671,
+        "y": 117.33333333333333,
+        "width": 19.333333333333343,
+        "x": 185.66666666666666
+      },
+      "depth": 9,
+      "enabled": true,
+      "ref": "e15",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "OCR could not confidently detect the food name. Add it before saving.",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 15,
+      "rect": {
+        "height": 33.666666666666686,
+        "y": 149.33333333333331,
+        "width": 326,
+        "x": 32
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e16",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "Servings",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 16,
+      "rect": {
+        "height": 20.333333333333343,
+        "y": 215.16666666666669,
+        "width": 66.33333333333333,
+        "x": 32
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e17",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "1",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 17,
+      "rect": {
+        "height": 20.333333333333343,
+        "y": 215.16666666666669,
+        "width": 10.333333333333343,
+        "x": 245.66666666666663
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e18",
+      "kind": "text"
+    },
+    {
+      "type": "Stepper",
+      "label": "Servings",
+      "parentIndex": 7,
+      "rect": {
+        "height": 32,
+        "y": 209.33333333333331,
+        "width": 94,
+        "x": 264
+      },
+      "index": 18,
+      "hittable": true,
+      "depth": 8,
+      "enabled": true,
+      "value": "1",
+      "ref": "e19",
+      "kind": "stepper"
+    },
+    {
+      "type": "Button",
+      "label": "Servings, Decrement",
+      "parentIndex": 18,
+      "rect": {
+        "height": 32,
+        "y": 209.33333333333331,
+        "width": 47,
+        "x": 264
+      },
+      "index": 19,
+      "identifier": "Decrement",
+      "hittable": true,
+      "enabled": true,
+      "depth": 9,
+      "value": "1",
+      "ref": "e20",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Servings, Increment",
+      "parentIndex": 18,
+      "rect": {
+        "height": 32,
+        "y": 209.33333333333331,
+        "width": 47,
+        "x": 311
+      },
+      "index": 20,
+      "identifier": "Increment",
+      "hittable": true,
+      "enabled": true,
+      "depth": 9,
+      "value": "1",
+      "ref": "e21",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "label": "1 cup (40g) each",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 21,
+      "rect": {
+        "height": 15.666666666666657,
+        "y": 245.33333333333334,
+        "width": 102.66666666666666,
+        "x": 32
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e22",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "40 g total",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 22,
+      "rect": {
+        "height": 15.666666666666629,
+        "y": 265,
+        "width": 58.66666666666666,
+        "x": 32
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e23",
+      "kind": "text"
+    },
+    {
+      "type": "Button",
+      "label": "Edit details",
+      "parentIndex": 7,
+      "hittable": true,
+      "index": 23,
+      "rect": {
+        "height": 50.33333333333337,
+        "y": 296.66666666666663,
+        "width": 123.66666666666666,
+        "x": 32
+      },
+      "depth": 8,
+      "enabled": true,
+      "ref": "e24",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Log",
+      "parentIndex": 7,
+      "hittable": false,
+      "index": 24,
+      "rect": {
+        "height": 50.33333333333337,
+        "y": 296.66666666666663,
+        "width": 190.33333333333334,
+        "x": 167.66666666666666
+      },
+      "depth": 8,
+      "enabled": false,
+      "ref": "e25",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "label": "Vertical scroll bar, 1 page",
+      "parentIndex": 6,
+      "rect": {
+        "height": 331.67,
+        "y": 31.329999999999984,
+        "width": 30,
+        "x": 341
+      },
+      "index": 25,
+      "hittable": true,
+      "depth": 7,
+      "enabled": true,
+      "value": "0%",
+      "ref": "e26",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "label": "Retake",
+      "parentIndex": 5,
+      "rect": {
+        "x": 135,
+        "y": 395,
+        "width": 120.33333333333331,
+        "height": 51.666666666666686
+      },
+      "hittable": true,
+      "index": 26,
+      "depth": 6,
+      "enabled": true,
+      "ref": "e27",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "label": "Retake",
+      "parentIndex": 26,
+      "rect": {
+        "x": 135,
+        "y": 395,
+        "width": 120.33333333333331,
+        "height": 51.666666666666686
+      },
+      "hittable": true,
+      "index": 27,
+      "depth": 7,
+      "enabled": true,
+      "ref": "e28",
+      "kind": "text"
+    },
+    {
+      "type": "Image",
+      "label": "Counterclockwise Curved Arrow",
+      "parentIndex": 26,
+      "rect": {
+        "x": 156.33333333333334,
+        "y": 411.3333333333333,
+        "width": 15,
+        "height": 18.33333396911621
+      },
+      "index": 28,
+      "identifier": "arrow.counterclockwise",
+      "hittable": true,
+      "enabled": true,
+      "depth": 7,
+      "ref": "e29",
+      "kind": "image"
+    },
+    {
+      "type": "Button",
+      "label": "Close camera",
+      "parentIndex": 5,
+      "rect": {
+        "x": 40,
+        "y": 726,
+        "width": 44,
+        "height": 44
+      },
+      "index": 29,
+      "identifier": "chevron.backward",
+      "hittable": true,
+      "enabled": true,
+      "depth": 6,
+      "ref": "e30",
+      "kind": "button"
+    },
+    {
+      "rect": {
+        "x": 161,
+        "y": 722,
+        "width": 68,
+        "height": 68
+      },
+      "type": "Button",
+      "depth": 6,
+      "index": 30,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 5,
+      "label": "Photograph nutrition label",
+      "ref": "e31",
+      "kind": "button"
+    },
+    {
+      "rect": {
+        "x": 306,
+        "y": 734,
+        "width": 44,
+        "height": 44
+      },
+      "parentIndex": 5,
+      "type": "Button",
+      "depth": 6,
+      "index": 31,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "ellipsis",
+      "label": "More camera options",
+      "ref": "e32",
+      "kind": "button"
+    },
+    {
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "parentIndex": 1,
+      "type": "Toolbar",
+      "depth": 2,
+      "index": 32,
+      "hittable": true,
+      "enabled": true,
+      "identifier": "Toolbar",
+      "label": "Toolbar",
+      "ref": "e33",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 33,
+    "totalNodeCount": 33,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 202.21006870269775,
+      "presentationMs": 0.1970529556274414
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 1,
+      "droppedNodeCount": 0
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 450,
+      "p50Ms": 132,
+      "p95Ms": 210,
+      "maxMs": 666,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 450
+      }
+    }
+  },
+  "refsGeneration": 958014
+}

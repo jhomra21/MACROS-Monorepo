@@ -1,0 +1,26 @@
+Final fixture build: /tmp/macros-camera-inline-extraction/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app
+Source fixture patch reversed immediately after the build.
+Driver: fresh T3 device_open command pinned to iPhone 17e B, under an exclusively acquired lock.
+
+MACROS_DEVICE_DRIVER=<bound command> python3 docs/evidence/camera-inline-details/repeat.py
+Exit 0:
+Core inline camera E2E passed. Restore the clean app, close the session and release only your lock.
+Includes assertions that Next focuses offscreen Protein, Previous focuses Calories, Log remains in camera,
+dirty swipe is blocked, intentional-zero review gates Log, and manual recovery requires a name.
+Raw captures: rerun/*.json and rerun/*.png.
+
+MACROS_DEVICE_DRIVER=<bound command> python3 docs/evidence/camera-inline-details/e12.py final-noncamera
+Exit 0:
+E12: manual, saved, grams, search, common reusable copy PASS
+Initial attempts stopped on an unrelated native rating prompt and duplicate retained saved fixtures.
+The repeat helper records/dismisses Not Now and selects the equivalent saved fixture by current reference.
+
+compare-e12.py extraction: 5 comparable normalized trees identical, 4 pixel-identical app pairs.
+compare-e12.py final-noncamera: 1 comparable tree identical, 4 tree comparisons unavailable across
+AX/XCTest schemas, 4 pixel-identical app pairs. Both phases retain the same common-copy glass-edge
+difference: 1751 RGB pixels, maximum difference [18,9,2], bounds [18,694,372,766] after cropping top 47 px.
+No claim of five pixel-identical pairs or final cross-backend tree identity.
+
+Clean final app from /tmp/macros-camera-inline-build installed afterward.
+Normal camera hint verified: green/final-clean-normal-app.*.
+B session closed and owned B lock released. Final suite command also released its acquired iPad lock.

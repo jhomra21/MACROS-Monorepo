@@ -1,0 +1,1475 @@
+{
+  "nodes": [
+    {
+      "label": "MACROS",
+      "index": 0,
+      "rect": {
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "x": 0
+      },
+      "type": "Application",
+      "hittable": false,
+      "depth": 0,
+      "enabled": true,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "label": "Sheet Grabber",
+      "parentIndex": 0,
+      "index": 1,
+      "rect": {
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "x": 0
+      },
+      "type": "Window",
+      "hittable": true,
+      "depth": 1,
+      "enabled": true,
+      "ref": "e2",
+      "kind": "window"
+    },
+    {
+      "label": "Sheet Grabber",
+      "parentIndex": 1,
+      "index": 2,
+      "rect": {
+        "y": 0,
+        "width": 390,
+        "height": 844,
+        "x": 0
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 2,
+      "enabled": true,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "label": "Sheet Grabber",
+      "parentIndex": 2,
+      "index": 3,
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 3,
+      "enabled": true,
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "enabled": true,
+      "label": "Sheet Grabber",
+      "parentIndex": 3,
+      "index": 4,
+      "rect": {
+        "y": 43,
+        "width": 100,
+        "height": 24,
+        "x": 145
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 4,
+      "value": "Expanded",
+      "ref": "e5",
+      "kind": "button"
+    },
+    {
+      "label": "Toolbar",
+      "parentIndex": 3,
+      "index": 5,
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 4,
+      "enabled": true,
+      "ref": "e6",
+      "kind": "other"
+    },
+    {
+      "label": "Add Food",
+      "parentIndex": 5,
+      "index": 6,
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 5,
+      "enabled": true,
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "label": "Cancel",
+      "parentIndex": 6,
+      "index": 7,
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 6,
+      "enabled": true,
+      "ref": "e8",
+      "kind": "other"
+    },
+    {
+      "label": "Cancel",
+      "parentIndex": 7,
+      "index": 8,
+      "rect": {
+        "y": 63,
+        "width": 390,
+        "height": 108,
+        "x": 0
+      },
+      "type": "NavigationBar",
+      "hittable": true,
+      "depth": 7,
+      "identifier": "Add Food",
+      "enabled": true,
+      "ref": "e9",
+      "kind": "navigation-bar"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 67,
+        "width": 76.66666666666667,
+        "height": 36,
+        "x": 20
+      },
+      "index": 9,
+      "enabled": true,
+      "label": "Cancel",
+      "depth": 8,
+      "parentIndex": 8,
+      "hittable": true,
+      "ref": "e10",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 67,
+        "width": 76.66666666666666,
+        "height": 36,
+        "x": 20
+      },
+      "index": 10,
+      "enabled": true,
+      "label": "Cancel",
+      "depth": 9,
+      "parentIndex": 9,
+      "hittable": true,
+      "ref": "e11",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "rect": {
+        "y": 61.33333333333333,
+        "width": 136,
+        "height": 47.33333333333333,
+        "x": 127
+      },
+      "index": 11,
+      "enabled": true,
+      "label": "Add Food",
+      "depth": 8,
+      "parentIndex": 8,
+      "hittable": true,
+      "ref": "e12",
+      "kind": "text"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 61.33333333333333,
+        "width": 136,
+        "height": 47.33333333333333,
+        "x": 127
+      },
+      "index": 12,
+      "enabled": true,
+      "label": "Search",
+      "depth": 9,
+      "parentIndex": 11,
+      "hittable": true,
+      "ref": "e13",
+      "kind": "other"
+    },
+    {
+      "type": "SegmentedControl",
+      "rect": {
+        "y": 61.666666666666664,
+        "width": 136,
+        "height": 46.99999999999999,
+        "x": 127
+      },
+      "index": 13,
+      "enabled": true,
+      "label": "Search",
+      "depth": 10,
+      "parentIndex": 12,
+      "hittable": true,
+      "ref": "e14",
+      "kind": "segmented-control"
+    },
+    {
+      "parentIndex": 13,
+      "type": "Button",
+      "rect": {
+        "y": 61.666666666666664,
+        "width": 68,
+        "height": 47.99999999999999,
+        "x": 127
+      },
+      "index": 14,
+      "enabled": true,
+      "label": "Search",
+      "depth": 11,
+      "selected": true,
+      "hittable": true,
+      "ref": "e15",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 61.666666666666664,
+        "width": 68,
+        "height": 47.99999999999999,
+        "x": 195
+      },
+      "index": 15,
+      "enabled": true,
+      "label": "Manual",
+      "depth": 11,
+      "parentIndex": 13,
+      "hittable": true,
+      "ref": "e16",
+      "kind": "button"
+    },
+    {
+      "type": "SearchField",
+      "rect": {
+        "y": 117,
+        "width": 358,
+        "height": 44,
+        "x": 16
+      },
+      "index": 16,
+      "enabled": true,
+      "placeholder": "Search foods on device or online",
+      "label": "Search foods on device or online",
+      "depth": 8,
+      "parentIndex": 8,
+      "hittable": true,
+      "password": false,
+      "editable": true,
+      "ref": "e17",
+      "kind": "search"
+    },
+    {
+      "type": "Image",
+      "rect": {
+        "y": 129,
+        "width": 20.66666666666667,
+        "height": 19.333333333333343,
+        "x": 28
+      },
+      "index": 17,
+      "enabled": true,
+      "label": "Search",
+      "identifier": "magnifyingglass",
+      "depth": 9,
+      "parentIndex": 16,
+      "hittable": true,
+      "ref": "e18",
+      "kind": "image"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "index": 18,
+      "enabled": true,
+      "label": "Camera",
+      "depth": 7,
+      "parentIndex": 7,
+      "hittable": true,
+      "ref": "e19",
+      "kind": "other"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "index": 19,
+      "enabled": true,
+      "label": "Vertical scroll bar, 7 pages",
+      "depth": 8,
+      "parentIndex": 18,
+      "hittable": true,
+      "ref": "e20",
+      "kind": "other"
+    },
+    {
+      "type": "CollectionView",
+      "rect": {
+        "y": 47,
+        "width": 390,
+        "height": 797,
+        "x": 0
+      },
+      "index": 20,
+      "enabled": true,
+      "depth": 9,
+      "parentIndex": 19,
+      "hittable": true,
+      "ref": "e21",
+      "kind": "collection",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Cell",
+      "rect": {
+        "y": 171,
+        "width": 390,
+        "height": 88,
+        "x": 0
+      },
+      "index": 21,
+      "enabled": true,
+      "label": "On Device",
+      "depth": 10,
+      "parentIndex": 20,
+      "hittable": true,
+      "ref": "e22",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 171,
+        "width": 390,
+        "height": 88,
+        "x": 0
+      },
+      "index": 22,
+      "enabled": true,
+      "label": "On Device",
+      "depth": 11,
+      "parentIndex": 21,
+      "hittable": true,
+      "ref": "e23",
+      "kind": "other"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 171,
+        "width": 390,
+        "height": 88,
+        "x": 0
+      },
+      "index": 23,
+      "enabled": true,
+      "label": "Pasta with tomato sauce",
+      "depth": 12,
+      "parentIndex": 22,
+      "hittable": true,
+      "ref": "e24",
+      "kind": "other"
+    },
+    {
+      "type": "ScrollView",
+      "rect": {
+        "y": 179,
+        "width": 390,
+        "height": 52.333333333333314,
+        "x": 0
+      },
+      "index": 24,
+      "enabled": true,
+      "label": "Pasta with tomato sauce",
+      "depth": 13,
+      "parentIndex": 23,
+      "hittable": true,
+      "ref": "e25",
+      "kind": "scroll-area"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 179,
+        "width": 390,
+        "height": 52.333333333333314,
+        "x": 0
+      },
+      "index": 25,
+      "enabled": true,
+      "label": "Pasta with tomato sauce",
+      "depth": 14,
+      "parentIndex": 24,
+      "hittable": true,
+      "ref": "e26",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 183,
+        "width": 203,
+        "height": 44,
+        "x": 12
+      },
+      "index": 26,
+      "enabled": true,
+      "label": "Pasta with tomato sauce",
+      "depth": 15,
+      "parentIndex": 25,
+      "hittable": true,
+      "ref": "e27",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 183,
+        "width": 117,
+        "height": 44,
+        "x": 223
+      },
+      "index": 27,
+      "enabled": true,
+      "label": "Salmon fillet",
+      "depth": 15,
+      "parentIndex": 25,
+      "hittable": true,
+      "ref": "e28",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 183,
+        "width": 42,
+        "height": 44,
+        "x": 348
+      },
+      "index": 28,
+      "enabled": true,
+      "label": "Turkey sandwich",
+      "depth": 15,
+      "parentIndex": 25,
+      "hittable": false,
+      "ref": "e29",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "rect": {
+        "y": 243.16666666666666,
+        "width": 64.33333333333333,
+        "height": 15.666666666666657,
+        "x": 12
+      },
+      "index": 29,
+      "enabled": true,
+      "label": "On Device",
+      "depth": 13,
+      "parentIndex": 23,
+      "hittable": true,
+      "ref": "e30",
+      "kind": "text"
+    },
+    {
+      "label": "Banana, 200 kcal, P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "type": "Cell",
+      "rect": {
+        "y": 259,
+        "width": 390,
+        "height": 74,
+        "x": 0
+      },
+      "index": 30,
+      "depth": 10,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 20,
+      "ref": "e31",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 259,
+        "width": 390,
+        "height": 74,
+        "x": 0
+      },
+      "index": 31,
+      "depth": 11,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 30,
+      "ref": "e32",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 259,
+        "width": 390,
+        "height": 74,
+        "x": 0
+      },
+      "index": 32,
+      "depth": 12,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 31,
+      "ref": "e33",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "label": "200 kcal",
+      "type": "StaticText",
+      "rect": {
+        "y": 275,
+        "width": 68.33333333333331,
+        "height": 20.333333333333314,
+        "x": 305.6666666666667
+      },
+      "index": 33,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 32,
+      "ref": "e34",
+      "kind": "text"
+    },
+    {
+      "label": "Banana",
+      "type": "StaticText",
+      "rect": {
+        "y": 285.83333333333337,
+        "width": 59.33333333333333,
+        "height": 20.333333333333314,
+        "x": 16
+      },
+      "index": 34,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 32,
+      "ref": "e35",
+      "kind": "text"
+    },
+    {
+      "label": "P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "type": "StaticText",
+      "rect": {
+        "y": 301.3333333333333,
+        "width": 118.33333333333331,
+        "height": 15.666666666666686,
+        "x": 255.66666666666669
+      },
+      "index": 35,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 32,
+      "ref": "e36",
+      "kind": "text"
+    },
+    {
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "type": "Cell",
+      "rect": {
+        "y": 333,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 36,
+      "depth": 10,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 20,
+      "ref": "e37",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 333,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 37,
+      "depth": 11,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 36,
+      "ref": "e38",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 333,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 38,
+      "depth": 12,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 37,
+      "ref": "e39",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "label": "160 kcal",
+      "type": "StaticText",
+      "rect": {
+        "y": 349,
+        "width": 68.33333333333331,
+        "x": 305.6666666666667,
+        "height": 20.333333333333314
+      },
+      "index": 39,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 38,
+      "ref": "e40",
+      "kind": "text"
+    },
+    {
+      "label": "Inline Regression Oats",
+      "type": "StaticText",
+      "rect": {
+        "y": 359.83333333333337,
+        "width": 176.66666666666666,
+        "x": 16,
+        "height": 20.333333333333314
+      },
+      "index": 40,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 38,
+      "ref": "e41",
+      "kind": "text"
+    },
+    {
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "type": "StaticText",
+      "rect": {
+        "y": 375.3333333333333,
+        "width": 86.33333333333331,
+        "x": 287.6666666666667,
+        "height": 15.666666666666686
+      },
+      "index": 41,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 38,
+      "ref": "e42",
+      "kind": "text"
+    },
+    {
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "type": "Cell",
+      "rect": {
+        "y": 407,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 42,
+      "depth": 10,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 20,
+      "ref": "e43",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 407,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 43,
+      "depth": 11,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 42,
+      "ref": "e44",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 407,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 44,
+      "depth": 12,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 43,
+      "ref": "e45",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "label": "160 kcal",
+      "type": "StaticText",
+      "rect": {
+        "y": 423,
+        "width": 68.33333333333331,
+        "x": 305.6666666666667,
+        "height": 20.333333333333314
+      },
+      "index": 45,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 44,
+      "ref": "e46",
+      "kind": "text"
+    },
+    {
+      "label": "Inline Regression Oats",
+      "type": "StaticText",
+      "rect": {
+        "y": 433.8333333333333,
+        "width": 176.66666666666666,
+        "x": 16,
+        "height": 20.33333333333337
+      },
+      "index": 46,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 44,
+      "ref": "e47",
+      "kind": "text"
+    },
+    {
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "type": "StaticText",
+      "rect": {
+        "y": 449.3333333333333,
+        "width": 86.33333333333331,
+        "x": 287.6666666666667,
+        "height": 15.666666666666686
+      },
+      "index": 47,
+      "depth": 13,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 44,
+      "ref": "e48",
+      "kind": "text"
+    },
+    {
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "type": "Cell",
+      "rect": {
+        "y": 481,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 48,
+      "depth": 10,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 20,
+      "ref": "e49",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "rect": {
+        "y": 481,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 49,
+      "depth": 11,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 48,
+      "ref": "e50",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Button",
+      "rect": {
+        "y": 481,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "index": 50,
+      "depth": 12,
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 49,
+      "ref": "e51",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 13,
+      "index": 51,
+      "hittable": true,
+      "label": "160 kcal",
+      "parentIndex": 50,
+      "type": "StaticText",
+      "rect": {
+        "y": 497,
+        "width": 68.33333333333331,
+        "x": 305.6666666666667,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "ref": "e52",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 52,
+      "hittable": true,
+      "label": "Inline Regression Oats",
+      "parentIndex": 50,
+      "type": "StaticText",
+      "rect": {
+        "y": 507.8333333333333,
+        "width": 176.66666666666666,
+        "x": 16,
+        "height": 20.333333333333428
+      },
+      "enabled": true,
+      "ref": "e53",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 53,
+      "hittable": true,
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "parentIndex": 50,
+      "type": "StaticText",
+      "rect": {
+        "y": 523.3333333333333,
+        "width": 86.33333333333331,
+        "x": 287.6666666666667,
+        "height": 15.666666666666742
+      },
+      "enabled": true,
+      "ref": "e54",
+      "kind": "text"
+    },
+    {
+      "depth": 10,
+      "index": 54,
+      "hittable": true,
+      "label": "Recovered E2E Food, 0 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "parentIndex": 20,
+      "type": "Cell",
+      "rect": {
+        "y": 555,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e55",
+      "kind": "cell"
+    },
+    {
+      "depth": 11,
+      "index": 55,
+      "hittable": true,
+      "parentIndex": 54,
+      "type": "Other",
+      "rect": {
+        "y": 555,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e56",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 12,
+      "index": 56,
+      "hittable": true,
+      "parentIndex": 55,
+      "type": "Button",
+      "rect": {
+        "y": 555,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e57",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 13,
+      "index": 57,
+      "hittable": true,
+      "label": "0 kcal",
+      "parentIndex": 56,
+      "type": "StaticText",
+      "rect": {
+        "y": 571,
+        "width": 47,
+        "x": 327,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "ref": "e58",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 58,
+      "hittable": true,
+      "label": "Recovered E2E Food",
+      "parentIndex": 56,
+      "type": "StaticText",
+      "rect": {
+        "y": 581.8333333333333,
+        "width": 162.66666666666666,
+        "x": 16,
+        "height": 20.333333333333485
+      },
+      "enabled": true,
+      "ref": "e59",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 59,
+      "hittable": true,
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "parentIndex": 56,
+      "type": "StaticText",
+      "rect": {
+        "y": 597.3333333333333,
+        "width": 86.33333333333331,
+        "x": 287.6666666666667,
+        "height": 15.666666666666742
+      },
+      "enabled": true,
+      "ref": "e60",
+      "kind": "text"
+    },
+    {
+      "depth": 10,
+      "index": 60,
+      "hittable": true,
+      "label": "Fajita Flour Tortillas, 0 kcal, P 0 \u2022 C 17 \u2022 F 5",
+      "parentIndex": 20,
+      "type": "Cell",
+      "rect": {
+        "y": 629,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e61",
+      "kind": "cell"
+    },
+    {
+      "depth": 11,
+      "index": 61,
+      "hittable": true,
+      "parentIndex": 60,
+      "type": "Other",
+      "rect": {
+        "y": 629,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e62",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 12,
+      "index": 62,
+      "hittable": true,
+      "parentIndex": 61,
+      "type": "Button",
+      "rect": {
+        "y": 629,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e63",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 13,
+      "index": 63,
+      "hittable": true,
+      "label": "0 kcal",
+      "parentIndex": 62,
+      "type": "StaticText",
+      "rect": {
+        "y": 645,
+        "width": 47,
+        "x": 327,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "ref": "e64",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 64,
+      "hittable": true,
+      "label": "Fajita Flour Tortillas",
+      "parentIndex": 62,
+      "type": "StaticText",
+      "rect": {
+        "y": 655.8333333333333,
+        "width": 154.33333333333331,
+        "x": 16,
+        "height": 20.333333333333485
+      },
+      "enabled": true,
+      "ref": "e65",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 65,
+      "hittable": true,
+      "label": "P 0 \u2022 C 17 \u2022 F 5",
+      "parentIndex": 62,
+      "type": "StaticText",
+      "rect": {
+        "y": 671.3333333333333,
+        "width": 94.66666666666663,
+        "x": 279.33333333333337,
+        "height": 15.666666666666742
+      },
+      "enabled": true,
+      "ref": "e66",
+      "kind": "text"
+    },
+    {
+      "depth": 10,
+      "index": 66,
+      "hittable": true,
+      "label": "Fajita Flour Tortillas, 200 kcal, P 2 \u2022 C 17 \u2022 F 5",
+      "parentIndex": 20,
+      "type": "Cell",
+      "rect": {
+        "y": 703,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e67",
+      "kind": "cell"
+    },
+    {
+      "depth": 11,
+      "index": 67,
+      "hittable": true,
+      "parentIndex": 66,
+      "type": "Other",
+      "rect": {
+        "y": 703,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e68",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 12,
+      "index": 68,
+      "hittable": true,
+      "parentIndex": 67,
+      "type": "Button",
+      "rect": {
+        "y": 703,
+        "width": 390,
+        "x": 0,
+        "height": 74
+      },
+      "enabled": true,
+      "ref": "e69",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "depth": 13,
+      "index": 69,
+      "hittable": true,
+      "label": "200 kcal",
+      "parentIndex": 68,
+      "type": "StaticText",
+      "rect": {
+        "y": 719,
+        "width": 68.33333333333331,
+        "x": 305.6666666666667,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "ref": "e70",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 70,
+      "hittable": true,
+      "label": "Fajita Flour Tortillas",
+      "parentIndex": 68,
+      "type": "StaticText",
+      "rect": {
+        "x": 16,
+        "height": 20.333333333333258,
+        "y": 729.8333333333334,
+        "width": 154.33333333333331
+      },
+      "enabled": true,
+      "ref": "e71",
+      "kind": "text"
+    },
+    {
+      "depth": 13,
+      "index": 71,
+      "hittable": true,
+      "label": "P 2 \u2022 C 17 \u2022 F 5",
+      "parentIndex": 68,
+      "type": "StaticText",
+      "rect": {
+        "y": 745.3333333333334,
+        "width": 94.66666666666663,
+        "height": 15.666666666666629,
+        "x": 279.33333333333337
+      },
+      "enabled": true,
+      "ref": "e72",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 20,
+      "index": 72,
+      "rect": {
+        "width": 390,
+        "y": 777,
+        "x": 0,
+        "height": 67
+      },
+      "enabled": true,
+      "label": "Almonds, 165 kcal, P 6 \u2022 C 6 \u2022 F 14",
+      "hittable": true,
+      "type": "Cell",
+      "depth": 10,
+      "ref": "e73",
+      "kind": "cell"
+    },
+    {
+      "parentIndex": 72,
+      "index": 73,
+      "rect": {
+        "width": 390,
+        "y": 777,
+        "x": 0,
+        "height": 67
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "depth": 11,
+      "ref": "e74",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 73,
+      "index": 74,
+      "rect": {
+        "width": 390,
+        "y": 777,
+        "x": 0,
+        "height": 67
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Button",
+      "depth": 12,
+      "ref": "e75",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 74,
+      "index": 75,
+      "rect": {
+        "width": 68.33333333333331,
+        "y": 793,
+        "x": 305.6666666666667,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "label": "165 kcal",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 13,
+      "ref": "e76",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 74,
+      "index": 76,
+      "rect": {
+        "width": 70.33333333333333,
+        "y": 803.8333333333334,
+        "x": 16,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "label": "Almonds",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 13,
+      "ref": "e77",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 74,
+      "index": 77,
+      "rect": {
+        "width": 94.66666666666663,
+        "y": 819.3333333333334,
+        "x": 279.33333333333337,
+        "height": 15.666666666666629
+      },
+      "enabled": true,
+      "label": "P 6 \u2022 C 6 \u2022 F 14",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 13,
+      "ref": "e78",
+      "kind": "text"
+    },
+    {
+      "depth": 10,
+      "parentIndex": 20,
+      "index": 78,
+      "rect": {
+        "width": 30,
+        "y": 171,
+        "x": 357,
+        "height": 571
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "value": "0%",
+      "ref": "e79",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 19,
+      "index": 79,
+      "rect": {
+        "width": 390,
+        "y": 742,
+        "x": 0,
+        "height": 102
+      },
+      "enabled": true,
+      "label": "Camera",
+      "hittable": true,
+      "type": "Button",
+      "depth": 9,
+      "ref": "e80",
+      "kind": "button"
+    },
+    {
+      "parentIndex": 79,
+      "index": 80,
+      "rect": {
+        "width": 11,
+        "y": 772.6666666666666,
+        "x": 154.33333333333334,
+        "height": 11
+      },
+      "identifier": "camera.viewfinder",
+      "enabled": true,
+      "label": "Screenshot",
+      "hittable": true,
+      "type": "Image",
+      "depth": 10,
+      "ref": "e81",
+      "kind": "image"
+    },
+    {
+      "parentIndex": 79,
+      "index": 81,
+      "rect": {
+        "width": 62,
+        "y": 767.8333333333334,
+        "x": 177,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "label": "Camera",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 10,
+      "ref": "e82",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 7,
+      "index": 82,
+      "rect": {
+        "width": 390,
+        "y": 47,
+        "x": 0,
+        "height": 797
+      },
+      "identifier": "Toolbar",
+      "enabled": true,
+      "label": "Toolbar",
+      "hittable": true,
+      "type": "Toolbar",
+      "depth": 7,
+      "ref": "e83",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 83,
+    "totalNodeCount": 83,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 292.69397258758545,
+      "presentationMs": 0.3859996795654297
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 8,
+      "droppedNodeCount": 2
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 596,
+      "p50Ms": 150,
+      "p95Ms": 401,
+      "maxMs": 3270,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 596
+      }
+    }
+  },
+  "refsGeneration": 617229
+}

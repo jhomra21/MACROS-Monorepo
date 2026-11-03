@@ -1,0 +1,386 @@
+{
+  "nodes": [
+    {
+      "depth": 0,
+      "label": "MACROS",
+      "enabled": true,
+      "index": 0,
+      "hittable": false,
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "height": 844,
+        "y": 0
+      },
+      "type": "Application",
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "depth": 1,
+      "label": "Toolbar",
+      "parentIndex": 0,
+      "enabled": true,
+      "index": 1,
+      "hittable": true,
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "height": 844,
+        "y": 0
+      },
+      "type": "Other",
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "depth": 2,
+      "label": "Retake",
+      "parentIndex": 1,
+      "enabled": true,
+      "index": 2,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "type": "Other",
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "depth": 3,
+      "label": "Vertical scroll bar, 1 page",
+      "parentIndex": 2,
+      "enabled": true,
+      "index": 3,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "type": "Other",
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "depth": 4,
+      "label": "Logged",
+      "parentIndex": 3,
+      "enabled": true,
+      "index": 4,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "type": "Other",
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "depth": 5,
+      "identifier": "camera-result-card",
+      "label": "Logged",
+      "parentIndex": 4,
+      "hiddenContentBelow": true,
+      "enabled": true,
+      "index": 5,
+      "hittable": true,
+      "rect": {
+        "x": 16,
+        "width": 358,
+        "height": 143.33333333333331,
+        "y": 0
+      },
+      "type": "ScrollView",
+      "ref": "e6",
+      "kind": "scroll-area"
+    },
+    {
+      "depth": 6,
+      "label": "Logged",
+      "parentIndex": 5,
+      "enabled": true,
+      "index": 6,
+      "hittable": true,
+      "rect": {
+        "x": 16,
+        "width": 358,
+        "height": 96.33333333333331,
+        "y": 47
+      },
+      "type": "Other",
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "depth": 7,
+      "label": "Logged",
+      "parentIndex": 6,
+      "enabled": true,
+      "index": 7,
+      "hittable": true,
+      "rect": {
+        "x": 33.33333206176758,
+        "width": 86.33334350585938,
+        "height": 20.333335876464844,
+        "y": 63
+      },
+      "type": "StaticText",
+      "ref": "e8",
+      "kind": "text"
+    },
+    {
+      "depth": 7,
+      "label": "Second Inline Item",
+      "parentIndex": 6,
+      "enabled": true,
+      "index": 8,
+      "hittable": true,
+      "rect": {
+        "x": 32,
+        "width": 140,
+        "height": 20.33333333333333,
+        "y": 87.34431966145834
+      },
+      "type": "StaticText",
+      "ref": "e9",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "1 serving \u00b7 1 cup (40g) \u00b7 190 kcal",
+      "index": 9,
+      "depth": 7,
+      "hittable": true,
+      "rect": {
+        "x": 32,
+        "width": 195.66666666666666,
+        "height": 15.666666666666671,
+        "y": 111.67765299479167
+      },
+      "enabled": true,
+      "parentIndex": 6,
+      "ref": "e10",
+      "kind": "text"
+    },
+    {
+      "type": "Other",
+      "label": "Vertical scroll bar, 1 page",
+      "value": "0%",
+      "index": 10,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "x": 341,
+        "width": 30,
+        "height": 112.00333333333333,
+        "y": 31.329999999999984
+      },
+      "enabled": true,
+      "parentIndex": 5,
+      "ref": "e11",
+      "kind": "other"
+    },
+    {
+      "type": "Image",
+      "index": 11,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 668.6666666666667,
+        "y": 159.33333333333331
+      },
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "parentIndex": 4,
+      "ref": "e12",
+      "kind": "image"
+    },
+    {
+      "type": "Button",
+      "label": "Retake",
+      "index": 12,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "y": 175.33333333333331,
+        "x": 135,
+        "height": 51.66666666666666,
+        "width": 120.33333333333331
+      },
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "parentIndex": 4,
+      "ref": "e13",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "label": "Retake",
+      "index": 13,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "width": 120.33333333333331,
+        "x": 135,
+        "height": 51.66666666666666,
+        "y": 175.33333333333331
+      },
+      "enabled": true,
+      "parentIndex": 12,
+      "ref": "e14",
+      "kind": "text"
+    },
+    {
+      "type": "Image",
+      "label": "Counterclockwise Curved Arrow",
+      "index": 14,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "width": 15,
+        "x": 156.33333333333334,
+        "height": 18.33333396911621,
+        "y": 191.66666666666666
+      },
+      "identifier": "arrow.counterclockwise",
+      "enabled": true,
+      "parentIndex": 12,
+      "ref": "e15",
+      "kind": "image"
+    },
+    {
+      "type": "Button",
+      "label": "Close camera",
+      "index": 15,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 44,
+        "x": 40,
+        "height": 44,
+        "y": 726
+      },
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "parentIndex": 4,
+      "ref": "e16",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Photograph nutrition label",
+      "index": 16,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 68,
+        "x": 161,
+        "y": 722,
+        "height": 68
+      },
+      "enabled": true,
+      "identifier": "camera-viewport",
+      "parentIndex": 4,
+      "ref": "e17",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "More camera options",
+      "index": 17,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 44,
+        "x": 306,
+        "y": 734,
+        "height": 44
+      },
+      "enabled": true,
+      "identifier": "camera-viewport",
+      "parentIndex": 4,
+      "ref": "e18",
+      "kind": "button"
+    },
+    {
+      "type": "Toolbar",
+      "label": "Toolbar",
+      "index": 18,
+      "depth": 2,
+      "hittable": true,
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "y": 0,
+        "height": 844
+      },
+      "enabled": true,
+      "identifier": "Toolbar",
+      "parentIndex": 1,
+      "ref": "e19",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 19,
+    "totalNodeCount": 19,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 151.17895603179932,
+      "presentationMs": 0.12505054473876953
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 1,
+      "droppedNodeCount": 1
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 105,
+      "p50Ms": 145,
+      "p95Ms": 349,
+      "maxMs": 529,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 105
+      }
+    }
+  },
+  "refsGeneration": 978172
+}

@@ -1,0 +1,1391 @@
+{
+  "nodes": [
+    {
+      "label": "MACROS",
+      "index": 0,
+      "rect": {
+        "height": 844,
+        "x": 0,
+        "y": 0,
+        "width": 390
+      },
+      "type": "Application",
+      "hittable": false,
+      "depth": 0,
+      "enabled": true,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "label": "Toolbar",
+      "parentIndex": 0,
+      "index": 1,
+      "rect": {
+        "height": 844,
+        "x": 0,
+        "y": 0,
+        "width": 390
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 1,
+      "enabled": true,
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "label": "Today",
+      "parentIndex": 1,
+      "index": 2,
+      "rect": {
+        "height": 844,
+        "x": 0,
+        "y": 0,
+        "width": 390
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 2,
+      "enabled": true,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "label": "Today",
+      "parentIndex": 2,
+      "index": 3,
+      "rect": {
+        "height": 54,
+        "x": 0,
+        "y": 47,
+        "width": 390
+      },
+      "type": "NavigationBar",
+      "hittable": true,
+      "depth": 3,
+      "identifier": "_TtGC7SwiftUI32NavigationStackHosting",
+      "enabled": true,
+      "ref": "e4",
+      "kind": "navigation-bar"
+    },
+    {
+      "label": "Today",
+      "parentIndex": 3,
+      "index": 4,
+      "rect": {
+        "height": 26.666666666666664,
+        "x": 16,
+        "y": 55.666666666666664,
+        "width": 60.33333333333334
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 4,
+      "enabled": true,
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "label": "Today",
+      "parentIndex": 4,
+      "index": 5,
+      "rect": {
+        "height": 26.33333333333333,
+        "x": 16.000000000000004,
+        "y": 55.83333333333333,
+        "width": 60.33333333333333
+      },
+      "type": "StaticText",
+      "hittable": true,
+      "depth": 5,
+      "enabled": true,
+      "ref": "e6",
+      "kind": "text"
+    },
+    {
+      "label": "Share daily summary",
+      "parentIndex": 3,
+      "index": 6,
+      "rect": {
+        "height": 36,
+        "x": 194,
+        "y": 51,
+        "width": 176
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 4,
+      "enabled": true,
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "label": "Share daily summary",
+      "parentIndex": 6,
+      "index": 7,
+      "rect": {
+        "height": 44,
+        "x": 194,
+        "y": 47,
+        "width": 44
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 5,
+      "identifier": "square.and.arrow.up",
+      "enabled": true,
+      "ref": "e8",
+      "kind": "button"
+    },
+    {
+      "label": "Open insights",
+      "parentIndex": 6,
+      "index": 8,
+      "rect": {
+        "height": 44,
+        "x": 238,
+        "y": 47,
+        "width": 44
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 5,
+      "identifier": "chart.xyaxis.line",
+      "enabled": true,
+      "ref": "e9",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "identifier": "calendar",
+      "enabled": true,
+      "label": "Open history",
+      "type": "Button",
+      "index": 9,
+      "depth": 5,
+      "rect": {
+        "height": 44,
+        "x": 282,
+        "width": 44,
+        "y": 47
+      },
+      "parentIndex": 6,
+      "ref": "e10",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "identifier": "gearshape",
+      "enabled": true,
+      "label": "Open settings",
+      "type": "Button",
+      "index": 10,
+      "depth": 5,
+      "rect": {
+        "height": 44,
+        "x": 326,
+        "width": 44,
+        "y": 47
+      },
+      "parentIndex": 6,
+      "ref": "e11",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "Camera",
+      "type": "Other",
+      "index": 11,
+      "depth": 3,
+      "rect": {
+        "height": 844,
+        "x": 0,
+        "width": 390,
+        "y": 0
+      },
+      "parentIndex": 2,
+      "ref": "e12",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "Vertical scroll bar, 3 pages",
+      "type": "Other",
+      "index": 12,
+      "depth": 4,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "parentIndex": 11,
+      "ref": "e13",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "CollectionView",
+      "index": 13,
+      "depth": 5,
+      "hiddenContentBelow": true,
+      "rect": {
+        "height": 844,
+        "x": 0,
+        "y": 0,
+        "width": 390
+      },
+      "parentIndex": 12,
+      "ref": "e14",
+      "kind": "collection",
+      "inheritsLabel": true
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "Expand nutrition details",
+      "type": "Cell",
+      "index": 14,
+      "depth": 6,
+      "rect": {
+        "y": 101,
+        "height": 426.33333333333326,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 13,
+      "ref": "e15",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "index": 15,
+      "depth": 7,
+      "rect": {
+        "y": 101,
+        "height": 426.33333333333326,
+        "width": 390,
+        "x": 0
+      },
+      "parentIndex": 14,
+      "ref": "e16",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "index": 16,
+      "depth": 8,
+      "rect": {
+        "y": 109,
+        "height": 290.66666666666663,
+        "width": 290.66666666666663,
+        "x": 49.666666666666664
+      },
+      "parentIndex": 15,
+      "ref": "e17",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "2530",
+      "index": 17,
+      "depth": 9,
+      "rect": {
+        "x": 141.5,
+        "width": 107,
+        "y": 218.16666666666669,
+        "height": 50.333333333333314
+      },
+      "parentIndex": 16,
+      "ref": "e18",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "of 2200 kcal",
+      "index": 18,
+      "depth": 9,
+      "rect": {
+        "x": 152.33333333333334,
+        "width": 85.33333333333334,
+        "y": 272.5,
+        "height": 18
+      },
+      "parentIndex": 16,
+      "ref": "e19",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "97",
+      "index": 19,
+      "depth": 8,
+      "rect": {
+        "x": 61.66666666666667,
+        "width": 25.33333333333333,
+        "y": 411.59333333333336,
+        "height": 24
+      },
+      "parentIndex": 15,
+      "ref": "e20",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "296",
+      "index": 20,
+      "depth": 8,
+      "rect": {
+        "x": 176,
+        "width": 38,
+        "y": 411.59333333333336,
+        "height": 24
+      },
+      "parentIndex": 15,
+      "ref": "e21",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "44",
+      "index": 21,
+      "depth": 8,
+      "rect": {
+        "x": 303.00000000000006,
+        "width": 25.333333333333314,
+        "y": 411.59333333333336,
+        "height": 24
+      },
+      "parentIndex": 15,
+      "ref": "e22",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "of 150 g",
+      "index": 22,
+      "depth": 8,
+      "rect": {
+        "x": 48.5,
+        "width": 51.66666666666666,
+        "y": 439.59333333333336,
+        "height": 15.666666666666686
+      },
+      "parentIndex": 15,
+      "ref": "e23",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "of 240 g",
+      "index": 23,
+      "depth": 8,
+      "rect": {
+        "x": 154.16666666666669,
+        "width": 51.66666666666666,
+        "y": 439.59333333333336,
+        "height": 15.666666666666686
+      },
+      "parentIndex": 15,
+      "ref": "e24",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "+56",
+      "index": 24,
+      "depth": 8,
+      "rect": {
+        "x": 209.83333333333334,
+        "width": 26,
+        "y": 439.59333333333336,
+        "height": 15.666666666666686
+      },
+      "parentIndex": 15,
+      "ref": "e25",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "of 70 g",
+      "index": 25,
+      "depth": 8,
+      "rect": {
+        "height": 15.666666666666686,
+        "y": 439.59333333333336,
+        "width": 43.666666666666686,
+        "x": 293.83333333333337
+      },
+      "parentIndex": 15,
+      "ref": "e26",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Button",
+      "label": "Protein",
+      "index": 26,
+      "depth": 8,
+      "rect": {
+        "y": 459.26000000000005,
+        "height": 18,
+        "width": 50.33333333333333,
+        "x": 58.16666666666667
+      },
+      "parentIndex": 15,
+      "ref": "e27",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "Carbs",
+      "type": "Button",
+      "index": 27,
+      "depth": 8,
+      "rect": {
+        "y": 459.26000000000005,
+        "width": 42,
+        "height": 18,
+        "x": 183
+      },
+      "parentIndex": 15,
+      "ref": "e28",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "Fat",
+      "type": "Button",
+      "index": 28,
+      "depth": 8,
+      "rect": {
+        "y": 459.26000000000005,
+        "width": 22,
+        "height": 18,
+        "x": 313.6666666666667
+      },
+      "parentIndex": 15,
+      "ref": "e29",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "label": "90-day logging streak. Open Insights.",
+      "type": "Button",
+      "index": 29,
+      "depth": 8,
+      "rect": {
+        "y": 489.3333333333333,
+        "width": 350,
+        "height": 25.999999999999943,
+        "x": 20
+      },
+      "parentIndex": 15,
+      "ref": "e30",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 29,
+      "rect": {
+        "y": 489.3333333333333,
+        "width": 350,
+        "height": 25.999999999999943,
+        "x": 20
+      },
+      "hittable": true,
+      "index": 30,
+      "label": "90-day logging streak",
+      "ref": "e31",
+      "kind": "text"
+    },
+    {
+      "type": "Image",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 29,
+      "rect": {
+        "y": 497,
+        "width": 6.333333492279053,
+        "height": 10.666666984558105,
+        "x": 270.3333333333333
+      },
+      "index": 31,
+      "hittable": true,
+      "label": "Forward",
+      "identifier": "chevron.right",
+      "ref": "e32",
+      "kind": "image"
+    },
+    {
+      "type": "Other",
+      "depth": 8,
+      "enabled": true,
+      "parentIndex": 15,
+      "rect": {
+        "y": 527.260009765625,
+        "width": 325.33331298828125,
+        "height": 37.66668701171875,
+        "x": 32.33333206176758
+      },
+      "hittable": true,
+      "index": 32,
+      "label": "Not tracked",
+      "ref": "e33",
+      "kind": "other"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 527.26,
+        "width": 84,
+        "height": 18,
+        "x": 32.333333333333336
+      },
+      "hittable": true,
+      "index": 33,
+      "label": "Not tracked",
+      "ref": "e34",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 527.26,
+        "width": 84,
+        "height": 18,
+        "x": 153
+      },
+      "hittable": true,
+      "index": 34,
+      "label": "Not tracked",
+      "ref": "e35",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 527.26,
+        "width": 84,
+        "height": 18,
+        "x": 273.66666666666663
+      },
+      "hittable": true,
+      "index": 35,
+      "label": "Not tracked",
+      "ref": "e36",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 549.26,
+        "width": 42.33333333333333,
+        "height": 15.666666666666742,
+        "x": 53.16666666666667
+      },
+      "hittable": true,
+      "index": 36,
+      "label": "Sat Fat",
+      "ref": "e37",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 549.26,
+        "width": 30.666666666666657,
+        "height": 15.666666666666742,
+        "x": 179.66666666666666
+      },
+      "hittable": true,
+      "index": 37,
+      "label": "Fiber",
+      "ref": "e38",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 32,
+      "rect": {
+        "y": 549.26,
+        "width": 42.333333333333314,
+        "height": 15.666666666666742,
+        "x": 294.49999999999994
+      },
+      "hittable": true,
+      "index": 38,
+      "label": "Sugars",
+      "ref": "e39",
+      "kind": "text"
+    },
+    {
+      "type": "Cell",
+      "depth": 6,
+      "enabled": true,
+      "parentIndex": 13,
+      "rect": {
+        "y": 527.3333333333333,
+        "width": 390,
+        "height": 52,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 39,
+      "label": "Food, 15 items",
+      "ref": "e40",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 39,
+      "rect": {
+        "y": 527.3333333333333,
+        "width": 390,
+        "height": 52,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 40,
+      "label": "Food, 15 items",
+      "ref": "e41",
+      "kind": "other"
+    },
+    {
+      "type": "StaticText",
+      "depth": 8,
+      "enabled": true,
+      "parentIndex": 40,
+      "rect": {
+        "y": 527.3333333333333,
+        "width": 390,
+        "height": 52,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 41,
+      "label": "Food, 15 items",
+      "ref": "e42",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 41,
+      "rect": {
+        "y": 541.3333333333333,
+        "width": 46.33333333333333,
+        "height": 24,
+        "x": 20
+      },
+      "hittable": true,
+      "index": 42,
+      "label": "Food",
+      "ref": "e43",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 41,
+      "rect": {
+        "y": 544.3333333333333,
+        "width": 57.333333333333314,
+        "height": 18,
+        "x": 312.6666666666667
+      },
+      "hittable": true,
+      "index": 43,
+      "label": "15 items",
+      "ref": "e44",
+      "kind": "text"
+    },
+    {
+      "type": "Cell",
+      "depth": 6,
+      "enabled": true,
+      "parentIndex": 13,
+      "rect": {
+        "y": 579.3333333333333,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 44,
+      "label": "Food, Protein bar, 1 bar (60 g), 3:30\u202fPM, 210 calories, 20 grams protein, 22 grams carbs, 7 grams fat",
+      "ref": "e45",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 44,
+      "rect": {
+        "y": 579.3333333333333,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 45,
+      "ref": "e46",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "type": "Button",
+      "depth": 8,
+      "enabled": true,
+      "parentIndex": 45,
+      "rect": {
+        "y": 579.3333333333333,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "hittable": true,
+      "index": 46,
+      "ref": "e47",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 46,
+      "rect": {
+        "y": 597.3333333333333,
+        "width": 87.66666666666666,
+        "height": 20.33333333333337,
+        "x": 20
+      },
+      "hittable": true,
+      "index": 47,
+      "label": "Protein bar",
+      "ref": "e48",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 46,
+      "rect": {
+        "y": 598.5,
+        "width": 68.33333333333331,
+        "height": 20.333333333333258,
+        "x": 301.6666666666667
+      },
+      "hittable": true,
+      "index": 48,
+      "label": "210 kcal",
+      "ref": "e49",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 46,
+      "rect": {
+        "y": 623.6666666666666,
+        "width": 153,
+        "height": 18,
+        "x": 20
+      },
+      "hittable": true,
+      "index": 49,
+      "label": "1 bar (60 g) \u2022 3:30\u202fPM",
+      "ref": "e50",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 9,
+      "enabled": true,
+      "parentIndex": 46,
+      "rect": {
+        "y": 624.8333333333333,
+        "width": 102.66666666666663,
+        "height": 15.666666666666629,
+        "x": 267.33333333333337
+      },
+      "hittable": true,
+      "index": 50,
+      "label": "P 20 \u2022 C 22 \u2022 F 7",
+      "ref": "e51",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 13,
+      "index": 51,
+      "rect": {
+        "y": 659.6666666666666,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "label": "Food, Inline Regression Oats, 40 g, 2:05\u202fPM, 160 calories, 0 grams protein, 0 grams carbs, 0 grams fat",
+      "hittable": true,
+      "type": "Cell",
+      "depth": 6,
+      "ref": "e52",
+      "kind": "cell"
+    },
+    {
+      "parentIndex": 51,
+      "index": 52,
+      "rect": {
+        "y": 659.6666666666666,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "depth": 7,
+      "ref": "e53",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 52,
+      "index": 53,
+      "rect": {
+        "y": 659.6666666666666,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Button",
+      "depth": 8,
+      "ref": "e54",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 53,
+      "index": 54,
+      "rect": {
+        "y": 677.6666666666666,
+        "width": 176.66666666666666,
+        "height": 20.33333333333337,
+        "x": 20
+      },
+      "enabled": true,
+      "label": "Inline Regression Oats",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e55",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 53,
+      "index": 55,
+      "rect": {
+        "y": 678.8333333333333,
+        "width": 68.33333333333331,
+        "height": 20.33333333333337,
+        "x": 301.6666666666667
+      },
+      "enabled": true,
+      "label": "160 kcal",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e56",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 53,
+      "index": 56,
+      "rect": {
+        "y": 704,
+        "width": 102.33333333333333,
+        "height": 18,
+        "x": 20
+      },
+      "enabled": true,
+      "label": "40 g \u2022 2:05\u202fPM",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e57",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 53,
+      "index": 57,
+      "rect": {
+        "y": 705.1666666666666,
+        "width": 86.33333333333331,
+        "height": 15.666666666666629,
+        "x": 283.6666666666667
+      },
+      "enabled": true,
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e58",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 13,
+      "index": 58,
+      "rect": {
+        "y": 740,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "label": "Food, Inline Regression Oats, 1 serving (40 g), 2:04\u202fPM, 160 calories, 0 grams protein, 0 grams carbs, 0 grams fat",
+      "hittable": true,
+      "type": "Cell",
+      "depth": 6,
+      "ref": "e59",
+      "kind": "cell"
+    },
+    {
+      "parentIndex": 58,
+      "index": 59,
+      "rect": {
+        "y": 740,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "depth": 7,
+      "ref": "e60",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 59,
+      "index": 60,
+      "rect": {
+        "y": 740,
+        "width": 390,
+        "height": 80.33333333333337,
+        "x": 0
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Button",
+      "depth": 8,
+      "ref": "e61",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 60,
+      "index": 61,
+      "rect": {
+        "y": 758,
+        "width": 176.66666666666666,
+        "height": 20.33333333333337,
+        "x": 20
+      },
+      "enabled": true,
+      "label": "Inline Regression Oats",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e62",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 60,
+      "index": 62,
+      "rect": {
+        "y": 759.1666666666666,
+        "width": 68.33333333333331,
+        "height": 20.33333333333337,
+        "x": 301.6666666666667
+      },
+      "enabled": true,
+      "label": "160 kcal",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e63",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 60,
+      "index": 63,
+      "rect": {
+        "y": 784.3333333333334,
+        "width": 180.66666666666666,
+        "x": 20,
+        "height": 18
+      },
+      "enabled": true,
+      "label": "1 serving (40 g) \u2022 2:04\u202fPM",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e64",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 60,
+      "index": 64,
+      "rect": {
+        "y": 785.5,
+        "width": 86.33333333333331,
+        "x": 283.6666666666667,
+        "height": 15.666666666666629
+      },
+      "enabled": true,
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e65",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 13,
+      "index": 65,
+      "rect": {
+        "y": 820.3333333333334,
+        "width": 390,
+        "x": 0,
+        "height": 23.66666666666663
+      },
+      "enabled": true,
+      "label": "Food, Inline Regression Oats, 1 serving (40 g), 2:02\u202fPM, 160 calories, 0 grams protein, 0 grams carbs, 0 grams fat",
+      "hittable": false,
+      "type": "Cell",
+      "depth": 6,
+      "ref": "e66",
+      "kind": "cell"
+    },
+    {
+      "parentIndex": 65,
+      "index": 66,
+      "rect": {
+        "y": 820.3333333333334,
+        "width": 390,
+        "x": 0,
+        "height": 23.66666666666663
+      },
+      "enabled": true,
+      "hittable": false,
+      "type": "Other",
+      "depth": 7,
+      "ref": "e67",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 66,
+      "index": 67,
+      "rect": {
+        "y": 820.3333333333334,
+        "width": 390,
+        "x": 0,
+        "height": 23.66666666666663
+      },
+      "enabled": true,
+      "hittable": false,
+      "type": "Button",
+      "depth": 8,
+      "ref": "e68",
+      "kind": "button",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 67,
+      "index": 68,
+      "rect": {
+        "y": 838.3333333333334,
+        "width": 176.66666666666666,
+        "x": 20,
+        "height": 5.666666666666629
+      },
+      "enabled": true,
+      "label": "Inline Regression Oats",
+      "hittable": false,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e69",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 67,
+      "index": 69,
+      "rect": {
+        "y": 839.5,
+        "width": 68.33333333333331,
+        "x": 301.6666666666667,
+        "height": 4.5
+      },
+      "enabled": true,
+      "label": "160 kcal",
+      "hittable": false,
+      "type": "StaticText",
+      "depth": 9,
+      "ref": "e70",
+      "kind": "text"
+    },
+    {
+      "depth": 6,
+      "parentIndex": 13,
+      "index": 70,
+      "rect": {
+        "y": 101,
+        "width": 30,
+        "x": 357,
+        "height": 641
+      },
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "value": "0%",
+      "ref": "e71",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "parentIndex": 12,
+      "index": 71,
+      "rect": {
+        "y": 748,
+        "width": 170,
+        "x": 20,
+        "height": 60
+      },
+      "enabled": true,
+      "label": "Camera",
+      "hittable": true,
+      "type": "Button",
+      "depth": 5,
+      "ref": "e72",
+      "kind": "button"
+    },
+    {
+      "depth": 6,
+      "index": 72,
+      "hittable": true,
+      "identifier": "camera",
+      "label": "Camera",
+      "parentIndex": 71,
+      "type": "Image",
+      "rect": {
+        "y": 772.6666666666666,
+        "width": 13.666666984558113,
+        "x": 63.333333333333336,
+        "height": 10.666666984558105
+      },
+      "enabled": true,
+      "ref": "e73",
+      "kind": "image"
+    },
+    {
+      "depth": 6,
+      "index": 73,
+      "hittable": true,
+      "label": "Camera",
+      "parentIndex": 71,
+      "type": "StaticText",
+      "rect": {
+        "y": 767.8333333333334,
+        "width": 62,
+        "x": 87,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "ref": "e74",
+      "kind": "text"
+    },
+    {
+      "depth": 5,
+      "index": 74,
+      "hittable": true,
+      "label": "Add Food",
+      "parentIndex": 12,
+      "type": "Button",
+      "rect": {
+        "y": 748,
+        "width": 170,
+        "x": 200,
+        "height": 60
+      },
+      "enabled": true,
+      "ref": "e75",
+      "kind": "button"
+    },
+    {
+      "depth": 6,
+      "index": 75,
+      "hittable": true,
+      "identifier": "plus",
+      "label": "Add",
+      "parentIndex": 74,
+      "type": "Image",
+      "rect": {
+        "y": 773.3333333333334,
+        "width": 9.333333969116211,
+        "x": 238.33333333333334,
+        "height": 9.333333969116211
+      },
+      "enabled": true,
+      "ref": "e76",
+      "kind": "image"
+    },
+    {
+      "depth": 6,
+      "index": 76,
+      "hittable": true,
+      "label": "Add Food",
+      "parentIndex": 74,
+      "type": "StaticText",
+      "rect": {
+        "y": 767.8333333333334,
+        "width": 76,
+        "x": 260,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "ref": "e77",
+      "kind": "text"
+    },
+    {
+      "depth": 3,
+      "index": 77,
+      "hittable": true,
+      "identifier": "Toolbar",
+      "label": "Toolbar",
+      "parentIndex": 2,
+      "type": "Toolbar",
+      "rect": {
+        "y": 0,
+        "width": 390,
+        "x": 0,
+        "height": 844
+      },
+      "enabled": true,
+      "ref": "e78",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 78,
+    "totalNodeCount": 78,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 190.56200981140137,
+      "presentationMs": 0.39196014404296875
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 8,
+      "droppedNodeCount": 2
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 546,
+      "p50Ms": 145,
+      "p95Ms": 401,
+      "maxMs": 3270,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 546
+      }
+    }
+  },
+  "refsGeneration": 617182
+}

@@ -38,11 +38,12 @@ struct FoodCameraResultPanel: View {
     let onChangeName: (String) -> Void
     let onLog: () -> Void
     let onDetails: () -> Void
-    let onReview: () -> Void
     let onManual: () -> Void
     let onSearch: () -> Void
     var showSettings: Bool = false
     var onSettings: () -> Void = {}
+    var showsActions = true
+    var showsServings = true
 
     var body: some View {
         Group {
@@ -137,7 +138,7 @@ struct FoodCameraResultPanel: View {
                 foodNutritionRow(draft, isLabel: isLabel, totals: totals)
                     .accessibilityElement(children: isLabel ? .contain : .combine)
                     .padding(.bottom, 14)
-                ForEach(Array(notes.enumerated()), id: \.offset) { _, note in
+                ForEach(Array((showsActions ? notes : []).enumerated()), id: \.offset) { _, note in
                     Text(note)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -146,16 +147,18 @@ struct FoodCameraResultPanel: View {
                 Divider()
                     .padding(.top, notes.isEmpty ? 0 : 6)
                     .padding(.bottom, 12)
-                servingsRow(draft, servings: servings)
-                    .padding(.bottom, 16)
-                if missingNutrients.isEmpty == false {
+                if showsServings {
+                    servingsRow(draft, servings: servings)
+                        .padding(.bottom, 16)
+                }
+                if showsActions, missingNutrients.isEmpty == false {
                     Label(
                         NutritionLabelParser.reviewRequiredNutrientsMessage(missingNutrients),
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.footnote).foregroundStyle(.orange)
-                    wideButton("Edit details", action: onReview)
-                } else {
+                    wideButton("Edit details", action: onDetails)
+                } else if showsActions {
                     actionRow(draft, servings: servings, isLabel: isLabel)
                 }
             }
@@ -215,7 +218,7 @@ struct FoodCameraResultPanel: View {
 
     @ViewBuilder
     private func foodTitle(_ draft: FoodDraft, isLabel: Bool) -> some View {
-        if isLabel {
+        if isLabel && showsActions {
             TextField("Food name", text: Binding(get: { draft.name }, set: onChangeName), axis: .vertical)
                 .font(.headline)
                 .lineLimit(2)
@@ -293,7 +296,7 @@ struct FoodCameraResultPanel: View {
 
     private func actionRow(_ draft: FoodDraft, servings: Double, isLabel: Bool) -> some View {
         let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
-        let details = Button(isLabel ? "Edit details" : "Details", action: isLabel ? onReview : onDetails)
+        let details = Button(isLabel ? "Edit details" : "Details", action: onDetails)
             .buttonStyle(.glass)
         let log = Button(action: onLog) { Text("Log").frame(maxWidth: .infinity) }
             .buttonStyle(.glassProminent)

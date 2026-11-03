@@ -1,0 +1,1422 @@
+{
+  "nodes": [
+    {
+      "index": 0,
+      "type": "Other",
+      "role": "_TtC7SwiftUIP33_ACC2C5639A7D76F611E170E831FCA49118SwiftUIApplication",
+      "subrole": "UIApplication",
+      "label": "Settings",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "enabled": true,
+      "depth": 0,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e1",
+      "kind": "other"
+    },
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "type": "NavigationBar",
+      "role": "SwiftUI.UIKitNavigationBar",
+      "subrole": "UINavigationBar",
+      "identifier": "VoiceOver",
+      "rect": {
+        "x": 0,
+        "y": 47,
+        "width": 390,
+        "height": 54
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e2",
+      "kind": "navigation-bar"
+    },
+    {
+      "index": 2,
+      "parentIndex": 1,
+      "type": "Button",
+      "role": "UIAccessibilityBackButtonElement",
+      "subrole": "UIAccessibilityElement",
+      "label": "Accessibility",
+      "identifier": "BackButton",
+      "rect": {
+        "x": 16,
+        "y": 47,
+        "width": 44,
+        "height": 44
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e3",
+      "kind": "button"
+    },
+    {
+      "index": 3,
+      "parentIndex": 1,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "VoiceOver",
+      "rect": {
+        "x": 154,
+        "y": 58.666666666666664,
+        "width": 81.66666666666669,
+        "height": 20.666666666666664
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e4",
+      "kind": "text"
+    },
+    {
+      "index": 4,
+      "parentIndex": 0,
+      "type": "Table",
+      "role": "UITableView",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e5",
+      "kind": "table"
+    },
+    {
+      "index": 5,
+      "parentIndex": 4,
+      "type": "ScrollView",
+      "role": "UITableViewWrapperView",
+      "rect": {
+        "x": 16,
+        "y": 101,
+        "width": 358,
+        "height": 743
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e6",
+      "kind": "scroll-area"
+    },
+    {
+      "index": 6,
+      "parentIndex": 5,
+      "type": "Other",
+      "role": "Preferences.PSSpecifierToggleContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "identifier": "VoiceOverTouchEnabled",
+      "rect": {
+        "x": 16,
+        "y": 118.66666603088379,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "index": 7,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "VoiceOver Practice",
+      "identifier": "VoiceOverTouchGestureHelpEnabled",
+      "rect": {
+        "x": 16,
+        "y": 331.33333015441895,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e8",
+      "kind": "button"
+    },
+    {
+      "index": 8,
+      "parentIndex": 7,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "VoiceOver Practice",
+      "rect": {
+        "x": 32,
+        "y": 347.66666348775226,
+        "width": 145.33333333333331,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e9",
+      "kind": "button",
+      "inheritsIdentifier": true
+    },
+    {
+      "index": 9,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "VoiceOver Tutorial",
+      "identifier": "VoiceOverTouchTutorialEnabled",
+      "rect": {
+        "x": 16,
+        "y": 384.33333015441895,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e10",
+      "kind": "button"
+    },
+    {
+      "index": 10,
+      "parentIndex": 9,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "VoiceOver Tutorial",
+      "rect": {
+        "x": 32,
+        "y": 400.66666348775226,
+        "width": 139.33333333333331,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e11",
+      "kind": "button",
+      "inheritsIdentifier": true
+    },
+    {
+      "index": 11,
+      "parentIndex": 5,
+      "type": "Other",
+      "role": "PSSpecifierSliderConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Speaking Rate",
+      "value": "50%",
+      "identifier": "SpeakingRateSlider",
+      "rect": {
+        "x": 16,
+        "y": 499.99999618530273,
+        "width": 358,
+        "height": 51
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e12",
+      "kind": "other"
+    },
+    {
+      "index": 12,
+      "parentIndex": 11,
+      "type": "Slider",
+      "role": "UISlider",
+      "value": "50%",
+      "rect": {
+        "x": 32,
+        "y": 507.99999618530273,
+        "width": 326,
+        "height": 35
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e13",
+      "kind": "slider"
+    },
+    {
+      "index": 13,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Speech",
+      "identifier": "Voices",
+      "rect": {
+        "x": 16,
+        "y": 598.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e14",
+      "kind": "button"
+    },
+    {
+      "index": 14,
+      "parentIndex": 13,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Speech",
+      "rect": {
+        "x": 32,
+        "y": 614.9999955495199,
+        "width": 57.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e15",
+      "kind": "text"
+    },
+    {
+      "index": 15,
+      "parentIndex": 13,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 617.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e16",
+      "kind": "button"
+    },
+    {
+      "index": 16,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Braille",
+      "identifier": "Braille",
+      "rect": {
+        "x": 16,
+        "y": 651.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e17",
+      "kind": "button"
+    },
+    {
+      "index": 17,
+      "parentIndex": 16,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Braille",
+      "rect": {
+        "x": 32,
+        "y": 667.9999955495199,
+        "width": 46.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e18",
+      "kind": "text"
+    },
+    {
+      "index": 18,
+      "parentIndex": 16,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 670.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e19",
+      "kind": "button"
+    },
+    {
+      "index": 19,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Verbosity",
+      "identifier": "Verbosity",
+      "rect": {
+        "x": 16,
+        "y": 704.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e20",
+      "kind": "button"
+    },
+    {
+      "index": 20,
+      "parentIndex": 19,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Verbosity",
+      "rect": {
+        "x": 32,
+        "y": 720.9999955495199,
+        "width": 72,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e21",
+      "kind": "text"
+    },
+    {
+      "index": 21,
+      "parentIndex": 19,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 723.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e22",
+      "kind": "button"
+    },
+    {
+      "index": 22,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Audio",
+      "identifier": "Audio",
+      "rect": {
+        "x": 16,
+        "y": 757.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e23",
+      "kind": "button"
+    },
+    {
+      "index": 23,
+      "parentIndex": 22,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Audio",
+      "rect": {
+        "x": 32,
+        "y": 773.9999955495199,
+        "width": 43.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e24",
+      "kind": "text"
+    },
+    {
+      "index": 24,
+      "parentIndex": 22,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 776.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 4,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e25",
+      "kind": "button"
+    },
+    {
+      "index": 25,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "VoiceOver speaks items on the screen:",
+      "rect": {
+        "x": 31.000000000000014,
+        "y": 176.66666666666669,
+        "width": 244.33333333333337,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e26",
+      "kind": "text"
+    },
+    {
+      "index": 26,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "  Tap once to select an item.",
+      "rect": {
+        "x": 31,
+        "y": 192.33333333333334,
+        "width": 176,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e27",
+      "kind": "text"
+    },
+    {
+      "index": 27,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "  Double-tap to activate the selected item.",
+      "rect": {
+        "x": 31,
+        "y": 208,
+        "width": 261,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e28",
+      "kind": "text"
+    },
+    {
+      "index": 28,
+      "parentIndex": 4,
+      "type": "TextView",
+      "role": "UITextView",
+      "label": "Learn more\u2026",
+      "rect": {
+        "x": 31,
+        "y": 228.66666666666669,
+        "width": 79,
+        "height": 20
+      },
+      "enabled": true,
+      "depth": 2,
+      "password": false,
+      "editable": true,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e29",
+      "kind": "text-view"
+    },
+    {
+      "index": 29,
+      "parentIndex": 28,
+      "type": "Link",
+      "role": "UIAccessibilityLinkSubelement",
+      "subrole": "UIAccessibilityElement",
+      "label": "Learn more\u2026",
+      "rect": {
+        "x": 31,
+        "y": 227.66666666666669,
+        "width": 78.66666666666667,
+        "height": 19.666666666666657
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e30",
+      "kind": "link"
+    },
+    {
+      "index": 30,
+      "parentIndex": 28,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 31,
+        "y": 235.66666666666669,
+        "width": 79,
+        "height": 10
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e31",
+      "kind": "other"
+    },
+    {
+      "index": 31,
+      "parentIndex": 4,
+      "type": "TextView",
+      "role": "UITextView",
+      "label": "What\u2019s new in VoiceOver\u2026",
+      "rect": {
+        "x": 31,
+        "y": 253.66666666666669,
+        "width": 160,
+        "height": 20
+      },
+      "enabled": true,
+      "depth": 2,
+      "password": false,
+      "editable": true,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e32",
+      "kind": "text-view"
+    },
+    {
+      "index": 32,
+      "parentIndex": 31,
+      "type": "Link",
+      "role": "UIAccessibilityLinkSubelement",
+      "subrole": "UIAccessibilityElement",
+      "rect": {
+        "x": 31,
+        "y": 252.66666666666669,
+        "width": 159.66666666666666,
+        "height": 19.666666666666686
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e33",
+      "kind": "link",
+      "inheritsLabel": true
+    },
+    {
+      "index": 33,
+      "parentIndex": 31,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 31,
+        "y": 260.6666666666667,
+        "width": 160,
+        "height": 10
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e34",
+      "kind": "other"
+    },
+    {
+      "index": 34,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "UITableViewHeaderFooterView",
+      "label": "Speaking Rate",
+      "rect": {
+        "x": 16,
+        "y": 454.66666412353516,
+        "width": 358,
+        "height": 45.33333206176758
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e35",
+      "kind": "other"
+    },
+    {
+      "index": 35,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "UITableViewHeaderFooterView",
+      "label": "Adjusts the speaking rate of the current voice.",
+      "rect": {
+        "x": 16,
+        "y": 550.9999968210857,
+        "width": 358,
+        "height": 30
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e36",
+      "kind": "other"
+    },
+    {
+      "index": 36,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Vertical scroll bar, 3 pages",
+      "value": "0%",
+      "rect": {
+        "x": 357,
+        "y": 101,
+        "width": 30,
+        "height": 695.6700000000001
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e37",
+      "kind": "other"
+    },
+    {
+      "index": 37,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 47.33,
+        "y": 811,
+        "width": 295.3400000000001,
+        "height": 30
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e38",
+      "kind": "other"
+    },
+    {
+      "index": 38,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Vertical scroll bar, 3 pages",
+      "value": "0%",
+      "rect": {
+        "x": 357,
+        "y": 101,
+        "width": 30,
+        "height": 695.6700000000001
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e39",
+      "kind": "other"
+    },
+    {
+      "index": 39,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 47.33,
+        "y": 811,
+        "width": 295.3400000000001,
+        "height": 30
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e40",
+      "kind": "other"
+    },
+    {
+      "index": 40,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Audio",
+      "identifier": "Audio",
+      "rect": {
+        "x": 16,
+        "y": 757.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e41",
+      "kind": "button"
+    },
+    {
+      "index": 41,
+      "parentIndex": 40,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Audio",
+      "rect": {
+        "x": 32,
+        "y": 773.9999955495199,
+        "width": 43.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e42",
+      "kind": "text"
+    },
+    {
+      "index": 42,
+      "parentIndex": 40,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 776.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e43",
+      "kind": "button"
+    },
+    {
+      "index": 43,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Verbosity",
+      "identifier": "Verbosity",
+      "rect": {
+        "x": 16,
+        "y": 704.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e44",
+      "kind": "button"
+    },
+    {
+      "index": 44,
+      "parentIndex": 43,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Verbosity",
+      "rect": {
+        "x": 32,
+        "y": 720.9999955495199,
+        "width": 72,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e45",
+      "kind": "text"
+    },
+    {
+      "index": 45,
+      "parentIndex": 43,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 723.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e46",
+      "kind": "button"
+    },
+    {
+      "index": 46,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Braille",
+      "identifier": "Braille",
+      "rect": {
+        "x": 16,
+        "y": 651.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e47",
+      "kind": "button"
+    },
+    {
+      "index": 47,
+      "parentIndex": 46,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Braille",
+      "rect": {
+        "x": 32,
+        "y": 667.9999955495199,
+        "width": 46.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e48",
+      "kind": "text"
+    },
+    {
+      "index": 48,
+      "parentIndex": 46,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 670.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e49",
+      "kind": "button"
+    },
+    {
+      "index": 49,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Speech",
+      "identifier": "Voices",
+      "rect": {
+        "x": 16,
+        "y": 598.6666622161865,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e50",
+      "kind": "button"
+    },
+    {
+      "index": 50,
+      "parentIndex": 49,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Speech",
+      "rect": {
+        "x": 32,
+        "y": 614.9999955495199,
+        "width": 57.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e51",
+      "kind": "text"
+    },
+    {
+      "index": 51,
+      "parentIndex": 49,
+      "type": "Button",
+      "role": "_UITableCellAccessoryButton",
+      "label": "chevron",
+      "rect": {
+        "x": 347.6666666666667,
+        "y": 617.9999955495199,
+        "width": 10.333333333333314,
+        "height": 14
+      },
+      "enabled": false,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": false,
+      "ref": "e52",
+      "kind": "button"
+    },
+    {
+      "index": 52,
+      "parentIndex": 4,
+      "type": "Other",
+      "role": "PSSpecifierSliderConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "Speaking Rate",
+      "value": "50%",
+      "identifier": "SpeakingRateSlider",
+      "rect": {
+        "x": 16,
+        "y": 499.99999618530273,
+        "width": 358,
+        "height": 51
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e53",
+      "kind": "other"
+    },
+    {
+      "index": 53,
+      "parentIndex": 52,
+      "type": "Slider",
+      "role": "UISlider",
+      "value": "50%",
+      "rect": {
+        "x": 32,
+        "y": 507.99999618530273,
+        "width": 326,
+        "height": 35
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e54",
+      "kind": "slider"
+    },
+    {
+      "index": 54,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "VoiceOver Tutorial",
+      "identifier": "VoiceOverTouchTutorialEnabled",
+      "rect": {
+        "x": 16,
+        "y": 384.33333015441895,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e55",
+      "kind": "button"
+    },
+    {
+      "index": 55,
+      "parentIndex": 54,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "VoiceOver Tutorial",
+      "rect": {
+        "x": 32,
+        "y": 400.66666348775226,
+        "width": 139.33333333333331,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e56",
+      "kind": "button",
+      "inheritsIdentifier": true
+    },
+    {
+      "index": 56,
+      "parentIndex": 4,
+      "type": "Button",
+      "role": "Preferences.PSSpecifierContentConfigurationCell",
+      "subrole": "UITableViewCell",
+      "label": "VoiceOver Practice",
+      "identifier": "VoiceOverTouchGestureHelpEnabled",
+      "rect": {
+        "x": 16,
+        "y": 331.33333015441895,
+        "width": 358,
+        "height": 53
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e57",
+      "kind": "button"
+    },
+    {
+      "index": 57,
+      "parentIndex": 56,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "VoiceOver Practice",
+      "rect": {
+        "x": 32,
+        "y": 347.66666348775226,
+        "width": 145.33333333333331,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e58",
+      "kind": "button",
+      "inheritsIdentifier": true
+    },
+    {
+      "index": 58,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "VoiceOver speaks items on the screen:",
+      "rect": {
+        "x": 31.000000000000014,
+        "y": 176.66666666666669,
+        "width": 244.33333333333337,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e59",
+      "kind": "text"
+    },
+    {
+      "index": 59,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "  Tap once to select an item.",
+      "rect": {
+        "x": 31,
+        "y": 192.33333333333334,
+        "width": 176,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e60",
+      "kind": "text"
+    },
+    {
+      "index": 60,
+      "parentIndex": 4,
+      "type": "StaticText",
+      "role": "UILabel",
+      "label": "  Double-tap to activate the selected item.",
+      "rect": {
+        "x": 31,
+        "y": 208,
+        "width": 261,
+        "height": 15.666666666666657
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e61",
+      "kind": "text"
+    },
+    {
+      "index": 61,
+      "parentIndex": 4,
+      "type": "TextView",
+      "role": "UITextView",
+      "label": "Learn more\u2026",
+      "rect": {
+        "x": 31,
+        "y": 228.66666666666669,
+        "width": 79,
+        "height": 20
+      },
+      "enabled": true,
+      "depth": 2,
+      "password": false,
+      "editable": true,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e62",
+      "kind": "text-view"
+    },
+    {
+      "index": 62,
+      "parentIndex": 61,
+      "type": "Link",
+      "role": "UIAccessibilityLinkSubelement",
+      "subrole": "UIAccessibilityElement",
+      "label": "Learn more\u2026",
+      "rect": {
+        "x": 31,
+        "y": 227.66666666666669,
+        "width": 78.66666666666667,
+        "height": 19.666666666666657
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e63",
+      "kind": "link"
+    },
+    {
+      "index": 63,
+      "parentIndex": 61,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 31,
+        "y": 235.66666666666669,
+        "width": 79,
+        "height": 10
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e64",
+      "kind": "other"
+    },
+    {
+      "index": 64,
+      "parentIndex": 4,
+      "type": "TextView",
+      "role": "UITextView",
+      "label": "What\u2019s new in VoiceOver\u2026",
+      "rect": {
+        "x": 31,
+        "y": 253.66666666666669,
+        "width": 160,
+        "height": 20
+      },
+      "enabled": true,
+      "depth": 2,
+      "password": false,
+      "editable": true,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e65",
+      "kind": "text-view"
+    },
+    {
+      "index": 65,
+      "parentIndex": 64,
+      "type": "Link",
+      "role": "UIAccessibilityLinkSubelement",
+      "subrole": "UIAccessibilityElement",
+      "rect": {
+        "x": 31,
+        "y": 252.66666666666669,
+        "width": 159.66666666666666,
+        "height": 19.666666666666686
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e66",
+      "kind": "link",
+      "inheritsLabel": true
+    },
+    {
+      "index": 66,
+      "parentIndex": 64,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Horizontal scroll bar, 1 page",
+      "value": "0%",
+      "rect": {
+        "x": 31,
+        "y": 260.6666666666667,
+        "width": 160,
+        "height": 10
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e67",
+      "kind": "other"
+    },
+    {
+      "index": 67,
+      "parentIndex": 0,
+      "type": "Toolbar",
+      "role": "_UIFloatingBarContainerView",
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e68",
+      "kind": "toolbar"
+    },
+    {
+      "index": 68,
+      "parentIndex": 0,
+      "type": "Toolbar",
+      "role": "_UIFloatingBarContainerView",
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 67595,
+      "hittable": true,
+      "ref": "e69",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "Settings",
+  "appBundleId": "com.apple.Preferences",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 69,
+    "totalNodeCount": 69,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "absent",
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 5,
+      "droppedNodeCount": 0
+    }
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 550,
+      "p50Ms": 122,
+      "p95Ms": 408,
+      "maxMs": 3419,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 550
+      }
+    }
+  },
+  "refsGeneration": 978605
+}

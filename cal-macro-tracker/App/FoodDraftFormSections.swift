@@ -175,6 +175,7 @@ struct FoodDraftFormSections: View {
     @Binding var draft: FoodDraft
     let configuration: FoodDraftEditorConfiguration
     let focusedField: FocusState<FoodDraftField?>.Binding
+    let onFieldAppear: ((FoodDraftField) -> Void)?
     @Binding var showsAdditionalNutrition: Bool
     @Binding private var numericText: FoodDraftNumericText
 
@@ -183,13 +184,15 @@ struct FoodDraftFormSections: View {
         numericText: Binding<FoodDraftNumericText>,
         configuration: FoodDraftEditorConfiguration,
         showsAdditionalNutrition: Binding<Bool>,
-        focusedField: FocusState<FoodDraftField?>.Binding
+        focusedField: FocusState<FoodDraftField?>.Binding,
+        onFieldAppear: ((FoodDraftField) -> Void)? = nil
     ) {
         _draft = draft
         _numericText = numericText
         self.configuration = configuration
         _showsAdditionalNutrition = showsAdditionalNutrition
         self.focusedField = focusedField
+        self.onFieldAppear = onFieldAppear
     }
 
     var body: some View {
@@ -197,16 +200,24 @@ struct FoodDraftFormSections: View {
             Section("Food") {
                 TextField("Name", text: $draft.name)
                     .focused(focusedField, equals: .name)
+                    .id(FoodDraftField.name)
+                    .onAppear { onFieldAppear?(.name) }
                 TextField(configuration.brandPrompt, text: $draft.brand)
                     .focused(focusedField, equals: .brand)
+                    .id(FoodDraftField.brand)
+                    .onAppear { onFieldAppear?(.brand) }
                 TextField("Serving description", text: $draft.servingDescription)
                     .focused(focusedField, equals: .servingDescription)
+                    .id(FoodDraftField.servingDescription)
+                    .onAppear { onFieldAppear?(.servingDescription) }
                 AppNumericTextField(
                     configuration.gramsPrompt,
                     text: numericBinding(\.gramsPerServing),
                     focusedField: focusedField,
                     field: .gramsPerServing
                 )
+                .id(FoodDraftField.gramsPerServing)
+                .onAppear { onFieldAppear?(.gramsPerServing) }
             }
 
             Section(nutritionSectionTitle) {
@@ -283,6 +294,8 @@ struct FoodDraftFormSections: View {
             focusedField: focusedField,
             field: field
         )
+        .id(field)
+        .onAppear { onFieldAppear?(field) }
     }
 
     private func numericBinding(_ keyPath: WritableKeyPath<FoodDraftNumericText, String>) -> Binding<String> {

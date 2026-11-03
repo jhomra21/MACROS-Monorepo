@@ -1,0 +1,1351 @@
+{
+  "nodes": [
+    {
+      "depth": 0,
+      "enabled": true,
+      "type": "Application",
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "x": 0,
+        "height": 844
+      },
+      "index": 0,
+      "label": "MACROS",
+      "hittable": false,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "depth": 1,
+      "enabled": true,
+      "type": "Window",
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "x": 0,
+        "height": 844
+      },
+      "index": 1,
+      "label": "Dictate",
+      "parentIndex": 0,
+      "hittable": true,
+      "ref": "e2",
+      "kind": "window"
+    },
+    {
+      "depth": 2,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "x": 0,
+        "height": 844
+      },
+      "index": 2,
+      "label": "Dictate",
+      "parentIndex": 1,
+      "hittable": true,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "depth": 3,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 390,
+        "y": 542,
+        "x": 0,
+        "height": 302
+      },
+      "index": 3,
+      "label": "Dictate",
+      "parentIndex": 2,
+      "hittable": true,
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "depth": 4,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 390,
+        "y": 559,
+        "x": 0,
+        "height": 227
+      },
+      "index": 4,
+      "label": "1",
+      "parentIndex": 3,
+      "hittable": true,
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "depth": 5,
+      "enabled": true,
+      "type": "Keyboard",
+      "rect": {
+        "width": 390,
+        "y": 559,
+        "x": 0,
+        "height": 227
+      },
+      "index": 5,
+      "label": "1",
+      "parentIndex": 4,
+      "hittable": true,
+      "ref": "e6",
+      "kind": "keyboard"
+    },
+    {
+      "identifier": "UIKeyboardLayoutStar Preview",
+      "depth": 6,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 390,
+        "y": 559,
+        "x": 0,
+        "height": 227
+      },
+      "index": 6,
+      "label": "1",
+      "parentIndex": 5,
+      "hittable": true,
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "depth": 7,
+      "enabled": true,
+      "type": "Key",
+      "rect": {
+        "width": 128.33333333333334,
+        "y": 566,
+        "x": 4.666666666666657,
+        "height": 54
+      },
+      "index": 7,
+      "label": "1",
+      "parentIndex": 6,
+      "hittable": true,
+      "ref": "e8",
+      "kind": "key"
+    },
+    {
+      "depth": 7,
+      "enabled": true,
+      "type": "Key",
+      "rect": {
+        "width": 128.66666666666666,
+        "y": 566,
+        "x": 133.00000000000003,
+        "height": 54
+      },
+      "index": 8,
+      "label": "2",
+      "parentIndex": 6,
+      "hittable": true,
+      "ref": "e9",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 9,
+      "rect": {
+        "width": 128.33333333333337,
+        "y": 566,
+        "x": 261.66666666666663,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "3",
+      "ref": "e10",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 10,
+      "rect": {
+        "width": 128.33333333333334,
+        "y": 620,
+        "x": 4.666666666666657,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "4",
+      "ref": "e11",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 11,
+      "rect": {
+        "width": 128.66666666666666,
+        "y": 620,
+        "x": 133.00000000000003,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "5",
+      "ref": "e12",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 12,
+      "rect": {
+        "width": 128.33333333333337,
+        "y": 620,
+        "x": 261.66666666666663,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "6",
+      "ref": "e13",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 13,
+      "rect": {
+        "width": 128.33333333333334,
+        "y": 674,
+        "x": 4.666666666666657,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "7",
+      "ref": "e14",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 14,
+      "rect": {
+        "width": 128.66666666666666,
+        "y": 674,
+        "x": 133.00000000000003,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "8",
+      "ref": "e15",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 15,
+      "rect": {
+        "width": 128.33333333333337,
+        "y": 674,
+        "x": 261.66666666666663,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "9",
+      "ref": "e16",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 16,
+      "rect": {
+        "width": 128.33333333333334,
+        "y": 728,
+        "x": 4.666666666666657,
+        "height": 54
+      },
+      "hittable": true,
+      "label": ".",
+      "ref": "e17",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 17,
+      "rect": {
+        "width": 128.66666666666666,
+        "y": 728,
+        "x": 133.00000000000003,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "0",
+      "ref": "e18",
+      "kind": "key"
+    },
+    {
+      "type": "Key",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 18,
+      "rect": {
+        "width": 128.33333333333337,
+        "y": 728,
+        "x": 261.66666666666663,
+        "height": 54
+      },
+      "hittable": true,
+      "label": "Delete",
+      "ref": "e19",
+      "kind": "key"
+    },
+    {
+      "type": "Other",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 3,
+      "index": 19,
+      "rect": {
+        "width": 390,
+        "y": 559,
+        "x": 0,
+        "height": 285
+      },
+      "hittable": true,
+      "label": "Dictate",
+      "ref": "e20",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": false,
+      "parentIndex": 19,
+      "index": 20,
+      "rect": {
+        "width": 68.08529584750863,
+        "y": 775.3656234665239,
+        "x": 313.43743847133214,
+        "height": 68.63437653347614
+      },
+      "hittable": false,
+      "label": "Dictate",
+      "identifier": "dictation",
+      "ref": "e21",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "depth": 1,
+      "enabled": true,
+      "parentIndex": 0,
+      "index": 21,
+      "rect": {
+        "width": 390,
+        "y": 494,
+        "x": 0,
+        "height": 350
+      },
+      "hittable": true,
+      "label": "Toolbar",
+      "ref": "e22",
+      "kind": "other"
+    },
+    {
+      "type": "Other",
+      "depth": 2,
+      "enabled": true,
+      "parentIndex": 21,
+      "index": 22,
+      "rect": {
+        "width": 390,
+        "y": 494,
+        "x": 0,
+        "height": 48
+      },
+      "hittable": true,
+      "label": "Toolbar",
+      "ref": "e23",
+      "kind": "other"
+    },
+    {
+      "type": "Toolbar",
+      "depth": 3,
+      "enabled": true,
+      "parentIndex": 22,
+      "index": 23,
+      "rect": {
+        "width": 390,
+        "y": 494,
+        "x": 0,
+        "height": 48
+      },
+      "hittable": true,
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "ref": "e24",
+      "kind": "toolbar"
+    },
+    {
+      "type": "Other",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 23,
+      "index": 24,
+      "rect": {
+        "width": 40,
+        "y": 500,
+        "x": 21,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Previous field",
+      "ref": "e25",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 24,
+      "index": 25,
+      "rect": {
+        "width": 40,
+        "y": 500,
+        "x": 21,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Previous field",
+      "identifier": "chevron.up",
+      "ref": "e26",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 23,
+      "index": 26,
+      "rect": {
+        "width": 40,
+        "y": 500,
+        "x": 75,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Next field",
+      "ref": "e27",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 26,
+      "index": 27,
+      "rect": {
+        "width": 40,
+        "y": 500,
+        "x": 75,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Next field",
+      "identifier": "chevron.down",
+      "ref": "e28",
+      "kind": "button"
+    },
+    {
+      "type": "Other",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 23,
+      "index": 28,
+      "rect": {
+        "width": 62.333333333333314,
+        "y": 500,
+        "x": 306.66666666666663,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Done",
+      "ref": "e29",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 28,
+      "index": 29,
+      "rect": {
+        "width": 62.333333333333314,
+        "y": 500,
+        "x": 306.66666666666663,
+        "height": 36
+      },
+      "hittable": true,
+      "label": "Done",
+      "ref": "e30",
+      "kind": "button"
+    },
+    {
+      "parentIndex": 21,
+      "index": 30,
+      "rect": {
+        "width": 390,
+        "y": 542,
+        "x": 0,
+        "height": 302
+      },
+      "identifier": "inputView",
+      "enabled": true,
+      "hittable": true,
+      "type": "Other",
+      "depth": 2,
+      "ref": "e31",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 0,
+      "index": 31,
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "x": 0,
+        "height": 844
+      },
+      "enabled": true,
+      "label": "Toolbar",
+      "hittable": true,
+      "type": "Other",
+      "depth": 1,
+      "ref": "e32",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 31,
+      "index": 32,
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "width": 390,
+        "x": 0
+      },
+      "enabled": true,
+      "label": "Food details",
+      "hittable": true,
+      "type": "Other",
+      "depth": 2,
+      "ref": "e33",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 32,
+      "index": 33,
+      "rect": {
+        "y": 61.33333206176758,
+        "height": 172.00001525878906,
+        "width": 327.6666564941406,
+        "x": 30.33333396911621
+      },
+      "identifier": "camera-result-card",
+      "enabled": true,
+      "label": "Food details",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 3,
+      "ref": "e34",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 33,
+      "index": 34,
+      "rect": {
+        "y": 61.33333206176758,
+        "height": 74.33334350585938,
+        "width": 208,
+        "x": 30.33333396911621
+      },
+      "enabled": true,
+      "label": "Fajita Flour Tortillas, Guerrero, 200 kcal, P 2, C 17, F 5",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 4,
+      "ref": "e35",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 35,
+      "rect": {
+        "y": 63,
+        "height": 20.33333333333333,
+        "width": 154.33333333333331,
+        "x": 84
+      },
+      "enabled": true,
+      "label": "Fajita Flour Tortillas",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e36",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 36,
+      "rect": {
+        "y": 89.33333333333333,
+        "height": 18,
+        "width": 61,
+        "x": 84
+      },
+      "enabled": true,
+      "label": "Guerrero",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e37",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 37,
+      "rect": {
+        "y": 115.33333333333333,
+        "height": 20.33333333333333,
+        "width": 68.33333333333333,
+        "x": 32
+      },
+      "enabled": true,
+      "label": "200 kcal",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e38",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 38,
+      "rect": {
+        "y": 117.66666666666666,
+        "height": 15.666666666666657,
+        "width": 19.999999999999986,
+        "x": 112.33333333333333
+      },
+      "enabled": true,
+      "label": "P 2",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e39",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 39,
+      "rect": {
+        "y": 117.66666666666666,
+        "height": 15.666666666666657,
+        "width": 29.333333333333343,
+        "x": 144.33333333333331
+      },
+      "enabled": true,
+      "label": "C 17",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e40",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 34,
+      "index": 40,
+      "rect": {
+        "y": 117.66666666666666,
+        "height": 15.666666666666657,
+        "width": 19.333333333333343,
+        "x": 185.66666666666666
+      },
+      "enabled": true,
+      "label": "F 5",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 5,
+      "ref": "e41",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 33,
+      "index": 41,
+      "rect": {
+        "y": 167.83333333333331,
+        "height": 20.333333333333343,
+        "width": 66.33333333333333,
+        "x": 32
+      },
+      "enabled": true,
+      "label": "Servings",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 4,
+      "ref": "e42",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 33,
+      "index": 42,
+      "rect": {
+        "y": 167.83333333333331,
+        "height": 20.333333333333343,
+        "width": 10.333333333333343,
+        "x": 245.66666666666663
+      },
+      "enabled": true,
+      "label": "1",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 4,
+      "ref": "e43",
+      "kind": "text"
+    },
+    {
+      "depth": 4,
+      "parentIndex": 33,
+      "index": 43,
+      "rect": {
+        "y": 162,
+        "height": 32,
+        "width": 94,
+        "x": 264
+      },
+      "enabled": true,
+      "label": "Servings",
+      "hittable": true,
+      "type": "Stepper",
+      "value": "1",
+      "ref": "e44",
+      "kind": "stepper"
+    },
+    {
+      "depth": 5,
+      "parentIndex": 43,
+      "index": 44,
+      "rect": {
+        "y": 162,
+        "height": 32,
+        "width": 47,
+        "x": 264
+      },
+      "identifier": "Decrement",
+      "enabled": true,
+      "label": "Servings, Decrement",
+      "hittable": true,
+      "type": "Button",
+      "value": "1",
+      "ref": "e45",
+      "kind": "button"
+    },
+    {
+      "depth": 5,
+      "parentIndex": 43,
+      "index": 45,
+      "rect": {
+        "y": 162,
+        "height": 32,
+        "width": 47,
+        "x": 311
+      },
+      "identifier": "Increment",
+      "enabled": true,
+      "label": "Servings, Increment",
+      "hittable": true,
+      "type": "Button",
+      "value": "1",
+      "ref": "e46",
+      "kind": "button"
+    },
+    {
+      "parentIndex": 33,
+      "index": 46,
+      "rect": {
+        "y": 198,
+        "height": 15.666666666666657,
+        "width": 121,
+        "x": 32
+      },
+      "enabled": true,
+      "label": "1 tortilla (37 g) each",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 4,
+      "ref": "e47",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 33,
+      "index": 47,
+      "rect": {
+        "y": 217.66666666666666,
+        "height": 15.666666666666657,
+        "width": 58.66666666666666,
+        "x": 32
+      },
+      "enabled": true,
+      "label": "37 g total",
+      "hittable": true,
+      "type": "StaticText",
+      "depth": 4,
+      "ref": "e48",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 32,
+      "index": 48,
+      "rect": {
+        "y": 265.3333333333333,
+        "height": 31,
+        "width": 326,
+        "x": 32
+      },
+      "identifier": "camera-result-card",
+      "enabled": true,
+      "label": "Servings",
+      "hittable": true,
+      "type": "SegmentedControl",
+      "depth": 3,
+      "ref": "e49",
+      "kind": "segmented-control"
+    },
+    {
+      "parentIndex": 48,
+      "index": 49,
+      "rect": {
+        "y": 265.3333333333333,
+        "height": 32,
+        "width": 163,
+        "x": 32
+      },
+      "selected": true,
+      "enabled": true,
+      "label": "Servings",
+      "hittable": true,
+      "type": "Button",
+      "depth": 4,
+      "ref": "e50",
+      "kind": "button"
+    },
+    {
+      "parentIndex": 48,
+      "index": 50,
+      "rect": {
+        "y": 265.3333333333333,
+        "height": 32,
+        "width": 163,
+        "x": 195
+      },
+      "enabled": true,
+      "label": "Grams",
+      "hittable": true,
+      "type": "Button",
+      "depth": 4,
+      "ref": "e51",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "identifier": "camera-result-card",
+      "enabled": true,
+      "type": "CollectionView",
+      "label": "Vertical scroll bar, 5 pages",
+      "index": 51,
+      "depth": 3,
+      "hiddenContentAbove": true,
+      "rect": {
+        "y": 296.3333333333333,
+        "height": 149.33333333333331,
+        "width": 358,
+        "x": 16
+      },
+      "parentIndex": 32,
+      "ref": "e52",
+      "kind": "collection"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Cell",
+      "label": "1 tortilla (37 g)",
+      "index": 52,
+      "depth": 4,
+      "rect": {
+        "y": 296.3333333333333,
+        "height": 1,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 51,
+      "ref": "e53",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "label": "1 tortilla (37 g)",
+      "index": 53,
+      "depth": 5,
+      "rect": {
+        "y": 296.3333333333333,
+        "height": 1,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 52,
+      "ref": "e54",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Cell",
+      "label": "37",
+      "index": 54,
+      "depth": 4,
+      "rect": {
+        "y": 297.3333333333333,
+        "height": 52,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 51,
+      "ref": "e55",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "label": "37",
+      "index": 55,
+      "depth": 5,
+      "rect": {
+        "y": 297.3333333333333,
+        "height": 52,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 54,
+      "ref": "e56",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "value": "37",
+      "placeholder": "Grams per serving (optional)",
+      "enabled": true,
+      "type": "TextField",
+      "label": "37",
+      "index": 56,
+      "depth": 6,
+      "rect": {
+        "y": 312.3333333333333,
+        "height": 22,
+        "width": 294,
+        "x": 48
+      },
+      "parentIndex": 55,
+      "password": false,
+      "editable": true,
+      "ref": "e57",
+      "kind": "text-field"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Cell",
+      "label": "Nutrition",
+      "index": 57,
+      "depth": 4,
+      "rect": {
+        "y": 367,
+        "height": 40.333333333333314,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 51,
+      "ref": "e58",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "label": "Nutrition",
+      "index": 58,
+      "depth": 5,
+      "rect": {
+        "y": 367,
+        "height": 40.333333333333314,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 57,
+      "ref": "e59",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "Nutrition",
+      "index": 59,
+      "depth": 6,
+      "rect": {
+        "y": 367,
+        "height": 40.333333333333314,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 58,
+      "ref": "e60",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Cell",
+      "label": "Calories",
+      "index": 60,
+      "depth": 4,
+      "rect": {
+        "y": 407,
+        "height": 38.66666666666663,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 51,
+      "ref": "e61",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "label": "Calories",
+      "index": 61,
+      "depth": 5,
+      "rect": {
+        "y": 407,
+        "height": 38.66666666666663,
+        "width": 326,
+        "x": 32
+      },
+      "parentIndex": 60,
+      "ref": "e62",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "Calories",
+      "index": 62,
+      "depth": 6,
+      "rect": {
+        "y": 422.8333333333333,
+        "height": 20.333333333333314,
+        "width": 62,
+        "x": 48
+      },
+      "parentIndex": 61,
+      "ref": "e63",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "focused": true,
+      "value": "200",
+      "placeholder": "Calories",
+      "enabled": true,
+      "type": "TextField",
+      "label": "Calories",
+      "index": 63,
+      "depth": 6,
+      "rect": {
+        "y": 422,
+        "height": 22,
+        "width": 180,
+        "x": 118
+      },
+      "parentIndex": 61,
+      "password": false,
+      "editable": true,
+      "ref": "e64",
+      "kind": "text-field"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "Calories, kcal",
+      "index": 64,
+      "depth": 6,
+      "rect": {
+        "y": 422.8333333333333,
+        "height": 20.333333333333314,
+        "width": 30.333333333333314,
+        "x": 306
+      },
+      "parentIndex": 61,
+      "ref": "e65",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "value": "37%",
+      "enabled": true,
+      "type": "Other",
+      "index": 65,
+      "depth": 4,
+      "rect": {
+        "y": 296.3333333333333,
+        "height": 149.33333333333331,
+        "width": 30,
+        "x": 341
+      },
+      "parentIndex": 51,
+      "ref": "e66",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "hittable": true,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "label": "Close camera",
+      "type": "Button",
+      "index": 66,
+      "depth": 3,
+      "rect": {
+        "x": 24,
+        "y": 346,
+        "height": 44,
+        "width": 44
+      },
+      "parentIndex": 32,
+      "ref": "e67",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "type": "Button",
+      "label": "Scan again",
+      "index": 67,
+      "depth": 3,
+      "rect": {
+        "width": 152.66666666666666,
+        "y": 342,
+        "x": 118.66666666666666,
+        "height": 51.666666666666686
+      },
+      "parentIndex": 32,
+      "ref": "e68",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "label": "Scan again",
+      "index": 68,
+      "depth": 4,
+      "rect": {
+        "width": 152.66666666666666,
+        "y": 342,
+        "x": 118.66666666666666,
+        "height": 51.666666666666686
+      },
+      "parentIndex": 67,
+      "ref": "e69",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "identifier": "arrow.counterclockwise",
+      "enabled": true,
+      "type": "Image",
+      "label": "Counterclockwise Curved Arrow",
+      "index": 69,
+      "depth": 4,
+      "rect": {
+        "width": 15,
+        "y": 358.3333333333333,
+        "x": 140,
+        "height": 18.33333396911621
+      },
+      "parentIndex": 67,
+      "ref": "e70",
+      "kind": "image"
+    },
+    {
+      "hittable": true,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "type": "Button",
+      "label": "Photograph nutrition label",
+      "index": 70,
+      "depth": 3,
+      "rect": {
+        "width": 68,
+        "y": 342,
+        "x": 161,
+        "height": 68
+      },
+      "parentIndex": 32,
+      "ref": "e71",
+      "kind": "button"
+    },
+    {
+      "hittable": true,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "type": "Button",
+      "label": "More camera options",
+      "index": 71,
+      "depth": 3,
+      "rect": {
+        "width": 44,
+        "y": 354,
+        "x": 322,
+        "height": 44
+      },
+      "parentIndex": 32,
+      "ref": "e72",
+      "kind": "button"
+    },
+    {
+      "depth": 3,
+      "index": 72,
+      "hittable": true,
+      "identifier": "camera-result-card",
+      "label": "Log",
+      "parentIndex": 32,
+      "type": "Button",
+      "rect": {
+        "width": 326,
+        "y": 461.66666666666663,
+        "x": 32,
+        "height": 50.333333333333314
+      },
+      "enabled": true,
+      "ref": "e73",
+      "kind": "button"
+    },
+    {
+      "depth": 2,
+      "index": 73,
+      "hittable": true,
+      "identifier": "Toolbar",
+      "label": "Toolbar",
+      "parentIndex": 31,
+      "type": "Toolbar",
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "x": 0,
+        "height": 844
+      },
+      "enabled": true,
+      "ref": "e74",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 74,
+    "totalNodeCount": 74,
+    "reasons": [
+      "scroll-hidden-above",
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "visible",
+    "frame": {
+      "x": 0,
+      "y": 559,
+      "width": 390,
+      "height": 227
+    }
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 220.51000595092773,
+      "presentationMs": 0.38909912109375
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 10,
+      "droppedNodeCount": 1
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 54,
+      "p50Ms": 222,
+      "p95Ms": 880,
+      "maxMs": 2528,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 54
+      }
+    }
+  },
+  "refsGeneration": 616733
+}

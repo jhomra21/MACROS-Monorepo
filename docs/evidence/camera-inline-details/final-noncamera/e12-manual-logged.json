@@ -1,0 +1,227 @@
+{
+  "nodes": [
+    {
+      "label": "MACROS",
+      "index": 0,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "type": "Application",
+      "hittable": false,
+      "depth": 0,
+      "enabled": true,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "label": "Enjoying MACROS?",
+      "parentIndex": 0,
+      "index": 1,
+      "rect": {
+        "y": 0,
+        "width": 390,
+        "x": 0,
+        "height": 844
+      },
+      "type": "Other",
+      "hittable": true,
+      "depth": 1,
+      "enabled": true,
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "label": "Enjoying MACROS?",
+      "parentIndex": 1,
+      "index": 2,
+      "rect": {
+        "y": 389.3333333333333,
+        "width": 153.33333333333331,
+        "x": 65,
+        "height": 20.333333333333314
+      },
+      "type": "StaticText",
+      "hittable": true,
+      "depth": 2,
+      "enabled": true,
+      "ref": "e3",
+      "kind": "text"
+    },
+    {
+      "label": "Tap a star to rate it on the App\u00a0Store.",
+      "parentIndex": 1,
+      "index": 3,
+      "rect": {
+        "y": 417.66666666666663,
+        "width": 252.33333333333331,
+        "x": 65,
+        "height": 18
+      },
+      "type": "StaticText",
+      "hittable": true,
+      "depth": 2,
+      "enabled": true,
+      "ref": "e4",
+      "kind": "text"
+    },
+    {
+      "label": "1 star unselected",
+      "parentIndex": 1,
+      "index": 4,
+      "rect": {
+        "y": 473,
+        "width": 24.666667938232422,
+        "x": 93.33333333333333,
+        "height": 23.33333396911621
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 2,
+      "identifier": "star",
+      "enabled": true,
+      "ref": "e5",
+      "kind": "button"
+    },
+    {
+      "label": "2 stars unselected",
+      "parentIndex": 1,
+      "index": 5,
+      "rect": {
+        "y": 473,
+        "width": 24.666667938232422,
+        "x": 138,
+        "height": 23.33333396911621
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 2,
+      "identifier": "star",
+      "enabled": true,
+      "ref": "e6",
+      "kind": "button"
+    },
+    {
+      "label": "3 stars unselected",
+      "parentIndex": 1,
+      "index": 6,
+      "rect": {
+        "y": 473,
+        "width": 24.666667938232422,
+        "x": 182.66666666666666,
+        "height": 23.33333396911621
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 2,
+      "identifier": "star",
+      "enabled": true,
+      "ref": "e7",
+      "kind": "button"
+    },
+    {
+      "label": "4 stars unselected",
+      "parentIndex": 1,
+      "index": 7,
+      "rect": {
+        "y": 473,
+        "width": 24.666667938232422,
+        "x": 227.33333333333331,
+        "height": 23.33333396911621
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 2,
+      "identifier": "star",
+      "enabled": true,
+      "ref": "e8",
+      "kind": "button"
+    },
+    {
+      "label": "5 stars unselected",
+      "parentIndex": 1,
+      "index": 8,
+      "rect": {
+        "y": 473,
+        "width": 24.666667938232422,
+        "x": 272,
+        "height": 23.33333396911621
+      },
+      "type": "Button",
+      "hittable": true,
+      "depth": 2,
+      "identifier": "star",
+      "enabled": true,
+      "ref": "e9",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "depth": 2,
+      "enabled": true,
+      "parentIndex": 1,
+      "rect": {
+        "y": 515.3333129882812,
+        "width": 288,
+        "x": 51,
+        "height": 50.3333740234375
+      },
+      "hittable": true,
+      "index": 9,
+      "label": "Not Now",
+      "ref": "e10",
+      "kind": "button"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": false,
+    "visibleNodeCount": 10,
+    "totalNodeCount": 10,
+    "reasons": []
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 170.62103748321533,
+      "presentationMs": 0.08308887481689453
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 1,
+      "droppedNodeCount": 0
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 506,
+      "p50Ms": 142,
+      "p95Ms": 394,
+      "maxMs": 3270,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 506
+      }
+    }
+  },
+  "refsGeneration": 617145
+}

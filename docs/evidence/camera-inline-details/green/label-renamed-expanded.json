@@ -1,0 +1,885 @@
+{
+  "nodes": [
+    {
+      "hittable": false,
+      "index": 0,
+      "depth": 0,
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "height": 844,
+        "x": 0
+      },
+      "type": "Application",
+      "enabled": true,
+      "label": "MACROS",
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "hittable": true,
+      "index": 1,
+      "depth": 1,
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "height": 844,
+        "x": 0
+      },
+      "parentIndex": 0,
+      "type": "Other",
+      "enabled": true,
+      "label": "Toolbar",
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "hittable": true,
+      "index": 2,
+      "depth": 2,
+      "rect": {
+        "width": 390,
+        "y": 0,
+        "height": 844,
+        "x": 0
+      },
+      "parentIndex": 1,
+      "type": "Other",
+      "enabled": true,
+      "label": "Food details",
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "identifier": "camera-result-card",
+      "index": 3,
+      "hittable": true,
+      "depth": 3,
+      "rect": {
+        "width": 327.6666564941406,
+        "y": 61.2400016784668,
+        "height": 171.75999450683594,
+        "x": 30.33333396911621
+      },
+      "parentIndex": 2,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "Food details",
+      "ref": "e4",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "index": 4,
+      "depth": 4,
+      "rect": {
+        "width": 200.33334350585938,
+        "y": 61.2400016784668,
+        "height": 74.09332275390625,
+        "x": 30.33333396911621
+      },
+      "parentIndex": 3,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "Second Inline Item\n, 190 kcal, P 5, C 36, F 3",
+      "ref": "e5",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "index": 5,
+      "depth": 5,
+      "rect": {
+        "width": 146.66666666666666,
+        "y": 74.83333333333334,
+        "height": 20.33333333333333,
+        "x": 84
+      },
+      "parentIndex": 4,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "Second Inline Item",
+      "ref": "e6",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "index": 6,
+      "depth": 5,
+      "rect": {
+        "width": 68.33333333333333,
+        "y": 115,
+        "height": 20.333333333333343,
+        "x": 32
+      },
+      "parentIndex": 4,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "190 kcal",
+      "ref": "e7",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "index": 7,
+      "depth": 5,
+      "rect": {
+        "width": 19.999999999999986,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671,
+        "x": 112.33333333333333
+      },
+      "parentIndex": 4,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "P 5",
+      "ref": "e8",
+      "kind": "text"
+    },
+    {
+      "hittable": true,
+      "index": 8,
+      "depth": 5,
+      "rect": {
+        "width": 29.333333333333343,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671,
+        "x": 144.33333333333331
+      },
+      "parentIndex": 4,
+      "type": "StaticText",
+      "enabled": true,
+      "label": "C 36",
+      "ref": "e9",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "F 3",
+      "index": 9,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 19.333333333333343,
+        "y": 117.33333333333333,
+        "height": 15.666666666666671,
+        "x": 185.66666666666666
+      },
+      "enabled": true,
+      "parentIndex": 4,
+      "ref": "e10",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "Servings",
+      "index": 10,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 66.33333333333333,
+        "y": 167.5,
+        "height": 20.333333333333343,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e11",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "1",
+      "index": 11,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 10.333333333333343,
+        "y": 167.5,
+        "height": 20.333333333333343,
+        "x": 245.66666666666663
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e12",
+      "kind": "text"
+    },
+    {
+      "type": "Stepper",
+      "label": "Servings",
+      "value": "1",
+      "index": 12,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 94,
+        "y": 161.66666666666666,
+        "height": 32,
+        "x": 264
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e13",
+      "kind": "stepper"
+    },
+    {
+      "type": "Button",
+      "label": "Servings, Decrement",
+      "value": "1",
+      "index": 13,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 47,
+        "y": 161.66666666666666,
+        "height": 32,
+        "x": 264
+      },
+      "identifier": "Decrement",
+      "enabled": true,
+      "parentIndex": 12,
+      "ref": "e14",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Servings, Increment",
+      "value": "1",
+      "index": 14,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 47,
+        "y": 161.66666666666666,
+        "height": 32,
+        "x": 311
+      },
+      "identifier": "Increment",
+      "enabled": true,
+      "parentIndex": 12,
+      "ref": "e15",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "label": "1 cup (40g) each",
+      "index": 15,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 102.66666666666666,
+        "y": 197.66666666666666,
+        "height": 15.666666666666657,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e16",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "label": "40 g total",
+      "index": 16,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 58.66666666666666,
+        "y": 217.33333333333331,
+        "height": 15.666666666666657,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 3,
+      "ref": "e17",
+      "kind": "text"
+    },
+    {
+      "type": "SegmentedControl",
+      "label": "Servings",
+      "index": 17,
+      "depth": 3,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 265,
+        "height": 31,
+        "x": 32
+      },
+      "enabled": true,
+      "identifier": "camera-result-card",
+      "parentIndex": 2,
+      "ref": "e18",
+      "kind": "segmented-control"
+    },
+    {
+      "type": "Button",
+      "label": "Servings",
+      "index": 18,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 163,
+        "y": 265,
+        "height": 32,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 17,
+      "selected": true,
+      "ref": "e19",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "label": "Grams",
+      "index": 19,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 163,
+        "y": 265,
+        "height": 32,
+        "x": 195
+      },
+      "enabled": true,
+      "parentIndex": 17,
+      "ref": "e20",
+      "kind": "button"
+    },
+    {
+      "type": "CollectionView",
+      "label": "Vertical scroll bar, 5 pages",
+      "index": 20,
+      "depth": 3,
+      "hittable": true,
+      "rect": {
+        "width": 358,
+        "y": 296,
+        "height": 241,
+        "x": 16
+      },
+      "enabled": true,
+      "identifier": "camera-result-card",
+      "parentIndex": 2,
+      "ref": "e21",
+      "kind": "collection"
+    },
+    {
+      "type": "Cell",
+      "label": "Food",
+      "index": 21,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 296,
+        "height": 40.333333333333314,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 20,
+      "ref": "e22",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "label": "Food",
+      "index": 22,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 296,
+        "height": 40.333333333333314,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 21,
+      "ref": "e23",
+      "kind": "other"
+    },
+    {
+      "type": "StaticText",
+      "label": "Food",
+      "index": 23,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 296,
+        "height": 40.333333333333314,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 22,
+      "ref": "e24",
+      "kind": "text"
+    },
+    {
+      "type": "Cell",
+      "label": "Second Inline Item",
+      "index": 24,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 336.33333333333337,
+        "height": 52,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 20,
+      "ref": "e25",
+      "kind": "cell"
+    },
+    {
+      "type": "Other",
+      "label": "Second Inline Item",
+      "index": 25,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 336.33333333333337,
+        "height": 52,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 24,
+      "ref": "e26",
+      "kind": "other"
+    },
+    {
+      "type": "TextField",
+      "label": "Second Inline Item",
+      "value": "Second Inline Item",
+      "placeholder": "Name",
+      "index": 26,
+      "depth": 6,
+      "hittable": true,
+      "rect": {
+        "width": 294,
+        "y": 351.33333333333337,
+        "height": 22,
+        "x": 48
+      },
+      "enabled": true,
+      "parentIndex": 25,
+      "password": false,
+      "editable": true,
+      "ref": "e27",
+      "kind": "text-field"
+    },
+    {
+      "type": "Cell",
+      "index": 27,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 388.3333333333333,
+        "height": 52,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 20,
+      "ref": "e28",
+      "kind": "cell"
+    },
+    {
+      "type": "TextField",
+      "placeholder": "Brand (optional)",
+      "index": 28,
+      "depth": 5,
+      "hittable": true,
+      "rect": {
+        "width": 294,
+        "y": 403.3333333333333,
+        "height": 22,
+        "x": 48
+      },
+      "enabled": true,
+      "parentIndex": 27,
+      "password": false,
+      "editable": true,
+      "ref": "e29",
+      "kind": "text-field"
+    },
+    {
+      "type": "Cell",
+      "label": "Serving size 1 cup (40g)",
+      "index": 29,
+      "depth": 4,
+      "hittable": true,
+      "rect": {
+        "width": 326,
+        "y": 440.33333333333337,
+        "height": 52,
+        "x": 32
+      },
+      "enabled": true,
+      "parentIndex": 20,
+      "ref": "e30",
+      "kind": "cell"
+    },
+    {
+      "hittable": true,
+      "index": 30,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 326,
+        "y": 440.33333333333337,
+        "height": 52,
+        "x": 32
+      },
+      "parentIndex": 29,
+      "depth": 5,
+      "ref": "e31",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "placeholder": "Serving description",
+      "index": 31,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 294,
+        "y": 455.33333333333337,
+        "height": 22,
+        "x": 48
+      },
+      "type": "TextField",
+      "value": "Serving size 1 cup (40g)",
+      "parentIndex": 30,
+      "depth": 6,
+      "password": false,
+      "editable": true,
+      "ref": "e32",
+      "kind": "text-field",
+      "inheritsLabel": true
+    },
+    {
+      "label": "40",
+      "hittable": true,
+      "index": 32,
+      "enabled": true,
+      "type": "Cell",
+      "rect": {
+        "width": 326,
+        "y": 492.33333333333337,
+        "height": 44.66666666666663,
+        "x": 32
+      },
+      "parentIndex": 20,
+      "depth": 4,
+      "ref": "e33",
+      "kind": "cell"
+    },
+    {
+      "label": "40",
+      "hittable": true,
+      "index": 33,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 326,
+        "y": 492.33333333333337,
+        "height": 44.66666666666663,
+        "x": 32
+      },
+      "parentIndex": 32,
+      "depth": 5,
+      "ref": "e34",
+      "kind": "other"
+    },
+    {
+      "label": "40",
+      "index": 34,
+      "placeholder": "Grams per serving (optional)",
+      "hittable": true,
+      "enabled": true,
+      "type": "TextField",
+      "rect": {
+        "width": 294,
+        "height": 22,
+        "y": 507.33333333333337,
+        "x": 48
+      },
+      "value": "40",
+      "parentIndex": 33,
+      "depth": 6,
+      "password": false,
+      "editable": true,
+      "ref": "e35",
+      "kind": "text-field"
+    },
+    {
+      "index": 35,
+      "hittable": true,
+      "enabled": true,
+      "type": "Other",
+      "rect": {
+        "width": 30,
+        "height": 241,
+        "y": 296,
+        "x": 341
+      },
+      "value": "0%",
+      "parentIndex": 20,
+      "depth": 4,
+      "ref": "e36",
+      "kind": "other",
+      "inheritsLabel": true
+    },
+    {
+      "index": 36,
+      "hittable": true,
+      "enabled": true,
+      "type": "Image",
+      "rect": {
+        "width": 358,
+        "height": 395.6666666666667,
+        "y": 448.3333333333333,
+        "x": 16
+      },
+      "parentIndex": 2,
+      "identifier": "camera-viewport",
+      "depth": 3,
+      "ref": "e37",
+      "kind": "image"
+    },
+    {
+      "label": "Log",
+      "index": 37,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 326,
+        "height": 50.33333333333337,
+        "y": 553,
+        "x": 32
+      },
+      "type": "Button",
+      "parentIndex": 2,
+      "identifier": "camera-result-card",
+      "depth": 3,
+      "ref": "e38",
+      "kind": "button"
+    },
+    {
+      "label": "Retake",
+      "index": 38,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 120.33333333333331,
+        "height": 51.66666666666663,
+        "y": 651.3333333333333,
+        "x": 135
+      },
+      "type": "Button",
+      "parentIndex": 2,
+      "identifier": "camera-viewport",
+      "depth": 3,
+      "ref": "e39",
+      "kind": "button"
+    },
+    {
+      "label": "Retake",
+      "index": 39,
+      "hittable": true,
+      "enabled": true,
+      "type": "StaticText",
+      "rect": {
+        "width": 120.33333333333331,
+        "height": 51.66666666666663,
+        "y": 651.3333333333333,
+        "x": 135
+      },
+      "parentIndex": 38,
+      "depth": 4,
+      "ref": "e40",
+      "kind": "text"
+    },
+    {
+      "label": "Counterclockwise Curved Arrow",
+      "index": 40,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 15,
+        "height": 18.33333396911621,
+        "y": 667.6666666666666,
+        "x": 156.33333333333334
+      },
+      "type": "Image",
+      "parentIndex": 38,
+      "identifier": "arrow.counterclockwise",
+      "depth": 4,
+      "ref": "e41",
+      "kind": "image"
+    },
+    {
+      "label": "Close camera",
+      "index": 41,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 44,
+        "height": 44,
+        "y": 726,
+        "x": 40
+      },
+      "type": "Button",
+      "parentIndex": 2,
+      "identifier": "camera-viewport",
+      "depth": 3,
+      "ref": "e42",
+      "kind": "button"
+    },
+    {
+      "label": "Close camera",
+      "index": 42,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 44,
+        "height": 44,
+        "y": 726,
+        "x": 40
+      },
+      "type": "Image",
+      "parentIndex": 41,
+      "identifier": "chevron.backward",
+      "depth": 4,
+      "ref": "e43",
+      "kind": "image"
+    },
+    {
+      "label": "Photograph nutrition label",
+      "index": 43,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 68,
+        "height": 68,
+        "y": 722,
+        "x": 161
+      },
+      "type": "Button",
+      "parentIndex": 2,
+      "identifier": "camera-viewport",
+      "depth": 3,
+      "ref": "e44",
+      "kind": "button"
+    },
+    {
+      "label": "More camera options",
+      "index": 44,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 44,
+        "height": 44,
+        "y": 734,
+        "x": 306
+      },
+      "type": "Button",
+      "parentIndex": 2,
+      "identifier": "camera-viewport",
+      "depth": 3,
+      "ref": "e45",
+      "kind": "button"
+    },
+    {
+      "label": "More",
+      "index": 45,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 44,
+        "height": 44,
+        "y": 734,
+        "x": 306
+      },
+      "type": "Image",
+      "parentIndex": 44,
+      "identifier": "ellipsis",
+      "depth": 4,
+      "ref": "e46",
+      "kind": "image"
+    },
+    {
+      "label": "Toolbar",
+      "index": 46,
+      "hittable": true,
+      "enabled": true,
+      "rect": {
+        "width": 390,
+        "height": 844,
+        "y": 0,
+        "x": 0
+      },
+      "type": "Toolbar",
+      "parentIndex": 1,
+      "identifier": "Toolbar",
+      "depth": 2,
+      "ref": "e47",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 47,
+    "totalNodeCount": 47,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 206.45391941070557,
+      "presentationMs": 0.22709369659423828
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 5,
+      "droppedNodeCount": 0
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 97,
+      "p50Ms": 132,
+      "p95Ms": 370,
+      "maxMs": 529,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 97
+      }
+    }
+  },
+  "refsGeneration": 978164
+}

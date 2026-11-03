@@ -1,0 +1,255 @@
+{
+  "nodes": [
+    {
+      "label": "MACROS",
+      "type": "Application",
+      "depth": 0,
+      "rect": {
+        "width": 390,
+        "x": 0,
+        "y": 0,
+        "height": 844
+      },
+      "index": 0,
+      "hittable": false,
+      "enabled": true,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "type": "Other",
+      "label": "Toolbar",
+      "depth": 1,
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 1,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 0,
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "type": "Other",
+      "label": "Photograph nutrition label",
+      "depth": 2,
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 2,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 1,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "type": "Other",
+      "label": "Scan",
+      "depth": 3,
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "index": 3,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 2,
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "label": "Scan",
+      "type": "ScrollView",
+      "depth": 4,
+      "rect": {
+        "width": 358,
+        "x": 16,
+        "y": 0,
+        "height": 117
+      },
+      "index": 4,
+      "identifier": "camera-result-card",
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 3,
+      "ref": "e5",
+      "kind": "scroll-area"
+    },
+    {
+      "label": "Scan",
+      "type": "Other",
+      "depth": 5,
+      "rect": {
+        "width": 358,
+        "x": 16,
+        "y": 47,
+        "height": 70
+      },
+      "index": 5,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 4,
+      "ref": "e6",
+      "kind": "other"
+    },
+    {
+      "label": "Scan",
+      "type": "Image",
+      "depth": 6,
+      "rect": {
+        "width": 16.33333396911621,
+        "x": 34,
+        "y": 74,
+        "height": 16.33333396911621
+      },
+      "index": 6,
+      "identifier": "viewfinder",
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 5,
+      "ref": "e7",
+      "kind": "image"
+    },
+    {
+      "label": "Camera unavailable. Choose a photo to scan a barcode or nutrition label.",
+      "type": "StaticText",
+      "depth": 6,
+      "rect": {
+        "y": 63,
+        "height": 38,
+        "x": 64.33333333333333,
+        "width": 272
+      },
+      "index": 7,
+      "hittable": true,
+      "enabled": true,
+      "parentIndex": 5,
+      "ref": "e8",
+      "kind": "text"
+    },
+    {
+      "label": "Photograph nutrition label",
+      "type": "Button",
+      "depth": 4,
+      "rect": {
+        "y": 714,
+        "height": 68,
+        "x": 161,
+        "width": 68
+      },
+      "index": 8,
+      "identifier": "camera-viewport",
+      "enabled": true,
+      "hittable": true,
+      "parentIndex": 3,
+      "ref": "e9",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 3,
+      "rect": {
+        "y": 726,
+        "height": 44,
+        "x": 40,
+        "width": 44
+      },
+      "index": 9,
+      "hittable": true,
+      "label": "Close camera",
+      "identifier": "camera-viewport",
+      "ref": "e10",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "depth": 4,
+      "enabled": true,
+      "parentIndex": 3,
+      "rect": {
+        "y": 726,
+        "height": 44,
+        "x": 306,
+        "width": 44
+      },
+      "index": 10,
+      "hittable": true,
+      "label": "More camera options",
+      "identifier": "camera-viewport",
+      "ref": "e11",
+      "kind": "button"
+    },
+    {
+      "type": "Toolbar",
+      "depth": 2,
+      "enabled": true,
+      "parentIndex": 1,
+      "index": 11,
+      "rect": {
+        "y": 0,
+        "height": 844,
+        "x": 0,
+        "width": 390
+      },
+      "hittable": true,
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "ref": "e12",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": false,
+    "visibleNodeCount": 12,
+    "totalNodeCount": 12,
+    "reasons": []
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 140.4581069946289,
+      "presentationMs": 0.08106231689453125
+    }
+  },
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 85,
+      "p50Ms": 233,
+      "p95Ms": 458,
+      "maxMs": 2528,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 85
+      }
+    }
+  },
+  "refsGeneration": 616764
+}
