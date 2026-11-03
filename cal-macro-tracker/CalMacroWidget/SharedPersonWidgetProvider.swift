@@ -227,7 +227,11 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
     }
 
     private var proAccess: WidgetProAccess {
-        WidgetAppearanceStorage(defaults: UserDefaults(suiteName: SharedAppConfiguration.appGroupIdentifier)).proAccess
+        let storage = WidgetAppearanceStorage(defaults: UserDefaults(suiteName: SharedAppConfiguration.appGroupIdentifier))
+        guard let record = storage.proAccessRecord,
+            record.expiration.map({ $0 > .now }) ?? true
+        else { return .unknown }
+        return record.access
     }
 
     private func isCurrent(_ control: SharedPersonWidgetControl, storage: SharedPersonWidgetStorage, day: String) throws -> Bool {

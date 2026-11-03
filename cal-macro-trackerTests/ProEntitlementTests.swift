@@ -214,13 +214,16 @@ final class ProEntitlementTests: XCTestCase {
 
     func testReducerPreservesGraceEvenAfterBillingExpiration() {
         let past = Date(timeIntervalSince1970: 1_000)
+        let graceDeadline = past.addingTimeInterval(2_000)
         let grace = EntitlementFact(
             productID: ProPlan.yearly.productID, productType: .autoRenewable,
-            expirationDate: past, renewalState: .inGracePeriod)
+            expirationDate: past, renewalState: .inGracePeriod,
+            gracePeriodExpirationDate: graceDeadline)
         let resolution = AppEntitlements.resolve(from: [grace])
         XCTAssertTrue(resolution.hasPro)
         XCTAssertTrue(resolution.hasActiveSubscription)
         XCTAssertEqual(resolution.expiration, past)
+        XCTAssertEqual(resolution.widgetExpiration, graceDeadline)
     }
 
     func testReducerDoesNotGuessExpiryWhenRenewalStatusIsUnavailable() {
@@ -228,6 +231,7 @@ final class ProEntitlementTests: XCTestCase {
             productID: ProPlan.monthly.productID, productType: .autoRenewable,
             expirationDate: Date(timeIntervalSince1970: 1_000))
         XCTAssertTrue(AppEntitlements.resolve(from: [transaction]).hasPro)
+        XCTAssertNil(AppEntitlements.resolve(from: [transaction]).widgetExpiration)
     }
 
     func testReducerRejectsExpiredRevokedAndBillingRetrySubscriptions() {

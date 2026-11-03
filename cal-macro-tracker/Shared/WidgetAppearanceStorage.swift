@@ -84,10 +84,7 @@ nonisolated struct WidgetAppearanceStorage {
     }
 
     var proAccess: WidgetProAccess {
-        guard let record = proAccessRecord,
-            record.expiration.map({ $0 > .now }) ?? true
-        else { return .unknown }
-        return record.access
+        proAccessRecord?.access ?? .unknown
     }
 
     var proAccessRecord: WidgetProAccessRecord? {

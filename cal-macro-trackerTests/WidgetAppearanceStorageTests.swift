@@ -55,8 +55,9 @@ final class WidgetAppearanceStorageTests: XCTestCase {
         XCTAssertEqual(storage.background, .color(hex: "#2466E6"))
         XCTAssertFalse(storage.writeBackground(.color(hex: "#12GG56")))
         XCTAssertEqual(storage.background, .color(hex: "#2466E6"))
-        XCTAssertTrue(storage.writeProAccess(.allowed))
+        XCTAssertTrue(storage.writeProAccess(.allowed, expiration: .distantPast))
         XCTAssertEqual(storage.proAccess, .allowed)
+        XCTAssertEqual(storage.proAccessRecord?.expiration, .distantPast)
     }
 
     func testMissingAppGroupDefaultsCannotWriteOrGrant() {
