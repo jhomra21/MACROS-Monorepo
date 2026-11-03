@@ -16,6 +16,7 @@ enum AppStorageKeys {
     static let sharingLastUploadDate = "sharingLastUploadDate"
     static let sharingLastUploadedSnapshotHash = "sharingLastUploadedSnapshotHash"
     static let reviewPromptedAppVersion = "reviewPromptedAppVersion"
+    static let reviewLastRequestedAt = "reviewLastRequestedAt"
     static let isProPaywallPresented = "isProPaywallPresented"
     static let insightsSelectedRange = "insightsSelectedRange"
     static let insightsWeightNoticeDismissedAt = "insightsWeightNoticeDismissedAt"

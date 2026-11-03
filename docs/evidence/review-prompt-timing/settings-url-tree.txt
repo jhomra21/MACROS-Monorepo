@@ -1,0 +1,43 @@
+Page: com.apple.mobilesafari
+App: com.apple.mobilesafari
+Snapshot: 38 visible nodes
+Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation.
+@e1 [application] "Safari"
+@e2 [other] "Continue"
+@e3 [scroll-area] "Speed up your typing by sliding your finger across the letters to compose a word." [scrollable]
+@e4 [other] [same label as parent]
+@e5 [button] "Continue"
+@e6 [other] "inputView"
+@e7 [scroll-area] [scrollable]
+@e8 [webview] "Safari cannot open the page because the address is invalid."
+@e9 [cell] "SFDialogView"
+@e10 [text-view] "Safari cannot open the page because the address is invalid." [editable]
+@e11 [text-view] [editable] [same label as parent]
+@e12 [button] "OK"
+@e13 [segmented-control] "Start Page"
+@e14 [button] "Start Page" [selected]
+@e15 [button] "Bookmarks"
+@e16 [button] "Reading List"
+@e17 [button] "History"
+@e18 [other] "Toolbar"
+@e19 [other] "Apple"
+@e20 [collection] "Favorites"
+  [content below collection hidden]
+@e21 [other] "Favorites"
+@e22 [cell] "Apple"
+@e23 [cell] "Bing"
+@e24 [other] "Bing"
+@e25 [cell] "Google"
+@e26 [other] "Google"
+@e27 [cell] "Yahoo"
+@e28 [other] "Yahoo"
+@e29 [other] "Privacy Report"
+@e30 [cell] "0 blocked trackers"
+@e31 [other] "0 blocked trackers"
+@e32 [text] "In the last seven days, Safari has prevented 0 trackers from profiling you."
+@e33 [toolbar] "Toolbar"
+@e34 [other] "Close"
+@e35 [text-field] "https://apps.apple.com/app/id6767565938?action=write-review" [focused] [editable]
+@e36 [button] "Clear text"
+@e37 [button] "Voice Search" [disabled]
+@e38 [button] "Close"

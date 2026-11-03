@@ -1,0 +1,3 @@
+F976E800-DA1F-4F20-B755-DFD964E33975 matches the profile: all expected disable overrides are applied.
+Restored pre-QA app Documents/Library/tmp and 432-entry demo store, including shared App Group store.
+Simulator shut down; iPhone and iPad locks released after use. Debug build retained; imported synthetic label remains in Photos.

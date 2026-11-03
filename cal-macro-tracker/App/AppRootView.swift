@@ -134,7 +134,7 @@ struct AppRootView: View {
             applyPendingOpenRequest(pendingOpenRequest)
             await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
-        .modifier(ReviewPromptModifier())
+        .modifier(ReviewPromptModifier(isTodayIdle: path.isEmpty && sheetDestination == nil && tutorial.step == nil))
     }
 
     @ViewBuilder

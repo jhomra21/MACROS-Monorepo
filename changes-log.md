@@ -1,5 +1,7 @@
 # Changes Log
 
+- 2026-11-03: Review requests now wait for two continuous idle seconds on root Today, stay pending when interrupted, and respect a persisted 14-day gap plus the existing engagement/version gates. Added the Settings App Store review link. RED/GREEN captures: `docs/evidence/review-prompt-timing/`; format/build and 229 serial non-StoreKit iPad tests passed.
+
 `changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
 
 Detailed implementation trackers live in `implementation-trackers/`:

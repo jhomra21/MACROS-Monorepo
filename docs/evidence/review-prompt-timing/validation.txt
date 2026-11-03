@@ -1,0 +1,7 @@
+make quality-format-check: PASS
+make quality-build: PASS
+	 Executed 229 tests, with 0 failures (0 unexpected) in 12.686 (13.284) seconds
+	 Executed 229 tests, with 0 failures (0 unexpected) in 12.686 (13.285) seconds
+** TEST SUCCEEDED **
+Full serial iPad run used DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer; PurchaseStoreStoreKitTests excluded.
+No new unit tests or temporary production-code bypasses.
