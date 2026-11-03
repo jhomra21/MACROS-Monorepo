@@ -6,6 +6,22 @@ nonisolated struct SharingIdentity: Codable, Equatable, Sendable {
     let profileSecret: String
 }
 
+/// The payload type is SDK-free; its Keychain item belongs only to the extension.
+nonisolated struct SharedWidgetTokenCache: Codable, Sendable {
+    let token: String
+    let expiresAt: Double
+    let profileKey: String
+    let deploymentURL: String
+    let generation: UUID
+
+    func isUsable(profileKey: String, generation: UUID, now: Date = .now) -> Bool {
+        !token.isEmpty && expiresAt.isFinite
+            && expiresAt > now.addingTimeInterval(300).timeIntervalSince1970 * 1000
+            && self.profileKey == profileKey && self.generation == generation
+            && deploymentURL == SharedAppConfiguration.convexDeploymentURL
+    }
+}
+
 nonisolated enum SharingIdentityStoreError: Error {
     case encodingFailed
     case keychainFailure(OSStatus)

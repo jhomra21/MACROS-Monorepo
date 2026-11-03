@@ -31,13 +31,15 @@ nonisolated struct SharedWidgetPersonQuery: EntityQuery, Sendable {
     }
 }
 
-nonisolated struct SharedPersonWidgetIntent: WidgetConfigurationIntent, Sendable {
-    static let title: LocalizedStringResource = "Choose Shared Person"
-    static let description = IntentDescription("Choose the person whose shared macros appear.")
+// Sendable prevents MainActor inference. Type-level nonisolated incorrectly
+// propagates onto the SDK's reference-backed @Parameter storage.
+struct SharedPersonWidgetIntent: WidgetConfigurationIntent, Sendable {
+    nonisolated static let title: LocalizedStringResource = "Choose Shared Person"
+    nonisolated static let description = IntentDescription("Choose the person whose shared macros appear.")
 
     @Parameter(title: "Person")
     var person: SharedWidgetPersonEntity?
 
-    init() { person = .defaultPerson }
+    nonisolated init() { person = .defaultPerson }
 }
 #endif

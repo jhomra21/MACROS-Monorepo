@@ -5,6 +5,7 @@ nonisolated enum SharedWidgetFetchError: Error {
     case transient(retryAfter: Date? = nil)
     case unavailable
     case reconnect
+    case tokenRejected
 }
 
 nonisolated private struct SharedWidgetTokenRequest: Encodable, Sendable {
@@ -20,14 +21,6 @@ nonisolated private struct SharedWidgetTokenResponse: Decodable, Sendable {
     let token: String
     let expiresAt: Double
     let profile: Profile
-}
-
-nonisolated private struct SharedWidgetTokenCache: Codable, Sendable {
-    let token: String
-    let expiresAt: Double
-    let profileKey: String
-    let deploymentURL: String
-    let generation: UUID
 }
 
 nonisolated private struct SharedWidgetQuery: Encodable, Sendable {
@@ -77,7 +70,7 @@ actor SharedPersonWidgetClient {
         let token = try await accessToken(identity: identity, generation: generation)
         do {
             return try await query(token: token, profileId: profileId, day: day)
-        } catch SharedWidgetFetchError.unavailable {
+        } catch SharedWidgetFetchError.unavailable, SharedWidgetFetchError.tokenRejected {
             clearToken()
             let refreshed = try await accessToken(identity: identity, generation: generation)
             // Only a second decoded error envelope is authoritative. Transport errors
@@ -89,10 +82,7 @@ actor SharedPersonWidgetClient {
     private func accessToken(identity: SharingIdentity, generation: UUID) async throws -> String {
         if let data = try tokenItem.load(),
             let cached = try? JSONDecoder().decode(SharedWidgetTokenCache.self, from: data),
-            cached.deploymentURL == SharedAppConfiguration.convexDeploymentURL,
-            cached.profileKey == identity.profileKey,
-            cached.generation == generation,
-            cached.expiresAt > Date.now.addingTimeInterval(300).timeIntervalSince1970 * 1000
+            cached.isUsable(profileKey: identity.profileKey, generation: generation)
         {
             return cached.token
         }
@@ -139,6 +129,7 @@ actor SharedPersonWidgetClient {
             SharedWidgetQuery(args: .init(otherProfileId: profileId, day: day, ownerToday: day))
         )
         let (data, response) = try await Self.send(request, session: session)
+        if response.statusCode == 401 { throw SharedWidgetFetchError.tokenRejected }
         guard let envelope = try? JSONDecoder().decode(SharedWidgetQueryEnvelope.self, from: data) else {
             throw SharedWidgetFetchError.transient()
         }
