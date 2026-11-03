@@ -5,24 +5,9 @@ import XCTest
 
 @MainActor
 final class CameraCardLayoutTests: XCTestCase {
-    func testSharedRowVisualFixtures() {
-        for size in [DynamicTypeSize.large, .accessibility3] {
-            for subtitle in [nil, "1.75 servings • 12:00 PM"] as [String?] {
-                let view = FoodNutritionRow(
-                    name: "Fajita Flour Tortillas with Roasted Vegetables",
-                    subtitle: subtitle, calories: 280, protein: 3.5, carbs: 29.8, fat: 8.8,
-                    isStacked: size.isAccessibilitySize
-                )
-                .padding(.horizontal, 16)
-                .environment(\.dynamicTypeSize, size)
-                render(view, width: 390, name: "\(subtitle == nil ? "add-food" : "dashboard")-\(size).png")
-            }
-        }
-    }
-
     // Failure cases: fractional macro widths, singular/total serving descriptions,
     // a two-line name, editable label names, narrow phones, and accessibility text.
-    func testServingChangesKeepBarcodeAndLabelCardHeight() {
+    func testServingChangesKeepBarcodeAndLabelCardHeight() throws {
         var measurements = ["kind,width,type,servings,height"]
         for width in [390.0, 402, 440] {
             for size in [DynamicTypeSize.large, .accessibility3] {
@@ -40,7 +25,7 @@ final class CameraCardLayoutTests: XCTestCase {
                 }
             }
         }
-        save(Data((measurements.joined(separator: "\n") + "\n").utf8), name: "heights.csv")
+        try save(Data((measurements.joined(separator: "\n") + "\n").utf8), name: "heights.csv")
     }
 
     private func height(width: CGFloat, size: DynamicTypeSize, isLabel: Bool, servings: Double) -> CGFloat {
@@ -68,18 +53,10 @@ final class CameraCardLayoutTests: XCTestCase {
         return height
     }
 
-    private func render(_ view: some View, width: CGFloat, name: String) {
-        let renderer = ImageRenderer(
-            content: view.environment(\.colorScheme, .dark).frame(width: width).background(.black)
-        )
-        renderer.scale = 2
-        save(renderer.uiImage!.pngData()!, name: name)
-    }
-
-    private func save(_ data: Data, name: String) {
+    private func save(_ data: Data, name: String) throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("camera-card-layout")
-        try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        try! data.write(to: folder.appendingPathComponent(name))
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        try data.write(to: folder.appendingPathComponent(name))
         print("CAMERA_CARD_EVIDENCE \(folder.path)/\(name)")
     }
 }

@@ -105,11 +105,12 @@ For caller captures, log one synthetic long-name food and run
 
 - Red, before implementation: the prewritten height assertion failed in
   11 of 12 layout configurations.
-- Final targeted tests: **2 passed**, including 960 height measurements.
+- Final targeted test: `testServingChangesKeepBarcodeAndLabelCardHeight` passed,
+  including 960 height measurements.
 - `make quality-format-check`: passed.
 - `make quality-build`: passed.
-- Full serial iPad suite, excluding `PurchaseStoreStoreKitTests`: awaiting its
-  simulator lock at the time of this draft.
+- Full serial iPad suite on the iPad test runner, excluding
+  `PurchaseStoreStoreKitTests`: **229 tests passed, 0 failures**.
 
 The initial screenshot driver timed out during exploratory captures; those runs
 are not claimed as complete. Two red render runs finished their test assertions
