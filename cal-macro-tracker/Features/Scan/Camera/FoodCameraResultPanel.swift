@@ -180,29 +180,45 @@ struct FoodCameraResultPanel: View {
         isLabel: Bool,
         totals: NutritionSnapshot
     ) -> some View {
-        HStack {
-            if dynamicTypeSize.isAccessibilitySize == false {
-                macroRing(totals)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                if dynamicTypeSize.isAccessibilitySize == false {
+                    macroRing(totals)
+                }
+                VStack(alignment: .leading, spacing: 6) {
+                    foodTitle(draft, isLabel: isLabel)
+                    if isLabel == false, draft.brand.isEmpty == false {
+                        Text(draft.brand).font(.subheadline).foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            FoodNutritionRow(
-                subtitle: isLabel ? nil : draft.brand.isEmpty ? nil : draft.brand,
-                calories: totals.calories,
-                protein: totals.protein,
-                carbs: totals.carbs,
-                fat: totals.fat,
-                verticalPadding: 0,
-                isStacked: dynamicTypeSize.isAccessibilitySize
-            ) {
-                foodTitle(draft, isLabel: isLabel)
+            let layout =
+                dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
+                : AnyLayout(HStackLayout(spacing: 12))
+            layout {
+                Text("\(totals.calories.roundedForDisplay) kcal")
+                    .font(.headline.weight(.semibold))
+                Group {
+                    Text("P \(totals.protein.roundedForDisplay)")
+                    Text("C \(totals.carbs.roundedForDisplay)")
+                    Text("F \(totals.fat.roundedForDisplay)")
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
+            .monospacedDigit()
+            .fixedSize(horizontal: true, vertical: true)
         }
     }
 
     @ViewBuilder
     private func foodTitle(_ draft: FoodDraft, isLabel: Bool) -> some View {
         if isLabel {
-            TextField("Food name", text: Binding(get: { draft.name }, set: onChangeName))
+            TextField("Food name", text: Binding(get: { draft.name }, set: onChangeName), axis: .vertical)
                 .font(.headline)
+                .lineLimit(2)
                 .submitLabel(.done)
         } else {
             Text(draft.name)
@@ -245,17 +261,32 @@ struct FoodCameraResultPanel: View {
 
     private func servingsRow(_ draft: FoodDraft, servings: Double) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text("Servings")
-                Spacer()
-                Text(servings.formatted(.number.precision(.fractionLength(0...2)))).monospacedDigit()
+            let layout =
+                dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+                : AnyLayout(HStackLayout())
+            layout {
+                HStack {
+                    Text("Servings")
+                    Spacer()
+                    Text(servings.formatted(.number.precision(.fractionLength(0...2))))
+                        .monospacedDigit()
+                        .fixedSize()
+                }
                 Stepper("Servings", value: Binding(get: { servings }, set: onChangeServings), in: 0.25...20, step: 0.25)
                     .labelsHidden()
             }
-            if let subtitle = servingDescription(draft, servings: servings) {
-                Text(subtitle)
+            if let subtitle = servingDescription(draft, servings: 1) {
+                Text("\(subtitle) each")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                if let grams = draft.gramsPerServing {
+                    Text("\((grams * servings).roundedForDisplay) g total")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                        .fixedSize()
+                }
             }
         }
     }

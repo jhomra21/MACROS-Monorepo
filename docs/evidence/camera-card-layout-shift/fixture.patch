@@ -1,0 +1,39 @@
+diff --git a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+index 38c4a82..86b49c2 100644
+--- a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
++++ b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+@@ -165,6 +165,34 @@ struct FoodCameraSheet: View {
+                 if permissionDenied {
+                     send(.contentChanged(.error(Self.cameraAccessDeniedMessage)))
+                 }
++                #if DEBUG
++                let arguments = ProcessInfo.processInfo.arguments
++                if let index = arguments.firstIndex(of: "-CameraLayoutFixture"), arguments.count > index + 1 {
++                    var draft = FoodDraft()
++                    draft.name = "Fajita Flour Tortillas"
++                    draft.brand = "Guerrero"
++                    draft.servingDescription = "1 tortilla (37 g)"
++                    draft.gramsPerServing = 37
++                    draft.caloriesPerServing = 160
++                    draft.proteinPerServing = 2
++                    draft.carbsPerServing = 17
++                    draft.fatPerServing = 5
++                    let isLabel = arguments[index + 1] == "label"
++                    if isLabel {
++                        _ = flow.reduce(.imagePicked)
++                        _ = flow.reduce(.ocrFinished)
++                    } else {
++                        _ = flow.reduce(.barcodeRecognized("layout-fixture"))
++                        _ = flow.reduce(.lookupFinished)
++                    }
++                    let servingsIndex = arguments.firstIndex(of: "-CameraLayoutServings")
++                    let amount = servingsIndex.flatMap { Double(arguments[$0 + 1]) } ?? 1
++                    _ = flow.reduce(.servingsChanged(amount))
++                    panelContent = isLabel
++                        ? .label(draft, notes: [], missingNutrients: [], servings: amount, logged: false)
++                        : .barcode(draft, servings: amount, logged: false)
++                }
++                #endif
+             }
+             .onAppear {
+                 if flow.phase != .dismissed { send(.sceneActive) }

@@ -11,6 +11,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+- 2026-11-02: Camera result cards no longer reflow when servings change: the title has independent width, macro numbers stay readable, and per-serving/total text occupy separate lines. Shared food rows and untinted Liquid Glass are unchanged. Build/format and 960 layout measurements pass; red/green and caller-regression evidence is in `docs/evidence/camera-card-layout-shift/`. Full iPad suite is queued behind another worker's simulator lock.
 - 2026-11-02: Camera result-layout animations now wait for the presentation to finish, so provisional first measurements cannot animate the viewport in from the left during the Add Food zoom. Reverted the ineffective source modifier-order change; later result sizing, staged reveal, Reduce Motion, compact mode, and dismissal are preserved.
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
