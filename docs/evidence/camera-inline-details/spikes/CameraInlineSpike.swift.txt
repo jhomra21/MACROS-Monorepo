@@ -1,0 +1,57 @@
+#if DEBUG && os(iOS)
+import SwiftUI
+
+struct CameraInlineSpike: View {
+    @State private var expanded = false
+    @State private var keyboard = false
+    @State private var editor: FoodLogEditorState = {
+        var draft = FoodDraft()
+        draft.name = "Fajita Flour Tortillas"
+        draft.gramsPerServing = 37
+        draft.caloriesPerServing = 160
+        return FoodLogEditorState(initialDraft: draft)
+    }()
+    @FocusState private var field: FoodDraftField?
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    Button(expanded ? "Food details" : "Details") { expanded.toggle() }
+                        .font(.headline)
+                        .padding()
+                    if expanded {
+                        FoodLogEditorSections(editor: $editor, focusedField: $field, rowBackground: .clear)
+                            .scrollContentBackground(.hidden)
+                    }
+                    Button("Log") {}
+                        .buttonStyle(.glassProminent)
+                        .padding()
+                }
+                .frame(height: expanded ? (keyboard ? geometry.size.height : geometry.size.height * 0.75) : 150)
+                .glassEffect(.regular, in: .rect(cornerRadius: 24))
+                .padding(.horizontal, 16)
+                .accessibilityIdentifier("spike-card")
+                ZStack {
+                    Color.gray
+                    VStack {
+                        Button("Scan again") {}
+                        Spacer()
+                        Button("Close camera") {}
+                    }
+                    .padding()
+                }
+                .frame(maxWidth: .infinity, minHeight: keyboard ? 0 : 120, maxHeight: keyboard ? 0 : .infinity)
+                .clipShape(.rect(cornerRadius: 28))
+                .padding(keyboard ? 0 : 16)
+                .accessibilityIdentifier("spike-strip")
+            }
+            .animation(.smooth(duration: 0.3), value: expanded)
+            .animation(.smooth(duration: 0.3), value: keyboard)
+        }
+        .background(.black)
+        .environment(\.colorScheme, .dark)
+        .bottomPinnedKeyboardVisibility($keyboard)
+    }
+}
+#endif

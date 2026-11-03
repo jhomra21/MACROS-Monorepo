@@ -1,0 +1,181 @@
+{
+  "portrait": {
+    "capture": "green/final-zoom-expanded.png",
+    "screen": [
+      390,
+      844
+    ],
+    "glass_card": [
+      16,
+      47,
+      358,
+      572.33
+    ],
+    "drawn_strip": [
+      16,
+      635.33,
+      358,
+      192.67
+    ],
+    "available_height": 763,
+    "card_fraction_of_available": 0.75,
+    "drawn_strip_fraction_of_screen": 0.228281990521327
+  },
+  "keyboard": {
+    "capture": "green/final-flow-keyboard.png",
+    "drawn_strip_height": 0,
+    "viewport_padding": 0,
+    "note": "No strip pixels; hidden descendants may still be returned by XCTest."
+  },
+  "landscape": {
+    "capture": "green/landscape.png",
+    "screen": [
+      844,
+      390
+    ],
+    "layout": "side-by-side",
+    "card_width_fraction_of_available": 0.65
+  },
+  "accessibility": {
+    "captures": [
+      "green/ax3-scrolled.png",
+      "green/ax5-final-scrolled.png"
+    ],
+    "pinned": [
+      "Log"
+    ],
+    "scrolls": [
+      "summary",
+      "quantity",
+      "fields"
+    ]
+  },
+  "final-zoom-expanded_control_frames": [
+    {
+      "label": "Log",
+      "rect": {
+        "x": 32,
+        "y": 553,
+        "width": 326,
+        "height": 50.33333333333337
+      },
+      "enabled": true
+    },
+    {
+      "label": "Scan again",
+      "rect": {
+        "x": 118.66666666666666,
+        "y": 651.3333333333333,
+        "width": 152.66666666666666,
+        "height": 51.66666666666663
+      },
+      "enabled": true
+    },
+    {
+      "label": "Close camera",
+      "rect": {
+        "x": 40,
+        "y": 726,
+        "width": 44,
+        "height": 44
+      },
+      "enabled": true
+    }
+  ],
+  "final-flow-keyboard_control_frames": [
+    {
+      "label": "Close camera",
+      "rect": {
+        "x": 24,
+        "y": 346,
+        "width": 44,
+        "height": 44
+      },
+      "enabled": true
+    },
+    {
+      "label": "Scan again",
+      "rect": {
+        "x": 118.66666666666666,
+        "y": 342,
+        "width": 152.66666666666666,
+        "height": 51.666666666666686
+      },
+      "enabled": true
+    },
+    {
+      "label": "Log",
+      "rect": {
+        "x": 32,
+        "y": 461.66666666666663,
+        "width": 326,
+        "height": 50.333333333333314
+      },
+      "enabled": true
+    }
+  ],
+  "ax5-final-expanded_control_frames": [
+    {
+      "label": "Log",
+      "rect": {
+        "x": 32,
+        "y": 510,
+        "width": 326,
+        "height": 93.33333333333337
+      },
+      "enabled": true
+    },
+    {
+      "label": "Scan again",
+      "rect": {
+        "x": 87.33333333333333,
+        "y": 651.3333333333333,
+        "width": 215.66666666666669,
+        "height": 63.66666666666663
+      },
+      "enabled": true
+    },
+    {
+      "label": "Close camera",
+      "rect": {
+        "x": 40,
+        "y": 726,
+        "width": 44,
+        "height": 44
+      },
+      "enabled": true
+    }
+  ],
+  "landscape_control_frames": [
+    {
+      "label": "Scan again",
+      "rect": {
+        "height": 51.66666666666666,
+        "y": 32,
+        "width": 152.66666666666663,
+        "x": 589.3333333333333
+      },
+      "enabled": true
+    },
+    {
+      "label": "Close camera",
+      "rect": {
+        "y": 286,
+        "height": 44,
+        "x": 574.6666666666666,
+        "width": 44
+      },
+      "enabled": true
+    },
+    {
+      "label": "Log",
+      "rect": {
+        "y": 303.66666666666663,
+        "height": 50.333333333333314,
+        "x": 79,
+        "width": 423.66666666666663
+      },
+      "enabled": true
+    }
+  ]
+}

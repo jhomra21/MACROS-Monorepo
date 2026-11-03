@@ -1,0 +1,667 @@
+{
+  "source": "green/final-flow.mp4",
+  "sample_hz": 10,
+  "note": "Manual inspection: no wide/left sweep. Pixel runs sample the gray viewport, not the glass-card frame.",
+  "frames": [
+    {
+      "seconds": 0.0,
+      "contact_cell": [
+        0,
+        0
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.1,
+      "contact_cell": [
+        0,
+        1
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.2,
+      "contact_cell": [
+        0,
+        2
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.3,
+      "contact_cell": [
+        0,
+        3
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.4,
+      "contact_cell": [
+        0,
+        4
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.5,
+      "contact_cell": [
+        0,
+        5
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.6,
+      "contact_cell": [
+        0,
+        6
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.7,
+      "contact_cell": [
+        0,
+        7
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.8,
+      "contact_cell": [
+        1,
+        0
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 0.9,
+      "contact_cell": [
+        1,
+        1
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.0,
+      "contact_cell": [
+        1,
+        2
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.1,
+      "contact_cell": [
+        1,
+        3
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.2,
+      "contact_cell": [
+        1,
+        4
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.3,
+      "contact_cell": [
+        1,
+        5
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.4,
+      "contact_cell": [
+        1,
+        6
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.5,
+      "contact_cell": [
+        1,
+        7
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.6,
+      "contact_cell": [
+        2,
+        0
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.7,
+      "contact_cell": [
+        2,
+        1
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.8,
+      "contact_cell": [
+        2,
+        2
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 1.9,
+      "contact_cell": [
+        2,
+        3
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": null,
+        "700": null,
+        "750": null
+      }
+    },
+    {
+      "seconds": 2.0,
+      "contact_cell": [
+        2,
+        4
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          19,
+          329
+        ],
+        "700": [
+          19,
+          329
+        ],
+        "750": [
+          19,
+          329
+        ]
+      }
+    },
+    {
+      "seconds": 2.1,
+      "contact_cell": [
+        2,
+        5
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          17,
+          363
+        ],
+        "700": [
+          17,
+          363
+        ],
+        "750": [
+          17,
+          363
+        ]
+      }
+    },
+    {
+      "seconds": 2.2,
+      "contact_cell": [
+        2,
+        6
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          371
+        ],
+        "700": [
+          16,
+          371
+        ],
+        "750": [
+          84,
+          371
+        ]
+      }
+    },
+    {
+      "seconds": 2.3,
+      "contact_cell": [
+        2,
+        7
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.4,
+      "contact_cell": [
+        3,
+        0
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.5,
+      "contact_cell": [
+        3,
+        1
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.6,
+      "contact_cell": [
+        3,
+        2
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.7,
+      "contact_cell": [
+        3,
+        3
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.8,
+      "contact_cell": [
+        3,
+        4
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 2.9,
+      "contact_cell": [
+        3,
+        5
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.0,
+      "contact_cell": [
+        3,
+        6
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.1,
+      "contact_cell": [
+        3,
+        7
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.2,
+      "contact_cell": [
+        4,
+        0
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.3,
+      "contact_cell": [
+        4,
+        1
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.4,
+      "contact_cell": [
+        4,
+        2
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.5,
+      "contact_cell": [
+        4,
+        3
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.6,
+      "contact_cell": [
+        4,
+        4
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.7,
+      "contact_cell": [
+        4,
+        5
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.8,
+      "contact_cell": [
+        4,
+        6
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    },
+    {
+      "seconds": 3.9,
+      "contact_cell": [
+        4,
+        7
+      ],
+      "longest_neutral_viewport_pixel_runs": {
+        "650": [
+          16,
+          373
+        ],
+        "700": [
+          16,
+          373
+        ],
+        "750": [
+          85,
+          373
+        ]
+      }
+    }
+  ]
+}

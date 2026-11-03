@@ -1,6 +1,15 @@
 # Camera inline details: implementation plan
 
-Status: implementation authorized; final owner decisions and R1–R9 below override the original recommendations. Base: `origin/main` d53a313 (includes the camera card layout-shift fix). All `file:line` cites are at that commit.
+Status: implemented and simulator-validated. Evidence, exact limitations and deferred device checks: [`../docs/evidence/camera-inline-details/README.md`](../docs/evidence/camera-inline-details/README.md). Base: `origin/main` d53a313 (includes the camera card layout-shift fix). All historical `file:line` cites are at that commit.
+
+## Verified implementation notes
+
+- Native iOS 27 dismissalConfirmationDialog did not intercept the dashboard zoom-cover swipe. Verified fallback: interactiveDismissDisabled while dirty on both OS versions; explicit Close/Scan again/Retake dialogs remain available. Clean zoom swipe dismisses normally. No custom gesture or presentation rewrite.
+- AX3/AX5 keep only Log pinned. Scan again/Retake text caps at accessibility1 to keep it separate from Close within the strip; its accessible name is unchanged. No SE-class simulator exists in the allowed inventory, so that device check is not claimed.
+- The shared Form also takes a default-nil leadingSections value so AX/landscape summary and quantity can scroll inside the same Form. All other callers retain nil row backgrounds and their pushed editor.
+- Extraction E12 trees and four screenshot pairs match. The common-copy pair has a small native glass button-edge pixel difference, documented rather than called pixel-identical.
+- Final offscreen Next/Previous passed after explicit scroll requests plus Form-row appearance focus. The reader-only and immediate-focus failures are preserved. Non-camera replay still has four pixel-identical pairs; four final raw tree comparisons are unavailable after the driver changed backend, not claimed identical.
+- Final serial suite: 242 tests, zero failures; format/build/JS lint pass. Defensive cleanup removed only four unused wrapper inputs. Hardware camera lifecycle checks remain deferred to TestFlight.
 
 ## Final implementation contract (owner decisions and review R1–R9)
 
@@ -8,7 +17,7 @@ Status: implementation authorized; final owner decisions and R1–R9 below overr
 - D6 ships with owner device verification deferred to TestFlight. Keep the frozen still through restart until startScanning succeeds, then fade. The preview remains torn down after Log until Scan again. No simulator claim substitutes for hardware verification (R1).
 - Keyboard up: camera viewport height, minimum height, and padding become zero without removing its hierarchy. Keyboard down: camera retains 20–30%. Expanded portrait height is min(0.75 × availableHeight, availableHeight − 170). On SE-class available height 647: card 477, strip 170, drawn strip 138, remaining control gap 16 (R2, R8).
 - Extract a value-type FoodLogEditorState and shared form under Features/AddFood/: explicit value ownership and bindings are simpler than an observable reference. Keep LogFoodScreen behavior and all non-camera call signatures unchanged.
-- Use a structural content swap, not a Form inside a disabled ScrollView. Add only rowBackground: Color? = nil to FoodDraftEditorForm, preserving other callers. Pass clear for inline rows. Prefer Form; fallback is ScrollView/VStack with shared sections if S1 fails. One native glass container, no tint or added dimming (R4).
+- Use a structural content swap, not a Form inside a disabled ScrollView. Shared Form options default to nil row backgrounds/leading sections and no explicit focus scrolling, preserving other callers. Inline opts into clear rows, scrollable accessibility summary and explicit toolbar focus scrolling. Prefer Form; fallback is ScrollView/VStack with shared sections if S1 fails. One native glass container, no tint or added dimming (R4).
 - D8 kept: dirty-only “Discard changes?” on Scan again, Retake and Close, with “Discard Changes” and “Keep Editing”. Confirm before softenCameraForDismissal. In one small modifier, iOS 27 uses dismissalConfirmationDialog(_:shouldPresent:actions:message:); iOS 26 uses interactiveDismissDisabled(isDirty). Apply inside FoodCameraSheet. Verify clean/dirty swipe dismissal with the zoom transition and report any limitation (R5).
 - D9 kept: failed barcode Enter manually opens inline through recoveryDraftOpened, with failure modes and isolated tests written and observed red before implementation (R6).
 - D7 kept: Log stays in camera, collapses to Logged. Verify Log → Scan again → second Log.

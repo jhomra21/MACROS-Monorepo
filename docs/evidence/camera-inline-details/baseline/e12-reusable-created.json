@@ -1,0 +1,1292 @@
+{
+  "nodes": [
+    {
+      "index": 0,
+      "type": "Other",
+      "role": "_TtC7SwiftUIP33_ACC2C5639A7D76F611E170E831FCA49118SwiftUIApplication",
+      "subrole": "UIApplication",
+      "label": "MACROS",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 844
+      },
+      "enabled": true,
+      "depth": 0,
+      "pid": 81610,
+      "hittable": false,
+      "ref": "e1",
+      "kind": "other"
+    },
+    {
+      "index": 1,
+      "parentIndex": 0,
+      "type": "Button",
+      "role": "_UIGrabber",
+      "label": "Sheet Grabber",
+      "value": "Expanded",
+      "rect": {
+        "x": 145,
+        "y": 43,
+        "width": 100,
+        "height": 24
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e2",
+      "kind": "button"
+    },
+    {
+      "index": 2,
+      "parentIndex": 0,
+      "type": "NavigationBar",
+      "role": "SwiftUI.UIKitNavigationBar",
+      "subrole": "UINavigationBar",
+      "identifier": "Add Food",
+      "rect": {
+        "x": 0,
+        "y": 63,
+        "width": 390,
+        "height": 108
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e3",
+      "kind": "navigation-bar"
+    },
+    {
+      "index": 3,
+      "parentIndex": 2,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Cancel",
+      "rect": {
+        "x": 20,
+        "y": 67,
+        "width": 76.66666666666666,
+        "height": 36
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e4",
+      "kind": "button"
+    },
+    {
+      "index": 4,
+      "parentIndex": 2,
+      "type": "StaticText",
+      "role": "_TtGC7SwiftUI16UIKitBarItemHostVS_11BarItemView_",
+      "subrole": "UIView",
+      "label": "Add Food",
+      "rect": {
+        "x": 127,
+        "y": 61.33333333333333,
+        "width": 136,
+        "height": 47.33333333333333
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e5",
+      "kind": "text"
+    },
+    {
+      "index": 5,
+      "parentIndex": 4,
+      "type": "SegmentedControl",
+      "role": "_TtCV7SwiftUIP33_D74FE142C3C5A6C2CEA4987A69AEBD7522SystemSegmentedControl18UISegmentedControl",
+      "subrole": "UISegmentedControl",
+      "rect": {
+        "x": 127,
+        "y": 61.666666666666664,
+        "width": 136,
+        "height": 46.99999999999999
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e6",
+      "kind": "segmented-control"
+    },
+    {
+      "index": 6,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "UISegment",
+      "label": "Search",
+      "rect": {
+        "x": 127,
+        "y": 61.666666666666664,
+        "width": 68,
+        "height": 47.99999999999999
+      },
+      "enabled": true,
+      "selected": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e7",
+      "kind": "button"
+    },
+    {
+      "index": 7,
+      "parentIndex": 5,
+      "type": "Button",
+      "role": "UISegment",
+      "label": "Manual",
+      "rect": {
+        "x": 195,
+        "y": 61.666666666666664,
+        "width": 68,
+        "height": 47.99999999999999
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e8",
+      "kind": "button"
+    },
+    {
+      "index": 8,
+      "parentIndex": 2,
+      "type": "SearchField",
+      "role": "UISearchBarTextField",
+      "label": "Search foods on device or online",
+      "value": "Search foods on device or online",
+      "placeholder": "Search foods on device or online",
+      "rect": {
+        "x": 16,
+        "y": 117,
+        "width": 358,
+        "height": 44
+      },
+      "enabled": true,
+      "depth": 2,
+      "password": false,
+      "editable": true,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e9",
+      "kind": "search"
+    },
+    {
+      "index": 9,
+      "parentIndex": 8,
+      "type": "Image",
+      "role": "UIImageView",
+      "label": "Search",
+      "identifier": "magnifyingglass",
+      "rect": {
+        "x": 28,
+        "y": 129,
+        "width": 20.66666666666667,
+        "height": 19.333333333333343
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e10",
+      "kind": "image"
+    },
+    {
+      "index": 10,
+      "parentIndex": 0,
+      "type": "CollectionView",
+      "role": "SwiftUI.UpdateCoalescingCollectionView",
+      "subrole": "UICollectionView",
+      "rect": {
+        "x": 0,
+        "y": 47,
+        "width": 390,
+        "height": 797
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 81610,
+      "hittable": true,
+      "hiddenContentBelow": true,
+      "ref": "e11",
+      "kind": "collection"
+    },
+    {
+      "index": 11,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 171,
+        "width": 390,
+        "height": 52
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e12",
+      "kind": "cell"
+    },
+    {
+      "index": 12,
+      "parentIndex": 11,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "On Device",
+      "rect": {
+        "x": 0,
+        "y": 171,
+        "width": 390,
+        "height": 52
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e13",
+      "kind": "text"
+    },
+    {
+      "index": 13,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 223,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e14",
+      "kind": "cell"
+    },
+    {
+      "index": 14,
+      "parentIndex": 13,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana, 200 kcal, P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 0,
+        "y": 223,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e15",
+      "kind": "button"
+    },
+    {
+      "index": 15,
+      "parentIndex": 14,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "200 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 239,
+        "width": 68.33333333333331,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e16",
+      "kind": "text"
+    },
+    {
+      "index": 16,
+      "parentIndex": 14,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana",
+      "rect": {
+        "x": 16,
+        "y": 249.83333333333334,
+        "width": 59.33333333333333,
+        "height": 20.333333333333343
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e17",
+      "kind": "text"
+    },
+    {
+      "index": 17,
+      "parentIndex": 14,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 255.66666666666669,
+        "y": 265.3333333333333,
+        "width": 118.33333333333331,
+        "height": 15.666666666666686
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e18",
+      "kind": "text"
+    },
+    {
+      "index": 18,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 297,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e19",
+      "kind": "cell"
+    },
+    {
+      "index": 19,
+      "parentIndex": 18,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 0,
+        "y": 297,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e20",
+      "kind": "button"
+    },
+    {
+      "index": 20,
+      "parentIndex": 19,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "160 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 313,
+        "width": 68.33333333333331,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e21",
+      "kind": "text"
+    },
+    {
+      "index": 21,
+      "parentIndex": 19,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats",
+      "rect": {
+        "x": 16,
+        "y": 323.83333333333337,
+        "width": 176.66666666666666,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e22",
+      "kind": "text"
+    },
+    {
+      "index": 22,
+      "parentIndex": 19,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 287.6666666666667,
+        "y": 339.3333333333333,
+        "width": 86.33333333333331,
+        "height": 15.666666666666686
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e23",
+      "kind": "text"
+    },
+    {
+      "index": 23,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 371,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e24",
+      "kind": "cell"
+    },
+    {
+      "index": 24,
+      "parentIndex": 23,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana, 200 kcal, P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 0,
+        "y": 371,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e25",
+      "kind": "button"
+    },
+    {
+      "index": 25,
+      "parentIndex": 24,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "200 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 387,
+        "width": 68.33333333333331,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e26",
+      "kind": "text"
+    },
+    {
+      "index": 26,
+      "parentIndex": 24,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana",
+      "rect": {
+        "x": 16,
+        "y": 397.83333333333337,
+        "width": 59.33333333333333,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e27",
+      "kind": "text"
+    },
+    {
+      "index": 27,
+      "parentIndex": 24,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 255.66666666666669,
+        "y": 413.3333333333333,
+        "width": 118.33333333333331,
+        "height": 15.666666666666686
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e28",
+      "kind": "text"
+    },
+    {
+      "index": 28,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 445,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e29",
+      "kind": "cell"
+    },
+    {
+      "index": 29,
+      "parentIndex": 28,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 0,
+        "y": 445,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e30",
+      "kind": "button"
+    },
+    {
+      "index": 30,
+      "parentIndex": 29,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "160 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 461,
+        "width": 68.33333333333331,
+        "height": 20.333333333333314
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e31",
+      "kind": "text"
+    },
+    {
+      "index": 31,
+      "parentIndex": 29,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats",
+      "rect": {
+        "x": 16,
+        "y": 471.8333333333333,
+        "width": 176.66666666666666,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e32",
+      "kind": "text"
+    },
+    {
+      "index": 32,
+      "parentIndex": 29,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 287.6666666666667,
+        "y": 487.3333333333333,
+        "width": 86.33333333333331,
+        "height": 15.666666666666686
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e33",
+      "kind": "text"
+    },
+    {
+      "index": 33,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e34",
+      "kind": "cell"
+    },
+    {
+      "index": 34,
+      "parentIndex": 33,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana, 200 kcal, P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 0,
+        "y": 519,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e35",
+      "kind": "button"
+    },
+    {
+      "index": 35,
+      "parentIndex": 34,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "200 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 535,
+        "width": 68.33333333333331,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e36",
+      "kind": "text"
+    },
+    {
+      "index": 36,
+      "parentIndex": 34,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana",
+      "rect": {
+        "x": 16,
+        "y": 545.8333333333333,
+        "width": 59.33333333333333,
+        "height": 20.333333333333485
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e37",
+      "kind": "text"
+    },
+    {
+      "index": 37,
+      "parentIndex": 34,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 255.66666666666669,
+        "y": 561.3333333333333,
+        "width": 118.33333333333331,
+        "height": 15.666666666666742
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e38",
+      "kind": "text"
+    },
+    {
+      "index": 38,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 593,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e39",
+      "kind": "cell"
+    },
+    {
+      "index": 39,
+      "parentIndex": 38,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats, 160 kcal, P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 0,
+        "y": 593,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e40",
+      "kind": "button"
+    },
+    {
+      "index": 40,
+      "parentIndex": 39,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "160 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 609,
+        "width": 68.33333333333331,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e41",
+      "kind": "text"
+    },
+    {
+      "index": 41,
+      "parentIndex": 39,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Inline Regression Oats",
+      "rect": {
+        "x": 16,
+        "y": 619.8333333333333,
+        "width": 176.66666666666666,
+        "height": 20.333333333333485
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e42",
+      "kind": "text"
+    },
+    {
+      "index": 42,
+      "parentIndex": 39,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 0 \u2022 C 0 \u2022 F 0",
+      "rect": {
+        "x": 287.6666666666667,
+        "y": 635.3333333333333,
+        "width": 86.33333333333331,
+        "height": 15.666666666666742
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e43",
+      "kind": "text"
+    },
+    {
+      "index": 43,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 667,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e44",
+      "kind": "cell"
+    },
+    {
+      "index": 44,
+      "parentIndex": 43,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana, 200 kcal, P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 0,
+        "y": 667,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e45",
+      "kind": "button"
+    },
+    {
+      "index": 45,
+      "parentIndex": 44,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "200 kcal",
+      "rect": {
+        "x": 305.6666666666667,
+        "y": 683,
+        "width": 68.33333333333331,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e46",
+      "kind": "text"
+    },
+    {
+      "index": 46,
+      "parentIndex": 44,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Banana",
+      "rect": {
+        "x": 16,
+        "y": 693.8333333333334,
+        "width": 59.33333333333333,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e47",
+      "kind": "text"
+    },
+    {
+      "index": 47,
+      "parentIndex": 44,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 1.3 \u2022 C 27 \u2022 F 0.4",
+      "rect": {
+        "x": 255.66666666666669,
+        "y": 709.3333333333334,
+        "width": 118.33333333333331,
+        "height": 15.666666666666629
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e48",
+      "kind": "text"
+    },
+    {
+      "index": 48,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 741,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e49",
+      "kind": "cell"
+    },
+    {
+      "index": 49,
+      "parentIndex": 48,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Zwieback Toast, 21.3 kcal, P 0.5 \u2022 C 3.7 \u2022 F 0.5",
+      "rect": {
+        "x": 0,
+        "y": 741,
+        "width": 390,
+        "height": 74
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e50",
+      "kind": "button"
+    },
+    {
+      "index": 50,
+      "parentIndex": 49,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "21.3 kcal",
+      "rect": {
+        "x": 300.33333333333337,
+        "y": 757,
+        "width": 73.66666666666663,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e51",
+      "kind": "text"
+    },
+    {
+      "index": 51,
+      "parentIndex": 49,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Zwieback Toast",
+      "rect": {
+        "x": 16,
+        "y": 767.8333333333334,
+        "width": 124.66666666666666,
+        "height": 20.333333333333258
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e52",
+      "kind": "text"
+    },
+    {
+      "index": 52,
+      "parentIndex": 49,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "P 0.5 \u2022 C 3.7 \u2022 F 0.5",
+      "rect": {
+        "x": 252,
+        "y": 783.3333333333334,
+        "width": 122,
+        "height": 15.666666666666629
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e53",
+      "kind": "text"
+    },
+    {
+      "index": 53,
+      "parentIndex": 10,
+      "type": "Cell",
+      "role": "SwiftUI.ListCollectionViewCell",
+      "subrole": "UICollectionViewListCell",
+      "rect": {
+        "x": 0,
+        "y": 815,
+        "width": 390,
+        "height": 29
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": false,
+      "ref": "e54",
+      "kind": "cell"
+    },
+    {
+      "index": 54,
+      "parentIndex": 53,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Zucchini, Pickled, 59.5 kcal, P 1.7 \u2022 C 12.7 \u2022 F 0.5",
+      "rect": {
+        "x": 0,
+        "y": 815,
+        "width": 390,
+        "height": 29
+      },
+      "enabled": true,
+      "depth": 3,
+      "pid": 81610,
+      "hittable": false,
+      "ref": "e55",
+      "kind": "button"
+    },
+    {
+      "index": 55,
+      "parentIndex": 54,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "59.5 kcal",
+      "rect": {
+        "x": 300.33333333333337,
+        "y": 831,
+        "width": 73.66666666666663,
+        "height": 13
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e56",
+      "kind": "text"
+    },
+    {
+      "index": 56,
+      "parentIndex": 54,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Zucchini, Pickled",
+      "rect": {
+        "x": 16,
+        "y": 841.8333333333334,
+        "width": 135.66666666666666,
+        "height": 2.1666666666666288
+      },
+      "enabled": true,
+      "depth": 4,
+      "pid": 81610,
+      "hittable": false,
+      "ref": "e57",
+      "kind": "text"
+    },
+    {
+      "index": 57,
+      "parentIndex": 10,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Vertical scroll bar, 7 pages",
+      "value": "0%",
+      "rect": {
+        "x": 357,
+        "y": 171,
+        "width": 30,
+        "height": 571
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e58",
+      "kind": "other"
+    },
+    {
+      "index": 58,
+      "parentIndex": 10,
+      "type": "Other",
+      "role": "_UIScrollViewScrollIndicator",
+      "label": "Vertical scroll bar, 7 pages",
+      "value": "0%",
+      "rect": {
+        "x": 357,
+        "y": 171,
+        "width": 30,
+        "height": 571
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e59",
+      "kind": "other"
+    },
+    {
+      "index": 59,
+      "parentIndex": 0,
+      "type": "Button",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Camera",
+      "rect": {
+        "x": 0,
+        "y": 742,
+        "width": 390,
+        "height": 102
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e60",
+      "kind": "button"
+    },
+    {
+      "index": 60,
+      "parentIndex": 59,
+      "type": "Image",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Screenshot",
+      "identifier": "camera.viewfinder",
+      "rect": {
+        "x": 154.33333333333334,
+        "y": 772.6666666666666,
+        "width": 11,
+        "height": 11
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e61",
+      "kind": "image"
+    },
+    {
+      "index": 61,
+      "parentIndex": 59,
+      "type": "StaticText",
+      "role": "SwiftUI.AccessibilityNode",
+      "subrole": "NSObject",
+      "label": "Camera",
+      "rect": {
+        "x": 177,
+        "y": 767.8333333333334,
+        "width": 62,
+        "height": 20.33333333333337
+      },
+      "enabled": true,
+      "depth": 2,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e62",
+      "kind": "text"
+    },
+    {
+      "index": 62,
+      "parentIndex": 0,
+      "type": "Toolbar",
+      "role": "_UIFloatingBarContainerView",
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "rect": {
+        "x": 0,
+        "y": 47,
+        "width": 390,
+        "height": 797
+      },
+      "enabled": true,
+      "depth": 1,
+      "pid": 81610,
+      "hittable": true,
+      "ref": "e63",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 63,
+    "totalNodeCount": 63,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "presented",
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 11,
+      "droppedNodeCount": 1
+    }
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 168,
+      "p50Ms": 138,
+      "p95Ms": 198,
+      "maxMs": 666,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 168
+      }
+    }
+  },
+  "refsGeneration": 957760
+}

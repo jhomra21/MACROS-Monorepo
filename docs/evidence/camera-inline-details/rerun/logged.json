@@ -1,0 +1,369 @@
+{
+  "nodes": [
+    {
+      "index": 0,
+      "hittable": false,
+      "enabled": true,
+      "type": "Application",
+      "label": "MACROS",
+      "rect": {
+        "width": 390,
+        "height": 844,
+        "y": 0,
+        "x": 0
+      },
+      "depth": 0,
+      "ref": "e1",
+      "kind": "application"
+    },
+    {
+      "parentIndex": 0,
+      "index": 1,
+      "enabled": true,
+      "type": "Other",
+      "hittable": true,
+      "label": "Toolbar",
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "depth": 1,
+      "ref": "e2",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 1,
+      "index": 2,
+      "enabled": true,
+      "type": "Other",
+      "hittable": true,
+      "label": "Scan again",
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "depth": 2,
+      "ref": "e3",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 2,
+      "index": 3,
+      "enabled": true,
+      "type": "Other",
+      "hittable": true,
+      "label": "Vertical scroll bar, 1 page",
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "depth": 3,
+      "ref": "e4",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 3,
+      "index": 4,
+      "enabled": true,
+      "type": "Other",
+      "hittable": true,
+      "label": "Logged",
+      "rect": {
+        "x": 0,
+        "width": 390,
+        "height": 844,
+        "y": 0
+      },
+      "depth": 4,
+      "ref": "e5",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 4,
+      "identifier": "camera-result-card",
+      "index": 5,
+      "enabled": true,
+      "type": "ScrollView",
+      "hittable": true,
+      "hiddenContentBelow": true,
+      "label": "Logged",
+      "rect": {
+        "width": 358,
+        "height": 143.33333333333331,
+        "y": 0,
+        "x": 16
+      },
+      "depth": 5,
+      "ref": "e6",
+      "kind": "scroll-area"
+    },
+    {
+      "parentIndex": 5,
+      "index": 6,
+      "enabled": true,
+      "type": "Other",
+      "hittable": true,
+      "label": "Logged",
+      "rect": {
+        "y": 47,
+        "width": 358,
+        "height": 96.33333333333331,
+        "x": 16
+      },
+      "depth": 6,
+      "ref": "e7",
+      "kind": "other"
+    },
+    {
+      "parentIndex": 6,
+      "index": 7,
+      "enabled": true,
+      "type": "StaticText",
+      "hittable": true,
+      "label": "Logged",
+      "rect": {
+        "y": 63,
+        "width": 86.33334350585938,
+        "height": 20.333335876464844,
+        "x": 33.33333206176758
+      },
+      "depth": 7,
+      "ref": "e8",
+      "kind": "text"
+    },
+    {
+      "parentIndex": 6,
+      "index": 8,
+      "enabled": true,
+      "type": "StaticText",
+      "hittable": true,
+      "label": "Fajita Flour Tortillas",
+      "rect": {
+        "y": 87.34431966145834,
+        "width": 146.33333333333331,
+        "height": 20.33333333333333,
+        "x": 32
+      },
+      "depth": 7,
+      "ref": "e9",
+      "kind": "text"
+    },
+    {
+      "type": "StaticText",
+      "depth": 7,
+      "enabled": true,
+      "parentIndex": 6,
+      "index": 9,
+      "rect": {
+        "height": 15.666666666666671,
+        "width": 216,
+        "x": 32,
+        "y": 111.67765299479167
+      },
+      "hittable": true,
+      "label": "1 serving \u00b7 1 tortilla (37 g) \u00b7 200 kcal",
+      "ref": "e10",
+      "kind": "text"
+    },
+    {
+      "value": "0%",
+      "type": "Other",
+      "depth": 6,
+      "enabled": true,
+      "parentIndex": 5,
+      "index": 10,
+      "rect": {
+        "height": 112.00333333333333,
+        "width": 30,
+        "x": 341,
+        "y": 31.329999999999984
+      },
+      "hittable": true,
+      "label": "Vertical scroll bar, 1 page",
+      "ref": "e11",
+      "kind": "other"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 4,
+      "index": 11,
+      "rect": {
+        "height": 51.66666666666666,
+        "width": 152.66666666666666,
+        "x": 118.66666666666666,
+        "y": 175.33333333333331
+      },
+      "hittable": true,
+      "label": "Scan again",
+      "identifier": "camera-viewport",
+      "ref": "e12",
+      "kind": "button"
+    },
+    {
+      "type": "StaticText",
+      "depth": 6,
+      "enabled": true,
+      "parentIndex": 11,
+      "index": 12,
+      "rect": {
+        "height": 51.66666666666666,
+        "width": 152.66666666666666,
+        "x": 118.66666666666666,
+        "y": 175.33333333333331
+      },
+      "hittable": true,
+      "label": "Scan again",
+      "ref": "e13",
+      "kind": "text"
+    },
+    {
+      "type": "Image",
+      "depth": 6,
+      "enabled": true,
+      "parentIndex": 11,
+      "index": 13,
+      "rect": {
+        "height": 18.33333396911621,
+        "width": 15,
+        "x": 140,
+        "y": 191.66666666666666
+      },
+      "hittable": true,
+      "label": "Counterclockwise Curved Arrow",
+      "identifier": "arrow.counterclockwise",
+      "ref": "e14",
+      "kind": "image"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 4,
+      "index": 14,
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 40,
+        "y": 726
+      },
+      "hittable": true,
+      "label": "Close camera",
+      "identifier": "camera-viewport",
+      "ref": "e15",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 4,
+      "index": 15,
+      "rect": {
+        "height": 68,
+        "width": 68,
+        "x": 161,
+        "y": 722
+      },
+      "hittable": true,
+      "label": "Photograph nutrition label",
+      "identifier": "camera-viewport",
+      "ref": "e16",
+      "kind": "button"
+    },
+    {
+      "type": "Button",
+      "depth": 5,
+      "enabled": true,
+      "parentIndex": 4,
+      "index": 16,
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 306,
+        "y": 734
+      },
+      "hittable": true,
+      "label": "More camera options",
+      "identifier": "camera-viewport",
+      "ref": "e17",
+      "kind": "button"
+    },
+    {
+      "type": "Toolbar",
+      "depth": 2,
+      "enabled": true,
+      "parentIndex": 1,
+      "index": 17,
+      "rect": {
+        "height": 844,
+        "width": 390,
+        "x": 0,
+        "y": 0
+      },
+      "hittable": true,
+      "label": "Toolbar",
+      "identifier": "Toolbar",
+      "ref": "e18",
+      "kind": "toolbar"
+    }
+  ],
+  "truncated": false,
+  "appName": "juan-test.cal-macro-tracker",
+  "appBundleId": "juan-test.cal-macro-tracker",
+  "visibility": {
+    "partial": true,
+    "visibleNodeCount": 18,
+    "totalNodeCount": 18,
+    "reasons": [
+      "scroll-hidden-below"
+    ]
+  },
+  "keyboard": {
+    "kind": "absent"
+  },
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "presentedSurface": "unknown",
+  "snapshotQuality": {
+    "state": "healthy",
+    "backend": "tree",
+    "timing": {
+      "acquisitionMs": 155.83205223083496,
+      "presentationMs": 0.12600421905517578
+    }
+  },
+  "snapshotQualityNotes": [
+    {
+      "code": "regular-geometry-clipped",
+      "clippedNodeCount": 0,
+      "droppedNodeCount": 1
+    }
+  ],
+  "warnings": [
+    "Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation."
+  ],
+  "snapshotDiagnostics": {
+    "stats": {
+      "count": 78,
+      "p50Ms": 242,
+      "p95Ms": 738,
+      "maxMs": 2528,
+      "slowThresholdMs": 1500,
+      "platform": "ios",
+      "backends": {
+        "xctest": 78
+      }
+    }
+  },
+  "refsGeneration": 616757
+}

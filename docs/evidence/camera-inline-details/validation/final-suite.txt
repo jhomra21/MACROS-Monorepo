@@ -1,0 +1,74 @@
+Test Suite 'Selected tests' started at 2026-11-03 13:59:03.669.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-03 13:59:03.671.
+Test Suite 'AppDayContextTests' started at 2026-11-03 13:59:03.671.
+Test Suite 'AppDayContextTests' passed at 2026-11-03 13:59:03.689.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.011 (0.019) seconds
+Test Suite 'BackupRoundTripTests' started at 2026-11-03 13:59:03.690.
+Test Suite 'BackupRoundTripTests' passed at 2026-11-03 13:59:04.237.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.542 (0.548) seconds
+Test Suite 'BarcodeImageScannerTests' started at 2026-11-03 13:59:04.237.
+Test Suite 'BarcodeImageScannerTests' passed at 2026-11-03 13:59:04.462.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.223 (0.225) seconds
+Test Suite 'BodyProfileDraftTests' started at 2026-11-03 13:59:04.462.
+Test Suite 'BodyProfileDraftTests' passed at 2026-11-03 13:59:04.525.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.060 (0.063) seconds
+Test Suite 'CameraCardLayoutTests' started at 2026-11-03 13:59:04.525.
+Test Suite 'CameraCardLayoutTests' passed at 2026-11-03 13:59:09.541.
+Test Suite 'CommonFoodSeedLoaderTests' started at 2026-11-03 13:59:09.541.
+Test Suite 'CommonFoodSeedLoaderTests' passed at 2026-11-03 13:59:09.627.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.083 (0.085) seconds
+Test Suite 'FoodCameraFlowTests' started at 2026-11-03 13:59:09.627.
+Test Suite 'FoodCameraFlowTests' passed at 2026-11-03 13:59:09.647.
+	 Executed 28 tests, with 0 failures (0 unexpected) in 0.012 (0.020) seconds
+Test Suite 'FoodItemLocalSearchTests' started at 2026-11-03 13:59:09.647.
+Test Suite 'FoodItemLocalSearchTests' passed at 2026-11-03 13:59:09.702.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.050 (0.054) seconds
+Test Suite 'FoodLogEditorStateTests' started at 2026-11-03 13:59:09.702.
+Test Suite 'FoodLogEditorStateTests' passed at 2026-11-03 13:59:09.711.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.007 (0.010) seconds
+Test Suite 'GoalCalculatorTests' started at 2026-11-03 13:59:09.712.
+Test Suite 'GoalCalculatorTests' passed at 2026-11-03 13:59:09.720.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.008) seconds
+Test Suite 'HealthSynchronizationTests' started at 2026-11-03 13:59:09.720.
+Test Suite 'HealthSynchronizationTests' passed at 2026-11-03 13:59:09.969.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.246 (0.249) seconds
+Test Suite 'InsightsAnalyticsTests' started at 2026-11-03 13:59:09.969.
+Test Suite 'InsightsAnalyticsTests' passed at 2026-11-03 13:59:09.997.
+	 Executed 27 tests, with 0 failures (0 unexpected) in 0.021 (0.028) seconds
+Test Suite 'LocalConfidenceTests' started at 2026-11-03 13:59:09.998.
+Test Suite 'LocalConfidenceTests' passed at 2026-11-03 13:59:11.006.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1.006 (1.009) seconds
+Test Suite 'LogEntryQueryTests' started at 2026-11-03 13:59:11.007.
+Test Suite 'LogEntryQueryTests' passed at 2026-11-03 13:59:11.041.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.033 (0.034) seconds
+Test Suite 'MealSchemaMigrationTests' started at 2026-11-03 13:59:11.041.
+Test Suite 'MealSchemaMigrationTests' passed at 2026-11-03 13:59:13.182.
+Test Suite 'ProEntitlementTests' started at 2026-11-03 13:59:13.182.
+Test Suite 'ProEntitlementTests' passed at 2026-11-03 13:59:13.217.
+	 Executed 18 tests, with 0 failures (0 unexpected) in 0.030 (0.035) seconds
+Test Suite 'ReminderConfigurationTests' started at 2026-11-03 13:59:13.217.
+Test Suite 'ReminderConfigurationTests' passed at 2026-11-03 13:59:13.222.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.003 (0.004) seconds
+Test Suite 'ReminderSchedulerTests' started at 2026-11-03 13:59:13.222.
+Test Suite 'ReminderSchedulerTests' passed at 2026-11-03 13:59:13.224.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'SharingFoodPayloadTests' started at 2026-11-03 13:59:13.224.
+Test Suite 'SharingFoodPayloadTests' passed at 2026-11-03 13:59:13.286.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.058 (0.062) seconds
+Test Suite 'SharingReliabilityTests' started at 2026-11-03 13:59:13.286.
+Test Suite 'SharingReliabilityTests' passed at 2026-11-03 13:59:13.953.
+	 Executed 37 tests, with 0 failures (0 unexpected) in 0.654 (0.666) seconds
+Test Suite 'WeightAnalyticsTests' started at 2026-11-03 13:59:13.953.
+Test Suite 'WeightAnalyticsTests' passed at 2026-11-03 13:59:13.959.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.004 (0.007) seconds
+Test Suite 'WidgetAppearanceStorageTests' started at 2026-11-03 13:59:13.959.
+Test Suite 'WidgetAppearanceStorageTests' passed at 2026-11-03 13:59:13.972.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.010 (0.012) seconds
+Test Suite 'WidgetBackgroundPhotoImportTests' started at 2026-11-03 13:59:13.972.
+Test Suite 'WidgetBackgroundPhotoImportTests' passed at 2026-11-03 13:59:13.992.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.019 (0.020) seconds
+Test Suite 'cal-macro-trackerTests.xctest' passed at 2026-11-03 13:59:13.992.
+	 Executed 242 tests, with 0 failures (0 unexpected) in 10.233 (10.321) seconds
+Test Suite 'Selected tests' passed at 2026-11-03 13:59:13.992.
+	 Executed 242 tests, with 0 failures (0 unexpected) in 10.233 (10.323) seconds
+** TEST SUCCEEDED **

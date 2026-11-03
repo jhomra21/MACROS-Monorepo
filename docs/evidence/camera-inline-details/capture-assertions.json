@@ -1,0 +1,16 @@
+{
+  "required_initial_disabled": true,
+  "one_confirmation_still_disabled": true,
+  "both_confirmations_enable_log": true,
+  "required-review-logged": true,
+  "recovery-logged": true,
+  "second-item-logged": true,
+  "final-flow-logged": true,
+  "recovery_name_required": true,
+  "dirty_zoom_preserved": true,
+  "background_preserved": true,
+  "renamed_clean_retake": true,
+  "clean_zoom_dismissed": true,
+  "next-protein_focused": true,
+  "previous-calories_focused": true
+}

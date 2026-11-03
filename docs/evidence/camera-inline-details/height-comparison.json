@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "measurements": 960,
+    "sha256": "039dbf6f5903af507dc29abf64768813b01a34ba4c435ea3a6a57133555e23a6"
+  },
+  "extraction": {
+    "measurements": 960,
+    "sha256": "039dbf6f5903af507dc29abf64768813b01a34ba4c435ea3a6a57133555e23a6"
+  },
+  "green": {
+    "measurements": 960,
+    "sha256": "039dbf6f5903af507dc29abf64768813b01a34ba4c435ea3a6a57133555e23a6"
+  }
+}
