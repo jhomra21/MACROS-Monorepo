@@ -1,0 +1,5 @@
+source=origin/main da00befaae3d9954c7046f80570bda4936f918d7
+build=Debug succeeded; simulator=iPhone 17e F976E800-DA1F-4F20-B755-DFD964E33975
+clean-install=simctl erase, install, launch; screenshot=/tmp/macros-onboarding.png
+driver=agent-device/idb/maestro/applesimutils not installed; XcodeBuildMCP snapshot required unavailable session simulatorId and session_set_defaults is prohibited
+HealthKit sample injection=simctl privacy does not list HealthKit; simctl push is APNs-only
