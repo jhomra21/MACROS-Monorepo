@@ -34,6 +34,8 @@ final class AppLaunchState {
                 }
             }
         } catch {
+            let launchError = error as NSError
+            Self.logger.error("App launch failed: domain=\(launchError.domain, privacy: .public), code=\(launchError.code)")
             phase = .failed(error.localizedDescription)
         }
     }

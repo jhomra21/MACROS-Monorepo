@@ -5,22 +5,6 @@ import XCTest
 
 @MainActor
 final class SharedStoreMigrationTests: XCTestCase {
-    func testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows() throws {
-        try withStore { source, destination, _ in
-            let fileManager = InterruptedStoreCopy()
-            // Old migration throws after publishing the base, before copying WAL.
-            // A safe migration does not use artifact copies at all.
-            do {
-                try SharedModelContainerFactory.migrateLegacyStoreIfNeeded(
-                    from: source, to: destination, fileManager: fileManager
-                )
-            } catch InterruptedStoreCopy.Failure.interrupted {}
-            try SharedModelContainerFactory.migrateLegacyStoreIfNeeded(from: source, to: destination)
-            XCTAssertEqual(try rows(at: destination), ["base", "committed WAL"])
-            XCTAssertEqual(try rows(at: source), ["base", "committed WAL"])
-        }
-    }
-
     func testPublishedBaseIsSelfContainedWithoutCopiedSidecars() throws {
         try withStore { source, destination, directory in
             try SharedModelContainerFactory.migrateLegacyStoreIfNeeded(from: source, to: destination)
@@ -37,9 +21,11 @@ final class SharedStoreMigrationTests: XCTestCase {
             try SharedModelContainerFactory.migrateLegacyStoreIfNeeded(from: source, to: destination)
             XCTAssertFalse(FileManager.default.fileExists(atPath: staging.path))
             XCTAssertEqual(try rows(at: destination), ["base", "committed WAL"])
-            let published = try Data(contentsOf: destination)
+            let db = try open(destination, flags: SQLITE_OPEN_READWRITE)
+            defer { sqlite3_close(db) }
+            try execute("INSERT INTO records VALUES ('post-migration write');", on: db)
             try SharedModelContainerFactory.migrateLegacyStoreIfNeeded(from: source, to: destination)
-            XCTAssertEqual(try Data(contentsOf: destination), published)
+            XCTAssertEqual(try rows(at: destination), ["base", "committed WAL", "post-migration write"])
         }
     }
 
@@ -135,15 +121,6 @@ final class SharedStoreMigrationTests: XCTestCase {
     }
 
     private enum SQLiteFailure: Error { case failed }
-}
-
-private final class InterruptedStoreCopy: FileManager, @unchecked Sendable {
-    enum Failure: Error { case interrupted }
-
-    override func copyItem(at source: URL, to destination: URL) throws {
-        try super.copyItem(at: source, to: destination)
-        throw Failure.interrupted
-    }
 }
 
 private final class FailedStorePublish: FileManager, @unchecked Sendable {

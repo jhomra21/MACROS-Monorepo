@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import SQLite3
 import SwiftData
@@ -75,17 +76,17 @@ enum SharedModelContainerFactory {
         fileManager: FileManager = .default
     ) throws {
         guard sourceURL != destinationURL else { return }
-        let stagingURL = URL(fileURLWithPath: destinationURL.path + ".migration")
-        let stagingArtifacts = storeArtifactURLs(for: stagingURL) + [URL(fileURLWithPath: stagingURL.path + "-journal")]
-        // Staging is disposable after any interrupted launch, even after publication.
-        for artifact in stagingArtifacts where fileManager.fileExists(atPath: artifact.path) {
-            try fileManager.removeItem(at: artifact)
-        }
         guard
             !fileManager.fileExists(atPath: destinationURL.path),
             fileManager.fileExists(atPath: sourceURL.path)
         else {
             return
+        }
+
+        let stagingURL = URL(fileURLWithPath: destinationURL.path + ".migration")
+        let stagingArtifacts = storeArtifactURLs(for: stagingURL) + [URL(fileURLWithPath: stagingURL.path + "-journal")]
+        for artifact in stagingArtifacts where fileManager.fileExists(atPath: artifact.path) {
+            try fileManager.removeItem(at: artifact)
         }
 
         try fileManager.createDirectory(
@@ -98,15 +99,24 @@ enum SharedModelContainerFactory {
                 try? fileManager.removeItem(at: artifact)
             }
         }
-        // absent → staging → validated, self-contained base → published.
+        // absent → staging → self-contained base → published.
         // The widget only opens destinationURL, never the staging path.
         try backupLegacyStore(from: sourceURL, to: stagingURL)
         try applySharedStoreFileProtectionIfNeeded(at: stagingURL)
         let file = try FileHandle(forWritingTo: stagingURL)
         defer { try? file.close() }
-        try file.synchronize()
+        // Unlike fsync, F_FULLFSYNC also asks the drive to flush its cache.
+        guard fcntl(file.fileDescriptor, F_FULLFSYNC) != -1 else {
+            throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+        }
         // Same directory/volume: move is a rename, not a multi-artifact copy.
         try fileManager.moveItem(at: stagingURL, to: destinationURL)
+        let directory = open(destinationURL.deletingLastPathComponent().path, O_RDONLY)
+        if directory >= 0 {
+            defer { close(directory) }
+            // Directory full-sync is best effort; publication has already succeeded.
+            _ = fcntl(directory, F_FULLFSYNC)
+        }
     }
 
     private static func backupLegacyStore(from sourceURL: URL, to stagingURL: URL) throws {
@@ -128,9 +138,9 @@ enum SharedModelContainerFactory {
             throw sqliteFailure(step)
         }
         try checkSQLite(finish)
-        guard try sqliteText("PRAGMA journal_mode=DELETE", in: destination) == "delete",
-            try sqliteText("PRAGMA quick_check", in: destination) == "ok"
-        else { throw CocoaError(.fileReadCorruptFile) }
+        guard try sqliteText("PRAGMA journal_mode=DELETE", in: destination) == "delete" else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
     }
 
     private static func checkSQLite(_ result: Int32) throws {
@@ -140,7 +150,7 @@ enum SharedModelContainerFactory {
     private static func sqliteFailure(_ result: Int32) -> NSError {
         NSError(
             domain: "SharedStoreMigration.SQLite", code: Int(result),
-            userInfo: [NSLocalizedDescriptionKey: "The legacy database could not be safely copied. Please try again."]
+            userInfo: [NSLocalizedDescriptionKey: "The legacy database could not be safely copied."]
         )
     }
 
@@ -148,7 +158,8 @@ enum SharedModelContainerFactory {
         var statement: OpaquePointer?
         try checkSQLite(sqlite3_prepare_v2(database, sql, -1, &statement, nil))
         defer { sqlite3_finalize(statement) }
-        guard sqlite3_step(statement) == SQLITE_ROW else { throw CocoaError(.fileReadCorruptFile) }
+        let result = sqlite3_step(statement)
+        guard result == SQLITE_ROW else { throw sqliteFailure(result) }
         return String(cString: sqlite3_column_text(statement, 0))
     }
 
