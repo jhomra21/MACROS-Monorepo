@@ -1,34 +1,74 @@
 [
   {
-    "utc": "2026-11-03T22:03:25Z",
+    "utc": "2026-11-03T23:29:08Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-03T23:29:08Z",
     "event": "launch barcode"
   },
   {
-    "utc": "2026-11-03T22:03:54Z",
-    "event": "keyboard"
+    "utc": "2026-11-03T23:29:12Z",
+    "event": "press Details"
   },
   {
-    "utc": "2026-11-03T22:03:58Z",
-    "event": "record edited-log"
+    "utc": "2026-11-03T23:29:21Z",
+    "event": "fill Name=Morph2 Edited Tortilla"
   },
   {
-    "utc": "2026-11-03T22:03:58Z",
-    "event": "raw /tmp/macros-morph-edited-log-1793743438569732000.mp4"
+    "utc": "2026-11-03T23:29:23Z",
+    "event": "press Next field"
   },
   {
-    "utc": "2026-11-03T22:04:01Z",
-    "event": "edited-compact"
+    "utc": "2026-11-03T23:29:26Z",
+    "event": "press Next field"
   },
   {
-    "utc": "2026-11-03T22:04:07Z",
-    "event": "edited-logged"
+    "utc": "2026-11-03T23:29:28Z",
+    "event": "press Next field"
   },
   {
-    "utc": "2026-11-03T22:04:12Z",
-    "event": "edited-dashboard"
+    "utc": "2026-11-03T23:29:31Z",
+    "event": "press Next field"
   },
   {
-    "utc": "2026-11-03T22:04:14Z",
+    "utc": "2026-11-03T23:29:36Z",
+    "event": "fill Calories=200"
+  },
+  {
+    "utc": "2026-11-03T23:29:38Z",
+    "event": "capture keyboard"
+  },
+  {
+    "utc": "2026-11-03T23:29:43Z",
+    "event": "press Done"
+  },
+  {
+    "utc": "2026-11-03T23:29:48Z",
+    "event": "press Show less"
+  },
+  {
+    "utc": "2026-11-03T23:29:51Z",
+    "event": "capture edited-compact"
+  },
+  {
+    "utc": "2026-11-03T23:29:55Z",
+    "event": "press Log"
+  },
+  {
+    "utc": "2026-11-03T23:29:58Z",
+    "event": "capture edited-logged"
+  },
+  {
+    "utc": "2026-11-03T23:30:02Z",
+    "event": "press Close camera"
+  },
+  {
+    "utc": "2026-11-03T23:30:04Z",
+    "event": "capture edited-dashboard"
+  },
+  {
+    "utc": "2026-11-03T23:30:04Z",
     "event": "PASS edited"
   }
 ]

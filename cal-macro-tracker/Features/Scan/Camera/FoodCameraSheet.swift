@@ -21,6 +21,7 @@ struct FoodCameraSheet: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.accessibilityReduceMotion) var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(SharingSyncService.self) var sharingSyncService
     @Query private var goals: [DailyGoals]
 
@@ -51,7 +52,6 @@ struct FoodCameraSheet: View {
     @State var pendingImageHadNoBarcode = false
     @State var detailsEditor: FoodLogEditorState?
     @State var detailsExpanded = false
-    @Namespace private var detailsNamespace
     @State var scannerSuspendedForDetails = false
     @State private var isKeyboardVisible = false
     @State private var pendingExit: CameraDetailsExit?
@@ -265,51 +265,53 @@ struct FoodCameraSheet: View {
             showSettings: permissionDenied,
             onSettings: openSettings,
             showsActionButtons: !hasDetailsActions,
-            actionNamespace: hasDetailsActions && !detailsExpanded ? detailsNamespace : nil,
             gramsAmount: detailsEditor?.quantityMode == .grams ? detailsEditor?.gramsAmount : nil
         )
         VStack(spacing: 0) {
-            ZStack(alignment: .top) {
-                if let editor = detailsEditor {
-                    FoodCameraDetailsEditor(
-                        editor: Binding(get: { detailsEditor ?? editor }, set: { detailsEditor = $0 }),
-                        goals: MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)),
-                        onQuantityChange: { send(.servingsChanged($0)) },
-                        isExpanded: detailsExpanded,
-                        isKeyboardVisible: isKeyboardVisible,
-                        actionNamespace: detailsExpanded ? detailsNamespace : nil
-                    )
-                    // Keep the Form mounted: disclosure state and unfinished text survive collapse.
-                    .frame(height: expandedHeight)
-                    .frame(height: detailsExpanded ? expandedHeight : 0, alignment: .top)
-                    .opacity(detailsExpanded ? 1 : 0)
-                    .allowsHitTesting(detailsExpanded)
-                    .accessibilityHidden(!detailsExpanded)
-                }
-                if !detailsExpanded {
-                    ScrollView {
-                        panel
-                            .padding(.bottom, hasDetailsActions ? -16 : 0)
-                            .onGeometryChange(for: CGFloat.self) {
-                                $0.size.height
-                            } action: {
-                                resultContentHeight = $0
-                            }
+            ScrollView {
+                panel
+                    .padding(.bottom, hasDetailsActions ? -16 : 0)
+                    .onGeometryChange(for: CGFloat.self) {
+                        $0.size.height
+                    } action: {
+                        resultContentHeight = $0
                     }
-                    .scrollDisabled(!hasActionableResult)
-                    .scrollBounceBehavior(.basedOnSize)
-                    .clipped()
-                }
             }
-            if !detailsExpanded && hasDetailsActions {
-                panel.actionButtons
-                    .accessibilityHidden(true)
+            .frame(
+                height: detailsExpanded && isKeyboardVisible
+                    ? 0
+                    : min(
+                        resultContentHeight,
+                        detailsExpanded
+                            ? (dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact
+                                ? expandedHeight * 0.4 : resultContentHeight)
+                            : max(0, maxHeight - (hasDetailsActions ? resultActionHeight : 0))
+                    )
+            )
+            .scrollDisabled(!hasActionableResult)
+            .scrollBounceBehavior(.basedOnSize)
+            .clipped()
+            .accessibilityHidden(detailsExpanded && isKeyboardVisible)
+            if let editor = detailsEditor {
+                FoodCameraDetailsEditor(
+                    editor: Binding(get: { detailsEditor ?? editor }, set: { detailsEditor = $0 }),
+                    onQuantityChange: { send(.servingsChanged($0)) },
+                    isExpanded: detailsExpanded
+                )
+                // Keep the same Form, but reveal only its body below the single persistent summary.
+                .frame(height: detailsExpanded ? nil : 0)
+                .clipped()
+                .allowsHitTesting(detailsExpanded)
+                .accessibilityHidden(!detailsExpanded)
+            }
+            if hasDetailsActions {
+                detailsActions
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                     .onGeometryChange(for: CGFloat.self) {
                         $0.size.height
                     } action: {
-                        resultActionHeight = $0
+                        if !detailsExpanded { resultActionHeight = $0 }
                     }
             }
         }
@@ -319,32 +321,6 @@ struct FoodCameraSheet: View {
         .clipShape(.rect(cornerRadius: 24))
         .accessibilityIdentifier("camera-result-card")
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
-        .overlay {
-            if hasDetailsActions {
-                // One rendered control per action. Invisible slots supply only geometry, never a second Log.
-                Button {
-                    if detailsExpanded {
-                        KeyboardSupport.dismissFirstResponder()
-                        detailsExpanded = false
-                    } else {
-                        openDetails()
-                    }
-                } label: {
-                    Text(detailsExpanded ? "Less" : compactDetailsTitle).frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.glass)
-                .accessibilityLabel(detailsExpanded ? "Show less" : compactDetailsTitle)
-                .accessibilityIdentifier("camera-details-toggle")
-                .matchedGeometryEffect(id: "details", in: detailsNamespace, isSource: false)
-                if showsCompactLog || detailsExpanded {
-                    Button(action: logBarcode) { Text("Log").frame(maxWidth: .infinity) }
-                        .buttonStyle(.glassProminent)
-                        .disabled(!canLogResult)
-                        .accessibilityIdentifier("camera-log")
-                        .matchedGeometryEffect(id: "log", in: detailsNamespace, isSource: false)
-                }
-            }
-        }
         .controlSize(.large)
         .buttonBorderShape(.capsule)
         .foregroundStyle(.primary)
@@ -352,6 +328,36 @@ struct FoodCameraSheet: View {
         .layoutPriority(2)
         .transaction { transaction in
             if reduceMotion { transaction.disablesAnimations = true }
+        }
+    }
+
+    private var detailsActions: some View {
+        let layout =
+            detailsExpanded || dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
+            Button {
+                if detailsExpanded {
+                    KeyboardSupport.dismissFirstResponder()
+                    detailsExpanded = false
+                } else {
+                    openDetails()
+                }
+            } label: {
+                Text(detailsExpanded ? "Less" : compactDetailsTitle)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .frame(maxWidth: showsCompactLog || detailsExpanded ? nil : .infinity)
+            }
+            .buttonStyle(.glass)
+            .accessibilityLabel(detailsExpanded ? "Show less" : compactDetailsTitle)
+            .accessibilityIdentifier("camera-details-toggle")
+            if showsCompactLog || detailsExpanded {
+                Button(action: logBarcode) { Text("Log").frame(maxWidth: .infinity) }
+                    .buttonStyle(.glassProminent)
+                    .disabled(!canLogResult)
+                    .accessibilityIdentifier("camera-log")
+            }
         }
     }
 

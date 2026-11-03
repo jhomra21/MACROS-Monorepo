@@ -1,30 +1,38 @@
 [
   {
-    "utc": "2026-11-03T22:01:32Z",
+    "utc": "2026-11-03T23:34:02Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-03T23:34:02Z",
     "event": "launch barcode"
   },
   {
-    "utc": "2026-11-03T22:01:32Z",
-    "event": "compact"
+    "utc": "2026-11-03T23:34:05Z",
+    "event": "capture compact"
   },
   {
-    "utc": "2026-11-03T22:01:35Z",
-    "event": "record morph"
+    "utc": "2026-11-03T23:34:07Z",
+    "event": "record /tmp/macros-morph2-morph-1793748845954612000.mp4"
   },
   {
-    "utc": "2026-11-03T22:01:35Z",
-    "event": "raw /tmp/macros-morph-morph-1793743294864894000.mp4"
+    "utc": "2026-11-03T23:34:11Z",
+    "event": "press Details"
   },
   {
-    "utc": "2026-11-03T22:01:37Z",
-    "event": "expanded"
+    "utc": "2026-11-03T23:34:14Z",
+    "event": "capture expanded"
   },
   {
-    "utc": "2026-11-03T22:01:44Z",
-    "event": "collapsed"
+    "utc": "2026-11-03T23:34:18Z",
+    "event": "press Show less"
   },
   {
-    "utc": "2026-11-03T22:01:48Z",
+    "utc": "2026-11-03T23:34:21Z",
+    "event": "capture collapsed"
+  },
+  {
+    "utc": "2026-11-03T23:34:23Z",
     "event": "PASS morph"
   }
 ]

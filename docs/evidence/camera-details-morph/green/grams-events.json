@@ -1,46 +1,74 @@
 [
   {
-    "utc": "2026-11-03T22:04:19Z",
+    "utc": "2026-11-03T23:31:30Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-03T23:31:30Z",
     "event": "launch barcode"
   },
   {
-    "utc": "2026-11-03T22:04:39Z",
-    "event": "grams-expanded"
+    "utc": "2026-11-03T23:31:33Z",
+    "event": "press Details"
   },
   {
-    "utc": "2026-11-03T22:04:41Z",
-    "event": "record grams-retained"
+    "utc": "2026-11-03T23:31:36Z",
+    "event": "press Grams"
   },
   {
-    "utc": "2026-11-03T22:04:41Z",
-    "event": "raw /tmp/macros-morph-grams-retained-1793743481271296000.mp4"
+    "utc": "2026-11-03T23:31:38Z",
+    "event": "press Grams, 37 g, Increment"
   },
   {
-    "utc": "2026-11-03T22:04:43Z",
-    "event": "grams-compact"
+    "utc": "2026-11-03T23:31:41Z",
+    "event": "capture grams-expanded"
   },
   {
-    "utc": "2026-11-03T22:04:48Z",
-    "event": "grams-restored"
+    "utc": "2026-11-03T23:31:45Z",
+    "event": "press Show less"
   },
   {
-    "utc": "2026-11-03T22:04:55Z",
-    "event": "dirty-collapsed-scan"
+    "utc": "2026-11-03T23:31:48Z",
+    "event": "capture grams-compact"
   },
   {
-    "utc": "2026-11-03T22:05:02Z",
-    "event": "dirty-collapsed-close"
+    "utc": "2026-11-03T23:31:52Z",
+    "event": "press Details"
   },
   {
-    "utc": "2026-11-03T22:05:08Z",
-    "event": "dirty-collapsed-swipe-blocked"
+    "utc": "2026-11-03T23:31:55Z",
+    "event": "capture grams-restored"
   },
   {
-    "utc": "2026-11-03T22:05:17Z",
-    "event": "grams-dashboard"
+    "utc": "2026-11-03T23:32:00Z",
+    "event": "press Show less"
   },
   {
-    "utc": "2026-11-03T22:05:20Z",
+    "utc": "2026-11-03T23:32:05Z",
+    "event": "press Scan again"
+  },
+  {
+    "utc": "2026-11-03T23:32:08Z",
+    "event": "capture dirty-collapsed-scan"
+  },
+  {
+    "utc": "2026-11-03T23:32:13Z",
+    "event": "press Keep Editing"
+  },
+  {
+    "utc": "2026-11-03T23:32:18Z",
+    "event": "press Log"
+  },
+  {
+    "utc": "2026-11-03T23:32:23Z",
+    "event": "press Close camera"
+  },
+  {
+    "utc": "2026-11-03T23:32:26Z",
+    "event": "capture grams-dashboard"
+  },
+  {
+    "utc": "2026-11-03T23:32:26Z",
     "event": "PASS grams"
   }
 ]

@@ -5,7 +5,7 @@ No new isolated unit tests are planned; the real fixture app and existing full s
 
 - Expansion/collapse replaces or fades two Log buttons instead of moving one continuously.
 - Geometry matching scales text, clips the moving button, loses hit testing, or leaves duplicate AX actions.
-- Details does not become a reachable top-of-editor Less / Show less control.
+- Details does not become a reachable Less / Show less control (the fix round keeps it with Log in the footer).
 - Collapse destroys name, numeric text (including incomplete/invalid input), quantity mode/amount, confirmations, reusable-food choice, or expanded secondary fields.
 - E2E follow-up: a valid trailing decimal (`1.`) is normalized by the shared nutrient presentation when focus ends, before collapse. Camera sessions must opt into retaining presented text across blur; other callers must keep their existing presentation behavior. Quantity-multiplier changes must still invalidate the retained display text so old totals cannot appear under a new quantity.
 - Compact totals/name/quantity use the original draft, or compact Log saves stale food/servings instead of the edited logging action.
@@ -16,5 +16,13 @@ No new isolated unit tests are planned; the real fixture app and existing full s
 - Reduce Motion still moves controls; keyboard leaves a visible strip or hides Log/Done; landscape loses the 65/35 split; AX5 hides collapse or overlaps strip actions.
 - Frame-review follow-up: Reduce Motion must suppress native glass-button label/layout animation as well as the outer card animation. Checking only Log raster endpoints misses Details/Less movement; inspect both controls in the retained frame strip.
 - Expanded height changes from 75% / 170 pt floor, or the 960-measurement layout regression fails.
+
+Fix-round failures, established by the parent-reviewed GREEN strips at `6efc374` before this round:
+
+- `green/expand-strip.jpg`, row 1 frames 4–5: the overlay Log outruns the growing card and overlaps Scan again.
+- Expand/collapse row 2: two separately rendered summary headers cross-fade at different offsets.
+- `green/collapse-strip.jpg`, settled row 3: Details truncates to "Deta..." and Log overflows the original compact row.
+- The independent matched-geometry overlay arrives after the card, rather than with its bottom edge.
+- The new iPad capture setup needs its own RED cycle before claiming a GREEN comparison.
 
 RED: `red/expand.mp4`, `red/expand-strip.jpg` (10 fps, row-major 0.0–1.9 s); around 0.7–0.9 s the compact action row and incoming editor bottom Log coexist. `red/expanded.json` contains no Less / Show less control.

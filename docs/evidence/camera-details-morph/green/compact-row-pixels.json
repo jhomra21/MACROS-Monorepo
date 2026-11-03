@@ -1,0 +1,12 @@
+{
+  "crop": "x=32,y=235,width=346,height=52 in compatibility-window pixels",
+  "beforeVsAfter": {
+    "meanAbsoluteChannelDifference": 0.0,
+    "maximumChannelDifference": 0
+  },
+  "redVsBefore": {
+    "meanAbsoluteChannelDifference": 0.1365,
+    "maximumChannelDifference": 5
+  },
+  "note": "Native glass pixels can respond to background/state; geometry equality is asserted separately."
+}

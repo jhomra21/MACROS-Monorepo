@@ -1,8 +1,8 @@
-Test Suite 'CameraCardLayoutTests' started at 2026-11-03 16:17:27.004.
+Test Suite 'CameraCardLayoutTests' started at 2026-11-03 17:42:09.433.
 Test Case '-[cal_macro_trackerTests.CameraCardLayoutTests testServingChangesKeepBarcodeAndLabelCardHeight]' started.
-CAMERA_CARD_EVIDENCE /Users/juan/Library/Developer/CoreSimulator/Devices/E91B597B-CE57-4C0B-A8A4-51CBDC3386AB/data/Containers/Data/Application/C9BA2728-B7BD-4BB2-85AB-5CA0BFBFF5DF/tmp/camera-card-layout/heights.csv
-Test Case '-[cal_macro_trackerTests.CameraCardLayoutTests testServingChangesKeepBarcodeAndLabelCardHeight]' passed (4.586 seconds).
-Test Suite 'CameraCardLayoutTests' passed at 2026-11-03 16:17:31.591.
-	 Executed 247 tests, with 0 failures (0 unexpected) in 8.930 (9.015) seconds
-	 Executed 247 tests, with 0 failures (0 unexpected) in 8.930 (9.017) seconds
+CAMERA_CARD_EVIDENCE /Users/juan/Library/Developer/CoreSimulator/Devices/E91B597B-CE57-4C0B-A8A4-51CBDC3386AB/data/Containers/Data/Application/630825EA-949A-4EA9-937A-CFF3399BFF7E/tmp/camera-card-layout/heights.csv
+Test Case '-[cal_macro_trackerTests.CameraCardLayoutTests testServingChangesKeepBarcodeAndLabelCardHeight]' passed (3.593 seconds).
+Test Suite 'CameraCardLayoutTests' passed at 2026-11-03 17:42:13.027.
+	 Executed 247 tests, with 0 failures (0 unexpected) in 7.764 (7.847) seconds
+	 Executed 247 tests, with 0 failures (0 unexpected) in 7.764 (7.851) seconds
 ** TEST SUCCEEDED **

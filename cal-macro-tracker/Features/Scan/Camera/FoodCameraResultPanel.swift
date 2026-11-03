@@ -45,7 +45,6 @@ struct FoodCameraResultPanel: View {
     var showsActions = true
     var showsServings = true
     var showsActionButtons = true
-    var actionNamespace: Namespace.ID? = nil
     var gramsAmount: Double? = nil
 
     var body: some View {
@@ -182,7 +181,6 @@ struct FoodCameraResultPanel: View {
                 actionRow(draft, servings: servings, isLabel: true)
             } else {
                 wideButton("Edit details", action: onDetails)
-                    .modifier(FoodCameraActionSlot(id: "details", namespace: actionNamespace))
             }
         default:
             EmptyView()
@@ -322,11 +320,9 @@ struct FoodCameraResultPanel: View {
         let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
         let details = Button(isLabel ? "Edit details" : "Details", action: onDetails)
             .buttonStyle(.glass)
-            .modifier(FoodCameraActionSlot(id: "details", namespace: actionNamespace))
         let log = Button(action: onLog) { Text("Log").frame(maxWidth: .infinity) }
             .buttonStyle(.glassProminent)
             .disabled(isLabel && canLog == false)
-            .modifier(FoodCameraActionSlot(id: "log", namespace: actionNamespace))
         return ViewThatFits(in: .horizontal) {
             HStack(spacing: 12) {
                 details.fixedSize(horizontal: true, vertical: false)

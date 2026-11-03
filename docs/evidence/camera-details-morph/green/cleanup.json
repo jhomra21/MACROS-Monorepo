@@ -1,8 +1,11 @@
 {
-  "utc": "2026-11-03T22:20:26Z",
-  "app": "Uninstrumented final suite build",
-  "orientation": "portrait",
-  "textSize": "Text size is large",
-  "reduceMotion": "Off, actual Settings capture reduce-motion-setting-restored.json",
-  "cameraClosed": true
+  "device": "E91B597B-CE57-4C0B-A8A4-51CBDC3386AB",
+  "installedApp": "/tmp/macros-morph2-dd/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app",
+  "fixturePatchApplied": false,
+  "cameraClosed": true,
+  "textSizeResult": "Text size set to large\n",
+  "orientationResult": "Rotated to portrait\n",
+  "reduceMotion": "off, independently captured in reduce-motion-setting-restored.json",
+  "driverSessionClosed": true,
+  "simulatorShutdown": false
 }
