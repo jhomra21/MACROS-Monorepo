@@ -1,0 +1,67 @@
+{
+  "dateUTC": "2026-11-03",
+  "branch": "fix/collection-feedback-loop",
+  "baseSHA": "7034202b594ea43c819ec7c8b796e4b84213a201",
+  "historicalRevision": "67e85ad",
+  "runtime": "iOS 26.5 (23F77)",
+  "device": "4EFBA68F-F1C7-41C5-AEB9-E800FCBA40AC",
+  "redBuild27CrashUTC": "2026-11-03T23:24:05Z",
+  "redMainCrashUTC": "2026-11-03T23:25:59Z",
+  "preferredHeightPoints": {
+    "build27": [
+      407.6666666666667,
+      407.3333333333333
+    ],
+    "main": [
+      403.0,
+      403.3333333333333
+    ]
+  },
+  "greenRecordingStartUTC": "2026-11-03T23:28:02Z",
+  "greenRecordingStopUTC": "2026-11-03T23:40:38Z",
+  "videoDurationSeconds": {
+    "red-build27-full.mp4": 728.333333,
+    "red-build27-today-focused.mp4": 36.25,
+    "red-main-today.mp4": 22.333333,
+    "green-full.mp4": 755.333333
+  },
+  "greenRequestedBatchHeroTaps": 304,
+  "greenLargestAXSearchScrolls": 30,
+  "greenStreamLineCount": 47102,
+  "greenStreamFeedbackMatchCount": 0,
+  "greenPersistedFeedbackMatchCount": 0,
+  "greenNewAppCrashReports": 0,
+  "crashReportInventoryLocal": [
+    "170814 (unsigned entitlement setup error)",
+    "170830 (unsigned entitlement setup error)",
+    "172409 (build27 RED)",
+    "172604 (main RED)"
+  ],
+  "qualityFormatCheck": "passed",
+  "qualityBuild": "passed (existing concurrency warnings)",
+  "serialIPadTests": {
+    "result": "Passed",
+    "passed": 247,
+    "failed": 0,
+    "skipped": 0,
+    "excludedClass": "PurchaseStoreStoreKitTests",
+    "resultBundle": "/tmp/macros-loop.xcresult",
+    "startUTC": "2026-11-03T23:45:51.090Z",
+    "finishUTC": "2026-11-03T23:46:14.706Z",
+    "summarySource": "xcresulttool get test-results summary"
+  },
+  "finalDefensiveReview": "completed after validators; no additional change justified",
+  "privateTokenScan": "no match",
+  "cleanup": {
+    "newSimulator": "retained, shut down",
+    "runtime": "retained",
+    "temporaryHistoricalWorktree": "removed",
+    "deviceSessions": "closed",
+    "ownedUILocks": "released",
+    "acquiredIPadLock": "released after tests",
+    "finalAvailableDiskGiB": 52,
+    "installedRuntimeGiB": 7.9,
+    "newSimulatorDataGiB": 2.3,
+    "A": "usable, Debug Pro on, 18 food rows, 2465 kcal; probe relationship retained"
+  }
+}

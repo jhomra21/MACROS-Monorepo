@@ -252,13 +252,10 @@ struct DashboardScreen: View {
 
             LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
 
-            RevealLayout(progress: isMacroRingExpanded ? 1 : 0) {
+            if isMacroRingExpanded {
                 SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
                     .padding(.top, 12)
-                    .opacity(isMacroRingExpanded ? 1 : 0)
-                    .accessibilityHidden(!isMacroRingExpanded)
             }
-            .clipped()
         }
         .id(Self.ringRowID)
         .padding(.top, 8)
@@ -412,13 +409,10 @@ struct DashboardScreen: View {
     }
 
     private func toggleMacroRingExpansion() {
-        withAnimation(expansionAnimation) {
+        // Animating this self-sizing List row can oscillate its preferred height by one pixel on iOS 26.
+        withAnimation(nil) {
             isMacroRingExpanded.toggle()
         }
-    }
-
-    private var expansionAnimation: Animation? {
-        reduceMotion ? nil : .smooth(duration: 0.35)
     }
 
     /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
@@ -426,7 +420,7 @@ struct DashboardScreen: View {
         switch step {
         case .openSharing?, .previousDay?, .expandRing?:
             if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
-            withAnimation(expansionAnimation) {
+            withAnimation(nil) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
             }
@@ -470,25 +464,6 @@ struct DashboardScreen: View {
         case .fat:
             $customFatRingColor
         }
-    }
-}
-
-/// Reports its single child's height scaled by `progress`, so the hero grows in the same animated layout pass as the ring.
-private struct RevealLayout: Layout {
-    var progress: CGFloat
-
-    var animatableData: CGFloat {
-        get { progress }
-        set { progress = newValue }
-    }
-
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let size = subviews.first?.sizeThatFits(proposal) ?? .zero
-        return CGSize(width: size.width, height: size.height * progress)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
     }
 }
 

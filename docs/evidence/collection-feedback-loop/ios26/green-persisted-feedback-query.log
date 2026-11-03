@@ -1,0 +1,3 @@
+getpwuid_r did not find a match for uid 501
+Timestamp               Ty Process[PID:TID]
+2026-11-03 17:28:02.623 Df log[91039:0] [com.apple.log:] log run noninteractively, parent: 66819 (launchd_sim), args: 'log' 'stream' '--style' 'compact' '--level' 'debug' '--predicate' 'subsystem == "com.apple.UIKit" OR eventMessage CONTAINS "feedback loop" OR eventMessage CONTAINS "UICollectionViewRecursion"'
