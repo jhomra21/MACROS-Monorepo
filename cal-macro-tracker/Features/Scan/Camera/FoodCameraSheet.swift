@@ -350,6 +350,9 @@ struct FoodCameraSheet: View {
         .foregroundStyle(.primary)
         .padding(.horizontal, 16)
         .layoutPriority(2)
+        .transaction { transaction in
+            if reduceMotion { transaction.disablesAnimations = true }
+        }
     }
 
     private var displayedResult: FoodCameraResultPanel.Content {
