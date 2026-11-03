@@ -1,0 +1,14 @@
+$ bun --env-file=.env.local scripts/sharingSmoke.ts
+Raw personDay stranger: HTTP 200, envelope error, visibility none
+Raw personDay unauthenticated: HTTP 200, envelope error, visibility none
+Raw personDay bad signature JWT: HTTP 401, auth boundary InvalidAuthHeader
+BLOCKED expired JWT: no genuinely signed expired fixture (MACROS_EXPIRED_JWT_FILE).
+Raw personDay ungranted direction: HTTP 200, envelope success, visibility notShared
+Raw personDay includeFoods:false under foods grant: HTTP 200, envelope success, visibility shared
+Two acceptors and repeat acceptance passed.
+Raw personDay ended grant: HTTP 200, envelope success, visibility notShared
+Raw personDay removed relationship: HTTP 200, envelope error, visibility none
+Raw personDay tombstoned viewer: HTTP 200, envelope error, visibility none
+Raw personDay tombstoned person: HTTP 200, envelope error, visibility none
+Sharing smoke passed.
+Cleaned up 1 disposable profiles.

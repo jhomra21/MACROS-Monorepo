@@ -1,0 +1,21 @@
+Actual source checked: cal-macro-tracker/CalMacroWidget/SharedPersonWidgetIntent.swift
+Compiler: Apple Swift 6.4, swiftlang-6.4.0.34.1.
+Strict flags: -typecheck -warnings-as-errors -swift-version 6 -default-isolation MainActor
+Target: arm64-apple-ios27.0-simulator.
+Exit 0, no diagnostics. Local output: build/shared-widget/intent-swift6-check.log.
+
+The actual intent file was compiled with SDK-free storage declarations supplied
+on stdin and nonisolated synchronous functions that initialize the intent and
+read its person parameter. This is a compiler probe, not a runtime/network test.
+
+Configuration intent uses direct Sendable conformance (prevents default MainActor
+inference) and explicit nonisolated init/title/description, rather than type-level
+nonisolated, which diagnoses the SDK reference-backed Parameter storage.
+Entity and query remain explicitly nonisolated/Sendable.
+No unsafe isolation, unchecked conformance, compiler-setting change, or warning
+suppression was introduced in this branch.
+
+Primary language reference:
+https://github.com/swiftlang/swift-evolution/blob/main/proposals/0466-control-default-actor-isolation.md
+Default isolation does not apply to primary definitions directly conforming to
+a protocol inheriting SendableMetatype (including Sendable).

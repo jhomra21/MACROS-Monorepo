@@ -1,0 +1,88 @@
+$ vitest run --config vitest.qa.config.ts
+
+ RUN  v5.0.5 /Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend
+
+(node:13656) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13657) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13655) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ convex/_qa/quotas.integration.ts (5 tests) 119ms
+ ✓ convex/_qa/purchaseReview.integration.ts (22 tests) 155ms
+ ❯ convex/_qa/sharing.integration.ts (49 tests | 1 failed) 203ms
+   ✓ registered authentication and unrelated visibility 24ms
+   ✓ accept/replay, duplicate grants, snapshots, disabling, removal and deletion 15ms
+   ✓ build 23 exact wire shapes remain frozen and foods default off 3ms
+   ✓ daily goals round-trip to dashboard and personDay, and build 23 upserts preserve them 4ms
+   × widget personDay omits foods without changing goals or existing callers 5ms
+   ✓ food scope patches in place, unchanged day arrays keep updatedAt, and off deletes immediately 4ms
+   ✓ Pro flag gates invites and pauses both ways; flag off and either person's Pro resume 7ms
+   ✓ personDay returns notShared when inbound grant is absent or ends 2ms
+   ✓ personDay rejects past days, removed relationships, deleted people and strangers 2ms
+   ✓ personDay rejects a deleted related profile 1ms
+   ✓ 100 food cap, bounded fields, unique local IDs and user/day isolation 8ms
+   ✓ batched deletion drains every owned table beyond 100 rows 24ms
+   ✓ purchase cap is five distinct profiles and retries do not consume slots 5ms
+   ✓ grace counts as Pro; expired, revoked, unknown products and mismatched renewal do not grant Pro 2ms
+   ✓ notification HTTP ordering, grace, expiry, refund, renewal, and unknown transaction 200 29ms
+   ✓ weekly bounded sweeper deletes all food days before today, retaining today and future days 10ms
+   ✓ stale purchases cannot revive a refund for existing or newly attached profiles 2ms
+   ✓ a new verified renewal updates every profile attached to that purchase 2ms
+   ✓ a newer renewal JWS cannot clear a refund using an older transaction 1ms
+   ✓ lifetime grants Pro without expiry; revoked purchases never do 1ms
+   ✓ verified non-Pro notifications are acknowledged without granting an entitlement 1ms
+   ✓ scope without ownerDay uses server today; other recipients keep foods until the last one turns off 2ms
+   ✓ food day replacement preserves document identity and removes omitted foods 2ms
+   ✓ canonical food arrays ignore property and input order, keeping updatedAt unchanged 2ms
+   ✓ food day documents isolate two sharing owners and never embed foods in profiles, totals, or dashboard 4ms
+   ✓ first sync removes old owner food days in bounded batches, preserving other users and current/future days 11ms
+   ✓ bootstrap rejects malformed JSON, non-string fields and invalid bounds with 400 2ms
+   ✓ revocation and exact expiry reject without relationship mutation 1ms
+   ✓ snapshot bounds and UTC timezone day window use framework clock 2ms
+   ✓ renewed invites consolidate relationships and supersede pending invites 1ms
+   ✓ snapshot identity cannot be overridden through public mutation arguments 0ms
+   ✓ actual bootstrap HTTP router protects mutations and verifies credentials 5ms
+   ✓ identical live invite retry is a write-free no-op with original expiry 1ms
+   ✓ issuing a foreign hash rejects before touching other pending invites 1ms
+   ✓ issuing a revoked hash rejects before touching other pending invites 1ms
+   ✓ issuing a accepted hash rejects before touching other pending invites 1ms
+   ✓ issuing a expired hash rejects before touching other pending invites 1ms
+   ✓ issuing a duplicates hash rejects before touching other pending invites 1ms
+   ✓ historical revoked rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ historical expired rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ historical two-live rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ historical foreign-history rows never authorize; only one same-owner live candidate may be accepted 1ms
+   ✓ legacy accepted hashes stay blocked (pending duplicate: false) 1ms
+   ✓ legacy accepted hashes stay blocked (pending duplicate: true) 1ms
+   ✓ one live invite accepts two people, replays without writes, and revives a removed pair 3ms
+   ✓ used link rejects after owner/link becomes expired 1ms
+   ✓ used link rejects after owner/link becomes revoked 1ms
+   ✓ used link rejects after owner/link becomes deleted 2ms
+   ✓ used link rejects after owner/link becomes missing 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  convex/_qa/sharing.integration.ts > widget personDay omits foods without changing goals or existing callers
+Error: Validator error: Unexpected field `includeFoods` in object
+ ❯ validateValidator node_modules/convex-test/dist/index.js:961:27
+ ❯ validateFunctionArgs node_modules/convex-test/dist/index.js:2618:5
+ ❯ Object.queryFromPath node_modules/convex-test/dist/index.js:2350:17
+ ❯ query node_modules/convex-test/dist/index.js:2436:20
+ ❯ convex/_qa/sharing.integration.ts:165:18
+    163|   await owner.mutation(api.sharing.syncMyDay, { snapshot: { ...snapsho…
+    164|   const args = { otherProfileId: ids[0], day, ownerToday: day, include…
+    165|   const widget = await viewer.query(api.sharing.personDay, args);
+       |                  ^
+    166|   expect(widget.visibility).toBe("shared");
+    167|   expect(widget.snapshot).toMatchObject({ ...snapshot, ...goals });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 75 passed (76)
+   Start at  15:03:23
+   Duration  457ms (tests 51%, import 20%, transform 18%, environment 10%, worker 1%)
+
+error: script "test:integration" exited with code 1
