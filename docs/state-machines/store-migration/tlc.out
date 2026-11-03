@@ -1,0 +1,40 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Warning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 0 and seed 2235991040516001069 with 1 worker on 12 cores with 4608MB heap and 64MB offheap memory [pid: 3622] (Mac OS X 27.2 aarch64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /private/tmp/macros-state-models/store-migration/SPEC.tla
+Semantic processing of module SPEC
+Starting... (2026-11-02 19:43:56)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 19:43:56.
+Error: Invariant CompleteBeforeOpen is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ wal = FALSE
+/\ phase = "launch"
+/\ base = FALSE
+
+State 2: <CheckDestination line 6, col 21 to line 8, col 46 of module SPEC>
+/\ wal = FALSE
+/\ phase = "copyBase"
+/\ base = FALSE
+
+State 3: <CopyBase line 9, col 13 to line 10, col 28 of module SPEC>
+/\ wal = FALSE
+/\ phase = "copyWAL"
+/\ base = TRUE
+
+State 4: <YouRelaunch line 14, col 16 to line 15, col 41 of module SPEC>
+/\ wal = FALSE
+/\ phase = "launch"
+/\ base = TRUE
+
+State 5: <CheckDestination line 6, col 21 to line 8, col 46 of module SPEC>
+/\ wal = FALSE
+/\ phase = "opened"
+/\ base = TRUE
+
+9 states generated, 7 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 5.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 3 and the 95th percentile is 3).
+Finished in 00s at (2026-11-02 19:43:56)

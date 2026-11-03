@@ -1,0 +1,59 @@
+---
+title: "Local StoreKit access and cloud purchase submission"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: Breaks LocalEqualsCloud
+    lg1: Path to the LocalEqualsCloud bug
+  }
+  class lg0 breaks
+  class lg1 bugPath
+  state "At the same time" as all {
+    state "Access" as r0 {
+      s0: No Pro
+      s1: Local Pro, cloud not yet active
+      s2: Local and cloud Pro
+      s3: Cloud Pro, local refresh pending
+      [*] --> s0
+      s0 --> s1: verified current purchases grant local Pro [when Refresh is Reading verified entitlements]
+      s1 --> s2: Apple verification grants cloud Pro
+      s1 --> s0: current purchases contain no entitlement [when Refresh is Reading verified entitlements]
+      s2 --> s1: an Apple notification removes cloud access
+      s0 --> s3: Apple verification grants cloud Pro
+      s2 --> s3: current purchases contain no entitlement [when Refresh is Reading verified entitlements]
+      s3 --> s0: an Apple notification removes cloud access
+      s3 --> s2: verified current purchases grant local Pro [when Refresh is Reading verified entitlements]
+    }
+    --
+    state "Store" as r1 {
+      s4: No purchase operation
+      s5: Restoring
+      s6: Buying
+      [*] --> s4
+      s4 --> s5: you restore
+      s4 --> s6: you buy
+      s5 --> s4: the StoreKit operation finishes
+      s6 --> s4: the StoreKit operation finishes
+    }
+    --
+    state "Refresh" as r2 {
+      s7: Entitlements settled
+      s8: Reading verified entitlements
+      s9: Read superseded, must reread
+      [*] --> s7
+      s7 --> s8: the app requests current entitlements
+      s8 --> s7: the refresh is canceled without committing or current purchases contain no entitlement or verified current purchases grant local Pro
+      s8 --> s9: another entitlement refresh is requested
+      s9 --> s7: the refresh is canceled without committing
+      s9 --> s8: the outdated read is discarded
+    }
+  }
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 bugPath
+  class s1 breaks
+  class s1 bugPath
+  class s3 breaks
+  class s4 bugPath
+  class s7 bugPath
+  class s8 bugPath

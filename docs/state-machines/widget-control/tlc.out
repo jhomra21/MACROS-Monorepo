@@ -1,0 +1,91 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Warning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 0 and seed 3524676046908249802 with 1 worker on 12 cores with 4608MB heap and 64MB offheap memory [pid: 5728] (Mac OS X 27.2 aarch64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /private/tmp/macros-state-models/widget-control/SPEC.tla
+Parsing file /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/statechart-tWkr5u/statechart-TtBctc/tmp-verdict-1/Integers.tla
+Parsing file /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/statechart-tWkr5u/statechart-TtBctc/tmp-verdict-1/Naturals.tla
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module SPEC
+Starting... (2026-11-02 19:53:18)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 19:53:19.
+Error: Invariant NoObsoleteFiles is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ legacy = TRUE
+/\ request = "idle"
+/\ generation = 0
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = FALSE
+/\ requestGeneration = 0
+/\ enabled = TRUE
+/\ cachedGeneration = -1
+
+State 2: <CopyCredential line 8, col 19 to line 9, col 133 of module SPEC>
+/\ legacy = TRUE
+/\ request = "idle"
+/\ generation = 0
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = TRUE
+/\ requestGeneration = 0
+/\ enabled = TRUE
+/\ cachedGeneration = -1
+
+State 3: <WidgetStarts line 14, col 17 to line 16, col 111 of module SPEC>
+/\ legacy = TRUE
+/\ request = "loading"
+/\ generation = 0
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = TRUE
+/\ requestGeneration = 0
+/\ enabled = TRUE
+/\ cachedGeneration = -1
+
+State 4: <CheckResponse line 22, col 18 to line 24, col 131 of module SPEC>
+/\ legacy = TRUE
+/\ request = "checked"
+/\ generation = 0
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = TRUE
+/\ requestGeneration = 0
+/\ enabled = TRUE
+/\ cachedGeneration = -1
+
+State 5: <AppDisables line 17, col 16 to line 18, col 107 of module SPEC>
+/\ legacy = TRUE
+/\ request = "checked"
+/\ generation = 1
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = TRUE
+/\ requestGeneration = 0
+/\ enabled = FALSE
+/\ cachedGeneration = -1
+
+State 6: <WriteCache line 25, col 15 to line 27, col 110 of module SPEC>
+/\ legacy = TRUE
+/\ request = "written"
+/\ generation = 1
+/\ selected = FALSE
+/\ verified = FALSE
+/\ pro = TRUE
+/\ shared = TRUE
+/\ requestGeneration = 0
+/\ enabled = FALSE
+/\ cachedGeneration = 0
+
+107 states generated, 31 distinct states found, 8 states left on queue.
+The depth of the complete state graph search is 6.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 4).
+Finished in 00s at (2026-11-02 19:53:19)

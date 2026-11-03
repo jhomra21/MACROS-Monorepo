@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 1366 1086" width="1366" height="1086" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="683" y="25.6">Upload drain and identity cancellation</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="710.94" y="8" width="252.51" height="112" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M710.94,44H963.45" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="837.19" y="31.6" text-anchor="middle">Legend</text></g></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M654.52,120L654.52,157"/><path class="pele-marker" d="M654.52,164L651.16,156L657.88,156Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M672.77,226L672.77,236.83C672.77,240.31 1269.01,247.27 1269.01,250.75L1269.01,860C1269.01,913.5 946.41,913.5 946.41,967L946.41,973"/><path class="pele-marker" d="M946.41,980L943.05,972L949.77,972Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M642.84,226L642.84,288"/><path class="pele-marker" d="M642.84,295L639.48,287L646.2,287Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M709.11,339L709.11,352C709.11,380 1052.62,380 1052.62,408L1052.62,860C1052.62,913.5 930.41,913.5 930.41,967L930.41,973"/><path class="pele-marker" d="M930.41,980L927.05,972L933.77,972Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M592.57,339L592.57,347.09C592.57,350.56 467.78,354.03 467.78,357.5L467.78,401"/><path class="pele-marker" d="M467.78,408L464.42,400L471.14,400Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M523.37,470C523.37,479.25 649.49,479.25 649.49,488.5L649.49,547"/><path class="pele-marker" d="M649.49,554L646.13,546L652.85,546Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M436.09,470L436.09,729C436.09,757 379.94,757 379.94,785L379.94,791"/><path class="pele-marker" d="M379.94,798L376.58,790L383.3,790Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M694.41,598C694.41,607.25 828.94,607.25 828.94,616.5L828.94,660"/><path class="pele-marker" d="M828.94,667L825.58,659L832.3,659Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge8"><path d="M649.49,598L649.49,729C649.49,757 395.94,757 395.94,785L395.94,791"/><path class="pele-marker" d="M395.94,798L392.58,790L399.3,790Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge9"><path d="M604.57,598C604.57,607.25 562.36,607.25 562.36,616.5L562.36,641.5C562.36,644.97 235.46,651.91 235.46,655.38L235.46,660"/><path class="pele-marker" d="M235.46,667L232.1,659L238.82,659Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge10"><path d="M349.23,860L349.23,954.5C349.23,957.97 859.78,964.91 859.78,968.38L859.78,973"/><path class="pele-marker" d="M859.78,980L856.42,972L863.14,972Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge11"><path d="M875.78,729L875.78,973"/><path class="pele-marker" d="M875.78,980L872.42,972L879.14,972Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge12"><path d="M883.78,667L883.78,408C883.78,380 693.11,380 693.11,352L693.11,346"/><path class="pele-marker" d="M693.11,339L696.47,347L689.75,347Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge13"><path d="M113.2,667L113.2,250.75C113.2,247.42 626.84,240.77 626.84,237.44L626.84,233"/><path class="pele-marker" d="M626.84,226L630.2,234L623.48,234Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge14"><path d="M173.81,729L173.81,772.5C173.81,778.13 310.53,780.74 310.53,786.38L310.53,791"/><path class="pele-marker" d="M310.53,798L307.17,790L313.89,790Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge15"><path d="M219.46,667L219.46,654C219.46,626 226.41,626 226.41,598L226.41,363.75C226.41,360.42 576.57,353.77 576.57,350.44L576.57,346"/><path class="pele-marker" d="M576.57,339L579.93,347L573.21,347Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="1182.53" y="565.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="1269.01" y="580.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge2"><rect x="579.31" y="246.5" width="127.06" height="21" rx="3" fill="var(--_bg)"/><text x="642.84" y="261.9" text-anchor="middle">you edit local totals</text></g><g class="pele-edge-label" data-id="edge3"><rect x="966.14" y="565.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="1052.62" y="580.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge4"><rect x="378.95" y="359.5" width="177.67" height="21" rx="3" fill="var(--_bg)"/><text x="467.78" y="374.9" text-anchor="middle">the app requests an upload</text></g><g class="pele-edge-label" data-id="edge5"><rect x="562.61" y="490.5" width="173.76" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="649.49" y="504.4">authentication finishes and</tspan><tspan x="649.49" y="522.4">totals are reread</tspan></text></g><g class="pele-edge-label" data-id="edge6"><rect x="349.61" y="565.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="436.09" y="580.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge7"><rect x="784.09" y="618.5" width="89.69" height="21" rx="3" fill="var(--_bg)"/><text x="828.94" y="633.9" text-anchor="middle">the write fails</text></g><g class="pele-edge-label" data-id="edge8"><rect x="563.01" y="687.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="649.49" y="702.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge9"><rect x="485.24" y="618.5" width="154.26" height="21" rx="3" fill="var(--_bg)"/><text x="562.36" y="633.9" text-anchor="middle">the cloud write commits</text></g><g class="pele-edge-label" data-id="edge10"><rect x="251.87" y="880.5" width="194.73" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="349.23" y="894.4">the canceled authentication</tspan><tspan x="349.23" y="912.4">settles or the write fails or the</tspan><tspan x="349.23" y="930.4">reply settles without reviving a</tspan><tspan x="349.23" y="948.4">disabled identity</tspan></text></g><g class="pele-edge-label" data-id="edge11"><rect x="789.3" y="818.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="875.78" y="833.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge12"><rect x="821.42" y="565.5" width="124.72" height="21" rx="3" fill="var(--_bg)"/><text x="883.78" y="580.9" text-anchor="middle">you request a retry</text></g><g class="pele-edge-label" data-id="edge13"><rect x="10" y="421" width="206.41" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="113.2" y="434.9">the reply settles without reviving</tspan><tspan x="113.2" y="452.9">a disabled identity</tspan></text></g><g class="pele-edge-label" data-id="edge14"><rect x="87.32" y="749.5" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="173.81" y="764.9" text-anchor="middle">you disable device sharing</text></g><g class="pele-edge-label" data-id="edge15"><rect x="123.2" y="558" width="206.41" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="226.41" y="571.9">the reply settles without reviving</tspan><tspan x="226.41" y="589.9">a disabled identity</tspan></text></g></g><g class="pele-nodes"><g class="pele-node pele-state blue" data-id="s0" transform="translate(654.52,195)"><rect x="-70.26" y="-31" width="140.51" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Latest changes</tspan><tspan x="0" y="16.1">acknowledged</tspan></text></g><g class="pele-node pele-state tan" data-id="s1" transform="translate(901.48,1011)"><rect x="-88.93" y="-31" width="177.86" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Sharing disabled, no</tspan><tspan x="0" y="16.1">acknowledgment</tspan></text></g><g class="pele-node pele-state blue" data-id="s2" transform="translate(642.84,317)"><rect x="-110.27" y="-22" width="220.54" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Changes waiting to upload</text></g><g class="pele-node pele-state blue" data-id="s3" transform="translate(467.78,439)"><rect x="-107.59" y="-31" width="215.18" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Authenticating, will reread</tspan><tspan x="0" y="16.1">changes</tspan></text></g><g class="pele-node pele-state blue" data-id="s4" transform="translate(649.49,576)"><rect x="-96.92" y="-22" width="193.84" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Writing latest snapshot</text></g><g class="pele-node pele-state tan" data-id="s5" transform="translate(349.23,829)"><rect x="-90.7" y="-31" width="181.41" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Sharing disabled, old</tspan><tspan x="0" y="16.1">request settling</tspan></text></g><g class="pele-node pele-state blue" data-id="s6" transform="translate(875.78,698)"><rect x="-109.81" y="-31" width="219.62" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Upload failed, explicit retry</tspan><tspan x="0" y="16.1">needed</tspan></text></g><g class="pele-node pele-state blue" data-id="s7" transform="translate(173.81,698)"><rect x="-106.71" y="-31" width="213.42" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Cloud committed,</tspan><tspan x="0" y="16.1">acknowledgment pending</tspan></text></g><g class="pele-node pele-state-start" data-id="root_start" transform="translate(654.52,113)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state blue" data-id="lg0" transform="translate(771.4,82)"><rect x="-44.46" y="-22" width="88.93" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">enabled</text></g><g class="pele-node pele-state tan" data-id="lg1" transform="translate(901.66,82)"><rect x="-45.79" y="-22" width="91.58" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">disabled</text></g></g></g></svg>

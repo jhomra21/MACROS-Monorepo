@@ -1,0 +1,53 @@
+---
+title: "Sharing scope, Pro pause, and food retention"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: active
+    lg1: paused
+    lg2: Breaks ImmediatePurgeOnPause
+    lg3: Path to the ImmediatePurgeOnPause bug
+  }
+  class lg0 teal
+  class lg1 orange
+  class lg2 breaks
+  class lg3 bugPath
+  s0: Macros only, no foods stored
+  s1: Relationship removed, foods deleted
+  s2: Foods allowed, upload pending
+  s3: Paused, no stored foods
+  s4: Sharing off, foods deleted
+  s5: Foods stored and visible
+  s6: Paused, foods hidden but retained
+  [*] --> s0
+  s0 --> s2: you choose Macros and Foods
+  s0 --> s3: the last person's Pro expires
+  s0 --> s4: you stop sharing
+  s2 --> s0: you choose Macros
+  s2 --> s4: you stop sharing
+  s2 --> s3: the last person's Pro expires
+  s2 --> s5: eligible foods upload
+  s3 --> s0: someone renews Pro
+  s3 --> s4: you stop sharing
+  s4 --> s0: you choose Macros
+  s4 --> s2: you choose Macros and Foods
+  s3 --> s2: someone renews Pro
+  s4 --> s3: you choose Macros or you choose Macros and Foods
+  s5 --> s0: you choose Macros
+  s5 --> s1: you remove the person
+  s5 --> s4: you stop sharing
+  s5 --> s6: the last person's Pro expires
+  s6 --> s3: you choose Macros or an ineligible upload removes stored foods
+  s6 --> s4: you stop sharing
+  s6 --> s5: someone renews Pro
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 teal
+  class s0 bugPath
+  class s2 teal
+  class s2 bugPath
+  class s3 orange
+  class s5 teal
+  class s5 bugPath
+  class s6 orange
+  class s6 breaks
+  class s6 bugPath

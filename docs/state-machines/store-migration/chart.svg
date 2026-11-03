@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 980 952" width="980" height="952" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="490" y="25.6">Local database migration and relaunch</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="264.11" y="8" width="707.78" height="130" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M264.11,44H971.89" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="618" y="31.6" text-anchor="middle">Legend</text></g></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M216.98,138L216.98,175"/><path class="pele-marker" d="M216.98,182L213.62,174L220.34,174Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M216.98,226L216.98,303"/><path class="pele-marker" d="M216.98,310L213.62,302L220.34,302Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M216.98,354L216.98,416"/><path class="pele-marker" d="M216.98,423L213.62,415L220.34,415Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M117.38,485L117.38,571"/><path class="pele-marker" d="M117.38,578L114.02,570L120.74,570Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M280.64,485C280.64,527 300.84,527 300.84,569L300.84,631C300.84,659 249.15,659 249.15,687L249.15,693"/><path class="pele-marker" d="M249.15,700L245.79,692L252.51,692Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M296.64,485C296.64,492.53 478.5,495.97 478.5,503.5L478.5,562"/><path class="pele-marker" d="M478.5,569L475.14,561L481.86,561Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M117.38,622L117.38,674.5C117.38,681.44 169.08,681.44 169.08,688.38L169.08,693"/><path class="pele-marker" d="M169.08,700L165.72,692L172.44,692Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M209.11,762L209.11,839"/><path class="pele-marker" d="M209.11,846L205.75,838L212.47,838Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="144.1" y="246.5" width="145.75" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="216.98" y="260.4">the app checks for the</tspan><tspan x="216.98" y="278.4">destination database</tspan></text></g><g class="pele-edge-label" data-id="edge2"><rect x="130.1" y="374.5" width="173.76" height="21" rx="3" fill="var(--_bg)"/><text x="216.98" y="389.9" text-anchor="middle">the database copy finishes</text></g><g class="pele-edge-label" data-id="edge3"><rect x="55.42" y="513" width="123.93" height="21" rx="3" fill="var(--_bg)"/><text x="117.38" y="528.4" text-anchor="middle">the WAL copy fails</text></g><g class="pele-edge-label" data-id="edge4"><rect x="256.77" y="589.5" width="88.15" height="21" rx="3" fill="var(--_bg)"/><text x="300.84" y="604.9" text-anchor="middle">you relaunch</text></g><g class="pele-edge-label" data-id="edge5"><rect x="396.7" y="505.5" width="163.61" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="478.5" y="519.4">the committed WAL copy</tspan><tspan x="478.5" y="537.4">finishes</tspan></text></g><g class="pele-edge-label" data-id="edge6"><rect x="73.31" y="651.5" width="88.15" height="21" rx="3" fill="var(--_bg)"/><text x="117.38" y="666.9" text-anchor="middle">you relaunch</text></g><g class="pele-edge-label" data-id="edge7"><rect x="136.24" y="782.5" width="145.75" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="209.11" y="796.4">the app checks for the</tspan><tspan x="209.11" y="814.4">destination database</tspan></text></g></g><g class="pele-nodes"><g class="pele-node pele-state blue bugPath" data-id="s0" transform="translate(216.98,204)"><rect x="-104.05" y="-22" width="208.1" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Legacy database waiting</text></g><g class="pele-node pele-state blue bugPath" data-id="s1" transform="translate(216.98,332)"><rect x="-80.48" y="-22" width="160.96" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Copying database</text></g><g class="pele-node pele-state blue bugPath" data-id="s2" transform="translate(216.98,454)"><rect x="-111.59" y="-31" width="223.18" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Database copied, WAL still</tspan><tspan x="0" y="16.1">missing</tspan></text></g><g class="pele-node pele-state blue" data-id="s3" transform="translate(117.38,600)"><rect x="-109.38" y="-22" width="218.77" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Copy failed after database</text></g><g class="pele-node pele-state blue bugPath" data-id="s4" transform="translate(209.11,731)"><rect x="-92.03" y="-31" width="184.06" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Relaunched with only</tspan><tspan x="0" y="16.1">database copied</tspan></text></g><g class="pele-node pele-state teal" data-id="s5" transform="translate(478.5,600)"><rect x="-103.58" y="-31" width="207.17" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Complete migrated store</tspan><tspan x="0" y="16.1">opened</tspan></text></g><g class="pele-node pele-state teal breaks bugPath" data-id="s6" transform="translate(209.11,877)"><rect x="-108.48" y="-31" width="216.96" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Incomplete migrated store</tspan><tspan x="0" y="16.1">opened</tspan></text></g><g class="pele-node pele-state-start" data-id="root_start" transform="translate(216.98,131)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state teal" data-id="lg0" transform="translate(322.8,91)"><rect x="-42.69" y="-22" width="85.38" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">opened</text></g><g class="pele-node pele-state blue" data-id="lg1" transform="translate(438.39,91)"><rect x="-32.9" y="-22" width="65.79" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">copy</text></g><g class="pele-node pele-state breaks" data-id="lg2" transform="translate(604.65,91)"><rect x="-93.37" y="-31" width="186.74" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Breaks</tspan><tspan x="0" y="16.1">CompleteBeforeOpen</tspan></text></g><g class="pele-node pele-state bugPath" data-id="lg3" transform="translate(846.95,91)"><rect x="-108.94" y="-31" width="217.87" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Path to the</tspan><tspan x="0" y="16.1">CompleteBeforeOpen bug</tspan></text></g></g></g></svg>

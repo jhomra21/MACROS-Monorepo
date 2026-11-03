@@ -1,0 +1,47 @@
+---
+title: "IN FLUX: widget credential migration and generation fence"
+---
+stateDiagram-v2
+  direction LR
+  state "Legend" as legend {
+    lg0: Breaks NoObsoleteFiles
+    lg1: Path to the NoObsoleteFiles bug
+  }
+  class lg0 breaks
+  class lg1 bugPath
+  state "At the same time" as all {
+    state "Credentials" as r0 {
+      s0: Legacy identity only
+      s1: Shared copy awaiting verification
+      s2: Both copies verified
+      s3: Verified shared identity
+      [*] --> s0
+      s0 --> s1: the app copies the identity
+      s1 --> s2: the app verifies byte-for-byte equality
+      s2 --> s3: the app deletes the specifically scoped legacy item
+    }
+    --
+    state "Widget" as r1 {
+      s4: No macros published
+      s5: Access stopped
+      s6: Loading current person
+      s7: Current-generation macros selected
+      s8: Access stopped, obsolete cache inert
+      [*] --> s4
+      s4 --> s5: the app disables sharing and rotates generation or the app denies Pro and rotates generation
+      s4 --> s6: WidgetKit requests a person [unless Legacy identity only]
+      s6 --> s5: the app disables sharing and rotates generation or the app denies Pro and rotates generation
+      s5 --> s8: the cache write uses the request's generation [unless Legacy identity only]
+      s6 --> s7: the provider checks current control again before returning or the widget reads only the current generation
+      s6 --> s8: the app disables sharing and rotates generation or the app denies Pro and rotates generation
+      s7 --> s8: the app disables sharing and rotates generation or the app denies Pro and rotates generation
+    }
+  }
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 bugPath
+  class s1 bugPath
+  class s4 bugPath
+  class s5 bugPath
+  class s6 bugPath
+  class s8 breaks
+  class s8 bugPath

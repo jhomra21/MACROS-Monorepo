@@ -1,0 +1,38 @@
+---
+title: "Person detail after roster removal"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: visible
+    lg1: revoked
+    lg2: Breaks RemovedMeansHidden
+    lg3: Path to the RemovedMeansHidden bug
+  }
+  class lg0 teal
+  class lg1 orange
+  class lg2 breaks
+  class lg3 bugPath
+  s0: Original dashboard macros shown
+  s1: Sharing stopped, macros hidden
+  s2: Person removed, original macros shown
+  s3: Live macros shown
+  s4: Person removed, old macros still shown after error
+  [*] --> s0
+  s0 --> s1: the dashboard confirms sharing stopped
+  s0 --> s2: the dashboard confirms the other person removed you
+  s0 --> s3: the live day arrives
+  s2 --> s4: the removed-person query fails
+  s3 --> s1: the dashboard confirms sharing stopped
+  s3 --> s2: the dashboard confirms the other person removed you
+  s3 --> s0: the day changes
+  s4 --> s2: the day changes
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 teal
+  class s0 bugPath
+  class s1 orange
+  class s2 orange
+  class s2 breaks
+  class s2 bugPath
+  class s3 teal
+  class s4 orange
+  class s4 breaks

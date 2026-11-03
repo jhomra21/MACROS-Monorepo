@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 1100 1037" width="1100" height="1037" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="550" y="25.6">Reusable invite, replacement, and lost reply</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="381.68" y="8" width="709.49" height="151" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M381.68,44H1091.16" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="736.42" y="31.6" text-anchor="middle">Legend</text></g></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M334.68,159L334.68,196"/><path class="pele-marker" d="M334.68,203L331.32,195L338.04,195Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M275.96,265C275.96,277.38 112.43,277.38 112.43,289.75L112.43,396C112.43,445.25 178.63,445.25 178.63,494.5L178.63,500.5"/><path class="pele-marker" d="M178.63,507.5L175.27,499.5L181.99,499.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M334.68,265L334.68,336"/><path class="pele-marker" d="M334.68,343L331.32,335L338.04,335Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M393.39,265C393.39,272.7 571.2,275.8 571.2,283.5L571.2,327"/><path class="pele-marker" d="M571.2,334L567.84,326L574.56,326Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M334.68,387L334.68,439.5C334.68,456.86 323.62,467.5 305.58,467.5C287.54,467.5 276.48,477.76 276.48,494.5L276.48,500.5"/><path class="pele-marker" d="M276.48,507.5L273.12,499.5L279.84,499.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M563.2,396L563.2,439.5C563.2,464.3 511.76,479.5 427.84,479.5C343.92,479.5 292.48,485.49 292.48,495.25L292.48,500.5"/><path class="pele-marker" d="M292.48,507.5L289.12,499.5L295.84,499.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M625.91,396C625.91,405.25 767.06,405.25 767.06,414.5L767.06,509.5"/><path class="pele-marker" d="M767.06,516.5L763.7,508.5L770.42,508.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M767.06,560.5L767.06,646.5"/><path class="pele-marker" d="M767.06,653.5L763.7,645.5L770.42,645.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge8"><path d="M707.03,715.5C707.03,724.75 665.09,724.75 665.09,734L665.09,792.5"/><path class="pele-marker" d="M665.09,799.5L661.73,791.5L668.45,791.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge9"><path d="M827.09,715.5C827.09,724.75 899.82,724.75 899.82,734L899.82,792.5"/><path class="pele-marker" d="M899.82,799.5L896.46,791.5L903.18,791.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge10"><path d="M665.09,861.5L665.09,905C665.09,911.94 731.91,911.94 731.91,918.88L731.91,923.5"/><path class="pele-marker" d="M731.91,930.5L728.55,922.5L735.27,922.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge11"><path d="M899.82,861.5L899.82,905C899.82,911.94 802.2,911.94 802.2,918.88L802.2,923.5"/><path class="pele-marker" d="M802.2,930.5L798.84,922.5L805.56,922.5Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="10" y="354.5" width="204.87" height="21" rx="3" fill="var(--_bg)"/><text x="112.43" y="369.9" text-anchor="middle">someone opens the original link</text></g><g class="pele-edge-label" data-id="edge2"><rect x="253.25" y="285.5" width="162.85" height="21" rx="3" fill="var(--_bg)"/><text x="334.68" y="300.9" text-anchor="middle">you choose Create Invite</text></g><g class="pele-edge-label" data-id="edge3"><rect x="478.1" y="285.5" width="186.19" height="21" rx="3" fill="var(--_bg)"/><text x="571.2" y="300.9" text-anchor="middle">the invite enters its final hour</text></g><g class="pele-edge-label" data-id="edge4"><rect x="232.24" y="416.5" width="204.87" height="21" rx="3" fill="var(--_bg)"/><text x="334.68" y="431.9" text-anchor="middle">someone opens the original link</text></g><g class="pele-edge-label" data-id="edge5"><rect x="460.76" y="416.5" width="204.87" height="21" rx="3" fill="var(--_bg)"/><text x="563.2" y="431.9" text-anchor="middle">someone opens the original link</text></g><g class="pele-edge-label" data-id="edge6"><rect x="685.63" y="416.5" width="162.85" height="21" rx="3" fill="var(--_bg)"/><text x="767.06" y="431.9" text-anchor="middle">you choose Create Invite</text></g><g class="pele-edge-label" data-id="edge7"><rect x="663.46" y="590" width="207.19" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="767.06" y="603.9">the server replaces the previous</tspan><tspan x="767.06" y="621.9">link</tspan></text></g><g class="pele-edge-label" data-id="edge8"><rect x="581.72" y="736" width="166.73" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="665.09" y="749.9">the new link reaches your</tspan><tspan x="665.09" y="767.9">phone</tspan></text></g><g class="pele-edge-label" data-id="edge9"><rect x="821.52" y="743.5" width="156.6" height="21" rx="3" fill="var(--_bg)"/><text x="899.82" y="758.9" text-anchor="middle">the new-link reply is lost</text></g><g class="pele-edge-label" data-id="edge10"><rect x="562.65" y="882" width="204.87" height="21" rx="3" fill="var(--_bg)"/><text x="665.09" y="897.4" text-anchor="middle">someone opens the original link</text></g><g class="pele-edge-label" data-id="edge11"><rect x="797.38" y="882" width="204.87" height="21" rx="3" fill="var(--_bg)"/><text x="899.82" y="897.4" text-anchor="middle">someone opens the original link</text></g></g><g class="pele-nodes"><g class="pele-node pele-state teal bugPath" data-id="s0" transform="translate(334.68,234)"><rect x="-110.71" y="-31" width="221.42" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Valid invite, more than one</tspan><tspan x="0" y="16.1">hour left</tspan></text></g><g class="pele-node pele-state teal" data-id="s1" transform="translate(231.56,538.5)"><rect x="-104.93" y="-31" width="209.86" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Recipient connected, link</tspan><tspan x="0" y="16.1">still reusable</tspan></text></g><g class="pele-node pele-state teal" data-id="s2" transform="translate(334.68,365)"><rect x="-89.81" y="-22" width="179.62" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Same invite returned</text></g><g class="pele-node pele-state teal bugPath" data-id="s3" transform="translate(571.2,365)"><rect x="-106.71" y="-31" width="213.42" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Valid invite, less than one</tspan><tspan x="0" y="16.1">hour left</tspan></text></g><g class="pele-node pele-state teal bugPath" data-id="s4" transform="translate(767.06,538.5)"><rect x="-109.38" y="-22" width="218.75" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Requesting a replacement</text></g><g class="pele-node pele-state orange breaks bugPath" data-id="s5" transform="translate(767.06,684.5)"><rect x="-112.03" y="-31" width="224.06" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Old link revoked, new reply</tspan><tspan x="0" y="16.1">pending</tspan></text></g><g class="pele-node pele-state orange breaks" data-id="s6" transform="translate(665.09,830.5)"><rect x="-84.91" y="-31" width="169.82" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">New link saved, old</tspan><tspan x="0" y="16.1">recipients blocked</tspan></text></g><g class="pele-node pele-state orange breaks bugPath" data-id="s7" transform="translate(899.82,830.5)"><rect x="-109.82" y="-31" width="219.63" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">App still offers revoked old</tspan><tspan x="0" y="16.1">link</tspan></text></g><g class="pele-node pele-state orange breaks" data-id="s8" transform="translate(767.06,961.5)"><rect x="-87.14" y="-31" width="174.29" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Old recipient cannot</tspan><tspan x="0" y="16.1">connect</tspan></text></g><g class="pele-node pele-state-start" data-id="root_start" transform="translate(334.68,152)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state orange" data-id="lg0" transform="translate(444.36,101.5)"><rect x="-46.68" y="-22" width="93.36" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">replaced</text></g><g class="pele-node pele-state teal" data-id="lg1" transform="translate(559.04,101.5)"><rect x="-28" y="-22" width="56" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">live</text></g><g class="pele-node pele-state breaks" data-id="lg2" transform="translate(742.63,101.5)"><rect x="-115.59" y="-31" width="231.18" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Breaks CachedLinkIsLive or</tspan><tspan x="0" y="16.1">KeepValidLink</tspan></text></g><g class="pele-node pele-state bugPath" data-id="lg3" transform="translate(986.69,101.5)"><rect x="-88.47" y="-41.5" width="176.94" height="83" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-15.4">Path to the</tspan><tspan x="0" y="5.6">CachedLinkIsLive or</tspan><tspan x="0" y="26.6">KeepValidLink bug</tspan></text></g></g></g></svg>

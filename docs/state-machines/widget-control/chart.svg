@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 1144 1018" width="1144" height="1018" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="572" y="25.6">IN FLUX: widget credential migration and generation fence</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="342.69" y="8" width="457.89" height="130" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M342.69,44H800.58" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="571.64" y="31.6" text-anchor="middle">Legend</text></g><g class="pele-cluster pele-state-composite" data-id="all"><rect x="8" y="178" width="1127.27" height="796" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M8,214H1135.27" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="571.64" y="201.6" text-anchor="middle">At the same time</text></g><g class="pele-cluster pele-state-composite" data-id="r0"><rect x="34" y="315.5" width="234.65" height="557" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M34,351.5H268.65" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="151.33" y="339.1" text-anchor="middle">Credentials</text></g><g class="pele-cluster pele-state-composite" data-id="r1"><rect x="328.65" y="240" width="780.62" height="708" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M328.65,276H1109.27" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="718.96" y="263.6" text-anchor="middle">Widget</text></g></g><g class="pele-dividers" stroke-dasharray="4 4" fill="none" stroke="var(--_b)"><path class="pele-divider" d="M298.65,214V974"/></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M151.33,381.5L151.33,418.5"/><path class="pele-marker" d="M151.33,425.5L147.97,417.5L154.69,417.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M151.33,469.5L151.33,531.5"/><path class="pele-marker" d="M151.33,538.5L147.97,530.5L154.69,530.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M151.33,600.5L151.33,677.5"/><path class="pele-marker" d="M151.33,684.5L147.97,676.5L154.69,676.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M151.33,728.5L151.33,805.5"/><path class="pele-marker" d="M151.33,812.5L147.97,804.5L154.69,804.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M597.23,306L597.23,343"/><path class="pele-marker" d="M597.23,350L593.87,342L600.59,342Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M558.09,394C558.09,436 440.54,436 440.54,478L440.54,683"/><path class="pele-marker" d="M440.54,690L437.18,682L443.9,682Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M636.36,394C636.36,403.25 761.92,403.25 761.92,412.5L761.92,487"/><path class="pele-marker" d="M761.92,494L758.56,486L765.28,486Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M715.65,538C715.65,555.25 544.43,555.25 544.43,572.5L544.43,683"/><path class="pele-marker" d="M544.43,690L541.07,682L547.79,682Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge8"><path d="M488.48,734L488.48,844.5C488.48,847.97 745.92,854.91 745.92,858.38L745.92,863"/><path class="pele-marker" d="M745.92,870L742.56,862L749.28,862Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge9"><path d="M761.92,538L761.92,674"/><path class="pele-marker" d="M761.92,681L758.56,673L765.28,673Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge10"><path d="M808.18,538C808.18,564.75 997.39,564.75 997.39,591.5L997.39,825.5C997.39,841.25 860.22,841.25 860.22,857L860.22,863"/><path class="pele-marker" d="M860.22,870L856.86,862L863.58,862Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge11"><path d="M761.92,743L761.92,863"/><path class="pele-marker" d="M761.92,870L758.56,862L765.28,862Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="66" y="490" width="170.65" height="21" rx="3" fill="var(--_bg)"/><text x="151.33" y="505.4" text-anchor="middle">the app copies the identity</text></g><g class="pele-edge-label" data-id="edge2"><rect x="58.62" y="621" width="185.41" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="151.33" y="634.9">the app verifies byte-for-byte</tspan><tspan x="151.33" y="652.9">equality</tspan></text></g><g class="pele-edge-label" data-id="edge3"><rect x="52" y="749" width="198.65" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="151.33" y="762.9">the app deletes the specifically</tspan><tspan x="151.33" y="780.9">scoped legacy item</tspan></text></g><g class="pele-edge-label" data-id="edge5"><rect x="346.65" y="480" width="187.77" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="440.54" y="493.9">the app disables sharing and</tspan><tspan x="440.54" y="511.9">rotates generation or the app</tspan><tspan x="440.54" y="529.9">denies Pro and rotates</tspan><tspan x="440.54" y="547.9">generation</tspan></text></g><g class="pele-edge-label" data-id="edge6"><rect x="669.99" y="414.5" width="183.85" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="761.92" y="428.4">WidgetKit requests a person</tspan><tspan x="761.92" y="446.4">[unless Legacy identity only]</tspan></text></g><g class="pele-edge-label" data-id="edge7"><rect x="450.54" y="574.5" width="187.77" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="544.43" y="588.4">the app disables sharing and</tspan><tspan x="544.43" y="606.4">rotates generation or the app</tspan><tspan x="544.43" y="624.4">denies Pro and rotates</tspan><tspan x="544.43" y="642.4">generation</tspan></text></g><g class="pele-edge-label" data-id="edge8"><rect x="397.16" y="779.5" width="182.65" height="54" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="488.48" y="793.4">the cache write uses the</tspan><tspan x="488.48" y="811.4">request's generation [unless</tspan><tspan x="488.48" y="829.4">Legacy identity only]</tspan></text></g><g class="pele-edge-label" data-id="edge9"><rect x="658.31" y="574.5" width="207.21" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="761.92" y="588.4">the provider checks current</tspan><tspan x="761.92" y="606.4">control again before returning or</tspan><tspan x="761.92" y="624.4">the widget reads only the</tspan><tspan x="761.92" y="642.4">current generation</tspan></text></g><g class="pele-edge-label" data-id="edge10"><rect x="903.5" y="676" width="187.77" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="997.39" y="689.9">the app disables sharing and</tspan><tspan x="997.39" y="707.9">rotates generation or the app</tspan><tspan x="997.39" y="725.9">denies Pro and rotates</tspan><tspan x="997.39" y="743.9">generation</tspan></text></g><g class="pele-edge-label" data-id="edge11"><rect x="668.03" y="770.5" width="187.77" height="72" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="761.92" y="784.4">the app disables sharing and</tspan><tspan x="761.92" y="802.4">rotates generation or the app</tspan><tspan x="761.92" y="820.4">denies Pro and rotates</tspan><tspan x="761.92" y="838.4">generation</tspan></text></g></g><g class="pele-nodes"><g class="pele-node pele-state breaks" data-id="lg0" transform="translate(460.94,91)"><rect x="-102.25" y="-22" width="204.5" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" x="0" y="5.6" text-anchor="middle">Breaks NoObsoleteFiles</text></g><g class="pele-node pele-state bugPath" data-id="lg1" transform="translate(693.89,91)"><rect x="-90.7" y="-31" width="181.39" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Path to the</tspan><tspan x="0" y="16.1">NoObsoleteFiles bug</tspan></text></g><g class="pele-node pele-state bugPath" data-id="s0" transform="translate(151.33,447.5)"><rect x="-86.26" y="-22" width="172.51" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Legacy identity only</text></g><g class="pele-node pele-state bugPath" data-id="s1" transform="translate(151.33,569.5)"><rect x="-92.48" y="-31" width="184.96" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Shared copy awaiting</tspan><tspan x="0" y="16.1">verification</tspan></text></g><g class="pele-node pele-state" data-id="s2" transform="translate(151.33,706.5)"><rect x="-85.81" y="-22" width="171.62" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Both copies verified</text></g><g class="pele-node pele-state" data-id="s3" transform="translate(151.33,834.5)"><rect x="-97.37" y="-22" width="194.74" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Verified shared identity</text></g><g class="pele-node pele-state-start" data-id="r0_start" transform="translate(151.33,374.5)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state bugPath" data-id="s4" transform="translate(597.23,372)"><rect x="-91.14" y="-22" width="182.27" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">No macros published</text></g><g class="pele-node pele-state bugPath" data-id="s5" transform="translate(488.48,712)"><rect x="-72.47" y="-22" width="144.94" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Access stopped</text></g><g class="pele-node pele-state bugPath" data-id="s6" transform="translate(761.92,516)"><rect x="-98.26" y="-22" width="196.53" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Loading current person</text></g><g class="pele-node pele-state" data-id="s7" transform="translate(761.92,712)"><rect x="-111.58" y="-31" width="223.17" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Current-generation macros</tspan><tspan x="0" y="16.1">selected</tspan></text></g><g class="pele-node pele-state breaks bugPath" data-id="s8" transform="translate(805.06,901)"><rect x="-107.16" y="-31" width="214.32" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Access stopped, obsolete</tspan><tspan x="0" y="16.1">cache inert</tspan></text></g><g class="pele-node pele-state-start" data-id="r1_start" transform="translate(597.23,299)"><circle r="7" fill="var(--_l)"/></g></g></g></svg>

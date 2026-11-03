@@ -1,0 +1,39 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Warning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 0 and seed 8347403939836640369 with 1 worker on 12 cores with 4608MB heap and 64MB offheap memory [pid: 3781] (Mac OS X 27.2 aarch64, Eclipse Adoptium 25.0.5 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /private/tmp/macros-state-models/scope-pro/SPEC.tla
+Semantic processing of module SPEC
+Starting... (2026-11-02 19:44:30)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-11-02 19:44:30.
+Error: Invariant ImmediatePurgeOnPause is violated.
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ storedFoods = FALSE
+/\ connected = TRUE
+/\ scope = "macros"
+/\ pro = TRUE
+
+State 2: <YouShareFoods line 5, col 18 to line 6, col 61 of module SPEC>
+/\ storedFoods = FALSE
+/\ connected = TRUE
+/\ scope = "foods"
+/\ pro = TRUE
+
+State 3: <UploadFoods line 15, col 16 to line 16, col 53 of module SPEC>
+/\ storedFoods = TRUE
+/\ connected = TRUE
+/\ scope = "foods"
+/\ pro = TRUE
+
+State 4: <ProExpires line 13, col 15 to line 13, col 83 of module SPEC>
+/\ storedFoods = TRUE
+/\ connected = TRUE
+/\ scope = "foods"
+/\ pro = FALSE
+
+46 states generated, 10 distinct states found, 2 states left on queue.
+The depth of the complete state graph search is 4.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 4 and the 95th percentile is 4).
+Finished in 00s at (2026-11-02 19:44:30)

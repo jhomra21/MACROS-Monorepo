@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 1048 788" width="1048" height="788" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="524" y="25.6">Person detail after roster removal</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="293.15" y="8" width="746.83" height="130" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M293.15,44H1039.99" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="666.57" y="31.6" text-anchor="middle">Legend</text></g></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M246.15,138L246.15,175"/><path class="pele-marker" d="M246.15,182L242.79,174L249.52,174Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M186.12,244L186.12,257C186.12,308 112.04,308 112.04,359L112.04,403C112.04,459.75 177.23,459.75 177.23,516.5L177.23,522.5"/><path class="pele-marker" d="M177.23,529.5L173.87,521.5L180.59,521.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M290.19,244L290.19,257C290.19,308 368.52,308 368.52,359L368.52,403C368.52,459.75 427.08,459.75 427.08,516.5L427.08,522.5"/><path class="pele-marker" d="M427.08,529.5L423.72,521.5L430.44,521.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M306.19,244L306.19,257C306.19,273.74 362.4,284 454.13,284C545.85,284 602.07,294.64 602.07,312L602.07,352"/><path class="pele-marker" d="M602.07,359L598.71,351L605.43,351Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M472,591.5L472,653.5"/><path class="pele-marker" d="M472,660.5L468.64,652.5L475.36,652.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M638.46,403C638.46,412.25 565.5,412.25 565.5,421.5L565.5,461.5C565.5,478.86 511.84,489.5 424.29,489.5C336.74,489.5 283.08,499.76 283.08,516.5L283.08,522.5"/><path class="pele-marker" d="M283.08,529.5L279.72,521.5L286.44,521.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M703.39,403C703.39,412.25 776.36,412.25 776.36,421.5L776.36,461.5C776.36,486.3 730.11,501.5 654.64,501.5C579.18,501.5 532.92,507.49 532.92,517.25L532.92,522.5"/><path class="pele-marker" d="M532.92,529.5L529.56,521.5L536.28,521.5Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M739.79,359L739.79,312C739.79,287.2 660.44,272 530.99,272C401.53,272 322.19,266.02 322.19,256.25L322.19,251"/><path class="pele-marker" d="M322.19,244L325.55,252L318.83,252Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge8"><path d="M527.58,660.5L527.58,650.88C527.58,645.78 647.85,643.59 647.85,638.5L647.85,613.5C647.85,609.1 532.92,606.65 532.92,602.25L532.92,598.5"/><path class="pele-marker" d="M532.92,591.5L536.28,599.5L529.56,599.5Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="10" y="363" width="204.08" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="112.04" y="376.9">the dashboard confirms sharing</tspan><tspan x="112.04" y="394.9">stopped</tspan></text></g><g class="pele-edge-label" data-id="edge2"><rect x="279.7" y="363" width="177.64" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="368.52" y="376.9">the dashboard confirms the</tspan><tspan x="368.52" y="394.9">other person removed you</tspan></text></g><g class="pele-edge-label" data-id="edge3"><rect x="539.72" y="314" width="124.7" height="21" rx="3" fill="var(--_bg)"/><text x="602.07" y="329.4" text-anchor="middle">the live day arrives</text></g><g class="pele-edge-label" data-id="edge4"><rect x="371.52" y="615.5" width="200.96" height="21" rx="3" fill="var(--_bg)"/><text x="472" y="630.9" text-anchor="middle">the removed-person query fails</text></g><g class="pele-edge-label" data-id="edge5"><rect x="463.46" y="423.5" width="204.08" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="565.5" y="437.4">the dashboard confirms sharing</tspan><tspan x="565.5" y="455.4">stopped</tspan></text></g><g class="pele-edge-label" data-id="edge6"><rect x="687.54" y="423.5" width="177.64" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="776.36" y="437.4">the dashboard confirms the</tspan><tspan x="776.36" y="455.4">other person removed you</tspan></text></g><g class="pele-edge-label" data-id="edge7"><rect x="684.42" y="314" width="110.73" height="21" rx="3" fill="var(--_bg)"/><text x="739.79" y="329.4" text-anchor="middle">the day changes</text></g><g class="pele-edge-label" data-id="edge8"><rect x="592.48" y="615.5" width="110.73" height="21" rx="3" fill="var(--_bg)"/><text x="647.85" y="630.9" text-anchor="middle">the day changes</text></g></g><g class="pele-nodes"><g class="pele-node pele-state teal bugPath" data-id="s0" transform="translate(246.15,213)"><rect x="-112.03" y="-31" width="224.06" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Original dashboard macros</tspan><tspan x="0" y="16.1">shown</tspan></text></g><g class="pele-node pele-state orange" data-id="s1" transform="translate(230.15,560.5)"><rect x="-104.93" y="-31" width="209.86" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Sharing stopped, macros</tspan><tspan x="0" y="16.1">hidden</tspan></text></g><g class="pele-node pele-state orange breaks bugPath" data-id="s2" transform="translate(480,560.5)"><rect x="-104.92" y="-31" width="209.84" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Person removed, original</tspan><tspan x="0" y="16.1">macros shown</tspan></text></g><g class="pele-node pele-state teal" data-id="s3" transform="translate(670.93,381)"><rect x="-84.46" y="-22" width="168.93" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Live macros shown</text></g><g class="pele-node pele-state orange breaks" data-id="s4" transform="translate(480,702)"><rect x="-99.58" y="-41.5" width="199.15" height="83" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-15.4">Person removed, old</tspan><tspan x="0" y="5.6">macros still shown after</tspan><tspan x="0" y="26.6">error</tspan></text></g><g class="pele-node pele-state-start" data-id="root_start" transform="translate(246.15,131)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state teal" data-id="lg0" transform="translate(347.38,91)"><rect x="-38.22" y="-22" width="76.45" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">visible</text></g><g class="pele-node pele-state orange" data-id="lg1" transform="translate(470.06,91)"><rect x="-44.46" y="-22" width="88.91" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">revoked</text></g><g class="pele-node pele-state breaks" data-id="lg2" transform="translate(654.1,91)"><rect x="-99.58" y="-31" width="199.17" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Breaks</tspan><tspan x="0" y="16.1">RemovedMeansHidden</tspan></text></g><g class="pele-node pele-state bugPath" data-id="lg3" transform="translate(908.84,91)"><rect x="-115.15" y="-31" width="230.3" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Path to the</tspan><tspan x="0" y="16.1">RemovedMeansHidden bug</tspan></text></g></g></g></svg>

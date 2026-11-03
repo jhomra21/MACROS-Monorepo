@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="pele pele-state" viewBox="0 0 1270 791" width="1270" height="791" style="max-width:100%;height:auto;--_bg:var(--pele-bg,#fff);--_fg:var(--pele-fg,#1f1f1f);--_m:var(--pele-muted,#6e6e6e);--_l:var(--pele-line,#1f1f1f);--_s:var(--pele-surface,#f3f3f3);--_a:var(--pele-surface-alt,#e6e6e6);--_b:var(--pele-border,#8a8a8a);--_c:var(--pele-accent,#5b7bd5);color:var(--_fg);--_tw:var(--pele-title-weight,bold);--_fm:var(--pele-font-mono,monospace);font:16px sans-serif;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;font-family:var(--pele-font,sans-serif)" fill="var(--_fg)" role="graphics-document document" aria-roledescription="state"><style>.pele {
+  --pele-bg: #ffffff;
+  --pele-fg: #1c1c1c;
+  --pele-muted: #656565;
+  --pele-line: #808080;
+  --pele-surface: #fcfcfc;
+  --pele-surface-alt: #f1f1f1;
+  --pele-border: #c9c9c9;
+}
+.pele .blue rect { fill: #c3e0ff; }
+.pele .orange rect { fill: #f0d3bf; }
+.pele .purple rect { fill: #e3d5ff; }
+.pele .yellow rect { fill: #f0dcbf; }
+.pele .teal rect { fill: #bfe3df; }
+.pele .tan rect { fill: #e5d9ce; }
+.pele .pink rect { fill: #ffcbe6; }
+.pele .breaks rect {
+  fill: #ffecee !important;
+  stroke: #e72e3b !important;
+  stroke-width: 2.5px !important;
+}
+.pele .breaks text {
+  fill: #cd2834 !important;
+}
+.pele .mayBreak rect {
+  fill: #fff3e6 !important;
+  stroke: #e8730c !important;
+  stroke-width: 2.5px !important;
+}
+.pele .mayBreak text {
+  fill: #b85a06 !important;
+}
+.pele .bugPath rect {
+  stroke: #1680f3 !important;
+  stroke-width: 2.5px !important;
+}
+.pele .repeats rect {
+  stroke: #9b35d6 !important;
+  stroke-width: 2.5px !important;
+  stroke-dasharray: 6 3;
+}
+@media (prefers-color-scheme: dark) {
+  .pele {
+    --pele-bg: #1f1f1f;
+    --pele-fg: #f5f5f5;
+    --pele-muted: #acacac;
+    --pele-line: #939393;
+    --pele-surface: #121212;
+    --pele-surface-alt: #2c2c2c;
+    --pele-border: #4e4e4e;
+  }
+  .pele .blue rect { fill: #1b3857; }
+  .pele .orange rect { fill: #573117; }
+  .pele .purple rect { fill: #3c2e57; }
+  .pele .yellow rect { fill: #573d17; }
+  .pele .teal rect { fill: #174641; }
+  .pele .tan rect { fill: #3d3127; }
+  .pele .pink rect { fill: #57233e; }
+  .pele .breaks rect {
+    fill: #2e2021 !important;
+    stroke: #cf2b35 !important;
+  }
+  .pele .breaks text {
+    fill: #ff6463 !important;
+  }
+  .pele .mayBreak rect {
+    fill: #2e2619 !important;
+    stroke: #d0700f !important;
+  }
+  .pele .mayBreak text {
+    fill: #ffa257 !important;
+  }
+  .pele .bugPath rect {
+    stroke: #116dd2 !important;
+  }
+  .pele .repeats rect {
+    stroke: #9a3fcf !important;
+  }
+}
+</style><text class="pele-title" font-weight="var(--_tw)" text-anchor="middle" xml:space="preserve"><tspan x="635" y="25.6">Deleting a sharing profile</tspan></text><g transform="translate(0,36)"><g class="pele-clusters"><g class="pele-cluster pele-state-composite" data-id="legend"><rect x="468.52" y="8" width="793.06" height="130" rx="10" fill="var(--_a)" fill-opacity="0.5" stroke="var(--_b)"/><path d="M468.52,44H1261.57" fill="none" stroke="var(--_b)"/><text class="pele-cluster-label" x="865.05" y="31.6" text-anchor="middle">Legend</text></g></g><g class="pele-edges" fill="none" stroke="var(--_l)" stroke-linecap="round"><g class="pele-edge pele-transition" data-id="edge0"><path d="M421.52,138L421.52,175"/><path class="pele-marker" d="M421.52,182L418.16,174L424.88,174Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge1"><path d="M421.52,226L421.52,288"/><path class="pele-marker" d="M421.52,295L418.16,287L424.88,287Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge2"><path d="M421.52,339L421.52,401"/><path class="pele-marker" d="M421.52,408L418.16,400L424.88,400Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge3"><path d="M386.37,470C386.37,479.25 289.91,479.25 289.91,488.5L289.91,547"/><path class="pele-marker" d="M289.91,554L286.55,546L293.27,546Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge4"><path d="M456.66,470C456.66,475.09 725.36,483.41 725.36,488.5L725.36,547"/><path class="pele-marker" d="M725.36,554L722,546L728.72,546Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge5"><path d="M254.77,616L254.77,625.63C254.77,629.8 108.04,633.83 108.04,638L108.04,678"/><path class="pele-marker" d="M108.04,685L104.68,677L111.4,677Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge6"><path d="M289.91,616L289.91,663C289.91,668.63 352.35,668.63 352.35,674.25L352.35,678"/><path class="pele-marker" d="M352.35,685L348.99,677L355.71,677Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge7"><path d="M725.36,616L725.36,678"/><path class="pele-marker" d="M725.36,685L722,677L728.72,677Z" fill="var(--_l)" stroke="none"/></g><g class="pele-edge pele-transition" data-id="edge8"><path d="M473.54,685L473.54,638C473.54,634.59 325.06,630.16 325.06,626.75L325.06,623"/><path class="pele-marker" d="M325.06,616L328.42,624L321.7,624Z" fill="var(--_l)" stroke="none"/></g></g><g class="pele-edge-labels" font-size="14"><g class="pele-edge-label" data-id="edge1"><rect x="334.65" y="246.5" width="173.75" height="21" rx="3" fill="var(--_bg)"/><text x="421.52" y="261.9" text-anchor="middle">you delete or retry deletion</text></g><g class="pele-edge-label" data-id="edge2"><rect x="331.94" y="359.5" width="179.16" height="21" rx="3" fill="var(--_bg)"/><text x="421.52" y="374.9" text-anchor="middle">the server commits deletion</text></g><g class="pele-edge-label" data-id="edge3"><rect x="195.26" y="498" width="189.31" height="21" rx="3" fill="var(--_bg)"/><text x="289.91" y="513.4" text-anchor="middle">the reply reaches your phone</text></g><g class="pele-edge-label" data-id="edge4"><rect x="641.21" y="490.5" width="168.3" height="36" rx="3" fill="var(--_bg)"/><text text-anchor="middle" xml:space="preserve"><tspan x="725.36" y="504.4">the reply is lost or the app</tspan><tspan x="725.36" y="522.4">terminates</tspan></text></g><g class="pele-edge-label" data-id="edge5"><rect x="21.56" y="640" width="172.96" height="21" rx="3" fill="var(--_bg)"/><text x="108.04" y="655.4" text-anchor="middle">credential cleanup finishes</text></g><g class="pele-edge-label" data-id="edge6"><rect x="216.27" y="640" width="147.29" height="21" rx="3" fill="var(--_bg)"/><text x="289.91" y="655.4" text-anchor="middle">Keychain cleanup fails</text></g><g class="pele-edge-label" data-id="edge7"><rect x="638.49" y="640" width="173.75" height="21" rx="3" fill="var(--_bg)"/><text x="725.36" y="655.4" text-anchor="middle">you delete or retry deletion</text></g><g class="pele-edge-label" data-id="edge8"><rect x="383.56" y="640" width="179.96" height="21" rx="3" fill="var(--_bg)"/><text x="473.54" y="655.4" text-anchor="middle">you retry credential cleanup</text></g></g><g class="pele-nodes"><g class="pele-node pele-state blue bugPath" data-id="s0" transform="translate(421.52,204)"><rect x="-74.26" y="-22" width="148.51" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Sharing enabled</text></g><g class="pele-node pele-state blue bugPath" data-id="s1" transform="translate(421.52,317)"><rect x="-88.48" y="-22" width="176.96" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">Deleting in the cloud</text></g><g class="pele-node pele-state blue bugPath" data-id="s2" transform="translate(421.52,439)"><rect x="-87.14" y="-31" width="174.29" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Cloud deleted, reply</tspan><tspan x="0" y="16.1">pending</tspan></text></g><g class="pele-node pele-state blue" data-id="s3" transform="translate(289.91,585)"><rect x="-87.14" y="-31" width="174.29" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Sharing off, clearing</tspan><tspan x="0" y="16.1">credentials</tspan></text></g><g class="pele-node pele-state blue bugPath" data-id="s4" transform="translate(725.36,585)"><rect x="-106.7" y="-31" width="213.41" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Cloud deleted, device still</tspan><tspan x="0" y="16.1">enabled</tspan></text></g><g class="pele-node pele-state teal" data-id="s5" transform="translate(108.04,716)"><rect x="-100.04" y="-31" width="200.08" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Deleted and credentials</tspan><tspan x="0" y="16.1">cleared</tspan></text></g><g class="pele-node pele-state pink breaks bugPath" data-id="s6" transform="translate(725.36,716)"><rect x="-104.04" y="-31" width="208.08" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Retry blocked by deleted</tspan><tspan x="0" y="16.1">credentials</tspan></text></g><g class="pele-node pele-state blue" data-id="s7" transform="translate(411.52,716)"><rect x="-111.17" y="-31" width="222.34" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Sharing off, cleanup needs</tspan><tspan x="0" y="16.1">retry</tspan></text></g><g class="pele-node pele-state-start" data-id="root_start" transform="translate(421.52,131)"><circle r="7" fill="var(--_l)"/></g><g class="pele-node pele-state pink" data-id="lg0" transform="translate(522.3,91)"><rect x="-37.78" y="-22" width="75.57" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">failure</text></g><g class="pele-node pele-state teal" data-id="lg1" transform="translate(633.88,91)"><rect x="-33.79" y="-22" width="67.58" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">done</text></g><g class="pele-node pele-state blue" data-id="lg2" transform="translate(740.56,91)"><rect x="-32.89" y="-22" width="65.78" height="44" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" x="0" y="5.6" text-anchor="middle">work</text></g><g class="pele-node pele-state breaks" data-id="lg3" transform="translate(903.69,91)"><rect x="-90.25" y="-31" width="180.5" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)" style="fill:#ffecee;stroke:#e72e3b;stroke-width:2.5px;"/><text class="pele-label" style="fill:#cd2834;" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Breaks</tspan><tspan x="0" y="16.1">DeletionRecoverable</tspan></text></g><g class="pele-node pele-state bugPath" data-id="lg4" transform="translate(1139.76,91)"><rect x="-105.82" y="-31" width="211.63" height="62" rx="10" fill="var(--_s)" stroke="var(--_b)"/><text class="pele-label" text-anchor="middle" xml:space="preserve"><tspan x="0" y="-4.9">Path to the</tspan><tspan x="0" y="16.1">DeletionRecoverable bug</tspan></text></g></g></g></svg>

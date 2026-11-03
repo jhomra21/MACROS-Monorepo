@@ -1,0 +1,48 @@
+---
+title: "Deleting a sharing profile"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: failure
+    lg1: done
+    lg2: work
+    lg3: Breaks DeletionRecoverable
+    lg4: Path to the DeletionRecoverable bug
+  }
+  class lg0 pink
+  class lg1 teal
+  class lg2 blue
+  class lg3 breaks
+  class lg4 bugPath
+  s0: Sharing enabled
+  s1: Deleting in the cloud
+  s2: Cloud deleted, reply pending
+  s3: Sharing off, clearing credentials
+  s4: Cloud deleted, device still enabled
+  s5: Deleted and credentials cleared
+  s6: Retry blocked by deleted credentials
+  s7: Sharing off, cleanup needs retry
+  [*] --> s0
+  s0 --> s1: you delete or retry deletion
+  s1 --> s2: the server commits deletion
+  s2 --> s3: the reply reaches your phone
+  s2 --> s4: the reply is lost or the app terminates
+  s3 --> s5: credential cleanup finishes
+  s3 --> s7: Keychain cleanup fails
+  s4 --> s6: you delete or retry deletion
+  s7 --> s3: you retry credential cleanup
+  classDef breaks fill:#ffecee,stroke:#e72e3b,stroke-width:2.5px,color:#cd2834
+  class s0 blue
+  class s0 bugPath
+  class s1 blue
+  class s1 bugPath
+  class s2 blue
+  class s2 bugPath
+  class s3 blue
+  class s4 blue
+  class s4 bugPath
+  class s5 teal
+  class s6 pink
+  class s6 breaks
+  class s6 bugPath
+  class s7 blue
