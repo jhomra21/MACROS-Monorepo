@@ -259,12 +259,21 @@ async function rawPersonDay(
     body: JSON.stringify({ path: "sharing:personDay", args: { otherProfileId, day, ownerToday: day, includeFoods }, format: "json" }),
   });
 
+  const body = await response.json();
+  const boundary = z.object({ code: z.string().optional() }).parse(body);
+
+  if (expected === "error" && response.status === 401 && boundary.code === "InvalidAuthHeader") {
+    console.log(`Raw personDay ${label}: HTTP ${response.status}, auth boundary ${boundary.code}`);
+
+    return;
+  }
+
   const envelope = z.discriminatedUnion("status", [
     z.object({ status: z.literal("error") }),
     z.object({ status: z.literal("success"), value: z.object({
       visibility: z.enum(["shared", "notShared", "paused"]), snapshot: z.unknown(), foods: z.array(z.unknown()),
     }) }),
-  ]).parse(await response.json());
+  ]).parse(body);
 
   const visibility = envelope.status === "success" ? envelope.value.visibility : "none";
 
