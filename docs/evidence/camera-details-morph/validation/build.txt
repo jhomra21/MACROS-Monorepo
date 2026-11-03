@@ -1,0 +1,3 @@
+xcodebuild -project "cal-macro-tracker.xcodeproj" -scheme "cal-macro-tracker" -configuration Debug -destination 'generic/platform=iOS Simulator' build
+    /Applications/Xcode-26.4.1.app/Contents/Developer/usr/bin/xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -configuration Debug -destination "generic/platform=iOS Simulator" build
+** BUILD SUCCEEDED **

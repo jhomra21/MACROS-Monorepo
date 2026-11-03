@@ -1,0 +1,34 @@
+[
+  {
+    "utc": "2026-11-03T22:10:12Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T22:10:15Z",
+    "event": "landscape"
+  },
+  {
+    "utc": "2026-11-03T22:10:22Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T22:10:24Z",
+    "event": "ax5"
+  },
+  {
+    "utc": "2026-11-03T22:10:32Z",
+    "event": "launch recovery"
+  },
+  {
+    "utc": "2026-11-03T22:10:34Z",
+    "event": "recovery"
+  },
+  {
+    "utc": "2026-11-03T22:10:52Z",
+    "event": "recovery-compact"
+  },
+  {
+    "utc": "2026-11-03T22:10:57Z",
+    "event": "PASS layout"
+  }
+]

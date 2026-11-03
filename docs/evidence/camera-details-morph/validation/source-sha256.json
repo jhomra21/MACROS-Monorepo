@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "ba212182d6a793550bd92d80dbf6864afbe84ffd",
+  "files": {
+    "cal-macro-tracker/App/FoodDraftFormSections.swift": "88d56ae31dbdb9f99a924d7c417bae10fd3ab71db830d368ca96e288d3d0a067",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraActionSlot.swift": "5386b160faf9067d77bb174d2fca1c3603cf4f4039fbb43cc8ab7b5323c9eb1f",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraDetailsEditor.swift": "bf599f782f1edaae7d10151fb5b0dfc9792e061d83fb1515bee144b537e29d23",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraResultPanel.swift": "ce8c9e71e6ee54582fea3bdfe5ae5483ed4e736b1ed1d9b77cfd2a5e6fe24159",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift": "7ffd83fcd85e090394fc3b7704473158ac8934f0a4b6b6211d9965efc162df30",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift": "9528a3c8e9e07adb2ba844f719a3676411abbca88a550abfec2d5674f952ac73"
+  }
+}

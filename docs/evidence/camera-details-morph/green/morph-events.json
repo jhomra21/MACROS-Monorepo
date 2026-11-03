@@ -1,0 +1,30 @@
+[
+  {
+    "utc": "2026-11-03T22:01:32Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T22:01:32Z",
+    "event": "compact"
+  },
+  {
+    "utc": "2026-11-03T22:01:35Z",
+    "event": "record morph"
+  },
+  {
+    "utc": "2026-11-03T22:01:35Z",
+    "event": "raw /tmp/macros-morph-morph-1793743294864894000.mp4"
+  },
+  {
+    "utc": "2026-11-03T22:01:37Z",
+    "event": "expanded"
+  },
+  {
+    "utc": "2026-11-03T22:01:44Z",
+    "event": "collapsed"
+  },
+  {
+    "utc": "2026-11-03T22:01:48Z",
+    "event": "PASS morph"
+  }
+]

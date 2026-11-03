@@ -1,0 +1,34 @@
+[
+  {
+    "utc": "2026-11-03T22:03:25Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T22:03:54Z",
+    "event": "keyboard"
+  },
+  {
+    "utc": "2026-11-03T22:03:58Z",
+    "event": "record edited-log"
+  },
+  {
+    "utc": "2026-11-03T22:03:58Z",
+    "event": "raw /tmp/macros-morph-edited-log-1793743438569732000.mp4"
+  },
+  {
+    "utc": "2026-11-03T22:04:01Z",
+    "event": "edited-compact"
+  },
+  {
+    "utc": "2026-11-03T22:04:07Z",
+    "event": "edited-logged"
+  },
+  {
+    "utc": "2026-11-03T22:04:12Z",
+    "event": "edited-dashboard"
+  },
+  {
+    "utc": "2026-11-03T22:04:14Z",
+    "event": "PASS edited"
+  }
+]

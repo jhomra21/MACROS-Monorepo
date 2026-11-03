@@ -1,0 +1,22 @@
+[
+  {
+    "utc": "2026-11-03T22:17:29Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T22:17:49Z",
+    "event": "servings-compact"
+  },
+  {
+    "utc": "2026-11-03T22:17:55Z",
+    "event": "servings-restored"
+  },
+  {
+    "utc": "2026-11-03T22:18:05Z",
+    "event": "servings-dashboard"
+  },
+  {
+    "utc": "2026-11-03T22:18:07Z",
+    "event": "PASS servings"
+  }
+]
