@@ -47,7 +47,7 @@ Use SQLite backup rather than VACUUM to preserve implicit row IDs.
 - [x] F2 atomic migration and green evidence.
 - [x] F3 live red E2E.
 - [x] F3 availability fix and live green E2E; clean up identities.
-- [ ] Required checks, full serial iPad suite except StoreKit, evidence review, push.
+- [x] Required checks and full serial iPad suite except StoreKit; 234 tests passed, 0 failures. Evidence review and push remain.
 
 F2: six tests; red has eight failed assertions across five cases, including
 `["base"]` versus `["base", "committed WAL"]`; green has zero failures.
@@ -72,6 +72,10 @@ Phone B slim profile verified, phone shut down, lock released.
 Evidence: `f3-red-stale.{png,txt}`, `f3-red-server.txt`, `f3-red-roster.txt`,
 `f3-green-{before,after}.png`, `f3-green-after.txt`, `f3-green-server.txt`,
 and `f3-{partner,viewer}-cleanup.txt` in the evidence directory.
+
+Full serial iPad suite: 234 tests passed, 0 failures; StoreKit tests skipped.
+The simulator was shut down and its lock released. Raw output is in ignored
+`build/state-machine-fixes/full-suite.log`.
 
 Widget overlap: only the required short `changes-log.md` entry; neither Swift
 implementation file overlaps `origin/feat/shared-person-widget`.
