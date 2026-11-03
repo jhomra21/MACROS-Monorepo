@@ -2,28 +2,141 @@
 
 App ID `6767565938`, bundle `juan-test.cal-macro-tracker`. Audit: 2026-11-03.
 
-## Findings and access limits
+## 2026-05-11 to 2026-05-13: version 1.0, builds 3 and 5, submission 2bf4dd23
 
-**No past App Review rejection or Resolution Center message was found in the inspected repository records. ASC history is unavailable, not verified empty.**
+Source: ASC > App Review > Submissions, read in the owner's signed-in session on 2026-11-03. The text below is copied from ASC. Attachment not downloaded yet.
 
-This Mac had no usable ASC API key/configuration or `asc` CLI in the checked locations. No authenticated request to app-store-version submissions, review-submission items, or Resolution Center messages was possible. We cannot establish that ASC has no rejections, quote any Apple review message, or enumerate its attachment names. Version 1.0 “Waiting for Review” comes from the owner and does not imply a clean prior history.
+| Field | Record |
+| --- | --- |
+| Submission ID | `2bf4dd23-de4c-4d3c-84c6-406a2dccf3c6`, submitted 2026-05-12 10:09 AM, final status **Removed** |
+| First rejection | 2026-05-11 1:00 PM, version 1.0 (3), iPad Air 11-inch (M3), iPadOS 26.4.2. Guidelines **2.1(a) App Completeness** ("the top right button was unresponsive") and **2.2 Beta Testing** ("features that are intended to support beta testing") |
+| Attachment | `Screenshot-0511-105910.png` (Apple's attachment; download it from ASC and keep it in owner storage) |
+| Our replies | 2026-05-11 9:36 PM, 2026-05-12 9:09 AM, 2026-05-12 10:04 AM (full text below). We said the app was not production-ready and asked how to test IAP in TestFlight |
+| Second rejection | 2026-05-13 10:28 AM, version 1.0 (5), iPhone 17 Pro Max. Guideline **2.2**: "Your app appears to be a pre-release, test, or trial version with a limited feature set." |
+| What changed since | iPad compact navigation fix; the app was finished before resubmitting; Sandbox testing used for IAP instead of App Review; app renamed from "MACROS-beta" to "MACROS: Nutrition Tracker" |
+| Resubmission | Submission `01487b42-af8f-4113-8091-012d7374080b`, 2026-10-31 3:13 PM, version 1.0 (23) plus the MACROS Pro group, Monthly, Yearly, Lifetime. Review notes open with "RESUBMISSION: build 5 was rejected in May 2026 under 2.2." Status on 2026-11-03: Waiting for Review |
+| Outcome | Pending |
 
-Read-only searches covered:
+Lesson: never submit to App Review only to unlock IAP testing. Sandbox purchases in TestFlight do not need an approved app. Test on iPad too (the app runs there in compatibility mode).
 
-- `changes-log.md`, `docs/app-store/`, and implementation trackers at `91f5b5f4c08f2822ab4d1c75a9dcbe74e480d1b1`, plus the app-store evidence branch `174606fac59438a86e52f673c12217f7811b2285`.
-- All fetched git commit subjects for rejection/Resolution Center/App Review/guideline terms and diffs in the history of those documentation paths for explicit guideline/review-rejection text.
-- Repository “rejected” mentions. Most concern code reviews, input validation, or local StoreKit errors, not Apple App Review.
+### Full thread
 
-Do not turn these local events into rejection entries:
+```text
+--- Apple, 2026-05-11 1:00 PM ---
+Hello, 
 
-| Event | Evidence | Classification |
-| --- | --- | --- |
-| Duplicate build 7 blocked during build 8 upload | `implementation-trackers/testflight-release-tracker.md`, 2026-10-26 | Upload/build-number failure; no full Apple message or attachment names recorded. Not App Review rejection. |
-| `SKInternalErrorDomain Code=3`, `WS2.StoreKitSetup Code=1`, `OctaneSaveConfigurationRequest` errors | `changes-log.md`, `implementation-trackers/pro-subscription-storekit-tracker.md` | Local simulator StoreKit setup failures, not a Resolution Center conversation. |
-| TestFlight processing/upload reports | `implementation-trackers/testflight-release-tracker.md` | Upload/processing or beta-group evidence, not a rejection or proof of App Store approval. |
+Thank you for submitting the new app, MACROS-beta, for review. We noticed some issues that require your attention. Please see below for additional information.
 
-**Recovered full Apple review messages: 0. Recovered Apple review attachment filenames: 0.** This reports recovery results only. Ask the owner to export all ASC messages and attached files when access is available; preserve the full conversation, including information requests and approvals, not just formal rejections. Do not fabricate missing text from memory or a commit summary.
+If you have any questions, we are here to help. Reply to this message in App Store Connect and let us know.
 
+Review Environment
+Submission ID: 2bf4dd23-de4c-4d3c-84c6-406a2dccf3c6
+Review date: May 11, 2026
+Review Device: iPad Air 11-inch (M3)
+Version reviewed: 1.0 (3)
+
+Guideline 2.2 - Performance - Beta Testing
+
+Issue Description
+
+Your app includes features that are intended to support beta testing. Since you are submitting a production version of your app, features intended to support beta testing are not appropriate.
+
+Next Steps
+
+To resolve this issue, revise the app and remove features that are intended to support beta testing. Since you are submitting a production version of your app, features intended to support beta testing are not appropriate.
+
+Resources
+
+- Learn more about beta testing requirements in guideline 2.2.
+- Test apps and invite users to provide feedback with TestFlight Beta Testing.
+
+Guideline 2.1(a) - Performance - App Completeness
+Issue Description
+
+The app exhibited one or more bugs that would negatively impact users.
+
+Bug description: the top right button was unresponsive. 
+
+Review device details:
+
+- Device type: iPad Air 11-inch (M3) 
+- OS version: iPadOS 26.4.2
+- Internet Connection: Active
+
+Next Steps
+
+Test the app on supported devices to identify and resolve bugs and stability issues before submitting for review.
+
+If the bug cannot be reproduced, try the following:
+
+- For new apps, uninstall all previous versions of the app from a device, then install and follow the steps to reproduce.
+- For app updates, install the new version as an update to the previous version, then follow the steps to reproduce.
+
+Note that users expect apps they download to function on all the devices where they are available. For example, apps that may be downloaded onto iPad devices should function as expected for iPad users. 
+
+Resources
+
+- For information about testing apps and preparing them for review, see Testing a Release Build.
+- To learn about troubleshooting networking issues, see Networking Overview.
+
+Support
+- Reply to this message in your preferred language if you need assistance. If you need additional support, use the Contact Us module.
+- Consult with fellow developers and Apple engineers on the Apple Developer Forums.
+- Provide feedback on this message and your review experience by completing a short survey.
+
+iOS App 1.0App Version
+Rejection Reasons:
+
+2.1.0 Performance: App Completeness
+
+2.2.0 Performance: Beta Testing
+
+Rejection Attachments:
+Screenshot-0511-105910.png
+
+--- Juan Martinez, 2026-05-11 9:36 PM ---
+Hello, thanks for the review and information. I have already fixed the three button bug in all devices. It was a problem with navigation compacting to that on smaller screens, which is something I forgot to test initially, but I found out testing it during the weekend and already fixed it in one of the newer versions, which I will be publishing, actually it might already be published up there. But for the other point, this is not intended for production. I did this flow because it's what I understood from the In-App Purchases, since I wanted to be able to test that via test flight, and from all the stuff I read in the documentation and the little messages there that I have to go through the review process through this, and doing the submission for reviewing the app to get the IAP in the flow. 
+But all I wanted to do is test it on test flight and make sure everything's working. This is not intended to be full production. I'm sorry if this is the wrong flow for that. That's what I just understood it was. This is obviously not ready, of course. So could you please advise as to what to do for the beta point? How can I be able to test the In-App Purchases in test flight, which is just one purchase item. I would like some help on this, because I'm a little confused.
+
+--- Juan Martinez, 2026-05-12 9:09 AM ---
+I just read more about the sandbox account, and I was definitely in the wrong trying to submit this app review! I am so sorry, I was trying to just test the purchases flow and permissions in the app. Not sure if I should leave this open and open another review when I am done.
+
+--- Juan Martinez, 2026-05-12 10:04 AM ---
+I actually read more and I'm a little bit more confused. So I did have to submit the app for review to get the IAP purchase thing online or enabled so that I can use my sandbox account, which I enabled on my phone and I was trying to use to do the purchase, but it's not recognizing the purchase. And I'm continuing testing everything else, and everything else is being fixed, but this is what's getting me stuck is that I don't know if I should do another app submission for review. There's no beta features on the app right now. Everything that's on the app is going to be in the final version. It's just that the app obviously isn't fully finished, fully tested, because I need to test the IAP. And I can't do that without doing the submission, so I'm gonna do it again because from rereading everything, I think I do need to clear a submission so that the IAP purchase is registered to the app or linked to the app in Test Flight in the sandbox, so that the test flight app picks up the purchase ID or something, or the entitlement. I'd like to test this to even consider putting it out in production. Like I said in the previous message, I'd like to test this and I'm just a little confused. I think I've found the answers I needed, but I'm still not 100% sure if what I'm reading and what I'm understanding is what I should do to be able to test this purchase.
+
+--- Apple, 2026-05-13 10:28 AM ---
+Hello,
+
+Thank you for your efforts to follow our guidelines. There are some outstanding issues that still need your attention.
+
+If you have any questions, we are here to help. Reply to this message in App Store Connect and let us know.
+
+Review Environment
+Submission ID: 2bf4dd23-de4c-4d3c-84c6-406a2dccf3c6
+Review date: May 13, 2026
+Review Device: iPhone 17 Pro Max
+Version reviewed: 1.0 (5)
+
+Guideline 2.2 - Performance - Beta Testing
+
+Issue Description
+
+Your app appears to be a pre-release, test, or trial version with a limited feature set. Apps that are created for test or trial purposes are not appropriate for the App Store.
+
+Next Steps
+
+To resolve this issue, please complete, remove, or fully configure any partially implemented features. If the app is not ready for public distribution, use TestFlight to test the app.
+
+Resources
+
+- Learn more about beta testing requirements in guideline 2.2.
+- Test apps and invite users to provide feedback with TestFlight Beta Testing.
+
+Support
+- Reply to this message in your preferred language if you need assistance. If you need additional support, use the Contact Us module.
+- Consult with fellow developers and Apple engineers on the Apple Developer Forums.
+- Provide feedback on this message and your review experience by completing a short survey.
+```
 ## Entry template
 
 Copy this section for each rejection or review-message thread. Preserve verbatim wording and original file names; redact credentials and personal contact details only in the Git copy. Keep the unredacted original in owner-controlled secure storage.

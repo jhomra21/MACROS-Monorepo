@@ -1,8 +1,31 @@
 # MACROS: ASO and App Review audit
 
 Audit date: 2026-11-03. App ID: `6767565938`. Bundle: `juan-test.cal-macro-tracker`.
-**Owner proposals only. No App Store Connect (ASC) changes, uploads, submissions, or removal from review.**
 
+## Live ASC check, 2026-11-03
+
+Read in the owner's signed-in ASC session. This section replaces the "unverified" fallback below wherever they disagree.
+
+| Field | Live value (1.0, build 23, Waiting for Review) |
+| --- | --- |
+| Name / subtitle | `MACROS: Nutrition Tracker` / `Calories, macros, no account` |
+| Promotional text | Changed 2026-11-03 with owner approval to: "Scan barcodes or nutrition labels, review each entry, and track calories, protein, carbs, and fat. Log food without creating an account." (Before: "Scan barcodes or nutrition labels in one camera view. No account needed, and your food log stays on your iPhone. Optional sharing and MACROS Pro.") Confirmed after reload. |
+| Keywords | `food,diary,meal,barcode,scanner,journal,protein,carbs,fat,diet,weight,label,kcal,intake,goal,widget` |
+| Description | 1,677 characters. Says individual foods are not shared in this version (matches build 23). Lists $2.99/month, $19.99/year with a 7-day trial, $49.99 lifetime, plus renewal/cancel text, Terms and Privacy links. Says "your food log stays on your iPhone". |
+| URLs | Support `https://macros-web.jhonra121.workers.dev/support`, marketing `https://macros-web.jhonra121.workers.dev/`, privacy link in description. No placeholders. |
+| Yearly intro offer | "Free for the first week" in all 175 regions, so the trial claim is true. |
+| Screenshots in review | `03-add-food`, `04-scan-review`, `05-history`, `06-insights-30d`, `07-sharing`, `08-paywall`, `09-widgets`, `10-settings` (medium and large Dynamic Island sizes), previews `macros-preview-1-log-your-day.mp4` and `macros-preview-2-pro.mp4`. `01-onboarding` and an old 6.5-inch paywall are in the Asset Library but marked "Add for Review", so not in this submission. |
+| Review history | See `rejection-log.md`: May 2026 submission rejected under 2.1(a) and 2.2, then removed. |
+
+Findings against live data:
+
+1. **2.3.7, confirmed.** Submitted `08-paywall.png` shows "$19.99/year", "$2.99/month", and "7 days free · Best value". Owner decision (2026-11-03): leave 1.0 in review; replace this screenshot in the next version.
+2. **Description prices, confirmed.** Remove the amounts in the next version and keep the renewal text (draft in `listing-drafts.md`).
+3. **Privacy wording.** "Your food log stays on your iPhone" is accurate for build 23, which shares totals only. Change it when food sharing ships. Removed from the promotional text now.
+4. **Finding 8 (placeholder URLs) is resolved**: live URLs are real.
+5. **Subtitle.** Owner chose `Calorie Counter & Food Diary` for the next version. ASC says App Information changes release with the next version. If adopted, drop `food` and `diary` from the keywords (the drafted keyword set already does).
+
+The sections below are the original fallback audit, written before ASC access.
 ## Evidence and limits
 
 **LIVE ASC UNVERIFIED.** The owner reports version 1.0 is Waiting for Review. This audit could not authenticate to ASC, identify the selected build, enumerate localizations, retrieve API attributes, or download submitted assets.
