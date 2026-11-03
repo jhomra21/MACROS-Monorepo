@@ -1,0 +1,48 @@
+Validation date: 2026-11-03
+Worktree: /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+Final production code: 1366b5f (four bug-fix commits, no DEBUG probes)
+DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer
+
+PASS: make quality-format-check (format-check.log)
+PASS: make quality-build (quality-build.log)
+PASS: full serial non-StoreKit iPad suite, 228 passed, 0 failed.
+The suite was run twice. The final run includes the post-replace observer
+restart that invalidates queries started during the replacement await.
+No unit tests were written after implementation or otherwise added.
+
+Exact final test command:
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB' -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests -derivedDataPath /tmp/state-fix-health-tests -resultBundlePath /tmp/state-fix-health-ipad-final.xcresult test
+
+Primary result: ipad-test-summary.json, exported with xcresulttool.
+Test output: ipad-tests.log. Result bundle remains at the /tmp path above.
+StoreKit tests were explicitly excluded and are not in the 228-test total;
+xcresult's skippedTests=0 refers to the selected test set.
+No macOS, physical-device, production-server, deployment, or StoreKit-expiry
+test is claimed.
+
+Existing unrelated full-build warnings:
+- SharingRemoteClient: actor-isolated Decodable conformances in concurrent calls.
+- DashboardTutorialOverlay: actor-isolated trail call.
+- ReviewPromptModifier: descriptor could be let.
+These files were not changed. Builds succeeded.
+
+Hook check: hooks-grep.log, rg exit 1, zero source matches for
+SuspectProbe|suspect- in cal-macro-tracker.
+Archival hook snippets are documentation only.
+
+Source diff: 4 files, 51 insertions, 67 deletions.
+Widget branch overlap: changes-log.md only; no app-source overlap.
+Final review: source snapshots/current-quantity math, replace-only anchor
+reset and lifecycle restart, one post-await permission guard, existing
+busy-state serialization. No new task abstraction or unused state.
+
+Cleanup:
+- Three synthetic 180 lb Health samples deleted; native Health list says No Data.
+- Health weight reading false, Debug Pro revoked.
+- Final hook-free app reinstalled on B; picker/delay/trace/export fixtures removed.
+- simslim on/verify passed on B and iPad with unedited tools/sim/macros-slim.json.
+- B and iPad shut down; owned locks released.
+- No leftover task xcodebuild/agent-device UI test runner; shared T3 daemon kept.
+- Reserved devices were not changed. The already-booted reserved Air remained booted.
+See simulator-restore.log, fixture-cleanup.log, restored-preferences.log,
+and 02/health-cleanup.log.

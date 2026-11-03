@@ -1,0 +1,9 @@
+Slimming F976E800-DA1F-4F20-B755-DFD964E33975: disabling 110 background services. The simulator will reboot to apply the changes.
+Shutting the simulator down to reconfigure it offline...
+Reconfiguring 5 background services while the simulator is off...
+Booting the simulator (a first boot can take up to a minute)...
+Done. Simulator reconfigured and rebooted slim.
+F976E800-DA1F-4F20-B755-DFD964E33975 matches the profile: all expected disable overrides are applied.
+Slimming E91B597B-CE57-4C0B-A8A4-51CBDC3386AB: disabling 110 background services. The simulator will reboot to apply the changes.
+Already slim. Nothing to change.
+E91B597B-CE57-4C0B-A8A4-51CBDC3386AB matches the profile: all expected disable overrides are applied.

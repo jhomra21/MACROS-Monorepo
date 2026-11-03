@@ -1,0 +1,6 @@
+1793715223.646596 repair fixture Banana fiberPerServing=3.1
+1793715223.647726 repair fixture Apple fiberPerServing=4.4
+1793715225.5018868 pause repair-delay begin
+1793715321.471373 pause repair-delay end cancelled=false
+1793715321.475556 repair applied quantity=1.25 fiber=3.1
+1793715321.4760098 repair applied quantity=1.0 fiber=4.4

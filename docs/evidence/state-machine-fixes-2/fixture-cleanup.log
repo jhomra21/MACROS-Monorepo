@@ -1,0 +1,14 @@
+Removed only task-created picker, delay, trace, and exported fixture files:
+suspect-repair-delay
+suspect-health-delay
+suspect-backup-delay
+suspects-trace.log
+Slow-A.json
+Fast-B.json
+Slow-A.json
+Fast-B.json
+Health-Merge.json
+MACROS-backup-2026-11-03.json
+Installed final hook-free app from /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app.
+Both owned simulators shut down. No reserved simulator was changed.
+Health reading restored to false, Debug Pro revoked, and all synthetic Health samples deleted.
