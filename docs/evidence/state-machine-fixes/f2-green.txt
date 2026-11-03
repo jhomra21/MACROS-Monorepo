@@ -1,0 +1,34 @@
+Command line invocation:
+    /Applications/Xcode-26.4.1.app/Contents/Developer/usr/bin/xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -derivedDataPath build/state-machine-fixes/DerivedData -destination "platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 "-only-testing:cal-macro-trackerTests/SharedStoreMigrationTests" test
+
+Test Suite 'Selected tests' started at 2026-11-02 20:20:00.612.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-02 20:20:00.613.
+Test Suite 'SharedStoreMigrationTests' started at 2026-11-02 20:20:00.613.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' passed (0.017 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' passed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' passed (0.015 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' passed (0.012 seconds).
+Test Suite 'SharedStoreMigrationTests' passed at 2026-11-02 20:20:00.695.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.078 (0.083) seconds
+Test Suite 'cal-macro-trackerTests.xctest' passed at 2026-11-02 20:20:00.696.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.078 (0.083) seconds
+Test Suite 'Selected tests' passed at 2026-11-02 20:20:00.696.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.078 (0.084) seconds
+2026-11-02 20:20:00.978 xcodebuild[16838:13828842] [MT] IDETestOperationsObserverDebug: 4.423 elapsed -- Testing started completed.
+2026-11-02 20:20:00.978 xcodebuild[16838:13828842] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-02 20:20:00.978 xcodebuild[16838:13828842] [MT] IDETestOperationsObserverDebug: 4.423 sec, +4.423 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/build/state-machine-fixes/DerivedData/Logs/Test/Test-cal-macro-tracker-2026.11.02_20-19-47--0600.xcresult
+
+** TEST SUCCEEDED **
+
+Testing started

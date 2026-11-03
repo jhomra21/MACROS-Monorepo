@@ -23,7 +23,7 @@ remain a separate live-reproduction workstream.
 - A pre-existing destination made by the old unsafe copier is indistinguishable from a
   legitimate shared store with newer data. Do not automatically replace it.
 
-Planned protocol: absent → staging → consistent SQLite backup → validated,
+Implemented protocol: absent → staging → consistent SQLite backup → validated,
 self-contained base → atomic publication. Errors leave destination absent.
 Only the app migrates; the widget checks only the published destination.
 Use SQLite backup rather than VACUUM to preserve implicit row IDs.
@@ -43,11 +43,21 @@ Use SQLite backup rather than VACUUM to preserve implicit row IDs.
 ## Progress
 
 - [x] Read complete findings, store/person models, local guidance, and widget diff.
-- [ ] F2 failing isolated tests and red evidence.
-- [ ] F2 atomic migration and green evidence.
+- [x] F2 failing isolated tests and red evidence.
+- [x] F2 atomic migration and green evidence.
 - [ ] F3 live red E2E.
 - [ ] F3 availability fix and live green E2E; clean up identities.
 - [ ] Required checks, full serial iPad suite except StoreKit, evidence review, push.
+
+F2: six tests; red has eight failed assertions across five cases, including
+`["base"]` versus `["base", "committed WAL"]`; green has zero failures.
+Evidence: `docs/evidence/state-machine-fixes/f2-{red,green}.txt`.
+The test fixture keeps a legacy WAL writer open and checks that legacy base/WAL
+bytes remain unchanged. The app reads legacy SQLite read-only, finishes backup,
+switches staging to DELETE journal mode, quick-checks, protects and synchronizes
+the base, then renames within its destination directory. Staging is removed on
+error/relaunch. Widget read-only opening is unchanged and cannot select staging.
+No new enum was needed: existence of the published base is the durable state.
 
 ## References
 

@@ -1,4 +1,5 @@
 import Foundation
+import SQLite3
 import SwiftData
 
 enum SharedModelContainerFactory {
@@ -73,8 +74,14 @@ enum SharedModelContainerFactory {
         to destinationURL: URL,
         fileManager: FileManager = .default
     ) throws {
+        guard sourceURL != destinationURL else { return }
+        let stagingURL = URL(fileURLWithPath: destinationURL.path + ".migration")
+        let stagingArtifacts = storeArtifactURLs(for: stagingURL) + [URL(fileURLWithPath: stagingURL.path + "-journal")]
+        // Staging is disposable after any interrupted launch, even after publication.
+        for artifact in stagingArtifacts where fileManager.fileExists(atPath: artifact.path) {
+            try fileManager.removeItem(at: artifact)
+        }
         guard
-            sourceURL != destinationURL,
             !fileManager.fileExists(atPath: destinationURL.path),
             fileManager.fileExists(atPath: sourceURL.path)
         else {
@@ -86,45 +93,81 @@ enum SharedModelContainerFactory {
             withIntermediateDirectories: true
         )
 
-        for sourceArtifactURL in storeArtifactURLs(for: sourceURL) {
-            guard fileManager.fileExists(atPath: sourceArtifactURL.path) else { continue }
-
-            let destinationArtifactURL = pairedArtifactURL(sourceArtifactURL, from: sourceURL, to: destinationURL)
-            guard !fileManager.fileExists(atPath: destinationArtifactURL.path) else { continue }
-
-            try fileManager.copyItem(at: sourceArtifactURL, to: destinationArtifactURL)
+        defer {
+            for artifact in stagingArtifacts where fileManager.fileExists(atPath: artifact.path) {
+                try? fileManager.removeItem(at: artifact)
+            }
         }
+        // absent → staging → validated, self-contained base → published.
+        // The widget only opens destinationURL, never the staging path.
+        try backupLegacyStore(from: sourceURL, to: stagingURL)
+        try applySharedStoreFileProtectionIfNeeded(at: stagingURL)
+        let file = try FileHandle(forWritingTo: stagingURL)
+        defer { try? file.close() }
+        try file.synchronize()
+        // Same directory/volume: move is a rename, not a multi-artifact copy.
+        try fileManager.moveItem(at: stagingURL, to: destinationURL)
+    }
+
+    private static func backupLegacyStore(from sourceURL: URL, to stagingURL: URL) throws {
+        var source: OpaquePointer?
+        defer { sqlite3_close(source) }
+        try checkSQLite(sqlite3_open_v2(sourceURL.path, &source, SQLITE_OPEN_READONLY, nil))
+        var destination: OpaquePointer?
+        defer { sqlite3_close(destination) }
+        try checkSQLite(sqlite3_open_v2(stagingURL.path, &destination, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nil))
+
+        // SQLite reads committed WAL frames under its own read lock; raw file
+        // copies (and VACUUM's potentially changed row IDs) are not equivalent.
+        guard let backup = sqlite3_backup_init(destination, "main", source, "main") else {
+            throw sqliteFailure(sqlite3_errcode(destination))
+        }
+        let step = sqlite3_backup_step(backup, -1)
+        let finish = sqlite3_backup_finish(backup)
+        guard step == SQLITE_DONE else {
+            throw sqliteFailure(step)
+        }
+        try checkSQLite(finish)
+        guard try sqliteText("PRAGMA journal_mode=DELETE", in: destination) == "delete",
+            try sqliteText("PRAGMA quick_check", in: destination) == "ok"
+        else { throw CocoaError(.fileReadCorruptFile) }
+    }
+
+    private static func checkSQLite(_ result: Int32) throws {
+        guard result == SQLITE_OK else { throw sqliteFailure(result) }
+    }
+
+    private static func sqliteFailure(_ result: Int32) -> NSError {
+        NSError(
+            domain: "SharedStoreMigration.SQLite", code: Int(result),
+            userInfo: [NSLocalizedDescriptionKey: "The legacy database could not be safely copied. Please try again."]
+        )
+    }
+
+    private static func sqliteText(_ sql: String, in database: OpaquePointer?) throws -> String {
+        var statement: OpaquePointer?
+        try checkSQLite(sqlite3_prepare_v2(database, sql, -1, &statement, nil))
+        defer { sqlite3_finalize(statement) }
+        guard sqlite3_step(statement) == SQLITE_ROW else { throw CocoaError(.fileReadCorruptFile) }
+        return String(cString: sqlite3_column_text(statement, 0))
     }
 
     private static func storeArtifactURLs(for baseURL: URL) -> [URL] {
-        let sidecarURLs = ["-shm", "-wal"].map { suffix in
-            URL(fileURLWithPath: baseURL.path + suffix)
-        }
-
-        return [baseURL] + sidecarURLs
-    }
-
-    private static func pairedArtifactURL(
-        _ artifactURL: URL,
-        from sourceBaseURL: URL,
-        to destinationBaseURL: URL
-    ) -> URL {
-        let suffix = String(artifactURL.path.dropFirst(sourceBaseURL.path.count))
-        return URL(fileURLWithPath: destinationBaseURL.path + suffix)
+        [baseURL] + ["-shm", "-wal"].map { URL(fileURLWithPath: baseURL.path + $0) }
     }
 
     #if os(iOS)
-    private static func applySharedStoreFileProtectionIfNeeded() throws {
+    private static func applySharedStoreFileProtectionIfNeeded(at baseURL: URL = sharedWritableConfiguration.url) throws {
         let fileManager = FileManager.default
         let attributes: [FileAttributeKey: Any] = [
             .protectionKey: FileProtectionType.completeUntilFirstUserAuthentication
         ]
 
-        for artifactURL in storeArtifactURLs(for: sharedWritableConfiguration.url) where fileManager.fileExists(atPath: artifactURL.path) {
+        for artifactURL in storeArtifactURLs(for: baseURL) where fileManager.fileExists(atPath: artifactURL.path) {
             try fileManager.setAttributes(attributes, ofItemAtPath: artifactURL.path)
         }
     }
     #else
-    private static func applySharedStoreFileProtectionIfNeeded() throws {}
+    private static func applySharedStoreFileProtectionIfNeeded(at baseURL: URL = sharedWritableConfiguration.url) throws {}
     #endif
 }
