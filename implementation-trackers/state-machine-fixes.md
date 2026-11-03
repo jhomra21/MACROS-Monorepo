@@ -1,0 +1,56 @@
+# F2 / F3 state-machine fixes
+
+Base: `da00befaae3d9954c7046f80570bda4936f918d7`. Scope: F2 and F3 only.
+F1/F4 await the widget branch; Q1 requires no purge change. The 11 suspects
+remain a separate live-reproduction workstream.
+
+## F2 failure inventory (written before tests or implementation)
+
+- Interruption after the base copy: destination exists but committed WAL rows are absent.
+- Interruption after the shared-memory copy: WAL still absent; SHM is not durable data.
+- Interruption after WAL copy: separate copies are not a consistent live snapshot.
+- A partially written base, WAL, or staging file must never become the published store.
+- Any copy/read/backup/validation/publish error must propagate without publishing.
+- Crash before publish: discard staging on relaunch and retry from untouched legacy data.
+- Widget opening during migration: only the final base path is readable, never staging.
+- Committed, uncheckpointed WAL rows must survive migration.
+- Disk-full during preparation, backup, validation, or publication: fail closed; retry after space is freed.
+- Relaunch after each step: missing destination retries; staging is disposable; published destination is a no-op.
+- Already-migrated device: preserve its destination, including newer writes; do not overwrite from legacy.
+- Corrupt legacy store, unavailable directory, SQLite busy/locked, protection/permission failure:
+  report failure and leave source intact.
+- Source equals destination or source absent: no migration.
+- A pre-existing destination made by the old unsafe copier is indistinguishable from a
+  legitimate shared store with newer data. Do not automatically replace it.
+
+Planned protocol: absent → staging → consistent SQLite backup → validated,
+self-contained base → atomic publication. Errors leave destination absent.
+Only the app migrates; the widget checks only the published destination.
+Use SQLite backup rather than VACUUM to preserve implicit row IDs.
+
+## F3 E2E scenario (before implementation)
+
+1. Install Debug base on a claimed allowed iPhone and enable a fresh sharing identity.
+2. A Bun script creates a second fresh identity through the dev auth worker, uploads
+   recognizable totals, and connects through an invite.
+3. Open the second person's detail screen and verify the totals.
+4. Remove the relationship from the script; verify the authoritative dashboard no
+   longer includes either person. Leave detail open.
+5. Red: original totals remain. Green: no totals or foods; clear removed state.
+6. Reconnect/repeat with the fixed binary; delete every test profile through
+   `sharing.deleteMySharingProfile`. Do not record tokens or credentials.
+
+## Progress
+
+- [x] Read complete findings, store/person models, local guidance, and widget diff.
+- [ ] F2 failing isolated tests and red evidence.
+- [ ] F2 atomic migration and green evidence.
+- [ ] F3 live red E2E.
+- [ ] F3 availability fix and live green E2E; clean up identities.
+- [ ] Required checks, full serial iPad suite except StoreKit, evidence review, push.
+
+## References
+
+- https://www.sqlite.org/backup.html
+- https://www.sqlite.org/c3ref/backup_finish.html
+- https://www.sqlite.org/lang_vacuum.html (VACUUM may change implicit ROWIDs)

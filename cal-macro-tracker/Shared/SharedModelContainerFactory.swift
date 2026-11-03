@@ -65,10 +65,14 @@ enum SharedModelContainerFactory {
     }
 
     private static func migrateLegacyStoreIfNeeded() throws {
-        let fileManager = FileManager.default
-        let sourceURL = legacyConfiguration.url
-        let destinationURL = sharedWritableConfiguration.url
+        try migrateLegacyStoreIfNeeded(from: legacyConfiguration.url, to: sharedWritableConfiguration.url)
+    }
 
+    static func migrateLegacyStoreIfNeeded(
+        from sourceURL: URL,
+        to destinationURL: URL,
+        fileManager: FileManager = .default
+    ) throws {
         guard
             sourceURL != destinationURL,
             !fileManager.fileExists(atPath: destinationURL.path),

@@ -1,0 +1,55 @@
+Command line invocation:
+    /Applications/Xcode-26.4.1.app/Contents/Developer/usr/bin/xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -derivedDataPath build/state-machine-fixes/DerivedData -destination "platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 "-only-testing:cal-macro-trackerTests/SharedStoreMigrationTests" test
+
+Test Suite 'Selected tests' started at 2026-11-02 20:16:19.749.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-02 20:16:19.750.
+Test Suite 'SharedStoreMigrationTests' started at 2026-11-02 20:16:19.750.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' started.
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:50: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry] : XCTAssertThrowsError failed: did not throw an error
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:53: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry] : XCTAssertFalse failed
+2026-11-02 20:16:19.873208-0600 cal-macro-tracker[15086:13814006] [logging] file is not a database in "SELECT value FROM records ORDER BY rowid"
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:55: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry] : XCTAssertEqual failed: threw error "failed"
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' failed (0.142 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows]' started.
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:19: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows] : XCTAssertEqual failed: ("["base"]") is not equal to ("["base", "committed WAL"]")
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows]' failed (0.019 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' started.
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:29: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars] : XCTAssertEqual failed: ("["base"]") is not equal to ("["base", "committed WAL"]")
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' failed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' started.
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:61: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries] : XCTAssertThrowsError failed: did not throw an error
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:66: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries] : XCTAssertFalse failed
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' failed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' started.
+/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/cal-macro-trackerTests/SharedStoreMigrationTests.swift:38: error: -[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination] : XCTAssertFalse failed
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' failed (0.013 seconds).
+Test Suite 'SharedStoreMigrationTests' failed at 2026-11-02 20:16:19.962.
+	 Executed 6 tests, with 8 failures (1 unexpected) in 0.209 (0.212) seconds
+Test Suite 'cal-macro-trackerTests.xctest' failed at 2026-11-02 20:16:19.962.
+	 Executed 6 tests, with 8 failures (1 unexpected) in 0.209 (0.212) seconds
+Test Suite 'Selected tests' failed at 2026-11-02 20:16:19.963.
+	 Executed 6 tests, with 8 failures (1 unexpected) in 0.209 (0.214) seconds
+IOSurfaceClientSetSurfaceNotify failed e00002c7
+2026-11-02 20:16:20.466457-0600 cal-macro-tracker[15086:13814006] [API] cannot add handler to 0 from 0 - dropping
+2026-11-02 20:16:57.715 xcodebuild[14059:13806897] [MT] IDETestOperationsObserverDebug: 116.825 elapsed -- Testing started completed.
+2026-11-02 20:16:57.716 xcodebuild[14059:13806897] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-02 20:16:57.716 xcodebuild[14059:13806897] [MT] IDETestOperationsObserverDebug: 116.826 sec, +116.826 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3/build/state-machine-fixes/DerivedData/Logs/Test/Test-cal-macro-tracker-2026.11.02_20-14-00--0600.xcresult
+
+Failing tests:
+	SharedStoreMigrationTests.testCorruptSourceDoesNotPublishAndCanRetry()
+	SharedStoreMigrationTests.testCorruptSourceDoesNotPublishAndCanRetry()
+	SharedStoreMigrationTests.testCorruptSourceDoesNotPublishAndCanRetry()
+	SharedStoreMigrationTests.testInterruptedArtifactCopyNeverPublishesBaseWithoutCommittedWALRows()
+	SharedStoreMigrationTests.testPublishedBaseIsSelfContainedWithoutCopiedSidecars()
+	SharedStoreMigrationTests.testPublishFailureLeavesLegacyIntactAndRelaunchRetries()
+	SharedStoreMigrationTests.testPublishFailureLeavesLegacyIntactAndRelaunchRetries()
+	SharedStoreMigrationTests.testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination()
+
+** TEST FAILED **
+
+Testing started
