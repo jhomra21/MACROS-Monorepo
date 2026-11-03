@@ -42,6 +42,13 @@ nonisolated private struct SharedWidgetQueryEnvelope: Decodable, Sendable {
 
 actor SharedPersonWidgetClient {
     static let shared = SharedPersonWidgetClient()
+    private static let retryAfterFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
+        return formatter
+    }()
     private let session: URLSession
     // No access group: this JWT is private to the extension, never published by the app.
     private let tokenItem = SharingKeychainItem(
@@ -142,26 +149,20 @@ actor SharedPersonWidgetClient {
     }
 
     private static func send(_ request: URLRequest, session: URLSession) async throws -> (Data, HTTPURLResponse) {
-        let (bytes, response) = try await session.bytes(for: request)
+        let (data, response) = try await session.data(for: request)
         guard let response = response as? HTTPURLResponse else { throw SharedWidgetFetchError.transient() }
         if response.statusCode == 429 || response.statusCode >= 500 {
             let retryAfter = response.value(forHTTPHeaderField: "Retry-After").flatMap { value -> Date? in
                 if let seconds = Double(value), seconds.isFinite, seconds >= 0 {
-                    return .now.addingTimeInterval(seconds)
+                    return min(.now.addingTimeInterval(seconds), SharedPersonWidgetClock.nextMidnight(after: .now))
                 }
-                let formatter = DateFormatter()
-                formatter.locale = Locale(identifier: "en_US_POSIX")
-                formatter.timeZone = TimeZone(secondsFromGMT: 0)
-                formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
-                return formatter.date(from: value)
+                return retryAfterFormatter.date(from: value).map {
+                    min($0, SharedPersonWidgetClock.nextMidnight(after: .now))
+                }
             }
             throw SharedWidgetFetchError.transient(retryAfter: retryAfter)
         }
-        var data = Data()
-        for try await byte in bytes {
-            guard data.count < 32768 else { throw SharedWidgetFetchError.transient() }
-            data.append(byte)
-        }
+        guard data.count <= 32768 else { throw SharedWidgetFetchError.transient() }
         return (data, response)
     }
 }

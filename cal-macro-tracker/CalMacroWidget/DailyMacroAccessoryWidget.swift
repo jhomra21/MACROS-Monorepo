@@ -33,16 +33,23 @@ struct DailyMacroAccessoryWidgetContentView: View {
     var offline = false
 
     var body: some View {
+        if let freshness {
+            content.accessibilityValue(freshness)
+        } else {
+            content
+        }
+    }
+
+    private var content: some View {
         Group {
             switch family {
             case .accessoryCircular:
                 circularContent
                     .overlay(alignment: .bottom) {
                         if let personName {
-                            Text(personName + (offline ? " · Offline" : ""))
+                            Text(offline ? "Offline" : personName)
                                 .font(.system(size: 11))
                                 .lineLimit(1)
-                                .privacySensitive()
                                 .offset(y: 4)
                         }
                     }
@@ -50,7 +57,7 @@ struct DailyMacroAccessoryWidgetContentView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     if let personName {
                         HStack {
-                            Text(personName).font(.caption.weight(.semibold)).privacySensitive()
+                            Text(personName).font(.caption.weight(.semibold))
                             Spacer(minLength: 2)
                             if let freshness { Text(freshness).font(.system(size: 11)) }
                         }
@@ -62,7 +69,6 @@ struct DailyMacroAccessoryWidgetContentView: View {
                 inlineContent
             }
         }
-        .accessibilityValue(freshness ?? "")
     }
 
     private var inlineContent: some View {
@@ -98,9 +104,10 @@ struct DailyMacroAccessoryWidgetContentView: View {
     }
 
     private var inlineSummary: String {
-        let prefix = personName.map { "\($0) · " } ?? ""
-        let suffix = offline ? " · Offline" : " · \(compactMacroSummary)"
-        return "\(prefix)\(entry.snapshot.totals.calories.roundedForDisplay) cal\(suffix)"
+        if let personName {
+            return "\(personName) · \(entry.snapshot.totals.calories.roundedForDisplay) cal"
+        }
+        return "\(entry.snapshot.totals.calories.roundedForDisplay) cal · \(compactMacroSummary)"
     }
 
     private var compactMacroSummary: String {

@@ -13,8 +13,10 @@ if (convexUrl == null) {
   throw new Error("CONVEX_URL is required. Run with the convex-backend .env.local loaded.");
 }
 
-if (convexUrl !== "https://energized-pigeon-822.convex.cloud") {
-  throw new Error("This disposable smoke run is restricted to dev energized-pigeon-822.");
+const allowedDeployment = process.env.MACROS_SMOKE_DEPLOYMENT ?? "energized-pigeon-822";
+
+if (convexUrl !== `https://${allowedDeployment}.convex.cloud`) {
+  throw new Error(`This disposable smoke run is restricted to ${allowedDeployment}.`);
 }
 
 type TokenResponse = {

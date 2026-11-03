@@ -14,7 +14,7 @@ nonisolated struct SharedWidgetPersonEntity: AppEntity, Sendable {
 nonisolated struct SharedWidgetPersonQuery: EntityQuery, Sendable {
     func entities(for identifiers: [String]) async throws -> [SharedWidgetPersonEntity] {
         let people = try allPeople()
-        let byId = Dictionary(uniqueKeysWithValues: people.map { ($0.id, $0) })
+        let byId = Dictionary(people.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         return identifiers.compactMap { byId[$0] }
     }
 
@@ -40,6 +40,6 @@ struct SharedPersonWidgetIntent: WidgetConfigurationIntent, Sendable {
     @Parameter(title: "Person")
     var person: SharedWidgetPersonEntity?
 
-    nonisolated init() { person = .defaultPerson }
+    nonisolated init() {}
 }
 #endif

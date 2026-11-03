@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-enum DailyGoalsDefaults {
+nonisolated enum DailyGoalsDefaults {
     static let calorieGoal = 2_200.0
     static let proteinGoalGrams = 160.0
     static let fatGoalGrams = 70.0

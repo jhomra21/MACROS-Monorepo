@@ -12,7 +12,9 @@ struct SharedPersonMacroWidget: Widget {
         ) { entry in
             SharedPersonWidgetContentView(entry: entry, accessory: false)
                 .containerBackground(for: .widget) {
-                    DailyMacroWidgetBackground(entry: entry.layoutEntry)
+                    if let layoutEntry = entry.layoutEntry {
+                        DailyMacroWidgetBackground(entry: layoutEntry)
+                    }
                 }
         }
         .configurationDisplayName("Shared Macros")
@@ -27,7 +29,7 @@ struct SharedPersonMacroAccessoryWidget: Widget {
         AppIntentConfiguration(
             kind: SharedAppConfiguration.sharedPersonMacroAccessoryWidgetKind,
             intent: SharedPersonWidgetIntent.self,
-            provider: SharedPersonWidgetProvider()
+            provider: SharedPersonWidgetProvider(includesAppearance: false)
         ) { entry in
             SharedPersonWidgetContentView(entry: entry, accessory: true)
                 .containerBackground(for: .widget) { AccessoryWidgetBackground() }
@@ -45,15 +47,15 @@ private struct SharedPersonWidgetContentView: View {
 
     var body: some View {
         Group {
-            if entry.snapshot != nil {
+            if entry.snapshot != nil, let layoutEntry = entry.layoutEntry {
                 if accessory {
                     DailyMacroAccessoryWidgetContentView(
-                        entry: entry.layoutEntry, personName: entry.person?.name,
+                        entry: layoutEntry, personName: entry.person?.name,
                         freshness: entry.freshness, offline: entry.offline
                     )
                 } else {
                     DailyMacroWidgetContentView(
-                        entry: entry.layoutEntry, personName: entry.person?.name, freshness: entry.freshness
+                        entry: layoutEntry, personName: entry.person?.name, freshness: entry.freshness
                     )
                 }
             } else {
@@ -99,19 +101,6 @@ private struct SharedPersonWidgetContentView: View {
 }
 
 private extension SharedPersonWidgetEntry {
-    @MainActor var layoutEntry: DailyMacroWidgetEntry {
-        let storage = WidgetAppearanceStorage.shared
-        let appearance = storage.appearanceRecord
-        return DailyMacroWidgetEntry(
-            date: date,
-            snapshot: snapshot?.dailySnapshot ?? DailyMacroSnapshot(totals: .zero, goals: .empty),
-            customRingPalette: MacroRingColorStorage.storedPalette(),
-            appearance: appearance, proAccess: storage.proAccess,
-            backgroundPhotoData: DailyMacroWidgetProvider().backgroundPhotoData(for: appearance, access: storage.proAccess),
-            isPlaceholder: isPlaceholder
-        )
-    }
-
     var freshness: String? {
         guard let snapshot else { return nil }
         let date = Date(timeIntervalSince1970: snapshot.updatedAt / 1000)

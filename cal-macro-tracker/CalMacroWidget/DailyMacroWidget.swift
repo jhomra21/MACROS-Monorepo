@@ -86,25 +86,8 @@ struct DailyMacroWidgetProvider: TimelineProvider {
             customRingPalette: MacroRingColorStorage.storedPalette(),
             appearance: appearance,
             proAccess: proAccess,
-            backgroundPhotoData: includesAppearance ? backgroundPhotoData(for: appearance, access: proAccess) : nil
+            backgroundPhotoData: includesAppearance ? appearanceStorage.backgroundPhotoData(for: appearance, access: proAccess) : nil
         )
-    }
-
-    func backgroundPhotoData(
-        for appearance: WidgetAppearanceRecord?,
-        access: WidgetProAccess
-    ) -> Data? {
-        let storage = WidgetAppearanceStorage.shared
-        guard access == .allowed,
-            let identifier = appearance?.background.photoIdentifier,
-            let url = storage.photoURL(for: identifier),
-            let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-            let size = attributes[.size] as? NSNumber,
-            size.uint64Value <= UInt64(WidgetAppearanceStorage.maximumPhotoBytes),
-            let data = try? Data(contentsOf: url, options: .mappedIfSafe),
-            data.count <= WidgetAppearanceStorage.maximumPhotoBytes
-        else { return nil }
-        return data
     }
 }
 
@@ -181,7 +164,6 @@ struct DailyMacroWidgetContentView: View {
                     Text(personName)
                         .font(.caption.weight(.semibold))
                         .lineLimit(1)
-                        .privacySensitive()
                 }
                 // WidgetKit delegates Liquid Glass to the system, so glassEffect would not render here.
                 MacroRingSetView(
@@ -232,7 +214,6 @@ struct DailyMacroWidgetContentView: View {
                         Text(personName)
                             .font(.caption.weight(.semibold))
                             .lineLimit(1)
-                            .privacySensitive()
                         Spacer(minLength: 4)
                         if let freshness {
                             Text(freshness)

@@ -5,12 +5,13 @@ import Security
 import WidgetKit
 
 nonisolated enum SharedPersonWidgetStatus: Sendable {
-    case shared, noData, disabled, proLocked, proUnknown, reconnect, locked
+    case shared, noData, openApp, disabled, proLocked, proUnknown, reconnect, locked
     case noPeople, noDefault, unavailable, paused, notShared, failed
 
     var message: String {
         switch self {
         case .shared, .noData: "No macros shared today"
+        case .openApp: "Open MACROS"
         case .disabled: "Sharing is off on this device"
         case .proLocked: "Shared widgets need MACROS Pro"
         case .proUnknown: "Open MACROS to check Pro"
@@ -47,6 +48,22 @@ nonisolated struct SharedPersonWidgetEntry: TimelineEntry, Sendable {
     var snapshot: SharedWidgetSnapshot?
     var offline = false
     var isPlaceholder = false
+    var layoutEntry: DailyMacroWidgetEntry?
+
+    @MainActor func prepared(includesAppearance: Bool) -> Self {
+        var entry = self
+        let storage = WidgetAppearanceStorage.shared
+        let appearance = includesAppearance ? storage.appearanceRecord : nil
+        let access = includesAppearance ? storage.proAccess : .unknown
+        entry.layoutEntry = DailyMacroWidgetEntry(
+            date: date, snapshot: snapshot?.dailySnapshot ?? DailyMacroSnapshot(totals: .zero, goals: .empty),
+            customRingPalette: includesAppearance ? MacroRingColorStorage.storedPalette() : nil,
+            appearance: appearance, proAccess: access,
+            backgroundPhotoData: includesAppearance ? storage.backgroundPhotoData(for: appearance, access: access) : nil,
+            isPlaceholder: isPlaceholder
+        )
+        return entry
+    }
 
     var url: URL {
         if let person {
@@ -58,47 +75,75 @@ nonisolated struct SharedPersonWidgetEntry: TimelineEntry, Sendable {
 
 nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendable {
     private static let logger = Logger(subsystem: "juan-test.cal-macro-tracker", category: "SharedWidget")
+    var includesAppearance = true
 
     func placeholder(in context: Context) -> SharedPersonWidgetEntry {
         var entry = sample
         entry.isPlaceholder = true
+        entry.layoutEntry = DailyMacroWidgetEntry(
+            date: entry.date,
+            snapshot: DailyMacroSnapshot(
+                totals: NutritionSnapshot(calories: 1840, protein: 132, fat: 58, carbs: 176),
+                goals: MacroGoalsSnapshot(calorieGoal: 2100, proteinGoalGrams: 145, fatGoalGrams: 65, carbGoalGrams: 230)
+            ),
+            customRingPalette: nil, appearance: nil, proAccess: .unknown, backgroundPhotoData: nil, isPlaceholder: true
+        )
         return entry
     }
 
     func snapshot(for configuration: SharedPersonWidgetIntent, in context: Context) async -> SharedPersonWidgetEntry {
-        if context.isPreview { return sample }
-        return await load(configuration).entry
+        let entry = context.isPreview ? sample : await load(configuration).entry
+        return await entry.prepared(includesAppearance: includesAppearance)
     }
 
     func timeline(for configuration: SharedPersonWidgetIntent, in context: Context) async -> Timeline<SharedPersonWidgetEntry> {
         let result = await load(configuration)
-        let entry = result.entry
+        let entry = await result.entry.prepared(includesAppearance: includesAppearance)
         let midnight = SharedPersonWidgetClock.nextMidnight(after: entry.date)
         var newDay = entry
         newDay.date = midnight
         newDay.snapshot = nil
         newDay.offline = false
         if entry.status == .shared { newDay.status = .noData }
-        let requested = max(
-            SharedPersonWidgetClock.refreshDate(after: entry.date),
-            result.retryAfter ?? .distantPast
-        )
+        let refresh: Date
+        switch entry.status {
+        case .openApp, .disabled, .proLocked, .proUnknown, .noPeople, .noDefault, .unavailable, .reconnect:
+            refresh = midnight
+        default:
+            refresh = SharedPersonWidgetClock.refreshDate(after: entry.date)
+        }
+        var requested = min(
+            midnight,
+            max(
+                refresh,
+                result.retryAfter ?? .distantPast
+            ))
+        var entries = [entry, newDay]
+        let storage = WidgetAppearanceStorage(defaults: UserDefaults(suiteName: SharedAppConfiguration.appGroupIdentifier))
+        if let expiration = storage.proAccessRecord?.expiration, expiration > entry.date, expiration < midnight {
+            requested = min(requested, expiration)
+            entries = [
+                entry,
+                await SharedPersonWidgetEntry(date: expiration, status: .proUnknown).prepared(includesAppearance: includesAppearance)
+            ]
+        }
         Self.logger.info(
             "Timeline entry \(entry.date.timeIntervalSince1970, privacy: .public), requested refresh \(requested.timeIntervalSince1970, privacy: .public)"
         )
-        return Timeline(entries: [entry, newDay], policy: .after(requested))
+        return Timeline(entries: entries, policy: .after(requested))
     }
 
     private func load(_ configuration: SharedPersonWidgetIntent) async -> (entry: SharedPersonWidgetEntry, retryAfter: Date?) {
         let storage = SharedPersonWidgetStorage.shared
         let now = Date.now
         let day = SharedPersonWidgetClock.dayKey(for: now)
-        var entry = SharedPersonWidgetEntry(date: now, status: .disabled)
+        var entry = SharedPersonWidgetEntry(date: now, status: .openApp)
         var retryAfter: Date?
         do {
             guard let control = try storage.loadControl() else { return (entry, nil) }
             storage.purgeObsoleteCaches(generation: control.generation, day: day)
             guard control.enabled else {
+                entry.status = .disabled
                 await SharedPersonWidgetClient.shared.clearToken()
                 return (entry, nil)
             }
@@ -193,7 +238,7 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
     }
 
     private func invalidatedEntry() -> SharedPersonWidgetEntry {
-        SharedPersonWidgetEntry(date: .now, status: .disabled)
+        SharedPersonWidgetEntry(date: .now, status: .openApp)
     }
 
     private var sample: SharedPersonWidgetEntry {
