@@ -15,17 +15,8 @@ struct LogFoodScreen: View {
     let previewImageData: Data?
     let onFoodLogged: () -> Void
 
-    @State private var draft: FoodDraft
-    @State private var quantityMode: QuantityMode
-    @State private var servingsAmount: Double
-    @State private var gramsAmount: Double
-    @State private var numericText: FoodDraftNumericText
-    @State private var errorMessage: String?
+    @State private var editor: FoodLogEditorState
     @State private var logFeedbackToken = 0
-    @State private var confirmedZeroRequiredNutrients = Set<RequiredNutritionReviewNutrient>()
-    #if os(iOS)
-    @State private var showingPreviewImage = false
-    #endif
     @FocusState private var focusedField: FoodDraftField?
 
     init(
@@ -44,217 +35,31 @@ struct LogFoodScreen: View {
         self.requiredReviewNutrients = requiredReviewNutrients
         self.previewImageData = previewImageData
         self.onFoodLogged = onFoodLogged
-        _draft = State(initialValue: initialDraft)
-        _quantityMode = State(initialValue: initialQuantityMode)
-        _servingsAmount = State(initialValue: initialQuantityMode == .servings ? (initialQuantityAmount ?? 1) : 1)
-        _gramsAmount = State(
-            initialValue: initialQuantityMode == .grams
-                ? (initialQuantityAmount ?? initialDraft.gramsPerServing ?? 100) : (initialDraft.gramsPerServing ?? 100))
-        _numericText = State(initialValue: FoodDraftNumericText(draft: initialDraft))
-    }
-
-    private var activeAmount: Double {
-        quantityMode == .servings ? servingsAmount : gramsAmount
-    }
-
-    private var reviewDraft: FoodDraft {
-        numericText.editingDraft(from: draft)
-    }
-
-    private var previewDraft: FoodDraft {
-        numericText.finalizedDraft(from: draft) ?? draft
-    }
-
-    private var loggingAction: FoodDraftLoggingAction? {
-        numericText.finalizedDraft(from: draft)?.loggingAction(
-            initialDraft: initialDraft,
-            quantityMode: quantityMode,
-            quantityAmount: activeAmount
-        )
-    }
-
-    private var previewLoggingAction: FoodDraftLoggingAction {
-        previewDraft.loggingAction(
-            initialDraft: initialDraft,
-            quantityMode: quantityMode,
-            quantityAmount: activeAmount
-        )
-    }
-
-    private var nutritionPresentation: FoodDraftNutritionPresentation? {
-        guard let multiplier = previewLoggingAction.quantityMultiplier else { return nil }
-
-        return FoodDraftNutritionPresentation(title: "Nutrition", multiplier: multiplier)
-    }
-
-    private var reusableFoodPersistenceMode: ReusableFoodPersistenceMode {
-        loggingAction?.reusableFoodPersistenceMode
-            ?? FoodDraft.reusableFoodPersistenceMode(initialDraft: initialDraft, currentDraft: draft)
-    }
-
-    private var canSave: Bool {
-        guard let loggingAction else { return false }
-        return loggingAction.canLog
-            && unresolvedRequiredReviewNutrients.isEmpty
-    }
-
-    private var hasPreviewImage: Bool {
-        previewImageData != nil
-    }
-
-    private var reviewSectionTitle: String {
-        switch initialDraft.source {
-        case .labelScan:
-            return "Label Scan"
-        case .searchLookup:
-            return "Online Packaged Food"
-        case .common, .custom, .barcodeLookup:
-            return "Review"
-        }
-    }
-
-    private var sourceURL: URL? {
-        guard let sourceURL = draft.sourceURLOrNil else { return nil }
-        return URL(string: sourceURL)
-    }
-
-    private var combinedReviewNotes: [String] {
-        let labelScanNote: [String]
-        if requiredReviewNutrients.isEmpty {
-            labelScanNote = []
-        } else {
-            labelScanNote = [NutritionLabelParser.reviewRequiredNutrientsMessage(requiredReviewNutrients)]
-        }
-
-        return labelScanNote + reviewNotes
-    }
-
-    private var unresolvedRequiredReviewNutrients: [RequiredNutritionReviewNutrient] {
-        reviewDraft.missingLabelScanRequiredNutrients(
-            from: requiredReviewNutrients,
-            confirmedZeroNutrients: confirmedZeroRequiredNutrients
-        )
-    }
-
-    private var shouldShowRequiredReviewSection: Bool {
-        requiredReviewNutrients.isEmpty == false
+        _editor = State(
+            initialValue: FoodLogEditorState(
+                initialDraft: initialDraft,
+                initialQuantityMode: initialQuantityMode,
+                initialQuantityAmount: initialQuantityAmount,
+                reviewNotes: reviewNotes,
+                requiredReviewNutrients: requiredReviewNutrients,
+                previewImageData: previewImageData
+            ))
     }
 
     var body: some View {
-        FoodDraftEditorForm(
-            draft: $draft,
-            numericText: $numericText,
-            errorMessage: $errorMessage,
-            configuration: FoodDraftEditorConfiguration(
-                brandPrompt: "Brand (optional)",
-                gramsPrompt: "Grams per serving (optional)",
-                nutritionPresentation: nutritionPresentation
-            ),
-            focusedField: $focusedField
-        ) {
-            FoodDraftSourceSection(
-                title: reviewSectionTitle,
-                notes: combinedReviewNotes,
-                sourceName: draft.sourceNameOrNil,
-                sourceURL: sourceURL,
-                previewActionTitle: hasPreviewImage ? "Preview Captured Image" : nil,
-                onPreview: hasPreviewImage
-                    ? {
-                        #if os(iOS)
-                        showingPreviewImage = true
-                        #endif
-                    }
-                    : nil
-            )
-
-            if shouldShowRequiredReviewSection {
-                Section("Required Review") {
-                    Text("Some values couldn’t be read from the label. Enter them, or confirm they’re 0.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-
-                    ForEach(requiredReviewNutrients, id: \.self) { nutrient in
-                        if reviewDraft.isRequiredNutrientPositive(nutrient) == false {
-                            Toggle(
-                                "\(nutrient.displayName) is intentionally 0",
-                                isOn: confirmationBinding(for: nutrient)
-                            )
-                        } else {
-                            Label(
-                                "\(nutrient.displayName) reviewed",
-                                systemImage: "checkmark.circle.fill"
-                            )
-                            .foregroundStyle(.green)
-                        }
-                    }
+        FoodLogEditorSections(editor: $editor, focusedField: $focusedField)
+            .safeAreaInset(edge: .bottom) {
+                BottomPinnedActionBar(
+                    title: "Log Food",
+                    systemImage: nil,
+                    isDisabled: !editor.canSave
+                ) {
+                    saveEntry()
                 }
             }
-
-            FoodQuantitySection(
-                quantityMode: $quantityMode,
-                servingsAmount: $servingsAmount,
-                gramsAmount: $gramsAmount,
-                canLogByGrams: previewDraft.canLogByGrams,
-                gramsPerServing: previewDraft.gramsPerServing,
-                gramLoggingMessage: "Add grams per serving to enable gram-based logging."
-            )
-        } footerSections: {
-            Section {
-                Toggle("Save as reusable food", isOn: $draft.saveAsCustomFood)
-                switch reusableFoodPersistenceMode {
-                case .autoCreateFromCommonEdits:
-                    Text("Because you changed a common food, a reusable copy will be saved automatically.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                case .autoUpdateExistingExternalFood:
-                    Text("Because you changed a saved external food, the reusable local copy will be updated automatically.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                case .none, .userRequested:
-                    EmptyView()
-                }
-            }
-        }
-        .safeAreaInset(edge: .bottom) {
-            BottomPinnedActionBar(
-                title: "Log Food",
-                systemImage: nil,
-                isDisabled: !canSave
-            ) {
-                saveEntry()
-            }
-        }
-        .sensoryFeedback(.success, trigger: logFeedbackToken)
-        .navigationTitle("Log Food")
-        .inlineNavigationTitle()
-        .onChange(of: numericText) { _, _ in
-            pruneResolvedZeroConfirmations()
-        }
-        #if os(iOS)
-        .sheet(isPresented: $showingPreviewImage) {
-            if let previewImageData, let previewImage = UIImage(data: previewImageData) {
-                NavigationStack {
-                    ScrollView {
-                        Image(uiImage: previewImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                    .background(Color.black.opacity(0.95))
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") {
-                                showingPreviewImage = false
-                            }
-                        }
-                    }
-                }
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
-            }
-        }
-        #endif
+            .sensoryFeedback(.success, trigger: logFeedbackToken)
+            .navigationTitle("Log Food")
+            .inlineNavigationTitle()
     }
 
     private var logEntryRepository: LogEntryRepository {
@@ -262,8 +67,8 @@ struct LogFoodScreen: View {
     }
 
     private func saveEntry() {
-        guard let loggingAction else {
-            errorMessage = "Please fix invalid numeric values before logging food."
+        guard let loggingAction = editor.loggingAction else {
+            editor.errorMessage = "Please fix invalid numeric values before logging food."
             return
         }
 
@@ -278,32 +83,13 @@ struct LogFoodScreen: View {
                 loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now,
                 operation: "Log food"
             )
-            errorMessage = nil
+            editor.errorMessage = nil
             logFeedbackToken += 1
             onFoodLogged()
         } catch {
-            errorMessage = error.localizedDescription
+            editor.errorMessage = error.localizedDescription
             assertionFailure(error.localizedDescription)
         }
     }
 
-    private func confirmationBinding(for nutrient: RequiredNutritionReviewNutrient) -> Binding<Bool> {
-        Binding(
-            get: { confirmedZeroRequiredNutrients.contains(nutrient) },
-            set: { isConfirmed in
-                if isConfirmed {
-                    confirmedZeroRequiredNutrients.insert(nutrient)
-                } else {
-                    confirmedZeroRequiredNutrients.remove(nutrient)
-                }
-            }
-        )
-    }
-
-    private func pruneResolvedZeroConfirmations() {
-        confirmedZeroRequiredNutrients = Set(
-            confirmedZeroRequiredNutrients.filter {
-                reviewDraft.isRequiredNutrientPositive($0) == false
-            })
-    }
 }
