@@ -1,0 +1,2 @@
+rg -n SuspectProbe|suspect- cal-macro-tracker
+exit=1; matches=0

@@ -9,6 +9,7 @@ struct BackupSettingsSection: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEntitlements.self) private var entitlements
     @Environment(SharingSyncService.self) private var sharingSyncService
+    @Environment(HealthKitService.self) private var health
     @State private var presentation: BackupPresentation?
     @State private var isImportingFile = false
     @State private var isWorking = false
@@ -74,8 +75,11 @@ struct BackupSettingsSection: View {
     }
 
     private func importFile(_ result: Result<[URL], Error>) {
+        guard !isWorking else { return }
         let container = modelContext.container
+        isWorking = true
         Task {
+            defer { isWorking = false }
             do {
                 guard let url = try result.get().first else { return }
                 let backup = try await Task.detached {
@@ -130,6 +134,14 @@ struct BackupSettingsSection: View {
         _ backup: MACROSBackup,
         mode: BackupImportMode
     ) async throws {
+        if mode == .replace { health.stopWeightObservation() }
+        defer {
+            if mode == .replace, entitlements.canUse(.healthWeightImport),
+                UserDefaults.standard.bool(forKey: AppStorageKeys.healthWeightReadEnabled)
+            {
+                health.restartWeightObservation(container: modelContext.container)
+            }
+        }
         try await BackupImporter.apply(backup, to: modelContext.container, mode: mode)
         WidgetTimelineReloader.reloadMacroWidgets()
         sharingSyncService.syncAfterDailyTotalsChange(container: modelContext.container)

@@ -1,0 +1,16 @@
+Page: com.apple.Health
+App: com.apple.Health
+Snapshot: 12 visible nodes
+@e1 [application] "Health"
+@e2 [navigation-bar] "All Recorded Data"
+@e3 [button] "Weight"
+@e4 [text] "All Recorded Data"
+@e5 [button] "Edit" [disabled]
+@e6 [table] "Empty list"
+  [content below table hidden]
+@e7 [text] "No Data"
+@e8 [toolbar] "Toolbar"
+@e9 [tab-bar] "Tab Bar"
+@e10 [button] "Summary"
+@e11 [button] "Sharing"
+@e12 [button] "Browse" [selected]

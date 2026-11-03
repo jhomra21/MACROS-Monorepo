@@ -16,21 +16,8 @@ extension SecondaryNutrientRepairService {
 
     private struct LogEntrySecondaryNutrientRepair {
         let entryID: PersistentIdentifier
-        let barcode: String?
-        let externalProductID: String?
-        let sourceName: String?
-        let sourceURL: String?
-        let perServing: SecondaryNutrientValues
-        let consumed: SecondaryNutrientValues
-    }
-
-    private struct SecondaryNutrientValues {
-        let saturatedFat: Double?
-        let fiber: Double?
-        let sugars: Double?
-        let addedSugars: Double?
-        let sodium: Double?
-        let cholesterol: Double?
+        let originalData: FoodDraftImportedData
+        let draft: FoodDraft
     }
 
     static func repairExternalFoodsIfNeeded(modelContext: ModelContext) async throws {
@@ -106,9 +93,10 @@ extension SecondaryNutrientRepairService {
         let repairDraftsByKey = commonRepairDraftsByKey(records: commonFoodRecords)
         var externalDraftsByTarget: [SecondaryNutrientRepairTarget: FoodDraft?] = [:]
         var repairs: [LogEntrySecondaryNutrientRepair] = []
-        var notRepairableEntryIDs: [PersistentIdentifier] = []
+        var notRepairableEntries: [PersistentIdentifier: FoodDraftImportedData] = [:]
 
         for entry in entries {
+            let originalData = entry.importedData
             let repairDraftResolution = try await historicalRepairDraftResolution(
                 for: entry,
                 foodsByID: lookup.foodsByID,
@@ -123,76 +111,56 @@ extension SecondaryNutrientRepairService {
                     .backfillingSourceIdentity(from: sourceDraft)
                     .withSecondaryNutrients(from: sourceDraft)
 
-                let quantityAmount =
-                    entry.quantityModeKind == .servings
-                    ? (entry.servingsConsumed ?? 0)
-                    : (entry.gramsConsumed ?? 0)
-                let consumedNutrients = NutritionMath.consumedNutrients(
-                    for: repairedDraft,
-                    mode: entry.quantityModeKind,
-                    amount: quantityAmount
-                )
-
                 repairs.append(
                     LogEntrySecondaryNutrientRepair(
                         entryID: entry.persistentModelID,
-                        barcode: repairedDraft.barcodeOrNil,
-                        externalProductID: repairedDraft.externalProductIDOrNil,
-                        sourceName: repairedDraft.sourceNameOrNil,
-                        sourceURL: repairedDraft.sourceURLOrNil,
-                        perServing: SecondaryNutrientValues(
-                            saturatedFat: repairedDraft.saturatedFatPerServing,
-                            fiber: repairedDraft.fiberPerServing,
-                            sugars: repairedDraft.sugarsPerServing,
-                            addedSugars: repairedDraft.addedSugarsPerServing,
-                            sodium: repairedDraft.sodiumPerServing,
-                            cholesterol: repairedDraft.cholesterolPerServing
-                        ),
-                        consumed: SecondaryNutrientValues(
-                            saturatedFat: consumedNutrients.saturatedFat,
-                            fiber: consumedNutrients.fiber,
-                            sugars: consumedNutrients.sugars,
-                            addedSugars: consumedNutrients.addedSugars,
-                            sodium: consumedNutrients.sodium,
-                            cholesterol: consumedNutrients.cholesterol
-                        )
+                        originalData: originalData,
+                        draft: repairedDraft
                     )
                 )
             case .notRepairable:
-                notRepairableEntryIDs.append(entry.persistentModelID)
+                notRepairableEntries[entry.persistentModelID] = originalData
             }
         }
 
-        guard repairs.isEmpty == false || notRepairableEntryIDs.isEmpty == false else { return }
+        guard repairs.isEmpty == false || notRepairableEntries.isEmpty == false else { return }
 
         try PersistenceReporter.persist(modelContext: modelContext, operation: "Repair log entry secondary nutrients") {
             for repair in repairs {
-                guard let entry = modelContext.model(for: repair.entryID) as? LogEntry else {
+                guard let entry = modelContext.model(for: repair.entryID) as? LogEntry,
+                    !entry.isDeleted, entry.importedData == repair.originalData
+                else {
                     continue
                 }
 
-                entry.barcode = repair.barcode
-                entry.externalProductID = repair.externalProductID
-                entry.sourceName = repair.sourceName
-                entry.sourceURL = repair.sourceURL
-                entry.saturatedFatPerServing = repair.perServing.saturatedFat
-                entry.fiberPerServing = repair.perServing.fiber
-                entry.sugarsPerServing = repair.perServing.sugars
-                entry.addedSugarsPerServing = repair.perServing.addedSugars
-                entry.sodiumPerServing = repair.perServing.sodium
-                entry.cholesterolPerServing = repair.perServing.cholesterol
-                entry.saturatedFatConsumed = repair.consumed.saturatedFat
-                entry.fiberConsumed = repair.consumed.fiber
-                entry.sugarsConsumed = repair.consumed.sugars
-                entry.addedSugarsConsumed = repair.consumed.addedSugars
-                entry.sodiumConsumed = repair.consumed.sodium
-                entry.cholesterolConsumed = repair.consumed.cholesterol
+                // Quantity may change while later lookups await; food edits invalidate the repair.
+                let draft = repair.draft
+                let amount = entry.quantityModeKind == .servings ? (entry.servingsConsumed ?? 0) : (entry.gramsConsumed ?? 0)
+                let consumed = NutritionMath.consumedNutrients(for: draft, mode: entry.quantityModeKind, amount: amount)
+                entry.barcode = draft.barcodeOrNil
+                entry.externalProductID = draft.externalProductIDOrNil
+                entry.sourceName = draft.sourceNameOrNil
+                entry.sourceURL = draft.sourceURLOrNil
+                entry.saturatedFatPerServing = draft.saturatedFatPerServing
+                entry.fiberPerServing = draft.fiberPerServing
+                entry.sugarsPerServing = draft.sugarsPerServing
+                entry.addedSugarsPerServing = draft.addedSugarsPerServing
+                entry.sodiumPerServing = draft.sodiumPerServing
+                entry.cholesterolPerServing = draft.cholesterolPerServing
+                entry.saturatedFatConsumed = consumed.saturatedFat
+                entry.fiberConsumed = consumed.fiber
+                entry.sugarsConsumed = consumed.sugars
+                entry.addedSugarsConsumed = consumed.addedSugars
+                entry.sodiumConsumed = consumed.sodium
+                entry.cholesterolConsumed = consumed.cholesterol
                 entry.secondaryNutrientBackfillState = .current
                 entry.updatedAt = .now
             }
 
-            for entryID in notRepairableEntryIDs {
-                guard let entry = modelContext.model(for: entryID) as? LogEntry else {
+            for (entryID, originalData) in notRepairableEntries {
+                guard let entry = modelContext.model(for: entryID) as? LogEntry,
+                    !entry.isDeleted, entry.importedData == originalData
+                else {
                     continue
                 }
 

@@ -1,0 +1,38 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 32 visible nodes
+Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation.
+@e1 [application] "MACROS"
+@e2 [other] "Toolbar"
+@e3 [navigation-bar] "Back"
+@e4 [button] "Back"
+@e5 [text] "Settings"
+@e6 [collection]
+  [content above collection hidden]
+  [content below collection hidden]
+@e7 [cell] "Backup"
+@e8 [other] "Backup"
+@e9 [cell] "Export Backup"
+@e10 [activity-indicator] "1" [disabled]
+@e11 [cell] "Export Logs as CSV"
+@e12 [activity-indicator] "1" [disabled]
+@e13 [cell] "Import Backup"
+@e14 [cell] "Backups contain your saved data and can be shared or stored in Files."
+@e15 [other] [same label as parent]
+@e16 [cell] "About"
+@e17 [other] "About"
+@e18 [cell] "Show Dashboard Tips"
+@e19 [cell] "Privacy Policy"
+@e20 [link] "Privacy Policy"
+@e21 [cell] "Terms of Use"
+@e22 [link] "Terms of Use"
+@e23 [cell] "Support"
+@e24 [link] "Support"
+@e25 [cell] "MACROS 1.0 (28)"
+@e26 [other] "MACROS 1.0 (28)"
+@e27 [cell] "Developer"
+@e28 [other] "Developer"
+@e29 [cell] "Revoke Debug Pro"
+@e30 [cell] "Load Demo Data"
+@e31 [cell] "Seed Repair Pair"
+@e32 [toolbar] "Toolbar"

@@ -1,0 +1,75 @@
+1793715640.3135161 health stop observation
+1793715640.318424 health stop observation
+1793715660.2900128 health stop observation
+1793715664.152585 health start observation
+1793715730.522071 pause health-delay begin
+1793715730.903524 health start observation
+1793715730.9480271 health stop observation
+1793715747.712671 health start observation
+1793715751.617002 health stop observation
+1793715753.1127791 health start observation
+1793715794.540762 pause health-delay end cancelled=false
+1793715794.5411801 health authorization completion pro=true
+1793715794.541291 health stop observation
+1793715794.541378 health start observation
+1793715794.548542 health start observation
+1793715826.909082 pause health-delay begin
+1793715834.208098 health stop observation
+1793715890.755556 pause health-delay end cancelled=false
+1793715890.757762 health authorization completion pro=false
+1793715890.758017 health stop observation
+1793715890.758247 health start observation
+1793715890.7657151 health stop observation
+1793715938.337757 health stop observation
+1793715938.340828 health stop observation
+1793715959.740355 health start observation
+1793715959.768358 health applied samples=0 deleted=0
+1793715959.7724009 health applied samples=0 deleted=0
+1793715963.6216059 health stop observation
+1793715965.235137 health start observation
+1793715965.238078 pause health-delay begin
+1793715965.249003 health applied samples=0 deleted=0
+1793715965.2531738 health applied samples=0 deleted=0
+1793715969.378555 health stop observation
+1793716029.079251 pause health-delay end cancelled=false
+1793716029.08141 health authorization completion pro=false
+1793716136.215633 health stop observation
+1793716138.5648851 health start observation
+1793716138.60642 health applied samples=1 deleted=0
+1793716138.615267 health applied samples=0 deleted=0
+1793716158.07212 health start observation
+1793716206.888294 health applied samples=1 deleted=0
+1793716207.3332481 health start observation
+1793716207.3686771 health stop observation
+1793716226.282419 health start observation
+1793716226.288666 health applied samples=0 deleted=0
+1793716226.2909331 health applied samples=0 deleted=0
+1793722295.698897 health start observation
+1793722302.097719 health stop observation
+1793722304.466079 health start observation
+1793722304.894783 health applied samples=0 deleted=0
+1793722304.897713 health applied samples=0 deleted=0
+1793722353.349965 health stop observation
+1793722353.353973 health stop observation
+1793722380.1555839 health stop observation
+1793722549.257784 health start observation
+1793722549.3414512 health applied samples=1 deleted=0
+1793722549.352491 health applied samples=0 deleted=0
+1793722726.8432121 health stop observation
+1793722727.220052 health start observation
+1793722727.408111 health applied samples=3 deleted=0
+1793722727.413053 health start observation
+1793722727.452911 health applied samples=0 deleted=0
+1793722821.6894078 health start observation
+1793722836.8124251 health start observation
+1793723311.681886 health stop observation
+1793723311.703555 health stop observation
+1793723320.599451 health start observation
+1793723320.638442 health applied samples=0 deleted=0
+1793723320.642564 health applied samples=0 deleted=0
+1793723515.041984 health stop observation
+1793723515.407521 health stop observation
+1793723515.407649 health start observation
+1793723515.6251922 health applied samples=3 deleted=0
+1793723515.6913729 health start observation
+1793723515.7256122 health applied samples=0 deleted=0

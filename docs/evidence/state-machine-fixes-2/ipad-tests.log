@@ -1,0 +1,750 @@
+Command line invocation:
+    /Applications/Xcode-26.4.1.app/Contents/Developer/usr/bin/xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination "platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB" -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 "-skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests" -derivedDataPath /tmp/state-fix-health-tests -resultBundlePath /tmp/state-fix-health-ipad-final.xcresult test
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  ConvexMobile: https://github.com/get-convex/convex-swift @ 0.8.2
+
+Writing result bundle at path:
+	/tmp/state-fix-health-ipad-final.xcresult
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (6 targets)
+    Target 'cal-macro-trackerTests' in project 'cal-macro-tracker'
+        ➜ Explicit dependency on target 'cal-macro-tracker' in project 'cal-macro-tracker'
+    Target 'cal-macro-tracker' in project 'cal-macro-tracker'
+        ➜ Explicit dependency on target 'CalMacroWidget' in project 'cal-macro-tracker'
+        ➜ Explicit dependency on target 'ConvexMobile-product' in project 'ConvexMobile'
+    Target 'ConvexMobile-product' in project 'ConvexMobile'
+        ➜ Explicit dependency on target 'ConvexMobile' in project 'ConvexMobile'
+        ➜ Explicit dependency on target 'UniFFI' in project 'ConvexMobile'
+    Target 'ConvexMobile' in project 'ConvexMobile'
+        ➜ Explicit dependency on target 'UniFFI' in project 'ConvexMobile'
+    Target 'UniFFI' in project 'ConvexMobile' (no dependencies)
+    Target 'CalMacroWidget' in project 'cal-macro-tracker' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk /tmp/state-fix-health-tests/SDKStatCaches.noindex/iphonesimulator27.0-24A430-ee17e27f93a95d3cfddee5cfb78757f5.sdkstatcache
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker.xcodeproj
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -o /tmp/state-fix-health-tests/SDKStatCaches.noindex/iphonesimulator27.0-24A430-ee17e27f93a95d3cfddee5cfb78757f5.sdkstatcache
+
+note: Disabling hardened runtime with ad-hoc codesigning. (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+SwiftDriver cal-macro-tracker normal arm64 com.apple.xcode.tools.swift.compiler (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-SwiftDriver -- /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name cal_macro_tracker -Onone @/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.SwiftFileList -DDEBUG -default-isolation\=MainActor -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/state-fix-health-tests/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64 -c -j12 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/state-fix-health-tests/SDKStatCaches.noindex/iphonesimulator27.0-24A430-ee17e27f93a95d3cfddee5cfb78757f5.sdkstatcache -output-file-map /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -sdk-module-cache-path /tmp/state-fix-health-tests/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/state-fix-health-tests/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-generated-files.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-own-target-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker-6a007fa7dd6ad82a4ae9a80a0487084a-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-project-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources-normal/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-Swift.h -working-directory /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health -experimental-emit-module-separately -disable-cmo
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ cal_macro_tracker (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftCompile normal arm64 (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+
+
+SwiftCompile normal arm64 Compiling\ BackupSettingsSection.swift /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftCompile normal arm64 /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-SwiftPerFileCompile BackupSettingsSection.swift
+
+SwiftCompile normal arm64 Compiling\ DeveloperSettingsSection.swift /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftCompile normal arm64 /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-SwiftPerFileCompile DeveloperSettingsSection.swift
+
+SwiftCompile normal arm64 Compiling\ HealthKitService.swift /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Health/HealthKitService.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftCompile normal arm64 /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/cal-macro-tracker/Features/Health/HealthKitService.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-SwiftPerFileCompile HealthKitService.swift
+
+SwiftDriverJobDiscovery normal arm64 Compiling DeveloperSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftDriverJobDiscovery normal arm64 Compiling HealthKitService.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftDriverJobDiscovery normal arm64 Compiling BackupSettingsSection.swift (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftDriver\ Compilation cal-macro-tracker normal arm64 com.apple.xcode.tools.swift.compiler (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-Swift-Compilation -- /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name cal_macro_tracker -Onone @/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.SwiftFileList -DDEBUG -default-isolation\=MainActor -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/state-fix-health-tests/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64 -c -j12 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/state-fix-health-tests/SDKStatCaches.noindex/iphonesimulator27.0-24A430-ee17e27f93a95d3cfddee5cfb78757f5.sdkstatcache -output-file-map /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -sdk-module-cache-path /tmp/state-fix-health-tests/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/state-fix-health-tests/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-generated-files.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-own-target-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker-6a007fa7dd6ad82a4ae9a80a0487084a-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-project-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources-normal/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-Swift.h -working-directory /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health -experimental-emit-module-separately -disable-cmo
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for cal_macro_tracker (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+SwiftDriver\ Compilation\ Requirements cal-macro-tracker normal arm64 com.apple.xcode.tools.swift.compiler (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name cal_macro_tracker -Onone @/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.SwiftFileList -DDEBUG -default-isolation\=MainActor -enable-bare-slash-regex -enable-upcoming-feature DisableOutwardActorInference -enable-upcoming-feature InferSendableFromCaptures -enable-upcoming-feature GlobalActorIsolatedTypesUsability -enable-upcoming-feature MemberImportVisibility -enable-upcoming-feature InferIsolatedConformances -enable-upcoming-feature NonisolatedNonsendingByDefault -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -target arm64-apple-ios26.0-simulator -g -module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -Xfrontend -serialize-debugging-options -profile-coverage-mapping -profile-generate -enable-testing -index-store-path /tmp/state-fix-health-tests/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64 -c -j12 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/state-fix-health-tests/SDKStatCaches.noindex/iphonesimulator27.0-24A430-ee17e27f93a95d3cfddee5cfb78757f5.sdkstatcache -output-file-map /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker-OutputFileMap.json -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/state-fix-health-tests/ModuleCache.noindex -sdk-module-cache-path /tmp/state-fix-health-tests/SDKExplicitPrecompiledModules -emit-dependencies -emit-module -emit-module-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftmodule -serialize-diagnostics -dependency-scan-serialize-diagnostics-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-dependency-scan.dia -validate-clang-modules-once -clang-build-session-file /tmp/state-fix-health-tests/ModuleCache.noindex/Session.modulevalidation -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -emit-const-values -const-gather-protocols-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-generated-files.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-own-target-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker-6a007fa7dd6ad82a4ae9a80a0487084a-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-project-headers.hmap -Xcc -I/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources-normal/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources/arm64 -Xcc -I/tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker-Swift.h -working-directory /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health -experimental-emit-module-separately -disable-cmo
+
+Copy /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal_macro_tracker.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftsourceinfo (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftsourceinfo /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal_macro_tracker.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+Copy /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal_macro_tracker.swiftmodule/arm64-apple-ios-simulator.abi.json /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.abi.json (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.abi.json /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal_macro_tracker.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+Ld /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib normal (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0-simulator -dynamiclib -isysroot /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/state-fix-health-tests/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -F/tmp/state-fix-health-tests/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -filelist /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.LinkFileList -install_name @rpath/cal-macro-tracker.debug.dylib -Xlinker -rpath -Xlinker @loader_path -Xlinker -rpath -Xlinker /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_dependency_info.dat -fobjc-link-runtime -fprofile-instr-generate -L/Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal_macro_tracker.swiftmodule -Xlinker -alias -Xlinker _main -Xlinker ___debug_main_executable_dylib_entry_point -lconvexmobile -Xlinker -no_adhoc_codesign -o /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib
+
+ConstructStubExecutorLinkFileList /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-ExecutorLinkFileList-normal-arm64.txt (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    construct-stub-executor-link-file-list /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor_no_swift_entry_point.a /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libPreviewsJITStubExecutor.a --output /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-ExecutorLinkFileList-normal-arm64.txt
+note: Using stub executor library with Swift entry point. (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+
+Ld /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker normal (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0-simulator -isysroot /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -Xlinker -rpath -Xlinker @executable_path -Xlinker -rpath -Xlinker @loader_path -Xlinker -rpath -Xlinker /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -e ___debug_blank_executor_main -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_dylib -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-DebugDylibPath-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __debug_instlnm -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-DebugDylibInstallName-normal-arm64.txt -Xlinker -filelist -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker-ExecutorLinkFileList-normal-arm64.txt -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker.app-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker.app-Simulated.xcent.der /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib -Xlinker -no_adhoc_codesign -o /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker
+
+Copy /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/CalMacroWidget.appex /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/CalMacroWidget.appex (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -exclude Headers -exclude PrivateHeaders -exclude Modules -exclude \*.tbd -resolve-src-symlinks -remove-static-executable /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/CalMacroWidget.appex /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns
+
+ExtractAppIntentsMetadata (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name cal_macro_tracker --sdk-root /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk --xcode-version 27A266a --platform-family iOS --deployment-target 26.0 --bundle-identifier juan-test.cal-macro-tracker --output /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app --target-triple arm64-apple-ios26.0-simulator --binary-file /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker --dependency-file /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker_dependency_info.dat --stringsdata-file /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.SwiftFileList --metadata-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker.DependencyMetadataFileList --static-metadata-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker.DependencyStaticMetadataFileList --swift-const-vals-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/Objects-normal/arm64/cal-macro-tracker.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --no-app-shortcuts-localization
+2026-11-03 10:33:22.973 appintentsmetadataprocessor[46562:15386498] Starting appintentsmetadataprocessor export
+2026-11-03 10:33:23.039 appintentsmetadataprocessor[46562:15386498] Extracted no relevant App Intents symbols, skipping writing output
+
+ProcessInfoPlistFile /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Info.plist /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/Info-iOS.plist (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-infoPlistUtility /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health/Info-iOS.plist -producttype com.apple.product-type.application -genpkginfo /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/assetcatalog_generated_info.plist -scanforprivacyfile /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/CalMacroWidget.appex -o /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Info.plist
+
+CopySwiftLibs /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Frameworks --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/SystemExtensions --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Extensions --platform iphonesimulator --toolchain /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+Ld /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/cal-macro-trackerTests normal (in target 'cal-macro-trackerTests' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios26.0-simulator -bundle -isysroot /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk -O0 -Xlinker -no_warn_duplicate_libraries -L/tmp/state-fix-health-tests/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -L/Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/tmp/state-fix-health-tests/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -F/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk/Developer/Library/Frameworks -filelist /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests.LinkFileList -Xlinker -rpath -Xlinker @loader_path -Xlinker -rpath -Xlinker /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/PackageFrameworks -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -rpath -Xlinker @executable_path/Frameworks -Xlinker -dead_strip -bundle_loader /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker -Xlinker -object_path_lto -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -debug_variant -Xlinker -dependency_info -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests_dependency_info.dat -fobjc-link-runtime -fprofile-instr-generate -L/Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal_macro_trackerTests.swiftmodule -framework StoreKitTest -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib -Xlinker -no_adhoc_codesign -o /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/cal-macro-trackerTests
+
+CopySwiftLibs /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest (in target 'cal-macro-trackerTests' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/cal-macro-trackerTests --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/Frameworks --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/PlugIns --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/SystemExtensions --scan-folder /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/Extensions --platform iphonesimulator --toolchain /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+ExtractAppIntentsMetadata (in target 'cal-macro-trackerTests' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode-26.4.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name cal_macro_trackerTests --sdk-root /Applications/Xcode-26.4.1.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator27.0.sdk --xcode-version 27A266a --platform-family iOS --deployment-target 26.0 --bundle-identifier juan-test.cal-macro-trackerTests --output /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest --target-triple arm64-apple-ios26.0-simulator --binary-file /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest/cal-macro-trackerTests --dependency-file /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests_dependency_info.dat --stringsdata-file /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests.SwiftFileList --metadata-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/cal-macro-trackerTests.DependencyMetadataFileList --static-metadata-file-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/cal-macro-trackerTests.DependencyStaticMetadataFileList --swift-const-vals-list /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-trackerTests.build/Objects-normal/arm64/cal-macro-trackerTests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --no-app-shortcuts-localization
+2026-11-03 10:33:23.343 appintentsmetadataprocessor[46576:15386586] Starting appintentsmetadataprocessor export
+2026-11-03 10:33:23.386 appintentsmetadataprocessor[46576:15386586] Extracted no relevant App Intents symbols, skipping writing output
+
+CodeSign /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest (in target 'cal-macro-trackerTests' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/cal-macro-trackerTests.xctest
+
+CodeSign /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/cal-macro-tracker.debug.dylib
+
+CodeSign /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/__preview.dylib (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/__preview.dylib
+/tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/__preview.dylib: replacing existing signature
+
+CodeSign /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --entitlements /tmp/state-fix-health-tests/Build/Intermediates.noindex/cal-macro-tracker.build/Debug-iphonesimulator/cal-macro-tracker.build/cal-macro-tracker.app.xcent --timestamp\=none --generate-entitlement-der /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app
+
+ValidateEmbeddedBinary /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/CalMacroWidget.appex (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    /Applications/Xcode-26.4.1.app/Contents/Developer/usr/bin/embeddedBinaryValidationUtility /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/PlugIns/CalMacroWidget.appex -signing-cert - -info-plist-path /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app/Info.plist
+
+Validate /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app (in target 'cal-macro-tracker' from project 'cal-macro-tracker')
+    cd /Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-health
+    builtin-validationUtility /tmp/state-fix-health-tests/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app -shallow-bundle -infoplist-subpath Info.plist
+
+PruneExplicitPrecompiledModules /tmp/state-fix-health-tests/SDKExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/state-fix-health-tests/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+PruneExplicitPrecompiledModules /tmp/state-fix-health-tests/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+note: Disabling hardened runtime with ad-hoc codesigning. (in target 'CalMacroWidget' from project 'cal-macro-tracker')
+2026-11-03 10:33:29.971092-0600 cal-macro-tracker[46645:15387457] [xpc] unable to create XPCSession for service "com.apple.uiintelligencesupport.agent": The operation couldn’t be completed. (XPC.XPCRichError error 1.); underlying error: Underlying connection was invalidated. Reason: Connection init failed at lookup with error 3 - No such process
+2026-11-03 10:33:31.302901-0600 cal-macro-tracker[46645:15387157] [API] cannot add handler to 0 from 0 - dropping
+2026-11-03 10:33:32.480159-0600 cal-macro-tracker[46645:15387157] [XPCErrors] non-launching port is incompatible with service identifier "com.apple.PointerUI.pointeruid.default-service"
+Test Suite 'Selected tests' started at 2026-11-03 10:33:32.534.
+Test Suite 'cal-macro-trackerTests.xctest' started at 2026-11-03 10:33:32.534.
+Test Suite 'AppDayContextTests' started at 2026-11-03 10:33:32.535.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testCurrentCalendarAndTimezoneChangeEquality]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testCurrentCalendarAndTimezoneChangeEquality]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testDayIntervalAndAdvanceAcrossLocalDSTDates]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testDayIntervalAndAdvanceAcrossLocalDSTDates]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testDaySelectionTracksTodayOnlyUntilHistoricalDayIsSelected]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testDaySelectionTracksTodayOnlyUntilHistoricalDayIsSelected]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testEffectiveTimezoneRefreshUpdatesTodayWithoutChangingHost]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testEffectiveTimezoneRefreshUpdatesTodayWithoutChangingHost]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testExplicitCalendarTimeZoneIsPreservedInDayInterval]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testExplicitCalendarTimeZoneIsPreservedInDayInterval]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testExplicitDSTIntervalsAre23And25Hours]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testExplicitDSTIntervalsAre23And25Hours]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testHistoricalDayTitlesUseCapturedCalendarAndLocale]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testHistoricalDayTitlesUseCapturedCalendarAndLocale]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testRefreshUpdatesTodayFromControlledDate]' started.
+Test Case '-[cal_macro_trackerTests.AppDayContextTests testRefreshUpdatesTodayFromControlledDate]' passed (0.000 seconds).
+Test Suite 'AppDayContextTests' passed at 2026-11-03 10:33:32.552.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.005 (0.018) seconds
+Test Suite 'BackupRoundTripTests' started at 2026-11-03 10:33:32.553.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testBundledReferencesRemapAcrossContainers]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testBundledReferencesRemapAcrossContainers]' passed (0.092 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testCSVEscapesCommasQuotesAndNewlinesInFoodNames]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testCSVEscapesCommasQuotesAndNewlinesInFoodNames]' passed (0.010 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testExportOrderingIsDeterministicApartFromExportedAt]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testExportOrderingIsDeterministicApartFromExportedAt]' passed (0.068 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidProfileLeavesReplaceStoreUntouched]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidProfileLeavesReplaceStoreUntouched]' passed (0.047 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidReminderHourLeavesReplaceStoreUntouched]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidReminderHourLeavesReplaceStoreUntouched]' passed (0.024 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidRingHexLeavesReplaceStoreUntouched]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testInvalidRingHexLeavesReplaceStoreUntouched]' passed (0.021 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testLateValidationFailureLeavesReplaceStoreUntouched]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testLateValidationFailureLeavesReplaceStoreUntouched]' passed (0.022 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testMergeSkipsExistingIDsAndKeepsExistingValues]' started.
+IOSurfaceClientSetSurfaceNotify failed e00002c7
+2026-11-03 10:33:33.392059-0600 cal-macro-tracker[46645:15387157] [API] cannot add handler to 0 from 0 - dropping
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testMergeSkipsExistingIDsAndKeepsExistingValues]' passed (0.597 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testMissingFoodReferenceImportsLogAsSnapshotOnly]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testMissingFoodReferenceImportsLogAsSnapshotOnly]' passed (0.031 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsCorruptJSON]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsCorruptJSON]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsInvalidProfileBoundsReminderSlotsAndDates]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsInvalidProfileBoundsReminderSlotsAndDates]' passed (0.019 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsNegativeNutrition]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsNegativeNutrition]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsUnknownVersion]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRejectsUnknownVersion]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testReplaceDeletesNonCommonDataAndKeepsCommonFoods]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testReplaceDeletesNonCommonDataAndKeepsCommonFoods]' passed (0.041 seconds).
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRoundTripDecodedContentMatchesAfterImportAndReexport]' started.
+Test Case '-[cal_macro_trackerTests.BackupRoundTripTests testRoundTripDecodedContentMatchesAfterImportAndReexport]' passed (0.046 seconds).
+Test Suite 'BackupRoundTripTests' passed at 2026-11-03 10:33:33.600.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 1.041 (1.047) seconds
+Test Suite 'BarcodeImageScannerTests' started at 2026-11-03 10:33:33.600.
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testImageWithoutBarcodeThrowsNoBarcodeFound]' started.
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testImageWithoutBarcodeThrowsNoBarcodeFound]' passed (0.115 seconds).
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testRecognizesRealEAN13Fixture]' started.
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testRecognizesRealEAN13Fixture]' passed (0.030 seconds).
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testZeroEAN13FixtureDoesNotResolveToRealProductCode]' started.
+Test Case '-[cal_macro_trackerTests.BarcodeImageScannerTests testZeroEAN13FixtureDoesNotResolveToRealProductCode]' passed (0.018 seconds).
+Test Suite 'BarcodeImageScannerTests' passed at 2026-11-03 10:33:33.765.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.163 (0.164) seconds
+Test Suite 'BodyProfileDraftTests' started at 2026-11-03 10:33:33.765.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testEveryLosePaceAndSupportedGainPaceIsAcceptedByCalculator]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testEveryLosePaceAndSupportedGainPaceIsAcceptedByCalculator]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testGainPacesStayWithinOffsetCeilingAndRoundTrip]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testGainPacesStayWithinOffsetCeilingAndRoundTrip]' passed (0.004 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testImperialInputStoresFullPrecisionMetricValues]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testImperialInputStoresFullPrecisionMetricValues]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testLosePacesMapToNegativeOffsetsInsideCalculatorRange]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testLosePacesMapToNegativeOffsetsInsideCalculatorRange]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testManualSaveUpdatesSingleActiveBodyProfileAndKeepsPreset]' started.
+2026-11-03 10:33:33.776760-0600 cal-macro-tracker[46645:15387157] [Persistence] Save body profile succeeded
+2026-11-03 10:33:33.777726-0600 cal-macro-tracker[46645:15387157] [Persistence] Save body profile succeeded
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testManualSaveUpdatesSingleActiveBodyProfileAndKeepsPreset]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testNumericFieldsParseThroughNumericTextIncludingFractionalInches]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testNumericFieldsParseThroughNumericTextIncludingFractionalInches]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testSavedLoseProfileRestoresDirectionPaceAndOffset]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testSavedLoseProfileRestoresDirectionPaceAndOffset]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testUnitToggleKeepsCanonicalMetricValuesAndRoundsOnlyForDisplay]' started.
+Test Case '-[cal_macro_trackerTests.BodyProfileDraftTests testUnitToggleKeepsCanonicalMetricValuesAndRoundsOnlyForDisplay]' passed (0.000 seconds).
+Test Suite 'BodyProfileDraftTests' passed at 2026-11-03 10:33:33.782.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.015 (0.018) seconds
+Test Suite 'CommonFoodSeedLoaderTests' started at 2026-11-03 10:33:33.783.
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsRenamedFoodByItsFNDDSDescriptionAlias]' started.
+2026-11-03 10:33:33.788289-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsRenamedFoodByItsFNDDSDescriptionAlias]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsSameNameFoodDeterministically]' started.
+2026-11-03 10:33:33.795423-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsSameNameFoodDeterministically]' passed (0.007 seconds).
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsSourceIdentifierWhenMatchingExistingFoodByName]' started.
+2026-11-03 10:33:33.803098-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileBackfillsSourceIdentifierWhenMatchingExistingFoodByName]' passed (0.007 seconds).
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileClaimsStoredFoodOnlyOnceAcrossDescriptionAndNameMatches]' started.
+2026-11-03 10:33:33.810129-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileClaimsStoredFoodOnlyOnceAcrossDescriptionAndNameMatches]' passed (0.007 seconds).
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileDeletesUnreferencedStaleFoodsAndKeepsReferencedOnes]' started.
+2026-11-03 10:33:33.816389-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+2026-11-03 10:33:33.818431-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileDeletesUnreferencedStaleFoodsAndKeepsReferencedOnes]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileRenamesFoodInPlaceBySourceIdentifier]' started.
+2026-11-03 10:33:33.824122-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+2026-11-03 10:33:33.825459-0600 cal-macro-tracker[46645:15387157] [Persistence] Reconcile common foods succeeded
+Test Case '-[cal_macro_trackerTests.CommonFoodSeedLoaderTests testReconcileRenamesFoodInPlaceBySourceIdentifier]' passed (0.007 seconds).
+Test Suite 'CommonFoodSeedLoaderTests' passed at 2026-11-03 10:33:33.828.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.043 (0.045) seconds
+Test Suite 'FoodCameraFlowTests' started at 2026-11-03 10:33:33.828.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testActiveLibraryCancellationRestartsScanning]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testActiveLibraryCancellationRestartsScanning]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testBarcodeFromImageAndOCRCanCompleteWhileInactive]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testBarcodeFromImageAndOCRCanCompleteWhileInactive]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testBarcodeRecognitionStartsLookupInExactOrder]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testBarcodeRecognitionStartsLookupInExactOrder]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testDismissalFromEveryPhaseStopsCancelsAndTurnsTorchOff]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testDismissalFromEveryPhaseStopsCancelsAndTurnsTorchOff]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testDismissedFlowRejectsEventsAndContent]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testDismissedFlowRejectsEventsAndContent]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testInactiveLookupCompletionKeepsResultWithoutRestarting]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testInactiveLookupCompletionKeepsResultWithoutRestarting]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testInvalidQuantityIsRejected]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testInvalidQuantityIsRejected]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelLoggingAndSavingTransitionsHaveExactEffects]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelLoggingAndSavingTransitionsHaveExactEffects]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelLogTapIsRejectedOutsideResultPhases]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelLogTapIsRejectedOutsideResultPhases]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelServingsChangeIsAcceptedOnlyWhileShowingLabel]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLabelServingsChangeIsAcceptedOnlyWhileShowingLabel]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryCancellationWhileInactiveDoesNotRestartScanner]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryCancellationWhileInactiveDoesNotRestartScanner]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryOpenedBeforeBackgroundDoesNotResumeUntilActive]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryOpenedBeforeBackgroundDoesNotResumeUntilActive]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryReplacementResetsServingsButCancellationPreservesThem]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLibraryReplacementResetsServingsButCancellationPreservesThem]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLiveBarcodeIsIgnoredDuringOCRAndCapture]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testLiveBarcodeIsIgnoredDuringOCRAndCapture]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testNavigationAwayAndBackPreservesResultPhase]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testNavigationAwayAndBackPreservesResultPhase]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testOCRFailureClearsBarcodeRecoveryForLabelManualEntry]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testOCRFailureClearsBarcodeRecoveryForLabelManualEntry]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testRepeatedDismissalHasNoEffects]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testRepeatedDismissalHasNoEffects]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSavingAndQuantityTransitionsHaveExactEffects]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSavingAndQuantityTransitionsHaveExactEffects]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScanAgainAfterLabelLogResetsServings]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScanAgainAfterLabelLogResetsServings]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScanAgainStartsOnlyWhenActive]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScanAgainStartsOnlyWhenActive]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScannerAndImageImportFailuresEnterRecovery]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testScannerAndImageImportFailuresEnterRecovery]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSceneInactiveStopsCaptureAndTorchFromEveryPhase]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSceneInactiveStopsCaptureAndTorchFromEveryPhase]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSecondShutterIsIgnoredDuringCapture]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testSecondShutterIsIgnoredDuringCapture]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testShutterCaptureOrderAndRecoveryShutter]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testShutterCaptureOrderAndRecoveryShutter]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testTorchToggleIsOwnedByScanningPhase]' started.
+Test Case '-[cal_macro_trackerTests.FoodCameraFlowTests testTorchToggleIsOwnedByScanningPhase]' passed (0.000 seconds).
+Test Suite 'FoodCameraFlowTests' passed at 2026-11-03 10:33:33.846.
+	 Executed 25 tests, with 0 failures (0 unexpected) in 0.012 (0.018) seconds
+Test Suite 'FoodItemLocalSearchTests' started at 2026-11-03 10:33:33.847.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBarcodeExactMatchRanksAboveOrdinaryNameMatch]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBarcodeExactMatchRanksAboveOrdinaryNameMatch]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBrandPrefixAndWordRankAboveLaterNameSegmentMatches]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBrandPrefixAndWordRankAboveLaterNameSegmentMatches]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBundledManifestPrioritiesRankWholeMilkBeforeDryMilk]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testBundledManifestPrioritiesRankWholeMilkBeforeDryMilk]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testEverydayQueriesPreferPlainFoodOverCompoundAndModifierMatches]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testEverydayQueriesPreferPlainFoodOverCompoundAndModifierMatches]' passed (0.003 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testExactFoodNameStillRanksBeforeOtherPrefixMatches]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testExactFoodNameStillRanksBeforeOtherPrefixMatches]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testFetchAndRankFindsFoldedTermsInBothFoodSearchSurfaces]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testFetchAndRankFindsFoldedTermsInBothFoodSearchSurfaces]' passed (0.011 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testFetchAndRankFindsPersistedBarcodeAndBrandMatches]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testFetchAndRankFindsPersistedBarcodeAndBrandMatches]' passed (0.017 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testGenericQueryRanksShortCanonicalFoodBeforeLongPreparedDishNames]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testGenericQueryRanksShortCanonicalFoodBeforeLongPreparedDishNames]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testModifierFoodsRankAfterUnmodifiedFoods]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testModifierFoodsRankAfterUnmodifiedFoods]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testPunctuationAndDiacriticsShareSearchTokenization]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testPunctuationAndDiacriticsShareSearchTokenization]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testStaplePrioritiesOverrideArbitraryTieBreakersWithinMatchTier]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testStaplePrioritiesOverrideArbitraryTieBreakersWithinMatchTier]' passed (0.006 seconds).
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testWholeWordMatchesRankBeforeSubstringMatches]' started.
+Test Case '-[cal_macro_trackerTests.FoodItemLocalSearchTests testWholeWordMatchesRankBeforeSubstringMatches]' passed (0.001 seconds).
+Test Suite 'FoodItemLocalSearchTests' passed at 2026-11-03 10:33:33.894.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.044 (0.048) seconds
+Test Suite 'GoalCalculatorTests' started at 2026-11-03 10:33:33.895.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testActivityMultipliersAndMacroPresetPercentages]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testActivityMultipliersAndMacroPresetPercentages]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testBmrMatchesHandCalculatedMifflinStJeorReferences]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testBmrMatchesHandCalculatedMifflinStJeorReferences]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testClampsBelowSafeMinimumForEachSex]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testClampsBelowSafeMinimumForEachSex]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testImperialConversionsRoundTrip]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testImperialConversionsRoundTrip]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testMacroCaloriesStayAtOrAboveClampedTargetWithinTwoPercent]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testMacroCaloriesStayAtOrAboveClampedTargetWithinTwoPercent]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRejectsNonFiniteMeasurements]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRejectsNonFiniteMeasurements]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRejectsNonPositiveAndOutOfRangeMeasurements]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRejectsNonPositiveAndOutOfRangeMeasurements]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRoundedMacroGramsRecomputeCaloriesWithinTwoPercent]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testRoundedMacroGramsRecomputeCaloriesWithinTwoPercent]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testUnitConversionsUseExactConstantsWithoutIntermediateRounding]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testUnitConversionsUseExactConstantsWithoutIntermediateRounding]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testUnspecifiedSexUsesMidpointMifflinStJeorConstant]' started.
+Test Case '-[cal_macro_trackerTests.GoalCalculatorTests testUnspecifiedSexUsesMidpointMifflinStJeorConstant]' passed (0.000 seconds).
+Test Suite 'GoalCalculatorTests' passed at 2026-11-03 10:33:33.902.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.005 (0.008) seconds
+Test Suite 'HealthSynchronizationTests' started at 2026-11-03 10:33:33.903.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testBackfillCancellationWaitsForSuspendedStoreOperation]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testBackfillCancellationWaitsForSuspendedStoreOperation]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testBackfillReportsFailuresAndFirstError]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testBackfillReportsFailuresAndFirstError]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteAfterWriteNeverResurrectsNutrition]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteAfterWriteNeverResurrectsNutrition]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteCallsDeleteObjectsForEveryNutrientType]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteCallsDeleteObjectsForEveryNutrientType]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteSupersedesQueuedUserAndBackfillWrites]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testDeleteSupersedesQueuedUserAndBackfillWrites]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testEditDuringWriteUsesCapturedSnapshotRevision]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testEditDuringWriteUsesCapturedSnapshotRevision]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testHealthImportGenerationRejectsStoppedAndOlderCallbacks]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testHealthImportGenerationRejectsStoppedAndOlderCallbacks]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testNutritionWritesIncludeOnlyAuthorizedTypes]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testNutritionWritesIncludeOnlyAuthorizedTypes]' passed (0.006 seconds).
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testWriteAfterDeleteRecreatesNutrition]' started.
+Test Case '-[cal_macro_trackerTests.HealthSynchronizationTests testWriteAfterDeleteRecreatesNutrition]' passed (0.001 seconds).
+Test Suite 'HealthSynchronizationTests' passed at 2026-11-03 10:33:33.917.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.012 (0.015) seconds
+Test Suite 'InsightsAnalyticsTests' started at 2026-11-03 10:33:33.918.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAllTimeDaysAreEmptyWithoutAnEarliestEntry]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAllTimeDaysAreEmptyWithoutAnEarliestEntry]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAllTimeDaysIncludeEarliestEntryThroughToday]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAllTimeDaysIncludeEarliestEntryThroughToday]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAverageExcludesDaysWithoutEntries]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testAverageExcludesDaysWithoutEntries]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCalorieAdherenceUsesTenPercentTargetRange]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCalorieAdherenceUsesTenPercentTargetRange]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testChartAxisKeepsSevenDailyLabelsAndIncludesLastLongRangeDay]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testChartAxisKeepsSevenDailyLabelsAndIncludesLastLongRangeDay]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testChartSelectionDoesNotResolveOutsideCurrentCalendarDomain]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testChartSelectionDoesNotResolveOutsideCurrentCalendarDomain]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakIncludesYesterdayWhenTodayIsEmpty]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakIncludesYesterdayWhenTodayIsEmpty]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakIsZeroWithoutEntries]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakIsZeroWithoutEntries]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakStopsAtGapBeforeToday]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakStopsAtGapBeforeToday]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakUsesAppCalendarTimeZoneAtDateBoundary]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testCurrentStreakUsesAppCalendarTimeZoneAtDateBoundary]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDailyChartBucketsOmitUnloggedDaysButKeepSummaryCoverage]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDailyChartBucketsOmitUnloggedDaysButKeepSummaryCoverage]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDailyChartOffsetsRespectCalendarAcrossMonthLeapAndDSTBoundaries]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDailyChartOffsetsRespectCalendarAcrossMonthLeapAndDSTBoundaries]' passed (0.003 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDismissalCooldownPersistsForBothNoticeTypesAndExpiresOnCalendarMonthDate]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testDismissalCooldownPersistsForBothNoticeTypesAndExpiresOnCalendarMonthDate]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testEveryInsightsRangeUsesDailyChartPoints]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testEveryInsightsRangeUsesDailyChartPoints]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testLongFixedRangesPreserveCalendarDayCountAndPreviousPeriod]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testLongFixedRangesPreserveCalendarDayCountAndPreviousPeriod]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testLongRangeDaysStaySeparateAcrossWeeksMonthsAndYears]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testLongRangeDaysStaySeparateAcrossWeeksMonthsAndYears]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testMonthlyWeightNoticeDistinguishesNeverLoggedFromStale]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testMonthlyWeightNoticeDistinguishesNeverLoggedFromStale]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testMultipleEntriesOnOneDateRemainOneCombinedDailyTotal]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testMultipleEntriesOnOneDateRemainOneCombinedDailyTotal]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testNoticeUsesCalendarMonthAcrossLeapYearEndOfMonthAndDST]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testNoticeUsesCalendarMonthAcrossLeapYearEndOfMonthAndDST]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testPreviousPeriodComparisonUsesPreviousAverage]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testPreviousPeriodComparisonUsesPreviousAverage]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testProteinAdherenceCountsAtLeastGoal]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testProteinAdherenceCountsAtLeastGoal]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRangeBuildsRollingDaysEndingToday]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRangeBuildsRollingDaysEndingToday]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRecentWeightSuppressesNoticeAndCutoffDayIsInclusive]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRecentWeightSuppressesNoticeAndCutoffDayIsInclusive]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRepeatedRangeRequestsWithSameAnchorAreStable]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testRepeatedRangeRequestsWithSameAnchorAreStable]' passed (0.003 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSecondaryNutrientCoverageExcludesMissingValuesButKeepsZero]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSecondaryNutrientCoverageExcludesMissingValuesButKeepsZero]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSevenConsecutiveLoggedDaysRemainSevenDailyChartPoints]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSevenConsecutiveLoggedDaysRemainSevenDailyChartPoints]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSparseDailyChartPointsKeepCalendarDayPositionsAndOmitUnloggedDays]' started.
+Test Case '-[cal_macro_trackerTests.InsightsAnalyticsTests testSparseDailyChartPointsKeepCalendarDayPositionsAndOmitUnloggedDays]' passed (0.001 seconds).
+Test Suite 'InsightsAnalyticsTests' passed at 2026-11-03 10:33:33.948.
+	 Executed 27 tests, with 0 failures (0 unexpected) in 0.023 (0.030) seconds
+Test Suite 'LocalConfidenceTests' started at 2026-11-03 10:33:33.948.
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testBarcodeImageThroughVision]' started.
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testBarcodeImageThroughVision]' passed (0.069 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testBlankBarcodeAndInvalidImageHaveControlledErrors]' started.
+2026-11-03 10:33:34.018537-0600 cal-macro-tracker[46645:15387157] [cal-macro-tracker] *** ERROR: CGImageSourceCreateThumbnailAtIndexEx:5504: create thumbnail at index failed
+2026-11-03 10:33:34.018608-0600 cal-macro-tracker[46645:15387157] [cal-macro-tracker] CGImageSourceCreateThumbnailAtIndexEx:5525: *** ERROR: CGImageSourceCreateThumbnailAtIndex[0] - 'n/a ' - failed to create thumbnail [1] {alw:1, abs: -1 tra:1 max:2400}
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testBlankBarcodeAndInvalidImageHaveControlledErrors]' passed (0.014 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCancellationClassificationDoesNotHideOtherErrors]' started.
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCancellationClassificationDoesNotHideOtherErrors]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCorruptCommonFoodManifestDoesNotBlockContainerBootstrap]' started.
+2026-11-03 10:33:34.052975-0600 cal-macro-tracker[46645:15387157] [AppBootstrap] Common food seed resources unavailable: The data couldn’t be read because it isn’t in the correct format.
+2026-11-03 10:33:34.054602-0600 cal-macro-tracker[46645:15387157] [Persistence] Normalize daily goals succeeded
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCorruptCommonFoodManifestDoesNotBlockContainerBootstrap]' passed (0.016 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCurrentSchemaLocalStoreReopenAndDayBoundarySnapshot]' started.
+2026-11-03 10:33:34.078350-0600 cal-macro-tracker[46645:15387157] [Persistence] Apple QA local fixture succeeded
+2026-11-03 10:33:34.080067-0600 cal-macro-tracker[46645:15387157] [Persistence] Apple QA local fixture succeeded
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testCurrentSchemaLocalStoreReopenAndDayBoundarySnapshot]' passed (0.050 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testMissingNutritionRemainsExplicitlyReviewable]' started.
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testMissingNutritionRemainsExplicitlyReviewable]' passed (0.015 seconds).
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testSyntheticLabelImageThroughVisionAndParser]' started.
+Test Case '-[cal_macro_trackerTests.LocalConfidenceTests testSyntheticLabelImageThroughVisionAndParser]' passed (0.869 seconds).
+Test Suite 'LocalConfidenceTests' passed at 2026-11-03 10:33:34.992.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 1.041 (1.044) seconds
+Test Suite 'LogEntryQueryTests' started at 2026-11-03 10:33:34.992.
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryExcludesNextMidnightAfterSpringForward]' started.
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryExcludesNextMidnightAfterSpringForward]' passed (0.015 seconds).
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryUsesDSTAwareFinalDayBoundary]' started.
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryUsesDSTAwareFinalDayBoundary]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryUsesNormalTwentyFourHourBoundary]' started.
+Test Case '-[cal_macro_trackerTests.LogEntryQueryTests testCapturedHistoryWeekQueryUsesNormalTwentyFourHourBoundary]' passed (0.008 seconds).
+Test Suite 'LogEntryQueryTests' passed at 2026-11-03 10:33:35.024.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.030 (0.031) seconds
+Test Suite 'MealSchemaMigrationTests' started at 2026-11-03 10:33:35.024.
+Test Case '-[cal_macro_trackerTests.MealSchemaMigrationTests testPreMealStoreMigratesPreservesDataAndReopensWithMealRecords]' started.
+Test Case '-[cal_macro_trackerTests.MealSchemaMigrationTests testPreMealStoreMigratesPreservesDataAndReopensWithMealRecords]' passed (1.802 seconds).
+Test Suite 'MealSchemaMigrationTests' passed at 2026-11-03 10:33:36.826.
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.802 (1.802) seconds
+Test Suite 'ProEntitlementTests' started at 2026-11-03 10:33:36.826.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testAllFeaturesRequirePro]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testAllFeaturesRequirePro]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testConcurrentRefreshCallersAwaitTheSameCommittedReread]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testConcurrentRefreshCallersAwaitTheSameCommittedReread]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testDuplicateSubscriptionFactsChooseLatestExpirationInBothOrders]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testDuplicateSubscriptionFactsChooseLatestExpirationInBothOrders]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testEmptyInputResolvesToFree]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testEmptyInputResolvesToFree]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testGraceUsesGraceDeadlineAndRetryDoesNotPromiseAccess]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testGraceUsesGraceDeadlineAndRetryDoesNotPromiseAccess]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLegacyProvidesLifetimeAccessInBothOrders]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLegacyProvidesLifetimeAccessInBothOrders]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLifetimeBeatsEitherSubscriptionInBothOrders]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLifetimeBeatsEitherSubscriptionInBothOrders]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLifetimeDoesNotHideActiveSubscription]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testLifetimeDoesNotHideActiveSubscription]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testProductMappingExcludesUnknownProducts]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testProductMappingExcludesUnknownProducts]' passed (0.007 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerDoesNotGuessExpiryWhenRenewalStatusIsUnavailable]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerDoesNotGuessExpiryWhenRenewalStatusIsUnavailable]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerPreservesGraceEvenAfterBillingExpiration]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerPreservesGraceEvenAfterBillingExpiration]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerRejectsExpiredRevokedAndBillingRetrySubscriptions]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerRejectsExpiredRevokedAndBillingRetrySubscriptions]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerRejectsUnverifiedRevokedUpgradedAndUnrelatedFacts]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testReducerRejectsUnverifiedRevokedUpgradedAndUnrelatedFacts]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testRequestsDuringDirtyRereadDrainBeforeAnyCallerReturns]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testRequestsDuringDirtyRereadDrainBeforeAnyCallerReturns]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testRevocationClearsSourceAndExpiration]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testRevocationClearsSourceAndExpiration]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testStoppedRefreshCannotOverwriteNewerCommittedSnapshot]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testStoppedRefreshCannotOverwriteNewerCommittedSnapshot]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testSubscriptionSelectionPreservesExpirationInBothOrders]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testSubscriptionSelectionPreservesExpirationInBothOrders]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testSubscriptionStatusDistinguishesRenewalAndCancellation]' started.
+Test Case '-[cal_macro_trackerTests.ProEntitlementTests testSubscriptionStatusDistinguishesRenewalAndCancellation]' passed (0.000 seconds).
+Test Suite 'ProEntitlementTests' passed at 2026-11-03 10:33:36.854.
+	 Executed 18 tests, with 0 failures (0 unexpected) in 0.022 (0.027) seconds
+Test Suite 'ReminderConfigurationTests' started at 2026-11-03 10:33:36.854.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testDailyAndEveningRemindersDeduplicateByTime]' started.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testDailyAndEveningRemindersDeduplicateByTime]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testFreeReminderIsLimitedToOne]' started.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testFreeReminderIsLimitedToOne]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testLoggedDayUsesCalendarLocalDayNearMidnight]' started.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testLoggedDayUsesCalendarLocalDayNearMidnight]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testOverlappingRefreshesRunOnlyLatestQueuedConfiguration]' started.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testOverlappingRefreshesRunOnlyLatestQueuedConfiguration]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testProRemindersAreCappedAtThreeAndDeduplicatedByTime]' started.
+Test Case '-[cal_macro_trackerTests.ReminderConfigurationTests testProRemindersAreCappedAtThreeAndDeduplicatedByTime]' passed (0.000 seconds).
+Test Suite 'ReminderConfigurationTests' passed at 2026-11-03 10:33:36.858.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.002 (0.004) seconds
+Test Suite 'ReminderSchedulerTests' started at 2026-11-03 10:33:36.858.
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testSelectsUpcomingDaysChronologicallyAndSkipsLoggedDays]' started.
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testSelectsUpcomingDaysChronologicallyAndSkipsLoggedDays]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testUsesCalendarDaysAcrossDSTTransition]' started.
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testUsesCalendarDaysAcrossDSTTransition]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testZeroHorizonReturnsNoDays]' started.
+Test Case '-[cal_macro_trackerTests.ReminderSchedulerTests testZeroHorizonReturnsNoDays]' passed (0.000 seconds).
+Test Suite 'ReminderSchedulerTests' passed at 2026-11-03 10:33:36.860.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.002) seconds
+Test Suite 'SharingFoodPayloadTests' started at 2026-11-03 10:33:36.860.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testDailyGoalsAreIncludedInPayloadAndStableHash]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testDailyGoalsAreIncludedInPayloadAndStableHash]' passed (0.007 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodChangesContributeToUploadHash]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodChangesContributeToUploadHash]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadTruncatesEmojiOnUtf16Boundary]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadTruncatesEmojiOnUtf16Boundary]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadUsesDashboardQuantitySummaryWithServingDescription]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadUsesDashboardQuantitySummaryWithServingDescription]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadUsesOnlyWhitelistedFieldsAndTrimsText]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodPayloadUsesOnlyWhitelistedFieldsAndTrimsText]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodsAreOmittedWhenNoRecipientHasFoodScope]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testFoodsAreOmittedWhenNoRecipientHasFoodScope]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPersonDayVisibilityDefaultsToSharedAndDecodesCurrentStates]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPersonDayVisibilityDefaultsToSharedAndDecodesCurrentStates]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPurchaseSubmissionDedupeIncludesRenewalInfo]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPurchaseSubmissionDedupeIncludesRenewalInfo]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPurchaseSubmissionDeduplicatesByTransactionAndExpiry]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testPurchaseSubmissionDeduplicatesByTransactionAndExpiry]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testServingQuantitySummaryPreservesUpToTwoDecimalPlaces]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testServingQuantitySummaryPreservesUpToTwoDecimalPlaces]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testSharedDailySnapshotDecodesGoalsAndLegacySnapshots]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testSharedDailySnapshotDecodesGoalsAndLegacySnapshots]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testSharingPersonDecodingUsesLegacyDefaults]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testSharingPersonDecodingUsesLegacyDefaults]' passed (0.002 seconds).
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testUploadPayloadCapsFoodsAtFirstHundredBySortIndex]' started.
+Test Case '-[cal_macro_trackerTests.SharingFoodPayloadTests testUploadPayloadCapsFoodsAtFirstHundredBySortIndex]' passed (0.027 seconds).
+Test Suite 'SharingFoodPayloadTests' passed at 2026-11-03 10:33:36.907.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.044 (0.047) seconds
+Test Suite 'SharingReliabilityTests' started at 2026-11-03 10:33:36.907.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCommittedDeletionCleanupFailureRetriesLocallyAcrossColdLaunch]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCommittedDeletionCleanupFailureRetriesLocallyAcrossColdLaunch]' passed (0.053 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testConcurrentIdenticalRequestsAndRepeatedNoopsWriteOnce]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testConcurrentIdenticalRequestsAndRepeatedNoopsWriteOnce]' passed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteDoesNotReuseAfterIdentityChangeOrRevocation]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteDoesNotReuseAfterIdentityChangeOrRevocation]' passed (0.019 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteReplacesExpiredNearExpiryAndUnboundLegacyLinks]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteReplacesExpiredNearExpiryAndUnboundLegacyLinks]' passed (0.051 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteReusesCurrentIdentityLinkAcrossServiceRestartWithoutNetwork]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testCreateInviteReusesCurrentIdentityLinkAcrossServiceRestartWithoutNetwork]' passed (0.011 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardAuthenticationAlsoCoversPersonDayUpdates]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardAuthenticationAlsoCoversPersonDayUpdates]' passed (0.010 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardEvictsRevokedPausedAndRemovedPeopleAndStripsFoodsWhenScopeDrops]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardEvictsRevokedPausedAndRemovedPeopleAndStripsFoodsWhenScopeDrops]' passed (0.010 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardReusesSameDayAndCancelsOnDayChangeAndDeletion]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardReusesSameDayAndCancelsOnDayChangeAndDeletion]' passed (0.011 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardValueFailureCompletionAndExplicitRestart]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDashboardValueFailureCompletionAndExplicitRestart]' passed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDayRolloverDropsCachedDays]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDayRolloverDropsCachedDays]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeleteSecureFailureHidesInviteAndRetriesWithoutRemoteCall]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeleteSecureFailureHidesInviteAndRetriesWithoutRemoteCall]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeletionBeforeRemoteCommitPreservesEnabledState]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeletionBeforeRemoteCommitPreservesEnabledState]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeletionDuringCommittedDelayedUploadCannotRepopulateMetadata]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeletionDuringCommittedDelayedUploadCannotRepopulateMetadata]' passed (0.014 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeviceDisableOwnsGrantsSubscriptionAndDelayedUploadCleanup]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testDeviceDisableOwnsGrantsSubscriptionAndDelayedUploadCleanup]' passed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEffectiveTimezoneParticipatesInSnapshotHash]' started.
+2026-11-03 10:33:37.167858-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEffectiveTimezoneParticipatesInSnapshotHash]' passed (0.018 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEnableAndDeleteRetryJoinPendingCredentialCleanup]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEnableAndDeleteRetryJoinPendingCredentialCleanup]' passed (0.018 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEnableFinishesPendingCleanupBeforeAuthentication]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testEnableFinishesPendingCleanupBeforeAuthentication]' passed (0.020 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailedJoinedCredentialCleanupSettlesForLaterRetry]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailedJoinedCredentialCleanupSettlesForLaterRetry]' passed (0.014 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailedSecureMigrationRetainsLegacyTokenAndThrows]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailedSecureMigrationRetainsLegacyTokenAndThrows]' passed (0.016 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailureSettlesAndExplicitRecoveryUsesLatestLocalChange]' started.
+2026-11-03 10:33:37.256450-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFailureSettlesAndExplicitRecoveryUsesLatestLocalChange]' passed (0.019 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFoodUploadHashInvalidatesWhenEligibilityEndsAndReturns]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testFoodUploadHashInvalidatesWhenEligibilityEndsAndReturns]' passed (0.023 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testInviteSaveFailureAndExpiredCleanupAreExplicit]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testInviteSaveFailureAndExpiredCleanupAreExplicit]' passed (0.015 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testNewDayPublishesZeroAndHistoricalSelectionCannotChooseSharedDay]' started.
+2026-11-03 10:33:37.313118-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testNewDayPublishesZeroAndHistoricalSelectionCannotChooseSharedDay]' passed (0.017 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testNonSharedValueEvictsCachedDay]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testNonSharedValueEvictsCachedDay]' passed (0.010 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPausedConnectionBlocksFoodUpload]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPausedConnectionBlocksFoodUpload]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPersonDayUpdatesSkipsAuthenticationWhileIdentityIsUnchanged]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPersonDayUpdatesSkipsAuthenticationWhileIdentityIsUnchanged]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPurchaseDedupeResetsAfterIdentityDisable]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testPurchaseDedupeResetsAfterIdentityDisable]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testRemovePersonDropsCachedDay]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testRemovePersonDropsCachedDay]' passed (0.026 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testReopenedPersonReadsLastKnownDayAndOnlyForThatPersonAndDay]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testReopenedPersonReadsLastKnownDayAndOnlyForThatPersonAndDay]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testScopeRollbackDoesNotSubmitAnotherWrite]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testScopeRollbackDoesNotSubmitAnotherWrite]' passed (0.009 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSecureInviteMigrationColdLoadAndRevokeCleanup]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSecureInviteMigrationColdLoadAndRevokeCleanup]' passed (0.015 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSignOutAndDisabledSharingDropCachedDaysAndRefuseNewOnes]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSignOutAndDisabledSharingDropCachedDaysAndRefuseNewOnes]' passed (0.019 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testStaleAuthenticationCannotStartDashboardAfterDeletion]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testStaleAuthenticationCannotStartDashboardAfterDeletion]' passed (0.011 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testStaleDeviceDisableResponseCannotDisableReplacementIdentity]' started.
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testStaleDeviceDisableResponseCannotDisableReplacementIdentity]' passed (0.013 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSuccessfulScopeWriteWaitsForDashboardAndUploadsOnce]' started.
+2026-11-03 10:33:37.483201-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testSuccessfulScopeWriteWaitsForDashboardAndUploadsOnce]' passed (0.016 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testUploadOmitsFoodsWhenNobodyHasFoodSharingEnabled]' started.
+2026-11-03 10:33:37.502279-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testUploadOmitsFoodsWhenNobodyHasFoodSharingEnabled]' passed (0.017 seconds).
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testUploadRevertDrainsLatestSnapshotAndAcknowledgesFinalHash]' started.
+2026-11-03 10:33:37.519754-0600 cal-macro-tracker[46645:15387157] [Persistence] isolated sharing QA succeeded
+Test Case '-[cal_macro_trackerTests.SharingReliabilityTests testUploadRevertDrainsLatestSnapshotAndAcknowledgesFinalHash]' passed (0.019 seconds).
+Test Suite 'SharingReliabilityTests' passed at 2026-11-03 10:33:37.530.
+	 Executed 37 tests, with 0 failures (0 unexpected) in 0.611 (0.623) seconds
+Test Suite 'WeightAnalyticsTests' started at 2026-11-03 10:33:37.530.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testEmptyHistoryHasNoLatestOrTrend]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testEmptyHistoryHasNoLatestOrTrend]' passed (0.001 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testLatestAndTrendResolveOutOfOrderDuplicateDaysByRecordedDate]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testLatestAndTrendResolveOutOfOrderDuplicateDaysByRecordedDate]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testMovingAverageUsesAvailableValuesAndSkipsInvalidWeights]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testMovingAverageUsesAvailableValuesAndSkipsInvalidWeights]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testMovingAverageUsesSlidingWindowAcrossLongHistory]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testMovingAverageUsesSlidingWindowAcrossLongHistory]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeDoesNotMatchAdjacentCalendarDay]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeDoesNotMatchAdjacentCalendarDay]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeDoesNotUseAnArbitrarilyOldEntry]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeDoesNotUseAnArbitrarilyOldEntry]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeRequiresMatchingCalendarDay]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testSevenDayChangeRequiresMatchingCalendarDay]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testWeeklyRateNeedsValidEndpointsAndScalesByElapsedDays]' started.
+Test Case '-[cal_macro_trackerTests.WeightAnalyticsTests testWeeklyRateNeedsValidEndpointsAndScalesByElapsedDays]' passed (0.000 seconds).
+Test Suite 'WeightAnalyticsTests' passed at 2026-11-03 10:33:37.536.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.004 (0.006) seconds
+Test Suite 'WidgetAppearanceStorageTests' started at 2026-11-03 10:33:37.536.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testColorSelectionAcceptsOnlySixDigitSRGBHex]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testColorSelectionAcceptsOnlySixDigitSRGBHex]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testInvalidPersistedColorAndUnknownAccessDoNotUnlock]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testInvalidPersistedColorAndUnknownAccessDoNotUnlock]' passed (0.004 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testMissingAppGroupDefaultsCannotWriteOrGrant]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testMissingAppGroupDefaultsCannotWriteOrGrant]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testMissingOrUnsupportedRecordFailsClosed]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testMissingOrUnsupportedRecordFailsClosed]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testPhotoSelectionUsesOnlyGeneratedUUIDIdentity]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testPhotoSelectionUsesOnlyGeneratedUUIDIdentity]' passed (0.000 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testStorageRoundTripsAndReaderDoesNotRepairMissingRecord]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testStorageRoundTripsAndReaderDoesNotRepairMissingRecord]' passed (0.003 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testVersionedRecordRoundTripsValidatedSelectionAndAccess]' started.
+Test Case '-[cal_macro_trackerTests.WidgetAppearanceStorageTests testVersionedRecordRoundTripsValidatedSelectionAndAccess]' passed (0.000 seconds).
+Test Suite 'WidgetAppearanceStorageTests' passed at 2026-11-03 10:33:37.547.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.009 (0.011) seconds
+Test Suite 'WidgetBackgroundPhotoImportTests' started at 2026-11-03 10:33:37.548.
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testCommitWritesProtectedBackupExcludedPhotoAndRestoreDefaultRemovesIt]' started.
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testCommitWritesProtectedBackupExcludedPhotoAndRestoreDefaultRemovesIt]' passed (0.012 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testDeniedCommitLeavesSelectionNativeWithoutSelectionRecord]' started.
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testDeniedCommitLeavesSelectionNativeWithoutSelectionRecord]' passed (0.004 seconds).
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testReplacingPhotoRemovesOnlyPreviousOwnedPhoto]' started.
+Test Case '-[cal_macro_trackerTests.WidgetBackgroundPhotoImportTests testReplacingPhotoRemovesOnlyPreviousOwnedPhoto]' passed (0.006 seconds).
+Test Suite 'WidgetBackgroundPhotoImportTests' passed at 2026-11-03 10:33:37.571.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.022 (0.023) seconds
+Test Suite 'cal-macro-trackerTests.xctest' passed at 2026-11-03 10:33:37.571.
+	 Executed 228 tests, with 0 failures (0 unexpected) in 4.953 (5.037) seconds
+Test Suite 'Selected tests' passed at 2026-11-03 10:33:37.571.
+	 Executed 228 tests, with 0 failures (0 unexpected) in 4.953 (5.037) seconds
+2026-11-03 10:33:37.887 xcodebuild[46465:15385850] [MT] IDETestOperationsObserverDebug: 13.652 elapsed -- Testing started completed.
+2026-11-03 10:33:37.887 xcodebuild[46465:15385850] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-03 10:33:37.887 xcodebuild[46465:15385850] [MT] IDETestOperationsObserverDebug: 13.652 sec, +13.652 sec -- end
+
+Test session results, code coverage, and logs:
+	/tmp/state-fix-health-ipad-final.xcresult
+
+** TEST SUCCEEDED **
+
+Testing started
