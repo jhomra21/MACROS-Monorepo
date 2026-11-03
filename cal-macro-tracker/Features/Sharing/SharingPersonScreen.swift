@@ -15,6 +15,7 @@ struct SharingPersonScreen: View {
     @State private var errorMessage: String?
     @State private var scopeSelection: SharingScopeSelection
     @State private var showingRemovalConfirmation = false
+    @State private var isRemovingPerson = false
     @State private var showingProUpgrade = false
 
     /// Roster membership owns availability. The captured person supplies identity, never fallback data.
@@ -171,19 +172,45 @@ struct SharingPersonScreen: View {
                 }
             }
         }
+        .disabled(isRemovingPerson)
+        .confirmationDialog(
+            "Remove \(displayName)?",
+            isPresented: $showingRemovalConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Remove Person", role: .destructive) {
+                guard self.currentPerson != nil else { return }
+                isRemovingPerson = true
+                Task {
+                    do {
+                        try await sharing.removePerson(person.profileId, ownerDay: dayContext.today)
+                        dismiss()
+                    } catch {
+                        isRemovingPerson = false
+                        if self.currentPerson != nil { errorMessage = error.localizedDescription }
+                    }
+                }
+            }
+        } message: {
+            Text(
+                "This removes the relationship for both people. Anyone with your invite link can reconnect until it expires or you revoke it in Sharing settings."
+            )
+        }
     }
 
     var body: some View {
         Group {
             if let currentPerson {
                 personDetails(currentPerson)
+            } else if isRemovingPerson {
+                ProgressView("Removing person…")
             } else if sharing.shouldShowDashboardLoading {
                 ProgressView("Loading sharing…")
             } else {
                 ContentUnavailableView(
-                    sharing.dashboardErrorMessage == nil ? "Person removed" : "Person unavailable",
+                    sharing.dashboardErrorMessage == nil ? "No longer available" : "Person unavailable",
                     systemImage: "person.crop.circle.badge.xmark",
-                    description: Text("This sharing connection is no longer available.")
+                    description: Text("This person was removed or sharing was turned off on this device.")
                 )
             }
         }
@@ -192,26 +219,6 @@ struct SharingPersonScreen: View {
         .errorBanner(message: $errorMessage, title: "Sharing Failed")
         .sheet(isPresented: $showingProUpgrade) {
             ProPaywallSheet(context: .sharingInvites)
-        }
-        .confirmationDialog(
-            "Remove \(displayName)?",
-            isPresented: $showingRemovalConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Remove Person", role: .destructive) {
-                Task {
-                    do {
-                        try await sharing.removePerson(person.profileId, ownerDay: dayContext.today)
-                        dismiss()
-                    } catch {
-                        errorMessage = error.localizedDescription
-                    }
-                }
-            }
-        } message: {
-            Text(
-                "This removes the relationship for both people. Anyone with your invite link can reconnect until it expires or you revoke it in Sharing settings."
-            )
         }
         .task(
             id:
@@ -258,7 +265,7 @@ struct SharingPersonScreen: View {
     }
 
     private func updateScope(_ scope: SharingOutgoingScope) {
-        guard scope != .macrosAndFoods || !isPaused, scopeSelection.beginWrite(scope) else { return }
+        guard currentPerson != nil, scope != .macrosAndFoods || !isPaused, scopeSelection.beginWrite(scope) else { return }
         Task {
             do {
                 try await sharing.setOutgoingScope(
@@ -269,7 +276,7 @@ struct SharingPersonScreen: View {
                 )
                 scopeSelection.confirmWrite(scope)
             } catch {
-                errorMessage = error.localizedDescription
+                if currentPerson != nil { errorMessage = error.localizedDescription }
                 scopeSelection.rejectWrite()
             }
         }
