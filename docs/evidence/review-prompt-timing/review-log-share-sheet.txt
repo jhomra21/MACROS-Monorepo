@@ -1,0 +1,6 @@
+2026-11-03 13:34:10.476 Df cal-macro-tracker[13450:f5b6e3] [juan-test.cal-macro-tracker:AppReview] Review request waiting for two seconds of idle Today.
+2026-11-03 13:34:12.547 Df cal-macro-tracker[13450:f5b6e3] [juan-test.cal-macro-tracker:AppReview] Requesting App Store review after two seconds of idle Today.
+2026-11-03 13:39:52.959 Df cal-macro-tracker[16588:f61ace] [juan-test.cal-macro-tracker:AppReview] Review request waiting for two seconds of idle Today.
+2026-11-03 13:39:55.044 Df cal-macro-tracker[16588:f61ace] [juan-test.cal-macro-tracker:AppReview] Review idle wait cancelled; request remains pending.
+2026-11-03 13:40:38.631 Df cal-macro-tracker[16588:f61ace] [juan-test.cal-macro-tracker:AppReview] Review request waiting for two seconds of idle Today.
+2026-11-03 13:40:40.724 Df cal-macro-tracker[16588:f61ace] [juan-test.cal-macro-tracker:AppReview] Requesting App Store review after two seconds of idle Today.

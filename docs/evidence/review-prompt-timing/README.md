@@ -96,3 +96,11 @@ No new unit tests were written. Final implementation review found no duplicated 
 `shared-person-overlap.txt` contains the requested
 `git diff --name-only origin/main...origin/feat/shared-person-widget` output.
 Overlapping source files are **AppRootView.swift** (one modifier call) and **SettingsScreen.swift** (four-line About link). `changes-log.md` overlaps as history only. No project-file or camera changes.
+
+## Share sheet follow-up
+
+Device-local time is UTC−06:00. On 2026-11-03, RED began waiting at 13:34:10.476 and requested review at 13:34:12.547 while the system share sheet was open. `red-share-sheet.png` and `red-share-sheet-followup.mp4` show the prompt over the sheet.
+
+On the fixed build, the wait began at 13:39:52.959 and was cancelled at 13:39:55.044 while sharing. After the share sheet closed, the wait restarted at 13:40:38.631 and requested review at 13:40:40.724, 2.093 seconds later. `green-share-sheet-open.png` shows the unobstructed sheet; `green-share-sheet-after.png` and `green-share-sheet-followup.mp4` show the prompt after returning to Today. The AppReview log is in `review-log-share-sheet.txt`. No review was submitted.
+
+To repeat: install the Debug build, complete onboarding, load Developer → Load Demo Data, then stop the simulator and set `reviewPromptedAppVersion` to `qa-other-version` and `reviewLastRequestedAt` to 15 days ago in the app’s preferences plist. Reboot, open Add Food → Apple, and tap **Log Food** followed immediately by the dashboard Share toolbar button with no settle between presses. RED shows the prompt over sharing. With the fixed build, keep the share sheet open beyond two seconds, verify it remains unobstructed, close it, and observe the prompt about two seconds after returning to Today.

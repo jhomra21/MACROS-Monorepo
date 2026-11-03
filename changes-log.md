@@ -1,7 +1,5 @@
 # Changes Log
 
-- 2026-11-03: Review requests now wait for two continuous idle seconds on root Today, stay pending when interrupted, and respect a persisted 14-day gap plus the existing engagement/version gates. Added the Settings App Store review link. RED/GREEN captures: `docs/evidence/review-prompt-timing/`; format/build and 229 serial non-StoreKit iPad tests passed.
-
 `changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
 
 Detailed implementation trackers live in `implementation-trackers/`:
@@ -13,6 +11,7 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+- 2026-11-03: Root Today idle now excludes the dashboard share sheet, failure alert, and share preparation. Review requests wait for two continuous idle seconds, stay pending when interrupted, and respect a persisted 14-day gap plus the existing engagement/version gates. Added the Settings App Store review link. RED/GREEN evidence: `docs/evidence/review-prompt-timing/`; format/build and 229 serial non-StoreKit iPad tests passed.
 - 2026-11-03: Fixed state-machine suspects 01–04: current-quantity nutrient repair writeback, Health history replay after backup replacement, post-authorization Pro/read checks, and serialized backup decode/export. Live RED/GREEN evidence is in `docs/evidence/state-machine-fixes-2/`; formatting/build and 228 serial non-StoreKit iPad tests passed.
 - 2026-11-02: Camera result cards no longer reflow when servings change: the title has independent width, macro numbers stay readable, and per-serving/total text occupy separate lines. Shared food rows and untinted Liquid Glass are unchanged. Build/format and 960 layout measurements pass; red/green and caller-regression evidence is in `docs/evidence/camera-card-layout-shift/`. Full iPad suite is queued behind another worker's simulator lock.
 - 2026-11-02: Camera result-layout animations now wait for the presentation to finish, so provisional first measurements cannot animate the viewport in from the left during the Add Food zoom. Reverted the ineffective source modifier-order change; later result sizing, staged reveal, Reduce Motion, compact mode, and dismissal are preserved.
