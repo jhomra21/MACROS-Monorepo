@@ -322,7 +322,7 @@ final class SharingSyncService {
         let removed = widgetControl.people.contains { !currentIds.contains($0.id) }
         let denied = Set(dashboard.people.filter { !$0.incomingActive || $0.connectionPaused }.map(\.profileId))
         let newlyDenied = !denied.subtracting(deniedWidgetProfileIds.union(deniedPersonDayProfileIds)).isEmpty
-        deniedPersonDayProfileIds.subtract(deniedWidgetProfileIds.subtracting(denied))
+        deniedPersonDayProfileIds.formIntersection(denied)
         deniedWidgetProfileIds = denied
         widgetControl.people = people
         if let defaultWidgetProfileId, !currentIds.contains(defaultWidgetProfileId) {
@@ -577,7 +577,7 @@ final class SharingSyncService {
     ) throws {
         guard let widgetStorage else { return }
         // Entitlement changes can invalidate this same app-written file.
-        let current = try widgetStorage.loadControl()
+        let current = (try? widgetStorage.loadControl()) ?? nil
         var next = proposed
         next.generation = current?.generation ?? proposed.generation
         next.enabled = isDeviceSharingEnabled

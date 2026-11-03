@@ -27,7 +27,8 @@ nonisolated struct SharedPersonWidgetStorage: Sendable {
 
     /// App-side invalidation for credential replacement or a newly denied Pro record.
     func invalidate(disabling: Bool = false) throws {
-        var control = try loadControl() ?? SharedPersonWidgetControl()
+        let current = (try? loadControl()) ?? nil
+        var control = current ?? SharedPersonWidgetControl()
         control.generation = UUID()
         if disabling {
             control.enabled = false
