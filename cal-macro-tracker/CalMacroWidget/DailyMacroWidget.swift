@@ -187,9 +187,9 @@ struct DailyMacroWidgetContentView: View {
                 MacroRingSetView(
                     totals: entry.snapshot.totals,
                     goals: entry.snapshot.goals,
-                    ringDiameter: personName == nil ? 80 : min(64, max(40, geometry.size.height - 96)),
-                    centerValueFontSize: 18,
-                    minimumLineWidth: 5,
+                    ringDiameter: personName == nil ? 80 : min(64, max(52, geometry.size.height - 80)),
+                    centerValueFontSize: personName == nil ? 18 : 14,
+                    minimumLineWidth: personName == nil ? 5 : 4,
                     showsGoalSubtitle: false,
                     colorStyle: ringColorStyle,
                     usesGlassEffect: false
