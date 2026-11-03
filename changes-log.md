@@ -14,6 +14,14 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - 2026-11-02: Camera result-layout animations now wait for the presentation to finish, so provisional first measurements cannot animate the viewport in from the left during the Add Food zoom. Reverted the ineffective source modifier-order change; later result sizing, staged reveal, Reduce Motion, compact mode, and dismissal are preserved.
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
+## 2026-11-03 Shared-person widget fix round 2 (branch only)
+
+- NB1: preserve raw personal-widget/photo-import Pro access; scope expiry to shared widgets, carry billing-grace deadlines and unknown renewal state, and allow 24 hours for verified auto-renewals the app has not observed.
+- NS1/NS2: prune unconfirmed person-day denials after computing new denials so same-day re-share/revoke invalidates again; publishing/sign-out can overwrite undecodable control files.
+- Review nits 1–10: reload shared Home Screen appearance, retry in-flight invalidation in 30 minutes, treat nil selection as Default, restore inline Offline, cap response reads, log migration failure without blocking legacy auth, preserve generation on Default changes, clear future-entry layouts/access, inject the preview sharing service, and handle disabled person links.
+- Owner decision pending: shared Home Screen widgets currently reuse the personal widget background; no product approval is inferred from that implementation.
+- Validation: 232 serial non-StoreKit iPad and 20 backend tests, build/format/JS lint passed; A grace/background and final-source Test B checks plus ring-change provider reload were captured, slim verification passed, used simulators were shut down and locks released (`docs/evidence/shared-person-widget-e2e/fix-round-2/REPORT.md`). Test B has no macros today; no fresh live nutrition/ring-color or sandbox renewal pass is claimed.
+
 ## 2026-11-02 Shared-person widgets (branch only, not released)
 
 - Fix round 1, B1/S1/S6 and nit 7: migration runs lazily for each token-exchange attempt, preserves widget control on failure, repairs duplicate group bytes from the legacy identity, verifies before persistent-reference legacy deletion, and cannot block identity cleanup on a widget-file failure. Identity constants now have one source.

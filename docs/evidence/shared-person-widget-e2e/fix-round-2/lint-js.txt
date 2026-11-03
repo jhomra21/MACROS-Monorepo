@@ -1,0 +1,3 @@
+"tools/oxlint/node_modules/oxlint/bin/oxlint" --config .oxlintrc.json
+Found 0 warnings and 0 errors.
+Finished in 1.1s on 93 files with 116 rules using 12 threads.

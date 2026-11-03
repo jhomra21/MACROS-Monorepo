@@ -1,0 +1,30 @@
+Final source: 102ccf9, plus NB1 359a54c and NS1/NS2 a3bac47.
+
+PASS make quality-format-check (exit 0)
+PASS DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer make quality-build (exit 0)
+PASS make lint-js (exit 0; 93 files, zero warnings/errors)
+PASS cd convex-backend && bun run check (exit 0; 20 pass, 0 fail, 37 expectations)
+PASS full iPad suite (232 passed, 0 failed, 0 skipped; StoreKit class excluded)
+PASS final hook-free make quality-build after diagnostic removal (exit 0, BUILD SUCCEEDED)
+PASS git diff --check
+PASS developer settings and slim-profile files exactly match committed source
+
+Full serial suite command:
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB' -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests -resultBundlePath /tmp/shared-widget-r2-suite.xcresult test
+
+Primary local result: /tmp/shared-widget-r2-suite.xcresult
+Compact primary result: ipad-suite-summary.json
+Full logs local: /tmp/shared-widget-r2-{format,build,lint,backend,suite,final-build}.log
+Test source was hook-free when the suite ran. The final rebuild restores that same source.
+No new unit tests; three existing test methods were adjusted before the implementation.
+Backend integration suite and disposable HTTP smoke were not rerun (no backend changes).
+Real StoreKit sandbox grace/renewal and signed hardware remain unverified.
+Test B live no-data state and ring-triggered timeline rebuild are not a visual nutrition-ring pass.
+
+Simulator A was restored to native background/default ring colors, ordinary Debug Pro,
+and the unchanged committed slim profile, then shut down and its lock released.
+The iPad was shut down/released at suite completion; later use of its new lock by
+another worker was left untouched.
+
+Scoped secret scan covers the fix delta and every delivered text artifact. A full
+threat-model security audit was not run (the repository has no configured model).

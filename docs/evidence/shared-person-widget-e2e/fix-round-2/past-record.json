@@ -1,0 +1,16 @@
+{
+  "widgetAppearance.selection.v1": {
+    "background": {
+      "color": {
+        "hex": "#243B6B"
+      }
+    },
+    "version": 1
+  },
+  "widgetAppearance.proAccess.v1": {
+    "access": "allowed",
+    "expiration": 815411926.120261,
+    "version": 1
+  },
+  "capturedAtUTC": "2026-11-03T16:19:46.481952+00:00"
+}

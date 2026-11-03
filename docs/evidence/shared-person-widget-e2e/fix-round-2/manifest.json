@@ -1,0 +1,112 @@
+[
+  {
+    "file": "00-personal-native-before.png",
+    "bytes": 3524633,
+    "sha256": "a196375ca9f139e60a8d21747569a5cc4eebe859b6a0c57462fc995a7ee78a4a"
+  },
+  {
+    "file": "01-personal-past-expiry-grace.png",
+    "bytes": 3378326,
+    "sha256": "b7196be290e27f22f74bb8fe3625657d860954fb5dda40388a1ad4519694eeda"
+  },
+  {
+    "file": "02-shared-expired-record.png",
+    "bytes": 3089148,
+    "sha256": "476fcbce7f3990d25a4bae1d9d4106a473c0a96cc89002cc9073ffadff79c53c"
+  },
+  {
+    "file": "03-shared-test-b-final-source.png",
+    "bytes": 3092695,
+    "sha256": "0641a1c45bf05523f54bdac64e6689cb97b415160291c99c652a4e5e36fa8cb9"
+  },
+  {
+    "file": "04-ring-color-picker.png",
+    "bytes": 578299,
+    "sha256": "9b400cfda9741d6f82e19ca454cb201a9609d7f14f03a40b3802c74611779cf9"
+  },
+  {
+    "file": "05-ring-color-setting.png",
+    "bytes": 529556,
+    "sha256": "4aaf33d6dc795ebf4c781c72a148f66ac8e2c9e67ff00ac6c8d8666be315c782"
+  },
+  {
+    "file": "06-shared-after-ring-change.png",
+    "bytes": 3096003,
+    "sha256": "6231b09710a44e46927d04df9c41beea64f88ec8a25ae49e2139a1123969a994"
+  },
+  {
+    "file": "REPORT.md",
+    "bytes": 12675,
+    "sha256": "4291b89df9bf19fc40c921677778fb02c5a38a3f4417f6076ac4594f37ae7f63"
+  },
+  {
+    "file": "backend-check.txt",
+    "bytes": 2128,
+    "sha256": "9f507ee0975163ba6ed691893fad3f564a6e2203c1507652217c20323d13c0f7"
+  },
+  {
+    "file": "format-check.txt",
+    "bytes": 105,
+    "sha256": "bb4f035b542ff7e53253a9a130554f057f5ccc29e913a85c39bf084f639d7748"
+  },
+  {
+    "file": "grace-probe.txt",
+    "bytes": 334,
+    "sha256": "51592855129fe7778f2c50ab13e145a48cbfe579845f7fa1b07ee89fd82d00b0"
+  },
+  {
+    "file": "ipad-suite-summary.json",
+    "bytes": 1236,
+    "sha256": "8b8b655459986cda1597cf361d4d34d5cae90f71d77111fa1eeb76f848485b5e"
+  },
+  {
+    "file": "lint-js.txt",
+    "bytes": 163,
+    "sha256": "25e7c5f1f0ef28ba7436f8c5795f341e36b91d6aeed5f8b7caa5299b47cd12aa"
+  },
+  {
+    "file": "past-record.json",
+    "bytes": 314,
+    "sha256": "081ff4102a3a4ca0b01b4c6f6546673888fd85eaa26f264cf0b57487caf123a8"
+  },
+  {
+    "file": "restored-appearance.json",
+    "bytes": 263,
+    "sha256": "63a58564f1c3e2a7b0ba1d75d17818c810b28b75277c9872b1a2cc9bbd8d076d"
+  },
+  {
+    "file": "ring-action.json",
+    "bytes": 276,
+    "sha256": "9c79763327d582a76b1cde0fa265bf5c492d8843d91784f5d640d2b2831df013"
+  },
+  {
+    "file": "ring-after-extension.txt",
+    "bytes": 2556,
+    "sha256": "afc81e3b3521318bf7489adb8a79d29e98dca5b8116eda4e3e8798a1c62f9a2b"
+  },
+  {
+    "file": "ring-before-extension.txt",
+    "bytes": 3111,
+    "sha256": "a8197cee09e577dc5199a9ceafe57699f35ab6172202dab93b5f6f9762c670fd"
+  },
+  {
+    "file": "secret-scan.txt",
+    "bytes": 379,
+    "sha256": "2ca4cc28b047cc9b46ba7eb2b6ec206f934585043d9262cb28914dec8cd99138"
+  },
+  {
+    "file": "simslim-restore.txt",
+    "bytes": 365,
+    "sha256": "20c231b092b629c6e08f0301ac00339fe5af8bd299d149445964a1bbcbe1f0db"
+  },
+  {
+    "file": "simslim-verify.txt",
+    "bytes": 102,
+    "sha256": "c039f4f6762a8b3f1d129f147be49211b77abb5b71f4a1528d5bb73ac96d221b"
+  },
+  {
+    "file": "validation.txt",
+    "bytes": 2274,
+    "sha256": "fe7477959632b9c40c9d0ccdd3ca62e19dc274715acffa2526e1bc3d62acde5b"
+  }
+]

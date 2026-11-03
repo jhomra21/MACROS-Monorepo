@@ -3,7 +3,8 @@
 Work in progress on `feat/shared-person-widget`, base `8ebd989` (build 28).
 This is not a release sign-off.
 
-The current fixes and new evidence are in [fix round 1](fix-round-1/REPORT.md).
+The current fixes and new evidence are in [fix round 2](fix-round-2/REPORT.md).
+The earlier fixes are in [fix round 1](fix-round-1/REPORT.md).
 The sections below describe the earlier validation, not new proof.
 
 ## Live results
