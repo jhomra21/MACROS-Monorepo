@@ -1,0 +1,26 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 21 visible nodes
+Simulator AX snapshot unavailable (app-window-not-full-screen); used XCTest for this capture, while the app window did not fill the screen; XCTest geometry for a windowed app can also be offset from the screen.
+@e1 [application] "MACROS"
+@e2 [other] "Toolbar"
+@e3 [other] "Sharing"
+@e4 [navigation-bar] "Sharing"
+@e5 [text] "Suspect Peer"
+@e6 [collection]
+  [content below collection hidden]
+@e7 [cell] "Today"
+@e8 [other] "Today"
+@e9 [cell] "222"
+@e10 [other] "222"
+@e11 [text] "C 10 g"
+@e12 [text] "F 8 g"
+@e13 [cell] "What Suspect Peer sees from you"
+@e14 [other] [same label as parent]
+@e15 [cell] "What Suspect Peer sees from you"
+@e16 [other] [same label as parent]
+@e17 [segmented-control] [same label as parent]
+@e18 [button] "Macros"
+@e19 [button] "Macros + Foods" [selected]
+@e20 [cell] "Remove Suspect Peer"
+@e21 [toolbar] "Toolbar"

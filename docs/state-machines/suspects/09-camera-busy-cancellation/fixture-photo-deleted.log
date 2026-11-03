@@ -1,0 +1,33 @@
+Page: com.apple.mobileslideshow
+App: com.apple.mobileslideshow
+Snapshot: 29 visible nodes
+@e1 [other] "Photos"
+@e2 [navigation-bar] "PXCuratedLibraryUIView" [covered]
+@e3 [other] "Library, 6 Photos"
+@e4 [button] "Sort and Filter"
+@e5 [button] "Select"
+@e6 [button] "Search"
+@e7 [scroll-area] "content_scroll_view" [scrollable]
+  [content below scroll-area hidden]
+@e8 [other] "PXCuratedLibraryLayout-Group"
+@e9 [other] "PXCuratedLibraryZoomableLayout-Group"
+@e10 [other] "PXGZoomLayout-Group"
+@e11 [other] "PXGDecoratingLayout-Group"
+@e12 [other] "Photo, Photo, Photo, Photo, Photo, Photo"
+@e13 [image] "Photo"
+@e14 [image] "Photo"
+@e15 [image] "Photo"
+@e16 [image] "Photo"
+@e17 [image] "Photo"
+@e18 [image] "Photo"
+@e19 [other] "Date range"
+@e20 [segmented-control]
+@e21 [button] "Years"
+@e22 [button] "Months"
+@e23 [button] "All Photos" [selected]
+@e24 [toolbar] "Toolbar"
+@e25 [button] "Toggle sidebar"
+@e26 [button] "Library" [selected]
+@e27 [button] "Library" [selected]
+@e28 [button] "Collections"
+@e29 [button] "Collections"

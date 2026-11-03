@@ -1,0 +1,16 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 11 nodes
+Detected an overly complex or slow accessibility tree. Fell back to the private-ax snapshot backend. It is OK to continue; use --json to inspect snapshotQuality.reason if you need recovery details.
+Simulator AX snapshot unavailable (foreground-owner-unverified); used XCTest for this capture, while another surface owned the foreground.
+@e1 [application] "MACROS"
+@e2 [scroll-area] [scrollable]
+@e3 [activity-indicator] "1"
+@e4 [activity-indicator] "1"
+@e5 [text] "Looking for a barcode…"
+@e6 [button] "Choose a Photo" [disabled]
+@e7 [button] "Collapse camera options"
+@e8 [button] "Flash Unavailable" [disabled]
+@e9 [button] "Close camera"
+@e10 [button] "Photograph nutrition label" [disabled]
+@e11 [toolbar] "Toolbar"

@@ -1,0 +1,8 @@
+1793704025.352264 invite call 1
+1793704025.957573 invite committed 1
+1793704025.9605808 pause invite-delay begin
+1793704029.901119 invite call 2
+1793704030.2991939 invite committed 2
+1793704030.323895 invite saved 2
+1793704089.026185 pause invite-delay end cancelled=false
+1793704089.0443249 invite saved 1

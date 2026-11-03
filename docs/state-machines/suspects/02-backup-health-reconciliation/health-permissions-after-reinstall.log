@@ -1,0 +1,16 @@
+Page: com.apple.Health
+App: com.apple.Health
+Snapshot: 11 visible nodes
+Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation.
+@e1 [application] "Health"
+@e2 [window] "dismiss popup"
+@e3 [other] "dismiss popup"
+@e4 [navigation-bar] "Back"
+@e5 [button] "Back"
+@e6 [text] "Apps"
+@e7 [collection] "None"
+  [content below collection hidden]
+@e8 [cell] "None"
+@e9 [other] "None"
+@e10 [text] "As apps request permission to update your Health data, they will be added to the list."
+@e11 [toolbar] "Toolbar"

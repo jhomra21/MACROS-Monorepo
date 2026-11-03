@@ -1,0 +1,18 @@
+1793704920.972333 camera before phase=scanning inactive=false
+1793704920.9728498 camera after phase=scanning inactive=false
+1793704938.406281 camera before phase=scanning inactive=false
+1793704938.406722 camera after phase=library inactive=false
+1793705000.042717 camera before phase=library inactive=false
+1793705000.043257 camera after phase=library inactive=false
+1793705000.584347 camera before phase=library inactive=false
+1793705000.584755 camera after phase=readingLabel inactive=false
+1793705000.5849771 camera before phase=readingLabel inactive=false
+1793705000.5851688 camera after phase=readingLabel inactive=false
+1793705000.622488 pause camera-delay begin
+1793705028.498605 camera before phase=readingLabel inactive=false
+1793705028.499021 camera after phase=readingLabel inactive=true
+1793705029.09206 camera before phase=readingLabel inactive=true
+1793705029.092389 camera after phase=readingLabel inactive=true
+1793705029.097193 pause camera-delay end cancelled=true
+1793705032.180948 camera before phase=scanning inactive=false
+1793705032.1812901 camera after phase=scanning inactive=false

@@ -1,0 +1,6 @@
+1793704438.486206 pause onboarding-delay begin
+1793704470.2141051 pause onboarding-delay end cancelled=false
+1793705324.9684749 pause onboarding-delay begin
+1793705340.8940082 pause onboarding-delay end cancelled=false
+1793705340.8969111 onboarding settings returned cancelled=false status=2
+1793705364.037909 onboarding disappear busy=true

@@ -1,0 +1,23 @@
+iPhone A original app restoration and profile verification (captured earlier):
+## r169 Execute Restore uninstrumented iPhone test app (266 B)
+exitCode: 0
+output:
+Opened: juan-test.cal-macro-tracker
+Session state: /Users/juan/.t3/userdata/device/agent-device/sessions/t3-9554659b8909b1d4dcfa6980
+
+918D29B9-97D3-42C0-9C47-00605E01E8DB matches the profile: all expected disable overrides are applied.
+
+iPad original app reinstalled; profile restoration/verification:
+Slimming E91B597B-CE57-4C0B-A8A4-51CBDC3386AB: disabling 110 background services. The simulator will reboot to apply the changes.
+Shutting the simulator down to reconfigure it offline...
+Reconfiguring 5 background services while the simulator is off...
+Booting the simulator (a first boot can take up to a minute)...
+Done. Simulator reconfigured and rebooted slim.
+E91B597B-CE57-4C0B-A8A4-51CBDC3386AB matches the profile: all expected disable overrides are applied.
+
+Final read-only checks:
+918D29B9-97D3-42C0-9C47-00605E01E8DB state=Shutdown lockExists=False
+E91B597B-CE57-4C0B-A8A4-51CBDC3386AB state=Shutdown lockExists=False
+privateCredentialDirectoryExists=False
+
+Source checks exited 0: app equals pinned origin/main; backend unchanged; git diff --check clean.

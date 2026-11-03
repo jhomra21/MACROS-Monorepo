@@ -1,0 +1,41 @@
+import subprocess,pathlib,sys,json,sqlite3,shutil
+U='E91B597B-CE57-4C0B-A8A4-51CBDC3386AB'
+root=pathlib.Path(subprocess.check_output(['xcrun','simctl','get_app_container',U,'juan-test.cal-macro-tracker','data'],text=True).strip())
+cmd,*args=sys.argv[1:]
+if cmd=='arm':
+    (root/'tmp'/('suspect-'+args[0])).write_text(args[1]);print('Armed '+args[0]+'='+args[1])
+elif cmd=='trace':
+    p=root/'tmp/suspects-trace.log';lines=p.read_text().splitlines()
+    if args: lines=[l for l in lines if any(k in l for k in args)]
+    print('\n'.join(lines[-120:]))
+elif cmd=='save-trace':
+    lines=(root/'tmp/suspects-trace.log').read_text().splitlines()
+    pathlib.Path(args[0]).write_text('\n'.join(l for l in lines if any(k in l for k in args[1:]))+'\n')
+elif cmd=='hashes':
+    values=[(root/f'tmp/invite-hash-{i}.private').read_text() for i in (1,2)]
+    pathlib.Path('/tmp/state-suspects-private/invite-hashes.json').write_text(json.dumps(values))
+    print('Copied two invite hashes privately; values not emitted.')
+elif cmd=='backup-files':
+    x=json.loads(pathlib.Path('/tmp/suspects-demo-backup.json').read_text())
+    for name,n in [('Slow-A',11),('Fast-B',22)]:
+        y=dict(x);y['logEntries']=x['logEntries'][:n];y['weightEntries']=[]
+        y['exportedAt']='2026-11-01T00:00:00.000Z' if name=='Slow-A' else '2026-11-02T00:00:00.000Z'
+        (root/'Documents').mkdir(exist_ok=True)
+        (root/f'Documents/{name}.json').write_text(json.dumps(y))
+    print('Wrote synthetic backup files in app Documents.')
+elif cmd=='db':
+    group=subprocess.check_output(['xcrun','simctl','get_app_container',U,'juan-test.cal-macro-tracker','groups'],text=True).strip().split('\t')[-1]
+    stores=list(pathlib.Path(group).rglob('*.store'))
+    for p in stores:
+        c=sqlite3.connect('file:'+str(p)+'?mode=ro',uri=True)
+        for t in ('ZWEIGHTENTRY','ZLOGENTRY'):
+            try:
+                if t=='ZWEIGHTENTRY': print('WEIGHTS',c.execute('select ZSOURCERAW, count(*) from ZWEIGHTENTRY group by ZSOURCERAW').fetchall())
+                else: print('REPAIR',c.execute("select ZFOODNAME,ZSERVINGSCONSUMED,ZFIBERPERSERVING,ZFIBERCONSUMED,ZSECONDARYNUTRIENTBACKFILLSTATERAW from ZLOGENTRY where ZSOURCE='common'").fetchall()[:10])
+            except sqlite3.Error as e: print(str(e))
+elif cmd=='prefs':
+    import plistlib
+    p=root/'Library/Preferences/juan-test.cal-macro-tracker.plist'
+    d=plistlib.loads(p.read_bytes())
+    for k in args: print(k, ('present' if isinstance(d.get(k),bytes) else d.get(k)))
+elif cmd=='root': print(root)

@@ -1,0 +1,13 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 9 nodes
+Simulator AX snapshot unavailable (foreground-owner-unverified); used XCTest for this capture, while another surface owned the foreground.
+@e1 [application] "MACROS"
+@e2 [other] "Toolbar"
+@e3 [other] "Close camera"
+@e4 [scroll-area] "Scan" [scrollable]
+@e5 [cell] "Scan"
+@e6 [text] "Camera unavailable. Choose a photo to scan a barcode or nutrition label."
+@e7 [button] "Photograph nutrition label"
+@e8 [button] "More camera options"
+@e9 [toolbar] "Toolbar"

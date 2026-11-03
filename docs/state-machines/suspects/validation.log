@@ -1,0 +1,34 @@
+2026-11-03 validation, documentation-only investigation follow-up
+
+PASS: uninstrumented Debug simulator build, /tmp/state-suspects-build.log contains BUILD SUCCEEDED.
+PASS: temporary DEBUG instrumentation builds, including final cleanup fixture build.
+These are compilation results, not XCTest results.
+
+PASS: live UI attempts 01-10, with linked screenshots, nonsecret traces, and store/backend checks.
+STATIC ONLY: widget 11 at fetched origin/feat/shared-person-widget 50fa3b90e95d3f5341f4aba7d47fe74e14c855d6.
+PASS: both fresh dev profile deletion calls completed; dashboard rejected both existing tokens afterward.
+PASS: fixture-owned local invite token removed; sharing false, upload idle, Health read setting false.
+PASS: private profile credentials/hashes and identity override removed.
+PASS: original apps restored; owned simulators shutdown, locks released, committed simslim profile verified.
+Native Health Apps access list was empty after original app reinstallation.
+
+PASS: git diff --exit-code origin/main -- cal-macro-tracker
+PASS: git diff --exit-code -- convex-backend
+PASS: git apply --check docs/state-machines/suspects/temporary-hooks.patch.txt
+The documentation patch has normalized blank context-line whitespace and still applies cleanly.
+
+PASS: node docs/state-machines/verify.mjs
+159 files; 66 inventory IDs; 8 models; 243 local links; failures=[].
+Largest artifact: suspects/04-backup-decode-overlap/stale-summary.png, 857914 bytes, below 5 MB.
+Byte total changes slightly with this validation record itself.
+
+PASS: artifact text scan of 62 files found no JWT-like literal, fresh profile-key literal,
+credential value, non-dummy invite token, or unreviewed 64-character hash literal.
+Screenshots were reviewed separately; the early blank upload-relaunch screenshot is explicitly not recovery proof.
+
+PASS: git diff --check
+Initial staged whitespace check found extra blank EOF lines in ten captured UI logs.
+Those log endings were normalized without changing evidence; staged whitespace is checked again before commit.
+
+Not run: full XCTest suite, unit tests, physical-device tests, production reproduction, deployment.
+No app fix or subagent was requested or used.

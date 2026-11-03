@@ -113,6 +113,8 @@ Primary [Apple access-group documentation](https://developer.apple.com/documenta
 
 ## Unconfirmed follow-ups, excluded from the confirmed count
 
+This list preserves the original static triage. The [live follow-up results](suspects/README.md) now supersede its investigation status: seven behaviors reproduced with the documented timing/policy limits, three suspected user-facing failures were not reproduced in attempted paths, and the widget item remains static-only. The original model-conflict count above is unchanged.
+
 1. **Repair stale writeback:** `Data/Services/SecondaryNutrientRepairExecution.swift:111–164` accumulates repairs across awaits; lines 168–200 re-find by ID but do not validate the original source/quantity version. Reproduce an edit to an earlier entry while a later lookup waits before deciding whether a version guard is needed.
 2. **Backup/Health reconciliation:** `Features/Backup/BackupImporter.swift:210–223` replaces weights; `Features/Health/HealthKitService.swift:273–306` independently retains/advances `healthWeightAnchor`. `BackupSettingsSection.swift:129–137` refreshes widgets/sharing/reminders but not Health reconciliation. Determine whether imported Health UUIDs/backup semantics intentionally define a reset boundary before calling missing historical re-import a defect.
 3. **Health authorization completion:** `HealthSettingsSection.swift:32–39` restarts weight observation after permission await without rereading Pro; import checks read enablement, not Pro, at `HealthKitService.swift:262–298`. App service refresh may stop it. Needs an event-order reproduction, not a privacy claim.

@@ -1,0 +1,439 @@
+diff --git a/cal-macro-tracker/App/AppRootView.swift b/cal-macro-tracker/App/AppRootView.swift
+index d59ab52..1bcc071 100644
+--- a/cal-macro-tracker/App/AppRootView.swift
++++ b/cal-macro-tracker/App/AppRootView.swift
+@@ -219,8 +219,22 @@ struct AppRootView: View {
+             resetPresentedState()
+             openRequestToken += 1
+             let requestId = openRequestToken
++            #if DEBUG
++            SuspectProbe.trace("route requested \(requestId)")
++            if SuspectProbe.seconds("route-delay") > 0 {
++                DispatchQueue.main.asyncAfter(deadline: .now() + SuspectProbe.seconds("route-delay")) {
++                    path.append(.sharing(inviteInput: inviteInput, requestId: requestId))
++                    SuspectProbe.trace("route appended \(requestId) latest=\(openRequestToken) count=\(path.count)")
++                }
++                pendingOpenRequest = nil
++                return
++            }
++            #endif
+             DispatchQueue.main.async {
+                 path.append(.sharing(inviteInput: inviteInput, requestId: requestId))
++                #if DEBUG
++                SuspectProbe.trace("route appended \(requestId) latest=\(openRequestToken) count=\(path.count)")
++                #endif
+             }
+         }
+
+diff --git a/cal-macro-tracker/Data/Services/SecondaryNutrientRepairExecution.swift b/cal-macro-tracker/Data/Services/SecondaryNutrientRepairExecution.swift
+index 6ecfca8..c59c4b6 100644
+--- a/cal-macro-tracker/Data/Services/SecondaryNutrientRepairExecution.swift
++++ b/cal-macro-tracker/Data/Services/SecondaryNutrientRepairExecution.swift
+@@ -109,6 +109,9 @@ extension SecondaryNutrientRepairService {
+         var notRepairableEntryIDs: [PersistentIdentifier] = []
+
+         for entry in entries {
++            #if DEBUG
++            if repairs.count == 1 { await SuspectProbe.pause("repair-delay") }
++            #endif
+             let repairDraftResolution = try await historicalRepairDraftResolution(
+                 for: entry,
+                 foodsByID: lookup.foodsByID,
+@@ -189,6 +192,9 @@ extension SecondaryNutrientRepairService {
+                 entry.cholesterolConsumed = repair.consumed.cholesterol
+                 entry.secondaryNutrientBackfillState = .current
+                 entry.updatedAt = .now
++                #if DEBUG
++                SuspectProbe.trace("repair applied quantity=\(entry.servingsConsumed ?? -1) fiber=\(entry.fiberConsumed ?? -1)")
++                #endif
+             }
+
+             for entryID in notRepairableEntryIDs {
+diff --git a/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift b/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift
+index dfa3732..09e6dbd 100644
+--- a/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift
++++ b/cal-macro-tracker/Features/Backup/BackupSettingsSection.swift
+@@ -83,9 +83,16 @@ struct BackupSettingsSection: View {
+                     defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+                     return try BackupImporter.decode(Data(contentsOf: url))
+                 }.value
++                #if DEBUG
++                SuspectProbe.trace("backup decoded slow=\(url.lastPathComponent.contains("Slow"))")
++                if url.lastPathComponent.contains("Slow") { await SuspectProbe.pause("backup-delay") }
++                #endif
+                 let exporter = await BackupExportActor.background(container: container)
+                 let count = try await exporter.unmatchedMealItemCount(in: backup)
+                 presentation = .importSummary(backup, count)
++                #if DEBUG
++                SuspectProbe.trace("backup summary slow=\(url.lastPathComponent.contains("Slow"))")
++                #endif
+             } catch {
+                 errorMessage = error.localizedDescription
+             }
+diff --git a/cal-macro-tracker/Features/Health/HealthKitService.swift b/cal-macro-tracker/Features/Health/HealthKitService.swift
+index 58289b6..fa06eb1 100644
+--- a/cal-macro-tracker/Features/Health/HealthKitService.swift
++++ b/cal-macro-tracker/Features/Health/HealthKitService.swift
+@@ -215,6 +215,9 @@ final class HealthKitService {
+     }
+
+     func startWeightObservation(container: ModelContainer) {
++        #if DEBUG
++        SuspectProbe.trace("health start observation")
++        #endif
+         guard isAvailable, observerQuery == nil,
+             let type = HKObjectType.quantityType(forIdentifier: .bodyMass)
+         else { return }
+@@ -237,6 +240,9 @@ final class HealthKitService {
+     }
+
+     func stopWeightObservation() {
++        #if DEBUG
++        SuspectProbe.trace("health stop observation")
++        #endif
+         isObservingWeight = false
+         weightLifecycle.stop()
+         pendingWeightImport = false
+@@ -300,6 +306,9 @@ final class HealthKitService {
+                         do {
+                             try WeightRepository(modelContext: container.mainContext)
+                                 .applyHealthChanges(imported, deletedUUIDs: deletedUUIDs)
++                            #if DEBUG
++                            SuspectProbe.trace("health applied samples=\(imported.count) deleted=\(deletedUUIDs.count)")
++                            #endif
+                             if let newAnchor,
+                                 let data = try? NSKeyedArchiver.archivedData(withRootObject: newAnchor, requiringSecureCoding: true)
+                             {
+diff --git a/cal-macro-tracker/Features/Health/HealthSettingsSection.swift b/cal-macro-tracker/Features/Health/HealthSettingsSection.swift
+index 9756631..961c4f0 100644
+--- a/cal-macro-tracker/Features/Health/HealthSettingsSection.swift
++++ b/cal-macro-tracker/Features/Health/HealthSettingsSection.swift
+@@ -34,6 +34,10 @@ struct HealthSettingsSection: View {
+                         if enabled {
+                             Task {
+                                 await requestAuthorization(readWeight: true)
++                                #if DEBUG
++                                await SuspectProbe.pause("health-delay")
++                                SuspectProbe.trace("health authorization completion pro=\(entitlements.canUse(.healthWeightImport))")
++                                #endif
+                                 health.restartWeightObservation(container: modelContext.container)
+                                 NotificationCenter.default.post(name: .healthSettingsDidChange, object: nil)
+                             }
+diff --git a/cal-macro-tracker/Features/Onboarding/OnboardingFlow.swift b/cal-macro-tracker/Features/Onboarding/OnboardingFlow.swift
+index fc2fe57..3e23e3d 100644
+--- a/cal-macro-tracker/Features/Onboarding/OnboardingFlow.swift
++++ b/cal-macro-tracker/Features/Onboarding/OnboardingFlow.swift
+@@ -251,6 +251,9 @@ private struct OnboardingRemindersScreen: View {
+         .inlineNavigationTitle()
+         .navigationBarBackButtonHidden(isRequestingPermission)
+         .onDisappear {
++            #if DEBUG
++            SuspectProbe.trace("onboarding disappear busy=\(isRequestingPermission)")
++            #endif
+             authorizationTask?.cancel()
+         }
+         .alert("Notifications aren’t enabled", isPresented: $isShowingPermissionMessage) {
+@@ -438,8 +441,14 @@ private struct OnboardingRemindersScreen: View {
+
+         isRequestingPermission = true
+         authorizationTask = Task {
++            #if DEBUG
++            await SuspectProbe.pause("onboarding-delay")
++            #endif
+             let center = UNUserNotificationCenter.current()
+             let status = await center.notificationSettings().authorizationStatus
++            #if DEBUG
++            SuspectProbe.trace("onboarding settings returned cancelled=\(Task.isCancelled) status=\(status.rawValue)")
++            #endif
+             guard !Task.isCancelled else { return }
+             switch status {
+             case .authorized, .provisional:
+@@ -453,6 +462,9 @@ private struct OnboardingRemindersScreen: View {
+             case .notDetermined:
+                 do {
+                     let granted = try await center.requestAuthorization(options: [.alert, .sound])
++                    #if DEBUG
++                    SuspectProbe.trace("onboarding authorization returned cancelled=\(Task.isCancelled) granted=\(granted)")
++                    #endif
+                     guard !Task.isCancelled else { return }
+                     NotificationCenter.default.post(name: .remindersDidChange, object: nil)
+                     if granted {
+diff --git a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift
+index 91d6013..796e9fe 100644
+--- a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift
++++ b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift
+@@ -99,6 +99,9 @@ extension FoodCameraSheet {
+
+     func processPendingImage() async {
+         guard let image = pendingImage else { return }
++        #if DEBUG
++        await SuspectProbe.pause("camera-delay")
++        #endif
+         frozenImage = Self.screenSizedStill(image)
+         do {
+             let barcode = try await barcodeScanner.scanBarcode(from: image)
+diff --git a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+index 38c4a82..a4f8bf8 100644
+--- a/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
++++ b/cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift
+@@ -491,7 +491,13 @@ struct FoodCameraSheet: View {
+
+     @discardableResult
+     func send(_ event: FoodCameraFlow.Event) -> [FoodCameraFlow.Effect] {
++        #if DEBUG
++        SuspectProbe.trace("camera before phase=\(flow.phase) inactive=\(flow.isInactive)")
++        #endif
+         let effects = flow.reduce(event)
++        #if DEBUG
++        SuspectProbe.trace("camera after phase=\(flow.phase) inactive=\(flow.isInactive)")
++        #endif
+         for effect in effects {
+             switch effect {
+             case .startScanning:
+diff --git a/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift b/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift
+index 4bacc2d..f8953e1 100644
+--- a/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift
++++ b/cal-macro-tracker/Features/Settings/DeveloperSettingsSection.swift
+@@ -20,6 +20,55 @@ struct DeveloperSettingsSection: View {
+                 } message: {
+                     Text("This replaces all data on this device.")
+                 }
++            // Temporary fixture controls, removed before committing.
++            Button("Show Onboarding Probe") {
++                UserDefaults.standard.set(false, forKey: "hasCompletedGoalSetup")
++            }
++            Button("Seed Repair Pair") {
++                Task {
++                    do {
++                        let records = try await CommonFoodSeedLoader.commonFoodSeedRecords()
++                        for record in records.filter({ ($0.fiberPerServing ?? 0) > 0 }).prefix(2) {
++                            let entry = LogEntry(
++                                dateLogged: .now, foodName: record.name, source: .common,
++                                servingDescription: record.servingDescription, gramsPerServing: record.gramsPerServing,
++                                caloriesPerServing: record.caloriesPerServing, proteinPerServing: record.proteinPerServing,
++                                fatPerServing: record.fatPerServing, carbsPerServing: record.carbsPerServing,
++                                quantityMode: .servings, servingsConsumed: 1,
++                                caloriesConsumed: record.caloriesPerServing, proteinConsumed: record.proteinPerServing,
++                                fatConsumed: record.fatPerServing, carbsConsumed: record.carbsPerServing,
++                                secondaryNutrientBackfillState: .needsRepair
++                            )
++                            modelContext.insert(entry)
++                            SuspectProbe.trace("repair fixture \(record.name) fiberPerServing=\(record.fiberPerServing ?? -1)")
++                        }
++                        try modelContext.save()
++                    } catch { errorMessage = error.localizedDescription }
++                }
++            }
++            Button("Start Repair Probe") {
++                Task {
++                    do {
++                        let records = try await CommonFoodSeedLoader.commonFoodSeedRecords()
++                        try await SecondaryNutrientRepairService.repairLogEntrySecondaryNutrientsIfNeeded(
++                            modelContext: modelContext, commonFoodRecords: records)
++                    } catch { errorMessage = error.localizedDescription }
++                }
++            }
++            Button("Replace Weight Backup Probe") {
++                Task {
++                    do {
++                        let before = try modelContext.fetch(FetchDescriptor<WeightEntry>())
++                        let count = before.filter { $0.source == .healthKit }.count
++                        var backup = try BackupExporter.makeBackup(from: modelContext, settings: BackupSettings.current())
++                        backup.weightEntries = []
++                        SuspectProbe.trace("backup weight before health=\(count) anchor=\(UserDefaults.standard.data(forKey: "healthWeightAnchor") != nil)")
++                        try await BackupImporter.apply(backup, to: modelContext.container, mode: .replace)
++                        NotificationCenter.default.post(name: .remindersDidChange, object: nil)
++                        SuspectProbe.trace("backup weight after rows=\(try modelContext.fetchCount(FetchDescriptor<WeightEntry>())) anchor=\(UserDefaults.standard.data(forKey: "healthWeightAnchor") != nil)")
++                    } catch { errorMessage = error.localizedDescription }
++                }
++            }
+             if let errorMessage {
+                 Text(errorMessage).foregroundStyle(.red)
+             }
+diff --git a/cal-macro-tracker/Features/Sharing/SharingIdentityStore.swift b/cal-macro-tracker/Features/Sharing/SharingIdentityStore.swift
+index da943c8..b43f10b 100644
+--- a/cal-macro-tracker/Features/Sharing/SharingIdentityStore.swift
++++ b/cal-macro-tracker/Features/Sharing/SharingIdentityStore.swift
+@@ -19,6 +19,13 @@ struct SharingIdentityStore {
+     }
+
+     func load() throws -> SharingIdentity? {
++        #if DEBUG
++        let fixture = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
++            .appendingPathComponent("suspect-identity.json")
++        if FileManager.default.fileExists(atPath: fixture.path) {
++            return try JSONDecoder().decode(SharingIdentity.self, from: Data(contentsOf: fixture))
++        }
++        #endif
+         guard let data = try item.load() else { return nil }
+         return try JSONDecoder().decode(SharingIdentity.self, from: data)
+     }
+diff --git a/cal-macro-tracker/Features/Sharing/SharingLocalStateStore.swift b/cal-macro-tracker/Features/Sharing/SharingLocalStateStore.swift
+index 1d066aa..20cf65e 100644
+--- a/cal-macro-tracker/Features/Sharing/SharingLocalStateStore.swift
++++ b/cal-macro-tracker/Features/Sharing/SharingLocalStateStore.swift
+@@ -1,5 +1,36 @@
+ import Foundation
+
++#if DEBUG
++// Temporary investigation instrumentation. Removed before committing.
++nonisolated enum SuspectProbe {
++    static func seconds(_ flag: String) -> Double {
++        let args = ProcessInfo.processInfo.arguments
++        guard let i = args.firstIndex(of: "--suspect-" + flag), args.indices.contains(i + 1) else {
++            let path = FileManager.default.temporaryDirectory.appendingPathComponent("suspect-" + flag)
++            return (try? String(contentsOf: path, encoding: .utf8)).flatMap { Double($0.trimmingCharacters(in: .whitespacesAndNewlines)) } ?? 0
++        }
++        return Double(args[i + 1]) ?? 0
++    }
++    static func trace(_ message: String) {
++        let url = FileManager.default.temporaryDirectory.appendingPathComponent("suspects-trace.log")
++        let data = Data("\(Date().timeIntervalSince1970) \(message)\n".utf8)
++        if !FileManager.default.fileExists(atPath: url.path) { FileManager.default.createFile(atPath: url.path, contents: nil) }
++        if let handle = try? FileHandle(forWritingTo: url) {
++            defer { try? handle.close() }
++            try? handle.seekToEnd()
++            try? handle.write(contentsOf: data)
++        }
++    }
++    static func pause(_ flag: String) async {
++        let delay = seconds(flag)
++        guard delay > 0 else { return }
++        trace("pause \(flag) begin")
++        try? await Task.sleep(for: .seconds(delay))
++        trace("pause \(flag) end cancelled=\(Task.isCancelled)")
++    }
++}
++#endif
++
+ struct SharingLocalStateStore {
+     let defaults: UserDefaults
+     let tokenStore: any SharingInviteTokenStorage
+@@ -13,6 +44,19 @@ struct SharingLocalStateStore {
+         self.defaults = defaults
+         self.tokenStore = tokenStore ?? SharingInviteTokenStore()
+         self.identityStore = identityStore
++        #if DEBUG
++        if SuspectProbe.seconds("cleanup") > 0,
++            FileManager.default.fileExists(atPath: FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
++                .appendingPathComponent("suspect-identity.json").path),
++            defaults.string(forKey: AppStorageKeys.sharingPendingInviteProfileKey) == (try? identityStore.load())?.profileKey
++        {
++            isDeviceSharingEnabled = false
++            try? clearPendingInvite()
++            clearUploadMetadata()
++            defaults.set(false, forKey: "healthWeightReadEnabled")
++            SuspectProbe.trace("cleanup local fixture invite absent=\((try? self.tokenStore.loadToken()) == nil)")
++        }
++        #endif
+     }
+     var isDeviceSharingEnabled: Bool {
+         get { defaults.bool(forKey: AppStorageKeys.isSharingDeviceEnabled) }
+diff --git a/cal-macro-tracker/Features/Sharing/SharingPersonScreen.swift b/cal-macro-tracker/Features/Sharing/SharingPersonScreen.swift
+index 77d4b35..03e2c3d 100644
+--- a/cal-macro-tracker/Features/Sharing/SharingPersonScreen.swift
++++ b/cal-macro-tracker/Features/Sharing/SharingPersonScreen.swift
+@@ -227,6 +227,9 @@ struct SharingPersonScreen: View {
+             }
+         }
+         .onChange(of: currentPerson.outgoingScope) { _, newScope in
++            #if DEBUG
++            SuspectProbe.trace("scope echo \(newScope.rawValue)")
++            #endif
+             scopeSelection.acceptServerScope(newScope)
+         }
+     }
+@@ -242,6 +245,9 @@ struct SharingPersonScreen: View {
+                     container: modelContext.container
+                 )
+                 scopeSelection.confirmWrite(scope)
++                #if DEBUG
++                SuspectProbe.trace("scope confirmed \(scope.rawValue)")
++                #endif
+             } catch {
+                 errorMessage = error.localizedDescription
+                 scopeSelection.rejectWrite()
+diff --git a/cal-macro-tracker/Features/Sharing/SharingSyncService.swift b/cal-macro-tracker/Features/Sharing/SharingSyncService.swift
+index c6e6a93..1bad1bf 100644
+--- a/cal-macro-tracker/Features/Sharing/SharingSyncService.swift
++++ b/cal-macro-tracker/Features/Sharing/SharingSyncService.swift
+@@ -39,6 +39,9 @@ final class SharingSyncService {
+     private var purchaseDeduplicator = PurchaseSubmissionDeduplicator()
+     private var lastUploadContainer: ModelContainer?
+     private var pendingScopeSync: (profileId: String, scope: SharingOutgoingScope)?
++    #if DEBUG
++    private var suspectInviteOrdinal = 0
++    #endif
+
+     private struct UploadRequest {
+         let container: ModelContainer
+@@ -73,6 +76,9 @@ final class SharingSyncService {
+         self.lastUploadStatus = localStateStore.lastUploadStatus
+         self.lastUploadDate = localStateStore.lastUploadDate
+         self.lastUploadedSnapshotHash = localStateStore.lastUploadedSnapshotHash
++        #if DEBUG
++        SuspectProbe.trace("upload init status=\(lastUploadStatus.rawValue)")
++        #endif
+         if localStateStore.isCredentialCleanupPending { disableLocalSharing() }
+     }
+
+@@ -195,7 +201,14 @@ final class SharingSyncService {
+                 continue
+             }
+             setLastUploadStatus(.uploading)
++            #if DEBUG
++            SuspectProbe.trace("upload before mutation")
++            await SuspectProbe.pause("upload-delay")
++            #endif
+             try await remoteClient.upsertDailySnapshot(payload)
++            #if DEBUG
++            SuspectProbe.trace("upload after mutation")
++            #endif
+             try checkIdentity(generation)
+             // Cancellation cannot undo a committed remote write. It only prevents
+             // acknowledgment or new writes under a disabled/replaced identity.
+@@ -364,6 +377,11 @@ final class SharingSyncService {
+     }
+
+     func createInvite() async throws -> SharingInvite {
++        #if DEBUG
++        suspectInviteOrdinal += 1
++        let suspectOrdinal = suspectInviteOrdinal
++        SuspectProbe.trace("invite call \(suspectOrdinal)")
++        #endif
+         if let profileDeletionTask { try await profileDeletionTask.value }
+         try await finishPendingCredentialCleanup()
+         if let invite = try pendingInvite(), invite.expiresAt > .now.addingTimeInterval(3600) {
+@@ -375,9 +393,21 @@ final class SharingSyncService {
+         let token = try SharingRandomToken.make()
+         let tokenHash = sha256Hex(token)
+         let response = try await accountActions.createInvite(tokenHash: tokenHash)
++        #if DEBUG
++        SuspectProbe.trace("invite committed \(suspectOrdinal)")
++        if SuspectProbe.seconds("invite-delay") > 0 {
++            let path = FileManager.default.temporaryDirectory.appendingPathComponent("invite-hash-\(suspectOrdinal).private")
++            try tokenHash.write(to: path, atomically: true, encoding: .utf8)
++            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: path.path)
++        }
++        if suspectOrdinal == 1 { await SuspectProbe.pause("invite-delay") }
++        #endif
+         try checkIdentity(generation)
+         let invite = localStateStore.makeInvite(inviteId: response.inviteId, token: token, expiresAt: response.expiresAt)
+         try localStateStore.savePendingInvite(invite)
++        #if DEBUG
++        SuspectProbe.trace("invite saved \(suspectOrdinal)")
++        #endif
+         return invite
+     }
+
+@@ -403,6 +433,10 @@ final class SharingSyncService {
+         let generation = identityGeneration
+         try await authenticateForOperation()
+         try await accountActions.setOutgoingScope(profileId: profileId, scope: scope, ownerDay: ownerDay)
++        #if DEBUG
++        SuspectProbe.trace("scope mutation returned \(scope.rawValue)")
++        await SuspectProbe.pause("scope-delay")
++        #endif
+         try checkIdentity(generation)
+         pendingScopeSync = (profileId, scope)
+         if dashboard.people.contains(where: { $0.profileId == profileId && $0.outgoingScope == scope }),

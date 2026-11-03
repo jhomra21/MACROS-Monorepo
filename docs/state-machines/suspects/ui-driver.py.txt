@@ -1,0 +1,44 @@
+import json, os, re, subprocess, sys
+
+PHONE = os.environ.get('SUSPECT_PHONE') == '1'
+CLI = '/Users/juan/.t3/userdata/device/targets/' + ('t3-a8c36fb644f0dc5f90e4162c' if PHONE else 't3-2d72ec29de8063cdcc64b8fc') + '/agent-device'
+SESSION = 't3-9554659b8909b1d4dcfa6980' if PHONE else 't3-ec61bd84b4c37dacbdc24bcc'
+def run(args):
+    p = subprocess.run([CLI, *args, '--session', SESSION], capture_output=True, text=True)
+    if p.returncode: raise RuntimeError(p.stderr or p.stdout)
+    return p.stdout
+def scrub(text):
+    text = re.sub(r'(?:calmacrotracker://sharing/invite/|macros://|https://[^\s"<>]+/(?:invite|i)/)[^\s"<>]+', '[INVITE REDACTED]', text)
+    text = re.sub(r'eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+', '[JWT REDACTED]', text)
+    return text
+cmd, *args = sys.argv[1:]
+if cmd == 'cache-hash':
+    import hashlib
+    raw = run(['snapshot','--raw'])
+    match = re.search(r'calmacrotracker://sharing/invite/([A-Za-z0-9_-]+)', raw)
+    if not match: raise RuntimeError('No displayed cached invite')
+    digest = hashlib.sha256(match.group(1).encode()).hexdigest()
+    with open('/tmp/state-suspects-private/invite-hashes.json') as f: hashes=json.load(f)
+    print('Displayed cached invite matches call '+str(hashes.index(digest)+1))
+elif cmd in ('press', 'fill'):
+    raw = run(['snapshot', '--raw'])
+    nodes = [json.loads(line) for line in raw.splitlines() if line.startswith('{')]
+    matches = [n for n in nodes if args[0] in (n.get('label'),n.get('identifier'),n.get('value')) and n.get('enabled') and n.get('rect',{}).get('width',0)>0]
+    if args[0].startswith('~'):
+        matches = [n for n in nodes if n.get('label','').startswith(args[0][1:]) and n.get('enabled') and n.get('rect',{}).get('width',0)>0]
+    if not matches: raise RuntimeError('No hittable target: '+args[0])
+    n = next((n for n in matches if n['type'] in ('Button','TextField','Switch')), matches[-1])
+    r = n['rect']
+    # iPhone compatibility mode: XCTest supplies app-local bounds, while
+    # coordinate injection subtracts the centered window origin a second time.
+    # Raw app width 410 on this 820pt iPad => compensate by 2 * 205pt.
+    offset = 466 if not PHONE and nodes[0]['rect']['width'] == 410 else 0
+    x = r['x']+r['width']-25 if n['type']=='Switch' else r['x']+r['width']/2
+    out = run(['press', str(x+offset), str(r['y']+r['height']/2), '--settle'])
+    if cmd == 'fill':
+        out += run(['type', args[1]])
+    print(scrub(out))
+elif cmd == 'tap':
+    print(scrub(run(['press',*args,'--settle'])))
+else:
+    print(scrub(run([cmd, *args])))

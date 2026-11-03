@@ -1,0 +1,6 @@
+1793704197.2873712 scope mutation returned macrosAndFoods
+1793704197.290084 pause scope-delay begin
+1793704197.3014421 scope echo macrosAndFoods
+1793704199.2672238 scope echo off
+1793704245.178015 pause scope-delay end cancelled=false
+1793704245.178255 scope confirmed macrosAndFoods

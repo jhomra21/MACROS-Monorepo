@@ -1,0 +1,18 @@
+1793703260.733938 health stop observation
+1793703260.761342 health stop observation
+1793703290.9132261 health stop observation
+1793703378.713052 health stop observation
+1793703378.725768 health stop observation
+1793703394.412887 health stop observation
+1793703418.5036712 health start observation
+1793703569.8326359 pause health-delay begin
+1793703594.068263 health stop observation
+1793703632.8938742 pause health-delay end cancelled=false
+1793703632.894059 health authorization completion pro=false
+1793703632.8941379 health stop observation
+1793703632.894222 health start observation
+1793703632.935127 health stop observation
+1793703673.392062 health stop observation
+1793703709.902971 health start observation
+1793703709.9891682 health applied samples=1 deleted=0
+1793703710.0011249 health applied samples=0 deleted=0

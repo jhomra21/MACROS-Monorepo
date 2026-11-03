@@ -1,0 +1,68 @@
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../convex/_generated/api";
+import { mkdir, readFile, writeFile, chmod } from "node:fs/promises";
+
+const deployment = process.env.CONVEX_URL;
+if (deployment !== "https://energized-pigeon-822.convex.cloud") throw new Error("Dev URL required");
+const auth = "https://macros-auth.jhonra121.workers.dev";
+const statePath = "/tmp/state-suspects-private/users.json";
+const day = new Intl.DateTimeFormat("en-CA", {timeZone:"America/Chicago",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+type User = { profileKey: string; profileSecret: string; displayName: string };
+async function client(u: User) {
+  const response = await fetch(`${auth}/v1/token`, {method:"POST", headers:{"Content-Type":"application/json","User-Agent":"MACROS-suspect-repro/1.0"},body:JSON.stringify(u)});
+  if (!response.ok) throw new Error(`Exchange HTTP ${response.status}`);
+  const result = await response.json();
+  const c = new ConvexHttpClient(deployment!); c.setAuth(result.token); return c;
+}
+async function digest(s:string) { return Buffer.from(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s))).toString("hex"); }
+const mode = process.argv[2];
+if (mode === "setup") {
+  await mkdir("/tmp/state-suspects-private",{recursive:true,mode:0o700});
+  const users: User[] = ["Owner","Peer"].map(n=>({displayName:`Suspect ${n}`, profileKey:`suspect_${crypto.randomUUID().replaceAll("-","")}`,profileSecret:crypto.randomUUID().replaceAll("-","")+crypto.randomUUID().replaceAll("-","")}));
+  await writeFile(statePath, JSON.stringify(users),{mode:0o600});
+  const owner=await client(users[0]); const peer=await client(users[1]);
+  const raw=crypto.randomUUID().replaceAll("-","");
+  const hash=await digest(raw);
+  await owner.mutation(api.sharing.upsertMyDailySnapshot,{day,timeZoneId:"America/Chicago",calories:321,protein:30,carbs:40,fat:9,entryCount:2});
+  await owner.mutation(api.sharing.createInvite,{tokenHash:hash});
+  await peer.mutation(api.sharing.acceptInvite,{tokenHash:hash,ownerDay:day});
+  await peer.mutation(api.sharing.upsertMyDailySnapshot,{day,timeZoneId:"America/Chicago",calories:222,protein:20,carbs:10,fat:8,entryCount:1});
+  const dashboard=await peer.query(api.sharing.sharingDashboard,{day,ownerToday:day});
+  await peer.mutation(api.sharing.setOutgoingSharingForPerson,{toProfileId:dashboard.people[0].profileId,enabled:true,ownerDay:day});
+  const docs=process.env.SUSPECT_DOCS;
+  if(!docs) throw new Error("SUSPECT_DOCS required");
+  await writeFile(`${docs}/suspect-identity.json`,JSON.stringify({profileKey:users[0].profileKey,profileSecret:users[0].profileSecret}),{mode:0o600});
+  await chmod(`${docs}/suspect-identity.json`,0o600);
+  await owner.mutation(api.sharing.revokePendingInvite,{inviteId:(await owner.mutation(api.sharing.createInvite,{tokenHash:hash})).inviteId});
+  console.log("SETUP: two fresh dev identities; reciprocal relationship; fixture override written privately; setup invite revoked.");
+} else {
+  const users:User[]=JSON.parse(await readFile(statePath,"utf8"));
+  const owner=await client(users[0]); const peer=await client(users[1]);
+  if(mode==="attach") {
+    const docs=process.env.SUSPECT_DOCS!;
+    await mkdir(docs,{recursive:true});
+    await writeFile(`${docs}/suspect-identity.json`,JSON.stringify({profileKey:users[0].profileKey,profileSecret:users[0].profileSecret}),{mode:0o600});
+    const r=await owner.mutation(api.sharing.createInvite,{tokenHash:await digest(crypto.randomUUID())});
+    await owner.mutation(api.sharing.revokePendingInvite,{inviteId:r.inviteId});
+    console.log('ATTACH: same two fresh identities; private owner override attached; pending setup invites revoked.');
+  } else if(mode==="scope") {
+    const d=await owner.query(api.sharing.sharingDashboard,{day,ownerToday:day});
+    await owner.mutation(api.sharing.setOutgoingScope,{otherProfileId:d.people[0].profileId,scope:"off",ownerDay:day});
+    const after=await owner.query(api.sharing.sharingDashboard,{day,ownerToday:day});
+    console.log(`REMOTE newer scope=${after.people[0].outgoingScope}`);
+  } else if(mode==="check-scope") {
+    const d=await owner.query(api.sharing.sharingDashboard,{day,ownerToday:day});
+    console.log(`AUTHORITATIVE outgoingScope=${d.people[0].outgoingScope}`);
+  } else if(mode==="check-invites") {
+    const hashes: string[]=JSON.parse(await readFile("/tmp/state-suspects-private/invite-hashes.json","utf8"));
+    for(let i=0;i<hashes.length;i++) {
+      try { await peer.mutation(api.sharing.acceptInvite,{tokenHash:hashes[i],ownerDay:day}); console.log(`INVITE call ${i+1}: accepted`); }
+      catch { console.log(`INVITE call ${i+1}: rejected (revoked/unavailable)`); }
+    }
+  } else if(mode==="cleanup") {
+    const results=await Promise.allSettled([owner.mutation(api.sharing.deleteMySharingProfile,{}),peer.mutation(api.sharing.deleteMySharingProfile,{})]);
+    if(results.some(r=>r.status==="rejected")) throw new Error("Profile cleanup failed");
+    for(const c of [owner,peer]) { let denied=false;try{await c.query(api.sharing.sharingDashboard,{day,ownerToday:day});}catch{denied=true;} if(!denied)throw new Error("Deleted profile still authorized"); }
+    console.log("CLEANUP: 2/2 profiles deleted; both existing tokens rejected by dashboard.");
+  }
+}

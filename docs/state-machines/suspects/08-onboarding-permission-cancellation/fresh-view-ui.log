@@ -1,0 +1,22 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 17 visible nodes
+Simulator AX snapshot unavailable (app-window-not-full-screen); used XCTest for this capture, while the app window did not fill the screen; XCTest geometry for a windowed app can also be offset from the screen.
+@e1 [application] "MACROS"
+@e2 [other] "Toolbar"
+@e3 [other] "Back"
+@e4 [navigation-bar] "Back"
+@e5 [other] "Continue"
+@e6 [scroll-area] "Stay on track" [scrollable]
+  [content below scroll-area hidden]
+@e7 [other] "Stay on track"
+@e8 [text] "A gentle nudge to log your day. Change it anytime in Settings."
+@e9 [text] "Remind me to log food"
+@e10 [switch] "Daily reminder" [checked]
+@e11 [switch] "1" [checked]
+@e12 [element(51)] "Daily reminder time"
+@e13 [button] "Time Picker"
+@e14 [button] "More reminders, Breakfast, lunch, dinner, evening check-in, PRO"
+@e15 [text] "iOS asks for permission only if a reminder is on."
+@e16 [button] "Continue"
+@e17 [toolbar] "Toolbar"
