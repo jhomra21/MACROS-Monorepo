@@ -1,0 +1,44 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 40 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Today, Nov 3, 2026"
+@e3 [button] "Back"
+@e4 [text] "Today, Nov 3, 2026"
+@e5 [button] "Toggle calendar"
+@e6 [scroll-area] [scrollable]
+  [content below scroll-area hidden]
+@e7 [button] "Sunday, November 1"
+@e8 [button] "Monday, November 2"
+@e9 [button] "Tuesday, November 3"
+@e10 [button] "Wednesday, November 4" [disabled]
+@e11 [button] "Thursday, November 5" [disabled]
+@e12 [button] "Friday, November 6" [disabled]
+@e13 [button] "Saturday, November 7" [disabled]
+@e14 [text] "95"
+@e15 [text] "162"
+@e16 [text] "34"
+@e17 [text] "1310"
+@e18 [text] "150"
+@e19 [text] "240"
+@e20 [text] "70"
+@e21 [text] "Protein"
+@e22 [text] "Carbs"
+@e23 [text] "Fat"
+@e24 [button] "Food, Protein bar, 1 bar (60 g), 3:30 PM, 210 calories, 20 grams protein, 22 grams carbs, 7 grams fat"
+@e25 [text] "210 kcal"
+@e26 [text] "1 bar (60 g) • 3:30 PM"
+@e27 [text] "P 20 • C 22 • F 7"
+@e28 [button] "Food, Chicken and rice bowl, 1 bowl (400 g), 12:45 PM, 600 calories, 48 grams protein, 70 grams carbs, 14 grams fat"
+@e29 [text] "600 kcal"
+@e30 [text] "1 bowl (400 g) • 12:45 PM"
+@e31 [text] "P 48 • C 70 • F 14"
+@e32 [button] "Food, Plain Greek yogurt cup, 1 cup (170 g), 10:00 AM, 150 calories, 15 grams protein, 8 grams carbs, 6 grams fat"
+@e33 [text] "150 kcal"
+@e34 [text] "1 cup (170 g) • 10:00 AM"
+@e35 [text] "P 15 • C 8 • F 6"
+@e36 [button] "Food, Oatmeal with banana, 1 bowl (250 g), 7:30 AM, 350 calories, 12 grams protein, 62 grams carbs, 7 grams fat"
+@e37 [text] "350 kcal"
+@e38 [text] "1 bowl (250 g) • 7:30 AM"
+@e39 [text] "P 12 • C 62 • F 7"
+@e40 [toolbar] "Toolbar"

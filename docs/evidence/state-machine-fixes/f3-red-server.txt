@@ -1,0 +1,2 @@
+Authoritative dev dashboard confirms zero relationships; leave app detail open.
+Disposable partner dashboard relationship count: 0.

@@ -1,0 +1,17 @@
+{
+  "case": "red-full",
+  "observed": {
+    "count": 432,
+    "sample": [
+      "Protein bar",
+      210.0
+    ],
+    "metadata_rows": 1
+  },
+  "matches_demo": true,
+  "legacy_base_and_wal_unchanged": true,
+  "legacy_after": {
+    "base": "4b75e28b7d82afe6de53272062a35f9a43d59af1c79138fe68af2b8a942b8c52",
+    "-wal": "4326dd85c4ef635d76457bf73195144b4a36f6b8399ca41fd2595c9ce4a1c304"
+  }
+}

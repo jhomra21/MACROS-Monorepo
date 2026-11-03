@@ -1,0 +1,26 @@
+Retained from build/review-fixes/full-suite.log (2026-11-03)
+DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer
+Serial iPad E91B597B-CE57-4C0B-A8A4-51CBDC3386AB; PurchaseStoreStoreKitTests skipped.
+
+Test Suite 'SharedStoreMigrationTests' started at 2026-11-03 10:41:43.453.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testCorruptSourceDoesNotPublishAndCanRetry]' passed (0.028 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testMissingSourceAndSamePathAreNoOps]' passed (0.008 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishedBaseIsSelfContainedWithoutCopiedSidecars]' passed (0.017 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testPublishFailureLeavesLegacyIntactAndRelaunchRetries]' passed (0.026 seconds).
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' started.
+Test Case '-[cal_macro_trackerTests.SharedStoreMigrationTests testRelaunchDiscardsPartialStagingAndPreservesPublishedDestination]' passed (0.017 seconds).
+Test Suite 'SharedStoreMigrationTests' passed at 2026-11-03 10:41:43.552.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.097 (0.099) seconds
+
+	 Executed 234 tests, with 0 failures (0 unexpected) in 12.152 (12.240) seconds
+	 Executed 234 tests, with 0 failures (0 unexpected) in 12.152 (12.242) seconds
+** TEST SUCCEEDED **
+
+make quality-format-check: exit 0
+make quality-build: exit 0, ** BUILD SUCCEEDED **
+Test-file swift-format lint and git diff --check: exit 0
+Warnings in unchanged source: SharingRemoteClient actor-isolated Decodable conformances; ReviewPromptModifier mutable descriptor; DashboardTutorialOverlay actor isolation; SharingReliabilityTests actor isolation; StoreKit SDK deprecation.

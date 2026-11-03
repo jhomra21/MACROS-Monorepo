@@ -1,0 +1,16 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 13 nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Sharing"
+@e3 [button] "Back"
+@e4 [text] "Sharing"
+@e5 [popupbutton] "Invite someone"
+@e6 [button]
+@e7 [image] "Add"
+@e8 [button] "Open sharing settings"
+@e9 [text] "No sharing yet"
+@e10 [image] "Two People"
+@e11 [text] "Invite someone or accept an invite to see their macros here."
+@e12 [button] "Open Sharing Settings"
+@e13 [toolbar] "Toolbar"

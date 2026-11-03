@@ -15,10 +15,16 @@ struct SharingPersonScreen: View {
     @State private var errorMessage: String?
     @State private var scopeSelection: SharingScopeSelection
     @State private var showingRemovalConfirmation = false
+    @State private var isRemovingPerson = false
     @State private var showingProUpgrade = false
 
-    private var currentPerson: SharingPerson {
-        sharing.dashboard.people.first { $0.profileId == person.profileId } ?? person
+    /// Roster membership owns availability. The captured person supplies identity, never fallback data.
+    private var currentPerson: SharingPerson? {
+        sharing.dashboard.people.first { $0.profileId == person.profileId }
+    }
+
+    private var displayName: String {
+        currentPerson?.displayName ?? person.displayName
     }
 
     private var personDay: SharingPersonDay? {
@@ -27,7 +33,7 @@ struct SharingPersonScreen: View {
 
     /// The live day when cached, otherwise the dashboard snapshot, which the server leaves empty unless the day is visible.
     private var displayedSnapshot: SharedDailySnapshot? {
-        guard !isPaused, !isNotShared else { return nil }
+        guard let currentPerson, !isPaused, !isNotShared else { return nil }
         return personDay?.snapshot ?? currentPerson.snapshot
     }
 
@@ -40,7 +46,7 @@ struct SharingPersonScreen: View {
         _scopeSelection = State(initialValue: SharingScopeSelection(scope: person.outgoingScope))
     }
 
-    var body: some View {
+    private func personDetails(_ currentPerson: SharingPerson) -> some View {
         List {
             if isPaused {
                 Section {
@@ -166,24 +172,22 @@ struct SharingPersonScreen: View {
                 }
             }
         }
-        .navigationTitle(currentPerson.displayName)
-        .inlineNavigationTitle()
-        .errorBanner(message: $errorMessage, title: "Sharing Failed")
-        .sheet(isPresented: $showingProUpgrade) {
-            ProPaywallSheet(context: .sharingInvites)
-        }
+        .disabled(isRemovingPerson)
         .confirmationDialog(
-            "Remove \(currentPerson.displayName)?",
+            "Remove \(displayName)?",
             isPresented: $showingRemovalConfirmation,
             titleVisibility: .visible
         ) {
             Button("Remove Person", role: .destructive) {
+                guard self.currentPerson != nil else { return }
+                isRemovingPerson = true
                 Task {
                     do {
-                        try await sharing.removePerson(currentPerson.profileId, ownerDay: dayContext.today)
+                        try await sharing.removePerson(person.profileId, ownerDay: dayContext.today)
                         dismiss()
                     } catch {
-                        errorMessage = error.localizedDescription
+                        isRemovingPerson = false
+                        if self.currentPerson != nil { errorMessage = error.localizedDescription }
                     }
                 }
             }
@@ -192,13 +196,40 @@ struct SharingPersonScreen: View {
                 "This removes the relationship for both people. Anyone with your invite link can reconnect until it expires or you revoke it in Sharing settings."
             )
         }
+    }
+
+    var body: some View {
+        Group {
+            if let currentPerson {
+                personDetails(currentPerson)
+            } else if isRemovingPerson {
+                ProgressView("Removing person…")
+            } else if sharing.shouldShowDashboardLoading {
+                ProgressView("Loading sharing…")
+            } else {
+                ContentUnavailableView(
+                    sharing.dashboardErrorMessage == nil ? "No longer available" : "Person unavailable",
+                    systemImage: "person.crop.circle.badge.xmark",
+                    description: Text("This person was removed or sharing was turned off on this device.")
+                )
+            }
+        }
+        .navigationTitle(displayName)
+        .inlineNavigationTitle()
+        .errorBanner(message: $errorMessage, title: "Sharing Failed")
+        .sheet(isPresented: $showingProUpgrade) {
+            ProPaywallSheet(context: .sharingInvites)
+        }
         .task(
             id:
-                "\(dayContext.today.sharingDayKey)-\(currentPerson.profileId)-\(currentPerson.incomingActive)-\(currentPerson.connectionPaused)-\(sharing.isDeviceSharingEnabled)"
+                "\(dayContext.today.sharingDayKey)-\(person.profileId)-\(currentPerson != nil)-\(currentPerson?.incomingActive == true)-\(currentPerson?.connectionPaused == true)-\(sharing.isDeviceSharingEnabled)"
         ) {
             personDayVisibility = nil
             isLoadingPersonDay = true
-            guard sharing.isDeviceSharingEnabled, currentPerson.incomingActive, !currentPerson.connectionPaused else { return }
+            guard let currentPerson, sharing.isDeviceSharingEnabled, currentPerson.incomingActive, !currentPerson.connectionPaused else {
+                isLoadingPersonDay = false
+                return
+            }
             do {
                 let day = dayContext.today
                 let updates = try await sharing.personDayUpdates(profileId: currentPerson.profileId, day: day)
@@ -210,6 +241,7 @@ struct SharingPersonScreen: View {
                 }
             } catch is CancellationError {
             } catch {
+                guard !Task.isCancelled, self.currentPerson != nil else { return }
                 isLoadingPersonDay = false
                 errorMessage = error.localizedDescription
             }
@@ -223,16 +255,17 @@ struct SharingPersonScreen: View {
                 sharing.isDeviceSharingEnabled
             else {
                 personDayVisibility = nil
+                if currentPerson == nil { errorMessage = nil }
                 return
             }
         }
-        .onChange(of: currentPerson.outgoingScope) { _, newScope in
-            scopeSelection.acceptServerScope(newScope)
+        .onChange(of: currentPerson?.outgoingScope) { _, newScope in
+            if let newScope { scopeSelection.acceptServerScope(newScope) }
         }
     }
 
     private func updateScope(_ scope: SharingOutgoingScope) {
-        guard scope != .macrosAndFoods || !isPaused, scopeSelection.beginWrite(scope) else { return }
+        guard currentPerson != nil, scope != .macrosAndFoods || !isPaused, scopeSelection.beginWrite(scope) else { return }
         Task {
             do {
                 try await sharing.setOutgoingScope(
@@ -243,18 +276,18 @@ struct SharingPersonScreen: View {
                 )
                 scopeSelection.confirmWrite(scope)
             } catch {
-                errorMessage = error.localizedDescription
+                if currentPerson != nil { errorMessage = error.localizedDescription }
                 scopeSelection.rejectWrite()
             }
         }
     }
 
     private var isPaused: Bool {
-        currentPerson.connectionPaused || personDayVisibility == .paused
+        currentPerson?.connectionPaused == true || personDayVisibility == .paused
     }
 
     private var isNotShared: Bool {
-        !currentPerson.incomingActive || personDayVisibility == .notShared
+        currentPerson?.incomingActive != true || personDayVisibility == .notShared
     }
 }
 

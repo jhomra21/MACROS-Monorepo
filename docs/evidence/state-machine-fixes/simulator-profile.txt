@@ -1,0 +1,3 @@
+Slimming F976E800-DA1F-4F20-B755-DFD964E33975: disabling 110 background services. The simulator will reboot to apply the changes.
+Already slim. Nothing to change.
+F976E800-DA1F-4F20-B755-DFD964E33975 matches the profile: all expected disable overrides are applied.

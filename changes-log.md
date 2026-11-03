@@ -11,8 +11,18 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+- 2026-11-03: F2/F3 review validation: format/build and 234 serial non-StoreKit iPad tests pass; simulator B real-SwiftData migration preserves 432 demo entries and legacy base/WAL hashes without SHM. Main's full copy succeeds; its base-only interrupted-publication variant opens zero entries. Exact commands/screenshots: `docs/evidence/state-machine-fixes/f2-e2e/README.md`.
+- 2026-11-03: F3 review: removal confirmation belongs to the live detail list; removed people cannot receive stale scope/removal errors, while failed scope writes still roll back. Neutral unavailability copy covers removal and device sharing-off; a local removal-in-flight state prevents the unavailable-screen flash before dismissal.
+- 2026-11-03: F2 review: existing shared stores bypass staging cleanup; SQLite backup retains the required DELETE-journal conversion without blocking on source `quick_check`. Launch logging records only the error domain/code, migration copy drops duplicate retry advice, and publication uses file/directory `F_FULLFSYNC` (directory best effort). The destination-preservation test now checks a later user write; deleted the obsolete copy-interruption test/helper.
 - 2026-11-03: Fixed state-machine suspects 01–04: current-quantity nutrient repair writeback, Health history replay after backup replacement, post-authorization Pro/read checks, and serialized backup decode/export. Live RED/GREEN evidence is in `docs/evidence/state-machine-fixes-2/`; formatting/build and 228 serial non-StoreKit iPad tests passed.
 - 2026-11-02: Camera result cards no longer reflow when servings change: the title has independent width, macro numbers stay readable, and per-serving/total text occupy separate lines. Shared food rows and untinted Liquid Glass are unchanged. Build/format and 960 layout measurements pass; red/green and caller-regression evidence is in `docs/evidence/camera-card-layout-shift/`. Full iPad suite is queued behind another worker's simulator lock.
+
+## 2026-11-02 State-machine fixes F2 / F3
+
+- Shared-store migration now backs up committed SQLite/WAL data into disposable staging, validates and synchronizes a self-contained base, then publishes it by same-directory rename. Legacy files and existing shared stores remain untouched; widgets cannot open staging.
+- Removed sharing people no longer revive the detail screen's captured snapshot. Live roster membership controls availability and cancels its stream; removal hides macros, foods, and controls while preserving paused/notShared guards.
+- Six migration tests and live two-person dev E2E pass after captured red runs; format/build/JS lint pass. Full serial non-StoreKit iPad suite passed (234 tests, 0 failures). Evidence and limits: `docs/evidence/state-machine-fixes/README.md`.
+
 - 2026-11-02: Camera result-layout animations now wait for the presentation to finish, so provisional first measurements cannot animate the viewport in from the left during the Add Food zoom. Reverted the ineffective source modifier-order change; later result sizing, staged reveal, Reduce Motion, compact mode, and dismissal are preserved.
 - 2026-11-02: Shared person and dashboard totals now animate live updates with the Dashboard’s smooth timing, numeric text transitions, and Reduce Motion support; food rows animate on stable IDs.
 
