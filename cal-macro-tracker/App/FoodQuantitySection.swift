@@ -8,6 +8,7 @@ struct FoodQuantitySection: View {
     let gramsPerServing: Double?
     let gramLoggingMessage: String
     let showsGramLoggingMessageOnlyInGramsMode: Bool
+    let isInline: Bool
 
     init(
         quantityMode: Binding<QuantityMode>,
@@ -17,7 +18,7 @@ struct FoodQuantitySection: View {
         gramsPerServing: Double?,
         gramLoggingMessage: String = FoodDraftValidationError.gramsPerServingRequiredForGramLogging.errorDescription
             ?? "Add grams per serving to log by grams.",
-        showsGramLoggingMessageOnlyInGramsMode: Bool = false
+        showsGramLoggingMessageOnlyInGramsMode: Bool = false, isInline: Bool = false
     ) {
         _quantityMode = quantityMode
         _servingsAmount = servingsAmount
@@ -26,22 +27,15 @@ struct FoodQuantitySection: View {
         self.gramsPerServing = gramsPerServing
         self.gramLoggingMessage = gramLoggingMessage
         self.showsGramLoggingMessageOnlyInGramsMode = showsGramLoggingMessageOnlyInGramsMode
+        self.isInline = isInline
     }
 
     var body: some View {
-        Section("Quantity") {
-            Picker("Mode", selection: guardedQuantityMode) {
-                Text("Servings").tag(QuantityMode.servings)
-                Text("Grams").tag(QuantityMode.grams)
-            }
-            .pickerStyle(.segmented)
-
-            quantityStepper
-
-            if shouldShowGramLoggingMessage {
-                Text(gramLoggingMessage)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+        Group {
+            if isInline {
+                quantityControls
+            } else {
+                Section("Quantity") { quantityControls }
             }
         }
         .onAppear {
@@ -85,6 +79,26 @@ struct FoodQuantitySection: View {
                 gramsAmount: &gramsAmount,
                 gramsPerServing: gramsPerServing
             )
+        }
+    }
+
+    private var quantityControls: some View {
+        Group {
+            Picker("Mode", selection: guardedQuantityMode) {
+                Text("Servings").tag(QuantityMode.servings)
+                Text("Grams").tag(QuantityMode.grams)
+            }
+            .pickerStyle(.segmented)
+
+            if quantityMode == .grams || !isInline {
+                quantityStepper
+            }
+
+            if shouldShowGramLoggingMessage {
+                Text(gramLoggingMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

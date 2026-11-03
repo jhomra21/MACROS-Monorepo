@@ -44,7 +44,7 @@ final class CameraCardLayoutTests: XCTestCase {
             : .barcode(draft, servings: servings, logged: false)
         let view = FoodCameraResultPanel(
             content: content, goals: .default, onChangeServings: { _ in },
-            onChangeName: { _ in }, onLog: {}, onDetails: {}, onReview: {},
+            onChangeName: { _ in }, onLog: {}, onDetails: {},
             onManual: {}, onSearch: {}
         )
         .environment(\.dynamicTypeSize, size)

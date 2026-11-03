@@ -23,6 +23,7 @@ struct FoodCameraFlow: Sendable {
         case imagePicked
         case lookupFinished
         case lookupFailed(String)
+        case recoveryDraftOpened
         case scannerFailed
         case importFailed
         case captureFailed
@@ -74,6 +75,11 @@ struct FoodCameraFlow: Sendable {
 
     private mutating func transition(_ event: Event) -> [Effect] {
         switch event {
+        case .recoveryDraftOpened where phase == .recovering:
+            phase = .showingBarcode
+            return []
+        case .recoveryDraftOpened:
+            return []
         case .torchToggled where phase == .scanning && isInactive == false:
             torchIsOn.toggle()
             return [torchIsOn ? .torchOn : .torchOff]

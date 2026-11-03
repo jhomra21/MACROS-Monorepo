@@ -6,6 +6,10 @@ import UIKit
 struct FoodLogEditorSections: View {
     @Binding var editor: FoodLogEditorState
     let focusedField: FocusState<FoodDraftField?>.Binding
+    var rowBackground: Color? = nil
+    var leadingSections: AnyView? = nil
+    var showsQuantity = true
+    var scrollsToFocusedField = false
     #if os(iOS)
     @State private var showingPreviewImage = false
     #endif
@@ -20,7 +24,10 @@ struct FoodLogEditorSections: View {
                 gramsPrompt: "Grams per serving (optional)",
                 nutritionPresentation: editor.nutritionPresentation
             ),
-            focusedField: focusedField
+            focusedField: focusedField,
+            rowBackground: rowBackground,
+            leadingSections: leadingSections,
+            scrollsToFocusedField: scrollsToFocusedField
         ) {
             FoodDraftSourceSection(
                 title: editor.reviewSectionTitle,
@@ -60,14 +67,16 @@ struct FoodLogEditorSections: View {
                 }
             }
 
-            FoodQuantitySection(
-                quantityMode: $editor.quantityMode,
-                servingsAmount: $editor.servingsAmount,
-                gramsAmount: $editor.gramsAmount,
-                canLogByGrams: editor.previewDraft.canLogByGrams,
-                gramsPerServing: editor.previewDraft.gramsPerServing,
-                gramLoggingMessage: "Add grams per serving to enable gram-based logging."
-            )
+            if showsQuantity {
+                FoodQuantitySection(
+                    quantityMode: $editor.quantityMode,
+                    servingsAmount: $editor.servingsAmount,
+                    gramsAmount: $editor.gramsAmount,
+                    canLogByGrams: editor.previewDraft.canLogByGrams,
+                    gramsPerServing: editor.previewDraft.gramsPerServing,
+                    gramLoggingMessage: "Add grams per serving to enable gram-based logging."
+                )
+            }
         } footerSections: {
             Section {
                 Toggle("Save as reusable food", isOn: $editor.draft.saveAsCustomFood)

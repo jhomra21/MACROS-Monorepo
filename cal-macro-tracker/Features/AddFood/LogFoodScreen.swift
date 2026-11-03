@@ -8,11 +8,7 @@ struct LogFoodScreen: View {
     @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(\.modelContext) private var modelContext
 
-    let initialDraft: FoodDraft
     let loggingDay: CalendarDay?
-    let reviewNotes: [String]
-    let requiredReviewNutrients: [RequiredNutritionReviewNutrient]
-    let previewImageData: Data?
     let onFoodLogged: () -> Void
 
     @State private var editor: FoodLogEditorState
@@ -29,11 +25,7 @@ struct LogFoodScreen: View {
         previewImageData: Data? = nil,
         onFoodLogged: @escaping () -> Void = {}
     ) {
-        self.initialDraft = initialDraft
         self.loggingDay = loggingDay
-        self.reviewNotes = reviewNotes
-        self.requiredReviewNutrients = requiredReviewNutrients
-        self.previewImageData = previewImageData
         self.onFoodLogged = onFoodLogged
         _editor = State(
             initialValue: FoodLogEditorState(

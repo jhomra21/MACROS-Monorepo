@@ -2,6 +2,20 @@ import Foundation
 
 @MainActor
 struct FoodLogEditorState {
+    private let openedDraft: FoodDraft
+    private let openedQuantityMode: QuantityMode
+    private let openedServings: Double
+    private let openedGrams: Double
+
+    var isDirty: Bool {
+        reviewDraft.hasMeaningfulChanges(comparedTo: openedDraft)
+            || numericText.hasInvalidValues
+            || draft.saveAsCustomFood != openedDraft.saveAsCustomFood
+            || quantityMode != openedQuantityMode
+            || servingsAmount != openedServings
+            || gramsAmount != openedGrams
+            || confirmedZeroRequiredNutrients.isEmpty == false
+    }
     let initialDraft: FoodDraft
     let reviewNotes: [String]
     let requiredReviewNutrients: [RequiredNutritionReviewNutrient]
@@ -16,13 +30,16 @@ struct FoodLogEditorState {
 
     init(
         initialDraft: FoodDraft,
+        originalDraft: FoodDraft? = nil,
         initialQuantityMode: QuantityMode = .servings,
         initialQuantityAmount: Double? = nil,
         reviewNotes: [String] = [],
         requiredReviewNutrients: [RequiredNutritionReviewNutrient] = [],
         previewImageData: Data? = nil
     ) {
-        self.initialDraft = initialDraft
+        self.initialDraft = originalDraft ?? initialDraft
+        openedDraft = initialDraft
+        openedQuantityMode = initialQuantityMode
         self.reviewNotes = reviewNotes
         self.requiredReviewNutrients = requiredReviewNutrients
         self.previewImageData = previewImageData
@@ -33,6 +50,12 @@ struct FoodLogEditorState {
             initialQuantityMode == .grams
             ? (initialQuantityAmount ?? initialDraft.gramsPerServing ?? 100) : (initialDraft.gramsPerServing ?? 100)
         numericText = FoodDraftNumericText(draft: initialDraft)
+        FoodQuantityState.syncInactiveAmount(
+            for: quantityMode, servingsAmount: &servingsAmount, gramsAmount: &gramsAmount,
+            gramsPerServing: initialDraft.gramsPerServing
+        )
+        openedServings = servingsAmount
+        openedGrams = gramsAmount
     }
 
     var activeAmount: Double {

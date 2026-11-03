@@ -151,6 +151,12 @@ extension FoodCameraSheet {
     }
 
     func logBarcode() {
+        if let editor = detailsEditor {
+            guard editor.canSave, let multiplier = editor.loggingAction?.quantityMultiplier else { return }
+            send(.servingsChanged(multiplier))
+            send(.logTapped)
+            return
+        }
         guard let loggable = loggableResult else { return }
         let action = loggable.draft.loggingAction(
             initialDraft: loggable.initialDraft,
@@ -167,11 +173,13 @@ extension FoodCameraSheet {
 
     func logBarcode(servings amount: Double) {
         guard let loggable = loggableResult, flow.isSaving else { return }
-        let action = loggable.draft.loggingAction(
-            initialDraft: loggable.initialDraft,
-            quantityMode: .servings,
-            quantityAmount: amount
-        )
+        let action =
+            detailsEditor?.loggingAction
+            ?? loggable.draft.loggingAction(
+                initialDraft: loggable.initialDraft,
+                quantityMode: .servings,
+                quantityAmount: amount
+            )
         do {
             try LogEntryRepository(
                 modelContext: modelContext,
@@ -179,11 +187,13 @@ extension FoodCameraSheet {
             ).logFood(action: action, loggedAt: loggingDay?.date(matchingTimeOf: .now) ?? .now, operation: "Log food")
             send(.logFinished)
             feedbackToken += 1
+            detailsEditor = nil
+            let loggedServings = action.quantityMultiplier ?? amount
             switch result {
-            case .barcode(let draft, _, _):
-                send(.contentChanged(.barcode(draft, servings: amount, logged: true)))
-            case let .label(draft, notes, missing, _, _):
-                send(.contentChanged(.label(draft, notes: notes, missingNutrients: missing, servings: amount, logged: true)))
+            case .barcode:
+                send(.contentChanged(.barcode(action.draft, servings: loggedServings, logged: true)))
+            case let .label(_, notes, missing, _, _):
+                send(.contentChanged(.label(action.draft, notes: notes, missingNutrients: missing, servings: loggedServings, logged: true)))
             default:
                 break
             }
@@ -204,9 +214,29 @@ extension FoodCameraSheet {
         }
     }
 
-    func showDetails() {
-        guard case let .barcode(draft, amount, _) = result else { return }
-        logDestination = FoodCameraLogDestination(draft: draft, notes: [], missingNutrients: [], imageData: nil, quantityAmount: amount)
+    func openDetails() {
+        let editor: FoodLogEditorState
+        switch result {
+        case let .barcode(draft, amount, _):
+            editor = FoodLogEditorState(initialDraft: draft, initialQuantityAmount: amount)
+        case let .label(draft, notes, missing, amount, _):
+            editor = FoodLogEditorState(
+                initialDraft: draft, originalDraft: labelInitialDraft,
+                initialQuantityAmount: amount, reviewNotes: notes,
+                requiredReviewNutrients: missing, previewImageData: captureImageData
+            )
+        default:
+            return
+        }
+        detailsEditor = editor
+        suspendScannerForDetails()
+    }
+
+    private func suspendScannerForDetails() {
+        scannerController?.stopScanning()
+        pendingScannerStart = false
+        scannerSuspendedForDetails = true
+        scannerController = nil
     }
 
     func showManualRecovery() {
@@ -214,26 +244,23 @@ extension FoodCameraSheet {
             route = .manual
             return
         }
-        logDestination = FoodCameraLogDestination(
-            draft: recoveryDestination.draft,
-            notes: recoveryDestination.reviewNotes,
-            missingNutrients: [],
-            imageData: nil,
-            quantityAmount: 1
+        send(.recoveryDraftOpened)
+        send(.contentChanged(.barcode(recoveryDestination.draft, servings: flow.servings, logged: false)))
+        detailsEditor = FoodLogEditorState(
+            initialDraft: recoveryDestination.draft, reviewNotes: recoveryDestination.reviewNotes
         )
-    }
-
-    func showLabelReview() {
-        guard case let .label(draft, notes, missing, servings, _) = result else { return }
-        logDestination = FoodCameraLogDestination(
-            draft: draft, notes: notes, missingNutrients: missing, imageData: captureImageData, quantityAmount: servings)
+        suspendScannerForDetails()
     }
 
     func resumeScanning() {
+        detailsEditor = nil
+        scannerSuspendedForDetails = false
+        labelInitialDraft = nil
+        captureImageData = nil
         send(.scanAgain)
         guard flow.phase == .scanning else { return }
-        labelInitialDraft = nil
-        frozenImage = nil
+        // The simulator has no live preview. Hardware keeps the still until startScanner succeeds.
+        if !canLiveScan { frozenImage = nil }
         send(.recoveryDestinationChanged(nil))
         send(.contentChanged(.hint("Point at a barcode, or photograph the nutrition label.")))
     }
@@ -264,6 +291,7 @@ extension FoodCameraSheet {
         pendingScannerStart = false
         do {
             try scannerController.startScanning()
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { frozenImage = nil }
         } catch {
             showError(error.localizedDescription)
         }
