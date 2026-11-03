@@ -1,0 +1,11 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 8 nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "State Fix Partner"
+@e3 [button] "Sharing"
+@e4 [text] "State Fix Partner"
+@e5 [text] "Person removed"
+@e6 [image] "Person Cropped In A Circle With An X Mark Badge"
+@e7 [text] "This sharing connection is no longer available."
+@e8 [toolbar] "Toolbar"

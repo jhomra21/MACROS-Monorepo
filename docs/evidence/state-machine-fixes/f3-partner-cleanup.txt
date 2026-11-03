@@ -1,0 +1,1 @@
+Deleted disposable dev partner through app API and removed private local state.

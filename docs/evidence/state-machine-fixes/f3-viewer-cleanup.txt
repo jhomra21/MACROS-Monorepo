@@ -1,0 +1,26 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 22 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Sharing"
+@e3 [button] "Sharing"
+@e4 [text] "Sharing"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [switch] "Sharing" [unchecked]
+@e7 [switch] "0" [unchecked]
+@e8 [cell]
+@e9 [text-field] "State Fix Viewer" [disabled] [editable]
+@e10 [cell] "Sharing is off by default. When it's on, MACROS sends your display name, daily goals, and today's calories, protein, carbs, fat, and number of entries so the people you connect with can see your day."
+@e11 [text] "For each person, choose Nothing, Macros, or Macros + Foods. Macros + Foods also sends today's food names, amounts, calories, and macros. Times, notes, photos, and barcodes are never sent, and foods are deleted from our server when you stop sharing them."
+@e12 [text] "A connection works while either person has MACROS Pro. Shared information is best-effort and not medical advice."
+@e13 [cell] "Invite Someone"
+@e14 [cell] "Create Invite Link"
+@e15 [button] "Create Invite Link, Pro"
+@e16 [cell] "Creating invites needs MACROS Pro. Anyone with your link can connect and share back for free until it expires after 7 days or you revoke it. Create Invite shows the same link while it’s valid. To replace it, revoke it first."
+@e17 [cell] "Accept Invite"
+@e18 [cell]
+@e19 [text-field] "Invite token or link" [editable]
+@e20 [cell]
+@e21 [button] "Accept Invite" [disabled]
+@e22 [toolbar] "Toolbar"

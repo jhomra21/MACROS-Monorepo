@@ -45,8 +45,8 @@ Use SQLite backup rather than VACUUM to preserve implicit row IDs.
 - [x] Read complete findings, store/person models, local guidance, and widget diff.
 - [x] F2 failing isolated tests and red evidence.
 - [x] F2 atomic migration and green evidence.
-- [ ] F3 live red E2E.
-- [ ] F3 availability fix and live green E2E; clean up identities.
+- [x] F3 live red E2E.
+- [x] F3 availability fix and live green E2E; clean up identities.
 - [ ] Required checks, full serial iPad suite except StoreKit, evidence review, push.
 
 F2: six tests; red has eight failed assertions across five cases, including
@@ -58,6 +58,23 @@ switches staging to DELETE journal mode, quick-checks, protects and synchronizes
 the base, then renames within its destination directory. Staging is removed on
 error/relaunch. Widget read-only opening is unchanged and cannot select staging.
 No new enum was needed: existence of the published base is the durable state.
+
+F3: real iPhone B / iOS 27 Debug base `da00bef`, fresh app viewer and
+scripted partner against dev only. Red retained 1234 kcal / P87 C146 F33 after
+remote removal and the app roster becoming empty. Green replaced detail with
+“Person removed” and no totals or scope/removal controls. Current roster person
+is optional; the captured value supplies only identity/name. The detail task
+identity includes membership and ignores cancellation/removal errors. Existing
+paused/notShared checks remain. Loading and dashboard failure have separate
+presentation, without another enum or changes to the shared sync service.
+Both profiles deleted through the app API; private script state removed.
+Phone B slim profile verified, phone shut down, lock released.
+Evidence: `f3-red-stale.{png,txt}`, `f3-red-server.txt`, `f3-red-roster.txt`,
+`f3-green-{before,after}.png`, `f3-green-after.txt`, `f3-green-server.txt`,
+and `f3-{partner,viewer}-cleanup.txt` in the evidence directory.
+
+Widget overlap: only the required short `changes-log.md` entry; neither Swift
+implementation file overlaps `origin/feat/shared-person-widget`.
 
 ## References
 

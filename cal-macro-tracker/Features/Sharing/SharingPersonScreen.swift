@@ -17,8 +17,13 @@ struct SharingPersonScreen: View {
     @State private var showingRemovalConfirmation = false
     @State private var showingProUpgrade = false
 
-    private var currentPerson: SharingPerson {
-        sharing.dashboard.people.first { $0.profileId == person.profileId } ?? person
+    /// Roster membership owns availability. The captured person supplies identity, never fallback data.
+    private var currentPerson: SharingPerson? {
+        sharing.dashboard.people.first { $0.profileId == person.profileId }
+    }
+
+    private var displayName: String {
+        currentPerson?.displayName ?? person.displayName
     }
 
     private var personDay: SharingPersonDay? {
@@ -27,7 +32,7 @@ struct SharingPersonScreen: View {
 
     /// The live day when cached, otherwise the dashboard snapshot, which the server leaves empty unless the day is visible.
     private var displayedSnapshot: SharedDailySnapshot? {
-        guard !isPaused, !isNotShared else { return nil }
+        guard let currentPerson, !isPaused, !isNotShared else { return nil }
         return personDay?.snapshot ?? currentPerson.snapshot
     }
 
@@ -40,7 +45,7 @@ struct SharingPersonScreen: View {
         _scopeSelection = State(initialValue: SharingScopeSelection(scope: person.outgoingScope))
     }
 
-    var body: some View {
+    private func personDetails(_ currentPerson: SharingPerson) -> some View {
         List {
             if isPaused {
                 Section {
@@ -166,21 +171,37 @@ struct SharingPersonScreen: View {
                 }
             }
         }
-        .navigationTitle(currentPerson.displayName)
+    }
+
+    var body: some View {
+        Group {
+            if let currentPerson {
+                personDetails(currentPerson)
+            } else if sharing.shouldShowDashboardLoading {
+                ProgressView("Loading sharing…")
+            } else {
+                ContentUnavailableView(
+                    sharing.dashboardErrorMessage == nil ? "Person removed" : "Person unavailable",
+                    systemImage: "person.crop.circle.badge.xmark",
+                    description: Text("This sharing connection is no longer available.")
+                )
+            }
+        }
+        .navigationTitle(displayName)
         .inlineNavigationTitle()
         .errorBanner(message: $errorMessage, title: "Sharing Failed")
         .sheet(isPresented: $showingProUpgrade) {
             ProPaywallSheet(context: .sharingInvites)
         }
         .confirmationDialog(
-            "Remove \(currentPerson.displayName)?",
+            "Remove \(displayName)?",
             isPresented: $showingRemovalConfirmation,
             titleVisibility: .visible
         ) {
             Button("Remove Person", role: .destructive) {
                 Task {
                     do {
-                        try await sharing.removePerson(currentPerson.profileId, ownerDay: dayContext.today)
+                        try await sharing.removePerson(person.profileId, ownerDay: dayContext.today)
                         dismiss()
                     } catch {
                         errorMessage = error.localizedDescription
@@ -194,11 +215,14 @@ struct SharingPersonScreen: View {
         }
         .task(
             id:
-                "\(dayContext.today.sharingDayKey)-\(currentPerson.profileId)-\(currentPerson.incomingActive)-\(currentPerson.connectionPaused)-\(sharing.isDeviceSharingEnabled)"
+                "\(dayContext.today.sharingDayKey)-\(person.profileId)-\(currentPerson != nil)-\(currentPerson?.incomingActive == true)-\(currentPerson?.connectionPaused == true)-\(sharing.isDeviceSharingEnabled)"
         ) {
             personDayVisibility = nil
             isLoadingPersonDay = true
-            guard sharing.isDeviceSharingEnabled, currentPerson.incomingActive, !currentPerson.connectionPaused else { return }
+            guard let currentPerson, sharing.isDeviceSharingEnabled, currentPerson.incomingActive, !currentPerson.connectionPaused else {
+                isLoadingPersonDay = false
+                return
+            }
             do {
                 let day = dayContext.today
                 let updates = try await sharing.personDayUpdates(profileId: currentPerson.profileId, day: day)
@@ -210,6 +234,7 @@ struct SharingPersonScreen: View {
                 }
             } catch is CancellationError {
             } catch {
+                guard !Task.isCancelled, self.currentPerson != nil else { return }
                 isLoadingPersonDay = false
                 errorMessage = error.localizedDescription
             }
@@ -223,11 +248,12 @@ struct SharingPersonScreen: View {
                 sharing.isDeviceSharingEnabled
             else {
                 personDayVisibility = nil
+                if currentPerson == nil { errorMessage = nil }
                 return
             }
         }
-        .onChange(of: currentPerson.outgoingScope) { _, newScope in
-            scopeSelection.acceptServerScope(newScope)
+        .onChange(of: currentPerson?.outgoingScope) { _, newScope in
+            if let newScope { scopeSelection.acceptServerScope(newScope) }
         }
     }
 
@@ -250,11 +276,11 @@ struct SharingPersonScreen: View {
     }
 
     private var isPaused: Bool {
-        currentPerson.connectionPaused || personDayVisibility == .paused
+        currentPerson?.connectionPaused == true || personDayVisibility == .paused
     }
 
     private var isNotShared: Bool {
-        !currentPerson.incomingActive || personDayVisibility == .notShared
+        currentPerson?.incomingActive != true || personDayVisibility == .notShared
     }
 }
 
