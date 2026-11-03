@@ -1,0 +1,32 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 25 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "State Fix Partner"
+@e3 [button] "Sharing"
+@e4 [text] "State Fix Partner"
+@e5 [collection] [covered]
+  [content below collection hidden]
+@e6 [cell] "Today"
+@e7 [cell] "1234"
+@e8 [text] "P 87 g" [covered]
+@e9 [text] "C 146 g" [covered]
+@e10 [text] "F 33 g" [covered]
+@e11 [cell] "What State Fix Partner sees from you" [covered]
+@e12 [cell] [covered]
+@e13 [segmented-control] "What State Fix Partner sees from you" [covered]
+@e14 [button] "Nothing" [selected] [covered]
+@e15 [button] "Macros" [covered]
+@e16 [button] "Macros + Foods" [covered]
+@e17 [cell]
+@e18 [button] "Remove State Fix Partner"
+@e19 [toolbar] "Toolbar" [covered]
+@e20 [group] "Sharing Failed"
+@e21 [scroll-area] [scrollable]
+  [content above scroll-area hidden]
+  [content below scroll-area hidden]
+@e22 [text] "Sharing Failed"
+@e23 [text] "UniFFI.ClientError.ServerError(msg: "[Request ID: 4c8f7e17b2a77dc8] Server Error\nUncaught Error: Relationship unavailable.\n    at handler (../convex/sharing.ts:391:58)\n")"
+@e24 [scroll-area] [scrollable]
+  [content below scroll-area hidden]
+@e25 [button] "OK"

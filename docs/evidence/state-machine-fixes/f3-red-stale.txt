@@ -1,0 +1,23 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 19 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "State Fix Partner"
+@e3 [button] "Sharing"
+@e4 [text] "State Fix Partner"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [cell] "Today"
+@e7 [cell] "1234"
+@e8 [text] "P 87 g"
+@e9 [text] "C 146 g"
+@e10 [text] "F 33 g"
+@e11 [cell] "What State Fix Partner sees from you"
+@e12 [cell]
+@e13 [segmented-control] "What State Fix Partner sees from you"
+@e14 [button] "Nothing" [selected]
+@e15 [button] "Macros"
+@e16 [button] "Macros + Foods"
+@e17 [cell]
+@e18 [button] "Remove State Fix Partner"
+@e19 [toolbar] "Toolbar"
