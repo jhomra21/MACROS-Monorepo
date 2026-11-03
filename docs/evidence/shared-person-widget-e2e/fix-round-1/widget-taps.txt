@@ -1,0 +1,16 @@
+Cold: terminated A's juan-test.cal-macro-tracker process, then tapped the installed
+small widget at simulator coordinates (110, 370). No URL-open command was used.
+After loading, Test B's real person screen showed 650 calories at 7:44 PM.
+09-cold-widget-tap.png SHA-1: 92c7cb55167cd980b970e137ed881560956b8377
+
+Warm: same running app, no termination. Regranted Debug Pro using Settings,
+returned Home, then tapped the installed small widget at (110, 370).
+Test B's real person screen showed 650 calories at 7:47 PM.
+10-warm-widget-tap.png SHA-1: 1771bd078600e1e2f0934eecc0f785744f1169de
+
+The intervening medium widget tap opened Sharing settings because its current
+entry was Pro-locked after app foreground entitlement refresh. That capture is
+not used as a named-person pass.
+
+The delivered PNGs are distinct. The historical 27-cold-link.png and
+28-warm-link.png are byte-identical and are no longer cited as independent proof.

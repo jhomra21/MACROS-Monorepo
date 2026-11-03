@@ -1,0 +1,18 @@
+Slimming 918D29B9-97D3-42C0-9C47-00605E01E8DB: disabling 110 background services. The simulator will reboot to apply the changes.
+Shutting the simulator down to reconfigure it offline...
+Reconfiguring 2 background services while the simulator is off...
+Booting the simulator (a first boot can take up to a minute)...
+Done. Simulator reconfigured and rebooted slim.
+
+918D29B9-97D3-42C0-9C47-00605E01E8DB matches the profile: all expected disable overrides are applied.
+
+Slimming F976E800-DA1F-4F20-B755-DFD964E33975: disabling 110 background services. The simulator will reboot to apply the changes.
+Already slim. Nothing to change.
+
+F976E800-DA1F-4F20-B755-DFD964E33975 matches the profile: all expected disable overrides are applied.
+
+Final allowed device states:
+    iPhone 17e (F976E800-DA1F-4F20-B755-DFD964E33975) (Shutdown)
+    iPhone 17 (918D29B9-97D3-42C0-9C47-00605E01E8DB) (Shutdown)
+    MACROS-iPad-Air-11-2026-10-29 (E91B597B-CE57-4C0B-A8A4-51CBDC3386AB) (Shutdown)
+The committed profile was not edited.

@@ -3,6 +3,9 @@
 Work in progress on `feat/shared-person-widget`, base `8ebd989` (build 28).
 This is not a release sign-off.
 
+The current fixes and new evidence are in [fix round 1](fix-round-1/REPORT.md).
+The sections below describe the earlier validation, not new proof.
+
 ## Live results
 
 - All five families were installed through SpringBoard, not rendered as app
@@ -20,10 +23,10 @@ This is not a release sign-off.
 - Medium stays on Default; small was explicitly set to Test B in native Edit
   Widget. With app Default changed from Test B to None, medium says “Choose a
   default person” and small keeps Test B's 650 calories. Default was restored.
-- Cold and warm `calmacrotracker://sharing/person/<profileId>` links resolve the
-  current relationship and show Test B's live person screen. These captures use
-  direct native URL opens; they are not claims about the earlier unsuccessful
-  SpringBoard tap/AX observation attempts.
+- The earlier direct native URL opens reached Test B, but `27-cold-link.png`
+  and `28-warm-link.png` are byte-identical and do not independently prove
+  cold/warm behavior. Fix round 1 replaces that claim with distinct captures
+  after actual installed-widget taps.
 - The installed small layout initially truncated calories. A shared-only ring
   size/type adjustment fixed it; the final screenshot displays `650` fully.
   Own-day dimensions and font defaults remain unchanged.
@@ -162,9 +165,11 @@ The configuration intent retains Sendable and explicit nonisolated synchronous
 members, but not type-level `nonisolated`: that spelling propagates incorrectly
 to the SDK's reference-backed `@Parameter` storage and produces a Swift 6 error.
 SE-0466 excludes direct Sendable conformers from default MainActor inference.
-The actual intent file passed strict Swift 6 typechecking with warnings-as-errors,
-MainActor defaults, and off-main synchronous initialization/property access.
-No unsafe isolation or warning suppression was added.
+The earlier standalone intent probe used strict Swift 6 flags, warnings-as-errors,
+MainActor defaults, off-main access, and stubbed project dependencies. It was not
+a project build. The app/extension build uses Swift 5 mode, and existing
+SharingRemoteClient Swift-concurrency warnings remain. The changed intent has
+not been re-proven by that historical probe.
 
 Offline last-good captures are **blocked** because Network Link Conditioner is
 not installed. No alternate network hack was substituted. Live paused coverage
@@ -185,11 +190,11 @@ shut down; the result bundle independently confirms the counts. Format, build,
 JS lint, backend TypeScript/20 tests, 76 integrations, and the fresh dev HTTP smoke
 all passed. See `validation-final.txt` and `smoke-final.txt`.
 
-The complete diff was reviewed against required changes 1–11 and the
-simplification table, then through the defensive-code-review skill. No proven
-redundant guards or dead code were found; no speculative cleanup was made.
-The intent isolation spelling and blocked E2E gates are explicitly recorded in
-`REVIEW.md`.
+The earlier defensive review missed duplicated state/publication/constants and
+redundant modifiers subsequently identified by REVIEW-OPUS.md. Fix round 1 removes
+those specific redundancies; no project-wide absence of dead code is claimed.
+TestFlight downgrades remain untested, and simulator checks do not prove
+distribution signing or real first-unlock behavior.
 
 B was re-applied to the unchanged slim profile, verified, and shut down.
 A's post-capture restore and verification passed, and A was shut down. The only

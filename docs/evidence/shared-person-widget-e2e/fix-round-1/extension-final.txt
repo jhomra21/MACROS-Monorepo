@@ -1,0 +1,28 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-02 19:56:29.809 I  CalMacroWidget[6971:d1dd9e] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670989.790489, requested refresh 1793685600.000000
+2026-11-02 19:56:29.897 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670989.898228, requested refresh 1793685600.000000
+2026-11-02 19:56:29.921 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670989.922718, requested refresh 1793685600.000000
+2026-11-02 19:56:29.942 I  CalMacroWidget[6971:d1dda2] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670989.943046, requested refresh 1793685600.000000
+2026-11-02 19:56:29.969 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670989.970609, requested refresh 1793685600.000000
+2026-11-02 19:56:30.188 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670990.189367, requested refresh 1793685600.000000
+2026-11-02 19:56:34.268 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670994.268768, requested refresh 1793685600.000000
+2026-11-02 19:56:34.290 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670994.291030, requested refresh 1793685600.000000
+2026-11-02 19:56:34.301 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670994.302861, requested refresh 1793685600.000000
+2026-11-02 19:56:34.320 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670994.321708, requested refresh 1793685600.000000
+2026-11-02 19:56:34.348 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670994.349714, requested refresh 1793685600.000000
+2026-11-02 19:56:39.290 I  CalMacroWidget[6971:d1dd6f] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670999.291277, requested refresh 1793685600.000000
+2026-11-02 19:56:39.309 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793670999.310062, requested refresh 1793685600.000000
+2026-11-02 19:57:03.000 I  CalMacroWidget[6971:d1ef0e] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671023.002628
+2026-11-02 19:57:03.740 I  CalMacroWidget[6971:d1ef12] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671023.741711, requested refresh 1793672823.741711
+2026-11-02 19:57:03.781 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671023.783102
+2026-11-02 19:57:03.889 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671023.891720, requested refresh 1793672823.891720
+2026-11-02 19:57:03.946 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671023.948673
+2026-11-02 19:57:04.047 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671024.049553, requested refresh 1793672824.049553
+2026-11-02 19:57:04.054 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671024.056463
+2026-11-02 19:57:04.159 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671024.160932, requested refresh 1793672824.160932
+2026-11-02 19:57:04.171 I  CalMacroWidget[6971:d1ef2a] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671024.173195
+2026-11-02 19:57:04.278 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671024.279982, requested refresh 1793672824.279982
+2026-11-02 19:57:05.361 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671025.363213
+2026-11-02 19:57:05.448 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671025.450278, requested refresh 1793672825.450278
+2026-11-02 19:57:05.472 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Extension personDay request 1793671025.474292
+2026-11-02 19:57:05.549 I  CalMacroWidget[6971:d1dd70] [juan-test.cal-macro-tracker:SharedWidget] Timeline entry 1793671025.551181, requested refresh 1793672825.551181
