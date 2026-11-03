@@ -125,6 +125,9 @@ enum BackupImporter {
         let importer = await Task.detached { BackupImportActor(modelContainer: container) }.value
         try await importer.apply(backup, mode: mode)
         backup.settings.apply(standardDefaults: standardDefaults, ringDefaults: ringDefaults)
+        if mode == .replace {
+            standardDefaults.removeObject(forKey: "healthWeightAnchor")
+        }
     }
 
     nonisolated private static func validateNutrition(_ values: [Double?], name: String) throws {
