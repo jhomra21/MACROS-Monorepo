@@ -75,8 +75,11 @@ struct BackupSettingsSection: View {
     }
 
     private func importFile(_ result: Result<[URL], Error>) {
+        guard !isWorking else { return }
         let container = modelContext.container
+        isWorking = true
         Task {
+            defer { isWorking = false }
             do {
                 guard let url = try result.get().first else { return }
                 let backup = try await Task.detached {
