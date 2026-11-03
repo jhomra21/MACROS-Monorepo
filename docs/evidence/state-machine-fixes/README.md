@@ -1,5 +1,11 @@
 # F2 / F3 reproduction and evidence
 
+Review follow-up (2026-11-03): [real SwiftData RED/GREEN simulator E2E](f2-e2e/README.md)
+supersedes the original F2 coverage limits below. There are now five migration
+tests: the obsolete `InterruptedStoreCopy` test/helper was deleted, and the
+destination-preservation assertion checks a post-migration write. The original
+six-test red/green artifacts below remain historical evidence.
+
 Worktree: `/Users/juan/.t3/worktrees/cal-macro-tracker/state-fix-f2f3`.
 Base: `da00befaae3d9954c7046f80570bda4936f918d7`.
 Only disposable dev identities and temporary SQLite fixtures are used.
