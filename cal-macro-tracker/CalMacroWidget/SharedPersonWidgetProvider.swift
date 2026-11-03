@@ -105,7 +105,7 @@ nonisolated struct SharedPersonWidgetProvider: AppIntentTimelineProvider, Sendab
         newDay.snapshot = nil
         newDay.offline = false
         if entry.status == .shared { newDay.status = .noData }
-        newDay = await newDay.prepared(includesAppearance: includesAppearance, proAccess: .unknown)
+        newDay = await newDay.prepared(includesAppearance: includesAppearance)
         let refresh: Date
         switch entry.status {
         case .openApp, .disabled, .proLocked, .proUnknown, .noPeople, .noDefault, .unavailable, .reconnect:

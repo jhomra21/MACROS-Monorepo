@@ -13,9 +13,10 @@ nonisolated struct SharedWidgetPersonEntity: AppEntity, Sendable {
 
 nonisolated struct SharedWidgetPersonQuery: EntityQuery, Sendable {
     func entities(for identifiers: [String]) async throws -> [SharedWidgetPersonEntity] {
-        let people = try allPeople()
+        // A removed or unreadable person must stay selected so the widget reports it as unavailable.
+        let people = (try? allPeople()) ?? [.defaultPerson]
         let byId = Dictionary(people.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        return identifiers.compactMap { byId[$0] }
+        return identifiers.map { byId[$0] ?? SharedWidgetPersonEntity(id: $0, name: "Unavailable") }
     }
 
     func suggestedEntities() async throws -> [SharedWidgetPersonEntity] { try allPeople() }

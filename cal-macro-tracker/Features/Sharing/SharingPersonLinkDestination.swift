@@ -15,6 +15,8 @@ struct SharingPersonLinkDestination: View {
                 } actions: {
                     Link("Open Sharing", destination: AppOpenRequest.sharing(inviteInput: nil).url)
                 }
+                .navigationTitle("Sharing")
+                .inlineNavigationTitle()
             } else if sharing.hasReceivedDashboard {
                 if let person = sharing.dashboard.people.first(where: { $0.profileId == profileId }) {
                     SharingPersonScreen(person: person)
