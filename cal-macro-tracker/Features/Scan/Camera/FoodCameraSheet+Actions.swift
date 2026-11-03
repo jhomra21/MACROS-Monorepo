@@ -188,6 +188,7 @@ extension FoodCameraSheet {
             send(.logFinished)
             feedbackToken += 1
             detailsEditor = nil
+            detailsExpanded = false
             let loggedServings = action.quantityMultiplier ?? amount
             switch result {
             case .barcode:
@@ -215,7 +216,11 @@ extension FoodCameraSheet {
     }
 
     func openDetails() {
-        let editor: FoodLogEditorState
+        if detailsEditor != nil {
+            detailsExpanded = true
+            return
+        }
+        var editor: FoodLogEditorState
         switch result {
         case let .barcode(draft, amount, _):
             editor = FoodLogEditorState(initialDraft: draft, initialQuantityAmount: amount)
@@ -228,7 +233,9 @@ extension FoodCameraSheet {
         default:
             return
         }
+        editor.numericText.retainsPresentedNutrientText = true
         detailsEditor = editor
+        detailsExpanded = true
         suspendScannerForDetails()
     }
 
@@ -249,11 +256,14 @@ extension FoodCameraSheet {
         detailsEditor = FoodLogEditorState(
             initialDraft: recoveryDestination.draft, reviewNotes: recoveryDestination.reviewNotes
         )
+        detailsEditor?.numericText.retainsPresentedNutrientText = true
+        detailsExpanded = true
         suspendScannerForDetails()
     }
 
     func resumeScanning() {
         detailsEditor = nil
+        detailsExpanded = false
         scannerSuspendedForDetails = false
         labelInitialDraft = nil
         captureImageData = nil

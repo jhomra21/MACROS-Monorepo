@@ -44,6 +44,9 @@ struct FoodCameraResultPanel: View {
     var onSettings: () -> Void = {}
     var showsActions = true
     var showsServings = true
+    var showsActionButtons = true
+    var actionNamespace: Namespace.ID? = nil
+    var gramsAmount: Double? = nil
 
     var body: some View {
         Group {
@@ -148,8 +151,14 @@ struct FoodCameraResultPanel: View {
                     .padding(.top, notes.isEmpty ? 0 : 6)
                     .padding(.bottom, 12)
                 if showsServings {
-                    servingsRow(draft, servings: servings)
-                        .padding(.bottom, 16)
+                    Group {
+                        if let gramsAmount {
+                            LabeledContent("Grams", value: "\(gramsAmount.formatted(.number.precision(.fractionLength(0...2)))) g")
+                        } else {
+                            servingsRow(draft, servings: servings)
+                        }
+                    }
+                    .padding(.bottom, 16)
                 }
                 if showsActions, missingNutrients.isEmpty == false {
                     Label(
@@ -157,11 +166,26 @@ struct FoodCameraResultPanel: View {
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.footnote).foregroundStyle(.orange)
-                    wideButton("Edit details", action: onDetails)
-                } else if showsActions {
-                    actionRow(draft, servings: servings, isLabel: isLabel)
                 }
+                if showsActions && showsActionButtons { actionButtons }
             }
+        }
+    }
+
+    @ViewBuilder
+    var actionButtons: some View {
+        switch content {
+        case let .barcode(draft, servings, false):
+            actionRow(draft, servings: servings, isLabel: false)
+        case let .label(draft, _, missing, servings, false):
+            if missing.isEmpty {
+                actionRow(draft, servings: servings, isLabel: true)
+            } else {
+                wideButton("Edit details", action: onDetails)
+                    .modifier(FoodCameraActionSlot(id: "details", namespace: actionNamespace))
+            }
+        default:
+            EmptyView()
         }
     }
 
@@ -298,9 +322,11 @@ struct FoodCameraResultPanel: View {
         let canLog = draft.loggingAction(initialDraft: draft, quantityMode: .servings, quantityAmount: servings).canLog
         let details = Button(isLabel ? "Edit details" : "Details", action: onDetails)
             .buttonStyle(.glass)
+            .modifier(FoodCameraActionSlot(id: "details", namespace: actionNamespace))
         let log = Button(action: onLog) { Text("Log").frame(maxWidth: .infinity) }
             .buttonStyle(.glassProminent)
             .disabled(isLabel && canLog == false)
+            .modifier(FoodCameraActionSlot(id: "log", namespace: actionNamespace))
         return ViewThatFits(in: .horizontal) {
             HStack(spacing: 12) {
                 details.fixedSize(horizontal: true, vertical: false)

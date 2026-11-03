@@ -7,16 +7,33 @@ struct FoodCameraDetailsEditor: View {
     @Binding var editor: FoodLogEditorState
     let goals: MacroGoalsSnapshot
     let onQuantityChange: (Double) -> Void
-    let onLog: () -> Void
+    let isExpanded: Bool
+    let isKeyboardVisible: Bool
+    let actionNamespace: Namespace.ID?
     @FocusState private var focusedField: FoodDraftField?
     @AccessibilityFocusState private var headerFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
+            HStack {
+                Button("Less") {}
+                    .buttonStyle(.glass)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.large)
+                    .modifier(FoodCameraActionSlot(id: "details", namespace: actionNamespace))
+                    .hidden()
+                Spacer()
+            }
+            .padding([.horizontal, .top], 16)
             if !scrollsSummary {
-                summary
-                quantity
-                    .padding(.horizontal, 16)
+                VStack(spacing: 0) {
+                    summary
+                    quantity
+                        .padding(.horizontal, 16)
+                }
+                .frame(height: isKeyboardVisible ? 0 : nil)
+                .clipped()
+                .accessibilityHidden(isKeyboardVisible)
             }
             FoodLogEditorSections(
                 editor: $editor,
@@ -33,8 +50,6 @@ struct FoodCameraDetailsEditor: View {
             )
             .scrollContentBackground(.hidden)
             Button {
-                dismissKeyboard($focusedField)
-                onLog()
             } label: {
                 Text("Log").frame(maxWidth: .infinity)
             }
@@ -42,10 +57,16 @@ struct FoodCameraDetailsEditor: View {
             .buttonBorderShape(.capsule)
             .controlSize(.large)
             .disabled(!editor.canSave)
+            .modifier(FoodCameraActionSlot(id: "log", namespace: actionNamespace))
+            .hidden()
             .padding(16)
         }
         .onChange(of: editor.servingsAmount) { _, amount in onQuantityChange(amount) }
-        .onAppear {
+        .onChange(of: isExpanded, initial: true) { _, expanded in
+            guard expanded else {
+                dismissKeyboard($focusedField)
+                return
+            }
             headerFocused = true
             AccessibilityNotification.LayoutChanged().post()
         }
@@ -61,7 +82,7 @@ struct FoodCameraDetailsEditor: View {
             goals: goals,
             onChangeServings: { editor.servingsAmount = $0 },
             onChangeName: { _ in },
-            onLog: onLog,
+            onLog: {},
             onDetails: {},
             onManual: {},
             onSearch: {},
