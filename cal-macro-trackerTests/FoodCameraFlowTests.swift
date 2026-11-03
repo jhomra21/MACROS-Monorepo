@@ -2,6 +2,41 @@ import XCTest
 @testable import cal_macro_tracker
 
 final class FoodCameraFlowTests: XCTestCase {
+    // Recovery failure modes were written before this event's implementation.
+    func testRecoveryDraftOpeningAllowsOneLogThenScanAgain() {
+        var flow = flow(in: .recovering)
+        XCTAssertEqual(flow.reduce(.logTapped), [])
+        XCTAssertEqual(flow.reduce(.recoveryDraftOpened), [])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+        _ = flow.reduce(.servingsChanged(2))
+        XCTAssertEqual(flow.reduce(.recoveryDraftOpened), [])
+        XCTAssertEqual(flow.servings, 2)
+        XCTAssertEqual(flow.reduce(.logTapped), [.log(servings: 2)])
+        XCTAssertEqual(flow.reduce(.logTapped), [])
+        _ = flow.reduce(.logFinished)
+        XCTAssertEqual(flow.reduce(.scanAgain), [.cancelWork, .torchOff, .startScanning])
+        XCTAssertEqual(flow.servings, 1)
+        XCTAssertFalse(flow.isSaving)
+    }
+
+    func testRecoveryDraftOpeningIsRejectedInEveryOtherPhase() {
+        for phase in FoodCameraFlow.Phase.allTestPhases where phase != .recovering {
+            var flow = flow(in: phase)
+            XCTAssertEqual(flow.reduce(.recoveryDraftOpened), [], "\(phase)")
+            XCTAssertEqual(flow.phase, phase)
+            XCTAssertFalse(flow.isSaving)
+        }
+    }
+
+    func testInactiveRecoveryDraftDoesNotRestartCamera() {
+        var flow = flow(in: .recovering)
+        _ = flow.reduce(.sceneInactive)
+        XCTAssertEqual(flow.reduce(.recoveryDraftOpened), [])
+        XCTAssertEqual(flow.phase, .showingBarcode)
+        XCTAssertTrue(flow.isInactive)
+        XCTAssertEqual(flow.reduce(.scanAgain), [.cancelWork, .torchOff, .stopScanning])
+    }
+
     func testBarcodeRecognitionStartsLookupInExactOrder() {
         var flow = FoodCameraFlow()
         XCTAssertEqual(
