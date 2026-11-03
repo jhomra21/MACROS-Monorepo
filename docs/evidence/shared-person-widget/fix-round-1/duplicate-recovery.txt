@@ -1,0 +1,5 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-02 19:39:50.579 Df cal-macro-tracker[2325:d11cd8] [juan-test.cal-macro-tracker:WidgetFixEvidence] Identity access groups: group.juan-test.cal-macro-tracker
+2026-11-02 19:39:50.588 Df cal-macro-tracker[2325:d11cd8] [juan-test.cal-macro-tracker:WidgetFixEvidence] Divergent duplicate repaired, verified, legacy deleted
+
+The diagnostic required the original legacy bytes and exactly one remaining group item after production migration. Passed. Temporary code removed.
