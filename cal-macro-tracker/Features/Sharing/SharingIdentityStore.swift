@@ -3,8 +3,8 @@ import Foundation
 struct SharingIdentityStore {
     private let item: SharingKeychainItem
 
-    init(service: String = "juan-test.cal-macro-tracker.sharing", account: String = "profile-identity") {
-        item = SharingKeychainItem(service: service, account: account, accessGroup: SharedAppConfiguration.appGroupIdentifier)
+    init(item: SharingKeychainItem = .identity) {
+        self.item = item
     }
 
     func migrateToAccessGroup() throws { try item.migrateToAccessGroup() }
