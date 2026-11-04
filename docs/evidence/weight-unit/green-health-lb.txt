@@ -1,0 +1,33 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 29 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Weight"
+@e3 [button] "Insights"
+@e4 [text] "Weight"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [cell] "Week of Nov 1"
+@e7 [cell] "Tuesday, Nov 3"
+@e8 [text] "180.6 lb"
+@e9 [text] "Apple Health"
+@e10 [cell] "Week of Oct 25"
+@e11 [cell] "Saturday, Oct 31"
+@e12 [text] "180.8 lb"
+@e13 [text] "Manual"
+@e14 [cell] "Wednesday, Oct 28"
+@e15 [text] "180.5 lb"
+@e16 [text] "Manual"
+@e17 [cell] "Sunday, Oct 25"
+@e18 [text] "180.7 lb"
+@e19 [text] "Manual"
+@e20 [cell] "Week of Oct 18"
+@e21 [cell] "Thursday, Oct 22"
+@e22 [text] "180.6 lb"
+@e23 [text] "Manual"
+@e24 [cell] "Monday, Oct 19"
+@e25 [text] "180.8 lb"
+@e26 [text] "Manual"
+@e27 [cell] "Week of Oct 11"
+@e28 [button] "Log Weight"
+@e29 [toolbar] "Toolbar"

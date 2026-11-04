@@ -1,0 +1,39 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 35 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber" [covered]
+@e3 [navigation-bar] "Log Weight" [covered]
+@e4 [button] "Cancel" [covered]
+@e5 [text] "Log Weight" [covered]
+@e6 [button] "Save" [covered]
+@e7 [collection] [covered]
+  [content below collection hidden]
+@e8 [cell] [covered]
+@e9 [text-field] "81.6466266" [covered] [focused] [editable]
+@e10 [segmented-control] [covered]
+@e11 [button] "kilograms" [selected] [covered]
+@e12 [button] "pounds" [covered]
+@e13 [cell] "Date" [covered]
+@e14 [button] "Date Picker" [covered]
+@e15 [toolbar] "Toolbar"
+@e16 [toolbar] "Toolbar"
+@e17 [button] "Previous field" [disabled]
+@e18 [button] "Next field" [disabled]
+@e19 [button] "Done"
+@e20 [other] "inputView"
+@e21 [keyboard]
+@e22 [other] "UIKeyboardLayoutStar Preview"
+@e23 [key] "1"
+@e24 [key] "2"
+@e25 [key] "3"
+@e26 [key] "4"
+@e27 [key] "5"
+@e28 [key] "6"
+@e29 [key] "7"
+@e30 [key] "8"
+@e31 [key] "9"
+@e32 [key] "."
+@e33 [key] "0"
+@e34 [key] "Delete"
+@e35 [button] "Dictate" [disabled]

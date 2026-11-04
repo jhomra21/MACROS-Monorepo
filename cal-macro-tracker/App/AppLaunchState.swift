@@ -23,6 +23,8 @@ final class AppLaunchState {
         do {
             let container = try AppModelContainerFactory.makePersistentContainer()
             try await AppBootstrap.bootstrapIfNeeded(in: container)
+            let profile = try BodyProfileRepository.activeProfile(modelContext: container.mainContext)
+            WeightUnit.initializeIfNeeded(profileUnitSystem: profile?.unitSystem)
             WidgetTimelineReloader.reloadMacroWidgets()
             phase = .ready(container)
             Task { @MainActor in

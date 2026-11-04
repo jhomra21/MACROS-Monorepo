@@ -1,0 +1,33 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 29 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "_TtGC7SwiftUI32NavigationStackHosting"
+@e3 [button] "Cancel"
+@e4 [collection]
+  [content below collection hidden]
+@e5 [cell] "About you"
+@e6 [image] "Account"
+@e7 [text] "Get a starting point based on your body and routine."
+@e8 [cell] "Age"
+@e9 [segmented-control] "Sex"
+@e10 [button] "Female"
+@e11 [button] "Male" [selected]
+@e12 [button] "Unspecified"
+@e13 [other] "Age"
+@e14 [text-field] "34" [editable]
+@e15 [text] "years"
+@e16 [text] "ft"
+@e17 [text] "in"
+@e18 [text] "Height"
+@e19 [text-field] "5" [editable]
+@e20 [text-field] "10" [editable]
+@e21 [other] "Weight"
+@e22 [text-field] "81.9" [editable]
+@e23 [text] "kg"
+@e24 [segmented-control] "Height units"
+@e25 [button] "Height: cm"
+@e26 [button] "Height: ft/in" [selected]
+@e27 [cell] "Activity"
+@e28 [button] "Review targets"
+@e29 [toolbar] "Toolbar"

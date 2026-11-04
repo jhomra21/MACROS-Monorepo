@@ -125,6 +125,11 @@ enum BackupImporter {
         let importer = await Task.detached { BackupImportActor(modelContainer: container) }.value
         try await importer.apply(backup, mode: mode)
         backup.settings.apply(standardDefaults: standardDefaults, ringDefaults: ringDefaults)
+        let profile = backup.bodyProfile.max {
+            if $0.updatedAt != $1.updatedAt { return $0.updatedAt < $1.updatedAt }
+            return $0.createdAt < $1.createdAt
+        }
+        WeightUnit.initializeIfNeeded(profileUnitSystem: profile?.unitSystem, defaults: standardDefaults)
         if mode == .replace {
             standardDefaults.removeObject(forKey: "healthWeightAnchor")
         }

@@ -11,6 +11,7 @@ struct BodyProfileDraft {
     private(set) var heightCm: Double?
     private(set) var weightKg: Double?
     var unitSystem: GoalUnitSystem = .metric
+    private(set) var weightUnit: WeightUnit = .kilograms
     var activity: GoalActivityLevel = .moderate
     var goalDirection = GoalDirection.maintain {
         didSet {
@@ -46,7 +47,7 @@ struct BodyProfileDraft {
 
     private var measuredWeightKg: Double? {
         guard let weight = Self.number(from: weightText), weight > 0 else { return nil }
-        return unitSystem == .metric ? weight : try? GoalCalculator.kg(fromPounds: weight)
+        return weightUnit.fromDisplay(weight)
     }
 
     private static func number(from text: String) -> Double? {
@@ -54,7 +55,8 @@ struct BodyProfileDraft {
         return value
     }
 
-    init(profile: BodyProfile? = nil) {
+    init(profile: BodyProfile? = nil, weightUnit: WeightUnit = .kilograms) {
+        self.weightUnit = weightUnit
         guard let profile else { return }
         sex = profile.sex
         if let birthYear = profile.birthYear {
@@ -89,6 +91,12 @@ struct BodyProfileDraft {
         refreshDisplayText()
     }
 
+    mutating func changeWeightUnit(to newUnit: WeightUnit) {
+        guard newUnit != weightUnit else { return }
+        weightUnit = newUnit
+        refreshDisplayText()
+    }
+
     mutating func setHeightText(_ text: String) {
         heightText = text
         heightCm = measuredHeightCm
@@ -110,7 +118,7 @@ struct BodyProfileDraft {
             (heightText, heightInchesText) = Self.heightTexts(cm: heightCm, unit: unitSystem)
         }
         if let weightKg {
-            weightText = Self.weightText(kg: weightKg, unit: unitSystem)
+            weightText = NumericText.editingDisplay(for: (weightUnit.toDisplay(weightKg) * 10).rounded() / 10)
         }
     }
 
@@ -120,10 +128,6 @@ struct BodyProfileDraft {
         return (NumericText.editingDisplay(for: Double(feet)), NumericText.editingDisplay(for: inches))
     }
 
-    private static func weightText(kg: Double, unit: GoalUnitSystem) -> String {
-        guard unit == .imperial else { return NumericText.editingDisplay(for: (kg * 10).rounded() / 10) }
-        return NumericText.editingDisplay(for: GoalCalculator.pounds(fromKg: kg).rounded())
-    }
 }
 
 enum GoalDirection: String, CaseIterable, Identifiable {
@@ -152,6 +156,7 @@ enum GoalDirection: String, CaseIterable, Identifiable {
 }
 
 struct BodyProfileFormScreen: View {
+    @AppStorage(AppStorageKeys.weightUnit) private var weightUnit = WeightUnit.initial(profileUnitSystem: nil)
     @Binding var profile: BodyProfileDraft
     let onContinue: () -> Void
     @FocusState private var focusedField: ProfileField?
@@ -273,6 +278,8 @@ struct BodyProfileFormScreen: View {
         .inlineNavigationTitle()
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: keyboardFields)
+        .onAppear { profile.changeWeightUnit(to: weightUnit) }
+        .onChange(of: weightUnit) { _, newUnit in profile.changeWeightUnit(to: newUnit) }
     }
 
     private var profileInputRows: some View {
@@ -323,21 +330,21 @@ struct BodyProfileFormScreen: View {
             profileNumericRow(
                 "Weight",
                 value: weightBinding,
-                suffix: profile.unitSystem == .metric ? "kg" : "lb",
+                suffix: profile.weightUnit.symbol,
                 field: .weight
             )
             Picker(
-                "Units",
+                "Height units",
                 selection: Binding(
                     get: { profile.unitSystem },
                     set: { profile.changeUnitSystem(to: $0) }
                 )
             ) {
-                Text("Metric").tag(GoalUnitSystem.metric)
-                Text("Imperial").tag(GoalUnitSystem.imperial)
+                Text("Height: cm").tag(GoalUnitSystem.metric)
+                Text("Height: ft/in").tag(GoalUnitSystem.imperial)
             }
             .pickerStyle(.segmented)
-            .accessibilityLabel("Units")
+            .accessibilityLabel("Height units")
             .padding(12)
             .appCardBackground(cornerRadius: 20)
         }
@@ -370,7 +377,7 @@ struct BodyProfileFormScreen: View {
     }
 
     private func rateLabel(_ rate: Double) -> String {
-        let amount = profile.unitSystem == .metric ? rate : GoalCalculator.pounds(fromKg: rate)
-        return "\(amount.formatted(.number.precision(.fractionLength(1)))) \(profile.unitSystem == .metric ? "kg" : "lb")/week"
+        let amount = profile.weightUnit.toDisplay(rate)
+        return "\(amount.formatted(.number.precision(.fractionLength(1)))) \(profile.weightUnit.symbol)/week"
     }
 }

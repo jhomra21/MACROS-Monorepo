@@ -1,0 +1,15 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 11 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Weight"
+@e3 [button] "Settings"
+@e4 [text] "Weight"
+@e5 [collection]
+  [content below collection hidden]
+@e6 [cell] "Week of Nov 1"
+@e7 [cell] "Wednesday, Nov 4"
+@e8 [text] "81.6 kg"
+@e9 [text] "Manual"
+@e10 [button] "Log Weight"
+@e11 [toolbar] "Toolbar"

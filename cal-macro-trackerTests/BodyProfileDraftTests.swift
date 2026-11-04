@@ -84,7 +84,7 @@ final class BodyProfileDraftTests: XCTestCase {
         draft.changeUnitSystem(to: .imperial)
         XCTAssertEqual(draft.heightText, "5")
         XCTAssertEqual(draft.heightInchesText, "7")
-        XCTAssertEqual(draft.weightText, "154")
+        XCTAssertEqual(draft.weightText, "70")
 
         draft.changeUnitSystem(to: .metric)
         draft.changeUnitSystem(to: .imperial)
@@ -99,12 +99,25 @@ final class BodyProfileDraftTests: XCTestCase {
     func testImperialInputStoresFullPrecisionMetricValues() throws {
         var draft = BodyProfileDraft()
         draft.changeUnitSystem(to: .imperial)
+        draft.changeWeightUnit(to: .pounds)
         draft.setHeightText("5")
         draft.setHeightInchesText("7.25")
         draft.setWeightText("154.5")
 
         XCTAssertEqual(try XCTUnwrap(draft.heightCm), (5 * 12 + 7.25) * 2.54, accuracy: 1e-9)
         XCTAssertEqual(try XCTUnwrap(draft.weightKg), 154.5 * 0.45359237, accuracy: 1e-9)
+    }
+
+    func testWeightUnitIsIndependentOfHeightAndKeepsCanonicalWeight() throws {
+        var draft = BodyProfileDraft()
+        draft.setWeightText("81.6466266")
+        draft.changeUnitSystem(to: .imperial)
+        XCTAssertEqual(draft.weightKg, 81.6466266)
+        draft.changeWeightUnit(to: .pounds)
+        XCTAssertEqual(draft.weightText, "180")
+        draft.changeWeightUnit(to: .kilograms)
+        XCTAssertEqual(draft.unitSystem, .imperial)
+        XCTAssertEqual(try XCTUnwrap(draft.weightKg), 81.6466266, accuracy: 1e-9)
     }
 
     @MainActor
