@@ -130,11 +130,30 @@ export async function searchUSDAFoods(
     : { ...lastResponse, query: input.query }
 }
 
-async function searchUSDAFoodsOnce(
+export async function searchUSDAFoodsOnce(
   input: USDAQuery,
   apiKey: string,
   fetcher: HTTPFetcher,
 ): Promise<USDAProxySearchResponse> {
+  const { foods, hasMore } = await fetchUSDASearchRecords(input, apiKey, fetcher)
+  const queryTokens = searchTokens(input.query, { removeApostrophes: true })
+
+  const results = foods
+    .map(makeProxyFoodResult)
+    .filter((value): value is USDAProxyFoodResult => value != null)
+    .filter((food) => matchesSearchQuery(food, queryTokens))
+
+  return {
+    query: input.query,
+    page: input.page,
+    pageSize: input.pageSize,
+    provider: USDA_PROVIDER_NAME,
+    results,
+    hasMore,
+  }
+}
+
+export async function fetchUSDASearchRecords(input: USDAQuery, apiKey: string, fetcher: HTTPFetcher) {
   const response = await fetcher(buildSearchURL(), {
     method: 'POST',
     headers: {
@@ -174,23 +193,42 @@ async function searchUSDAFoodsOnce(
     return parsed.success ? [parsed.data] : []
   })
 
-  const queryTokens = searchTokens(input.query, { removeApostrophes: true })
-
-  const results = foods
-    .map(makeProxyFoodResult)
-    .filter((value): value is USDAProxyFoodResult => value != null)
-    .filter((food) => matchesSearchQuery(food, queryTokens))
-
   const totalHits = decoded.totalHits ?? 0
   const hasMore = input.page < MAX_PAGE && input.page * input.pageSize < totalHits
 
   return {
-    query: input.query,
-    page: input.page,
-    pageSize: input.pageSize,
-    provider: USDA_PROVIDER_NAME,
-    results,
+    foods,
     hasMore,
+  }
+}
+
+// The v2 source preserves incomplete records; the v1 completeness filter stays above.
+export function usdaSourceFood(food: USDASearchFood) {
+  const id = food.fdcId
+  const name = normalizedText(food.description)
+
+  if (id == null || !Number.isSafeInteger(id) || id <= 0 || name == null) return null
+
+  const values = nutrientValueMap(food)
+
+  return {
+    id: `usda:${id}`, name,
+    brand: firstNonEmpty(food.brandOwner, food.brandName),
+    servingDescription: makeServingDescription(food),
+    gramsPerServing: gramsPerServing(food),
+    caloriesPerServing: values.get(NUTRIENT_IDS.calories),
+    proteinPerServing: values.get(NUTRIENT_IDS.protein),
+    fatPerServing: values.get(NUTRIENT_IDS.fat),
+    carbsPerServing: values.get(NUTRIENT_IDS.carbs),
+    saturatedFatPerServing: values.get(NUTRIENT_IDS.saturatedFat),
+    fiberPerServing: values.get(NUTRIENT_IDS.fiber),
+    sugarsPerServing: values.get(NUTRIENT_IDS.sugars),
+    addedSugarsPerServing: values.get(NUTRIENT_IDS.addedSugars),
+    sodiumPerServing: values.get(NUTRIENT_IDS.sodium),
+    cholesterolPerServing: values.get(NUTRIENT_IDS.cholesterol),
+    sourceName: USDA_PROVIDER_NAME,
+    sourceURL: `https://fdc.nal.usda.gov/food-details/${id}`,
+    barcode: normalizedText(food.gtinUpc),
   }
 }
 

@@ -1,112 +1,74 @@
 import Foundation
 
-enum RemoteSearchProvider: String, Hashable, Decodable {
-    case openFoodFacts
-    case usda
+struct RemoteSearchResult: Decodable, Identifiable, Hashable {
+    let id: String
+    let source: String
+    let externalProductID: String
+    let sourceName: String?
+    let sourceURL: String?
+    let name: String
+    let brand: String?
+    let barcode: String?
+    let servingDescription: String
+    let gramsPerServing: Double?
+    let nutrition: Nutrition
+    let requiredReviewNutrients: [RequiredNutritionReviewNutrient]
 
-    var displayName: String {
-        switch self {
-        case .openFoodFacts:
-            return "Open Food Facts"
-        case .usda:
-            return "USDA FoodData Central"
-        }
-    }
-}
-
-enum RemoteSearchResult: Identifiable, Hashable {
-    case openFoodFacts(OpenFoodFactsProduct)
-    case usda(USDAProxyFood)
-
-    var id: String {
-        switch self {
-        case let .openFoodFacts(product):
-            return "\(provider.rawValue):\(product.id)"
-        case let .usda(food):
-            return food.id
-        }
-    }
-
-    var provider: RemoteSearchProvider {
-        switch self {
-        case .openFoodFacts:
-            return .openFoodFacts
-        case .usda:
-            return .usda
-        }
-    }
-
-    var name: String {
-        switch self {
-        case let .openFoodFacts(product):
-            return TextNormalization.trimmedNonEmpty(product.productName) ?? "Unnamed product"
-        case let .usda(food):
-            return TextNormalization.trimmedNonEmpty(food.name) ?? "Unnamed product"
-        }
+    struct Nutrition: Decodable, Hashable {
+        let calories: Double?
+        let protein: Double?
+        let fat: Double?
+        let carbs: Double?
+        let saturatedFat: Double?
+        let fiber: Double?
+        let sugars: Double?
+        let addedSugars: Double?
+        let sodium: Double?
+        let cholesterol: Double?
     }
 
     var cacheLookupExternalProductIDs: [String] {
-        switch self {
-        case let .openFoodFacts(product):
-            return product.cacheLookupExternalProductIDs
-        case let .usda(food):
-            return [food.id]
-        }
-    }
-
-    var barcode: String? {
-        switch self {
-        case let .openFoodFacts(product):
-            return product.normalizedBarcode
-        case let .usda(food):
-            return TextNormalization.trimmedNonEmpty(food.barcode)
-        }
+        [externalProductID] + OpenFoodFactsIdentity.qualifiedExternalProductIDAliases(for: barcode)
     }
 
     var reviewNotes: [String] {
-        switch self {
-        case let .openFoodFacts(product):
-            if needsManualNutritionReview(product: product) {
-                return ["Open Food Facts has this item but no nutrition values. Fill in the calories and macros before logging."]
-            }
-            return ["Selected from online packaged food search."]
-        case .usda:
-            return ["Selected from USDA packaged food search."]
-        }
-    }
-
-    var requiredReviewNutrients: [RequiredNutritionReviewNutrient] {
-        switch self {
-        case let .openFoodFacts(product) where needsManualNutritionReview(product: product):
-            return [.calories, .protein, .fat, .carbs]
-        case .openFoodFacts, .usda:
-            return []
-        }
+        requiredReviewNutrients.isEmpty ? [] : ["Check the values before logging."]
     }
 
     var nutritionPreview: PerServingNutritionValues? {
-        switch self {
-        case let .openFoodFacts(product):
-            return BarcodeLookupMapper.perServingNutritionPreview(from: product)
-        case let .usda(food):
-            return food.importedData.perServingNutritionValues
-        }
+        guard requiredReviewNutrients.isEmpty else { return nil }
+        return perServingNutrition
     }
 
-    private func needsManualNutritionReview(product: OpenFoodFactsProduct) -> Bool {
-        BarcodeLookupMapper.perServingNutritionPreview(from: product) == nil
+    private var perServingNutrition: PerServingNutritionValues {
+        PerServingNutritionValues(
+            calories: nutrition.calories ?? 0,
+            protein: nutrition.protein ?? 0,
+            fat: nutrition.fat ?? 0,
+            carbs: nutrition.carbs ?? 0,
+            saturatedFat: nutrition.saturatedFat,
+            fiber: nutrition.fiber,
+            sugars: nutrition.sugars,
+            addedSugars: nutrition.addedSugars,
+            sodium: nutrition.sodium,
+            cholesterol: nutrition.cholesterol
+        )
     }
 
-    func makeDraft() throws -> FoodDraft {
-        switch self {
-        case let .openFoodFacts(product):
-            do {
-                return try BarcodeLookupMapper.makeDraft(from: product, source: .searchLookup)
-            } catch BarcodeLookupMapperError.missingNutrition {
-                return BarcodeLookupMapper.makeManualReviewDraft(from: product, source: .searchLookup)
-            }
-        case let .usda(food):
-            return USDAFoodDraftMapper.makeDraft(from: food)
-        }
+    func makeDraft() -> FoodDraft {
+        FoodDraft(
+            importedData: FoodDraftImportedData(
+                name: name,
+                brand: brand,
+                source: .searchLookup,
+                barcode: barcode,
+                externalProductID: externalProductID,
+                sourceName: sourceName ?? source,
+                sourceURL: sourceURL,
+                servingDescription: servingDescription,
+                gramsPerServing: gramsPerServing,
+                perServingNutrition: perServingNutrition
+            )
+        )
     }
 }

@@ -12,16 +12,12 @@ struct AddFoodScreen: View {
     @AppStorage(AppStorageKeys.isFoodSuggestionsEnabled) private var isFoodSuggestionsEnabled = true
     @State private var selectedMode: AddFoodMode = .search
     @State private var searchText = ""
-    @State var remoteSearch = AddFoodRemoteSearchSession()
-    @State var remoteSearchTask: Task<Void, Never>?
+    @State private var remoteSearch = FoodSearchSession()
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var isFoodCameraPresented = false
     @Namespace private var cameraTransition
     private let cameraTransitionSourceID = "search-camera"
-
-    let remotePageSize = 12
-    let packagedFoodSearchClient = PackagedFoodSearchClient()
 
     init(initialMode: AddFoodMode = .search, loggingDay: CalendarDay? = nil) {
         self.loggingDay = loggingDay
@@ -40,21 +36,19 @@ struct AddFoodScreen: View {
                         SearchFoodListView(
                             loggingDay: loggingDay,
                             suggestions: foodSuggestions,
-                            remoteSearch: remoteSearch.viewState,
-                            isRemoteSearchAvailable: isRemoteSearchAvailable,
-                            searchText: trimmedSearchText,
+                            remoteSearch: remoteSearch,
+                            searchText: searchText,
                             onFoodLogged: closeSheet,
-                            onSearchOnline: searchOnline,
-                            onSearchUSDA: searchUSDA,
-                            onLoadMoreRemoteResults: loadMoreRemoteResults,
                             onScrollOffsetChange: updateScanActionBarDisplay
                         )
                         .searchable(
                             text: $searchText,
                             placement: .appNavigationDrawer,
-                            prompt: "Search foods on device or online"
+                            prompt: "Search foods"
                         )
-                        .onSubmit(of: .search, searchOnline)
+                        .onSubmit(of: .search) {
+                            remoteSearch.submit(query: trimmedSearchText)
+                        }
                     case .manual:
                         ManualFoodEntryScreen(loggingDay: loggingDay, onFoodLogged: closeSheet)
                     }
@@ -64,17 +58,8 @@ struct AddFoodScreen: View {
         }
         .navigationTitle("Add Food")
         .inlineNavigationTitle()
-        .onChange(of: trimmedSearchText) { oldValue, newValue in
-            guard oldValue != newValue, remoteSearch.query != newValue else { return }
-            clearRemoteSearch()
-        }
         .onChange(of: selectedMode) { _, _ in
             resetSearchScrollTracking()
-        }
-        .onDisappear {
-            remoteSearchTask?.cancel()
-            remoteSearchTask = nil
-            remoteSearch.isLoading = false
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -111,10 +96,6 @@ struct AddFoodScreen: View {
     }
 
     var trimmedSearchText: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
-    private var isRemoteSearchAvailable: Bool {
-        RemoteFoodSearchConfiguration.isPackagedFoodSearchAvailable
-    }
-
     private var foodSuggestions: [FoodSuggestion] {
         guard selectedMode == .search, trimmedSearchText.isEmpty, isFoodSuggestionsEnabled else { return [] }
         return FoodSuggestionEngine.suggestions(from: recentLogEntries)

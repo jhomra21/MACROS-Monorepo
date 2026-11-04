@@ -1,0 +1,2 @@
+{"query":"chicken","path":"/v2/foods/search","status":200,"milliseconds":1227,"upstreamCalls":{"usda":1,"openFoodFacts":1},"skipped":null,"contributions":{"usda":12,"openFoodFacts":4}}
+{"query":"chicken breast","path":"/v2/foods/search","status":200,"milliseconds":83,"upstreamCalls":{},"skipped":null,"contributions":{"openFoodFacts":12,"usda":12}}

@@ -1,0 +1,31 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 26 visible nodes
+Simulator AX snapshot unavailable (circuit-disabled); used XCTest for this app generation.
+@e1 [application] "MACROS"
+@e2 [window] "Sheet Grabber"
+@e3 [other] "Sheet Grabber"
+@e4 [button] "Sheet Grabber"
+@e5 [other] "Toolbar"
+@e6 [navigation-bar] "Search foods"
+@e7 [search] "mcdonalds big mac" [editable]
+@e8 [image] "Search"
+@e9 [button] "Clear text"
+@e10 [button] "Close"
+@e11 [other] "Camera"
+@e12 [collection]
+  [content below collection hidden]
+@e13 [cell] "On Device"
+@e14 [other] "On Device"
+@e15 [cell] "No on-device foods or meals match this search yet."
+@e16 [other] [same label as parent]
+@e17 [cell] "Search Results"
+@e18 [other] "Search Results"
+@e19 [cell] "Big mac, 625 kcal, P 40 • C 47 • F 29"
+@e20 [cell] "Big Mac, 530 kcal, P 27 • C 42 • F 27"
+@e21 [cell] "Big Mac™ Bacon, 240 kcal, P 13.2 • C 18.6 • F 12.3"
+@e22 [cell] "Big Mac, 231 kcal, P 12 • C 19 • F 11"
+@e23 [cell] "LE BIG MAC™, 231 kcal, P 12 • C 19 • F 11"
+@e24 [cell] "Grand Big Mac Chicken, Nutrition missing — tap to fill manually"
+@e25 [button] "Camera"
+@e26 [toolbar] "Toolbar"

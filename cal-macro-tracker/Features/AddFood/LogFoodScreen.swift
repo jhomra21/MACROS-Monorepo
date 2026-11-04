@@ -10,6 +10,7 @@ struct LogFoodScreen: View {
 
     let loggingDay: CalendarDay?
     let onFoodLogged: () -> Void
+    let showsSourceAttribution: Bool
 
     @State private var editor: FoodLogEditorState
     @State private var logFeedbackToken = 0
@@ -23,10 +24,12 @@ struct LogFoodScreen: View {
         reviewNotes: [String] = [],
         requiredReviewNutrients: [RequiredNutritionReviewNutrient] = [],
         previewImageData: Data? = nil,
+        showsSourceAttribution: Bool = true,
         onFoodLogged: @escaping () -> Void = {}
     ) {
         self.loggingDay = loggingDay
         self.onFoodLogged = onFoodLogged
+        self.showsSourceAttribution = showsSourceAttribution
         _editor = State(
             initialValue: FoodLogEditorState(
                 initialDraft: initialDraft,
@@ -39,19 +42,23 @@ struct LogFoodScreen: View {
     }
 
     var body: some View {
-        FoodLogEditorSections(editor: $editor, focusedField: $focusedField)
-            .safeAreaInset(edge: .bottom) {
-                BottomPinnedActionBar(
-                    title: "Log Food",
-                    systemImage: nil,
-                    isDisabled: !editor.canSave
-                ) {
-                    saveEntry()
-                }
+        FoodLogEditorSections(
+            editor: $editor,
+            focusedField: $focusedField,
+            showsSourceAttribution: showsSourceAttribution
+        )
+        .safeAreaInset(edge: .bottom) {
+            BottomPinnedActionBar(
+                title: "Log Food",
+                systemImage: nil,
+                isDisabled: !editor.canSave
+            ) {
+                saveEntry()
             }
-            .sensoryFeedback(.success, trigger: logFeedbackToken)
-            .navigationTitle("Log Food")
-            .inlineNavigationTitle()
+        }
+        .sensoryFeedback(.success, trigger: logFeedbackToken)
+        .navigationTitle("Log Food")
+        .inlineNavigationTitle()
     }
 
     private var logEntryRepository: LogEntryRepository {

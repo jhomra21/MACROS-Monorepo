@@ -347,11 +347,11 @@ struct FoodCameraResultPanel: View {
             }
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 12) {
-                    wideButton("Search online", prominent: false, action: onSearch)
+                    wideButton("Search", prominent: false, action: onSearch)
                     wideButton("Enter manually", prominent: false, action: onManual)
                 }
                 VStack(spacing: 12) {
-                    wideButton("Search online", prominent: false, action: onSearch)
+                    wideButton("Search", prominent: false, action: onSearch)
                     wideButton("Enter manually", prominent: false, action: onManual)
                 }
             }

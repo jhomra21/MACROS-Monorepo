@@ -1,0 +1,105 @@
+[
+  {
+    "case": "v2-chicken",
+    "status": 200,
+    "seconds": 0.402658,
+    "count": 24,
+    "contributions": {
+      "openFoodFacts": 12,
+      "usda": 12
+    },
+    "shape": [
+      "query",
+      "results",
+      "nextCursor"
+    ],
+    "upstreamCalls": {},
+    "skipped": null
+  },
+  {
+    "case": "v2-restaurant",
+    "status": 200,
+    "seconds": 1.05633,
+    "count": 8,
+    "contributions": {
+      "openFoodFacts": 8
+    },
+    "shape": [
+      "query",
+      "results",
+      "nextCursor"
+    ],
+    "upstreamCalls": {
+      "usda": 1
+    },
+    "skipped": null
+  },
+  {
+    "case": "v2-barcode",
+    "status": 200,
+    "seconds": 0.802889,
+    "count": 1,
+    "contributions": {
+      "openFoodFacts": 1
+    },
+    "shape": [
+      "query",
+      "results",
+      "nextCursor"
+    ],
+    "upstreamCalls": {
+      "usda": 1
+    },
+    "skipped": null
+  },
+  {
+    "case": "v2-short",
+    "status": 400,
+    "seconds": 0.233343,
+    "count": 0,
+    "contributions": {},
+    "shape": [
+      "error"
+    ],
+    "upstreamCalls": {},
+    "skipped": null
+  },
+  {
+    "case": "v1-default",
+    "status": 200,
+    "seconds": 0.253079,
+    "count": 1,
+    "contributions": {
+      "openFoodFacts": 1
+    },
+    "shape": [
+      "query",
+      "page",
+      "pageSize",
+      "resolvedProvider",
+      "results",
+      "hasMore"
+    ],
+    "upstreamCalls": {},
+    "skipped": null
+  },
+  {
+    "case": "v1-usda",
+    "status": 200,
+    "seconds": 0.169274,
+    "count": 12,
+    "contributions": {
+      "usda": 12
+    },
+    "shape": [
+      "query",
+      "page",
+      "pageSize",
+      "resolvedProvider",
+      "results",
+      "hasMore"
+    ],
+    "upstreamCalls": {},
+    "skipped": null
+  }
+]

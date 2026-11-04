@@ -112,7 +112,7 @@ struct FoodLogEditorState {
         case .labelScan:
             return "Label Scan"
         case .searchLookup:
-            return "Online Packaged Food"
+            return "Review"
         case .common, .custom, .barcodeLookup:
             return "Review"
         }

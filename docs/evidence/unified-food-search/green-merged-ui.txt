@@ -1,0 +1,33 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 28 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [navigation-bar] "Add Food"
+@e4 [search] "chicken breast" [editable]
+@e5 [image] "Search"
+@e6 [button] "Clear text"
+@e7 [button] "Close"
+@e8 [collection]
+  [content above collection hidden]
+  [content below collection hidden]
+@e9 [cell] "Chicken Breast, Baked, Broiled, Skin Not Eaten"
+@e10 [button] "Chicken Breast, Baked, Broiled, Skin Not Eaten, 96.6 kcal, P 18.1 • C 0 • F 2.1"
+@e11 [cell] "16 on-device matches shown"
+@e12 [cell] "Search Results"
+@e13 [cell] "92 kcal"
+@e14 [button] "Chicken breast, 92 kcal, P 17.8 • C 1.1 • F 1.5"
+@e15 [cell] "59.9 kcal"
+@e16 [button] "CHICKEN BREAST, 59.9 kcal, P 10.0 • C 2 • F 1"
+@e17 [cell] "45.1 kcal"
+@e18 [button] "CHICKEN BREAST, 45.1 kcal, P 9.0 • C 1 • F 0.5"
+@e19 [cell] "59.9 kcal"
+@e20 [button] "CHICKEN BREAST, 59.9 kcal, P 12.0 • C 0 • F 1"
+@e21 [cell] "129.9 kcal"
+@e22 [button] "CHICKEN BREAST, 129.9 kcal, P 19.0 • C 4 • F 2.5"
+@e23 [cell] "40.0 kcal"
+@e24 [button] "CHICKEN BREAST, 40.0 kcal, P 4 • C 1 • F 2.5"
+@e25 [cell] "369.6 kcal"
+@e26 [button] "CHICKEN BREAST, 369.6 kcal, P 43.9 • C 22.0 • F 16.0"
+@e27 [button] "Camera"
+@e28 [toolbar] "Toolbar"

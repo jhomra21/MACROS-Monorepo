@@ -20,6 +20,8 @@ import type {
 import { fetchUSDAFood, USDAClientError, searchUSDAFoods } from './usda'
 import { withTimeout } from './http'
 import { clientKey, enforceRateLimit } from './rateLimit'
+import { createFoodSearchApp } from './foodSearchRoute'
+import { foodSearchDependencies } from './foodSourceRegistry'
 
 import {
   packagedFoodSearchLogContext,
@@ -30,6 +32,11 @@ import type { PackagedFoodSearchLogContext, PackagedFoodSearchLogMetadata } from
 export { UsdaBudget } from './usdaBudget'
 
 const app = new Hono<{ Bindings: Env }>()
+
+app.route('/v2/foods', createFoodSearchApp(
+  foodSearchDependencies,
+  (c) => enforceRateLimit(c.env.PACKAGED_SEARCH_LIMITER, clientKey(c.req.raw)),
+))
 
 const CACHE_TTL_SECONDS = 86_400
 

@@ -4,15 +4,13 @@ Working tracker for improving packaged food search reliability across the Cloudf
 
 ## Shared Understanding
 
-- Goal: Make normal online packaged food search return useful data reliably and quickly while preserving source accuracy as much as practical.
-- User priority: Users should get a response with food data for normal search; strict Open Food Facts-only behavior is less important than reliable results.
-- Provider semantics:
-  - Normal online search should use the Worker default/best-available path.
-  - Explicit `provider=openFoodFacts` remains OFF-only, but can use both Search-a-licious and legacy Open Food Facts search.
-  - Explicit `provider=usda` remains USDA-only.
-- Restaurant/menu-like default searches should route to legacy Open Food Facts first because it returns useful restaurant/menu rows that Search-a-licious often misses or ranks poorly.
+- Goal: One source-neutral search, with saved on-device foods separate from merged search results.
+- Current app semantics: `/v2/foods/search` runs registered OFF and USDA adapters concurrently under one deadline. Results use a normalized, provider-independent contract and opaque per-source cursor; adding/removing sources is Worker-only. Partial failures are silent; all-source failures expose only a “Try again” button.
+- Input behavior: three-character minimum, 700 ms idle debounce, cancellation on every input change, immediate keyboard Search/Return. Source caches and the global OFF v2 rolling 8/min gate protect upstream services; USDA retains its shared 14/min budget. Denied source cache misses retain their cursor position. OFF’s discouragement of search-as-you-type remains an explicitly owner-approved compromise, not a claim of provider permission.
+- Legacy compatibility: `/v1` remains byte-compatible for App Review build 23 and TestFlight builds 27–30. Default v1 search remains OFF-backed; explicit `provider=openFoodFacts` is OFF-only and `provider=usda` is USDA-only. Its cache keys, routing, and test files are unchanged.
+- V2 named restaurant searches select legacy OFF once; other text uses Search-a-licious once. USDA runs concurrently, not as a fallback. Historical milestones below describe the v1 reliability work and are not the new app’s provider contract.
 - Data quality: Do not invent missing nutrition values. Return available source fields and let the app/user fill gaps when data is incomplete.
-- Scope discipline: Keep the first pass focused on Worker routing, OFF filter simplification, the Swift caller change, tests, validation, deployment, and concise changelog documentation.
+- Current design and validation: [`../docs/design/unified-food-search.md`](../docs/design/unified-food-search.md); [`../docs/evidence/unified-food-search/README.md`](../docs/evidence/unified-food-search/README.md).
 
 ## Core Decisions
 

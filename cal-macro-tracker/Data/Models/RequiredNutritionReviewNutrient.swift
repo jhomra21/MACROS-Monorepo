@@ -1,6 +1,6 @@
 import Foundation
 
-enum RequiredNutritionReviewNutrient: Hashable {
+enum RequiredNutritionReviewNutrient: String, Hashable, Decodable {
     case calories
     case protein
     case fat
