@@ -1,0 +1,20 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 15 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [navigation-bar] "Add Food"
+@e4 [search] "greek yogurt" [editable]
+@e5 [image] "Search"
+@e6 [button] "Clear text"
+@e7 [button] "Close"
+@e8 [collection]
+  [content above collection hidden]
+  [content below collection hidden]
+@e9 [cell] "Search Results"
+@e10 [cell] "Greek yogurt"
+@e11 [button] "Greek yogurt, Philos Greek Yogurt, 67 kcal, P 8 • C 10 • F 0"
+@e12 [cell] "Greek Yogurt"
+@e13 [button] "Greek Yogurt, Ocean Spray Cranberries, 140 kcal, P 1 • C 21 • F 6"
+@e14 [button] "Camera"
+@e15 [toolbar] "Toolbar"

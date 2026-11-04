@@ -1,0 +1,66 @@
+{
+  "query": "chicken breast",
+  "count": 24,
+  "rows": [
+    {
+      "name": "Chicken breast",
+      "brand": "Coles",
+      "calories": 92
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Oscar Mayer Foods",
+      "calories": 60
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "The Hillshire Brands",
+      "calories": 45
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Tony Downs Foods",
+      "calories": 60
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Eddy Packing Co.",
+      "calories": 130
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Tyson Foods",
+      "calories": 40
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "H E Butt Grocery",
+      "calories": 370
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Jennie-O Turkey Store",
+      "calories": 60
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Giant Eagle",
+      "calories": 469
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Fareway Stores",
+      "calories": 60
+    },
+    {
+      "name": "Chicken Breast",
+      "brand": "Wakefern Food",
+      "calories": 107
+    },
+    {
+      "name": "Chicken Breast Tenders",
+      "brand": "Tyson, USDA, Walmart",
+      "calories": 89
+    }
+  ]
+}

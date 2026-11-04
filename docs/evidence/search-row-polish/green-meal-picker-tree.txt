@@ -1,0 +1,30 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 26 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [collection]
+  [content below collection hidden]
+@e4 [cell] "On Device"
+@e5 [cell] "100 kcal"
+@e6 [button] "Greek Yogurt, 100 kcal, P 17 • C 6 • F 0.7"
+@e7 [cell] "Plain Greek yogurt cup"
+@e8 [button] "Plain Greek yogurt cup, 150 kcal, P 15 • C 8 • F 6"
+@e9 [cell] "Search Results"
+@e10 [cell] "Greek yogurt"
+@e11 [button] "Greek yogurt, Philos Greek Yogurt, 67 kcal, P 8 • C 10 • F 0"
+@e12 [cell] "Greek Yogurt"
+@e13 [button] "Greek Yogurt, Ocean Spray Cranberries, 140 kcal, P 1 • C 21 • F 6"
+@e14 [cell] "Greek Yogurt"
+@e15 [button] "Greek Yogurt, Chobani, 120 kcal, P 13 • C 16 • F 0"
+@e16 [cell] "Greek Yogurt"
+@e17 [button] "Greek Yogurt, Chobani, 140 kcal, P 11 • C 18 • F 3"
+@e18 [cell] "Greek Yogurt"
+@e19 [button] "Greek Yogurt, Karoun Dairies, 230 kcal, P 5 • C 19 • F 15"
+@e20 [cell] "Greek Yogurt"
+@e21 [button] "Greek Yogurt, Chobani, 131 kcal, P 12 • C 19 • F 0"
+@e22 [toolbar] "Toolbar"
+@e23 [search] "greek yogurt" [editable]
+@e24 [image] "Search"
+@e25 [button] "Clear text"
+@e26 [button] "close"
