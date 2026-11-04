@@ -2,6 +2,7 @@ import appAddFoodImage from '../assets/app-images/app-add-food.png';
 import appHistoryImage from '../assets/app-images/app-history.png';
 import appHomeImage from '../assets/app-images/app-home.png';
 import appInsightsImage from '../assets/app-images/app-insights.png';
+import appScanDetailsImage from '../assets/app-images/app-scan-details.png';
 import appScanReviewImage from '../assets/app-images/app-scan-review.png';
 import appSettingsImage from '../assets/app-images/app-settings.png';
 import appSharingImage from '../assets/app-images/app-sharing.png';
@@ -97,7 +98,7 @@ export const site = {
 			glyph: 'people',
 			accent: 'carbs',
 			title: 'Share your day with your people.',
-			body: 'Sharing is optional and off by default. Invite people with Pro, then choose Nothing, Macros, or Macros + Foods for each person; connections work while either person has Pro.',
+			body: 'Sharing is optional and off by default. Invite people with Pro, then choose Nothing, Macros, or Macros + Foods for each person. Connections work while either person has Pro. With Pro, add a widget for someone who shares with you.',
 			size: 'half',
 		},
 		{
@@ -105,12 +106,12 @@ export const site = {
 			glyph: 'widget',
 			accent: 'fat',
 			title: 'Widgets and Apple Health.',
-			body: 'Home Screen and Lock Screen widgets. Nutrition goes to Apple Health if you allow it.',
+			body: 'See your macros on your Home Screen or Lock Screen. With Pro, follow someone who shares with you in a widget. Nutrition goes to Apple Health if you allow it.',
 			size: 'half',
 		},
 	],
 	freeFeatures: [
-		'All food logging, barcode and nutrition label scanning, and online packaged-food search',
+		'All food logging, food search, and barcode and nutrition label scanning',
 		'Saved foods and meals, and history',
 		'Small and medium Home Screen widgets and a Lock Screen widget',
 		'Daily share card, and accepting sharing circle invites',
@@ -121,6 +122,7 @@ export const site = {
 	proFeatures: [
 		'Insights ranges beyond 7 days',
 		'Sharing circle invites',
+		'Shared-person Home Screen and Lock Screen widgets',
 		'Weight trends and weight import from Apple Health',
 		'Backup export and import',
 		'Custom macro ring colors',
@@ -167,11 +169,11 @@ export const site = {
 		},
 		{
 			question: 'Is MACROS free?',
-			answer: 'Yes. Food logging, barcode and nutrition label scanning, saved foods, history, widgets, and Apple Health writing are free. MACROS Pro is optional.',
+			answer: 'Yes. Food logging, food search, barcode and nutrition label scanning, saved foods, history, personal widgets, and Apple Health writing are free. MACROS Pro is optional.',
 		},
 		{
 			question: 'What is MACROS Pro?',
-			answer: 'Pro adds Insights ranges beyond 7 days, sharing circle invites, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it.',
+			answer: 'Pro adds Insights ranges beyond 7 days, sharing circle invites, shared-person widgets, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it.',
 		},
 		{
 			question: 'How much does Pro cost?',
@@ -179,7 +181,7 @@ export const site = {
 		},
 		{
 			question: 'Does it work offline?',
-			answer: 'Logging and manual entry work offline. Packaged-food search and barcode lookup need a connection.',
+			answer: 'Logging, manual entry, and searching on-device foods work offline. Other food search results and barcode lookup need a connection.',
 		},
 		{
 			question: 'What leaves my phone?',
@@ -198,13 +200,18 @@ export const site = {
 		},
 		{
 			src: appAddFoodImage,
-			alt: 'Add Food with search, recent and common foods, and camera actions',
-			title: 'Add food',
+			alt: 'Food search for greek yogurt with On Device matches and Search Results in one list',
+			title: 'Search foods in one list',
 		},
 		{
 			src: appScanReviewImage,
-			alt: 'Camera label scan review for Oat Crunch Cereal showing a 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, Log and Edit details buttons, and the scanned Nutrition Facts label',
-			title: 'Oat Crunch Cereal label scan',
+			alt: 'Oat Crunch Cereal label scan with 190 calories, serving controls, and Edit details and Log buttons in the compact camera card',
+			title: 'Review a label scan',
+		},
+		{
+			src: appScanDetailsImage,
+			alt: 'Oat Crunch Cereal editor expanded inside the camera card with serving fields, a Less button, and Log in the footer',
+			title: 'Edit details in the camera',
 		},
 		{
 			src: appHistoryImage,
@@ -213,8 +220,8 @@ export const site = {
 		},
 		{
 			src: appInsightsImage,
-			alt: 'Pro Insights showing a 30-day weight trend, calorie and macro averages, and a calorie chart',
-			title: 'Insights and trends (Pro)',
+			alt: '30-day Pro Insights with the Weight card aligned with calorie and macro average tiles above the calorie chart',
+			title: 'Weight and nutrition trends (Pro)',
 		},
 		{
 			src: appSharingImage,
@@ -228,8 +235,8 @@ export const site = {
 		},
 		{
 			src: appWidgetsImage,
-			alt: 'MACROS small and medium widgets on the iPhone Home Screen',
-			title: 'Home Screen widgets',
+			alt: 'iPhone Home Screen with personal small and medium macro widgets and a shared-person widget showing Alex’s macros',
+			title: 'Your macros and Alex’s (Pro)',
 		},
 		{
 			src: appSettingsImage,
