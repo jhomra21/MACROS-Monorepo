@@ -1,0 +1,22 @@
+Natural refresh observation: observed.
+
+The app was force-quit at 2026-11-02T23:50:26Z. The first post-quit
+extension-originated personDay request occurred at 2026-11-03T00:20:45.694Z
+(30m 19s later). The extension emitted a timeline entry at
+2026-11-03T00:20:46.379Z and requested the next refresh for
+2026-11-03T00:50:46.379Z. Additional widget instances requested data and
+emitted entries through 00:20:47.428Z. These timestamps are from
+natural-refresh-stream.log; the observation ran until the scheduled
+2026-11-03T00:35:26Z cutoff with the app left force-quit.
+
+Before: 01-small-shared.png and 02-medium-shared.png show Updated 4:40 PM.
+After: 26-after-refresh.png, captured 2026-11-03T00:38Z, shows Updated 5:46 PM.
+The widget display time advanced after the extension request and new timeline
+entry. The before/after nutrition is unchanged at 650 kcal, P40/C80/F20,
+with goals 2200/160/220/70. No separate server-side nutrition mutation was
+made or observed during this passive window, so this does not prove propagation
+of a changed server-side value.
+
+The displayed “Updated” labels use the simulator's configured local time.
+Raw extension request and timeline-entry timestamps above are UTC epoch times
+in the unified log (with millisecond precision).

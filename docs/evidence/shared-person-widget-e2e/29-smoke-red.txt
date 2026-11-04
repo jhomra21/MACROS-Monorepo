@@ -1,0 +1,22 @@
+$ bun --env-file=.env.local scripts/sharingSmoke.ts
+Raw personDay stranger: HTTP 200, envelope error, visibility none
+Raw personDay unauthenticated: HTTP 200, envelope error, visibility none
+BLOCKED expired JWT: no genuinely signed expired fixture (MACROS_EXPIRED_JWT_FILE).
+Raw personDay ungranted direction: HTTP 200, envelope success, visibility notShared
+Raw personDay includeFoods:false under foods grant: HTTP 200, envelope error, visibility none
+Cleaned up 3 disposable profiles.
+278 |   return person;
+279 | }
+280 |
+281 | function assert(condition: boolean, message: string): asserts condition {
+282 |   if (!condition) {
+283 |     throw new Error(message);
+                    ^
+error: includeFoods:false under foods grant must return shared.
+      at assert (/Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend/scripts/sharingSmoke.ts:283:15)
+      at rawPersonDay (/Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend/scripts/sharingSmoke.ts:255:3)
+      at runSmoke (/Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend/scripts/sharingSmoke.ts:89:9)
+      at main (/Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend/scripts/sharingSmoke.ts:35:11)
+
+Bun v1.4.2 (macOS arm64)
+error: script "smoke:sharing" exited with code 1

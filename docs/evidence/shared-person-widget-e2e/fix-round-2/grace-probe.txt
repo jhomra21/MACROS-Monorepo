@@ -1,0 +1,2 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-03 10:18:46.133 I  cal-macro-tracker[31176:e9524a] [juan-test.cal-macro-tracker:GraceProbe] Temporary probe: billing=1793719126.120261, grace=1793809126.120261, resolvedWidget=1793809126.120261, hasPro=true, rawAccess=allowed, storedExpiration=1793719126.120261, background=#243B6B

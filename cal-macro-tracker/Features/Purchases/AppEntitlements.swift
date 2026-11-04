@@ -10,11 +10,14 @@ struct EntitlementFact {
     let expirationDate: Date?
     let isUpgraded: Bool
     let renewalState: Product.SubscriptionInfo.RenewalState?
+    let gracePeriodExpirationDate: Date?
+    let willAutoRenew: Bool
 
     init(
         productID: String, productType: Product.ProductType, isVerified: Bool = true,
         revocationDate: Date? = nil, expirationDate: Date? = nil, isUpgraded: Bool = false,
-        renewalState: Product.SubscriptionInfo.RenewalState? = nil
+        renewalState: Product.SubscriptionInfo.RenewalState? = nil,
+        gracePeriodExpirationDate: Date? = nil, willAutoRenew: Bool = false
     ) {
         self.productID = productID
         self.productType = productType
@@ -23,6 +26,21 @@ struct EntitlementFact {
         self.expirationDate = expirationDate
         self.isUpgraded = isUpgraded
         self.renewalState = renewalState
+        self.gracePeriodExpirationDate = gracePeriodExpirationDate
+        self.willAutoRenew = willAutoRenew
+    }
+
+    var widgetExpiration: Date? {
+        switch renewalState {
+        case .inGracePeriod:
+            gracePeriodExpirationDate.map { max($0, expirationDate ?? $0) }
+        case .subscribed:
+            // Allow 24 hours for an unseen auto-renewal, trading bounded stale Pro
+            // eligibility for avoiding a monthly lockout until the next app launch.
+            expirationDate?.addingTimeInterval(willAutoRenew ? 24 * 60 * 60 : 0)
+        default:
+            nil
+        }
     }
 }
 
@@ -30,6 +48,7 @@ struct EntitlementResolution: Equatable {
     let source: ProSource?
     let expiration: Date?
     let hasActiveSubscription: Bool
+    var widgetExpiration: Date? = nil
 
     var hasPro: Bool { source != nil }
 }
@@ -73,6 +92,7 @@ final class AppEntitlements {
     static func resolve(from facts: [EntitlementFact]) -> EntitlementResolution {
         var source: ProSource?
         var expiration: Date?
+        var widgetExpiration: Date?
         var hasActiveSubscription = false
         for fact in facts {
             guard fact.isVerified, fact.revocationDate == nil, !fact.isUpgraded,
@@ -90,22 +110,27 @@ final class AppEntitlements {
             {
                 source = candidate
                 expiration = candidate.isSubscription ? fact.expirationDate : nil
+                widgetExpiration = candidate.isSubscription ? fact.widgetExpiration : nil
             }
         }
-        return EntitlementResolution(source: source, expiration: expiration, hasActiveSubscription: hasActiveSubscription)
+        return EntitlementResolution(
+            source: source, expiration: expiration, hasActiveSubscription: hasActiveSubscription,
+            widgetExpiration: widgetExpiration)
     }
 
     func update(_ resolution: EntitlementResolution) {
         let widgetAccess = WidgetProAccess.projected(hasPro: resolution.hasPro)
-        let previouslyHadWidgetAccess = WidgetAppearanceStorage.shared.proAccess == .allowed
+        let previousWidgetRecord = WidgetAppearanceStorage.shared.proAccessRecord
         hasPro = resolution.hasPro
         proSource = resolution.source
         proExpirationDate = resolution.expiration
         hasActiveSubscription = resolution.hasActiveSubscription
-        if WidgetAppearanceStorage.shared.writeProAccess(widgetAccess),
-            previouslyHadWidgetAccess != (widgetAccess == .allowed)
+        if WidgetAppearanceStorage.shared.writeProAccess(widgetAccess, expiration: resolution.widgetExpiration),
+            previousWidgetRecord != WidgetProAccessRecord(access: widgetAccess, expiration: resolution.widgetExpiration)
         {
+            if widgetAccess == .denied { try? SharedPersonWidgetStorage.shared.invalidate() }
             WidgetTimelineReloader.reloadMacroWidgets()
+            WidgetTimelineReloader.reloadSharedPersonWidgets()
         }
     }
 

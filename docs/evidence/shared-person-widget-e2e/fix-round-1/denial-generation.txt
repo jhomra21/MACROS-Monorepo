@@ -1,0 +1,16 @@
+Live dev transition, A and B, 2026-11-02 local:
+
+Before: incoming Test B shared; generation 62C20C6E-EDDF-4809-92DF-971889D86994.
+B selected Nothing while A's person/dashboard feeds were active.
+After: A visibly showed "Test B isn't sharing with you".
+Generation B75BA775-192B-4A59-9BCE-DB9CA4AB602F.
+A selected Nothing in its outgoing scope while incoming remained denied.
+Generation B75BA775-192B-4A59-9BCE-DB9CA4AB602F.
+A restored Macros.
+B restored Macros + Foods.
+Generation B75BA775-192B-4A59-9BCE-DB9CA4AB602F.
+A's accessibility tree again reported Test B, 650, and Widget E2E Oats.
+
+One generation transition was observed. No invalidation on subsequent unrelated
+outgoing dashboard changes or restoration. This exercises not-sharing, not the
+server-driven connectionPaused branch. No dev-global flag was changed.

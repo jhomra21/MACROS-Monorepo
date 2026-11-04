@@ -1,0 +1,13 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-02 19:37:52.249 Df cal-macro-tracker[1463:d10945] [juan-test.cal-macro-tracker:WidgetFixEvidence] Identity access groups: NK3K87K955.juan-test.cal-macro-tracker,group.juan-test.cal-macro-tracker
+2026-11-02 19:37:52.249 Df cal-macro-tracker[1463:d10945] [juan-test.cal-macro-tracker:WidgetFixEvidence] Existing legacy and group bytes equal: true
+2026-11-02 19:37:52.267 Df cal-macro-tracker[1463:d10945] [juan-test.cal-macro-tracker:WidgetFixEvidence] Prepared legacy identity without printing bytes
+
+Same-process retry:
+2026-11-02 19:38:22.706 Df cal-macro-tracker[1972:d110c9] [juan-test.cal-macro-tracker:WidgetFixEvidence] Forced migration failure, attempt 1
+2026-11-02 19:38:41.519 Df cal-macro-tracker[1972:d110c9] [juan-test.cal-macro-tracker:WidgetFixEvidence] Migration succeeded on a later attempt in this process
+2026-11-02 19:38:42.580 Df cal-macro-tracker[1972:d110c9] [juan-test.cal-macro-tracker:WidgetFixEvidence] Migration succeeded on a later attempt in this process
+
+Control SHA-1 before and after forced failure:
+047a5d945b1b3354369c69fc0ba9b81a7ff66e19
+No Default/person/control mutation on failure. All temporary DEBUG hooks were removed.

@@ -44,7 +44,7 @@ extension MacroSummaryColumnView.Style {
         showsTitleAfterValues: true
     )
 
-    static func widgetSmall(valueFontSize: CGFloat) -> MacroSummaryColumnView.Style {
+    static func widgetSmall(valueFontSize: CGFloat, hidesMissingGoals: Bool = false) -> MacroSummaryColumnView.Style {
         MacroSummaryColumnView.Style(
             titleFont: .caption2.weight(.medium),
             valueFont: .system(size: valueFontSize, weight: .semibold),
@@ -63,7 +63,8 @@ extension MacroSummaryColumnView.Style {
             deltaWeight: .bold,
             showsOverGoalIndicatorInValueLine: true,
             showsOverGoalDeltaInGoalLine: false,
-            showsTitleAfterValues: true
+            showsTitleAfterValues: true,
+            hidesMissingGoals: hidesMissingGoals
         )
     }
 

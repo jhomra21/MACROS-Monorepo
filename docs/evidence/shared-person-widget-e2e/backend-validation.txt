@@ -1,0 +1,36 @@
+Deployment: dev energized-pigeon-822 only.
+Deploy command:
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget/convex-backend && CONVEX_DEPLOYMENT=dev:energized-pigeon-822 bunx convex dev --once --typecheck enable --tail-logs disable
+Exit 0, functions ready 2026-11-02 15:09:26 -0600 (21:09:26Z).
+Full local deployment output: build/shared-widget/dev-deploy.log.
+
+Deployable source diff:
+personDay args adds includeFoods: v.optional(v.boolean()).
+foodDay read runs only when args.includeFoods !== false && incoming.scope.foods === true.
+No return validator, authorization logic, schema, or helper changes.
+Default/true preserves existing callers; false returns foods:[] without reading sharedFoodDays.
+
+Predeployment registered integration red: integration-red.txt.
+Predeployment live raw HTTP red: 29-smoke-red.txt.
+Postdeployment registered integration green: integration-green.txt, 76 passed.
+Final backend check: TypeScript + 20 Bun tests passed, 0 failed.
+Final registered integration: 76 passed across three files, 0 failed.
+Final raw HTTP green: 30-smoke-green.txt (includes bad-signature JWT HTTP 401).
+Genuinely signed expired JWT: BLOCKED, owner approved; no fixture/signing key.
+Live paused/global sharingRequirePro flip: NOT RUN, owner prohibited.
+
+Dev insights, final 72-hour read:
+2 OCC retry warnings, profileDeletion.js:deleteBatch.
+shareRelationships: 2026-11-02T12:57:22Z, 1 call.
+shareGrantIntervals: 2026-11-02T21:03:26Z, 1 call.
+Initial handoff baseline listed only shareRelationships.
+Do not describe final insights as unchanged.
+Both event timestamps predate the additive deployment at 21:09:26Z.
+No personDay warning was returned. Causation of the retry warnings is not established.
+
+No production deployment, Worker change, global flag change, or App Store operation.
+
+Completion verification 2026-11-03T00:06Z:
+Live dev function metadata confirms sharing.js:personDay includes optional boolean includeFoods.
+Final TypeScript/20 tests and 76 integrations passed again; smoke-final.txt is the fresh HTTP run.
+Dev insights still return the same two predeployment retry warning timestamps listed above.

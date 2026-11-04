@@ -223,7 +223,7 @@ final class PurchaseStore {
                 currentTransactions.append((transaction, false))
             }
         }
-        var renewalStates: [UInt64: Product.SubscriptionInfo.RenewalState] = [:]
+        var renewals: [UInt64: (state: Product.SubscriptionInfo.RenewalState, graceExpiration: Date?, willAutoRenew: Bool)] = [:]
         var statuses: [String: ProSubscriptionStatus] = [:]
         var statusDates: [String: Date] = [:]
         var statusAccess: [String: Bool] = [:]
@@ -234,7 +234,7 @@ final class PurchaseStore {
                     transaction.productType == .autoRenewable,
                     ProSource(productID: transaction.productID)?.isSubscription == true
                 else { continue }
-                renewalStates[transaction.originalID] = status.state
+                renewals[transaction.originalID] = (status.state, renewal.gracePeriodExpirationDate, renewal.willAutoRenew)
                 let grantsAccess = status.state == .subscribed || status.state == .inGracePeriod
                 let productID = transaction.productID
                 // A family-shared active status outranks an expired personal status.
@@ -254,7 +254,9 @@ final class PurchaseStore {
                 productID: transaction.productID, productType: transaction.productType,
                 isVerified: isVerified, revocationDate: transaction.revocationDate,
                 expirationDate: transaction.expirationDate, isUpgraded: transaction.isUpgraded,
-                renewalState: renewalStates[transaction.originalID])
+                renewalState: renewals[transaction.originalID]?.state,
+                gracePeriodExpirationDate: renewals[transaction.originalID]?.graceExpiration,
+                willAutoRenew: renewals[transaction.originalID]?.willAutoRenew ?? false)
         }
         return EntitlementSnapshot(resolution: AppEntitlements.resolve(from: facts), subscriptionStatuses: statuses)
     }

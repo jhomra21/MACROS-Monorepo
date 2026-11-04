@@ -103,6 +103,43 @@ struct SharingScreen: View {
             }
 
             Section {
+                PaidFeatureGate(.sharedPersonWidget) {
+                    Picker(
+                        "Default person",
+                        selection: Binding(
+                            get: { sharingSyncService.defaultWidgetProfileId },
+                            set: { profileId in
+                                do {
+                                    try sharingSyncService.setDefaultWidgetPerson(profileId)
+                                } catch {
+                                    errorMessage = error.localizedDescription
+                                }
+                            }
+                        )
+                    ) {
+                        Text("None").tag(String?.none)
+                        ForEach(sharingSyncService.widgetPeople) { person in
+                            Text(person.name).tag(Optional(person.id))
+                        }
+                    }
+                    .disabled(!isSharingDeviceEnabled)
+                } locked: {
+                    ProLockedRow(title: "Shared Widgets", context: .sharedPersonWidget)
+                }
+            } header: {
+                Text("Shared Widgets")
+            } footer: {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(
+                        "Widgets set to Default follow this person. Choose a different person in Edit Widget to keep a widget fixed. Use a Smart Stack to switch between widgets."
+                    )
+                    Text(
+                        "Shared widgets refresh today's macros and goals in the background, about every 30 minutes. Widgets mark names and nutrition as private; iOS Lock Screen privacy settings control their visibility while locked. Protected local copies expire at midnight; removal is best-effort until the next update."
+                    )
+                }
+            }
+
+            Section {
                 Button("Stop Sharing With Everyone", role: .destructive) {
                     destructiveAction = .stopSharing
                 }

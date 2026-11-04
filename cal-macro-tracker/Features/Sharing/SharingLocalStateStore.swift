@@ -136,7 +136,7 @@ struct SharingLocalStateStore {
         SharingInvite(
             inviteId: inviteId,
             token: token,
-            url: SharingConfiguration.authBaseURL.appending(path: "invite/\(token)"),
+            url: SharedAppConfiguration.authBaseURL.appending(path: "invite/\(token)"),
             appURL: SharingConfiguration.inviteAppURL(token: token),
             expiresAt: expiresAt
         )

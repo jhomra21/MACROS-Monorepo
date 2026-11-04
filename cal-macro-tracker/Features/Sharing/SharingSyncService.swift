@@ -9,6 +9,12 @@ final class SharingSyncService {
     private let remoteClient: any SharingRemote
     private let credentialCleanup: any SharingCredentialCleanup
     private let localStateStore: SharingLocalStateStore
+    private let widgetStorage: SharedPersonWidgetStorage?
+    private var widgetControl: SharedPersonWidgetControl
+    var defaultWidgetProfileId: String? { widgetControl.defaultProfileId }
+    var widgetPeople: [SharedWidgetPerson] { widgetControl.people }
+    private var deniedWidgetProfileIds: Set<String> = []
+    private var deniedPersonDayProfileIds: Set<String> = []
     private let uploadCoordinator = SharingUploadCoordinator()
     private var dashboardFeed: SharingDashboardFeed {
         SharingDashboardFeed(remote: remoteClient)
@@ -19,7 +25,9 @@ final class SharingSyncService {
     private(set) var lastUploadStatus: SharingUploadStatus
     private(set) var lastUploadDate: Date?
     private(set) var dashboard = SharingDashboard(people: [])
-    private(set) var dashboardErrorMessage: String?
+    var dashboardErrorMessage: String? { widgetControlErrorMessage ?? dashboardFeedErrorMessage }
+    private var dashboardFeedErrorMessage: String?
+    private var widgetControlErrorMessage: String?
     private(set) var uploadErrorMessage: String?
     private var isDashboardLoading = false
     var shouldShowDashboardLoading: Bool {
@@ -50,7 +58,7 @@ final class SharingSyncService {
         let day: String
     }
     private var dashboardSubscriptionDay: CalendarDay?
-    private var hasReceivedDashboard = false
+    private(set) var hasReceivedDashboard = false
     private var dashboardSubscriptionTask: Task<Void, Never>?
     private var dashboardSubscriptionAttemptId: UUID?
     var isDeviceSharingEnabled: Bool {
@@ -58,18 +66,25 @@ final class SharingSyncService {
     }
 
     convenience init(authService: SharingAuthService) {
-        self.init(remoteClient: SharingRemoteClient(authService: authService), credentialCleanup: authService)
+        self.init(
+            remoteClient: SharingRemoteClient(authService: authService), credentialCleanup: authService,
+            widgetStorage: .shared
+        )
     }
 
     init(
         remoteClient: any SharingRemote,
         credentialCleanup: any SharingCredentialCleanup,
-        localStateStore: SharingLocalStateStore? = nil
+        localStateStore: SharingLocalStateStore? = nil,
+        widgetStorage: SharedPersonWidgetStorage? = nil
     ) {
         let localStateStore = localStateStore ?? SharingLocalStateStore()
+        let widgetControl = (try? widgetStorage?.loadControl()) ?? SharedPersonWidgetControl()
         self.remoteClient = remoteClient
         self.credentialCleanup = credentialCleanup
         self.localStateStore = localStateStore
+        self.widgetStorage = widgetStorage
+        self.widgetControl = widgetControl
         self.lastUploadStatus = localStateStore.lastUploadStatus
         self.lastUploadDate = localStateStore.lastUploadDate
         self.lastUploadedSnapshotHash = localStateStore.lastUploadedSnapshotHash
@@ -104,6 +119,7 @@ final class SharingSyncService {
         try checkIdentity(generation)
         localStateStore.displayName = displayName
         localStateStore.isDeviceSharingEnabled = true
+        publishWidgetControl()
         try await uploadTodaySnapshot(container: container)
     }
 
@@ -279,6 +295,7 @@ final class SharingSyncService {
 
     private func receiveDashboard(_ dashboard: SharingDashboard, attemptId: UUID) {
         guard isCurrentDashboardSubscriptionAttempt(attemptId) else { return }
+        let isFirstDashboard = !hasReceivedDashboard
         let previouslySharedFoods = self.dashboard.people.contains {
             !$0.connectionPaused && $0.outgoingScope == .macrosAndFoods
         }
@@ -299,18 +316,32 @@ final class SharingSyncService {
                 dashboard.people.contains { $0.profileId == pending.profileId && $0.outgoingScope == pending.scope }
             } ?? false
         if scopeSyncReady { pendingScopeSync = nil }
-        if self.dashboard != dashboard { self.dashboard = dashboard }
+        let changed = self.dashboard != dashboard
+        let people = dashboard.people.map { SharedWidgetPerson(id: $0.profileId, name: $0.displayName) }
+        let currentIds = Set(people.map(\.id))
+        let removed = widgetControl.people.contains { !currentIds.contains($0.id) }
+        let denied = Set(dashboard.people.filter { !$0.incomingActive || $0.connectionPaused }.map(\.profileId))
+        let newlyDenied = !denied.subtracting(deniedWidgetProfileIds.union(deniedPersonDayProfileIds)).isEmpty
+        deniedPersonDayProfileIds.formIntersection(denied)
+        deniedWidgetProfileIds = denied
+        widgetControl.people = people
+        if let defaultWidgetProfileId, !currentIds.contains(defaultWidgetProfileId) {
+            widgetControl.defaultProfileId = nil
+        }
+        // A successful dashboard is authoritative, including an empty people list.
+        publishWidgetControl(invalidate: removed || newlyDenied, reload: changed || isFirstDashboard)
+        if changed { self.dashboard = dashboard }
         prunePersonDays(to: dashboard)
         if sharesFoodsNow != previouslySharedFoods || eligibilityEnded || scopeSyncReady, let lastUploadContainer {
             _ = requestUpload(UploadRequest(container: lastUploadContainer, date: nil, calendar: nil))
         }
-        if dashboardErrorMessage != nil { dashboardErrorMessage = nil }
+        dashboardFeedErrorMessage = nil
     }
 
     private func failDashboardSubscription(_ error: Error, attemptId: UUID) {
         guard isCurrentDashboardSubscriptionAttempt(attemptId) else { return }
         isDashboardLoading = false
-        dashboardErrorMessage = error.localizedDescription
+        dashboardFeedErrorMessage = error.localizedDescription
     }
 
     private func finishDashboardSubscription(attemptId: UUID) {
@@ -325,7 +356,7 @@ final class SharingSyncService {
         dashboardSubscriptionTask = nil
         dashboardSubscriptionDay = nil
         dashboardSubscriptionAttemptId = nil
-        dashboardErrorMessage = nil
+        dashboardFeedErrorMessage = nil
         isDashboardLoading = false
         if clearDashboard {
             dashboard = SharingDashboard(people: [])
@@ -344,6 +375,15 @@ final class SharingSyncService {
         let key = PersonDayKey(profileId: profileId, day: day.sharingDayKey)
         let cached = value.visibility == .shared ? value : nil
         if personDays[key] != cached { personDays[key] = cached }
+        if value.visibility != .shared {
+            if deniedPersonDayProfileIds.insert(profileId).inserted,
+                !deniedWidgetProfileIds.contains(profileId)
+            {
+                publishWidgetControl(invalidate: true)
+            }
+        } else {
+            deniedPersonDayProfileIds.remove(profileId)
+        }
     }
 
     /// Keeps only days the dashboard still says are visible, and drops foods once the person stops sharing them.
@@ -469,6 +509,11 @@ final class SharingSyncService {
         try await authenticateForOperation()
         try await accountActions.removePerson(profileId: profileId, ownerDay: ownerDay)
         personDays = personDays.filter { $0.key.profileId != profileId }
+        widgetControl.people.removeAll { $0.id == profileId }
+        if defaultWidgetProfileId == profileId { widgetControl.defaultProfileId = nil }
+        deniedWidgetProfileIds.remove(profileId)
+        deniedPersonDayProfileIds.remove(profileId)
+        publishWidgetControl(invalidate: true)
     }
 
     func deleteSharingProfile() async throws {
@@ -493,6 +538,11 @@ final class SharingSyncService {
 
     private func disableLocalSharing() {
         localStateStore.isDeviceSharingEnabled = false
+        widgetControl.people = []
+        widgetControl.defaultProfileId = nil
+        deniedWidgetProfileIds = []
+        deniedPersonDayProfileIds = []
+        publishWidgetControl(invalidate: true)
         identityGeneration = UUID()
         purchaseDeduplicator = PurchaseSubmissionDeduplicator()
         pendingScopeSync = nil
@@ -504,6 +554,44 @@ final class SharingSyncService {
         uploadErrorMessage = nil
         stopDashboardSubscription(clearDashboard: true)
         clearUploadMetadata()
+    }
+
+    func setDefaultWidgetPerson(_ profileId: String?) throws {
+        guard profileId == nil || widgetControl.people.contains(where: { $0.id == profileId }) else { return }
+        guard defaultWidgetProfileId != profileId else { return }
+        var next = widgetControl
+        next.defaultProfileId = profileId
+        try writeWidgetControl(next)
+    }
+
+    private func publishWidgetControl(invalidate: Bool = false, reload: Bool = false) {
+        do {
+            try writeWidgetControl(widgetControl, invalidate: invalidate, reload: reload)
+        } catch {
+            widgetControlErrorMessage = "Shared widgets couldn't update. Open Sharing Settings to retry."
+        }
+    }
+
+    private func writeWidgetControl(
+        _ proposed: SharedPersonWidgetControl, invalidate: Bool = false, reload: Bool = false
+    ) throws {
+        guard let widgetStorage else { return }
+        // Entitlement changes can invalidate this same app-written file.
+        let current = (try? widgetStorage.loadControl()) ?? nil
+        var next = proposed
+        next.generation = current?.generation ?? proposed.generation
+        next.enabled = isDeviceSharingEnabled
+        if invalidate { next.generation = UUID() }
+        let changed = next != current
+        if changed {
+            try widgetStorage.writeControl(next)
+            widgetStorage.purgeObsoleteCaches(
+                generation: next.generation, day: SharedPersonWidgetClock.dayKey(for: .now)
+            )
+        }
+        widgetControl = next
+        widgetControlErrorMessage = nil
+        if changed || reload { WidgetTimelineReloader.reloadSharedPersonWidgets() }
     }
 
     private func finishPendingCredentialCleanup() async throws {

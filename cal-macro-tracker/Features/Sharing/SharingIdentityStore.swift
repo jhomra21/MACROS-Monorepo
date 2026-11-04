@@ -1,22 +1,13 @@
 import Foundation
 
-struct SharingIdentity: Codable, Equatable {
-    let profileKey: String
-    let profileSecret: String
-}
-
-enum SharingIdentityStoreError: Error {
-    case encodingFailed
-    case keychainFailure(OSStatus)
-    case randomGenerationFailed(OSStatus)
-}
-
 struct SharingIdentityStore {
     private let item: SharingKeychainItem
 
-    init(service: String = "juan-test.cal-macro-tracker.sharing", account: String = "profile-identity") {
-        item = SharingKeychainItem(service: service, account: account)
+    init(item: SharingKeychainItem = .identity) {
+        self.item = item
     }
+
+    func migrateToAccessGroup() throws { try item.migrateToAccessGroup() }
 
     func load() throws -> SharingIdentity? {
         guard let data = try item.load() else { return nil }

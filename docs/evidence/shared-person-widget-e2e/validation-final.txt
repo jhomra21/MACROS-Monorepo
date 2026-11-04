@@ -1,0 +1,27 @@
+Completion validation: 2026-11-03 UTC (2026-11-02 local).
+Base: 8ebd989, branch feat/shared-person-widget, build remains 28.
+Workspace: /Users/juan/.t3/worktrees/cal-macro-tracker/shared-widget.
+
+make quality-format-check: exit 0.
+make quality-build: exit 0, BUILD SUCCEEDED; this is build evidence, not a test run.
+make lint-js: exit 0, 93 files, 116 rules, 0 warnings/errors.
+convex-backend bun run check: exit 0, TypeScript + 20 tests, 0 failures.
+convex-backend bun run test:integration: exit 0, 76 tests / 3 files, 0 failures.
+CONVEX_URL=https://energized-pigeon-822.convex.cloud bun scripts/sharingSmoke.ts:
+exit 0; all available assertions pass; signed-expired-JWT fixture explicitly BLOCKED.
+Prior red and first green are preserved as 29-smoke-red.txt / 30-smoke-green.txt.
+
+Full iPad command (launched from the workspace above):
+xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB' -derivedDataPath build/shared-widget/final-tests -resultBundlePath build/shared-widget/finish-suite.xcresult -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests test
+Exit 0, TEST SUCCEEDED, 232 tests passed, 0 failed.
+PurchaseStoreStoreKitTests was excluded (not a reported skipped test in xcresult).
+SharedPersonWidgetTests: all 4 passed, including expiry policy and Keychain migration.
+xcresulttool summary independently confirms 232 passed / 0 failed / 0 runtime warnings.
+Device: iPad Air 11-inch M4, iOS 27.0 build 24A434, arm64 simulator.
+Xcode: /Applications/Xcode-26.4.1.app, Swift 6.4.
+The iPad is Shutdown. The cleanup shutdown call found it already Shutdown (SimError 405);
+subsequent simulator inventory confirms it is not booted.
+
+Raw validator outputs and xcresult stay local under build/shared-widget/.
+No StoreKit run, macOS build, production deployment, Worker update, App Store operation,
+website change, or forbidden-device action was performed.

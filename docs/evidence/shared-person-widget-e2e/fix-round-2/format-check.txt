@@ -1,0 +1,1 @@
+sh "tools/quality/run_swift_format.sh" --config ".swift-format" --mode lint --target "cal-macro-tracker"

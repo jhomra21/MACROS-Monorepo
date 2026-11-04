@@ -7,6 +7,8 @@ struct CalMacroWidgetBundle: WidgetBundle {
         DailyMacroWidget()
         #if os(iOS)
         DailyMacroAccessoryWidget()
+        SharedPersonMacroWidget()
+        SharedPersonMacroAccessoryWidget()
         #endif
     }
 }

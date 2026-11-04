@@ -1,0 +1,13 @@
+Final source: 44370e4 plus documentation-only evidence/accuracy updates.
+Rebase base: da00bef.
+make quality-format-check: PASS.
+make quality-build: PASS (build is not test evidence).
+make lint-js: PASS.
+convex-backend bun run check: PASS, 20 tests, 0 failures.
+convex-backend bun run test:integration: PASS, 76 tests, 0 failures.
+Dev disposable sharing smoke: PASS; no deployment performed.
+Full serial iPad suite: 232 tests, 0 failures, PurchaseStoreStoreKitTests excluded.
+Result: build/shared-widget/fix-suite-complete.xcresult.
+Options: parallel-testing-enabled NO; test-timeouts-enabled YES; default-test-execution-time-allowance 30; maximum-test-execution-time-allowance 45.
+Project builds in Swift 5 language mode. Existing SharingRemoteClient concurrency warnings remain; no Swift 6 project certification is claimed.
+The iPad, A and B were shut down after validation.

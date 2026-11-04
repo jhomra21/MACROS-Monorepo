@@ -148,12 +148,12 @@ struct WidgetBackgroundSettingsSection: View {
             try WidgetBackgroundPhotoImport.writeSelection(newSelection)
             selection = newSelection
             errorMessage = nil
-            WidgetTimelineReloader.reloadMacroWidgets()
+            WidgetTimelineReloader.reloadAppearanceWidgets()
         } catch {
             selection = WidgetAppearanceStorage.shared.background
             errorMessage = error.localizedDescription
             if selection == newSelection {
-                WidgetTimelineReloader.reloadMacroWidgets()
+                WidgetTimelineReloader.reloadAppearanceWidgets()
             }
         }
     }
@@ -182,13 +182,13 @@ struct WidgetBackgroundSettingsSection: View {
                 guard requestIdentifier == request else { return }
                 selection = .photo(identifier: identifier)
                 errorMessage = nil
-                WidgetTimelineReloader.reloadMacroWidgets()
+                WidgetTimelineReloader.reloadAppearanceWidgets()
             } catch {
                 guard requestIdentifier == request, !Task.isCancelled else { return }
                 selection = WidgetAppearanceStorage.shared.background
                 errorMessage = error.localizedDescription
                 if isPhotoSelected {
-                    WidgetTimelineReloader.reloadMacroWidgets()
+                    WidgetTimelineReloader.reloadAppearanceWidgets()
                 }
             }
         }
@@ -224,7 +224,7 @@ struct WidgetBackgroundSettingsSection: View {
             }
         } onFinish: {
             if didChangeColor {
-                WidgetTimelineReloader.reloadMacroWidgets()
+                WidgetTimelineReloader.reloadAppearanceWidgets()
             }
         }
     }

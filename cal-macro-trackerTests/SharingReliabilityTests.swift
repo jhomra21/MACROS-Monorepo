@@ -721,7 +721,11 @@ private final class Fixture {
 
     init() throws {
         defaults = UserDefaults(suiteName: suite)!
-        identityStore = SharingIdentityStore(service: suite)
+        identityStore = SharingIdentityStore(
+            item: SharingKeychainItem(
+                service: suite, account: SharingKeychainItem.identity.account,
+                accessGroup: SharedAppConfiguration.appGroupIdentifier)
+        )
         try identityStore.save(SharingIdentity(profileKey: "fixture", profileSecret: "synthetic"))
         store = SharingLocalStateStore(defaults: defaults, tokenStore: tokens, identityStore: identityStore)
         store.isDeviceSharingEnabled = true

@@ -171,7 +171,7 @@ private struct MacroRingColorSettingsSection: View {
                         for metric in changedMetrics {
                             setHex(defaultHex(for: metric), for: metric, reloadWidgets: false)
                         }
-                        WidgetTimelineReloader.reloadMacroWidgets()
+                        WidgetTimelineReloader.reloadAppearanceWidgets()
                     }
                 }
             } locked: {
@@ -252,7 +252,7 @@ private struct MacroRingColorSettingsSection: View {
 
         hex.wrappedValue = newHex
         if reloadWidgets {
-            WidgetTimelineReloader.reloadMacroWidgets()
+            WidgetTimelineReloader.reloadAppearanceWidgets()
         }
     }
 

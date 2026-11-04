@@ -26,6 +26,7 @@ struct MacroSummaryColumnView: View {
         let showsOverGoalDeltaInGoalLine: Bool
         let showsTitleAfterValues: Bool
         var showsGoalUnit = false
+        var hidesMissingGoals = false
     }
 
     let metric: MacroMetric
@@ -103,7 +104,9 @@ struct MacroSummaryColumnView: View {
 
     @ViewBuilder
     var currentValueLine: some View {
-        if style.showsOverGoalIndicatorInValueLine, presentation.overGoalValueText != nil {
+        if style.showsOverGoalIndicatorInValueLine, presentation.overGoalValueText != nil,
+            !style.hidesMissingGoals || metric.goal(from: goals) > 0
+        {
             HStack(alignment: .firstTextBaseline, spacing: 1) {
                 currentValueText
 
@@ -138,7 +141,9 @@ struct MacroSummaryColumnView: View {
 
     @ViewBuilder
     var goalLine: some View {
-        if style.showsOverGoalDeltaInGoalLine, let overGoalValueText = presentation.overGoalValueText {
+        if style.hidesMissingGoals && metric.goal(from: goals) <= 0 {
+            EmptyView()
+        } else if style.showsOverGoalDeltaInGoalLine, let overGoalValueText = presentation.overGoalValueText {
             HStack(spacing: style.goalSpacing) {
                 Text(goalText)
                     .foregroundStyle(style.baselineColor)
@@ -165,6 +170,9 @@ struct MacroSummaryColumnView: View {
     }
 
     var accessibilitySummary: String {
+        if style.hidesMissingGoals && metric.goal(from: goals) <= 0 {
+            return "\(metric.title), \(presentation.currentValueText) grams"
+        }
         let overGoal = presentation.overGoalValueText.map { ", over goal by \($0)" } ?? ""
         return "\(metric.title), \(presentation.currentValueText) grams, goal \(presentation.goalValueText) grams\(overGoal)"
     }

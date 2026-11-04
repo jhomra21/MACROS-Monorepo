@@ -1,5 +1,6 @@
 import { ConvexHttpClient } from "convex/browser";
 import type { FunctionReturnType } from "convex/server";
+import { z } from "zod";
 import { api } from "../convex/_generated/api";
 
 const authBaseUrl = process.env.MACROS_AUTH_URL ?? "https://macros-auth.jhonra121.workers.dev";
@@ -12,6 +13,12 @@ if (convexUrl == null) {
   throw new Error("CONVEX_URL is required. Run with the convex-backend .env.local loaded.");
 }
 
+const allowedDeployment = process.env.MACROS_SMOKE_DEPLOYMENT ?? "energized-pigeon-822";
+
+if (convexUrl !== `https://${allowedDeployment}.convex.cloud`) {
+  throw new Error(`This disposable smoke run is restricted to ${allowedDeployment}.`);
+}
+
 type TokenResponse = {
   token: string;
   profile: { profileKey: string; displayName: string; deleted: boolean };
@@ -22,6 +29,7 @@ type SmokeUser = {
   profileKey: string;
   profileSecret: string;
   client: ConvexHttpClient;
+  token: string;
 };
 
 async function main() {
@@ -60,6 +68,39 @@ async function runSmoke(users: SmokeUser[]) {
   assert(aFromB.incomingActive, "A should be sharing with B after invite acceptance.");
   assert(!aFromB.outgoingActive, "B should not share back until reciprocal sharing is enabled.");
   assert(aFromB.snapshot?.calories === 321, "B should see A's uploaded snapshot.");
+  await rawPersonDay(userC.token, aFromB.profileId, "stranger", "error");
+  await rawPersonDay(undefined, aFromB.profileId, "unauthenticated", "error");
+  const invalidSignature = userB.token.split(".");
+
+  invalidSignature[2] = (invalidSignature[2][0] === "A" ? "B" : "A") + invalidSignature[2].slice(1);
+  await rawPersonDay(invalidSignature.join("."), aFromB.profileId, "bad signature JWT", "error");
+  const expiredFile = process.env.MACROS_EXPIRED_JWT_FILE;
+
+  if (expiredFile != null) {
+    const expiredToken = (await Bun.file(expiredFile).text()).trim();
+
+    const claims = z.object({ exp: z.number().finite() }).parse(
+      JSON.parse(Buffer.from(expiredToken.split(".")[1], "base64url").toString()),
+    );
+
+    assert(claims.exp * 1000 < Date.now(), "Expired fixture must be expired.");
+    await rawPersonDay(expiredToken, aFromB.profileId, "expired JWT", "error");
+  } else {
+    console.log("BLOCKED expired JWT: no genuinely signed expired fixture (MACROS_EXPIRED_JWT_FILE).");
+  }
+
+  const aProfile = (await userA.client.query(api.sharing.sharingDashboard, { day, ownerToday: day })).people[0];
+  await rawPersonDay(userA.token, aProfile.profileId, "ungranted direction", "notShared");
+  await userA.client.mutation(api.sharing.setOutgoingScope, {
+    otherProfileId: aProfile.profileId, scope: "macrosAndFoods", ownerDay: day,
+  });
+  await userA.client.mutation(api.sharing.syncMyDay, {
+    snapshot: { day, timeZoneId: "UTC", calories: 321, protein: 30, carbs: 40, fat: 9, entryCount: 2,
+      calorieGoal: 2100, proteinGoal: 145, carbsGoal: 230, fatGoal: 65 },
+    foods: [{ localEntryId: "smoke-food", sortIndex: 0, name: "Synthetic oats", quantityText: "1 bowl",
+      calories: 321, protein: 30, carbs: 40, fat: 9 }],
+  });
+  await rawPersonDay(userB.token, aFromB.profileId, "includeFoods:false under foods grant", "shared", false);
   await expectFailure(
     () => userB.client.query(api.sharing.sharingDashboard, { day: previousDay(day), ownerToday: day }),
     "Dashboard query should reject non-current-day snapshot requests.",
@@ -118,6 +159,7 @@ async function runSmoke(users: SmokeUser[]) {
   const disabledAFromB = expectPerson(disabledDashboardForB, userA.displayName);
   assert(!disabledAFromB.incomingActive, "A's outgoing sharing should be inactive after stopSharingMyData.");
   assert(disabledAFromB.snapshot == null, "A's same-day snapshot should be hidden after sharing is stopped.");
+  await rawPersonDay(userB.token, aFromB.profileId, "ended grant", "notShared");
 
   await userA.client.mutation(api.sharing.setOutgoingSharingForPerson, {
     toProfileId: bFromA.profileId,
@@ -134,6 +176,7 @@ async function runSmoke(users: SmokeUser[]) {
     otherProfileId: bFromA.profileId,
     ownerDay: day,
   });
+  await rawPersonDay(userB.token, aFromB.profileId, "removed relationship", "error");
   const reconnectInviteToken = crypto.randomUUID().replaceAll("-", "");
   const reconnectHash = await sha256Hex(reconnectInviteToken);
   await userA.client.mutation(api.sharing.createInvite, { tokenHash: reconnectHash });
@@ -153,6 +196,8 @@ async function runSmoke(users: SmokeUser[]) {
 
   await userB.client.mutation(api.sharing.deleteMySharingProfile, {});
   users.splice(users.indexOf(userB), 1);
+  await rawPersonDay(userB.token, reconnectedAFromB.profileId, "tombstoned viewer", "error");
+  await rawPersonDay(userA.token, reconnectedBFromA.profileId, "tombstoned person", "error");
   await expectFailure(
     () => userB.client.query(api.sharing.sharingDashboard, { day, ownerToday: day }),
     "Deleted profile's existing token should no longer authorize sharing queries.",
@@ -180,7 +225,7 @@ async function createUser(displayName: string): Promise<SmokeUser> {
   const client = new ConvexHttpClient(convexUrl!);
   client.setAuth(token.token);
 
-  return { displayName, profileKey, profileSecret, client };
+  return { displayName, profileKey, profileSecret, client, token: token.token };
 }
 
 async function exchangeToken(args: { profileKey: string; profileSecret: string; displayName: string }): Promise<TokenResponse> {
@@ -194,10 +239,58 @@ async function exchangeToken(args: { profileKey: string; profileSecret: string; 
   });
 
   if (!response.ok) {
-    throw new Error(`Token exchange failed: ${response.status} ${await response.text()}`);
+    throw new Error(`Token exchange failed: HTTP ${response.status}`);
   }
 
   return await response.json();
+}
+
+async function rawPersonDay(
+  token: string | undefined,
+  otherProfileId: string,
+  label: string,
+  expected: "error" | "shared" | "notShared",
+  includeFoods = false,
+) {
+  const headers = new Headers({ "Content-Type": "application/json" });
+
+  if (token != null) headers.set("Authorization", `Bearer ${token}`);
+
+  const response = await fetch(`${convexUrl}/api/query`, {
+    method: "POST", headers,
+    body: JSON.stringify({ path: "sharing:personDay", args: { otherProfileId, day, ownerToday: day, includeFoods }, format: "json" }),
+  });
+
+  const body = await response.json();
+  const boundary = z.object({ code: z.string().optional() }).parse(body);
+
+  if (expected === "error" && response.status === 401 && boundary.code === "InvalidAuthHeader") {
+    console.log(`Raw personDay ${label}: HTTP ${response.status}, auth boundary ${boundary.code}`);
+
+    return;
+  }
+
+  const envelope = z.discriminatedUnion("status", [
+    z.object({ status: z.literal("error") }),
+    z.object({ status: z.literal("success"), value: z.object({
+      visibility: z.enum(["shared", "notShared", "paused"]), snapshot: z.unknown(), foods: z.array(z.unknown()),
+    }) }),
+  ]).parse(body);
+
+  const visibility = envelope.status === "success" ? envelope.value.visibility : "none";
+
+  console.log(`Raw personDay ${label}: HTTP ${response.status}, envelope ${envelope.status}, visibility ${visibility}`);
+
+  if (expected === "error") {
+    assert(envelope.status === "error", `${label} must reject with a decoded error envelope.`);
+
+    return;
+  }
+
+  assert(envelope.status === "success" && envelope.value.visibility === expected, `${label} must return ${expected}.`);
+  assert(envelope.value.foods.length === 0, `${label} must not return foods.`);
+
+  if (expected === "notShared") assert(envelope.value.snapshot == null, `${label} must not return nutrition.`);
 }
 
 async function uploadSnapshot(

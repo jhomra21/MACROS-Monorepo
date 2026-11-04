@@ -45,10 +45,12 @@ nonisolated struct WidgetProAccessRecord: Codable, Equatable, Sendable {
 
     let version: Int
     let access: WidgetProAccess
+    let expiration: Date?
 
-    init(access: WidgetProAccess) {
+    init(access: WidgetProAccess, expiration: Date? = nil) {
         version = Self.currentVersion
         self.access = access
+        self.expiration = expiration
     }
 }
 
@@ -82,12 +84,16 @@ nonisolated struct WidgetAppearanceStorage {
     }
 
     var proAccess: WidgetProAccess {
+        proAccessRecord?.access ?? .unknown
+    }
+
+    var proAccessRecord: WidgetProAccessRecord? {
         guard let data = defaults?.data(forKey: Self.proAccessKey),
             data.count <= 128,
             let record = try? JSONDecoder().decode(WidgetProAccessRecord.self, from: data),
             record.version == WidgetProAccessRecord.currentVersion
-        else { return .unknown }
-        return record.access
+        else { return nil }
+        return record
     }
 
     @discardableResult
@@ -107,9 +113,9 @@ nonisolated struct WidgetAppearanceStorage {
     }
 
     @discardableResult
-    func writeProAccess(_ access: WidgetProAccess) -> Bool {
+    func writeProAccess(_ access: WidgetProAccess, expiration: Date? = nil) -> Bool {
         guard let defaults,
-            let data = try? JSONEncoder().encode(WidgetProAccessRecord(access: access))
+            let data = try? JSONEncoder().encode(WidgetProAccessRecord(access: access, expiration: expiration))
         else { return false }
         defaults.set(data, forKey: Self.proAccessKey)
         return defaults.data(forKey: Self.proAccessKey) == data
@@ -141,5 +147,18 @@ nonisolated struct WidgetAppearanceStorage {
             .appendingPathComponent("Application Support", isDirectory: true)
             .appendingPathComponent("WidgetAppearance", isDirectory: true)
             .appendingPathComponent("\(identifier.uuidString).jpg", isDirectory: false)
+    }
+
+    @MainActor func backgroundPhotoData(for appearance: WidgetAppearanceRecord?, access: WidgetProAccess) -> Data? {
+        guard access == .allowed,
+            let identifier = appearance?.background.photoIdentifier,
+            let url = photoURL(for: identifier),
+            let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+            let size = attributes[.size] as? NSNumber,
+            size.uint64Value <= UInt64(Self.maximumPhotoBytes),
+            let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+            data.count <= Self.maximumPhotoBytes
+        else { return nil }
+        return data
     }
 }

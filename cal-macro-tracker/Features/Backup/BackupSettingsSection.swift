@@ -143,7 +143,7 @@ struct BackupSettingsSection: View {
             }
         }
         try await BackupImporter.apply(backup, to: modelContext.container, mode: mode)
-        WidgetTimelineReloader.reloadMacroWidgets()
+        WidgetTimelineReloader.reloadAppearanceWidgets()
         sharingSyncService.syncAfterDailyTotalsChange(container: modelContext.container)
         NotificationCenter.default.post(name: .remindersDidChange, object: nil)
         presentation = nil
