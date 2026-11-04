@@ -1,0 +1,74 @@
+{
+  "default": {
+    "byteIdentical": true,
+    "keys": [
+      "query",
+      "page",
+      "pageSize",
+      "resolvedProvider",
+      "results",
+      "hasMore"
+    ],
+    "itemKeys": [
+      "provider",
+      "item"
+    ],
+    "sample": {
+      "provider": "openFoodFacts",
+      "item": {
+        "externalProductID": "openfoodfacts:894700010137",
+        "code": "0894700010137",
+        "product_name": "Nonfat Greek Yogurt",
+        "brands": "Chobani",
+        "quantity": "32 OZ",
+        "nutriments": {
+          "energy-kcal_100g": 52.9,
+          "proteins_100g": 9.41,
+          "fat_100g": 0,
+          "carbohydrates_100g": 3.53,
+          "sugars_100g": 3.53,
+          "sodium_100g": 0.0382,
+          "salt_100g": 0.0956
+        }
+      }
+    }
+  },
+  "usda": {
+    "byteIdentical": true,
+    "keys": [
+      "query",
+      "page",
+      "pageSize",
+      "resolvedProvider",
+      "results",
+      "hasMore"
+    ],
+    "itemKeys": [
+      "provider",
+      "item"
+    ],
+    "sample": {
+      "provider": "usda",
+      "item": {
+        "id": "usda:2035482",
+        "fdcId": 2035482,
+        "name": "GREEK YOGURT",
+        "brand": "Ocean Spray Cranberries, Inc.",
+        "servingDescription": "2 Tbsp",
+        "gramsPerServing": 30,
+        "caloriesPerServing": 467,
+        "proteinPerServing": 3.33,
+        "fatPerServing": 20,
+        "carbsPerServing": 70,
+        "saturatedFatPerServing": 16.7,
+        "fiberPerServing": 3.3,
+        "sugarsPerServing": 70,
+        "sodiumPerServing": 33,
+        "cholesterolPerServing": 0,
+        "sourceName": "USDA FoodData Central",
+        "sourceURL": "https://fdc.nal.usda.gov/food-details/2035482",
+        "barcode": "031200037206"
+      }
+    }
+  }
+}

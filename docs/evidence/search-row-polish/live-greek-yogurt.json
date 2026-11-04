@@ -1,0 +1,66 @@
+{
+  "query": "greek yogurt",
+  "count": 24,
+  "rows": [
+    {
+      "name": "Greek yogurt",
+      "brand": "Philos Greek Yogurt",
+      "calories": 67
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Ocean Spray Cranberries",
+      "calories": 140
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Chobani",
+      "calories": 120
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Chobani",
+      "calories": 140
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Karoun Dairies",
+      "calories": 230
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Chobani",
+      "calories": 131
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Hain Refrigerated Foods",
+      "calories": 291
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Cafe Hon",
+      "calories": 111
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Trader Joe's",
+      "calories": 300
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Green Mountain Creamery",
+      "calories": 120
+    },
+    {
+      "name": "Greek Yogurt",
+      "brand": "Fresh & Easy",
+      "calories": 110
+    },
+    {
+      "name": "Greek yogurt with pomegranate",
+      "brand": "Chobani",
+      "calories": 80
+    }
+  ]
+}

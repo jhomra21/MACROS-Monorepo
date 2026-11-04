@@ -86,7 +86,7 @@ async function loadSource(
   cursor: string | null,
   dependencies: FoodSearchDependencies,
 ): Promise<SourcePage> {
-  const key = JSON.stringify([2, source.id, query, cursor ?? '1'])
+  const key = JSON.stringify([3, source.id, query, cursor ?? '1'])
   const cached = await dependencies.cache?.read(key)
 
   if (cached != null) return cached

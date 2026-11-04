@@ -1,0 +1,113 @@
+bun test v1.4.2 (744846f84)
+
+tests/index.test.ts:
+(pass) packagedFoodSearchLogEntry > omits raw query text from telemetry payloads [0.18ms]
+
+tests/http.test.ts:
+(pass) withTimeout > does not start fetch for a pre-aborted signal or emit an unhandled rejection [2.28ms]
+
+tests/packagedFoods.test.ts:
+(pass) searchPackagedFoods > uses Search-a-licious before falling back to USDA for default search [4.24ms]
+(pass) searchPackagedFoods > keeps valid Search-a-licious hits beside malformed siblings, including timed-out pages [0.32ms]
+(pass) searchPackagedFoods > keeps valid legacy products beside malformed siblings [0.63ms]
+(pass) searchPackagedFoods > rejects invalid Open Food Facts collection containers after all providers fail [0.48ms]
+(pass) searchPackagedFoods > rejects invalid USDA collection containers [0.65ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when Search-a-licious is unavailable for default search [0.13ms]
+(pass) searchPackagedFoods > treats timed out empty Search-a-licious responses as unavailable [0.13ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when Search-a-licious returns zero hits for default search [0.11ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when pinned Search-a-licious is unavailable [0.22ms]
+(pass) searchPackagedFoods > returns an empty Open Food Facts response when both pinned backends have zero hits [0.15ms]
+(pass) searchPackagedFoods > stays on Open Food Facts when products are missing main nutrition [0.24ms]
+(pass) searchPackagedFoods > returns exact Open Food Facts matches that need manual nutrition entry [0.15ms]
+(pass) searchPackagedFoods > keeps matching Open Food Facts results that need nutrition review beside complete matches [0.20ms]
+(pass) searchPackagedFoods > deduplicates repeated Open Food Facts search results [0.17ms]
+(pass) searchPackagedFoods > does not force USDA fallback for default Open Food Facts searches [0.42ms]
+(pass) searchPackagedFoods > preserves filtered-empty Open Food Facts pages when more pages are available [0.11ms]
+(pass) searchPackagedFoods > fetches only the requested legacy Open Food Facts page after Search-a-licious misses [0.18ms]
+(pass) searchPackagedFoods > maps USDA secondary nutrients into the packaged food response contract [0.75ms]
+(pass) searchPackagedFoods > routes restaurant-like default searches to legacy Open Food Facts first [0.21ms]
+(pass) searchPackagedFoods > tries the more reliable Open Food Facts staging host before production legacy search [0.15ms]
+(pass) searchPackagedFoods > keeps restaurant chain results that match the menu item without requiring every query token [0.17ms]
+(pass) searchPackagedFoods > retries flaky legacy Open Food Facts restaurant searches before Search-a-licious [0.12ms]
+(pass) searchPackagedFoods > scans empty restaurant legacy pages before falling back to Search-a-licious [0.16ms]
+(pass) searchPackagedFoods > stops empty restaurant searches after scanned Open Food Facts pages miss [0.20ms]
+(pass) searchPackagedFoods > keeps restaurant-like pinned Open Food Facts pagination on legacy first [0.10ms]
+(pass) searchPackagedFoods > preserves Open Food Facts secondary nutriments in search results [0.12ms]
+(pass) searchPackagedFoods > rethrows unexpected Open Food Facts errors instead of masking them as fallback [0.07ms]
+(pass) isRestaurantLikeQuery > detects restaurant-shaped menu queries without a chain allowlist [0.08ms]
+(pass) isRestaurantLikeQuery > keeps generic packaged grocery queries on the normal OFF path [0.04ms]
+(pass) fetchOpenFoodFactsProduct > fetches and normalizes products by barcode [0.28ms]
+(pass) fetchOpenFoodFactsProduct > tries barcode aliases before reporting not found [0.07ms]
+(pass) fetchOpenFoodFactsProduct > falls back to the staging host after a retryable production product error [0.14ms]
+(pass) fetchOpenFoodFactsProduct > falls back to the staging host after a rejected production product request [0.07ms]
+(pass) fetchUSDAFood > sends USDA API keys in headers instead of traced URLs [0.63ms]
+(pass) fetchUSDAFood > retries page-one USDA searches with punctuation-normalized restaurant names [0.26ms]
+(pass) fetchUSDAFood > filters USDA search results to foods matching all query terms [0.15ms]
+(pass) fetchUSDAFood > maps USDA food details into the proxy contract [0.07ms]
+(pass) packaged food cache policy > shares successful pinned Open Food Facts results under the default read key [0.19ms]
+(pass) packaged food cache policy > keeps empty pinned Open Food Facts page-1 results out of the shared default key [0.04ms]
+(pass) packaged food cache policy > does not cache empty restaurant pinned Open Food Facts pages [0.02ms]
+(pass) packaged food cache policy > keeps empty default Open Food Facts responses scoped to their fallback mode [0.06ms]
+(pass) packaged food cache policy > keeps default USDA responses out of the default Open Food Facts cache key [0.04ms]
+(pass) packaged food cache policy > keeps provider-pinned cache keys stable across fallback policy changes [0.04ms]
+
+tests/searchPresentation.test.ts:
+(pass) v2 search presentation boundary > rounds USDA nutrition after serving scaling, without float noise [0.22ms]
+(pass) v2 search presentation boundary > rounds OFF nutrition after grams/mg conversion and serving scaling [0.16ms]
+(pass) v2 search presentation boundary > display-cases all-capital names and brands for both sources [0.18ms]
+(pass) v2 search presentation boundary > preserves strings containing lowercase letters [0.02ms]
+(pass) v2 search presentation boundary > strips only trailing legal brand suffixes and collapses whitespace [0.14ms]
+(pass) v2 search presentation boundary > keeps tokens with digits verbatim [0.02ms]
+(pass) v2 search presentation boundary > lowercases interior connectors, not the first word [0.03ms]
+(pass) v2 search presentation boundary > preserves only explicit brand acronyms, not every short uppercase word [0.03ms]
+(pass) v2 search presentation boundary > omits missing and whitespace-only brands without inventing one [0.06ms]
+
+tests/hardening.test.ts:
+(pass) service hardening failure cases > uses a stable fallback key when the client IP header is missing [0.02ms]
+(pass) service hardening failure cases > resets the shared budget on the next fixed minute window [0.03ms]
+(pass) service hardening failure cases > aborts the upstream fetch when the total request deadline expires [10.08ms]
+(pass) service hardening failure cases > returns a degraded response by the deadline when budget acquisition never resolves [58.51ms]
+(pass) service hardening failure cases > stops cumulative upstream attempts at the deadline and recovers on retry [37.50ms]
+(pass) service hardening failure cases > allows requests when the binding is absent in local development [0.10ms]
+(pass) service hardening failure cases > returns a non-cacheable 429 with Retry-After when exhausted [0.10ms]
+(pass) service hardening failure cases > allows a successful rate-limit decision [0.04ms]
+(pass) service hardening failure cases > skips USDA when the global budget is exhausted [0.11ms]
+
+tests/usdaBudget.test.ts:
+(pass) USDA budget configuration > uses the default budget for invalid limit abc [0.02ms]
+(pass) USDA budget configuration > uses the default budget for invalid limit 0
+(pass) USDA budget configuration > uses the default budget for invalid limit
+(pass) USDA budget configuration > uses the default budget for invalid limit %s
+
+tests/unifiedFoods.test.ts:
+(pass) unified food search failures, written before implementation > starts every source concurrently, including unknown future source IDs [1.50ms]
+(pass) unified food search failures, written before implementation > bounds a source that never settles and returns the other source by the shared deadline [20.19ms]
+(pass) unified food search failures, written before implementation > skips one 5xx source and retains its position in the cursor [0.87ms]
+(pass) unified food search failures, written before implementation > fails only when every source fails, not for successful empty sources [0.10ms]
+(pass) unified food search failures, written before implementation > deduplicates GTIN aliases and preserves conflicting GTINs [0.14ms]
+(pass) unified food search failures, written before implementation > deduplicates normalized name and brand without barcodes, choosing a whole complete record [0.09ms]
+(pass) unified food search failures, written before implementation > does not repeat emitted duplicates across source pages or fetch exhausted sources [0.19ms]
+(pass) unified food search failures, written before implementation > rejects empty, short, oversized queries and malformed/query-mismatched cursors before calls [0.24ms]
+(pass) unified food search failures, written before implementation > caches source pages independently, retries failed pages, and uses long USDA TTL [0.17ms]
+(pass) unified food search failures, written before implementation > normalizes whitespace/case into the same source cache key [0.06ms]
+{"phase":"unified-food-search","count":1,"contributions":{"futureSource":1},"skippedSources":["openFoodFacts"]}
+(pass) v2 endpoint > returns normalized results, no-store and header-only degradation [0.59ms]
+(pass) v2 endpoint > maps all-source failure and client 429 to only Try again, with no upstream for 429 [0.23ms]
+(pass) adapters and budgets > skips budget-exhausted USDA before an upstream call [0.19ms]
+(pass) adapters and budgets > skips OFF when its global gate denies or coordination fails [0.27ms]
+(pass) adapters and budgets > honors upstream 429 Retry-After without retries and returns the other source [0.18ms]
+(pass) adapters and budgets > skips malformed items but keeps valid results and never fabricates nutrition [0.20ms]
+(pass) adapters and budgets > makes one request per source for normalized plain queries and barcode product lookup [0.09ms]
+(pass) adapters and budgets > enforces rolling 8/min and cooldown, without mutating input state [0.04ms]
+(pass) normalization parity fixtures > per-serving with milligram conversion [0.03ms]
+(pass) normalization parity fixtures > scaled 100g and salt conversion [0.02ms]
+(pass) normalization parity fixtures > explicit 100g without mass conversion [0.01ms]
+(pass) normalization parity fixtures > volume serving does not invent grams
+(pass) normalization parity fixtures > missing nutrition requires review [0.01ms]
+(pass) normalization parity fixtures > partial nutrients remain optional
+(pass) normalization parity fixtures > USDA converts per-100g nutrients to known serving grams, but not milliliters [0.04ms]
+
+ 92 pass
+ 0 fail
+ 322 expect() calls
+Ran 92 tests across 7 files. [183.00ms]

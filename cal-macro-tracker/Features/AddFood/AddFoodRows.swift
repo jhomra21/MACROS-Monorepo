@@ -82,7 +82,7 @@ struct RemoteFoodRow: View {
         if let nutrition = result.nutritionPreview {
             FoodNutritionRow(
                 name: result.name,
-                subtitle: nil,
+                subtitle: result.brand,
                 calories: nutrition.calories,
                 protein: nutrition.protein,
                 carbs: nutrition.carbs,
@@ -94,6 +94,11 @@ struct RemoteFoodRow: View {
                 Text(result.name)
                     .font(.headline)
                     .foregroundStyle(.primary)
+                if let brand = result.brand {
+                    Text(brand)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
                 Text("Nutrition missing — tap to fill manually")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)

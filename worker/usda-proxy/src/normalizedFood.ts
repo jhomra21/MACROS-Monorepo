@@ -1,4 +1,5 @@
 import type { FoodNutrition, NormalizedFood, ReviewNutrient } from './foodSearchTypes'
+import { foodDisplayBrand, foodDisplayText } from './foodDisplayText'
 import type {
   OpenFoodFactsProxyNutriments,
   OpenFoodFactsProxyProduct,
@@ -37,6 +38,9 @@ const text = (value: string | undefined) => value?.trim() || undefined
 
 const usable = (value: number | undefined): number | undefined =>
   value != null && Number.isFinite(value) && value >= 0 ? value : undefined
+
+const roundNutrient = (key: keyof FoodNutrition, value: number): number =>
+  key === 'calories' ? Math.round(value) : Math.round(value * 10) / 10
 
 function offValue(
   n: OpenFoodFactsProxyNutriments,
@@ -80,8 +84,8 @@ export function normalizeOpenFoodFactsFood(
     sourceURL:
       text(product.url) ??
       (barcode != null ? `https://world.openfoodfacts.org/product/${barcode}` : undefined),
-    name,
-    brand: text(product.brands),
+    name: foodDisplayText(name),
+    brand: foodDisplayBrand(product.brands),
     barcode,
     servingDescription: basis.servingDescription,
     gramsPerServing: basis.gramsPerServing,
@@ -134,7 +138,7 @@ function offNutrition(
             : undefined))
         : per100g
 
-    if (value != null) nutrition[key] = value
+    if (value != null) nutrition[key] = roundNutrient(key, value)
   }
 
   return nutrition
@@ -153,7 +157,7 @@ export function normalizeUSDAFood(food: USDASourceFood): NormalizedFood {
   for (const key of nutrientKeys) {
     const value = usable(food[`${key}PerServing`])
 
-    if (value != null) nutrition[key] = value * multiplier
+    if (value != null) nutrition[key] = roundNutrient(key, value * multiplier)
   }
 
   return {
@@ -162,8 +166,8 @@ export function normalizeUSDAFood(food: USDASourceFood): NormalizedFood {
     externalProductID: food.id,
     sourceName: food.sourceName,
     sourceURL: food.sourceURL,
-    name: food.name,
-    brand: food.brand,
+    name: foodDisplayText(food.name),
+    brand: foodDisplayBrand(food.brand),
     barcode: food.barcode,
     servingDescription: knownGrams != null ? food.servingDescription : '100 g',
     gramsPerServing: knownGrams ?? 100,
