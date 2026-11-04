@@ -142,6 +142,7 @@ Design for ambiguity explicitly: missing database items, OCR mistakes, incomplet
 - Keep the app usable with zero account setup.
 - Treat scanning/OCR/network resolution as separate steps so each can fail independently without blocking manual logging.
 - Use the existing XCTest target and isolated fixtures for app behavior; keep test resources in the test bundle and avoid real user stores, production services, and unrelated simulators.
+- Website articles (`web/src/content/guides/`, `web/src/content/blog/`, and any other long-form page copy) always get an `unslop` skill pass before they ship, without waiting to be asked. Health and nutrition figures must cite primary sources, and anything describing app behavior must match the current code. Illustrate guides with real app screenshots from `web/src/assets/app-images/` (or fresh captures from the App Store media simulator) and with static diagrams built as inline SVG or HTML/CSS components, so pages ship no extra client JavaScript.
 - `make quality-build` compiles the app and is not test evidence. `make qa-network` runs the Node-native loopback HTTP/Miniflare runtime QA and registered Convex integration tests; install dependencies in `tools/runtime-qa/` and `convex-backend/` first. There is no root `package.json`.
 
 # Changes Log
