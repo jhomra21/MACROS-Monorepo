@@ -26,14 +26,12 @@ struct InsightsScreen: View {
                 InsightsScrollableContent(
                     range: selectedRange.wrappedValue,
                     today: dayContext.today,
-                    hasWeightEntry: !latestWeightEntries.isEmpty,
                     isPresentingWeightTrendsPro: $isPresentingWeightTrendsPro
                 )
             } locked: {
                 InsightsScrollableContent(
                     range: .sevenDays,
                     today: dayContext.today,
-                    hasWeightEntry: !latestWeightEntries.isEmpty,
                     isPresentingWeightTrendsPro: $isPresentingWeightTrendsPro,
                     isPresentingInsightsPro: $isPresentingPro
                 )
@@ -179,20 +177,17 @@ struct InsightsScreen: View {
 private struct InsightsScrollableContent: View {
     let range: InsightsRange
     let today: CalendarDay
-    let hasWeightEntry: Bool
     @Binding var isPresentingWeightTrendsPro: Bool
     var isPresentingInsightsPro: Binding<Bool>?
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                if hasWeightEntry {
-                    InsightsWeightCard(
-                        range: range,
-                        today: today,
-                        isPresentingPro: $isPresentingWeightTrendsPro
-                    )
-                }
+                InsightsWeightCard(
+                    range: range,
+                    today: today,
+                    isPresentingPro: $isPresentingWeightTrendsPro
+                )
                 InsightsRangeQueryContent(
                     range: range,
                     today: today,
