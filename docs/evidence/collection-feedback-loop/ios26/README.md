@@ -18,7 +18,48 @@ The records repeat for 100 layout passes. The collection frame is `(0 0; 402 874
 
 Pinned main also traps at **23:25:59 UTC**, alternating `403.0` and `403.3333333333333` points. Both `.ips` reports contain `EXC_BREAKPOINT`, `_assertionFailure`, `_setNeedsVisibleCellsUpdate`, compositional invalidation, many recursive `_updateVisibleCellsNow` frames, and SwiftUI `UpdateCoalescingCollectionView.layoutSubviews`. Two private UIKit frames are unsymbolicated in these simulator reports. UIKit's collected records explicitly identify its feedback-loop debugger. This reproduces the reported failure class, but does not prove the original tester was on Today.
 
-## Runtime and isolation
+## Root-cause follow-up, 2026-11-04 UTC
+
+The animation removal in `53e2932` is superseded. The reproducible app-level cause is **non-idempotent measurement of the nested lazy grid during the animated reveal**, not fractional multiplication alone.
+
+Temporary instrumentation (`layout-probe.patch.gz`, applied to pinned main `7034202`) logged every reveal measurement and placement, animation progress, `displayScale`, and the hero VStack's measured size. It did not write geometry back to state. The retained logs are isolated by app PID, because stopping a shell wrapper did not immediately stop its simulator log children.
+
+### Logged causal controls
+
+| Control | Actual toggle callbacks | Fit calls | Identical proposal/progress groups with different child sizes | Result |
+| --- | ---: | ---: | ---: | --- |
+| Original animated `LazyVGrid`, PID 42933 | 5 | 1212 | 97 | feedback-loop trap |
+| Same lazy grid, always measure with unspecified height, PID 43774 | 5 | 1357 | 101 | same trap |
+| Eager `Grid`, original animation and unrounded multiplication, PID 44316 | 124 | 18660 | 0 of 7254 groups | no feedback loop |
+
+These are callback/measurement counts, unlike the later uninstrumented UI tap-request counts. Full numeric summaries are in `layout-measurements.json`; the three compressed logs preserve the actual inputs and outputs.
+
+At **00:17:02.977–00:17:03.025 UTC**, the original layout repeatedly logs:
+
+```text
+width = 362, displayScale = 3, progress = 0.020545798082464
+proposal height = nil: child height = 88, result height = 1.8080302312568453
+proposal height = nil: child height = 100, result height = 2.054579808246415
+proposal height = 45.79248351906196: child height = 88 AND 100
+```
+
+`progress` is unchanged throughout the terminal remeasurement loop. The child differs by **12 points** for the same proposal, not floating-point epsilon. After multiplication the difference is **0.2465495769895697 points**, or **0.739648730968709 physical pixels** at 3×. At **00:17:03.050 UTC**, UIKit reports the first row alternating between **407.6666666666667 and 407.3333333333333 points**. Its layout-generated value is always the previous value. The cell origin alternates between `y = 0.333333` and `y = -0`. The records continue through 100 passes.
+
+The geometry observer's last delivered inner-VStack size before the tight loop was `(362, 387.1362794367891)` at **00:17:01.655 UTC**. This excludes the outer top/bottom row padding. Geometry-change callbacks stop during the tight loop, while the synchronous fit/placement logs continue. This observer is therefore not being mistaken for UIKit's final cell-height measurement.
+
+**Mechanism:** placement and the next sizing pass of the lazy subtree keep producing different answers. The reveal scales those different answers at a fixed in-flight progress; pixel alignment turns their subpixel difference into the observed one-pixel preferred-size difference. UIKit accepts a new preferred size, invalidates the layout, and remeasures, receiving the other answer again. There is no fixed point, and the synchronous invalidation cycle prevents the animation from advancing to another frame. Interrupting the animation exposes the problematic intermediate value; it is not evidence that SwiftUI incorrectly completed an animation at that value.
+
+The 12-point difference matches configured grid spacing, but these logs do **not** identify a private lazy-grid cache entry or prove exactly which internal spacing estimate changed. Nor do they establish UIKit's private rounding formula. The proven defect is the unstable measurement boundary; the fix does not depend on either private implementation guess.
+
+### Hypotheses resolved
+
+- **Unrounded `height * progress` alone:** not the cause. The eager-grid control retains exactly that unrounded calculation and passes 124 reversals; every unspecified-height child measurement is `99.33333333333333` points (2165 measurements).
+- **Different incoming heights / text wrapping alone:** insufficient. The unspecified-height control still returns `88` and `100` for the same width and fixed progress and crashes at **00:18:28.006 UTC**. Original measurements at zero, infinity, finite, and unspecified heights show the same discrepancy.
+- **Inner content measurement instability during List remeasurement:** demonstrated by identical-input discrepancies, then removed by the eager-grid control without removing animation, clipping, or List.
+- **An interrupted progress value must be reset:** unsupported. The fixed layout handles the same repeated interruption pattern; no progress reset, lockout, or delayed completion is needed.
+- **Measurement versus placement mismatch:** also real. Eager Grid legitimately compresses under finite-height proposals. The first eager control's fit heights ranged from `90.66666666666666` to `99.33333333333333`; placing with unspecified height clipped the bottom labels. Final measurement now uses the same width/unspecified-height proposal as placement. The final expanded screenshot verifies all six complete labels.
+
+## Historical RED runtime and isolation
 
 - Initial `df -h /`: 68 GiB available, above the required 20 GiB.
 - Both `/Applications/Xcode.app` and `/Applications/Xcode-26.4.1.app` report Xcode 27.0 (27A266a); the directory name is not the toolchain version. Installed SDK: iOS Simulator 27.0.
@@ -68,29 +109,82 @@ The persisted post-crash log supplied the collected records; the live stream alo
 
 The original build-27 post-pairing RED video is **728.217 seconds** (committed 3-fps copy: 728.333 seconds). The focused clip is **36.250 seconds**; the main RED recording is a minimal **22.333-second** repeat. The preceding sharing/search activity is a broad negative test, not proof that those paths cannot fail under other conditions.
 
-## Fix
 
-Only `DashboardScreen.swift` changes:
+## Final fix
 
-- Explicit nil animation transactions for hero expansion and tutorial-driven collapse prevent animated preferred-height renegotiation of the self-sizing List row.
-- Conditional secondary-nutrition content replaces `RevealLayout`. Its animated progress, opacity/accessibility masking, clipping, and the now-unused layout implementation are removed.
-- No timers, delayed state, view model, layout rounding heuristic, OS-version guess, or fixed height.
-- Ring/numeric update animation, compact-summary behavior, food rows, and all Sharing code remain unchanged.
+Only two Dashboard source files change, with no camera source changes:
 
-## GREEN and validation
+- `SecondaryNutritionDetailsView`: replace the six-item `LazyVGrid` with two eager `GridRow`s in `Grid`, retaining three columns, 12-point spacing, nutrient order, and existing text styling. All six cells are known during sizing.
+- Restore `RevealLayout`, clipping, opacity, and the original `.smooth(duration: 0.35)` expand/collapse animation, including tutorial-driven collapse.
+- Measure the full child with `ProposedViewSize(width: proposal.width, height: nil)`, matching placement instead of compressing it to the current reveal height.
+- Use a shared expansion `Transaction`. With Reduce Motion off, it contains the original smooth animation and does not disable animations. With Reduce Motion on, it has nil animation **and** `disablesAnimations = true`, preventing List from inserting an animation.
 
-The fixed build was installed over the same reproduction data at approximately **23:28:02 UTC**. The GREEN capture starts before installation/launch and continues through repeated hero toggles, maximum accessibility sizes, verified compact-summary scrolling, rotation requests, and another live Sharing insertion/long-name/deletion pass.
+There is no pixel-rounding heuristic, fixed height, timer, delayed state, OS check, extra model, geometry-state feedback, or blocked input. The layout continues reporting `childHeight * progress` without rounding. All diagnostic source changes were removed; only their replay patch/logs remain as evidence.
 
-The original GREEN recording is **755.233 seconds**, longer than the complete original RED attempt by **27.017 seconds**. The committed 3-fps copy is 755.333 seconds. This is elapsed coverage, not a claim of continuous rapid tapping or a frame-timing benchmark.
+### Reduce Motion, measured rather than assumed
 
-- Requested hero tap batches: **24 + 100** at standard size, **60** at maximum accessibility size, then **120** more at standard size, plus individual expansion/collapse checks. No crash. Secondary metrics remained accessible: Sat Fat 3.7 g, Fiber 3.7 g, Sugars 14.6 g, Added Sugar 0 g, Sodium 1887.6 mg, Cholesterol 73.4 mg.
-- Verified the compact-summary overlay after actual vertical panning and return to the expanded hero. Some generic `scroll top` attempts did not move the list; they are not counted as coverage.
-- Replayed six live A logs, one long-name yogurt, one Apple, then deleted that newly added Apple. Observed incoming detail change **2345 -> 2560 -> 2465 kcal**, with wrapping food rows and alternating scrolling at maximum accessibility size.
-- Repeated `chicken` search and result replacement. Completed **30/30** additional down/up search scrolls at largest accessibility size. The timestamped scroll transcript is committed.
-- Captured **47,102** live UIKit lines. **Zero actual feedback-loop records** in either the live stream or a separate persisted category query from 17:28 local onward. The sole persisted keyword hit is the log command's own echoed predicate, not an app event; it remains visible in the query artifact rather than being hidden.
-- Diagnostic inventory after GREEN contains only the two unsigned-entitlement startup reports and the two RED crashes. **No new app crash report.** Finished on responsive, collapsed Today with the same four-food reproduction fixture.
-- `make quality-format-check`: passed. `make quality-build`: passed. Existing concurrency warnings remain in unchanged tutorial/Sharing files; no warning suppression or unrelated fix. Logs are committed. `git diff --check`: clean.
-- Full serial iPad suite: **247 passed, 0 failed, 0 skipped, 0 expected failures**, independently extracted with `xcresulttool`. `PurchaseStoreStoreKitTests` was explicitly excluded at selection time, so its tests are not included in the 247 or the skipped count. iPad Air 11-inch, iOS 27.0 (24A434), serial execution, 30/45-second per-test allowances. Result bundle: `/tmp/macros-loop.xcresult`. Run start **23:45:51.090 UTC**, finish **23:46:14.706 UTC**.
+A real Settings > Accessibility > Motion toggle was verified visually and through the inner switch's checked value. Tapping the outer accessibility label did not change the switch; that unsuccessful setup was not counted as a passing check.
+
+A temporary readback at **00:36:34–00:36:58 UTC** confirmed `SwiftUI reduceMotion = 1` and `UIAccessibility.isReduceMotionEnabled = 1`. Despite that, the original nil-animation transaction still produced many intermediate ring sizes inside List. `reduce-motion-readback.log` preserves those values. An explicit disabled-animation transaction corrected this, without changing normal-motion behavior.
+
+Final **uninstrumented** captures:
+
+- Normal: **161 captured frames**, **83 intermediate-size frames**. The saturated blue arc's right edge traverses `335 → 361` points and back, with a maximum adjacent captured change of **3 points**, rather than the 26-point endpoint jump. Dense original-frame strips show both directions. This is visual/captured-frame evidence, not a device ProMotion frame-time benchmark.
+- Reduce Motion: **74 captured frames**, only right-edge values **335 and 361**, **zero intermediate-size frames**, four direct state changes. The system setting was on. Returned it to its original off state afterward.
+
+The reproducible pixel probe scans the source frames scaled to 402 × 874, over `x = 200..<390`, `y = 120..<480`, for the blue arc (`b > 150`, `b-r > 70`, `b-g > 30`), then records its rightmost x coordinate. `motion-measurements.json` includes every source frame index, presentation time, and result. JPEG strips use consecutive captured frames, not generated interpolation. Raw full-resolution source clips remain in `/tmp/macros-loop2-release-{normal,reduced}-motion.mp4`.
+
+## Guidance and primary sources
+
+Read the installed `apple-design` and `animate` skills before designing. Their relevant guidance is continuous, interruptible state transitions, reversing from presentation state, avoiding unnecessary layout work, and providing a real reduced-motion path. `swiftui-performance-audit` was absent from the global skills directory but available through the installed skill loader; its layout-thrash, stable identity, targeted instrumentation, and same-reproduction verification guidance was used. No subagent was started.
+
+Apple sources consulted, and what each establishes:
+
+1. [Layout](https://developer.apple.com/documentation/swiftui/layout.md) and [sizeThatFits](https://developer.apple.com/documentation/swiftui/layout/sizethatfits(proposal:subviews:cache:).md): the parent may probe repeatedly with different proposals; `sizeThatFits` reports the composite size and placement receives the chosen bounds. An unspecified dimension requests ideal size. This supports width-only natural-height measurement, not arbitrary cached or fixed heights.
+2. [Animatable](https://developer.apple.com/documentation/swiftui/animatable.md) and [animatableData](https://developer.apple.com/documentation/swiftui/animatable/animatabledata-6nydg.md): SwiftUI writes interpolated values on successive frames. A fixed progress during synchronous remeasurement is not a new animation frame or proof of an incorrect final state.
+3. [LazyVGrid](https://developer.apple.com/documentation/swiftui/lazyvgrid.md): creates children only when needed; Apple explicitly says to use a lazy grid only when profiling shows regular Grid performs poorly. Six labels do not need lazy creation.
+4. [Grid](https://developer.apple.com/documentation/swiftui/grid.md): eagerly renders children so it can size rows and columns correctly; tallest row cells and widest column cells determine layout. This directly fits the bounded six-metric panel.
+5. [preferredLayoutAttributesFitting](https://developer.apple.com/documentation/uikit/uicollectionreusableview/preferredlayoutattributesfitting(_:).md), [shouldInvalidateLayout](https://developer.apple.com/documentation/uikit/uicollectionviewlayout/shouldinvalidatelayout(forpreferredlayoutattributes:withoriginalattributes:).md), and [selfSizingInvalidation](https://developer.apple.com/documentation/uikit/uicollectionview/selfsizinginvalidation-swift.property.md): self-sizing cells can change preferred size, which may trigger a larger layout refresh. These explain the measured preferred-size/invalidation cycle.
+6. [Use SwiftUI with UIKit, WWDC22](https://developer.apple.com/videos/play/wwdc2022/10072/), around 21:51–22:24: hosted SwiftUI content changes automatically resize self-sizing collection/table cells. Do not add app-owned row invalidation or frame-change loops.
+7. [displayScale](https://developer.apple.com/documentation/swiftui/environmentvalues/displayscale.md) and [Building Custom Views with SwiftUI, WWDC19](https://developer.apple.com/videos/play/wwdc2019/237/), 4:23–4:49: scale is an environment value; SwiftUI rounds view corners to pixels. Our measured scale is 3. This explains quantization, not a mandate to round every custom layout's return value.
+8. [Apple DTS: List row expansion](https://developer.apple.com/forums/thread/761656): custom disclosure content can animate differently in List versus Stack; the answer suggests a nil transaction for that bounce report. The follow-up explicitly says that loses smoothness. It is **not** a general prescription proving that List height animation is unsupported, nor proof that disabling our animation fixes the cause. No Apple primary source found prescribes a universal safe custom List-row animation recipe; this implementation is validated by the measured reproduction, not attributed to an undocumented guarantee.
+9. `UICollectionViewFeedbackLoopDebugger`: no public Apple API contract or exact recursion threshold was found. The **UIKit framework's own runtime records** are the primary source here: reason `PreferredAttributes`, row `(0-0)`, alternating preferred/layout-generated sizes and origins, 100 logged passes. The older [Apple-hosted recursion discussion](https://developer.apple.com/forums/thread/694141) is developer-reported context, not an Apple-prescribed fix.
+10. [accessibilityReduceMotion](https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion.md), [UIAccessibility.isReduceMotionEnabled](https://developer.apple.com/documentation/uikit/uiaccessibility/isreducemotionenabled.md), and [Transaction.disablesAnimations](https://developer.apple.com/documentation/swiftui/transaction/disablesanimations.md): avoid large animation when the preference is true; `disablesAnimations` prevents views from inserting animations into the transaction. The final reduced-motion capture verifies the result.
+
+Documentation URLs were fetched with `.md`. Video/forum `.md` variants returned 404/403, so their ordinary Apple URLs/transcripts were read instead. An initial animatableData URL and preferred-layout-attributes class URL returned 404; the canonical URLs above were then fetched successfully. Failed lookups were not treated as evidence.
+
+## Final GREEN, 2026-11-04 UTC
+
+The same existing fixtures were reused, with installation over the app, not erase/uninstall/demo seeding:
+
+- iOS 26.5, iPhone 17 `4EFBA68F-F1C7-41C5-AEB9-E800FCBA40AC`: four Today entries, **585.4 kcal**, **P29.9 / C65 / F23.2**.
+- iOS 27.0, iPhone 17 A `918D29B9-97D3-42C0-9C47-00605E01E8DB`: preserved **18 entries / 2465 kcal**. Only `simctl install` was used for installation; sharing/account/data settings were unchanged.
+
+Both final builds completed the requested tap batches: **24 + 100 standard, 60 maximum accessibility size, 120 standard**, plus individual expansion/collapse checks. The JSON transcripts include each requested batch, exit status, UTC range, and pre/post accessibility snapshots. These are dispatched UI tap-request counts, not a claim that the uninstrumented app counted every tap.
+
+| Final pass | Start UTC | Finish UTC | Result |
+| --- | --- | --- | --- |
+| iOS 26 batches | 00:42:13.826 | 00:44:06.760 | all batches exit 0, responsive |
+| iOS 27 batches | 00:39:34.439 | 00:41:31.625 | all batches exit 0, responsive |
+| Normal-motion recording | 00:44:09 | duration 6.121667 s | smooth intermediate frames both ways |
+| Reduce Motion recording | 00:39:35 | duration 6.290000 s | endpoints only |
+
+`green-full.mp4` is the **113.461667-second** final iOS 26 stress recording, compressed to 3 fps for size; it is not the smoothness proof. `green-normal-motion.mp4` and `green-motion-frames.jpg` preserve that proof separately. Superseded no-animation GREEN artifacts were replaced/removed, not presented as final evidence. The retained RED clips/reports are unchanged.
+
+- **37,454 iOS 26 UIKit stream lines, zero actual feedback-loop category records.**
+- **26,695 iOS 27 UIKit stream lines, zero actual feedback-loop category records.**
+- Separate persisted `UICollectionViewFeedbackLoopDebugger` queries from 00:39 UTC return **zero records** on both devices. Stream coverage begins earlier than the final passes and includes exploratory controls; no failure is excluded by that broader window.
+- Host app-crash inventory is unchanged: **17 before / 17 after, no new report**, checked at **00:47:15.580 UTC**. Baseline was after the two intentional diagnostic RED crashes.
+- Expanded normal-size screenshot shows all six complete nutrient labels and values, without bottom clipping: Sat Fat 3.7 g, Fiber 3.7 g, Sugars 14.6 g, Added Sugar 0 g, Sodium 1887.6 mg, Cholesterol 73.4 mg.
+- Final states are responsive, collapsed Today at `large` text size. Reduce Motion returned to off.
+
+## Final validation
+
+- `make quality-format-check`: passed.
+- `make quality-build`: passed. The final incremental build reports no warnings; earlier probe builds warned in unchanged tutorial code. No warning suppression or unrelated change.
+- Full serial iPad suite: **247 passed, 0 failed, 0 skipped, 0 expected failures**, independently re-read with `xcresulttool`. `PurchaseStoreStoreKitTests` was explicitly excluded at selection time, not counted as skipped.
+- iPad lock waited from **00:39:04.204 UTC**, acquired **00:40:39.947**, released **00:41:11.395**. Acquisition used atomic `mkdir` and directory-change events, not polling or removing another worker's lock.
+- Actual test timestamps from xcresult: **00:40:41.486–00:41:10.717 UTC**. Bundle: `/tmp/macros-loop2.xcresult`. Build/test/lock logs and raw summary are retained.
 
 ```sh
 xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker \
@@ -99,38 +193,27 @@ xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker \
   -default-test-execution-time-allowance 30 \
   -maximum-test-execution-time-allowance 45 \
   -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests \
-  -resultBundlePath /tmp/macros-loop.xcresult test
-xcrun xcresulttool get test-results summary --path /tmp/macros-loop.xcresult --compact
+  -resultBundlePath /tmp/macros-loop2.xcresult test
+xcrun xcresulttool get test-results summary --path /tmp/macros-loop2.xcresult --compact
 ```
 
-Final defensive-code review ran personally after the normal validators. Scope: the hero conditional, both expansion-state writes, and their ring/tutorial callers. No new guards, duplicate validation, timers, or impossible-state fallback were added. Explicit nil animation is intentional, not a redundant wrapper: it overrides animated caller transactions. Removed layout/animation helpers have no remaining references. No additional source change was justified.
-
-### Cleanup already verified
-
-Both UI device sessions are closed. The newly created iOS 26 simulator is shut down but retained; A stays booted and usable at normal text size/portrait, Debug Pro enabled. A has 18 rows / 2465 kcal after investigation logs and deletion; its existing Test B connection was not removed. The `iOS26 Loop Probe` relationship and Macros + Foods scope remain for repeatability.
-
-The clean detached historical worktree was removed. Released our new-device/A/17e locks. Waited for the other worker's iPad lock without removing it, acquired it at **23:45:31 UTC**, then released our acquired lock after tests. The iPad was already booted and remains booted. The previously unclaimed 17e remains off. No camera or prohibited simulator was touched. At **23:46:41 UTC**, installed runtime storage is **7.9 GiB**, new simulator data **2.3 GiB**, and `df -h /` shows **52 GiB available**. The exported runtime copy remains in `/tmp/macros-ios26-runtime` (7.9 GiB), separate from the installed runtime.
+Review after validators: no redundant guards, duplicate validation, unused helpers, timers, or geometry-state writes remain. `expansionTransaction` is shared by the two expansion-state writes; its accessibility-only disabled-animation flag is supported by measured nil-transaction failure. The grid remains bounded to six existing metrics. No unit tests were added after implementation.
 
 ## Artifacts
 
-- `red-build27-full.mp4`: entire post-pairing RED attempt, compressed to 3 fps, 402 × 874. Not a frame-timing measurement.
-- `red-build27-today-focused.mp4`: 36.250-second focused clip at 12 fps.
-- `red-main-today.mp4`: minimal main repeat.
-- `red-build27.ips`, `red-main.ips`: actual simulator crash reports, with only `crashReporterKey` replaced by `REDACTED`, as authorized after Droid Shield flagged the diagnostic identifier. Stack, exception, timing, and layout evidence are unchanged.
-- `red-build27-feedback.log`, `red-main-feedback.log`: collected invalidation records.
-- `build27-live-roster-ax.png`, `build27-shared-long-row-ax.png`: populated live Sharing at maximum accessibility size.
-- `green-compact-summary-ax.png`, `green-expanded-hero-ax.png`: fixed UI; the expanded secondary metrics are also verified in the accessibility tree after scrolling.
-- `green-full.mp4`: complete longer GREEN pass, compressed to 3 fps.
-- `green-uikit.log.gz`, `green-persisted-feedback-query.log`, `capture-summary.json`: log capture, explicit category query, and machine-readable results.
-- `green-final-today.png`, `A-final-today.png`, `green-search-scrolls.json`: usable final states and timestamped search coverage.
-- `format.log`, `quality-build.log.gz`, `serial-ipad-tests.log.gz`, `serial-ipad-summary.json`: normal validators, losslessly compressed full build/test output, and independently extracted counts.
+- Original RED: `red-build27{,-today-focused,-full}` clips/log/report names and `red-main*`; original setup/negative Sharing screenshots remain.
+- Causal measurements: `layout-probe.patch.gz`, `layout-measurements.json`, `red-probe.log.gz`, `nil-height.log.gz`, `grid-probe.log.gz`.
+- Final UI: `green-full.mp4`, `green26-actions.json`, `green27-actions.json`, `green-expanded-hero.png`, `green-final-today.png`, `green27-final-today.png`.
+- Motion: `green-normal-motion.mp4`, `green-motion-frames.jpg`, `green-reduced-motion.mp4`, `green-reduced-frames.jpg`, `green-reduce-motion-on.png`, `motion-measurements.json`, both gesture telemetry files, `reduce-motion-readback.log`.
+- UIKit/crash inventory: `green-uikit.log.gz`, `green27-uikit.log.gz`, both persisted-query logs, `crash-inventory.json`, `capture-summary.json`.
+- Validators: `format.log`, `quality-build.log.gz`, `serial-ipad-tests.log.gz`, `serial-ipad-summary.json`, `serial-ipad-run.json`, `serial-ipad-lock.log`.
 
-Every committed evidence file is under 5 MB. Raw recordings/logs remain in `/tmp`; the private invite-setup video is not a public evidence artifact.
+Every committed evidence file is under **5,000,000 bytes**. Large raw recordings/logs remain in `/tmp`, outside Git.
 
-## Limits
+## Isolation and limits
 
-- Runtime is **26.5**, not the tester's **26.6.2**. These are Debug simulator rebuilds with Xcode 27, not the uploaded TestFlight binary.
-- Same failure mechanism and row are reproduced locally; the original tester's last screen is still unknown.
-- Orientation commands succeeded, but the iPhone app's portrait-only support means command success is not proof of landscape UI coverage.
-- UI-driven successive logs were roughly 10–21 seconds apart, not subsecond network bursts. The largest text sizes and list scrolling did overlap incoming updates.
-- No unit tests were added after implementation. The required existing full serial iPad suite is separate from the on-device GREEN reproduction.
+`git pull --ff-only` ran first and was already up to date. All shell commands started with `cd /Users/juan/.t3/worktrees/cal-macro-tracker/collection-loop &&`. No subagents, camera source changes, prohibited simulator operations, build/version bump, upload, merge, or XcodeBuildMCP defaults/profile changes.
+
+Each used simulator was locked before interaction. No existing lock was taken. The iPad's other worker was allowed to finish. At most four devices were booted; no reserved device was stopped to create space. Both UI sessions are closed; iOS 26 is shut down and retained, A is left booted and usable, and only our acquired locks were released.
+
+The reproduced runtime is 26.5, not the original tester's 26.6.2. Builds are Debug simulator binaries, not the uploaded TestFlight artifact. This proves the measured local mechanism and requested reproduction passes, not that every UIKit sizing defect or the original tester's last screen is known. The original broad Sharing/search negative exercise remains historical context, not a newly repeated final sharing E2E claim.

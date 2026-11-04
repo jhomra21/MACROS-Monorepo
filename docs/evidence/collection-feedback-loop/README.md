@@ -4,7 +4,7 @@
 
 **Reproduced on iOS 26.5 in both build 27 and pinned main.** Repeated Today hero expansion/collapse triggers UIKit's feedback-loop debugger. Its collected records show the first row's preferred height alternating by one physical pixel. Populated live Sharing updates did not reproduce the crash.
 
-The focused fix removes animation of the Today hero's self-sizing row, including tutorial-driven collapse, and replaces the now-unnecessary custom reveal layout with conditional content. Ring/numeric updates and Sharing animations remain unchanged. See [the iOS 26 follow-up report](ios26/README.md) for RED/GREEN recordings, collected records, runtime details, validation, and limitations.
+The root-cause follow-up supersedes the animation-removal workaround. Identical layout inputs produced 88/100-point heights from the nested lazy grid. An eager Grid and matching measurement/placement proposals keep smooth expansion, while an explicit Reduce Motion transaction prevents List-inserted animation. See [the iOS 26 follow-up report](ios26/README.md) for measured controls, primary sources, final iOS 26/27 GREEN and motion artifacts, and validation.
 
 ## Earlier iOS 27-only result
 

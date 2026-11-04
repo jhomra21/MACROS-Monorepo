@@ -1,0 +1,190 @@
+[
+  {
+    "start": "2026-11-04T00:42:13.826689+00:00",
+    "end": "2026-11-04T00:42:14.137827+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:14.138366+00:00",
+    "end": "2026-11-04T00:42:14.732141+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:14.732561+00:00",
+    "end": "2026-11-04T00:42:23.457325+00:00",
+    "args": [
+      "press",
+      "@e11",
+      "--count",
+      "24"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e11 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:23.457643+00:00",
+    "end": "2026-11-04T00:42:23.758954+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:23.759411+00:00",
+    "end": "2026-11-04T00:42:24.211991+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:24.212310+00:00",
+    "end": "2026-11-04T00:42:24.508716+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:24.509068+00:00",
+    "end": "2026-11-04T00:42:59.173151+00:00",
+    "args": [
+      "press",
+      "@e11",
+      "--count",
+      "100"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e11 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:59.173581+00:00",
+    "end": "2026-11-04T00:42:59.496707+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:42:59.497151+00:00",
+    "end": "2026-11-04T00:43:00.059207+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "accessibility-extra-extra-extra-large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to accessibility-extra-extra-extra-large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:00.059759+00:00",
+    "end": "2026-11-04T00:43:00.375610+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 20 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"Camera\"\n@e20 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:00.375955+00:00",
+    "end": "2026-11-04T00:43:21.549743+00:00",
+    "args": [
+      "press",
+      "@e11",
+      "--count",
+      "60"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e11 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:21.550550+00:00",
+    "end": "2026-11-04T00:43:22.183843+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 20 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"Camera\"\n@e20 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:22.185230+00:00",
+    "end": "2026-11-04T00:43:23.214506+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:23.215088+00:00",
+    "end": "2026-11-04T00:43:23.743126+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:43:23.743575+00:00",
+    "end": "2026-11-04T00:44:06.434059+00:00",
+    "args": [
+      "press",
+      "@e11",
+      "--count",
+      "120"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e11 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:44:06.434650+00:00",
+    "end": "2026-11-04T00:44:06.760649+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 50 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [other] \"Today\"\n@e4 [other] \"Share daily summary\"\n@e5 [button] \"Share daily summary\"\n@e6 [button] \"Open insights\"\n@e7 [button] \"Open history\"\n@e8 [button] \"Open settings\"\n@e9 [collection]\n  [content below collection hidden]\n@e10 [cell] \"585.4\"\n@e11 [button] \"Expand nutrition details\"\n@e12 [text] \"of 2200 kcal\"\n@e13 [button] \"29.9\"\n@e14 [button] \"of 160 g\"\n@e15 [button] \"Protein\"\n@e16 [button] \"65.0\"\n@e17 [button] \"of 220 g\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"23.2\"\n@e20 [button] \"of 70 g\"\n@e21 [button] \"Fat\"\n@e22 [text] \"3.7 g\"\n@e23 [text] \"Sat Fat\"\n@e24 [text] \"3.7 g\"\n@e25 [text] \"Fiber\"\n@e26 [text] \"14.6 g\"\n@e27 [text] \"Sugars\"\n@e28 [text] \"0 g\"\n@e29 [text] \"Added Sugar\"\n@e30 [text] \"1887.6 mg\"\n@e31 [text] \"Sodium\"\n@e32 [text] \"73.4 mg\"\n@e33 [text] \"Cholesterol\"\n@e34 [cell] \"Food, 4 items\"\n@e35 [text] \"Food\"\n@e36 [text] \"4 items\"\n@e37 [cell] \"Zucchini, Pickled\"\n@e38 [button] \"Food, Zucchini, Pickled, 1 cup (170 g), 5:23\u202fPM, 60 calories, 2 grams protein, 13 grams carbs, 0 grams fat\"\n@e39 [text] \"1 cup (170 g) \u2022 5:23\u202fPM\"\n@e40 [text] \"59.5 kcal\"\n@e41 [text] \"P 1.7 \u2022 C 12.7 \u2022 F 0.5\"\n@e42 [cell] \"Yuca Fries\"\n@e43 [button] \"Food, Yuca Fries, 1 cup (140 g), 5:23\u202fPM, 377 calories, 2 grams protein, 49 grams carbs, 20 grams fat\"\n@e44 [text] \"1 cup (140 g) \u2022 5:23\u202fPM\"\n@e45 [text] \"376.6 kcal\"\n@e46 [text] \"P 1.7 \u2022 C 48.6 \u2022 F 19.5\"\n@e47 [cell] \"Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label\"\n@e48 [button] \"Food, Loop probe toast with roasted vegetables brown rice and an intentionally long descriptive serving label, 1 piece (5 g), 5:23\u202fPM, 21 calories, 1 grams protein, 4 grams carbs, 0 grams fat\"\n@e49 [button] \"Camera\"\n@e50 [button] \"Add Food\"\n",
+    "stderr": ""
+  }
+]

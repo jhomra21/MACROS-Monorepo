@@ -1,0 +1,88 @@
+{
+  "red-probe": {
+    "pid": 42933,
+    "first": "2026-11-03 18:16:47.553",
+    "last": "2026-11-03 18:17:03.057",
+    "lines": 2346,
+    "fitCalls": 1212,
+    "toggles": 5,
+    "loops": 1,
+    "nilProposalChildSizes": {
+      "362.0, 100.0": 155,
+      "362.0, 88.0": 101
+    },
+    "proposalProgressGroups": 347,
+    "inconsistentGroups": 97,
+    "example": [
+      {
+        "proposal": "ProposedViewSize(width: Optional(362.0), height: Optional(45.79248351906196))",
+        "progress": "0.020545798082464",
+        "childSizes": [
+          "362.0, 100.0",
+          "362.0, 88.0"
+        ]
+      }
+    ],
+    "lastRows": [
+      "2026-11-03 18:17:01.629 Df cal-macro-tracker[42933:106cc30] (Foundation) LOOP2 row size=(362.0, 383.8052061904767) scale=3.000000000 expanded=0",
+      "2026-11-03 18:17:01.640 Df cal-macro-tracker[42933:106cc30] (Foundation) LOOP2 row size=(362.0, 383.30961277012244) scale=3.000000000 expanded=1",
+      "2026-11-03 18:17:01.652 Df cal-macro-tracker[42933:106cc30] (Foundation) LOOP2 row size=(362.0, 383.8029461034558) scale=3.000000000 expanded=1",
+      "2026-11-03 18:17:01.652 Df cal-macro-tracker[42933:106cc30] (Foundation) LOOP2 row size=(362.0, 387.2230631931329) scale=3.000000000 expanded=1",
+      "2026-11-03 18:17:01.655 Df cal-macro-tracker[42933:106cc30] (Foundation) LOOP2 row size=(362.0, 387.1362794367891) scale=3.000000000 expanded=1"
+    ]
+  },
+  "nil-height": {
+    "pid": 43774,
+    "first": "2026-11-03 18:18:21.620",
+    "last": "2026-11-03 18:18:28.014",
+    "lines": 2473,
+    "fitCalls": 1357,
+    "toggles": 5,
+    "loops": 1,
+    "nilProposalChildSizes": {
+      "362.0, 100.0": 179,
+      "362.0, 88.0": 103
+    },
+    "proposalProgressGroups": 420,
+    "inconsistentGroups": 101,
+    "example": [
+      {
+        "proposal": "ProposedViewSize(width: Optional(362.0), height: Optional(45.79082877944154))",
+        "progress": "0.020609255871843",
+        "childSizes": [
+          "362.0, 100.0",
+          "362.0, 88.0"
+        ]
+      }
+    ],
+    "lastRows": [
+      "2026-11-03 18:18:26.695 Df cal-macro-tracker[43774:106e241] (Foundation) LOOP2 row size=(362.0, 383.8174781884899) scale=3.000000000 expanded=0",
+      "2026-11-03 18:18:26.707 Df cal-macro-tracker[43774:106e241] (Foundation) LOOP2 row size=(362.0, 383.31926802830117) scale=3.000000000 expanded=1",
+      "2026-11-03 18:18:26.716 Df cal-macro-tracker[43774:106e241] (Foundation) LOOP2 row size=(362.0, 383.81260136163456) scale=3.000000000 expanded=1",
+      "2026-11-03 18:18:26.716 Df cal-macro-tracker[43774:106e241] (Foundation) LOOP2 row size=(362.0, 387.2319569578391) scale=3.000000000 expanded=1",
+      "2026-11-03 18:18:26.719 Df cal-macro-tracker[43774:106e241] (Foundation) LOOP2 row size=(362.0, 387.1459346949679) scale=3.000000000 expanded=1"
+    ]
+  },
+  "grid-probe": {
+    "pid": 44316,
+    "first": "2026-11-03 18:19:25.280",
+    "last": "2026-11-03 18:20:42.124",
+    "lines": 36045,
+    "fitCalls": 18660,
+    "toggles": 124,
+    "loops": 0,
+    "nilProposalChildSizes": {
+      "362.0, 99.33333333333333": 2165
+    },
+    "proposalProgressGroups": 7254,
+    "inconsistentGroups": 0,
+    "example": [],
+    "lastRows": [
+      "2026-11-03 18:20:42.056 Df cal-macro-tracker[44316:106edf9] (Foundation) LOOP2 row size=(362.0, 380.18727906487265) scale=3.000000000 expanded=0",
+      "2026-11-03 18:20:42.073 Df cal-macro-tracker[44316:106edf9] (Foundation) LOOP2 row size=(362.0, 380.1871483675093) scale=3.000000000 expanded=0",
+      "2026-11-03 18:20:42.089 Df cal-macro-tracker[44316:106edf9] (Foundation) LOOP2 row size=(362.0, 380.18704556184866) scale=3.000000000 expanded=0",
+      "2026-11-03 18:20:42.106 Df cal-macro-tracker[44316:106edf9] (Foundation) LOOP2 row size=(362.0, 380.18696469613303) scale=3.000000000 expanded=0",
+      "2026-11-03 18:20:42.123 Df cal-macro-tracker[44316:106edf9] (Foundation) LOOP2 row size=(362.0, 380.1866666666666) scale=3.000000000 expanded=0"
+    ]
+  }
+}
