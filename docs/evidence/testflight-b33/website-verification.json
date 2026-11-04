@@ -1,0 +1,30 @@
+{
+  "versionId": "fc9f56ba-085d-4bae-92c5-d91e763750dd",
+  "worker": "macros-web",
+  "d1": "No migrations to apply!",
+  "homepage": {
+    "url": "https://macros-web.jhonra121.workers.dev/",
+    "status": 200,
+    "references": [
+      "/_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp",
+      "/_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp"
+    ]
+  },
+  "images": [
+    {
+      "url": "https://macros-web.jhonra121.workers.dev/_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp",
+      "status": 200
+    },
+    {
+      "url": "https://macros-web.jhonra121.workers.dev/_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp",
+      "status": 200
+    }
+  ],
+  "privacy": {
+    "url": "https://macros-web.jhonra121.workers.dev/privacy/",
+    "status": 200,
+    "effectiveDate": "November 4, 2026",
+    "method": "Cloudflare Browser Rendering HTML",
+    "searchAsYouTypeAndPerSourceCachingVerified": true
+  }
+}

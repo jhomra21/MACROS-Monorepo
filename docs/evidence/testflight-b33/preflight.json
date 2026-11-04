@@ -1,0 +1,94 @@
+{
+  "ipa_sha256": "dc4fa729d031e7fca967860dc0b60778c52720eb4b75004d921b90f6a3cb00a8",
+  "bundles": {
+    "archive": [
+      {
+        "bundle": "cal-macro-tracker.app",
+        "version": "1.0",
+        "build": "33",
+        "base_url": "https://cal-macro-tracker-usda-proxy.jhonra121.workers.dev",
+        "entitlements": {
+          "application-identifier": "NK3K87K955.juan-test.cal-macro-tracker",
+          "com.apple.developer.healthkit": true,
+          "com.apple.developer.team-identifier": "NK3K87K955",
+          "com.apple.security.application-groups": [
+            "group.juan-test.cal-macro-tracker"
+          ],
+          "get-task-allow": true
+        },
+        "profile_get_task_allow": true,
+        "profile_has_devices": true,
+        "profile_keychain_groups": [
+          "NK3K87K955.*",
+          "com.apple.token"
+        ]
+      },
+      {
+        "bundle": "CalMacroWidget.appex",
+        "version": "1.0",
+        "build": "33",
+        "base_url": null,
+        "entitlements": {
+          "application-identifier": "NK3K87K955.juan-test.cal-macro-tracker.widget",
+          "com.apple.developer.team-identifier": "NK3K87K955",
+          "com.apple.security.application-groups": [
+            "group.juan-test.cal-macro-tracker"
+          ],
+          "get-task-allow": true
+        },
+        "profile_get_task_allow": true,
+        "profile_has_devices": true,
+        "profile_keychain_groups": [
+          "NK3K87K955.*",
+          "com.apple.token"
+        ]
+      }
+    ],
+    "export": [
+      {
+        "bundle": "cal-macro-tracker.app",
+        "version": "1.0",
+        "build": "33",
+        "base_url": "https://cal-macro-tracker-usda-proxy.jhonra121.workers.dev",
+        "entitlements": {
+          "application-identifier": "NK3K87K955.juan-test.cal-macro-tracker",
+          "beta-reports-active": true,
+          "com.apple.developer.healthkit": true,
+          "com.apple.developer.team-identifier": "NK3K87K955",
+          "com.apple.security.application-groups": [
+            "group.juan-test.cal-macro-tracker"
+          ],
+          "get-task-allow": false
+        },
+        "profile_get_task_allow": false,
+        "profile_has_devices": false,
+        "profile_keychain_groups": [
+          "NK3K87K955.*",
+          "com.apple.token"
+        ]
+      },
+      {
+        "bundle": "CalMacroWidget.appex",
+        "version": "1.0",
+        "build": "33",
+        "base_url": null,
+        "entitlements": {
+          "application-identifier": "NK3K87K955.juan-test.cal-macro-tracker.widget",
+          "beta-reports-active": true,
+          "com.apple.developer.team-identifier": "NK3K87K955",
+          "com.apple.security.application-groups": [
+            "group.juan-test.cal-macro-tracker"
+          ],
+          "get-task-allow": false
+        },
+        "profile_get_task_allow": false,
+        "profile_has_devices": false,
+        "profile_keychain_groups": [
+          "NK3K87K955.*",
+          "com.apple.token"
+        ]
+      }
+    ]
+  },
+  "shared_keychain_mechanism": "App Group used as Keychain access group, matching build 32; no separate keychain-access-groups signing entitlement"
+}
