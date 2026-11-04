@@ -9,7 +9,7 @@ MACROS is a local-first calorie and macro tracker for iPhone, with a small suppo
 - `web/` — the product, privacy, waitlist, and support site
   - <https://macros-web.jhonra121.workers.dev/>
 
-The app stays local-first: no required account for normal tracking, on-device food/log data by default, and optional network features layered on top for invite sharing and packaged-food search.
+The app stays local-first: no required account for normal tracking, on-device food/log data by default, and optional network features layered on top for invite sharing and food search.
 
 ## Screenshots
 
@@ -22,7 +22,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Logging
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-add-food.png" alt="Add food screen with common foods and scan actions" width="220" />
+  <img src="web/src/assets/app-images/app-add-food.png" alt="Food search for greek yogurt with On Device matches and Search Results in one list" width="220" />
 </p>
 
 ### Settings
@@ -34,13 +34,15 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Label review
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-scan-review.png" alt="Camera label scan review for Oat Crunch Cereal showing a 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, Log and Edit details buttons, and the scanned Nutrition Facts label" width="220" />
+  <img src="web/src/assets/app-images/app-scan-review.png" alt="Oat Crunch Cereal label scan with serving controls and Edit details and Log buttons in the compact camera card" width="220" />
+  &nbsp;&nbsp;
+  <img src="web/src/assets/app-images/app-scan-details.png" alt="Inline camera editor with serving fields, Less, and Log in the footer" width="220" />
 </p>
 
 ### Insights
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-insights.png" alt="Pro Insights with 30-day nutrition charts and macro trends" width="220" />
+  <img src="web/src/assets/app-images/app-insights.png" alt="30-day Pro Insights with the Weight card aligned with calorie and macro average tiles" width="220" />
 </p>
 
 ### History
@@ -60,7 +62,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Widgets
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-widgets.png" alt="MACROS small and medium Home Screen widgets" width="220" />
+  <img src="web/src/assets/app-images/app-widgets.png" alt="Personal small and medium Home Screen widgets beside Alex’s shared-person widget (Pro)" width="220" />
 </p>
 
 ## Features
@@ -68,11 +70,11 @@ The app stays local-first: no required account for normal tracking, on-device fo
 - **Dashboard** — daily calorie and macro progress, logged foods, quick edits, and shareable summaries
 - **Food logging** — log common foods, saved foods, searched foods, custom foods, suggestions, or manual entries, with servings/grams math handled deterministically
 - **Scanning** — barcode scanning and nutrition-label scanning, including camera/photo fallback paths and editable review before logging
-- **Search and suggestions** — offline common foods, saved-food suggestions, packaged-food search, and saved reusable foods
+- **Search and suggestions**: one food-search list with on-device matches and search results as you type, saved-food suggestions, and saved reusable foods
 - **History** — calendar-based browsing of past days and weekly progress
 - **Insights** — premium nutrition graphs and trends for calories, macros, consistency, and goal progress
 - **Sharing dashboard** — optional no-account sharing with Convex-backed invite links, shared macro rings, today's totals, per-person controls, and revocation/delete flows
-- **Widgets** — Home Screen and Lock Screen widgets for daily macro progress
+- **Widgets**: Home Screen and Lock Screen widgets for your macros, plus shared-person widgets with MACROS Pro
 - **Settings** — daily goals, saved foods, macro ring colors, sharing, preferences, and Full Unlock purchase/restore
 - **Premium unlock** — StoreKit-backed Full Unlock for premium graphs and customization
 - **Offline-first** — local persistence, cached lookups, and graceful network absence

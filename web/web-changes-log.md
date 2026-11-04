@@ -2,6 +2,15 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Build 32 Media And Food Search Copy Refresh
+
+- Replaced Add Food with a typed search showing On Device and Search Results, and retook Insights with the aligned Weight card. Retook the compact label-review card and added an inline Details editor image.
+- Replaced the widget image with personal small/medium widgets beside a real installed shared-person widget for Alex. Used a disposable profile on dev `energized-pigeon-822`, then deleted it. No production sharing data, app source changes, or deployments.
+- Kept home, history, settings, Sharing list, person sharing, and `public/og.png`: pictured layouts are unchanged. History’s date alone differs.
+- Marketing says food search, not online packaged-food search. Added shared-person widgets to sharing and widget descriptions, the Pro list, and the Pro FAQ. Updated changed-image titles, alt text, and README images.
+- Privacy now explains search-as-you-type requests, per-query/source/page cache durations, and count/source summary logs. Existing provider names, sampled platform logging, and seven-day retention are unchanged.
+- Validation: Debug media build and plist verified; web check/build, repository JS lint, and diff whitespace check passed. Headless 390/1440 light/dark captures, decoded-image and overflow checks, and capture notes are in `docs/evidence/web-refresh-build-32/` (under 5 MB). Simulator demo data retained; status-bar override cleared and lock released.
+
 ## 2026-11-02 Label Scan Screenshot Retake
 
 - Replaced the label-review screenshot with a 1320 × 2868 iPhone 18 Pro Max capture showing the OCR-detected “Oat Crunch Cereal,” its 1 cup (40 g) serving, 190 calories, 5 g protein, 36 g carbs, 3 g fat, and the Log/Edit details actions without the missing-name warning.
