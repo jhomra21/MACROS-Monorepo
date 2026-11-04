@@ -1,5 +1,8 @@
 ---
 import { site } from '../data/site';
+import { publishedEntries } from '../lib/seo';
+
+const posts = await publishedEntries('blog');
 
 const currentPath = Astro.url.pathname;
 ---
@@ -21,14 +24,8 @@ const currentPath = Astro.url.pathname;
 						</li>
 					))
 				}
+				{posts.length > 0 && <li><a class="nav-link" href="/blog/">Blog</a></li>}
 			</ul>
-			{
-				site.appStoreURL && (
-					<a class="button button--sm" href={site.appStoreURL}>
-						Download
-					</a>
-				)
-			}
 		</nav>
 	</div>
 </header>

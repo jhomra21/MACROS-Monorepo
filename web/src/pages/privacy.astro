@@ -2,12 +2,11 @@
 export const prerender = true;
 
 import ProseLayout from '../components/ProseLayout.astro';
-import { site } from '../data/site';
+import { pages } from '../lib/seo';
 ---
 
 <ProseLayout
-	title={`${site.fullName} | Privacy Policy`}
-	description="How the MACROS: Nutrition Tracker app and website use and protect information."
+	{...pages['/privacy/']}
 	heading="Your food log stays yours."
 	lede="This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request."
 	effective="November 4, 2026"
@@ -60,6 +59,6 @@ import { site } from '../data/site';
 
 	<section>
 		<h2>Your choices and deletion requests</h2>
-		<p>You can use MACROS without creating an account, decline optional search, sharing, or Health features, and manage or delete app data in the app. For deletion of website form submissions or privacy questions, contact us through the <a href="/support">support page</a>. We will use the email address and information you provide to locate and handle the request.</p>
+		<p>You can use MACROS without creating an account, decline optional search, sharing, or Health features, and manage or delete app data in the app. For deletion of website form submissions or privacy questions, contact us through the <a href="/support/">support page</a>. We will use the email address and information you provide to locate and handle the request.</p>
 	</section>
 </ProseLayout>

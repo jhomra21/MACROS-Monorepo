@@ -2,12 +2,11 @@
 export const prerender = true;
 
 import ProseLayout from '../components/ProseLayout.astro';
-import { site } from '../data/site';
+import { pages } from '../lib/seo';
 ---
 
 <ProseLayout
-	title={`${site.fullName} | Terms of Use`}
-	description="Terms for using the MACROS: Nutrition Tracker app and website."
+	{...pages['/terms/']}
 	heading="Terms of Use"
 	effective="October 25, 2026"
 >
@@ -36,6 +35,6 @@ import { site } from '../data/site';
 	<section>
 		<h2>Governing law and contact</h2>
 		<p>These terms are governed by the laws of the State of Texas, USA, without regard to conflict-of-law rules, and by applicable United States federal law.</p>
-		<p>For questions about these terms, contact us through the <a href="/support">support page</a>.</p>
+		<p>For questions about these terms, contact us through the <a href="/support/">support page</a>.</p>
 	</section>
 </ProseLayout>

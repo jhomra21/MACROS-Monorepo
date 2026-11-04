@@ -90,6 +90,7 @@ function textResponse(status: number, message: string): Response {
 		status,
 		headers: {
 			'content-type': 'text/plain; charset=utf-8',
+			'X-Robots-Tag': 'noindex',
 		},
 	});
 }

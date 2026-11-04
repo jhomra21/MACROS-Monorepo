@@ -2,11 +2,11 @@
 export const prerender = true;
 
 import WaitlistCta from '../components/WaitlistCta.astro';
-import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { pages } from '../lib/seo';
 ---
 
-<SiteLayout title={`${site.fullName} | About`} description="What MACROS: Nutrition Tracker does and how it works.">
+<SiteLayout {...pages['/about/']}>
 	<section class="page-header">
 		<div class="container page-header__inner">
 			<h1 class="page-title">Simple, accurate daily tracking.</h1>
@@ -21,6 +21,7 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 		<div class="container about-grid">
 			<article class="about-card" data-reveal>
 				<h2 class="title">Why it exists</h2>
+				<p>I am Juan Ramon Martinez Bulnes, the developer of MACROS.</p>
 				<p>
 					Tracking should be fast and trustworthy. MACROS needs no sign-up and shows
 					every number.

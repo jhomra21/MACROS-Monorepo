@@ -2,6 +2,15 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Search metadata, guides, and launch gates
+
+- Added typed guides/blog collections, a sourced macro-goal guide matching the native calculator, and a launch announcement held as a draft. Blog routes, nav, sitemap entries, and RSS appear only after publication.
+- Centralized page metadata and origin-derived canonical/social/schema URLs; added sitemap and robots endpoints, Article/BreadcrumbList markup, and home MobileApplication/Organization/WebSite/visible FAQ markup without ratings.
+- Added noindex 404 handling, consistent trailing slashes, correct static XML/text MIME types, and noindex for POST-only waitlist text results. Fixed a hidden RSS MIME override that mislabeled its HTML 404.
+- Prepared the official, unchanged Apple badge and Smart App Banner behind `site.appStore.live`, verified a local flag-on preview, then left it off. Documented launch/publication/domain-switch operations in `SEO.md`.
+- Reused the real Settings screenshot, added readable article styles, and right-sized the hero's desktop WebP. No native changes, new production dependencies, simulator use, or deployment.
+- Validation: check/build, five Worker tests, root JS lint, diff checks, endpoint/publication E2E, and 390/1440 light/dark captures pass. All six final Lighthouse runs score 100/100/100/100; evidence and baseline caveats are in `docs/evidence/web-seo/`. Existing creative-renderer lint errors received whitespace-only fixes.
+
 ## 2026-11-04 Build 32 Media And Food Search Copy Refresh
 
 - Retook Add Food for build 33 with brand lines beneath clean food names and whole-number calories; updated website and README alt text.

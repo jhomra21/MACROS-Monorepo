@@ -7,16 +7,23 @@ import Hero from '../components/Hero.astro';
 import ProPlans from '../components/ProPlans.astro';
 import Showcase from '../components/Showcase.astro';
 import WaitlistCta from '../components/WaitlistCta.astro';
-import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { homeStructuredData, pages } from '../lib/seo';
 ---
 
-<SiteLayout title={`${site.fullName} | Home`} description={site.description}>
+<SiteLayout {...pages['/']} structuredData={homeStructuredData}>
 	<Hero />
 	<FeatureGrid />
 	<Showcase />
 	<ProPlans />
 	<FAQ />
+	<section class="section section--soft">
+		<div class="container section-heading">
+			<h2 class="headline">Start with goals you understand.</h2>
+			<p class="lead">See the math behind daily targets, and what the app's presets mean.</p>
+			<p><a href="/guides/how-to-set-macro-goals/">How to set protein, carb, and fat goals</a></p>
+		</div>
+	</section>
 	<div id="waitlist">
 		<WaitlistCta idPrefix="home" />
 	</div>

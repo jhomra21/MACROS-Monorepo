@@ -3,12 +3,19 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const directory = fileURLToPath(new URL('./', import.meta.url));
+
 const profile = await readFile('/System/Library/ColorSync/Profiles/sRGB Profile.icc');
+
 const image = async path => `data:image/png;base64,${(await readFile(new URL(path, import.meta.url))).toString('base64')}`;
+
 const home = await image('../../../web/src/assets/app-images/app-home.png');
+
 const food = await image('./app-add-food-unbranded.png');
+
 const scan = await image('../../../web/src/assets/app-images/app-scan-review.png');
+
 const phone = (name, src) => `<figure class="phone ${name}"><img src="${src}" alt="${name} app screen"></figure>`;
+
 const common = `
 * { box-sizing:border-box; }
 html,body { margin:0; overflow:hidden; background:#f5f5f7; }
@@ -17,7 +24,9 @@ body { position:relative; font-family:-apple-system,BlinkMacSystemFont,'Helvetic
 .phone img { display:block; width:100%; height:auto; border-radius:80px; }
 .band { position:absolute; border-radius:50%; border:100px solid; }
 `;
+
 const document = (title, css, body) => `<!doctype html><html lang="en"><meta charset="utf-8"><title>${title}</title><style>${common}${css}</style><body>${body}</body></html>`;
+
 const header = document('MACROS product page header', `
 body { width:3840px; height:1646px; }
 .band { width:2100px; height:2100px; left:-1330px; top:-230px; border-color:#007aff; }
@@ -30,6 +39,7 @@ h1 .last { margin-top:25px; max-width:1000px; }
 .home { width:490px; left:2220px; top:355px; border-radius:72px; padding:10px; }
 .home img { border-radius:62px; }
 `, `<div class="band"></div><div class="band second"></div><div class="band third"></div><div class="right-band"></div><h1><span>Scan it. Log it.</span><span class="last">Hit your macros.</span></h1>${phone('home', home)}`);
+
 const search = document('MACROS search results', `
 body { width:3840px; height:2560px; background:#f5f5f7; }
 .backdrop { position:absolute; left:0; top:1020px; width:3840px; height:1000px; background:#fff; }
@@ -40,6 +50,7 @@ body { width:3840px; height:2560px; background:#f5f5f7; }
 `, `<div class="backdrop"></div><div class="stripe"></div>${phone('food', food)}${phone('home', home)}${phone('scan', scan)}`);
 
 const browser = await chromium.launch({ headless:true, args:['--force-color-profile=srgb'] });
+
 try {
   for (const [name, html, height] of [['header',header,1646],['search-results',search,2560]]) {
     await writeFile(`${directory}${name}.html`, html);
@@ -51,11 +62,13 @@ try {
       await document.fonts.ready;
       await Promise.all([...document.images].map(image => image.decode()));
     });
+
     const geometry = await page.evaluate(() => ({
       images:[...document.images].map(img=>({width:img.naturalWidth,height:img.naturalHeight})),
       headline:document.querySelector('h1')?.getBoundingClientRect().toJSON(),
       overflow:document.body.scrollWidth > innerWidth,
     }));
+
     if (errors.length || geometry.overflow) throw new Error(JSON.stringify({errors,geometry}));
     await page.screenshot({path:`${directory}${name}-3840x${height}.jpg`,type:'jpeg',quality:97});
     // Add an explicit ICC APP2 segment without recompressing the screenshot.
@@ -67,17 +80,22 @@ try {
     marker.writeUInt16BE(payload.length + 2, 2);
     const segments = [jpeg.subarray(0, 2), marker, payload];
     let offset = 2;
+
     while (offset < jpeg.length) {
       const type = jpeg.readUInt16BE(offset);
+
       if (type === 0xffda || type === 0xffd9) {
         segments.push(jpeg.subarray(offset));
         break;
       }
+
       const end = offset + 2 + jpeg.readUInt16BE(offset + 2);
       const existingProfile = type === 0xffe2 && jpeg.subarray(offset + 4, offset + 16).toString() === 'ICC_PROFILE\0';
+
       if (!existingProfile) segments.push(jpeg.subarray(offset, end));
       offset = end;
     }
+
     await writeFile(jpegPath, Buffer.concat(segments));
     console.log(JSON.stringify({name,errors,geometry}));
     await page.close();
