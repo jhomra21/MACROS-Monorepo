@@ -22,7 +22,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 ### Logging
 
 <p align="center">
-  <img src="web/src/assets/app-images/app-add-food.png" alt="Food search for greek yogurt with On Device matches and Search Results in one list" width="220" />
+  <img src="web/src/assets/app-images/app-add-food.png" alt="Food search for greek yogurt with On Device matches and Search Results showing brands beneath food names" width="220" />
 </p>
 
 ### Settings

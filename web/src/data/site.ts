@@ -200,7 +200,7 @@ export const site = {
 		},
 		{
 			src: appAddFoodImage,
-			alt: 'Food search for greek yogurt with On Device matches and Search Results in one list',
+			alt: 'Food search for greek yogurt with On Device matches and Search Results showing brands beneath food names',
 			title: 'Search foods in one list',
 		},
 		{

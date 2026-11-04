@@ -4,6 +4,7 @@
 
 ## 2026-11-04 Build 32 Media And Food Search Copy Refresh
 
+- Retook Add Food for build 33 with brand lines beneath clean food names and whole-number calories; updated website and README alt text.
 - Replaced Add Food with a typed search showing On Device and Search Results, and retook Insights with the aligned Weight card. Retook the compact label-review card and added an inline Details editor image.
 - Replaced the widget image with personal small/medium widgets beside a real installed shared-person widget for Alex. Used a disposable profile on dev `energized-pigeon-822`, then deleted it. No production sharing data, app source changes, or deployments.
 - Kept home, history, settings, Sharing list, person sharing, and `public/og.png`: pictured layouts are unchanged. History’s date alone differs.
