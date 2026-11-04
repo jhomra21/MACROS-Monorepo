@@ -23,22 +23,18 @@ struct InsightsScreen: View {
     var body: some View {
         Group {
             PaidFeatureGate(.nutritionInsights) {
-                InsightsUnlockedContent(
-                    selectedRange: selectedRange,
+                InsightsScrollableContent(
+                    range: selectedRange.wrappedValue,
                     today: dayContext.today,
                     isPresentingWeightTrendsPro: $isPresentingWeightTrendsPro
                 )
             } locked: {
-                ScrollView {
-                    VStack(spacing: 0) {
-                        InsightsWeightCard(
-                            range: .sevenDays,
-                            today: dayContext.today,
-                            isPresentingPro: $isPresentingWeightTrendsPro
-                        )
-                        InsightsRangeQueryContent(range: .sevenDays, today: dayContext.today, isPresentingPro: $isPresentingPro)
-                    }
-                }
+                InsightsScrollableContent(
+                    range: .sevenDays,
+                    today: dayContext.today,
+                    isPresentingWeightTrendsPro: $isPresentingWeightTrendsPro,
+                    isPresentingInsightsPro: $isPresentingPro
+                )
             }
         }
         .background(PlatformColors.groupedBackground)
@@ -178,21 +174,28 @@ struct InsightsScreen: View {
     }
 }
 
-private struct InsightsUnlockedContent: View {
-    @Binding var selectedRange: InsightsRange
+private struct InsightsScrollableContent: View {
+    let range: InsightsRange
     let today: CalendarDay
     @Binding var isPresentingWeightTrendsPro: Bool
+    var isPresentingInsightsPro: Binding<Bool>?
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            VStack(spacing: 16) {
                 InsightsWeightCard(
-                    range: selectedRange,
+                    range: range,
                     today: today,
                     isPresentingPro: $isPresentingWeightTrendsPro
                 )
-                InsightsRangeQueryContent(range: selectedRange, today: today)
+                InsightsRangeQueryContent(
+                    range: range,
+                    today: today,
+                    isPresentingPro: isPresentingInsightsPro
+                )
             }
+            .padding(20)
+            .padding(.bottom, 32)
         }
     }
 }
@@ -267,7 +270,6 @@ private struct InsightsAllTimeRangeQueryContent: View {
             )
         } else {
             ContentUnavailableView("No entries yet", systemImage: "chart.bar.xaxis")
-                .padding(20)
         }
     }
 }
@@ -368,8 +370,6 @@ private struct InsightsRangeQueryResults: View {
                 }
             }
         }
-        .padding(20)
-        .padding(.bottom, 32)
     }
 }
 
