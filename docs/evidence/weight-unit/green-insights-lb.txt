@@ -1,0 +1,32 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 28 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "Insights"
+@e3 [button] "Back"
+@e4 [text] "Insights"
+@e5 [popupbutton] "Insights range"
+@e6 [button]
+@e7 [scroll-area] [scrollable]
+  [content below scroll-area hidden]
+@e8 [text] "Weight"
+@e9 [text] "180.0 lb"
+@e10 [text] "No weight 7 days ago"
+@e11 [button] "View weight log"
+@e12 [text] "Avg Calories"
+@e13 [text] "Avg Protein"
+@e14 [text] "No data"
+@e15 [text] "No data"
+@e16 [text] "No previous comparison"
+@e17 [text] "No previous comparison"
+@e18 [text] "Avg Carbs"
+@e19 [text] "Avg Fat"
+@e20 [text] "No data"
+@e21 [text] "No data"
+@e22 [text] "No previous comparison"
+@e23 [text] "No previous comparison"
+@e24 [text] "Insights is a Pro feature"
+@e25 [text] "Explore your calorie, macro, and nutrient trends."
+@e26 [text] "Included with MACROS Pro"
+@e27 [button] "Unlock Insights"
+@e28 [toolbar] "Toolbar"

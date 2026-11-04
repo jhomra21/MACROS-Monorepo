@@ -1,0 +1,46 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 41 visible nodes
+@e1 [other] "MACROS"
+@e2 [navigation-bar] "_TtGC7SwiftUI32NavigationStackHosting"
+@e3 [button] "Cancel"
+@e4 [collection]
+  [content above collection hidden]
+  [content below collection hidden]
+@e5 [cell] "Age"
+@e6 [segmented-control] "Sex"
+@e7 [button] "Female"
+@e8 [button] "Male" [selected]
+@e9 [button] "Unspecified"
+@e10 [other] "Age"
+@e11 [text-field] "34" [editable]
+@e12 [text] "years"
+@e13 [text] "ft"
+@e14 [text] "in"
+@e15 [text] "Height"
+@e16 [text-field] "5" [editable]
+@e17 [text-field] "10" [editable]
+@e18 [other] "Weight"
+@e19 [text-field] "81.9" [editable]
+@e20 [text] "kg"
+@e21 [segmented-control] "Height units"
+@e22 [button] "Height: cm"
+@e23 [button] "Height: ft/in" [selected]
+@e24 [cell] "Activity"
+@e25 [cell] "Moderate"
+@e26 [button] "Activity level, Activity level, Moderate"
+@e27 [text] "Activity level"
+@e28 [cell] "Moderate exercise 3–5 days per week"
+@e29 [cell] "Your goal"
+@e30 [cell]
+@e31 [segmented-control] "Goal"
+@e32 [button] "Lose" [selected]
+@e33 [button] "Maintain"
+@e34 [button] "Gain"
+@e35 [cell]
+@e36 [segmented-control]
+@e37 [button] "0.2 kg/week" [selected]
+@e38 [button] "0.5 kg/week"
+@e39 [button] "0.8 kg/week"
+@e40 [button] "Review targets"
+@e41 [toolbar] "Toolbar"

@@ -4,12 +4,9 @@ import SwiftUI
 struct WeightScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \WeightEntry.recordedAt, order: .reverse) private var entries: [WeightEntry]
-    @Query private var profiles: [BodyProfile]
+    @AppStorage(AppStorageKeys.weightUnit) private var weightUnit = WeightUnit.initial(profileUnitSystem: nil)
     @State private var isPresentingEntry = false
     @State private var errorMessage: String?
-
-    private var unitSystem: GoalUnitSystem { BodyProfile.activeRecord(from: profiles)?.unitSystem ?? .metric }
-    private var unitLabel: String { unitSystem == .metric ? "kg" : "lb" }
 
     var body: some View {
         List {
@@ -28,7 +25,7 @@ struct WeightScreen: View {
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Text("\(displayWeight(entry.weightKg), specifier: "%.1f") \(unitLabel)")
+                                Text("\(weightUnit.toDisplay(entry.weightKg), specifier: "%.1f") \(weightUnit.symbol)")
                                     .font(.headline.monospacedDigit())
                             }
                         }
@@ -54,10 +51,6 @@ struct WeightScreen: View {
             calendar.dateInterval(of: .weekOfYear, for: entry.recordedAt)?.start ?? calendar.startOfDay(for: entry.recordedAt)
         }
         return groups.keys.sorted(by: >).map { ($0, groups[$0] ?? []) }
-    }
-
-    private func displayWeight(_ kilograms: Double) -> Double {
-        unitSystem == .metric ? kilograms : GoalCalculator.pounds(fromKg: kilograms)
     }
 
     private func delete(_ group: [WeightEntry], offsets: IndexSet) {

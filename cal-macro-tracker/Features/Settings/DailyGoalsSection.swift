@@ -267,6 +267,7 @@ struct SettingsGoalsEditorSection: View {
 }
 
 private struct RecalculateTargetsSheet: View {
+    @AppStorage(AppStorageKeys.weightUnit) private var weightUnit = WeightUnit.initial(profileUnitSystem: nil)
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var profile: BodyProfileDraft
@@ -298,7 +299,7 @@ private struct RecalculateTargetsSheet: View {
         }
         .task {
             guard let savedProfile = try? BodyProfileRepository.activeProfile(modelContext: modelContext) else { return }
-            profile = BodyProfileDraft(profile: savedProfile)
+            profile = BodyProfileDraft(profile: savedProfile, weightUnit: weightUnit)
         }
     }
 }

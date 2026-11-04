@@ -71,6 +71,30 @@ final class BackupRoundTripTests: XCTestCase {
         }
     }
 
+    func testOldBackupWithoutWeightUnitRestoresLegacyImperialPreference() async throws {
+        var oldBackup = backup()
+        oldBackup.bodyProfile = [BackupBodyProfile(BodyProfile(unitSystem: .imperial))]
+        var object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: BackupExporter.encode(oldBackup)) as? [String: Any])
+        var settings = try XCTUnwrap(object["settings"] as? [String: Any])
+        settings.removeValue(forKey: "weightUnit")
+        object["settings"] = settings
+        let decoded = try BackupImporter.decode(JSONSerialization.data(withJSONObject: object))
+        testDefaults.set(WeightUnit.kilograms.rawValue, forKey: AppStorageKeys.weightUnit)
+        try await apply(decoded, to: container, mode: .replace)
+        XCTAssertEqual(testDefaults.string(forKey: AppStorageKeys.weightUnit), WeightUnit.pounds.rawValue)
+    }
+
+    func testNewBackupRestoresWeightUnitSeparatelyFromHeight() async throws {
+        var incoming = backup()
+        incoming.bodyProfile = [BackupBodyProfile(BodyProfile(unitSystem: .imperial))]
+        incoming.settings.weightUnit = .kilograms
+        let decoded = try BackupImporter.decode(BackupExporter.encode(incoming))
+        try await apply(decoded, to: container, mode: .replace)
+        XCTAssertEqual(testDefaults.string(forKey: AppStorageKeys.weightUnit), WeightUnit.kilograms.rawValue)
+        XCTAssertEqual(try container.mainContext.fetch(FetchDescriptor<BodyProfile>()).first?.unitSystem, .imperial)
+    }
+
     func testRejectsCorruptJSON() throws {
         XCTAssertThrowsError(try BackupImporter.decode(Data("{".utf8)))
     }
@@ -381,6 +405,7 @@ final class BackupRoundTripTests: XCTestCase {
                 quantityMode: .servings, quantityAmount: 1, caloriesConsumed: 300,
                 proteinConsumed: 12, fatConsumed: 5, carbsConsumed: 50, createdAt: timestamp))
         var settings = BackupSettings.default
+        settings.weightUnit = .kilograms
         settings.ringColors.proteinHex = "#123456"
         settings.ringColors.carbHex = "#654321"
         settings.ringColors.fatHex = "#ABCDEF"

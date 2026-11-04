@@ -1,0 +1,20 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 16 visible nodes
+@e1 [other] "MACROS"
+@e2 [other] "dismiss popup" [covered]
+@e3 [button] "Sheet Grabber"
+@e4 [navigation-bar] "Log Weight"
+@e5 [button] "Cancel"
+@e6 [text] "Log Weight"
+@e7 [button] "Save"
+@e8 [collection]
+  [content below collection hidden]
+@e9 [cell]
+@e10 [text-field] "81.6466266" [editable]
+@e11 [segmented-control]
+@e12 [button] "kilograms" [selected]
+@e13 [button] "pounds"
+@e14 [cell] "Date"
+@e15 [button] "Date Picker"
+@e16 [toolbar] "Toolbar"

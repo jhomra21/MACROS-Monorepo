@@ -1,4 +1,5 @@
 enum AppStorageKeys {
+    static let weightUnit = WeightUnit.preferenceKey
     static let hasCompletedGoalSetup = "hasCompletedGoalSetup"
     static let hasCompletedDashboardTutorial = "hasCompletedDashboardTutorial"
     static let isFoodSuggestionsEnabled = "isFoodSuggestionsEnabled"

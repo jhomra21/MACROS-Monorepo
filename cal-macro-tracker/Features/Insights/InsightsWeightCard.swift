@@ -4,7 +4,7 @@ import SwiftUI
 
 struct InsightsWeightCard: View {
     @Query private var entries: [WeightEntry]
-    @Query private var profiles: [BodyProfile]
+    @AppStorage(AppStorageKeys.weightUnit) private var weightUnit = WeightUnit.initial(profileUnitSystem: nil)
     @Environment(AppEntitlements.self) private var entitlements
 
     let range: InsightsRange
@@ -56,11 +56,11 @@ struct InsightsWeightCard: View {
                 HStack {
                     Text("Weight").font(.headline)
                     Spacer()
-                    Text("\(displayWeight(latest.weightKg), specifier: "%.1f") \(unitLabel)")
+                    Text("\(weightUnit.toDisplay(latest.weightKg), specifier: "%.1f") \(weightUnit.symbol)")
                         .font(.title3.bold().monospacedDigit())
                 }
                 if entitlements.canUse(.weightTrends), let rate = WeightAnalytics.weeklyRate(from: points) {
-                    Text("\(rate >= 0 ? "+" : "")\(displayWeight(rate), specifier: "%.2f") \(unitLabel)/week")
+                    Text("\(rate >= 0 ? "+" : "")\(weightUnit.toDisplay(rate), specifier: "%.2f") \(weightUnit.symbol)/week")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
@@ -70,7 +70,7 @@ struct InsightsWeightCard: View {
                     ) {
                         let label = "since \(comparison.baselineDay.formatted(date: .abbreviated, time: .omitted))"
                         Text(
-                            "\(comparison.changeKg >= 0 ? "+" : "")\(displayWeight(comparison.changeKg), specifier: "%.1f") \(unitLabel) \(label)"
+                            "\(comparison.changeKg >= 0 ? "+" : "")\(weightUnit.toDisplay(comparison.changeKg), specifier: "%.1f") \(weightUnit.symbol) \(label)"
                         )
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -107,29 +107,19 @@ struct InsightsWeightCard: View {
         }
     }
 
-    private var isMetric: Bool {
-        BodyProfile.activeRecord(from: profiles)?.unitSystem != .imperial
-    }
-
-    private var unitLabel: String { isMetric ? "kg" : "lb" }
-
-    private func displayWeight(_ kilograms: Double) -> Double {
-        isMetric ? kilograms : GoalCalculator.pounds(fromKg: kilograms)
-    }
-
     private var trendChart: some View {
         Chart {
             ForEach(points, id: \.recordedAt) { point in
                 PointMark(
                     x: .value("Date", point.day),
-                    y: .value("Weight", displayWeight(point.weightKg))
+                    y: .value("Weight", weightUnit.toDisplay(point.weightKg))
                 )
                 .foregroundStyle(.secondary)
             }
             ForEach(WeightAnalytics.movingAverages(from: points)) { point in
                 LineMark(
                     x: .value("Date", point.day),
-                    y: .value("7-day average", displayWeight(point.averageKg))
+                    y: .value("7-day average", weightUnit.toDisplay(point.averageKg))
                 )
                 .foregroundStyle(Color.accentColor)
                 .interpolationMethod(.catmullRom)

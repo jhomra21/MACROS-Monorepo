@@ -486,6 +486,7 @@ nonisolated struct BackupWeightEntry: Codable, Equatable, Identifiable, Sendable
 }
 
 nonisolated struct BackupSettings: Codable, Equatable, Sendable {
+    var weightUnit: WeightUnit? = nil
     var ringColors: MacroRingColorStorage
     var isFoodSuggestionsEnabled: Bool
     var reminders: BackupReminderConfiguration
@@ -505,6 +506,7 @@ nonisolated struct BackupSettings: Codable, Equatable, Sendable {
         reminders.capture(from: standardDefaults)
         let ringDefaults = ringDefaults ?? UserDefaults.macroRingColors
         return Self(
+            weightUnit: standardDefaults.string(forKey: AppStorageKeys.weightUnit).flatMap(WeightUnit.init(rawValue:)),
             ringColors: MacroRingColorStorage(
                 proteinHex: ringDefaults.string(forKey: AppStorageKeys.customProteinRingColor)
                     ?? MacroRingColorStorage.defaultProteinHex,
@@ -524,6 +526,7 @@ nonisolated struct BackupSettings: Codable, Equatable, Sendable {
         ringDefaults.set(ringColors.carbHex, forKey: AppStorageKeys.customCarbRingColor)
         ringDefaults.set(ringColors.fatHex, forKey: AppStorageKeys.customFatRingColor)
         standardDefaults.set(isFoodSuggestionsEnabled, forKey: AppStorageKeys.isFoodSuggestionsEnabled)
+        standardDefaults.set(weightUnit?.rawValue, forKey: AppStorageKeys.weightUnit)
         reminders.apply(to: standardDefaults)
     }
 }
