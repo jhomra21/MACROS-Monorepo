@@ -1,0 +1,88 @@
+{
+  "sourceMain": "eb77c15",
+  "build": 33,
+  "assets": [
+    {
+      "file": "header-3840x1646.jpg",
+      "dimensions": [
+        3840,
+        1646
+      ],
+      "hasAlpha": false,
+      "mode": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 339885,
+      "sha256": "583e3fbc6087fc80dcf80a3225133bae094e14470aa833e4cbfaea33d030cf1e"
+    },
+    {
+      "file": "search-results-3840x2560.jpg",
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "hasAlpha": false,
+      "mode": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 603445,
+      "sha256": "50316b072f2c53e50b9e6cb93b4ce6451c72302f6cfff7901f4dff9dbccd3b0b"
+    }
+  ],
+  "templates": [
+    {
+      "file": "product-page-header.psd",
+      "dimensions": [
+        3840,
+        1646
+      ],
+      "safeLayerBounds": [
+        1097,
+        493,
+        2743,
+        1154
+      ],
+      "sha256": "4200f416adcf3affb70d5847c1d0554fc39b7405110ec527bdea92bfb82f93b0"
+    },
+    {
+      "file": "universal-asset.psd",
+      "dimensions": [
+        5244,
+        2950
+      ],
+      "safeLayerBounds": [
+        1921,
+        660,
+        3323,
+        1622
+      ],
+      "sha256": "72e3f5e67a4be0df463e509cd0df5645e97123c40a897eeba8064339cac0535c"
+    },
+    {
+      "file": "search-results.psd",
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "safeLayerBounds": [
+        836,
+        765,
+        3004,
+        1795
+      ],
+      "sha256": "7bb57a3c33cc4402d1c82e85a0211cf0f2f2b1c05cf7f36e4710092226dea056"
+    }
+  ],
+  "inputs": [
+    {
+      "file": "web/src/assets/app-images/app-home.png",
+      "sha256": "dea171c2c9741b4c24f018b2610296a6b5b98c969773be3b0e22fcf95d594353"
+    },
+    {
+      "file": "docs/app-store/creative-assets/app-add-food-unbranded.png",
+      "sha256": "daa99f096388bbfa0cf2bb4ad3c13bb135858b38869a9e56a06a8a31394c0726"
+    },
+    {
+      "file": "web/src/assets/app-images/app-scan-review.png",
+      "sha256": "f5636e891b67b5be4fcabff236d9eac56a6a2cbd78ccd6355f06a25a7792a8e4"
+    }
+  ]
+}

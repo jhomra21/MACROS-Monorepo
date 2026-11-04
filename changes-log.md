@@ -4,6 +4,8 @@
 
 Detailed implementation trackers live in `implementation-trackers/`:
 
+- 2026-11-04: Added separate App Store header and search creatives, self-contained HTML sources, Apple PSD safe-area extraction, and an unbranded build-33 Add Food capture. Exact-size opaque sRGB renders and crop previews verified; owner uploads manually. See `docs/app-store/creative-assets/README.md`.
+
 - [`implementation-trackers/insights-implementation-tracker.md`](implementation-trackers/insights-implementation-tracker.md)
 - [`implementation-trackers/meals-implementation-tracker.md`](implementation-trackers/meals-implementation-tracker.md)
 - [`implementation-trackers/packaged-food-search-reliability-tracker.md`](implementation-trackers/packaged-food-search-reliability-tracker.md)
