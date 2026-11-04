@@ -62,6 +62,7 @@ struct FoodDraftNumericText: Equatable {
     var sodium: String
     var cholesterol: String
     private var presentedNutrientValues: [FoodDraftField: String] = [:]
+    var retainsPresentedNutrientText = false
 
     init(draft: FoodDraft) {
         gramsPerServing = NumericText.editingDisplay(for: draft.gramsPerServing)
@@ -109,7 +110,7 @@ struct FoodDraftNumericText: Equatable {
         nutritionPresentation: FoodDraftNutritionPresentation?,
         focusedField: FoodDraftField?
     ) -> String {
-        if focusedField == field, let presentedValue = presentedNutrientValues[field] {
+        if retainsPresentedNutrientText || focusedField == field, let presentedValue = presentedNutrientValues[field] {
             return presentedValue
         }
 
@@ -135,6 +136,7 @@ struct FoodDraftNumericText: Equatable {
     }
 
     mutating func syncPresentedNutrientValues(with focusedField: FoodDraftField?) {
+        guard !retainsPresentedNutrientText else { return }
         guard let focusedField else {
             presentedNutrientValues.removeAll()
             return

@@ -44,6 +44,9 @@ struct FoodCameraResultPanel: View {
     var onSettings: () -> Void = {}
     var showsActions = true
     var showsServings = true
+    var showsActionButtons = true
+    var gramsAmount: Double? = nil
+    var headerTrailingInset: CGFloat = 0
 
     var body: some View {
         Group {
@@ -148,8 +151,14 @@ struct FoodCameraResultPanel: View {
                     .padding(.top, notes.isEmpty ? 0 : 6)
                     .padding(.bottom, 12)
                 if showsServings {
-                    servingsRow(draft, servings: servings)
-                        .padding(.bottom, 16)
+                    Group {
+                        if let gramsAmount {
+                            LabeledContent("Grams", value: "\(gramsAmount.formatted(.number.precision(.fractionLength(0...2)))) g")
+                        } else {
+                            servingsRow(draft, servings: servings)
+                        }
+                    }
+                    .padding(.bottom, 16)
                 }
                 if showsActions, missingNutrients.isEmpty == false {
                     Label(
@@ -157,11 +166,25 @@ struct FoodCameraResultPanel: View {
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.footnote).foregroundStyle(.orange)
-                    wideButton("Edit details", action: onDetails)
-                } else if showsActions {
-                    actionRow(draft, servings: servings, isLabel: isLabel)
                 }
+                if showsActions && showsActionButtons { actionButtons }
             }
+        }
+    }
+
+    @ViewBuilder
+    var actionButtons: some View {
+        switch content {
+        case let .barcode(draft, servings, false):
+            actionRow(draft, servings: servings, isLabel: false)
+        case let .label(draft, _, missing, servings, false):
+            if missing.isEmpty {
+                actionRow(draft, servings: servings, isLabel: true)
+            } else {
+                wideButton("Edit details", action: onDetails)
+            }
+        default:
+            EmptyView()
         }
     }
 
@@ -196,6 +219,7 @@ struct FoodCameraResultPanel: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .padding(.trailing, headerTrailingInset)
             let layout =
                 dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))

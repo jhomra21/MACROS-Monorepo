@@ -1,0 +1,11 @@
+{
+  "reviewBase": "6efc37412695d7e8f70d3c3464c20b4d30d8be32",
+  "source": "Fix-round working tree, exact hashes; fixture patch not applied",
+  "files": {
+    "cal-macro-tracker/App/FoodDraftFormSections.swift": "88d56ae31dbdb9f99a924d7c417bae10fd3ab71db830d368ca96e288d3d0a067",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet+Actions.swift": "7ffd83fcd85e090394fc3b7704473158ac8934f0a4b6b6211d9965efc162df30",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraSheet.swift": "3a4e28d4523f11c4aa5ed1381cc463022d769d1598afed6f2183125f9cf60d5e",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraDetailsEditor.swift": "e2e246b606e1fc26b88bc823f18519313fc6c954d1dc794796da8a1afd06713f",
+    "cal-macro-tracker/Features/Scan/Camera/FoodCameraResultPanel.swift": "fafd0585350bcb4981a86f65ef80c6b6b5d327780cca3e407659544b557e5930"
+  }
+}

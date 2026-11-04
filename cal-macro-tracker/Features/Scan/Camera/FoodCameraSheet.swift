@@ -21,6 +21,7 @@ struct FoodCameraSheet: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.scenePhase) var scenePhase
     @Environment(\.accessibilityReduceMotion) var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(SharingSyncService.self) var sharingSyncService
     @Query private var goals: [DailyGoals]
 
@@ -30,6 +31,8 @@ struct FoodCameraSheet: View {
     @State private var cameraRevealVisible = false
     @State private var cameraCardVisible = false
     @State private var resultContentHeight: CGFloat = 0
+    @State private var resultActionHeight: CGFloat = 0
+    @State private var detailsButtonSize: CGSize = .zero
     @State private var isCameraDismissalActive = false
     @State var scannerController: FoodCameraScannerController?
     @State var pendingScannerStart = false
@@ -49,6 +52,7 @@ struct FoodCameraSheet: View {
     @State var frozenImage: UIImage?
     @State var pendingImageHadNoBarcode = false
     @State var detailsEditor: FoodLogEditorState?
+    @State var detailsExpanded = false
     @State var scannerSuspendedForDetails = false
     @State private var isKeyboardVisible = false
     @State private var pendingExit: CameraDetailsExit?
@@ -77,7 +81,7 @@ struct FoodCameraSheet: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geometry in
-                let sideBySide = detailsEditor != nil && verticalSizeClass == .compact && !isKeyboardVisible
+                let sideBySide = detailsExpanded && verticalSizeClass == .compact && !isKeyboardVisible
                 let layout = sideBySide ? AnyLayout(HStackLayout(spacing: 0)) : AnyLayout(VStackLayout(spacing: 0))
                 let expandedHeight =
                     isKeyboardVisible || sideBySide
@@ -85,11 +89,12 @@ struct FoodCameraSheet: View {
                 layout {
                     stagedResultPanel(maxHeight: geometry.size.height * 0.45, expandedHeight: expandedHeight)
                         .frame(width: sideBySide ? geometry.size.width * 0.65 : nil)
+                        .zIndex(1)
                     cameraViewport(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
                 .animation(layoutAnimation, value: panelContent.kind)
                 .animation(layoutAnimation, value: resultContentHeight)
-                .animation(layoutAnimation, value: detailsEditor != nil)
+                .animation(layoutAnimation, value: detailsExpanded)
                 .animation(layoutAnimation, value: isKeyboardVisible)
                 .background { Color.black.ignoresSafeArea() }
                 .containerBackground(.clear, for: .navigation)
@@ -177,6 +182,7 @@ struct FoodCameraSheet: View {
         .modifier(
             CameraDirtyDismissal(isDirty: detailsEditor?.isDirty == true) {
                 detailsEditor = nil
+                detailsExpanded = false
                 softenCameraForDismissal()
             }
         )
@@ -229,6 +235,10 @@ struct FoodCameraSheet: View {
             content: displayedResult,
             goals: MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)),
             onChangeServings: { amount in
+                if detailsEditor != nil {
+                    detailsEditor?.servingsAmount = amount
+                    return
+                }
                 send(.servingsChanged(amount))
                 switch result {
                 case let .barcode(draft, _, logged):
@@ -240,6 +250,10 @@ struct FoodCameraSheet: View {
                 }
             },
             onChangeName: { name in
+                if detailsEditor != nil {
+                    detailsEditor?.draft.name = name
+                    return
+                }
                 guard case let .label(draft, notes, missing, servings, logged) = result else { return }
                 var editedDraft = draft
                 editedDraft.name = name
@@ -250,42 +264,165 @@ struct FoodCameraSheet: View {
             onManual: showManualRecovery,
             onSearch: { route = .search },
             showSettings: permissionDenied,
-            onSettings: openSettings
+            onSettings: openSettings,
+            showsActionButtons: !hasDetailsActions,
+            gramsAmount: detailsEditor?.quantityMode == .grams ? detailsEditor?.gramsAmount : nil,
+            headerTrailingInset: detailsExpanded && !separateDetailsHeader ? detailsButtonSize.width + 12 : 0
         )
-        Group {
+        VStack(spacing: 0) {
+            ScrollView {
+                panel
+                    .padding(.bottom, hasDetailsActions ? -16 : 0)
+                    .onGeometryChange(for: CGFloat.self) {
+                        $0.size.height
+                    } action: {
+                        resultContentHeight = $0
+                    }
+            }
+            .frame(
+                height: detailsExpanded && isKeyboardVisible
+                    ? 0
+                    : min(
+                        resultContentHeight,
+                        detailsExpanded
+                            ? (dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact
+                                ? expandedHeight * 0.4 : resultContentHeight)
+                            : max(0, maxHeight - (hasDetailsActions ? resultActionHeight : 0))
+                    )
+            )
+            .scrollDisabled(!hasActionableResult)
+            .scrollBounceBehavior(.basedOnSize)
+            .clipped()
+            .accessibilityHidden(detailsExpanded && isKeyboardVisible)
+            .padding(.top, detailsExpanded && separateDetailsHeader ? detailsButtonSize.height + 12 : 0)
             if let editor = detailsEditor {
                 FoodCameraDetailsEditor(
                     editor: Binding(get: { detailsEditor ?? editor }, set: { detailsEditor = $0 }),
-                    goals: MacroGoalsSnapshot(goals: DailyGoals.activeRecord(from: goals)),
                     onQuantityChange: { send(.servingsChanged($0)) },
-                    onLog: logBarcode
+                    isExpanded: detailsExpanded
                 )
-            } else {
-                ScrollView {
-                    panel
-                        .onGeometryChange(for: CGFloat.self) {
-                            $0.size.height
-                        } action: {
-                            resultContentHeight = $0
-                        }
-                }
-                .scrollDisabled(!hasActionableResult)
-                .scrollBounceBehavior(.basedOnSize)
+                // Keep the same Form, but reveal only its body below the single persistent summary.
+                .frame(height: detailsExpanded ? nil : 0)
+                .clipped()
+                .allowsHitTesting(detailsExpanded)
+                .accessibilityHidden(!detailsExpanded)
             }
         }
-        .frame(height: detailsEditor != nil ? expandedHeight : min(resultContentHeight, maxHeight))
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if hasDetailsActions {
+                logFooter
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
+                    .onGeometryChange(for: CGFloat.self) {
+                        $0.size.height
+                    } action: {
+                        if !detailsExpanded { resultActionHeight = $0 }
+                    }
+            }
+        }
+        .frame(
+            height: detailsExpanded ? expandedHeight : min(resultContentHeight + (hasDetailsActions ? resultActionHeight : 0), maxHeight)
+        )
+        .overlay(alignment: detailsExpanded ? .topTrailing : .bottomLeading) {
+            if hasDetailsActions {
+                detailsToggle
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(
+                        .bottom,
+                        !detailsExpanded && dynamicTypeSize.isAccessibilitySize && showsCompactLog
+                            ? max(16, resultActionHeight - detailsButtonSize.height - 16) : 16)
+            }
+        }
+        .clipShape(.rect(cornerRadius: 24))
         .accessibilityIdentifier("camera-result-card")
-        .foregroundStyle(.primary)
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
+        .controlSize(.large)
+        .buttonBorderShape(.capsule)
+        .foregroundStyle(.primary)
         .padding(.horizontal, 16)
         .layoutPriority(2)
+        .transaction { transaction in
+            if reduceMotion { transaction.disablesAnimations = true }
+        }
+    }
+
+    private var separateDetailsHeader: Bool { dynamicTypeSize.isAccessibilitySize || isKeyboardVisible }
+
+    private var logFooter: some View {
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
+            if !detailsExpanded {
+                // Reserve the compact control's space, not a second rendered button.
+                Color.clear
+                    .frame(width: dynamicTypeSize.isAccessibilitySize ? nil : detailsButtonSize.width, height: detailsButtonSize.height)
+                    .accessibilityHidden(true)
+            }
+            if showsCompactLog || detailsExpanded {
+                Button(action: logBarcode) { Text("Log").frame(maxWidth: .infinity) }
+                    .buttonStyle(.glassProminent)
+                    .disabled(!canLogResult)
+                    .accessibilityIdentifier("camera-log")
+            }
+        }
+    }
+
+    private var detailsToggle: some View {
+        Button {
+            if detailsExpanded {
+                KeyboardSupport.dismissFirstResponder()
+                detailsExpanded = false
+            } else {
+                openDetails()
+            }
+        } label: {
+            Text(detailsExpanded ? "Less" : compactDetailsTitle)
+                .fixedSize(horizontal: true, vertical: false)
+                .frame(maxWidth: showsCompactLog || detailsExpanded ? nil : .infinity)
+        }
+        .buttonStyle(.glass)
+        .accessibilityLabel(detailsExpanded ? "Show less" : compactDetailsTitle)
+        .accessibilityIdentifier("camera-details-toggle")
+        .onGeometryChange(for: CGSize.self) {
+            $0.size
+        } action: {
+            detailsButtonSize = $0
+        }
     }
 
     private var displayedResult: FoodCameraResultPanel.Content {
+        if let editor = detailsEditor {
+            let amount = editor.previewLoggingAction.quantityMultiplier ?? editor.servingsAmount
+            if case .label = result {
+                return .label(editor.previewDraft, notes: [], missingNutrients: [], servings: amount, logged: false)
+            }
+            return .barcode(editor.previewDraft, servings: amount, logged: false)
+        }
         if canLiveScan == false, case .hint = result {
             return .hint("Camera unavailable. Choose a photo to scan a barcode or nutrition label.")
         }
         return result
+    }
+
+    private var hasDetailsActions: Bool { result.kind == .barcode || result.kind == .label }
+
+    private var compactDetailsTitle: String { result.kind == .label ? "Edit details" : "Details" }
+
+    private var showsCompactLog: Bool {
+        if detailsEditor != nil { return true }
+        if case let .label(_, _, missing, _, _) = result { return missing.isEmpty }
+        return true
+    }
+
+    private var canLogResult: Bool {
+        if let editor = detailsEditor { return editor.canSave }
+        if case let .label(draft, _, _, amount, _) = result {
+            return draft.loggingAction(initialDraft: labelInitialDraft ?? draft, quantityMode: .servings, quantityAmount: amount).canLog
+        }
+        return true
     }
 
     private func stagedResultPanel(maxHeight: CGFloat, expandedHeight: CGFloat) -> some View {
@@ -381,7 +518,7 @@ struct FoodCameraSheet: View {
         .allowsHitTesting(!hidesCameraStrip)
         .accessibilityHidden(hidesCameraStrip)
         .accessibilityIdentifier("camera-viewport")
-        .ignoresSafeArea(detailsEditor == nil ? .all : .container, edges: .bottom)
+        .ignoresSafeArea(detailsExpanded ? .container : .all, edges: .bottom)
         .onAppear {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
                 cameraRevealVisible = true
@@ -389,7 +526,7 @@ struct FoodCameraSheet: View {
         }
     }
 
-    private var hidesCameraStrip: Bool { detailsEditor != nil && isKeyboardVisible }
+    private var hidesCameraStrip: Bool { detailsExpanded && isKeyboardVisible }
 
     private enum CameraDetailsExit { case scanAgain, close }
 
@@ -399,6 +536,7 @@ struct FoodCameraSheet: View {
 
     private func closeCamera() {
         detailsEditor = nil
+        detailsExpanded = false
         softenCameraForDismissal()
         dismiss()
     }

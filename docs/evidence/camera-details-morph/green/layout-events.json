@@ -1,0 +1,42 @@
+[
+  {
+    "utc": "2026-11-04T00:00:15Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-04T00:00:15Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-04T00:00:19Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-04T00:00:22Z",
+    "event": "capture landscape"
+  },
+  {
+    "utc": "2026-11-04T00:00:31Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-04T00:00:31Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-04T00:00:34Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-04T00:00:37Z",
+    "event": "capture ax5"
+  },
+  {
+    "utc": "2026-11-04T00:00:41Z",
+    "event": "press Show less"
+  },
+  {
+    "utc": "2026-11-04T00:00:42Z",
+    "event": "PASS layout"
+  }
+]

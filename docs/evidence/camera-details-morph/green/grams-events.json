@@ -1,0 +1,74 @@
+[
+  {
+    "utc": "2026-11-03T23:59:11Z",
+    "event": "press Camera"
+  },
+  {
+    "utc": "2026-11-03T23:59:11Z",
+    "event": "launch barcode"
+  },
+  {
+    "utc": "2026-11-03T23:59:15Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-03T23:59:19Z",
+    "event": "press Grams"
+  },
+  {
+    "utc": "2026-11-03T23:59:22Z",
+    "event": "press Grams, 37 g, Increment"
+  },
+  {
+    "utc": "2026-11-03T23:59:25Z",
+    "event": "capture grams-expanded"
+  },
+  {
+    "utc": "2026-11-03T23:59:29Z",
+    "event": "press Show less"
+  },
+  {
+    "utc": "2026-11-03T23:59:32Z",
+    "event": "capture grams-compact"
+  },
+  {
+    "utc": "2026-11-03T23:59:36Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-03T23:59:38Z",
+    "event": "capture grams-restored"
+  },
+  {
+    "utc": "2026-11-03T23:59:43Z",
+    "event": "press Show less"
+  },
+  {
+    "utc": "2026-11-03T23:59:46Z",
+    "event": "press Scan again"
+  },
+  {
+    "utc": "2026-11-03T23:59:49Z",
+    "event": "capture dirty-collapsed-scan"
+  },
+  {
+    "utc": "2026-11-03T23:59:55Z",
+    "event": "press Keep Editing"
+  },
+  {
+    "utc": "2026-11-03T23:59:59Z",
+    "event": "press Log"
+  },
+  {
+    "utc": "2026-11-04T00:00:04Z",
+    "event": "press Close camera"
+  },
+  {
+    "utc": "2026-11-04T00:00:06Z",
+    "event": "capture grams-dashboard"
+  },
+  {
+    "utc": "2026-11-04T00:00:06Z",
+    "event": "PASS grams"
+  }
+]

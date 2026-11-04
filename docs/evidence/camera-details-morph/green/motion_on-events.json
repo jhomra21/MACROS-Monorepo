@@ -1,0 +1,10 @@
+[
+  {
+    "utc": "2026-11-04T00:04:11Z",
+    "event": "reduce-motion-setting-on"
+  },
+  {
+    "utc": "2026-11-04T00:04:11Z",
+    "event": "PASS motion_on"
+  }
+]

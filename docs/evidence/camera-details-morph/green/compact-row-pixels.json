@@ -1,0 +1,7 @@
+{
+  "crop": "crop=346:52:32:235",
+  "beforeVsAfter": {
+    "meanAbsoluteChannelDifference": 0.0,
+    "maximumChannelDifference": 0
+  }
+}
