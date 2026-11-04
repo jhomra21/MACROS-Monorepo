@@ -1,0 +1,25 @@
+{
+  "started": "2026-11-04T00:40:39.947958+00:00",
+  "finished": "2026-11-04T00:41:11.394894+00:00",
+  "command": [
+    "xcodebuild",
+    "-project",
+    "cal-macro-tracker.xcodeproj",
+    "-scheme",
+    "cal-macro-tracker",
+    "-destination",
+    "platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB",
+    "-parallel-testing-enabled",
+    "NO",
+    "-test-timeouts-enabled",
+    "YES",
+    "-default-test-execution-time-allowance",
+    "30",
+    "-maximum-test-execution-time-allowance",
+    "45",
+    "-skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests",
+    "-resultBundlePath",
+    "/tmp/macros-loop2.xcresult",
+    "test"
+  ]
+}

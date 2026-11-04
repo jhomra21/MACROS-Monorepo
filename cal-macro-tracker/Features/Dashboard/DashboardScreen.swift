@@ -412,13 +412,15 @@ struct DashboardScreen: View {
     }
 
     private func toggleMacroRingExpansion() {
-        withAnimation(expansionAnimation) {
+        withTransaction(expansionTransaction) {
             isMacroRingExpanded.toggle()
         }
     }
 
-    private var expansionAnimation: Animation? {
-        reduceMotion ? nil : .smooth(duration: 0.35)
+    private var expansionTransaction: Transaction {
+        var transaction = Transaction(animation: reduceMotion ? nil : .smooth(duration: 0.35))
+        transaction.disablesAnimations = reduceMotion
+        return transaction
     }
 
     /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
@@ -426,7 +428,7 @@ struct DashboardScreen: View {
         switch step {
         case .openSharing?, .previousDay?, .expandRing?:
             if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
-            withAnimation(expansionAnimation) {
+            withTransaction(expansionTransaction) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
             }
@@ -483,7 +485,8 @@ private struct RevealLayout: Layout {
     }
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let size = subviews.first?.sizeThatFits(proposal) ?? .zero
+        // Measure the full content with the same proposal used for placement, not the current reveal height.
+        let size = subviews.first?.sizeThatFits(ProposedViewSize(width: proposal.width, height: nil)) ?? .zero
         return CGSize(width: size.width, height: size.height * progress)
     }
 

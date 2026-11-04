@@ -1,0 +1,1219 @@
+{
+  "normal": {
+    "sourceVideo": "/tmp/macros-loop2-release-normal-motion.mp4",
+    "frames": 161,
+    "rightEdgeValues": [
+      335,
+      336,
+      337,
+      338,
+      339,
+      341,
+      343,
+      344,
+      345,
+      346,
+      347,
+      349,
+      351,
+      353,
+      355,
+      356,
+      357,
+      359,
+      360,
+      361
+    ],
+    "maxAdjacentEdgeStepPoints": 3,
+    "intermediateFrameCount": 83,
+    "measurements": [
+      {
+        "time": 0.0,
+        "rightEdgePoints": 335,
+        "sourceFrame": 1
+      },
+      {
+        "time": 1.09,
+        "rightEdgePoints": 335,
+        "sourceFrame": 2
+      },
+      {
+        "time": 1.095,
+        "rightEdgePoints": 335,
+        "sourceFrame": 3
+      },
+      {
+        "time": 1.12,
+        "rightEdgePoints": 336,
+        "sourceFrame": 4
+      },
+      {
+        "time": 1.136667,
+        "rightEdgePoints": 337,
+        "sourceFrame": 5
+      },
+      {
+        "time": 1.151667,
+        "rightEdgePoints": 338,
+        "sourceFrame": 6
+      },
+      {
+        "time": 1.17,
+        "rightEdgePoints": 339,
+        "sourceFrame": 7
+      },
+      {
+        "time": 1.186667,
+        "rightEdgePoints": 341,
+        "sourceFrame": 8
+      },
+      {
+        "time": 1.203333,
+        "rightEdgePoints": 343,
+        "sourceFrame": 9
+      },
+      {
+        "time": 1.221667,
+        "rightEdgePoints": 346,
+        "sourceFrame": 10
+      },
+      {
+        "time": 1.238333,
+        "rightEdgePoints": 347,
+        "sourceFrame": 11
+      },
+      {
+        "time": 1.255,
+        "rightEdgePoints": 349,
+        "sourceFrame": 12
+      },
+      {
+        "time": 1.271667,
+        "rightEdgePoints": 351,
+        "sourceFrame": 13
+      },
+      {
+        "time": 1.288333,
+        "rightEdgePoints": 353,
+        "sourceFrame": 14
+      },
+      {
+        "time": 1.306667,
+        "rightEdgePoints": 353,
+        "sourceFrame": 15
+      },
+      {
+        "time": 1.321667,
+        "rightEdgePoints": 355,
+        "sourceFrame": 16
+      },
+      {
+        "time": 1.338333,
+        "rightEdgePoints": 356,
+        "sourceFrame": 17
+      },
+      {
+        "time": 1.355,
+        "rightEdgePoints": 357,
+        "sourceFrame": 18
+      },
+      {
+        "time": 1.371667,
+        "rightEdgePoints": 357,
+        "sourceFrame": 19
+      },
+      {
+        "time": 1.391667,
+        "rightEdgePoints": 359,
+        "sourceFrame": 20
+      },
+      {
+        "time": 1.403333,
+        "rightEdgePoints": 359,
+        "sourceFrame": 21
+      },
+      {
+        "time": 1.42,
+        "rightEdgePoints": 359,
+        "sourceFrame": 22
+      },
+      {
+        "time": 1.436667,
+        "rightEdgePoints": 360,
+        "sourceFrame": 23
+      },
+      {
+        "time": 1.453333,
+        "rightEdgePoints": 360,
+        "sourceFrame": 24
+      },
+      {
+        "time": 1.47,
+        "rightEdgePoints": 361,
+        "sourceFrame": 25
+      },
+      {
+        "time": 1.488333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 26
+      },
+      {
+        "time": 1.505,
+        "rightEdgePoints": 361,
+        "sourceFrame": 27
+      },
+      {
+        "time": 1.52,
+        "rightEdgePoints": 361,
+        "sourceFrame": 28
+      },
+      {
+        "time": 1.536667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 29
+      },
+      {
+        "time": 1.551667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 30
+      },
+      {
+        "time": 1.571667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 31
+      },
+      {
+        "time": 1.585,
+        "rightEdgePoints": 361,
+        "sourceFrame": 32
+      },
+      {
+        "time": 1.593333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 33
+      },
+      {
+        "time": 1.611667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 34
+      },
+      {
+        "time": 1.626667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 35
+      },
+      {
+        "time": 1.643333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 36
+      },
+      {
+        "time": 1.663333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 37
+      },
+      {
+        "time": 1.675,
+        "rightEdgePoints": 361,
+        "sourceFrame": 38
+      },
+      {
+        "time": 1.693333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 39
+      },
+      {
+        "time": 1.71,
+        "rightEdgePoints": 361,
+        "sourceFrame": 40
+      },
+      {
+        "time": 1.735,
+        "rightEdgePoints": 361,
+        "sourceFrame": 41
+      },
+      {
+        "time": 1.77,
+        "rightEdgePoints": 361,
+        "sourceFrame": 42
+      },
+      {
+        "time": 1.775,
+        "rightEdgePoints": 361,
+        "sourceFrame": 43
+      },
+      {
+        "time": 2.018333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 44
+      },
+      {
+        "time": 2.611667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 45
+      },
+      {
+        "time": 2.655,
+        "rightEdgePoints": 361,
+        "sourceFrame": 46
+      },
+      {
+        "time": 2.671667,
+        "rightEdgePoints": 360,
+        "sourceFrame": 47
+      },
+      {
+        "time": 2.688333,
+        "rightEdgePoints": 359,
+        "sourceFrame": 48
+      },
+      {
+        "time": 2.705,
+        "rightEdgePoints": 357,
+        "sourceFrame": 49
+      },
+      {
+        "time": 2.723333,
+        "rightEdgePoints": 355,
+        "sourceFrame": 50
+      },
+      {
+        "time": 2.738333,
+        "rightEdgePoints": 353,
+        "sourceFrame": 51
+      },
+      {
+        "time": 2.755,
+        "rightEdgePoints": 351,
+        "sourceFrame": 52
+      },
+      {
+        "time": 2.771667,
+        "rightEdgePoints": 349,
+        "sourceFrame": 53
+      },
+      {
+        "time": 2.786667,
+        "rightEdgePoints": 347,
+        "sourceFrame": 54
+      },
+      {
+        "time": 2.803333,
+        "rightEdgePoints": 345,
+        "sourceFrame": 55
+      },
+      {
+        "time": 2.82,
+        "rightEdgePoints": 343,
+        "sourceFrame": 56
+      },
+      {
+        "time": 2.836667,
+        "rightEdgePoints": 343,
+        "sourceFrame": 57
+      },
+      {
+        "time": 2.853333,
+        "rightEdgePoints": 341,
+        "sourceFrame": 58
+      },
+      {
+        "time": 2.87,
+        "rightEdgePoints": 341,
+        "sourceFrame": 59
+      },
+      {
+        "time": 2.886667,
+        "rightEdgePoints": 339,
+        "sourceFrame": 60
+      },
+      {
+        "time": 2.901667,
+        "rightEdgePoints": 339,
+        "sourceFrame": 61
+      },
+      {
+        "time": 2.92,
+        "rightEdgePoints": 338,
+        "sourceFrame": 62
+      },
+      {
+        "time": 2.935,
+        "rightEdgePoints": 337,
+        "sourceFrame": 63
+      },
+      {
+        "time": 2.951667,
+        "rightEdgePoints": 337,
+        "sourceFrame": 64
+      },
+      {
+        "time": 2.97,
+        "rightEdgePoints": 337,
+        "sourceFrame": 65
+      },
+      {
+        "time": 2.985,
+        "rightEdgePoints": 336,
+        "sourceFrame": 66
+      },
+      {
+        "time": 3.001667,
+        "rightEdgePoints": 336,
+        "sourceFrame": 67
+      },
+      {
+        "time": 3.018333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 68
+      },
+      {
+        "time": 3.036667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 69
+      },
+      {
+        "time": 3.053333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 70
+      },
+      {
+        "time": 3.068333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 71
+      },
+      {
+        "time": 3.085,
+        "rightEdgePoints": 335,
+        "sourceFrame": 72
+      },
+      {
+        "time": 3.1,
+        "rightEdgePoints": 335,
+        "sourceFrame": 73
+      },
+      {
+        "time": 3.116667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 74
+      },
+      {
+        "time": 3.125,
+        "rightEdgePoints": 335,
+        "sourceFrame": 75
+      },
+      {
+        "time": 3.141667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 76
+      },
+      {
+        "time": 3.161667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 77
+      },
+      {
+        "time": 3.175,
+        "rightEdgePoints": 335,
+        "sourceFrame": 78
+      },
+      {
+        "time": 3.191667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 79
+      },
+      {
+        "time": 3.21,
+        "rightEdgePoints": 335,
+        "sourceFrame": 80
+      },
+      {
+        "time": 3.225,
+        "rightEdgePoints": 335,
+        "sourceFrame": 81
+      },
+      {
+        "time": 3.245,
+        "rightEdgePoints": 335,
+        "sourceFrame": 82
+      },
+      {
+        "time": 3.26,
+        "rightEdgePoints": 335,
+        "sourceFrame": 83
+      },
+      {
+        "time": 3.306667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 84
+      },
+      {
+        "time": 3.373333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 85
+      },
+      {
+        "time": 3.436667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 86
+      },
+      {
+        "time": 3.505,
+        "rightEdgePoints": 335,
+        "sourceFrame": 87
+      },
+      {
+        "time": 3.52,
+        "rightEdgePoints": 335,
+        "sourceFrame": 88
+      },
+      {
+        "time": 3.57,
+        "rightEdgePoints": 335,
+        "sourceFrame": 89
+      },
+      {
+        "time": 3.638333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 90
+      },
+      {
+        "time": 3.705,
+        "rightEdgePoints": 335,
+        "sourceFrame": 91
+      },
+      {
+        "time": 3.768333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 92
+      },
+      {
+        "time": 4.141667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 93
+      },
+      {
+        "time": 4.156667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 94
+      },
+      {
+        "time": 4.185,
+        "rightEdgePoints": 335,
+        "sourceFrame": 95
+      },
+      {
+        "time": 4.203333,
+        "rightEdgePoints": 337,
+        "sourceFrame": 96
+      },
+      {
+        "time": 4.221667,
+        "rightEdgePoints": 338,
+        "sourceFrame": 97
+      },
+      {
+        "time": 4.236667,
+        "rightEdgePoints": 339,
+        "sourceFrame": 98
+      },
+      {
+        "time": 4.255,
+        "rightEdgePoints": 341,
+        "sourceFrame": 99
+      },
+      {
+        "time": 4.271667,
+        "rightEdgePoints": 343,
+        "sourceFrame": 100
+      },
+      {
+        "time": 4.288333,
+        "rightEdgePoints": 346,
+        "sourceFrame": 101
+      },
+      {
+        "time": 4.305,
+        "rightEdgePoints": 347,
+        "sourceFrame": 102
+      },
+      {
+        "time": 4.321667,
+        "rightEdgePoints": 349,
+        "sourceFrame": 103
+      },
+      {
+        "time": 4.338333,
+        "rightEdgePoints": 351,
+        "sourceFrame": 104
+      },
+      {
+        "time": 4.353333,
+        "rightEdgePoints": 353,
+        "sourceFrame": 105
+      },
+      {
+        "time": 4.371667,
+        "rightEdgePoints": 353,
+        "sourceFrame": 106
+      },
+      {
+        "time": 4.388333,
+        "rightEdgePoints": 355,
+        "sourceFrame": 107
+      },
+      {
+        "time": 4.406667,
+        "rightEdgePoints": 356,
+        "sourceFrame": 108
+      },
+      {
+        "time": 4.421667,
+        "rightEdgePoints": 357,
+        "sourceFrame": 109
+      },
+      {
+        "time": 4.44,
+        "rightEdgePoints": 357,
+        "sourceFrame": 110
+      },
+      {
+        "time": 4.458333,
+        "rightEdgePoints": 359,
+        "sourceFrame": 111
+      },
+      {
+        "time": 4.471667,
+        "rightEdgePoints": 359,
+        "sourceFrame": 112
+      },
+      {
+        "time": 4.488333,
+        "rightEdgePoints": 359,
+        "sourceFrame": 113
+      },
+      {
+        "time": 4.505,
+        "rightEdgePoints": 359,
+        "sourceFrame": 114
+      },
+      {
+        "time": 4.521667,
+        "rightEdgePoints": 360,
+        "sourceFrame": 115
+      },
+      {
+        "time": 4.538333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 116
+      },
+      {
+        "time": 4.555,
+        "rightEdgePoints": 361,
+        "sourceFrame": 117
+      },
+      {
+        "time": 4.571667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 118
+      },
+      {
+        "time": 4.588333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 119
+      },
+      {
+        "time": 4.605,
+        "rightEdgePoints": 361,
+        "sourceFrame": 120
+      },
+      {
+        "time": 4.62,
+        "rightEdgePoints": 361,
+        "sourceFrame": 121
+      },
+      {
+        "time": 4.638333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 122
+      },
+      {
+        "time": 4.653333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 123
+      },
+      {
+        "time": 4.661667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 124
+      },
+      {
+        "time": 4.678333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 125
+      },
+      {
+        "time": 4.691667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 126
+      },
+      {
+        "time": 4.706667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 127
+      },
+      {
+        "time": 4.728333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 128
+      },
+      {
+        "time": 4.741667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 129
+      },
+      {
+        "time": 4.758333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 130
+      },
+      {
+        "time": 4.775,
+        "rightEdgePoints": 361,
+        "sourceFrame": 131
+      },
+      {
+        "time": 4.803333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 132
+      },
+      {
+        "time": 4.841667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 133
+      },
+      {
+        "time": 5.025,
+        "rightEdgePoints": 361,
+        "sourceFrame": 134
+      },
+      {
+        "time": 5.658333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 135
+      },
+      {
+        "time": 5.705,
+        "rightEdgePoints": 361,
+        "sourceFrame": 136
+      },
+      {
+        "time": 5.72,
+        "rightEdgePoints": 360,
+        "sourceFrame": 137
+      },
+      {
+        "time": 5.738333,
+        "rightEdgePoints": 359,
+        "sourceFrame": 138
+      },
+      {
+        "time": 5.753333,
+        "rightEdgePoints": 357,
+        "sourceFrame": 139
+      },
+      {
+        "time": 5.77,
+        "rightEdgePoints": 355,
+        "sourceFrame": 140
+      },
+      {
+        "time": 5.788333,
+        "rightEdgePoints": 353,
+        "sourceFrame": 141
+      },
+      {
+        "time": 5.803333,
+        "rightEdgePoints": 351,
+        "sourceFrame": 142
+      },
+      {
+        "time": 5.821667,
+        "rightEdgePoints": 349,
+        "sourceFrame": 143
+      },
+      {
+        "time": 5.838333,
+        "rightEdgePoints": 347,
+        "sourceFrame": 144
+      },
+      {
+        "time": 5.853333,
+        "rightEdgePoints": 345,
+        "sourceFrame": 145
+      },
+      {
+        "time": 5.87,
+        "rightEdgePoints": 344,
+        "sourceFrame": 146
+      },
+      {
+        "time": 5.886667,
+        "rightEdgePoints": 343,
+        "sourceFrame": 147
+      },
+      {
+        "time": 5.903333,
+        "rightEdgePoints": 341,
+        "sourceFrame": 148
+      },
+      {
+        "time": 5.92,
+        "rightEdgePoints": 341,
+        "sourceFrame": 149
+      },
+      {
+        "time": 5.936667,
+        "rightEdgePoints": 339,
+        "sourceFrame": 150
+      },
+      {
+        "time": 5.953333,
+        "rightEdgePoints": 339,
+        "sourceFrame": 151
+      },
+      {
+        "time": 5.968333,
+        "rightEdgePoints": 338,
+        "sourceFrame": 152
+      },
+      {
+        "time": 5.985,
+        "rightEdgePoints": 337,
+        "sourceFrame": 153
+      },
+      {
+        "time": 6.001667,
+        "rightEdgePoints": 337,
+        "sourceFrame": 154
+      },
+      {
+        "time": 6.02,
+        "rightEdgePoints": 337,
+        "sourceFrame": 155
+      },
+      {
+        "time": 6.036667,
+        "rightEdgePoints": 336,
+        "sourceFrame": 156
+      },
+      {
+        "time": 6.053333,
+        "rightEdgePoints": 336,
+        "sourceFrame": 157
+      },
+      {
+        "time": 6.068333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 158
+      },
+      {
+        "time": 6.085,
+        "rightEdgePoints": 335,
+        "sourceFrame": 159
+      },
+      {
+        "time": 6.101667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 160
+      },
+      {
+        "time": 6.118333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 161
+      }
+    ]
+  },
+  "reduced": {
+    "sourceVideo": "/tmp/macros-loop2-release-reduced-motion.mp4",
+    "frames": 74,
+    "rightEdgeValues": [
+      335,
+      361
+    ],
+    "maxAdjacentEdgeStepPoints": 26,
+    "intermediateFrameCount": 0,
+    "measurements": [
+      {
+        "time": 0.0,
+        "rightEdgePoints": 335,
+        "sourceFrame": 1
+      },
+      {
+        "time": 1.295,
+        "rightEdgePoints": 361,
+        "sourceFrame": 2
+      },
+      {
+        "time": 1.32,
+        "rightEdgePoints": 361,
+        "sourceFrame": 3
+      },
+      {
+        "time": 1.355,
+        "rightEdgePoints": 361,
+        "sourceFrame": 4
+      },
+      {
+        "time": 1.381667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 5
+      },
+      {
+        "time": 1.415,
+        "rightEdgePoints": 361,
+        "sourceFrame": 6
+      },
+      {
+        "time": 1.45,
+        "rightEdgePoints": 361,
+        "sourceFrame": 7
+      },
+      {
+        "time": 1.483333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 8
+      },
+      {
+        "time": 1.516667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 9
+      },
+      {
+        "time": 1.55,
+        "rightEdgePoints": 361,
+        "sourceFrame": 10
+      },
+      {
+        "time": 1.583333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 11
+      },
+      {
+        "time": 1.616667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 12
+      },
+      {
+        "time": 1.653333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 13
+      },
+      {
+        "time": 1.685,
+        "rightEdgePoints": 361,
+        "sourceFrame": 14
+      },
+      {
+        "time": 1.713333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 15
+      },
+      {
+        "time": 1.716667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 16
+      },
+      {
+        "time": 1.77,
+        "rightEdgePoints": 361,
+        "sourceFrame": 17
+      },
+      {
+        "time": 1.785,
+        "rightEdgePoints": 361,
+        "sourceFrame": 18
+      },
+      {
+        "time": 1.818333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 19
+      },
+      {
+        "time": 1.851667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 20
+      },
+      {
+        "time": 1.963333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 21
+      },
+      {
+        "time": 2.781667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 22
+      },
+      {
+        "time": 2.886667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 23
+      },
+      {
+        "time": 2.921667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 24
+      },
+      {
+        "time": 2.951667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 25
+      },
+      {
+        "time": 2.966667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 26
+      },
+      {
+        "time": 2.985,
+        "rightEdgePoints": 335,
+        "sourceFrame": 27
+      },
+      {
+        "time": 3.02,
+        "rightEdgePoints": 335,
+        "sourceFrame": 28
+      },
+      {
+        "time": 3.051667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 29
+      },
+      {
+        "time": 3.085,
+        "rightEdgePoints": 335,
+        "sourceFrame": 30
+      },
+      {
+        "time": 3.118333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 31
+      },
+      {
+        "time": 3.151667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 32
+      },
+      {
+        "time": 3.185,
+        "rightEdgePoints": 335,
+        "sourceFrame": 33
+      },
+      {
+        "time": 3.213333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 34
+      },
+      {
+        "time": 3.218333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 35
+      },
+      {
+        "time": 3.25,
+        "rightEdgePoints": 335,
+        "sourceFrame": 36
+      },
+      {
+        "time": 3.301667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 37
+      },
+      {
+        "time": 3.316667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 38
+      },
+      {
+        "time": 3.35,
+        "rightEdgePoints": 335,
+        "sourceFrame": 39
+      },
+      {
+        "time": 3.383333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 40
+      },
+      {
+        "time": 3.463333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 41
+      },
+      {
+        "time": 4.313333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 42
+      },
+      {
+        "time": 4.423333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 43
+      },
+      {
+        "time": 4.451667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 44
+      },
+      {
+        "time": 4.483333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 45
+      },
+      {
+        "time": 4.516667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 46
+      },
+      {
+        "time": 4.55,
+        "rightEdgePoints": 361,
+        "sourceFrame": 47
+      },
+      {
+        "time": 4.583333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 48
+      },
+      {
+        "time": 4.616667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 49
+      },
+      {
+        "time": 4.65,
+        "rightEdgePoints": 361,
+        "sourceFrame": 50
+      },
+      {
+        "time": 4.681667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 51
+      },
+      {
+        "time": 4.711667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 52
+      },
+      {
+        "time": 4.716667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 53
+      },
+      {
+        "time": 4.75,
+        "rightEdgePoints": 361,
+        "sourceFrame": 54
+      },
+      {
+        "time": 4.783333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 55
+      },
+      {
+        "time": 4.831667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 56
+      },
+      {
+        "time": 4.85,
+        "rightEdgePoints": 361,
+        "sourceFrame": 57
+      },
+      {
+        "time": 4.883333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 58
+      },
+      {
+        "time": 4.916667,
+        "rightEdgePoints": 361,
+        "sourceFrame": 59
+      },
+      {
+        "time": 4.963333,
+        "rightEdgePoints": 361,
+        "sourceFrame": 60
+      },
+      {
+        "time": 5.325,
+        "rightEdgePoints": 361,
+        "sourceFrame": 61
+      },
+      {
+        "time": 5.843333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 62
+      },
+      {
+        "time": 5.951667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 63
+      },
+      {
+        "time": 5.985,
+        "rightEdgePoints": 335,
+        "sourceFrame": 64
+      },
+      {
+        "time": 6.016667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 65
+      },
+      {
+        "time": 6.048333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 66
+      },
+      {
+        "time": 6.083333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 67
+      },
+      {
+        "time": 6.118333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 68
+      },
+      {
+        "time": 6.151667,
+        "rightEdgePoints": 335,
+        "sourceFrame": 69
+      },
+      {
+        "time": 6.185,
+        "rightEdgePoints": 335,
+        "sourceFrame": 70
+      },
+      {
+        "time": 6.213333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 71
+      },
+      {
+        "time": 6.218333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 72
+      },
+      {
+        "time": 6.253333,
+        "rightEdgePoints": 335,
+        "sourceFrame": 73
+      },
+      {
+        "time": 6.285,
+        "rightEdgePoints": 335,
+        "sourceFrame": 74
+      }
+    ]
+  }
+}

@@ -1,0 +1,190 @@
+[
+  {
+    "start": "2026-11-04T00:39:34.439627+00:00",
+    "end": "2026-11-04T00:39:34.968936+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:34.969518+00:00",
+    "end": "2026-11-04T00:39:38.820929+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:38.821528+00:00",
+    "end": "2026-11-04T00:39:47.755816+00:00",
+    "args": [
+      "press",
+      "@e10",
+      "--count",
+      "24"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e10 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:47.756115+00:00",
+    "end": "2026-11-04T00:39:48.106134+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:48.106513+00:00",
+    "end": "2026-11-04T00:39:48.547853+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:48.548190+00:00",
+    "end": "2026-11-04T00:39:48.836849+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:39:48.837154+00:00",
+    "end": "2026-11-04T00:40:24.796855+00:00",
+    "args": [
+      "press",
+      "@e10",
+      "--count",
+      "100"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e10 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:24.799964+00:00",
+    "end": "2026-11-04T00:40:25.518033+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:25.518597+00:00",
+    "end": "2026-11-04T00:40:26.164722+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "accessibility-extra-extra-extra-large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to accessibility-extra-extra-extra-large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:26.165229+00:00",
+    "end": "2026-11-04T00:40:26.583716+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 21 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"of 180 g\"\n@e14 [button] \"Protein\"\n@e15 [button] \"367\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"Camera\"\n@e20 [button] \"Add Food\"\n@e21 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:26.584359+00:00",
+    "end": "2026-11-04T00:40:47.281084+00:00",
+    "args": [
+      "press",
+      "@e10",
+      "--count",
+      "60"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e10 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:47.281851+00:00",
+    "end": "2026-11-04T00:40:47.713907+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 21 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"of 180 g\"\n@e14 [button] \"Protein\"\n@e15 [button] \"367\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"Carbs\"\n@e19 [button] \"Camera\"\n@e20 [button] \"Add Food\"\n@e21 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:47.714493+00:00",
+    "end": "2026-11-04T00:40:48.231809+00:00",
+    "args": [
+      "settings",
+      "text-size",
+      "large"
+    ],
+    "exit": 0,
+    "stdout": "Text size set to large\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:48.232111+00:00",
+    "end": "2026-11-04T00:40:48.569841+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:40:48.570278+00:00",
+    "end": "2026-11-04T00:41:31.256986+00:00",
+    "args": [
+      "press",
+      "@e10",
+      "--count",
+      "120"
+    ],
+    "exit": 0,
+    "stdout": "Tapped @e10 (201, 269)\n",
+    "stderr": ""
+  },
+  {
+    "start": "2026-11-04T00:41:31.257544+00:00",
+    "end": "2026-11-04T00:41:31.625457+00:00",
+    "args": [
+      "snapshot",
+      "-i"
+    ],
+    "exit": 0,
+    "stdout": "Page: juan-test.cal-macro-tracker\nApp: juan-test.cal-macro-tracker\nSnapshot: 47 visible nodes\n@e1 [other] \"MACROS\"\n@e2 [navigation-bar] \"_TtGC7SwiftUI32NavigationStackHosting\"\n@e3 [text] \"Today\"\n@e4 [button] \"Share daily summary\"\n@e5 [button] \"Open insights\"\n@e6 [button] \"Open history\"\n@e7 [button] \"Open settings\"\n@e8 [collection]\n  [content below collection hidden]\n@e9 [cell] \"2465\"\n@e10 [button] \"Expand nutrition details\"\n@e11 [text] \"of 2440 kcal\"\n@e12 [button] \"111\"\n@e13 [button] \"367\"\n@e14 [button] \"64\"\n@e15 [button] \"of 180 g\"\n@e16 [button] \"of 250 g\"\n@e17 [button] \"+117\"\n@e18 [button] \"of 80 g\"\n@e19 [button] \"Protein\"\n@e20 [button] \"Carbs\"\n@e21 [button] \"Fat\"\n@e22 [button] \"2-day logging streak. Open Insights.\"\n@e23 [text] \"Not tracked\"\n@e24 [text] \"Not tracked\"\n@e25 [text] \"Not tracked\"\n@e26 [text] \"Sat Fat\"\n@e27 [text] \"Fiber\"\n@e28 [text] \"Sugars\"\n@e29 [text] \"Not tracked\"\n@e30 [text] \"Not tracked\"\n@e31 [text] \"Not tracked\"\n@e32 [text] \"Added Sugar\"\n@e33 [text] \"Sodium\"\n@e34 [text] \"Cholesterol\"\n@e35 [cell] \"Food, 18 items\"\n@e36 [text] \"Food\"\n@e37 [text] \"18 items\"\n@e38 [cell] \"Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows\"\n@e39 [button] \"Food, Loop probe GREEN yogurt oats almonds blueberries extended breakfast description for self sizing live shared rows, 1 cup, 5:34\u202fPM, 120 calories, 12 grams protein, 9 grams carbs, 3 grams fat\"\n@e40 [text] \"120 kcal\"\n@e41 [text] \"P 12 \u2022 C 9 \u2022 F 3\"\n@e42 [text] \"1 cup \u2022 5:34\u202fPM\"\n@e43 [cell] \"Banana\"\n@e44 [button] \"Food, Banana, 1 medium (118 g), 5:33\u202fPM, 105 calories, 1 grams protein, 27 grams carbs, 0 grams fat\"\n@e45 [button] \"Camera\"\n@e46 [button] \"Add Food\"\n@e47 [toolbar] \"Toolbar\"\n",
+    "stderr": ""
+  }
+]

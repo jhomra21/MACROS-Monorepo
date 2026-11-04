@@ -1,0 +1,939 @@
+2026-11-03 17:24:05.122 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] Collection view <UpdateCoalescingCollectionView 0x108abe9a0> is stuck in its update loop. This can happen when self-sizing views do not return consistent sizes, or the collection views frame/bounds/contentOffset is being constantly adjusted. To debug this issue, check the Console app for logs in the "UICollectionViewFeedbackLoopDebugger" category.
+Collection view: <SwiftUI.UpdateCoalescingCollectionView: 0x101e56a00; baseClass = UICollectionView; frame = (0 0; 402 874); clipsToBounds = YES; autoresize = W+H; gestureRecognizers = <NSArray: 0x1183992c0>; backgroundColor = UIExtendedSRGBColorSpace 0 0 0 0; layer = <CALayer: 0x1183991d0>; contentOffset: {0, -116}; contentSize: {402, 869}; adjustedContentInset: {116, 0, 102, 0} topEdge=<style=soft backgroundCapture=sampled> bottomEdge=<style=soft backgroundCapture=color<<UIDynamicSystemColor: 0x10302b3c0; name = systemBackgroundColor>>>; layout: <UICollectionViewCompositionalLayout: 0x118185e00>; dataSource: <_TtGC7SwiftUI31UICollectionViewListCoordinatorGVS_28CollectionViewListDataSourceOs5Never_GOS_19SelectionManagerBoxS2___: 0x118784000>>
+2026-11-03 17:24:05.123 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 0, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d3dd500; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 1, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d3dde00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 2, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d4cd680; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 3, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11a7a0d80; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 4, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d3e4900; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 5, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11c296280; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 6, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.152 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d4a0f00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 7, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d4a3600; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 8, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d4c5200; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 9, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11d4c7600; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 10, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffb9500; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 11, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffbb780; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 12, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffcd800; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.153 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 13, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffcfa80; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 14, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffd5b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 15, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffd7c00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 16, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffd9e00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 17, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffd5680; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 18, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffee100; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 19, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11ffedb00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 20, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11fff6400; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 21, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11fff5b00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 22, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11fffe700; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 23, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x11fffdb00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.154 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 24, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120812a00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 25, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120814c00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 26, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120817480; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 27, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12081cf00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 28, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12081f600; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 29, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120829200; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 30, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12082b600; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 31, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120835500; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 32, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120837780; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 33, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12083d800; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 34, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12083fa80; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 35, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.155 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120845b00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 36, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120847c00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 37, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12084de00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 38, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120845680; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 39, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120872100; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 40, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120871b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 41, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12087e400; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 42, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12087db00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 43, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120896700; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 44, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120895b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 45, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12089ea00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 46, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208a0c00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 47, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208a3480; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 48, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.156 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208c0f00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 49, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208c3600; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 50, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208d1200; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 51, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208d3600; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 52, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208e9500; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 53, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208eb780; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 54, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208f1800; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 55, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1208f3a80; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 56, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120901b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 57, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120903c00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 58, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120921e00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 59, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.157 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120901680; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 60, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12092e100; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 61, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12092db00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 62, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120946400; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 63, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120945b00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 64, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120952700; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 65, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120951b00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 66, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120972a00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 67, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12097cc00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 68, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12097f480; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 69, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120998f00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 70, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x12099b600; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 71, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209a5200; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 72, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.158 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209a7600; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 73, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209b1500; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 74, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209b3780; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 75, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209cd800; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 76, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209cfa80; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 77, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209d9b00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 78, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209dbc00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 79, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209fde00; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 80, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x1209d9680; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 81, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120a1a100; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 82, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120a19b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 83, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.3333333333333)", to: "(402.0, 407.6666666666667)", layout generated value: "(402.0, 407.3333333333333)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120a26400; index path: (0-0); frame = (0 -0; 402 407.667); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] For layout pass 84, tracked invalidation with index 0 had 1 change(s). Reason: "PreferredAttributes"; invalidatedItems: ["(0-0)"]. Changes:
+2026-11-03 17:24:05.159 E  cal-macro-tracker[69068:101791a] [com.apple.UIKit:UICollectionViewFeedbackLoopDebugger] 	Element at index path: (0-0),  changedAttribute: "preferredSize", from: "(402.0, 407.6666666666667)", to: "(402.0, 407.3333333333333)", layout generated value: "(402.0, 407.6666666666667)"
+		attributes: <UICollectionViewLayoutAttributes: 0x120a25b00; index path: (0-0); frame = (0 0.333333; 402 407.333); zIndex = 10>
+		reason: "preferred size changed for item: "<NSCollectionLayoutItem 0x101c52ee0 size={.containerWidthFactor(1), .estimated(52)}>
+		decorationItems=
+				<NSCollectionLayoutDecorationItem 0x11ff08820 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindBottomSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549040: edges=4; offset={0, 0}; anchorPoint={0.5, 1}>>
+				<NSCollectionLayoutDecorationItem 0x11ff08140 size: {.containerWidthFactor(1), .absolute(1)}; elementKind: "UICollectionViewListLayoutElementKindTopSeparator";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549080: edges=1; offset={0, 0}; anchorPoint={0.5, 0}>>
+				<NSCollectionLayoutDecorationItem 0x11ff097c0 size: {.containerWidthFactor(1), .containerHeightFactor(1)}; elementKind: "UICollectionViewListLayoutElementKindSwipeActions";
+				containerAnchor=<NSCollectionLayoutAnchor 0x11a549b40: edges=0; offset={0, 0}; anchorPoint={0.5, 0.5}>>""
+2026-11-03 17:24:05.161 Df cal-macro-tracker[69068:101791a] (libswiftCore.dylib) UIKitCore/_UICollectionViewFeedbackLoopDebugger.swift:93: Fatal error: <UpdateCoalescingCollectionView 0x108abe9a0> is stuck in a recursive layout loop. This can happen when self-sizing views do not return consistent sizes, or the collection view's frame/bounds/contentOffset is being constantly adjusted. To debug this issue, check the Console app for logs in the "UICollectionViewFeedbackLoopDebugger" category.
+Collection view: <SwiftUI.UpdateCoalescingCollectionView: 0x101e56a00; baseClass = UICollectionView; frame = (0 0; 402 874); clipsToBounds = YES; autoresize = W+H; gestureRecognizers = <NSArray: 0x1183992c0>; backgroundColor = UIExtendedSRGBColorSpace 0 0 0 0; layer = <CALayer: 0x1183991d0>; contentOffset: {0, -116}; contentSize: {402, 869}; adjustedContentInset: {116, 0, 102, 0} topEdge=<style=soft backgroundCapture=sampled> bottomEdge=<style=soft backgroundCapture=color<<UIDynamicSystemColor: 0x10302b3c0; name = systemBackgroundColor>>>; layout: <UICollectionViewCompositionalLayout: 0x118185e<…>

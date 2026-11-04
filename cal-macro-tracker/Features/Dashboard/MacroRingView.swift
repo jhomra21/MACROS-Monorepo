@@ -122,20 +122,20 @@ struct SecondaryNutritionDetailsView: View {
     let snapshot: SecondaryNutritionSnapshot
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .center, spacing: 12) {
-            ForEach(SecondaryNutritionMetric.allCases) { metric in
-                secondaryNutrientColumn(metric)
+        // All six metrics must be measured eagerly: lazy estimates can change during the hero's animated reveal.
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                ForEach(SecondaryNutritionMetric.allCases.prefix(3)) { metric in
+                    secondaryNutrientColumn(metric)
+                }
+            }
+            GridRow {
+                ForEach(SecondaryNutritionMetric.allCases.suffix(3)) { metric in
+                    secondaryNutrientColumn(metric)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var columns: [GridItem] {
-        [
-            GridItem(.flexible(), spacing: 12, alignment: .center),
-            GridItem(.flexible(), spacing: 12, alignment: .center),
-            GridItem(.flexible(), spacing: 12, alignment: .center)
-        ]
     }
 
     private func secondaryNutrientColumn(_ metric: SecondaryNutritionMetric) -> some View {

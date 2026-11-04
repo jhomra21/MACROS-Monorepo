@@ -1,0 +1,149 @@
+{
+  "branch": "fix/collection-feedback-loop",
+  "rejectedHead": "53e293293097cede9299d1d6e35884d1064bc2ab",
+  "runtime26": "iOS 26.5 (23F77)",
+  "runtime27": "iOS 27.0 (24A434)",
+  "newCrashReports": {
+    "baselineUTC": "2026-11-04T00:23:23.957300+00:00",
+    "afterUTC": "2026-11-04T00:47:15.580916+00:00",
+    "baselineCount": 17,
+    "afterCount": 17,
+    "newReportNames": []
+  },
+  "green": {
+    "26": {
+      "startUTC": "2026-11-04T00:42:13.826689+00:00",
+      "finishUTC": "2026-11-04T00:44:06.760649+00:00",
+      "batches": [
+        {
+          "count": 24,
+          "start": "2026-11-04T00:42:14.732561+00:00",
+          "end": "2026-11-04T00:42:23.457325+00:00",
+          "exit": 0
+        },
+        {
+          "count": 100,
+          "start": "2026-11-04T00:42:24.509068+00:00",
+          "end": "2026-11-04T00:42:59.173151+00:00",
+          "exit": 0
+        },
+        {
+          "count": 60,
+          "start": "2026-11-04T00:43:00.375955+00:00",
+          "end": "2026-11-04T00:43:21.549743+00:00",
+          "exit": 0
+        },
+        {
+          "count": 120,
+          "start": "2026-11-04T00:43:23.743575+00:00",
+          "end": "2026-11-04T00:44:06.434059+00:00",
+          "exit": 0
+        }
+      ],
+      "streamLines": 37454,
+      "actualFeedbackCategoryRecords": 0,
+      "persistedFeedbackCategoryRecords": 0
+    },
+    "27": {
+      "startUTC": "2026-11-04T00:39:34.439627+00:00",
+      "finishUTC": "2026-11-04T00:41:31.625457+00:00",
+      "batches": [
+        {
+          "count": 24,
+          "start": "2026-11-04T00:39:38.821528+00:00",
+          "end": "2026-11-04T00:39:47.755816+00:00",
+          "exit": 0
+        },
+        {
+          "count": 100,
+          "start": "2026-11-04T00:39:48.837154+00:00",
+          "end": "2026-11-04T00:40:24.796855+00:00",
+          "exit": 0
+        },
+        {
+          "count": 60,
+          "start": "2026-11-04T00:40:26.584359+00:00",
+          "end": "2026-11-04T00:40:47.281084+00:00",
+          "exit": 0
+        },
+        {
+          "count": 120,
+          "start": "2026-11-04T00:40:48.570278+00:00",
+          "end": "2026-11-04T00:41:31.256986+00:00",
+          "exit": 0
+        }
+      ],
+      "streamLines": 26695,
+      "actualFeedbackCategoryRecords": 0,
+      "persistedFeedbackCategoryRecords": 0
+    }
+  },
+  "videos": {
+    "stress": {
+      "duration": "113.461667",
+      "size": "149389231",
+      "tags": {
+        "creation_time": "2026-11-04T00:42:13.000000Z"
+      }
+    },
+    "normal": {
+      "duration": "6.121667",
+      "size": "3286515",
+      "tags": {
+        "creation_time": "2026-11-04T00:44:09.000000Z"
+      }
+    },
+    "reduced": {
+      "duration": "6.290000",
+      "size": "947992",
+      "tags": {
+        "creation_time": "2026-11-04T00:39:35.000000Z"
+      }
+    }
+  },
+  "format": "passed",
+  "build": "passed",
+  "serialIPadTests": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "E91B597B-CE57-4C0B-A8A4-51CBDC3386AB",
+          "deviceName": "MACROS-iPad-Air-11-2026-10-29",
+          "modelName": "iPad Air 11-inch (M4)",
+          "osBuildNumber": "24A434",
+          "osVersion": "27.0",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "passedTests": 247,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "cal-macro-tracker \u00b7 Built with macOS 27.2",
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "finishTime": 1793752870.717,
+    "passedTests": 247,
+    "result": "Passed",
+    "runtimeWarnings": [],
+    "skippedTests": 0,
+    "startTime": 1793752841.486,
+    "statistics": [],
+    "testFailures": [],
+    "title": "Test - cal-macro-tracker",
+    "topInsights": [
+      {
+        "category": "Longest Test Runs",
+        "impact": "66% of duration",
+        "text": "2 longest test runs with outlier durations exceeding 1.08s (three standard deviations)"
+      }
+    ],
+    "totalTestCount": 247
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "build27": {
+    "appPID": "92396",
+    "rawBytes": 6219964,
+    "appBytes": 2083421,
+    "rawLineCount": 33130,
+    "appLineCount": 10985,
+    "firstAppTimestamp": "2026-11-03 15:53:09.731",
+    "lastAppTimestamp": "2026-11-03 15:59:03.226",
+    "feedbackLoopMatchCount": 0,
+    "feedbackLoopMatches": []
+  },
+  "main": {
+    "appPID": "8912",
+    "rawBytes": 2151545,
+    "appBytes": 1149218,
+    "rawLineCount": 11615,
+    "appLineCount": 6232,
+    "firstAppTimestamp": "2026-11-03 16:00:32.906",
+    "lastAppTimestamp": "2026-11-03 16:04:01.974",
+    "feedbackLoopMatchCount": 0,
+    "feedbackLoopMatches": []
+  }
+}
