@@ -1,5 +1,9 @@
 ---
 import { site } from '../data/site';
+import { publishedEntries } from '../lib/seo';
+import AppStoreBadge from './AppStoreBadge.astro';
+
+const posts = await publishedEntries('blog');
 ---
 
 <footer class="site-footer">
@@ -29,6 +33,9 @@ import { site } from '../data/site';
 				}
 			</div>
 		</div>
+		{Astro.url.pathname !== '/' && <AppStoreBadge />}
+		{posts.length > 0 && <p><a href="/blog/">Read the MACROS blog</a> · <a href="/rss.xml">Subscribe via RSS</a></p>}
 		<p class="site-footer__bottom caption">© 2026 {site.fullName}. All rights reserved.</p>
+		{site.appStore.live && <p class="caption">Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc.</p>}
 	</div>
 </footer>

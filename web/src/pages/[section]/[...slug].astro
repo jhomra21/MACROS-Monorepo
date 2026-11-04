@@ -1,0 +1,85 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { getImage, Image } from 'astro:assets';
+import { site } from '../../data/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { absoluteURL, pages, publishedEntries } from '../../lib/seo';
+
+export async function getStaticPaths() {
+	const sections = await Promise.all((['guides', 'blog'] as const).map(async section => {
+		const entries = await publishedEntries(section);
+
+		if (entries.length === 0) return [];
+
+		return [
+			{ params: { section, slug: undefined }, props: { section, entries } },
+			...entries.map(entry => ({ params: { section, slug: entry.id }, props: { section, entry, entries } })),
+		];
+	}));
+
+	return sections.flat();
+}
+
+interface Props {
+	section: 'guides' | 'blog';
+	entry?: CollectionEntry<'guides' | 'blog'>;
+	entries: CollectionEntry<'guides' | 'blog'>[];
+}
+
+const { section, entry, entries } = Astro.props;
+
+const sectionName = section === 'guides' ? 'Guides' : 'Blog';
+
+const rendered = entry ? await render(entry) : undefined;
+
+const image = entry ? await getImage({ src: entry.data.image, width: 1200, format: 'webp' }) : undefined;
+
+const metadata = entry ? { title: entry.data.title, description: entry.data.description } : pages[`/${section}/`];
+
+const articleSchema = entry && image ? [{
+	'@type': 'Article',
+	headline: entry.data.title,
+	description: entry.data.description,
+	datePublished: entry.data.published.toISOString(),
+	dateModified: entry.data.updated.toISOString(),
+	author: { '@type': 'Person', name: site.author, url: absoluteURL('/about/') },
+	image: absoluteURL(image.src),
+	mainEntityOfPage: absoluteURL(`/${section}/${entry.id}/`),
+}] : [];
+
+const dateText = (date: Date) => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+
+const Content = rendered?.Content;
+---
+<SiteLayout {...metadata}
+	image={entry && image ? { src: image.src, width: 1200, height: Math.round(entry.data.image.height * 1200 / entry.data.image.width), alt: entry.data.imageAlt } : undefined}
+	article={entry ? { published: entry.data.published, updated: entry.data.updated } : undefined}
+	structuredData={articleSchema}>
+	<article class="container editorial">
+		<nav class="breadcrumbs caption" aria-label="Breadcrumb">
+			<a href="/">MACROS</a><span aria-hidden="true"> / </span>
+			{entry ? <><a href={`/${section}/`}>{sectionName}</a><span aria-hidden="true"> / </span><span aria-current="page">{entry.data.title}</span></> : <span aria-current="page">{sectionName}</span>}
+		</nav>
+		<header class="editorial__header">
+			<h1 class="page-title">{entry?.data.title ?? sectionName}</h1>
+			<p class="lead">{metadata.description}</p>
+			{entry && <p class="caption">By <a href="/about/">{site.author}</a><br />
+				Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>.
+			</p>}
+		</header>
+		{Content ? <>
+			<div class="prose"><Content /></div>
+			{entry && <figure class="editorial__screenshot">
+				<Image src={entry.data.image} alt={entry.data.imageAlt} widths={[320, 640, 960]} sizes="(max-width: 390px) 100vw, 320px" format="webp" loading="lazy" />
+				<figcaption class="caption">{entry.data.imageCaption ?? entry.data.imageAlt}</figcaption>
+			</figure>}
+			<p class="editorial__related"><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>
+		</> : <ul class="editorial__list">
+			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li>
+				<h2 class="title"><a href={`/${section}/${item.id}/`}>{item.data.title}</a></h2>
+				<p>{item.data.description}</p>
+				<p class="caption"><time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time></p>
+			</li>)}
+		</ul>}
+	</article>
+</SiteLayout>

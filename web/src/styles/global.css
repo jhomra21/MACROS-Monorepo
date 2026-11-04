@@ -1559,6 +1559,109 @@ summary {
 	}
 }
 
+/* Editorial pages reuse the site's reading measure, type scale, and surface tokens. */
+.editorial {
+	max-width: 46rem;
+	padding-block: var(--space-7) var(--section-space);
+}
+
+.breadcrumbs {
+	margin-bottom: var(--space-6);
+}
+
+.editorial__header {
+	display: grid;
+	gap: var(--space-5);
+	margin-bottom: var(--space-8);
+}
+
+.editorial .prose {
+	display: block;
+	max-width: none;
+}
+
+.editorial .prose > * + * {
+	margin-top: var(--space-5);
+}
+
+.editorial .prose h2 {
+	margin-top: var(--space-8);
+	margin-bottom: var(--space-4);
+	font-size: var(--fs-h3);
+	scroll-margin-top: calc(var(--header-h) + var(--space-5));
+}
+
+.editorial .prose ul,
+.editorial .prose ol {
+	padding-left: var(--space-5);
+}
+
+.editorial .prose ul {
+	list-style: disc;
+}
+
+.editorial .prose ol {
+	list-style: decimal;
+}
+
+.editorial .prose li + li {
+	margin-top: var(--space-3);
+}
+
+.editorial .prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--fs-small);
+	font-variant-numeric: tabular-nums;
+}
+
+.editorial .prose th,
+.editorial .prose td {
+	padding: var(--space-3) var(--space-2);
+	text-align: left;
+	border-bottom: 1px solid var(--hairline);
+}
+
+.editorial__screenshot {
+	display: grid;
+	gap: var(--space-4);
+	max-width: 20rem;
+	margin: var(--space-7) auto;
+}
+
+.editorial__screenshot img {
+	width: 100%;
+	border-radius: var(--radius-lg);
+}
+
+.editorial__related {
+	margin-top: var(--space-7);
+}
+
+.editorial__list li {
+	display: grid;
+	gap: var(--space-4);
+	padding-block: var(--space-6);
+	border-block-start: 1px solid var(--hairline);
+}
+
+/* Apple's minimum onscreen height is 40px, with 10px clear space on all sides.
+   No transforms or filters: the official badge artwork stays unchanged. */
+.app-store-badge {
+	display: inline-block;
+	padding: 10px;
+	line-height: 0;
+}
+
+.app-store-badge img {
+	width: auto;
+	height: 40px;
+}
+
+.hero__copy > .app-store-badge {
+	animation: none;
+}
+
 /* Footer */
 .site-footer {
 	padding-block: var(--space-8) calc(var(--space-6) + env(safe-area-inset-bottom, 0px));

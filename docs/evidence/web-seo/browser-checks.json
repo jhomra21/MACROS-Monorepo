@@ -1,0 +1,598 @@
+[
+  {
+    "colorScheme": "light",
+    "path": "/",
+    "width": 390,
+    "scrollWidth": 390,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "MobileApplication",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "operatingSystem": "iOS 26+",
+            "applicationCategory": "HealthApplication",
+            "description": "Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required. Optional MACROS Pro in-app purchases are available.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://macros-web.jhonra121.workers.dev/#organization",
+            "name": "MACROS",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "founder": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "publisher": {
+              "@id": "https://macros-web.jhonra121.workers.dev/#organization"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do I need an account?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Food logging works without an account. Sharing is optional and uses a separate sharing profile."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is MACROS free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Food logging, food search, barcode and nutrition label scanning, saved foods, history, personal widgets, and Apple Health writing are free. MACROS Pro is optional."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is MACROS Pro?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pro adds Insights ranges beyond 7 days, sharing circle invites, shared-person widgets, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How much does Pro cost?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "$2.99 per month, $19.99 per year with a 7-day free trial, or $49.99 once for lifetime. Prices vary by region. Apple shows the price before you buy."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does it work offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Logging, manual entry, and searching on-device foods work offline. Other food search results and barcode lookup need a connection."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What leaves my phone?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, optional daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "light",
+    "path": "/guides/how-to-set-macro-goals/",
+    "width": 390,
+    "scrollWidth": 390,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "MACROS",
+                "item": "https://macros-web.jhonra121.workers.dev/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Guides",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "How to set protein, carb, and fat goals",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+              }
+            ]
+          },
+          {
+            "@type": "Article",
+            "headline": "How to set protein, carb, and fat goals",
+            "description": "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets.",
+            "datePublished": "2026-11-04T00:00:00.000Z",
+            "dateModified": "2026-11-04T00:00:00.000Z",
+            "author": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes",
+              "url": "https://macros-web.jhonra121.workers.dev/about/"
+            },
+            "image": "https://macros-web.jhonra121.workers.dev/_astro/app-settings.DENtPOxW_ZfQgCS.webp",
+            "mainEntityOfPage": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "dark",
+    "path": "/",
+    "width": 390,
+    "scrollWidth": 390,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "MobileApplication",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "operatingSystem": "iOS 26+",
+            "applicationCategory": "HealthApplication",
+            "description": "Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required. Optional MACROS Pro in-app purchases are available.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://macros-web.jhonra121.workers.dev/#organization",
+            "name": "MACROS",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "founder": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "publisher": {
+              "@id": "https://macros-web.jhonra121.workers.dev/#organization"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do I need an account?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Food logging works without an account. Sharing is optional and uses a separate sharing profile."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is MACROS free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Food logging, food search, barcode and nutrition label scanning, saved foods, history, personal widgets, and Apple Health writing are free. MACROS Pro is optional."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is MACROS Pro?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pro adds Insights ranges beyond 7 days, sharing circle invites, shared-person widgets, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How much does Pro cost?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "$2.99 per month, $19.99 per year with a 7-day free trial, or $49.99 once for lifetime. Prices vary by region. Apple shows the price before you buy."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does it work offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Logging, manual entry, and searching on-device foods work offline. Other food search results and barcode lookup need a connection."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What leaves my phone?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, optional daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "dark",
+    "path": "/guides/how-to-set-macro-goals/",
+    "width": 390,
+    "scrollWidth": 390,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "MACROS",
+                "item": "https://macros-web.jhonra121.workers.dev/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Guides",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "How to set protein, carb, and fat goals",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+              }
+            ]
+          },
+          {
+            "@type": "Article",
+            "headline": "How to set protein, carb, and fat goals",
+            "description": "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets.",
+            "datePublished": "2026-11-04T00:00:00.000Z",
+            "dateModified": "2026-11-04T00:00:00.000Z",
+            "author": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes",
+              "url": "https://macros-web.jhonra121.workers.dev/about/"
+            },
+            "image": "https://macros-web.jhonra121.workers.dev/_astro/app-settings.DENtPOxW_ZfQgCS.webp",
+            "mainEntityOfPage": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "light",
+    "path": "/",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "MobileApplication",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "operatingSystem": "iOS 26+",
+            "applicationCategory": "HealthApplication",
+            "description": "Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required. Optional MACROS Pro in-app purchases are available.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://macros-web.jhonra121.workers.dev/#organization",
+            "name": "MACROS",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "founder": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "publisher": {
+              "@id": "https://macros-web.jhonra121.workers.dev/#organization"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do I need an account?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Food logging works without an account. Sharing is optional and uses a separate sharing profile."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is MACROS free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Food logging, food search, barcode and nutrition label scanning, saved foods, history, personal widgets, and Apple Health writing are free. MACROS Pro is optional."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is MACROS Pro?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pro adds Insights ranges beyond 7 days, sharing circle invites, shared-person widgets, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How much does Pro cost?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "$2.99 per month, $19.99 per year with a 7-day free trial, or $49.99 once for lifetime. Prices vary by region. Apple shows the price before you buy."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does it work offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Logging, manual entry, and searching on-device foods work offline. Other food search results and barcode lookup need a connection."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What leaves my phone?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, optional daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "light",
+    "path": "/guides/how-to-set-macro-goals/",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "MACROS",
+                "item": "https://macros-web.jhonra121.workers.dev/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Guides",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "How to set protein, carb, and fat goals",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+              }
+            ]
+          },
+          {
+            "@type": "Article",
+            "headline": "How to set protein, carb, and fat goals",
+            "description": "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets.",
+            "datePublished": "2026-11-04T00:00:00.000Z",
+            "dateModified": "2026-11-04T00:00:00.000Z",
+            "author": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes",
+              "url": "https://macros-web.jhonra121.workers.dev/about/"
+            },
+            "image": "https://macros-web.jhonra121.workers.dev/_astro/app-settings.DENtPOxW_ZfQgCS.webp",
+            "mainEntityOfPage": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "dark",
+    "path": "/",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "MobileApplication",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "operatingSystem": "iOS 26+",
+            "applicationCategory": "HealthApplication",
+            "description": "Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required. Optional MACROS Pro in-app purchases are available.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://macros-web.jhonra121.workers.dev/#organization",
+            "name": "MACROS",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "founder": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "name": "MACROS: Nutrition Tracker",
+            "url": "https://macros-web.jhonra121.workers.dev/",
+            "publisher": {
+              "@id": "https://macros-web.jhonra121.workers.dev/#organization"
+            }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do I need an account?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Food logging works without an account. Sharing is optional and uses a separate sharing profile."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Is MACROS free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Food logging, food search, barcode and nutrition label scanning, saved foods, history, personal widgets, and Apple Health writing are free. MACROS Pro is optional."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is MACROS Pro?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pro adds Insights ranges beyond 7 days, sharing circle invites, shared-person widgets, weight trends, weight import from Apple Health, backup export and import, custom ring colors, custom widget color and photo backgrounds, and multiple or smart reminders. Anyone with your invite link can connect and share back for free until it expires after 7 days or you revoke it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How much does Pro cost?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "$2.99 per month, $19.99 per year with a 7-day free trial, or $49.99 once for lifetime. Prices vary by region. Apple shows the price before you buy."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Does it work offline?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Logging, manual entry, and searching on-device foods work offline. Other food search results and barcode lookup need a connection."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What leaves my phone?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Search terms or barcodes go to our food-search service. Sharing is optional and off by default. When on, the app sends your display name, optional daily goals, and today’s calories, protein, carbs, fat, and entry count; for each person, choose Nothing, Macros, or Macros + Foods. Food sharing includes today’s food names, amounts, calories, protein, carbs, and fat, but never logged times, notes, photos, or barcodes. Foods are uploaded only while at least one person can see them; foods are deleted when sharing them stops, and older days are deleted. Viewers see today only."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "colorScheme": "dark",
+    "path": "/guides/how-to-set-macro-goals/",
+    "width": 1440,
+    "scrollWidth": 1440,
+    "h1": 1,
+    "jsonLD": [
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "MACROS",
+                "item": "https://macros-web.jhonra121.workers.dev/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Guides",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "How to set protein, carb, and fat goals",
+                "item": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+              }
+            ]
+          },
+          {
+            "@type": "Article",
+            "headline": "How to set protein, carb, and fat goals",
+            "description": "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets.",
+            "datePublished": "2026-11-04T00:00:00.000Z",
+            "dateModified": "2026-11-04T00:00:00.000Z",
+            "author": {
+              "@type": "Person",
+              "name": "Juan Ramon Martinez Bulnes",
+              "url": "https://macros-web.jhonra121.workers.dev/about/"
+            },
+            "image": "https://macros-web.jhonra121.workers.dev/_astro/app-settings.DENtPOxW_ZfQgCS.webp",
+            "mainEntityOfPage": "https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -15,9 +15,9 @@ export const site = {
 	url: 'https://macros-web.jhonra121.workers.dev',
 	tagline: 'Track calories and macros with barcode and label scans, no account.',
 	description:
-		'MACROS: Nutrition Tracker is a local-first iPhone app for logging calories, protein, carbs, and fat with barcode and nutrition label scanning, fast manual entry, and no account.',
-	// Set this to the App Store listing URL at launch. The header and hero show a download button only when it is non-empty.
-	appStoreURL: '',
+		'Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required.',
+	appStore: { id: '6767565938', live: false },
+	author: 'Juan Ramon Martinez Bulnes',
 	supportEmail: 'jhonra121@gmail.com',
 	ogImage: {
 		src: '/og.png',
@@ -28,8 +28,9 @@ export const site = {
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
 		{ href: '/#plans', label: 'Pro', secondary: true },
-		{ href: '/about', label: 'About', secondary: false },
-		{ href: '/support', label: 'Support', secondary: false },
+		{ href: '/guides/', label: 'Guides', secondary: false },
+		{ href: '/about/', label: 'About', secondary: false },
+		{ href: '/support/', label: 'Support', secondary: false },
 	],
 	footerLinks: [
 		{
@@ -44,15 +45,16 @@ export const site = {
 		{
 			heading: 'Company',
 			links: [
-				{ href: '/about', label: 'About' },
-				{ href: '/support', label: 'Support' },
+				{ href: '/guides/', label: 'Macro guides' },
+				{ href: '/about/', label: 'About' },
+				{ href: '/support/', label: 'Support' },
 			],
 		},
 		{
 			heading: 'Legal',
 			links: [
-				{ href: '/privacy', label: 'Privacy policy' },
-				{ href: '/terms', label: 'Terms of use' },
+				{ href: '/privacy/', label: 'Privacy policy' },
+				{ href: '/terms/', label: 'Terms of use' },
 			],
 		},
 	],

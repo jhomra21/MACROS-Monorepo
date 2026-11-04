@@ -108,5 +108,5 @@ export function validateSupportRequest(input: ParsedRequestBody):
 }
 
 export function getSupportRedirectPath(status: SupportPageStatus): string {
-	return `/support#${supportStatusElementIDs[status]}`;
+	return `/support/#${supportStatusElementIDs[status]}`;
 }

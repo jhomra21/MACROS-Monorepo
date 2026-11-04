@@ -3,6 +3,7 @@ export const prerender = true;
 
 import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { pages } from '../lib/seo';
 import {
 	supportFieldAttributes,
 	supportStatusElementIDs,
@@ -10,7 +11,7 @@ import {
 } from '../lib/support';
 ---
 
-<SiteLayout title={`${site.fullName} | Support`} description="Get support for MACROS: Nutrition Tracker.">
+<SiteLayout {...pages['/support/']}>
 	<section class="page-header">
 		<div class="container page-header__inner">
 			<h1 class="page-title">Need help with the app?</h1>

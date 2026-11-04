@@ -1,0 +1,9 @@
+---
+import { site } from '../data/site';
+import { appStoreURL } from '../lib/seo';
+---
+{site.appStore.live && (
+	<a class="app-store-badge" href={appStoreURL()}>
+		<img src="/download-on-the-app-store.svg" width="120" height="40" alt="Download on the App Store" />
+	</a>
+)}
