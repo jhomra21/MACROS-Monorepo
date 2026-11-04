@@ -76,7 +76,7 @@ struct SettingsScreen: View {
             )
             SavedFoodsSection(
                 title: "Saved External Foods",
-                emptyState: "Barcode, label scan, and online packaged foods you save locally will show up here.",
+                emptyState: "Foods you save from searches and scans will show up here.",
                 descriptor: Self.externalFoodsDescriptor
             )
 

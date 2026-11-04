@@ -12,12 +12,8 @@ struct MealComponentFoodPickerScreen: View {
     @State private var foods: [LocalFoodSearchResult] = []
     @State private var selectedFoodIDs = Set<UUID>()
     @State private var isSearching = false
-    @State private var remoteSearch = AddFoodRemoteSearchSession()
-    @State private var remoteSearchTask: Task<Void, Never>?
+    @State private var remoteSearch = FoodSearchSession()
     @State private var selectedRemoteResult: RemoteSearchResult?
-
-    private let remotePageSize = 12
-    private let packagedFoodSearchClient = PackagedFoodSearchClient()
 
     var body: some View {
         List {
@@ -54,35 +50,11 @@ struct MealComponentFoodPickerScreen: View {
                 }
             }
 
-            Section("Online Packaged Foods") {
-                if remoteSearch.isLoading {
-                    HStack {
-                        ProgressView()
-                        Text("Searching online foods…")
-                            .foregroundStyle(.secondary)
-                    }
-                } else if let errorMessage = remoteSearch.errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.secondary)
-                } else if remoteSearch.results.isEmpty {
-                    Text(onlineEmptyMessage)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(remoteSearch.results) { result in
-                        Button {
-                            selectedRemoteResult = result
-                        } label: {
-                            RemoteFoodRow(result: result)
-                        }
-                        .buttonStyle(.plain)
-                    }
-
-                    if remoteSearch.hasMore {
-                        Button("Load More") {
-                            loadMoreRemoteResults()
-                        }
-                    }
-                }
+            FoodSearchResultsSection(
+                session: remoteSearch,
+                query: searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            ) { result in
+                selectedRemoteResult = result
             }
         }
         .navigationTitle("Choose Foods")
@@ -95,17 +67,15 @@ struct MealComponentFoodPickerScreen: View {
                 .disabled(selectedFoodIDs.isEmpty)
             }
         }
-        .searchable(text: $searchText, prompt: "Search saved foods")
-        .onSubmit(of: .search, searchOnline)
+        .searchable(text: $searchText, prompt: "Search foods")
+        .onSubmit(of: .search) {
+            remoteSearch.submit(query: searchText)
+        }
         .task(id: searchText) {
             await updateFoods()
         }
-        .onChange(of: searchText) { _, newValue in
-            guard remoteSearch.query != newValue.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
-            clearRemoteSearch()
-        }
-        .onDisappear {
-            remoteSearchTask?.cancel()
+        .task(id: FoodSearchRequest(query: searchText, revision: remoteSearch.revision)) {
+            await remoteSearch.load(query: searchText)
         }
         .navigationDestination(item: $selectedRemoteResult) { result in
             MealComponentRemoteSelectionScreen(result: result) { component in
@@ -119,13 +89,6 @@ struct MealComponentFoodPickerScreen: View {
         searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             ? "No saved foods available on device yet."
             : "No saved foods match this search."
-    }
-
-    private var onlineEmptyMessage: String {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return query.count < PackagedFoodSearchClient.minimumQueryLength
-            ? "Type at least \(PackagedFoodSearchClient.minimumQueryLength) characters, then press Search to add an online food."
-            : "Press Search to find packaged foods online."
     }
 
     private func updateFoods() async {
@@ -189,69 +152,6 @@ struct MealComponentFoodPickerScreen: View {
         return (try? modelContext.fetch(descriptor)) ?? []
     }
 
-    private func searchOnline() {
-        startRemoteSearch(query: searchText, page: 1, append: false)
-    }
-
-    private func loadMoreRemoteResults() {
-        guard remoteSearch.isLoading == false, remoteSearch.hasMore else { return }
-        startRemoteSearch(query: remoteSearch.query, page: remoteSearch.page + 1, append: true)
-    }
-
-    private func clearRemoteSearch() {
-        remoteSearchTask?.cancel()
-        remoteSearchTask = nil
-        remoteSearch = AddFoodRemoteSearchSession()
-    }
-
-    private func startRemoteSearch(query: String, page: Int, append: Bool) {
-        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard normalizedQuery.count >= PackagedFoodSearchClient.minimumQueryLength else {
-            clearRemoteSearch()
-            return
-        }
-
-        remoteSearchTask?.cancel()
-        let requestID = UUID()
-        remoteSearch = AddFoodRemoteSearchSession(
-            query: normalizedQuery,
-            page: append ? remoteSearch.page : 0,
-            results: append ? remoteSearch.results : [],
-            hasMore: append && remoteSearch.hasMore,
-            isLoading: true,
-            requestID: requestID
-        )
-
-        remoteSearchTask = Task {
-            await loadRemoteResults(requestID: requestID, query: normalizedQuery, page: page, append: append)
-        }
-    }
-
-    @MainActor
-    private func loadRemoteResults(requestID: UUID, query: String, page: Int, append: Bool) async {
-        do {
-            let response = try await packagedFoodSearchClient.searchFoods(
-                query: query,
-                page: page,
-                pageSize: remotePageSize
-            )
-
-            guard Task.isCancelled == false, remoteSearch.requestID == requestID else { return }
-            remoteSearch.query = response.query
-            remoteSearch.page = response.page
-            remoteSearch.provider = response.provider
-            remoteSearch.results = append ? (remoteSearch.results + response.results) : response.results
-            remoteSearch.hasMore = response.hasMore
-            remoteSearch.isLoading = false
-            remoteSearch.errorMessage = nil
-            remoteSearchTask = nil
-        } catch {
-            guard Task.isCancelled == false, remoteSearch.requestID == requestID else { return }
-            remoteSearch.isLoading = false
-            remoteSearch.errorMessage = error.localizedDescription
-            remoteSearchTask = nil
-        }
-    }
 }
 
 private func pickerRecentLocalFoods(in context: ModelContext) throws -> [FoodItem] {

@@ -13,6 +13,7 @@ struct MealComponentRemoteSelectionScreen: View {
     @State private var servingsAmount: Double = 1
     @State private var gramsAmount: Double = 100
     @State private var errorMessage: String?
+    @State private var retryRevision = 0
     @FocusState private var focusedField: FoodDraftField?
 
     private var reviewDraft: FoodDraft? {
@@ -61,13 +62,11 @@ struct MealComponentRemoteSelectionScreen: View {
                         set: { self.numericText = $0 }
                     )
                 )
-            } else if let errorMessage {
-                ContentUnavailableView(
-                    "Unable to load food",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(errorMessage)
-                )
-                .padding()
+            } else if errorMessage != nil {
+                Button("Try again") {
+                    errorMessage = nil
+                    retryRevision += 1
+                }
             } else {
                 ProgressView("Preparing food…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -75,18 +74,13 @@ struct MealComponentRemoteSelectionScreen: View {
         }
         .navigationTitle("Review Food")
         .inlineNavigationTitle()
-        .task {
+        .task(id: retryRevision) {
             await loadDraftIfNeeded()
         }
     }
 
     private var foodRepository: FoodItemRepository {
         FoodItemRepository(modelContext: modelContext)
-    }
-
-    private var sourceURL: URL? {
-        guard let sourceURL = draft?.sourceURLOrNil else { return nil }
-        return URL(string: sourceURL)
     }
 
     private var combinedReviewNotes: [String] {
@@ -115,10 +109,8 @@ struct MealComponentRemoteSelectionScreen: View {
             focusedField: $focusedField
         ) {
             FoodDraftSourceSection(
-                title: "Online Packaged Food",
-                notes: combinedReviewNotes,
-                sourceName: draft.sourceNameOrNil,
-                sourceURL: sourceURL
+                title: "Review",
+                notes: combinedReviewNotes
             )
 
             if result.requiredReviewNutrients.isEmpty == false {
@@ -161,7 +153,7 @@ struct MealComponentRemoteSelectionScreen: View {
             if let cachedFood = try result.cachedFood(using: foodRepository) {
                 loadedDraft = FoodDraft(foodItem: cachedFood, saveAsCustomFood: true)
             } else {
-                loadedDraft = try result.makeDraft()
+                loadedDraft = result.makeDraft()
                 loadedDraft.saveAsCustomFood = true
             }
 
@@ -169,7 +161,7 @@ struct MealComponentRemoteSelectionScreen: View {
             numericText = FoodDraftNumericText(draft: loadedDraft)
             gramsAmount = loadedDraft.gramsPerServing ?? 100
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Try again"
         }
     }
 

@@ -1,0 +1,70 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 66 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [navigation-bar] "Add Food"
+@e4 [search] "mcdonalds big mac" [focused] [editable]
+@e5 [image] "Search"
+@e6 [button] "Clear text"
+@e7 [button] "Close"
+@e8 [collection]
+  [content below collection hidden]
+@e9 [cell] "On Device"
+@e10 [cell] "No on-device foods or meals match this search yet."
+@e11 [cell] "Search Results"
+@e12 [cell]
+@e13 [button] "Try again"
+@e14 [button] "Camera"
+@e15 [toolbar] "Toolbar"
+@e16 [other] "inputView"
+@e17 [other] "SystemInputAssistantView"
+@e18 [other] "CenterPageView"
+@e19 [scroll-area] [scrollable]
+@e20 [other] "Typing Predictions"
+@e21 [button]
+@e22 [button]
+@e23 [button]
+@e24 [keyboard]
+@e25 [other] "UIKeyboardLayoutStar Preview"
+@e26 [key] "Padding-Left"
+@e27 [key] "Padding-Right"
+@e28 [key] "Padding-Left"
+@e29 [key] "Padding-Right"
+@e30 [key] "Padding-Left"
+@e31 [key] "Padding-Right"
+@e32 [key] "Q"
+@e33 [key] "W"
+@e34 [key] "E"
+@e35 [key] "R"
+@e36 [key] "T"
+@e37 [key] "Y"
+@e38 [key] "U"
+@e39 [key] "I"
+@e40 [key] "O"
+@e41 [key] "P"
+@e42 [key] "A"
+@e43 [key] "S"
+@e44 [key] "D"
+@e45 [key] "F"
+@e46 [key] "G"
+@e47 [key] "H"
+@e48 [key] "J"
+@e49 [key] "K"
+@e50 [key] "L"
+@e51 [key] "shift" [selected]
+@e52 [key] "Z"
+@e53 [key] "X"
+@e54 [key] "C"
+@e55 [key] "V"
+@e56 [key] "B"
+@e57 [key] "N"
+@e58 [key] "M"
+@e59 [key] "delete"
+@e60 [key] "numbers"
+@e61 [key] "Emoji"
+@e62 [key] "space"
+@e63 [key] "search"
+@e64 [button] "Next keyboard"
+@e65 [button] "Dictate"
+@e66 [button] "Dictate"

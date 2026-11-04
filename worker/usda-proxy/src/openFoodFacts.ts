@@ -126,6 +126,7 @@ export interface OpenFoodFactsQuery {
 
 export interface OpenFoodFactsRequestOptions {
   userAgent: string
+  singleRequest?: boolean
 }
 
 export function normalizedOpenFoodFactsBarcode(value: string): string | null {
@@ -181,8 +182,8 @@ export async function fetchOpenFoodFactsProduct(
   let lastRetryableError: OpenFoodFactsClientError | null = null
   let sawProductResponse = false
 
-  for (const barcodeAlias of barcodeAliases(barcode)) {
-    for (const productURL of OPEN_FOOD_FACTS_PRODUCT_URLS) {
+  for (const barcodeAlias of options.singleRequest ? [barcode] : barcodeAliases(barcode)) {
+    for (const productURL of options.singleRequest ? OPEN_FOOD_FACTS_PRODUCT_URLS.slice(0, 1) : OPEN_FOOD_FACTS_PRODUCT_URLS) {
       let response: Response
 
       try {
@@ -272,7 +273,7 @@ async function fetchOpenFoodFactsPage(
 ): Promise<OpenFoodFactsRawPage> {
   let lastRetryableError: OpenFoodFactsClientError | null = null
 
-  for (const searchURL of OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS) {
+  for (const searchURL of options.singleRequest ? OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS.slice(0, 1) : OPEN_FOOD_FACTS_LEGACY_SEARCH_URLS) {
     let response: Response
 
     try {

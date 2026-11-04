@@ -32,6 +32,10 @@ function hasRestaurantPhrase(tokens: string[]): boolean {
   return RESTAURANT_PHRASES.some((phrase) => normalized.includes(phrase))
 }
 
+export function isNamedRestaurantQuery(query: string): boolean {
+  return hasRestaurantPhrase(searchTokens(query, { removeApostrophes: true }))
+}
+
 function hasLikelyRestaurantQualifier(tokens: string[], tokenSet: Set<string>): boolean {
   if (tokens.some((token) => RESTAURANT_CONTEXT_TOKENS.has(token))) {
     return true

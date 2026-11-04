@@ -1,0 +1,24 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 19 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [navigation-bar] "Add Food"
+@e4 [search] "mcdonalds big mac" [editable]
+@e5 [image] "Search"
+@e6 [button] "Clear text"
+@e7 [button] "Close"
+@e8 [collection]
+  [content above collection hidden]
+  [content below collection hidden]
+@e9 [cell] "Big Mac™ Bacon"
+@e10 [button] "Big Mac™ Bacon, 240 kcal, P 13.2 • C 18.6 • F 12.3"
+@e11 [cell] "Search Results"
+@e12 [cell] "Big Mac"
+@e13 [button] "Big Mac, 231 kcal, P 12 • C 19 • F 11"
+@e14 [cell] "LE BIG MAC™"
+@e15 [button] "LE BIG MAC™, 231 kcal, P 12 • C 19 • F 11"
+@e16 [cell] "Grand Big Mac Chicken"
+@e17 [button] "Grand Big Mac Chicken, Nutrition missing — tap to fill manually"
+@e18 [button] "Camera"
+@e19 [toolbar] "Toolbar"

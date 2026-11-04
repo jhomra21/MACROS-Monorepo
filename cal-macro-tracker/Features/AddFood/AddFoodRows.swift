@@ -74,6 +74,8 @@ struct LocalMealSearchResultRow: View {
 }
 
 struct RemoteFoodRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     let result: RemoteSearchResult
 
     var body: some View {
@@ -84,7 +86,8 @@ struct RemoteFoodRow: View {
                 calories: nutrition.calories,
                 protein: nutrition.protein,
                 carbs: nutrition.carbs,
-                fat: nutrition.fat
+                fat: nutrition.fat,
+                isStacked: dynamicTypeSize.isAccessibilitySize
             )
         } else {
             VStack(alignment: .leading, spacing: 4) {

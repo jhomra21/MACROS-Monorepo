@@ -10,6 +10,7 @@ struct FoodLogEditorSections: View {
     var leadingSections: AnyView? = nil
     var showsQuantity = true
     var scrollsToFocusedField = false
+    var showsSourceAttribution = true
     #if os(iOS)
     @State private var showingPreviewImage = false
     #endif
@@ -32,8 +33,8 @@ struct FoodLogEditorSections: View {
             FoodDraftSourceSection(
                 title: editor.reviewSectionTitle,
                 notes: editor.combinedReviewNotes,
-                sourceName: editor.draft.sourceNameOrNil,
-                sourceURL: editor.sourceURL,
+                sourceName: showsSourceAttribution && editor.draft.source != .searchLookup ? editor.draft.sourceNameOrNil : nil,
+                sourceURL: showsSourceAttribution && editor.draft.source != .searchLookup ? editor.sourceURL : nil,
                 previewActionTitle: editor.hasPreviewImage ? "Preview Captured Image" : nil,
                 onPreview: editor.hasPreviewImage
                     ? {

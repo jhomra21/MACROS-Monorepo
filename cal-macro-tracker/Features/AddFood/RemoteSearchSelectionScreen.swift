@@ -10,6 +10,7 @@ struct RemoteSearchSelectionScreen: View {
 
     @State private var draft: FoodDraft?
     @State private var errorMessage: String?
+    @State private var retryRevision = 0
 
     var body: some View {
         Group {
@@ -19,15 +20,14 @@ struct RemoteSearchSelectionScreen: View {
                     loggingDay: loggingDay,
                     reviewNotes: result.reviewNotes,
                     requiredReviewNutrients: result.requiredReviewNutrients,
+                    showsSourceAttribution: false,
                     onFoodLogged: onFoodLogged
                 )
-            } else if let errorMessage {
-                ContentUnavailableView(
-                    "Unable to load food",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(errorMessage)
-                )
-                .padding()
+            } else if errorMessage != nil {
+                Button("Try again") {
+                    errorMessage = nil
+                    retryRevision += 1
+                }
             } else {
                 ProgressView("Preparing food…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -35,7 +35,7 @@ struct RemoteSearchSelectionScreen: View {
         }
         .navigationTitle("Search Result")
         .inlineNavigationTitle()
-        .task {
+        .task(id: retryRevision) {
             await loadDraftIfNeeded()
         }
     }
@@ -54,9 +54,9 @@ struct RemoteSearchSelectionScreen: View {
                 return
             }
 
-            draft = try result.makeDraft()
+            draft = result.makeDraft()
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Try again"
         }
     }
 }

@@ -1,0 +1,19 @@
+Page: juan-test.cal-macro-tracker
+App: juan-test.cal-macro-tracker
+Snapshot: 15 visible nodes
+@e1 [other] "MACROS"
+@e2 [button] "Sheet Grabber"
+@e3 [navigation-bar] "Add Food"
+@e4 [search] "mcdonalds big mac" [editable]
+@e5 [image] "Search"
+@e6 [button] "Clear text"
+@e7 [button] "Close"
+@e8 [collection]
+  [content below collection hidden]
+@e9 [cell] "On Device"
+@e10 [cell] "No on-device foods or meals match this search yet."
+@e11 [cell] "Search Results"
+@e12 [cell] "625 kcal"
+@e13 [button] "Big mac, 625 kcal, P 40 • C 47 • F 29"
+@e14 [button] "Camera"
+@e15 [toolbar] "Toolbar"

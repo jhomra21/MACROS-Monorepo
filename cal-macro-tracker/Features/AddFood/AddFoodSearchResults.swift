@@ -13,15 +13,6 @@ enum SearchFoodSpacing {
     static let pillVerticalPadding: CGFloat = 8
 }
 
-struct RemoteSearchViewState {
-    let results: [RemoteSearchResult]
-    let provider: RemoteSearchProvider?
-    let errorMessage: String?
-    let isLoading: Bool
-    let hasState: Bool
-    let hasMore: Bool
-}
-
 struct LocalFoodSearchResult: Identifiable {
     let id: UUID
     let name: String
@@ -79,13 +70,9 @@ struct SearchFoodListView: View {
 
     let loggingDay: CalendarDay?
     let suggestions: [FoodSuggestion]
-    let remoteSearch: RemoteSearchViewState
-    let isRemoteSearchAvailable: Bool
+    let remoteSearch: FoodSearchSession
     let searchText: String
     let onFoodLogged: () -> Void
-    let onSearchOnline: () -> Void
-    let onSearchUSDA: () -> Void
-    let onLoadMoreRemoteResults: () -> Void
     let onScrollOffsetChange: (CGFloat) -> Void
 
     @State private var localResults: [LocalAddFoodSearchResult] = []
@@ -137,77 +124,11 @@ struct SearchFoodListView: View {
                 }
             }
 
-            Section {
-                if searchText.isEmpty {
-                    Text("Enter a food name or brand, then submit search to query online packaged foods.")
-                        .foregroundStyle(.secondary)
-                } else if searchText.count < PackagedFoodSearchClient.minimumQueryLength {
-                    Text("Enter at least 2 characters to search online packaged foods.")
-                        .foregroundStyle(.secondary)
-                } else if isRemoteSearchAvailable == false {
-                    Text(RemoteFoodSearchConfiguration.unavailableConfigurationMessage)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Button("Search Online") {
-                        onSearchOnline()
-                    }
-
-                    if remoteSearch.isLoading && remoteSearch.results.isEmpty {
-                        HStack {
-                            ProgressView()
-                            Text("Searching online packaged foods…")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    if let remoteErrorMessage = remoteSearch.errorMessage {
-                        Text(remoteErrorMessage)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if remoteSearch.results.isEmpty
-                        && remoteSearch.hasState
-                        && remoteSearch.isLoading == false
-                        && remoteSearch.errorMessage == nil
-                    {
-                        Text(emptyRemoteSearchMessage)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if showsUSDASearchFallback {
-                        Button("Search USDA instead") {
-                            onSearchUSDA()
-                        }
-                    }
-
-                    ForEach(remoteSearch.results) { result in
-                        Button {
-                            selectedRemoteResult = result
-                        } label: {
-                            RemoteFoodRow(result: result)
-                        }
-                        .buttonStyle(.plain)
-                        .environment(\.defaultMinListRowHeight, 0)
-                        .listRowInsets(foodRowInsets)
-                    }
-
-                    if remoteSearch.isLoading && remoteSearch.results.isEmpty == false {
-                        HStack {
-                            ProgressView()
-                            Text("Loading more results…")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-
-                    if remoteSearch.hasMore {
-                        Button("Load More") {
-                            onLoadMoreRemoteResults()
-                        }
-                        .disabled(remoteSearch.isLoading)
-                    }
-                }
-            } header: {
-                Text("Online Packaged Foods")
+            FoodSearchResultsSection(
+                session: remoteSearch,
+                query: searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            ) { result in
+                selectedRemoteResult = result
             }
         }
         .listStyle(.plain)
@@ -219,10 +140,14 @@ struct SearchFoodListView: View {
         .task(id: searchText) {
             await updateLocalFoods(for: searchText)
         }
+        .task(id: FoodSearchRequest(query: searchText, revision: remoteSearch.revision)) {
+            await remoteSearch.load(query: searchText)
+        }
         .navigationDestination(item: $selectedLocalFoodDraft) { draft in
             LogFoodScreen(
                 initialDraft: draft,
                 loggingDay: loggingDay,
+                showsSourceAttribution: false,
                 onFoodLogged: onFoodLogged
             )
         }
@@ -305,6 +230,7 @@ struct SearchFoodListView: View {
                 loggingDay: loggingDay,
                 initialQuantityMode: suggestion.sourceEntry.quantityModeKind,
                 initialQuantityAmount: initialQuantityAmount,
+                showsSourceAttribution: false,
                 onFoodLogged: onFoodLogged
             )
         } label: {
@@ -346,23 +272,6 @@ struct SearchFoodListView: View {
         }
 
         return localResults.isEmpty ? nil : "\(localResults.count) on-device matches shown"
-    }
-
-    private var showsUSDASearchFallback: Bool {
-        remoteSearch.provider == .openFoodFacts
-            && remoteSearch.isLoading == false
-            && remoteSearch.hasState
-    }
-
-    private var emptyRemoteSearchMessage: String {
-        switch remoteSearch.provider {
-        case .openFoodFacts:
-            return "No Open Food Facts packaged foods matched this search."
-        case .usda:
-            return "No USDA packaged foods matched this search."
-        case nil:
-            return "No online packaged foods matched this search."
-        }
     }
 
     private func updateLocalFoods(for query: String) async {

@@ -144,7 +144,7 @@ extension FoodCameraSheet {
                 .contentChanged(
                     .error(
                         barcodeWasNotFound
-                            ? "No packaged-food barcode or readable nutrition label was found. Scan again, search online, or photograph the nutrition label."
+                            ? "No barcode or readable nutrition label was found. Scan again, search, or photograph the nutrition label."
                             : "Couldn’t read a nutrition label from this image. Retake the photo or enter the food manually."
                     )))
         }

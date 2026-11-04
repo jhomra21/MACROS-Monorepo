@@ -1,0 +1,85 @@
+bun test v1.4.2 (744846f84)
+
+tests/index.test.ts:
+(pass) packagedFoodSearchLogEntry > omits raw query text from telemetry payloads [0.09ms]
+
+tests/http.test.ts:
+(pass) withTimeout > does not start fetch for a pre-aborted signal or emit an unhandled rejection [1.72ms]
+
+tests/packagedFoods.test.ts:
+(pass) searchPackagedFoods > uses Search-a-licious before falling back to USDA for default search [11.48ms]
+(pass) searchPackagedFoods > keeps valid Search-a-licious hits beside malformed siblings, including timed-out pages [0.54ms]
+(pass) searchPackagedFoods > keeps valid legacy products beside malformed siblings [1.06ms]
+(pass) searchPackagedFoods > rejects invalid Open Food Facts collection containers after all providers fail [1.24ms]
+(pass) searchPackagedFoods > rejects invalid USDA collection containers [0.74ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when Search-a-licious is unavailable for default search [0.11ms]
+(pass) searchPackagedFoods > treats timed out empty Search-a-licious responses as unavailable [0.11ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when Search-a-licious returns zero hits for default search [0.09ms]
+(pass) searchPackagedFoods > uses legacy Open Food Facts when pinned Search-a-licious is unavailable [0.39ms]
+(pass) searchPackagedFoods > returns an empty Open Food Facts response when both pinned backends have zero hits [0.14ms]
+(pass) searchPackagedFoods > stays on Open Food Facts when products are missing main nutrition [0.41ms]
+(pass) searchPackagedFoods > returns exact Open Food Facts matches that need manual nutrition entry [0.13ms]
+(pass) searchPackagedFoods > keeps matching Open Food Facts results that need nutrition review beside complete matches [0.32ms]
+(pass) searchPackagedFoods > deduplicates repeated Open Food Facts search results [0.14ms]
+(pass) searchPackagedFoods > does not force USDA fallback for default Open Food Facts searches [0.54ms]
+(pass) searchPackagedFoods > preserves filtered-empty Open Food Facts pages when more pages are available [0.10ms]
+(pass) searchPackagedFoods > fetches only the requested legacy Open Food Facts page after Search-a-licious misses [0.17ms]
+(pass) searchPackagedFoods > maps USDA secondary nutrients into the packaged food response contract [0.62ms]
+(pass) searchPackagedFoods > routes restaurant-like default searches to legacy Open Food Facts first [0.34ms]
+(pass) searchPackagedFoods > tries the more reliable Open Food Facts staging host before production legacy search [0.12ms]
+(pass) searchPackagedFoods > keeps restaurant chain results that match the menu item without requiring every query token [0.14ms]
+(pass) searchPackagedFoods > retries flaky legacy Open Food Facts restaurant searches before Search-a-licious [0.10ms]
+(pass) searchPackagedFoods > scans empty restaurant legacy pages before falling back to Search-a-licious [0.18ms]
+(pass) searchPackagedFoods > stops empty restaurant searches after scanned Open Food Facts pages miss [0.77ms]
+(pass) searchPackagedFoods > keeps restaurant-like pinned Open Food Facts pagination on legacy first [0.13ms]
+(pass) searchPackagedFoods > preserves Open Food Facts secondary nutriments in search results [0.13ms]
+(pass) searchPackagedFoods > rethrows unexpected Open Food Facts errors instead of masking them as fallback [0.06ms]
+(pass) isRestaurantLikeQuery > detects restaurant-shaped menu queries without a chain allowlist [0.06ms]
+(pass) isRestaurantLikeQuery > keeps generic packaged grocery queries on the normal OFF path [0.04ms]
+(pass) fetchOpenFoodFactsProduct > fetches and normalizes products by barcode [0.49ms]
+(pass) fetchOpenFoodFactsProduct > tries barcode aliases before reporting not found [0.25ms]
+(pass) fetchOpenFoodFactsProduct > falls back to the staging host after a retryable production product error [0.13ms]
+(pass) fetchOpenFoodFactsProduct > falls back to the staging host after a rejected production product request [0.05ms]
+(pass) fetchUSDAFood > sends USDA API keys in headers instead of traced URLs [0.66ms]
+(pass) fetchUSDAFood > retries page-one USDA searches with punctuation-normalized restaurant names [0.44ms]
+(pass) fetchUSDAFood > filters USDA search results to foods matching all query terms [0.13ms]
+(pass) fetchUSDAFood > maps USDA food details into the proxy contract [0.06ms]
+(pass) packaged food cache policy > shares successful pinned Open Food Facts results under the default read key [0.88ms]
+(pass) packaged food cache policy > keeps empty pinned Open Food Facts page-1 results out of the shared default key [0.04ms]
+(pass) packaged food cache policy > does not cache empty restaurant pinned Open Food Facts pages [0.02ms]
+(pass) packaged food cache policy > keeps empty default Open Food Facts responses scoped to their fallback mode [0.04ms]
+(pass) packaged food cache policy > keeps default USDA responses out of the default Open Food Facts cache key [0.03ms]
+(pass) packaged food cache policy > keeps provider-pinned cache keys stable across fallback policy changes [0.04ms]
+
+tests/hardening.test.ts:
+(pass) service hardening failure cases > uses a stable fallback key when the client IP header is missing [0.02ms]
+(pass) service hardening failure cases > resets the shared budget on the next fixed minute window [0.03ms]
+(pass) service hardening failure cases > aborts the upstream fetch when the total request deadline expires [11.30ms]
+(pass) service hardening failure cases > returns a degraded response by the deadline when budget acquisition never resolves [60.01ms]
+(pass) service hardening failure cases > stops cumulative upstream attempts at the deadline and recovers on retry [37.38ms]
+(pass) service hardening failure cases > allows requests when the binding is absent in local development [0.10ms]
+(pass) service hardening failure cases > returns a non-cacheable 429 with Retry-After when exhausted [0.08ms]
+(pass) service hardening failure cases > allows a successful rate-limit decision [0.03ms]
+(pass) service hardening failure cases > skips USDA when the global budget is exhausted [0.08ms]
+
+tests/usdaBudget.test.ts:
+(pass) USDA budget configuration > uses the default budget for invalid limit abc [0.02ms]
+(pass) USDA budget configuration > uses the default budget for invalid limit 0
+(pass) USDA budget configuration > uses the default budget for invalid limit
+(pass) USDA budget configuration > uses the default budget for invalid limit %s
+
+tests/unifiedFoods.test.ts:
+
+# Unhandled error between tests
+-------------------------------
+error: Cannot find module '../src/unifiedFoods' from '/Users/juan/.t3/worktrees/cal-macro-tracker/unified-food-search/worker/usda-proxy/tests/unifiedFoods.test.ts'
+-------------------------------
+
+
+1 tests failed:
+
+ 58 pass
+ 1 fail
+ 1 error
+ 183 expect() calls
+Ran 59 tests across 6 files. [167.00ms]

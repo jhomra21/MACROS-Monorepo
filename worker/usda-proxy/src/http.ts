@@ -36,7 +36,7 @@ export function withTimeout(
   }
 }
 
-function awaitWithAbort<Value>(operation: Promise<Value>, signal: AbortSignal): Promise<Value> {
+export function awaitWithAbort<Value>(operation: Promise<Value>, signal: AbortSignal): Promise<Value> {
   if (signal.aborted) {
     void operation.catch(() => undefined)
 
