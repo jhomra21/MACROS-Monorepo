@@ -46,6 +46,7 @@ struct FoodCameraResultPanel: View {
     var showsServings = true
     var showsActionButtons = true
     var gramsAmount: Double? = nil
+    var headerTrailingInset: CGFloat = 0
 
     var body: some View {
         Group {
@@ -218,6 +219,7 @@ struct FoodCameraResultPanel: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .padding(.trailing, headerTrailingInset)
             let layout =
                 dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))

@@ -8,7 +8,7 @@ ROOT = pathlib.Path(__file__).resolve().parent
 
 def strip(source, target, start, fps=30, count=25):
     subprocess.run(["ffmpeg", "-y", "-ss", str(start), "-i", str(source), "-vf",
-                    f"fps={fps},scale=260:-2,tile=5x{(count + 4) // 5}",
+                    f"fps={fps},crop=362:824:14:28,scale=300:-2,trim=end_frame={count},tile=6x{(count + 5) // 6}:nb_frames={count}:color=black",
                     "-frames:v", "1", str(target)],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
@@ -41,7 +41,8 @@ def transitions(phase, name, prefix=""):
     expanded_y = max(r["y"] for r in rows)
     expand = next(r["t"] for r in rows if r["y"] > compact_y + 4)
     collapse = next(r["t"] for r in rows if r["t"] > expand + 1 and r["y"] < expanded_y - 4)
-    data = {"fps": 30, "framesPerStrip": 25, "source": source.name,
+    data = {"fps": 30, "framesPerStrip": 25, "columns": 6, "frameWidth": 300,
+            "crop": "362:824:14:28", "source": source.name,
             "method": "Observed blue raster (2 px y / 3 px x samples), not reconstructed geometry.",
             "expandStripStart": round(max(0, expand - .1), 3),
             "collapseStripStart": round(max(0, collapse - .1), 3)}
@@ -52,8 +53,29 @@ def transitions(phase, name, prefix=""):
     return data
 
 
+def compact_comparison():
+    folder = ROOT / "green"
+    crop = "crop=346:52:32:235"
+    pixels = []
+    for name in ["compact", "collapsed"]:
+        pixels.append(subprocess.check_output(
+            ["ffmpeg", "-v", "error", "-i", str(folder / (name + ".png")),
+             "-vf", crop, "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]))
+    differences = [abs(a - b) for a, b in zip(*pixels)]
+    report = {"crop": crop, "beforeVsAfter": {
+        "meanAbsoluteChannelDifference": sum(differences) / len(differences),
+        "maximumChannelDifference": max(differences)}}
+    assert max(differences) == 0, report
+    (folder / "compact-row-pixels.json").write_text(json.dumps(report, indent=2) + "\n")
+    subprocess.run(["ffmpeg", "-y", "-i", str(folder / "compact.png"),
+                    "-i", str(folder / "collapsed.png"), "-filter_complex",
+                    f"[0:v]{crop}[a];[1:v]{crop}[b];[a][b]hstack",
+                    "-frames:v", "1", str(folder / "compact-before-after.png")],
+                   capture_output=True, check=True)
+
+
 if __name__ == "__main__":
+    compact_comparison()
     print(json.dumps(transitions("green", "morph"), indent=2))
-    print(json.dumps(transitions("red", "ipad-review-cycle", "ipad-review-"), indent=2))
     if (ROOT / "green" / "reduce-motion.mp4").exists():
         print(json.dumps(transitions("green", "reduce-motion", "reduce-motion-"), indent=2))

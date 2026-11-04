@@ -87,7 +87,7 @@ def launch(mode="barcode"):
 
 @contextlib.contextmanager
 def record(name):
-    raw = pathlib.Path("/tmp") / ("macros-morph2-" + name + "-" + str(time.time_ns()) + ".mp4")
+    raw = pathlib.Path("/tmp") / ("macros-morph3-" + name + "-" + str(time.time_ns()) + ".mp4")
     run("record", "start", raw, "--scope", "device", "--hide-touches")
     mark("record " + str(raw))
     try:
@@ -102,6 +102,9 @@ def record(name):
 
 def morph():
     launch()
+    # Compare the same retained, unedited session on both sides of the cycle.
+    press("Details")
+    press("Show less")
     cap("compact")
     before = {label: node(label)["rect"] for label in ["Details", "Log"]}
     with record("morph"):
@@ -113,12 +116,27 @@ def morph():
     assert before == after, (before, after)
     (ROOT / "green" / "compact-row-bounds.json").write_text(
         json.dumps({"before": before, "after": after}, indent=2) + "\n")
+    press("Details")
+    # Fling only the retained Form, below the persistent summary and above Log.
+    # Gestures validate against the physical x=232...642 window before the same
+    # offset correction. x=620 lands inside the Form and passes that validation.
+    run("swipe", 620, 700, 620, 400, "--count", 6, "--pause-ms", 150)
+    data = cap("expanded-bottom")
+    toggle = next(n for n in data["nodes"] if n.get("kind") == "switch" and n.get("label") == "Save as reusable food")
+    log = node("Log")
+    assert toggle["rect"]["y"] + toggle["rect"]["height"] < log["rect"]["y"], (toggle, log)
+    # XCTest's window-offset hittable flag is unreliable; prove actual input works.
+    r = toggle["rect"]
+    run("press", r["x"] + r["width"] - 24 + 464, r["y"] + r["height"] / 2, "--settle")
+    assert not node("Save as reusable food", "switch").get("checked")
+    run("press", r["x"] + r["width"] - 24 + 464, r["y"] + r["height"] / 2, "--settle")
+    assert node("Save as reusable food", "switch").get("checked")
 
 
 def edited():
     launch()
     press("Details")
-    fill("Name", "Morph2 Edited Tortilla")
+    fill("Name", "Morph3 Edited Tortilla")
     for _ in range(4):
         press("Next field")
     fill("Calories", "200")
@@ -132,7 +150,7 @@ def edited():
     assert any(n.get("label") == "Logged" for n in data["nodes"])
     press("Close camera")
     data = cap("edited-dashboard")
-    assert any("Morph2 Edited Tortilla" in n.get("label", "") and "200 calories" in n.get("label", "")
+    assert any("Morph3 Edited Tortilla" in n.get("label", "") and "200 calories" in n.get("label", "")
                for n in data["nodes"])
 
 
@@ -168,7 +186,12 @@ def layout():
     run("settings", "text-size", "accessibility-extra-extra-extra-large")
     launch()
     press("Details")
-    cap("ax5")
+    data = cap("ax5")
+    less = node("Show less")
+    title = next(n for n in data["nodes"] if n.get("kind") == "text" and n.get("label") == "Fajita Flour Tortillas")
+    assert less["rect"]["y"] + less["rect"]["height"] < title["rect"]["y"], (less, title)
+    press("Show less")
+    assert node("Details")
     run("settings", "text-size", "large")
 
 
@@ -180,6 +203,30 @@ def reduced():
         cap("reduce-motion-expanded")
         press("Show less")
         cap("reduce-motion-collapsed")
+
+
+def motion_on():
+    system_motion(True)
+
+
+def motion_off():
+    system_motion(False)
+
+
+def system_motion(enabled):
+    run("open", "com.apple.Preferences")
+    if not any(n.get("label") == "Reduce Motion" for n in snapshot()["nodes"]):
+        run("press", 'label="Accessibility" role=button', "--settle")
+        run("press", 'label="Motion"', "--settle")
+    current = node("Reduce Motion", "switch")
+    if bool(current.get("checked")) != enabled:
+        r = current["rect"]
+        run("press", r["x"] + r["width"] - 28, r["y"] + r["height"] / 2, "--settle")
+    assert bool(node("Reduce Motion", "switch").get("checked")) == enabled
+    name = "reduce-motion-setting-" + ("on" if enabled else "restored")
+    run("screenshot", ROOT / "green" / (name + ".png"))
+    (ROOT / "green" / (name + ".json")).write_text(json.dumps(snapshot(), separators=(",", ":")) + "\n")
+    mark(name)
 
 
 if __name__ == "__main__":

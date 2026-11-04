@@ -32,6 +32,7 @@ struct FoodCameraSheet: View {
     @State private var cameraCardVisible = false
     @State private var resultContentHeight: CGFloat = 0
     @State private var resultActionHeight: CGFloat = 0
+    @State private var detailsButtonSize: CGSize = .zero
     @State private var isCameraDismissalActive = false
     @State var scannerController: FoodCameraScannerController?
     @State var pendingScannerStart = false
@@ -265,7 +266,8 @@ struct FoodCameraSheet: View {
             showSettings: permissionDenied,
             onSettings: openSettings,
             showsActionButtons: !hasDetailsActions,
-            gramsAmount: detailsEditor?.quantityMode == .grams ? detailsEditor?.gramsAmount : nil
+            gramsAmount: detailsEditor?.quantityMode == .grams ? detailsEditor?.gramsAmount : nil,
+            headerTrailingInset: detailsExpanded && !separateDetailsHeader ? detailsButtonSize.width + 12 : 0
         )
         VStack(spacing: 0) {
             ScrollView {
@@ -292,6 +294,7 @@ struct FoodCameraSheet: View {
             .scrollBounceBehavior(.basedOnSize)
             .clipped()
             .accessibilityHidden(detailsExpanded && isKeyboardVisible)
+            .padding(.top, detailsExpanded && separateDetailsHeader ? detailsButtonSize.height + 12 : 0)
             if let editor = detailsEditor {
                 FoodCameraDetailsEditor(
                     editor: Binding(get: { detailsEditor ?? editor }, set: { detailsEditor = $0 }),
@@ -304,8 +307,10 @@ struct FoodCameraSheet: View {
                 .allowsHitTesting(detailsExpanded)
                 .accessibilityHidden(!detailsExpanded)
             }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
             if hasDetailsActions {
-                detailsActions
+                logFooter
                     .padding(.horizontal, 16)
                     .padding(.bottom, 16)
                     .onGeometryChange(for: CGFloat.self) {
@@ -318,6 +323,17 @@ struct FoodCameraSheet: View {
         .frame(
             height: detailsExpanded ? expandedHeight : min(resultContentHeight + (hasDetailsActions ? resultActionHeight : 0), maxHeight)
         )
+        .overlay(alignment: detailsExpanded ? .topTrailing : .bottomLeading) {
+            if hasDetailsActions {
+                detailsToggle
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(
+                        .bottom,
+                        !detailsExpanded && dynamicTypeSize.isAccessibilitySize && showsCompactLog
+                            ? max(16, resultActionHeight - detailsButtonSize.height - 16) : 16)
+            }
+        }
         .clipShape(.rect(cornerRadius: 24))
         .accessibilityIdentifier("camera-result-card")
         .glassEffect(.regular, in: .rect(cornerRadius: 24))
@@ -331,33 +347,49 @@ struct FoodCameraSheet: View {
         }
     }
 
-    private var detailsActions: some View {
+    private var separateDetailsHeader: Bool { dynamicTypeSize.isAccessibilitySize || isKeyboardVisible }
+
+    private var logFooter: some View {
         let layout =
-            detailsExpanded || dynamicTypeSize.isAccessibilitySize
+            dynamicTypeSize.isAccessibilitySize
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
             : AnyLayout(HStackLayout(spacing: 12))
         return layout {
-            Button {
-                if detailsExpanded {
-                    KeyboardSupport.dismissFirstResponder()
-                    detailsExpanded = false
-                } else {
-                    openDetails()
-                }
-            } label: {
-                Text(detailsExpanded ? "Less" : compactDetailsTitle)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .frame(maxWidth: showsCompactLog || detailsExpanded ? nil : .infinity)
+            if !detailsExpanded {
+                // Reserve the compact control's space, not a second rendered button.
+                Color.clear
+                    .frame(width: dynamicTypeSize.isAccessibilitySize ? nil : detailsButtonSize.width, height: detailsButtonSize.height)
+                    .accessibilityHidden(true)
             }
-            .buttonStyle(.glass)
-            .accessibilityLabel(detailsExpanded ? "Show less" : compactDetailsTitle)
-            .accessibilityIdentifier("camera-details-toggle")
             if showsCompactLog || detailsExpanded {
                 Button(action: logBarcode) { Text("Log").frame(maxWidth: .infinity) }
                     .buttonStyle(.glassProminent)
                     .disabled(!canLogResult)
                     .accessibilityIdentifier("camera-log")
             }
+        }
+    }
+
+    private var detailsToggle: some View {
+        Button {
+            if detailsExpanded {
+                KeyboardSupport.dismissFirstResponder()
+                detailsExpanded = false
+            } else {
+                openDetails()
+            }
+        } label: {
+            Text(detailsExpanded ? "Less" : compactDetailsTitle)
+                .fixedSize(horizontal: true, vertical: false)
+                .frame(maxWidth: showsCompactLog || detailsExpanded ? nil : .infinity)
+        }
+        .buttonStyle(.glass)
+        .accessibilityLabel(detailsExpanded ? "Show less" : compactDetailsTitle)
+        .accessibilityIdentifier("camera-details-toggle")
+        .onGeometryChange(for: CGSize.self) {
+            $0.size
+        } action: {
+            detailsButtonSize = $0
         }
     }
 

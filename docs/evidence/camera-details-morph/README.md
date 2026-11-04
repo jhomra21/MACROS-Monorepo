@@ -1,102 +1,92 @@
-# Camera Details morph, review fix round
+# Camera Details morph, fix round 2
 
-Branch `feat/camera-details-morph`; review base `6efc374`, build 29 unchanged.
+Branch `feat/camera-details-morph`; review base **c8edb61**. Build 29 is unchanged.
 
-## Causes and correction
+## Correction
 
-1. **Log escaped the card.** The old button was an overlay *outside* the clipping/glass modifiers. Its matched-geometry source changed from a compact slot to a separately sized editor slot, independently of the card's growing bounds. The rendered button is now inside the card's persistent action container and clipping boundary.
-2. **Two headers overlapped.** The outgoing compact ScrollView and incoming editor each rendered a complete summary. There is now one persistent summary ScrollView. Only the retained editor body grows below it. No summary opacity transition or replacement is involved.
-3. **Details became “Deta...”.** The overlay used a stretched label whose intrinsic width differed from the hidden Details/Less source slots. Removing the slots and geometry matching removes that stale sizing relationship. A real, intrinsically sized label participates in ordinary layout; there is no fixed button width.
-4. **Log landed late.** Its matched-geometry animation was independent of the card layout. `AnyLayout` now switches the same two controls between the compact HStack and expanded VStack footer, in the existing card layout transaction. Less stays directly above full-width Log in the expanded footer, rather than introducing a top overlay.
+- **Less is now at the top-trailing edge of the persistent header**, beside the title. Only the title row reserves its measured width; the macros and servings keep their full width. At accessibility sizes, and while the keyboard is visible, Less gets a separate reserved header row so it cannot overlap or truncate the food title. Its accessibility label remains **Show less**.
+- There is one persistent Details/Less button. Its in-card alignment changes from the compact action row to the header while the single persistent Log expands down to the footer, in the same card transaction. Both remain inside the card's clipping/glass boundary. No matched-geometry copies or duplicate summary were reintroduced.
+- **Log is a bottom `safeAreaInset(edge: .bottom, spacing: 0)`**, including its 16 pt bottom padding. The inset propagates through the retained Form, so its last rows can scroll above the footer rather than behind it. In `green/expanded-bottom.png`, the reusable-food row ends at **791.5 pt**, above Log's **811.5 pt** top, a 20 pt gap. The real switch was also toggled off/on through the device driver.
+- Native `.glass`, `.glassProminent` and untinted `.glassEffect(.regular)` remain. No tint, dimming, custom blur, timers or motion loops were added. Reduce Motion disables animations in the card transaction, including native control label/layout animation.
 
-There is **one rendered Log button** in the camera card, not two cross-faded copies. The result panel's standalone actions remain available to its existing layout tests, but are disabled for an actionable camera card. Removed the unused slot modifier, action namespace, hidden placeholder buttons and duplicate summary.
+Draft ownership, dirty-exit protection, exact Grams logging, Required Review, scanner suspension, keyboard field navigation, the 75% / 170 pt expanded-height rule and landscape 65/35 branch are unchanged. The Form stays mounted while collapsed, clipped and excluded from input/accessibility.
 
-Native `.glass` / `.glassProminent` button styles and untinted `.glassEffect(.regular)` remain. No custom blur, tint, dimming, timers or animation loops were added. Reduce Motion still disables all animation in the card transaction. Draft/session ownership, exact Grams logging, Required Review gating and dirty-exit logic are unchanged. The Form remains mounted while collapsed, clipped and excluded from interaction/accessibility. At large text and compact vertical size, the persistent summary has its own bounded scroll area; quantity and the editor body scroll in the retained Form. Keyboard mode hides the summary and camera strip while keeping the footer and keyboard toolbar reachable.
+Apple's primary documentation confirms that the inset makes space for the footer and adjusts the modified view's safe area:
+https://developer.apple.com/documentation/swiftui/view/safeareainset(edge:alignment:spacing:content:)-4s51l.md
 
-Apple primary docs verified with `.md`:
+## RED, no new capture
 
-- https://developer.apple.com/documentation/swiftui/anylayout.md (switch layouts without destroying subview state)
-- https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:).md (synchronizes geometry, not rendering)
-- https://developer.apple.com/documentation/swiftui/applying-liquid-glass-to-custom-views.md
-- https://developer.apple.com/documentation/swiftui/glasseffectcontainer.md
+The parent's review of **c8edb61** is the round-2 RED:
 
-`glassEffectID` coordinates appearing/disappearing glass shapes. These controls do not appear/disappear when the layout changes, so ordinary persistent native controls and `AnyLayout` are the smaller solution.
+- [`green/expanded.png` at c8edb61](https://github.com/jhomra21/MACROS-Monorepo/blob/c8edb61/docs/evidence/camera-details-morph/green/expanded.png): bottom-left Less obscures Protein.
+- `green/morph.mp4` at c8edb61, approximately **2.07–2.21 s**: Less crosses Nutrition/Calories during expansion.
 
-## RED
+Those files are historical, not the current GREEN. Earlier RED files remain background evidence for the original duplicate-header/escaping-Log defects. No additional RED was recorded for this round.
 
-The parent reviewed the old `green/expand-strip.jpg` and `green/collapse-strip.jpg` at **6efc374**:
+## Current GREEN
 
-- Expand row 1 frames 4–5: Log below the compact card, overlapping Scan again.
-- Expand/collapse row 2: overlapping copies of the food name, kcal and servings.
-- Settled collapse row 3: “Deta...” and displaced Log.
-- Log's independent movement finishes after the card resize.
+All current captures use the exclusively locked iPad runner **E91B597B-CE57-4C0B-A8A4-51CBDC3386AB**, iOS 27.0, in its actual iPhone compatibility window. Superseded GREEN files are replaced in place.
 
-Those historical files remain inspectable in that commit, not as a second purported GREEN set.
-
-The capture device changed because B and A belong to a live crash investigation. A fresh **same-device RED** was therefore recorded from the unmodified 6efc374 application sources plus the existing evidence-only `camera-inline-details/fixture.patch`, before the source fix: `red/ipad-review-cycle.mp4`, `red/ipad-review-{expand,collapse}-strip.jpg`, and `red/ipad-compact.png`. `red/ipad-review-frame-times.json` records offsets. The original task's RED and unfinished-decimal captures remain historical background.
-
-## GREEN frame review
-
-All new captures use the exclusively locked iPad runner `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB`, iOS 27.0, in its actual iPhone compatibility window. Videos crop the captured device image to that window, then encode at 390 px width. No expected frames are synthesized. Each strip contains **25 frames at 30 fps**, row-major, covering 0.8 s. Exact source offsets and observed blue Log raster bounds are in the paired `*-frame-times.json`.
-
-| Strip | Assertions checked visually |
+| File | What to inspect |
 |---|---|
-| `green/expand-strip.jpg`, from `morph.mp4` | (1) Log never leaves the card; (2) one stationary header, no duplicate; (3) the eventual collapsed row matches the starting compact row in the paired collapse strip/comparison; (4) Log follows the card bottom and arrives with the card, not afterward. |
-| `green/collapse-strip.jpg`, from `morph.mp4` | (1) Log never leaves the card; (2) no duplicate header; (3) settled Details and Log return to the exact pre-expand frames and full labels; (4) Log arrives with the card. |
-| `green/reduce-motion-expand-strip.jpg`, from `reduce-motion.mp4` | (1) Log stays in the card; (2) no duplicate header; (3) the paired collapsed endpoint matches the pre-expand compact row; (4) Log and card jump to the endpoint together, without spatial interpolation. |
-| `green/reduce-motion-collapse-strip.jpg`, from `reduce-motion.mp4` | (1) Log stays in the card; (2) no duplicate header; (3) the compact row returns unchanged; (4) Log arrives immediately with the card. |
+| `green/morph.mp4` | Fresh expansion/collapse: Details moves up into the header as Log moves down; collapse reverses both inside the card. |
+| `green/expand-strip.jpg` | **25 real frames**, 30 fps, row-major, six columns, **300 px per frame**. Fixed crop encloses the card's largest bounds; no reconstructed frames. One stationary summary; no form-row/Log overlap from Less. |
+| `green/collapse-strip.jpg` | Same 25-frame format. Controls and card settle together; full Details label returns. |
+| `green/expanded.png` | Expanded top: Less beside the title, all visible nutrition rows unobscured by Less. |
+| `green/expanded-bottom.png` | Real Form scrolled to its bottom: the entire reusable-food toggle clears Log. |
+| `green/ax5.png` | Actual AX5 system text size: Less occupies its own top row, full food title below it, no overlapping controls. Collapse was tapped successfully at AX5. |
+| `green/reduce-motion.mp4` | Real Reduce Motion enabled in Settings; card and controls jump to their endpoints, without movement. |
+| `green/reduce-motion-{expand,collapse}-strip.jpg` | 25 real frames each, six columns, 300 px/frame. Both Details/Less and Log have no intermediate spatial positions. |
+| `green/compact-before-after.png` | Actual compact action-row crops before expansion and after collapse. |
 
-![Before expansion (left), after collapse (right)](green/compact-before-after.png)
+`green/*frame-times.json` records exact source offsets and observed blue Log raster bounds. The final row of each six-column strip contains one source frame and five empty tiles, not five repeated frames.
 
-`green/compact-row-bounds.json` asserts exact equality of raw settled frames: Details `(32, 235.5, 92, 50.5)`; Log `(136, 235.5, 242, 50.5)` in app points, before **and** after. The side-by-side image is cropped from actual screenshots. Both match the same-device RED compact row, with full “Details”, not “Deta...”.
+`green/compact-row-bounds.json` verifies equal raw action frames: Details **(32, 235.5, 92, 50.5)** and Log **(136, 235.5, 242, 50.5)** before and after. `green/compact-row-pixels.json` records **zero pixel difference** for that paired retained-session comparison. The script first opens/closes the unedited editor so both endpoints compare the same retained session. A separate first-mount comparison had identical geometry with a maximum native-glass raster difference of 1/255 (mean 0.0071/255); that rendering quantization is not described as pixel-identical.
 
-`green/compact-row-pixels.json` also verifies **zero pixel difference** between the pre-expand and post-collapse action-row crops. Versus RED, positions match; the native-glass raster's mean absolute RGB-channel difference is 0.1365/255 (maximum 5), not a layout shift.
+![Expanded header](green/expanded.png)
+![Scrolled to the final row](green/expanded-bottom.png)
+![Compact actions before and after](green/compact-before-after.png)
 
-## Retained-state and layout rechecks
+## Retained-state checks
 
-- `green/edited-{compact,logged,dashboard}.{png,json}`: edit the name to **Morph2 Edited Tortilla**, change calories to **200**, collapse and use compact Log; Today contains that exact edited food and 200 calories.
-- `green/grams-{expanded,compact,restored,dashboard}.{png,json}`: select Grams, change 37 to **42 g**, collapse and re-expand; the selected mode and 42 g persist. Compact summary shows **181.6 kcal**, and compact Log persists **42 g**, not a rounded servings conversion.
-- `green/dirty-collapsed-scan.{png,json}`: changing grams makes the retained session dirty; collapsed Scan again presents **Discard changes? / Keep Editing**. Keep Editing preserves the session, then compact Log succeeds.
-- `green/keyboard.{png,json}`: edited Calories field focused, Log and Less above the keyboard toolbar, Done/field navigation reachable, no camera strip.
-- `green/landscape.{png,json}`: actual device landscape orientation, retained editor and both actions remain reachable. **Limit:** iPad's compatibility window stays portrait-shaped and uses regular vertical size class. This is not evidence of the iPhone's 65/35 compact-size-class branch; that unchanged branch needs a free iPhone for a fresh hardware-shaped capture.
-- `green/ax5.{png,json}`: actual accessibility-extra-extra-extra-large setting; summary scrolls separately, body scrolls, Less and Log remain pinned and distinct from Scan again.
-- `green/reduce-motion-setting-{on,restored}.{png,json}`: actual system switch on for capture, restored off afterward.
+- `green/edited-{compact,logged,dashboard}.{png,json}`: rename to **Morph3 Edited Tortilla**, change Calories to **200**, collapse and compact Log; Today contains the edited food and 200 calories.
+- `green/grams-{expanded,compact,restored,dashboard}.{png,json}`: change **37 g to 42 g**, collapse and re-expand; Grams and 42 g persist. Compact summary shows **181.6 kcal**, and Log persists **42 g**, not rounded servings.
+- `green/dirty-collapsed-scan.{png,json}`: collapsed dirty Scan again presents **Discard changes? / Keep Editing**. Keep Editing retains the session, then compact Log succeeds.
+- `green/keyboard.{png,json}`: Calories focused, top Less and footer Log remain available; Done and field navigation work. **Limit:** this iPad compatibility session exposes the 64 pt keyboard accessory toolbar with the software-key rows offscreen; the camera strip remains visible. The unchanged full software-keyboard strip-hiding branch is not newly proven by this capture.
+- `green/landscape.{png,json}`: actual landscape device orientation, reachable editor/actions. **Limit:** the iPad compatibility window remains portrait-shaped with regular vertical size class. The unchanged iPhone compact-size-class 65/35 branch is not newly hardware-shaped E2E evidence.
+- `green/reduce-motion-setting-{on,restored}.{png,json}`: actual system setting enabled for capture and restored off.
 
-The earlier review/unfinished-input/servings E2Es are recorded at 6efc374. They were not silently counted as rerun evidence here; superseded GREEN artifacts were removed instead of keeping multiple competing passes.
+Real camera/torch/scanner lifecycle, full VoiceOver traversal and iOS 26 remain outside this simulator evidence.
 
-## Repeat
+## Repeat and isolation
 
-Acquire the iPad lock with `mkdir /tmp/macros-sim-locks/E91B597B-CE57-4C0B-A8A4-51CBDC3386AB`. Never remove another owner's lock. B's existing lock belongs to the crash worker and was left untouched. The user explicitly authorized closing only the stale iPad driver session `t3-ec61bd84b4c37dacbdc24bcc`, without shutdown.
+Acquire the lock atomically with `mkdir /tmp/macros-sim-locks/E91B597B-CE57-4C0B-A8A4-51CBDC3386AB`. Never take or remove another owner's lock. Only the iPad runner was opened or driven. No forbidden devices, crash-worker devices, owner's checkout, `IGNOREDbuild/`, shared XcodeBuildMCP defaults/profiles, project settings, merge, build-number change or upload.
 
-Open the iPad with T3 `device_open`; set `MACROS_DEVICE_DRIVER` to its returned bound executable. `repeat-ipad.py` drives every launch, tap, text input, setting, orientation, screenshot and recording through that CLI. Raw XCTest coordinates and screenshots expose the iPad window offset; the script documents its explicit compatibility-window coordinate correction. Focused text is cleared from the end and read back exactly, rather than accepting appended digits. The 1200 ms settle quiet window avoids capturing provisional native-button geometry. Failed selector/input/runner attempts are not counted as passes.
+Open the iPad through T3 `device_open`, then use its exact bound executable for `MACROS_DEVICE_DRIVER`. `repeat-ipad.py` drives all app launches, input, settings, orientation, screenshots and recording through that CLI.
+
+The script documents the compatibility window's raw-coordinate correction. Gestures must also fit its physical x=232...642 window; x=620 reaches the Form after the driver's correction. XCTest reports false `hittable` values for some windowed controls even when they accept input, so actual switch input and geometry validate bottom reachability. Focused text is cleared and read back exactly, not accepted with appended digits.
 
 ```sh
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && git pull --ff-only
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && git apply --check docs/evidence/camera-inline-details/fixture.patch && git apply docs/evidence/camera-inline-details/fixture.patch
-cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/macros-morph2-fixture build
-cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && git apply -R docs/evidence/camera-inline-details/fixture.patch && xcrun simctl install E91B597B-CE57-4C0B-A8A4-51CBDC3386AB /tmp/macros-morph2-fixture/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/macros-morph3-fixture build
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && git apply -R docs/evidence/camera-inline-details/fixture.patch && xcrun simctl install E91B597B-CE57-4C0B-A8A4-51CBDC3386AB /tmp/macros-morph3-fixture/Build/Products/Debug-iphonesimulator/cal-macro-tracker.app
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && MACROS_DEVICE_DRIVER=<T3-bound-executable> python3 docs/evidence/camera-details-morph/repeat-ipad.py morph
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && python3 docs/evidence/camera-details-morph/frames.py
 ```
 
-Other scenarios: `edited`, `grams`, `layout`, `reduced`. Enable real Reduce Motion through Settings → Accessibility → Motion before `reduced`, then restore it. `layout` restores portrait and Large text. The fixture patch is removed before formatting, required validation and commit; it is never shipped applied.
+Other scenarios: `edited`, `grams`, `layout`, `reduced`. Run `motion_on` before `reduced` and `motion_off` afterward to change/restore the actual system Reduce Motion switch. If switching from Settings causes a runner timeout, close only this bound CLI session and reopen the app before replaying `reduced`; do not change shared runner caches. `layout` restores portrait and Large text. The evidence-only fixture patch is removed before required validators and commit; it is never shipped applied. Failed driver setup/coordinate/selector attempts are not counted as passing scenarios.
 
-One runner process exited while switching back from Settings (XCTest connection timeout, not an application assertion). Reopening the bound device session recovered it; the final Reduce Motion replay passed. No shared runner caches or other device sessions were modified.
+## Validation
 
-## Validation and cleanup
-
-Required format/build/JS lint gates pass. JS lint: **94 files, 0 warnings, 0 errors**.
-Final full serial suite: **247 total, 247 passed, 0 failed, 0 skipped, 0 expected failures**, no xcresult runtime warnings. PurchaseStoreStoreKitTests were intentionally excluded by selector. CameraCardLayoutTests passed; all **960** measurements are byte-identical to baseline, SHA-256 `039dbf6f5903af507dc29abf64768813b01a34ba4c435ea3a6a57133555e23a6`.
-
-The first suite attempt was killed before establishing the test-host connection, with no test case run (`validation/bootstrap-failure.json`, original bundle `/tmp/macros-morph2-bootstrap-failure.xcresult`). The locked iPad's slim profile verified correctly. A normal retry, with no source or simulator reset, passed at **23:41:59.382–23:42:16.745 UTC** and occupies the required `/tmp/macros-morph2.xcresult`. The benign missing slimmed-system-service console message also appears in the passing run; it is not counted as a test failure.
+Formatting, quality build, and JS lint passed. JS lint: **94 files, 0 warnings, 0 errors**. The full serial iPad suite passed: **247 passed, 0 failed, 0 skipped** (PurchaseStoreStoreKitTests excluded). The result bundle is `/tmp/macros-morph3.xcresult`; durable suite and summary files are in `validation/`. A clean fixture compile reports existing unrelated concurrency warnings in SharingRemoteClient and DashboardTutorialOverlay; no camera-source warning was introduced.
 
 ```sh
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && make quality-format-check
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer make quality-build
 cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && make lint-js
-cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB' -derivedDataPath /tmp/macros-morph2-dd -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests -resultBundlePath /tmp/macros-morph2.xcresult test
-cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcrun xcresulttool get test-results summary --path /tmp/macros-morph2.xcresult --compact
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB' -derivedDataPath /tmp/macros-morph3-dd -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests -resultBundlePath /tmp/macros-morph3.xcresult test
+cd /Users/juan/.t3/worktrees/cal-macro-tracker/camera-details-morph && DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer xcrun xcresulttool get test-results summary --path /tmp/macros-morph3.xcresult --compact
 ```
 
-Durable summaries live in `validation/`; the manifest records sizes and SHA-256 hashes. All files are under 5 MB. No new unit tests were written after implementation. Final source review found no duplicate summary, hidden slot controls or dead transition bookkeeping.
-
-Cleanup is recorded in `green/cleanup.json`. No merge, version bump, upload, project change, owner's checkout access, forbidden simulator mutation or shared XcodeBuildMCP defaults/profile change. Real camera/torch/scanner lifecycle, full VoiceOver traversal and iOS 26 remain outside simulator evidence.
+The final source review checks for duplicate controls, dead transition state and unnecessary guards. No new unit tests were written after implementation. Every evidence file must remain below 5 MB; `artifact-manifest.json` records sizes and SHA-256 hashes.

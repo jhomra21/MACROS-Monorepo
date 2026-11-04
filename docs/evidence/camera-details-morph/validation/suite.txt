@@ -1,8 +1,7 @@
-Test Suite 'CameraCardLayoutTests' started at 2026-11-03 17:42:09.433.
-Test Case '-[cal_macro_trackerTests.CameraCardLayoutTests testServingChangesKeepBarcodeAndLabelCardHeight]' started.
-CAMERA_CARD_EVIDENCE /Users/juan/Library/Developer/CoreSimulator/Devices/E91B597B-CE57-4C0B-A8A4-51CBDC3386AB/data/Containers/Data/Application/630825EA-949A-4EA9-937A-CFF3399BFF7E/tmp/camera-card-layout/heights.csv
-Test Case '-[cal_macro_trackerTests.CameraCardLayoutTests testServingChangesKeepBarcodeAndLabelCardHeight]' passed (3.593 seconds).
-Test Suite 'CameraCardLayoutTests' passed at 2026-11-03 17:42:13.027.
-	 Executed 247 tests, with 0 failures (0 unexpected) in 7.764 (7.847) seconds
-	 Executed 247 tests, with 0 failures (0 unexpected) in 7.764 (7.851) seconds
-** TEST SUCCEEDED **
+xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination platform=iOS Simulator,id=E91B597B-CE57-4C0B-A8A4-51CBDC3386AB -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -skip-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests -resultBundlePath /tmp/macros-morph3.xcresult test
+Result: Passed
+Total tests: 247
+Passed: 247
+Failed: 0
+Skipped: 0
+Expected failures: 0

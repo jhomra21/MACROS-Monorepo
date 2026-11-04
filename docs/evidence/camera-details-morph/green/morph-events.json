@@ -1,38 +1,54 @@
 [
   {
-    "utc": "2026-11-03T23:34:02Z",
+    "utc": "2026-11-03T23:57:15Z",
     "event": "press Camera"
   },
   {
-    "utc": "2026-11-03T23:34:02Z",
+    "utc": "2026-11-03T23:57:15Z",
     "event": "launch barcode"
   },
   {
-    "utc": "2026-11-03T23:34:05Z",
-    "event": "capture compact"
-  },
-  {
-    "utc": "2026-11-03T23:34:07Z",
-    "event": "record /tmp/macros-morph2-morph-1793748845954612000.mp4"
-  },
-  {
-    "utc": "2026-11-03T23:34:11Z",
+    "utc": "2026-11-03T23:57:19Z",
     "event": "press Details"
   },
   {
-    "utc": "2026-11-03T23:34:14Z",
-    "event": "capture expanded"
-  },
-  {
-    "utc": "2026-11-03T23:34:18Z",
+    "utc": "2026-11-03T23:57:24Z",
     "event": "press Show less"
   },
   {
-    "utc": "2026-11-03T23:34:21Z",
+    "utc": "2026-11-03T23:57:26Z",
+    "event": "capture compact"
+  },
+  {
+    "utc": "2026-11-03T23:57:28Z",
+    "event": "record /tmp/macros-morph3-morph-1793750247150815000.mp4"
+  },
+  {
+    "utc": "2026-11-03T23:57:32Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-03T23:57:34Z",
+    "event": "capture expanded"
+  },
+  {
+    "utc": "2026-11-03T23:57:39Z",
+    "event": "press Show less"
+  },
+  {
+    "utc": "2026-11-03T23:57:41Z",
     "event": "capture collapsed"
   },
   {
-    "utc": "2026-11-03T23:34:23Z",
+    "utc": "2026-11-03T23:57:47Z",
+    "event": "press Details"
+  },
+  {
+    "utc": "2026-11-03T23:57:56Z",
+    "event": "capture expanded-bottom"
+  },
+  {
+    "utc": "2026-11-03T23:58:02Z",
     "event": "PASS morph"
   }
 ]

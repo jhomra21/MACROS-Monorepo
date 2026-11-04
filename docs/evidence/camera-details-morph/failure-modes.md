@@ -5,7 +5,7 @@ No new isolated unit tests are planned; the real fixture app and existing full s
 
 - Expansion/collapse replaces or fades two Log buttons instead of moving one continuously.
 - Geometry matching scales text, clips the moving button, loses hit testing, or leaves duplicate AX actions.
-- Details does not become a reachable Less / Show less control (the fix round keeps it with Log in the footer).
+- Details does not become a reachable Less / Show less control in the persistent header.
 - Collapse destroys name, numeric text (including incomplete/invalid input), quantity mode/amount, confirmations, reusable-food choice, or expanded secondary fields.
 - E2E follow-up: a valid trailing decimal (`1.`) is normalized by the shared nutrient presentation when focus ends, before collapse. Camera sessions must opt into retaining presented text across blur; other callers must keep their existing presentation behavior. Quantity-multiplier changes must still invalidate the retained display text so old totals cannot appear under a new quantity.
 - Compact totals/name/quantity use the original draft, or compact Log saves stale food/servings instead of the edited logging action.
@@ -24,5 +24,12 @@ Fix-round failures, established by the parent-reviewed GREEN strips at `6efc374`
 - `green/collapse-strip.jpg`, settled row 3: Details truncates to "Deta..." and Log overflows the original compact row.
 - The independent matched-geometry overlay arrives after the card, rather than with its bottom edge.
 - The new iPad capture setup needs its own RED cycle before claiming a GREEN comparison.
+
+Round-2 failures established from c8edb61 before editing:
+
+- Less sits above Log and obscures Protein at rest, and Nutrition/Calories during expansion.
+- Top-trailing Less could cover or truncate the title, especially at AX5; reserve its own header row at accessibility sizes.
+- A footer that does not reduce the Form's safe area could hide the final reusable-food toggle.
+- Moving the persistent toggle could regress compact row equality, keyboard dismissal, or Reduce Motion.
 
 RED: `red/expand.mp4`, `red/expand-strip.jpg` (10 fps, row-major 0.0–1.9 s); around 0.7–0.9 s the compact action row and incoming editor bottom Log coexist. `red/expanded.json` contains no Less / Show less control.
