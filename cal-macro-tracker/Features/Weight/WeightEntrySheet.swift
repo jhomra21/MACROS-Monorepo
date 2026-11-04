@@ -11,12 +11,15 @@ struct WeightEntrySheet: View {
     @State private var day = Date.now
     @State private var errorMessage: String?
     @State private var saveFeedbackToken = 0
+    /// The exact weight behind a unit-switched value, so the rounded text does not drift on repeated switches.
+    @State private var convertedEntry: (text: String, kilograms: Double)?
 
     private enum WeightField: Hashable {
         case amount
     }
 
     private var kilograms: Double? {
+        if let convertedEntry, convertedEntry.text == amount { return convertedEntry.kilograms }
         guard case let .valid(value) = NumericText.state(for: amount), value > 0 else { return nil }
         return weightUnit.fromDisplay(value)
     }
@@ -58,9 +61,16 @@ struct WeightEntrySheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .onChange(of: weightUnit) { oldUnit, newUnit in
-            if case let .valid(value) = NumericText.state(for: amount) {
-                amount = NumericText.editingDisplay(for: newUnit.toDisplay(oldUnit.fromDisplay(value)))
+            let exactKilograms: Double
+            if let convertedEntry, convertedEntry.text == amount {
+                exactKilograms = convertedEntry.kilograms
+            } else if case let .valid(value) = NumericText.state(for: amount), value > 0 {
+                exactKilograms = oldUnit.fromDisplay(value)
+            } else {
+                return
             }
+            amount = NumericText.editingDisplay(for: (newUnit.toDisplay(exactKilograms) * 10).rounded() / 10)
+            convertedEntry = (amount, exactKilograms)
         }
     }
 
