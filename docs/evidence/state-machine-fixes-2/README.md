@@ -1,5 +1,7 @@
 # State-machine fixes 01–04
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/state-machine-fixes-2/01/green-edited.png`.
+
 Live RED/GREEN runs on 2026-11-03, using iPhone 17e B (`F976E800-DA1F-4F20-B755-DFD964E33975`, iOS 27.0). Baseline: `da00befaae3d9954c7046f80570bda4936f918d7`. Only synthetic app/Health data was used. No unit tests were added.
 
 | Bug | Result and evidence |

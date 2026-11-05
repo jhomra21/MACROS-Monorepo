@@ -1,0 +1,150 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      lint: ${{ steps.paths.outputs.lint }}
+      web: ${{ steps.paths.outputs.web }}
+      workers: ${{ steps.paths.outputs.workers }}
+      convex: ${{ steps.paths.outputs.convex }}
+      runtime: ${{ steps.paths.outputs.runtime }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: paths
+        name: Select checks by changed paths
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import fnmatch
+          import os
+          import subprocess
+
+          base = os.environ["BASE"]
+          head = os.environ["HEAD"]
+          if not base or set(base) == {"0"}:
+              command = ["git", "ls-files"]
+          else:
+              command = ["git", "diff", "--name-only", base, head]
+          paths = subprocess.check_output(command, text=True).splitlines()
+          common = [".github/workflows/quality.yml"]
+          filters = {
+              "lint": ["**/*.ts", "**/*.js", "**/*.mjs", "**/*.astro", ".oxlintrc.json", "tools/oxlint/**", "Makefile"],
+              "web": ["web/**"],
+              "workers": ["worker/**"],
+              "convex": ["convex-backend/**"],
+              "runtime": ["tools/runtime-qa/**", "worker/**", "web/src/worker*", "web/src/lib/**", "web/migrations/**", "web/package.json", "web/bun.lock", "Makefile"],
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              for job, patterns in filters.items():
+                  changed = any(fnmatch.fnmatch(path, pattern) for path in paths for pattern in patterns + common)
+                  output.write(f"{job}={str(changed).lower()}\n")
+          PY
+
+  lint-js:
+    needs: changes
+    if: needs.changes.outputs.lint == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - run: cd tools/oxlint && bun install --frozen-lockfile
+      - run: make lint-js
+
+  web:
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26.5.0
+      - run: bun install --frozen-lockfile && bun run check
+
+  workers:
+    needs: changes
+    if: needs.changes.outputs.workers == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [worker/auth, worker/usda-proxy]
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26.5.0
+      - run: bun install --frozen-lockfile && bun run check
+      - if: matrix.package == 'worker/usda-proxy'
+        run: bun test
+
+  convex:
+    needs: changes
+    if: needs.changes.outputs.convex == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: convex-backend
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26.5.0
+      - run: bun install --frozen-lockfile && bun run check && bun run test:integration
+
+  runtime-qa:
+    needs: changes
+    if: needs.changes.outputs.runtime == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 26.5.0
+      # esbuild resolves imports beside the original entrypoints, not this harness.
+      - run: cd worker/auth && bun install --frozen-lockfile
+      - run: cd worker/usda-proxy && bun install --frozen-lockfile
+      - run: cd web && bun install --frozen-lockfile
+      - run: cd tools/runtime-qa && bun install --frozen-lockfile && bun run check && bun run test

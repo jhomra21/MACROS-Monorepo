@@ -1,5 +1,7 @@
 # Review prompt timing, 2026-11-03
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/review-prompt-timing/green-13-days.png`.
+
 Baseline: `8e145eb` (`origin/main` when the worktree was created).
 Device: iPhone 17e B, `F976E800-DA1F-4F20-B755-DFD964E33975`, iOS 27.0.
 App: `juan-test.cal-macro-tracker`, Debug, version 1.0 (28).

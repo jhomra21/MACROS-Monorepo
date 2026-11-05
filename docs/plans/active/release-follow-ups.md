@@ -1,0 +1,22 @@
+# Release and device follow-ups
+
+Owner: release owner unless a row names the native/service maintainer. Status: open or blocked, not waived by repository cleanup. Original dated results remain in the linked tracker and [obligation inventory](obligation-inventory.md).
+
+| Area | Open checks | Closure evidence |
+| --- | --- | --- |
+| Release | Three TestFlight checkboxes, current group/build reconciliation, physical-device results, App Privacy, screenshots, review notes/URLs, subscription review and age rating | Owner's current App Store Connect and device checklist, with version/build |
+| Purchases | Sandbox yearly/monthly/lifetime and trial/cancel, second-device restore, Family Sharing lifetime, legacy fullunlock001, manage/redeem; dated cancellation/legacy/expiry/Ask to Buy failures need reconciliation | Real account/device report plus bounded serial StoreKit rerun for any simulator claims |
+| Sharing v2 | Approved production cutover after 1.0 approval, Sandbox/Production notification URLs, valid Apple verification, live subscription transport, settings.sharingRequirePro timing | Authorized service/device run with current clients and real Sandbox transactions; leave enforcement false until approved |
+| Shared widgets | Distribution app-group/Keychain signing, first-unlock protection and authenticated-lock redaction, full family/state matrix, real offline cache, neither-Pro pause/resume, genuinely signed expired JWT, renewal and fresh live nutrition/ring-color refresh | Native/service maintainers' live negative-case matrix, physical-device proof where simulator cannot establish it; explicit approval for deployment-global flag/network changes |
+| Sharing | Name-confirmation checkbox, production-domain/universal links decision, exact subscription counts, day rollover, failure/retry and invalid/expired/replayed invite cases | Maintainer's paired isolated device run; privacy-safe valid-token metadata if polish is approved |
+| Camera | Unknown-product dismissal/recovery checkbox; live camera, torch, real OCR, barcode 429, Photos EAN-13; Add Food origin morph, exact pill swipe landing, Reduce Motion, actual Home Screen Quick Action; dirty edit retry/save failure, narrow/SE-class behavior and iOS 26 gesture behavior | Native maintainer's current-build device matrix, including large Dynamic Type and keyboard-visible controls; absent narrow device/runtime stays blocked |
+| Accessibility/layout | AX5 lower legend, streak and Today/items together; camera AX cases beyond available width | Device evidence of complete layout with no overlap; do not infer from an offscreen tree |
+| Insights | Long-range macro pan (prior attempt navigated back), exhaustive nutrient/style/range combinations, exact-seven-day versus eight-days-ago acceptance reconciliation | Native maintainer's seeded current-build chart selection/pan and comparison report |
+| Food search | Saved barcode digits, saved brand prefix, mixed meal/food ordering; deferred stale-cache design/missing-nutrition affordances | Device search report; optional design work requires a separate scope decision |
+| Health/reminders | Nutrition write/readback, Pro weight read/auth prompts, multiple/smart reminder firing, delivered notification foreground/background/cold launch routes | Real-device permission and delivery report after App ID capability check |
+| Backup/platform | Files share-sheet export and import Merge/Replace, post-import personal/Lock Screen widgets, quick actions and paired sharing | Device round-trip preserving totals and source fixture |
+| Meals | Saved-meal Settings management checkbox remains optional, not silently cancelled | Owner decision or implemented/validated management path |
+| State machines | F1/F4 widget dependency and 11 live suspects are separate work; F2/F3 evidence review/push wording is historical | Maintainer reconciles current widget fixes and live suspects against evidence before closing |
+| Tooling | Historical unconfigured Convex codegen and beta Miniflare/cf migration caveats are not authority to deploy | Local/offline codegen where applicable; explicit approval for live checks, no cleanup-driven upgrade/deploy |
+
+The original widget acceptance plan/review also requires authorization, revocation, midnight/DST, selection/default, cold/warm navigation and all five families. Existing passing rows stay dated. Read the reports for partial coverage; preview/mock/build passes never replace blocked live rows. The evidence README remains even when old media is removed.

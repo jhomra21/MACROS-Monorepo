@@ -1,5 +1,7 @@
 # Camera result card layout shift
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-card-layout-shift/red-label-contact-sheet.jpg`.
+
 ## Confirmed cause
 
 The camera reused `FoodNutritionRow` beside a 44 pt ring. Its title and nutrition
@@ -35,10 +37,10 @@ Only `FoodCameraResultPanel.swift` changes shipping behavior:
 - [Heights table](heights.md): actual sheet geometry plus all 960 per-phase
   render measurements, every 0.25 step from 0.25 through 20, both result kinds,
   widths 390/402/440, Large and accessibility3 text.
-- [Red label contact sheet](red-label-contact-sheet.jpg) and
-  [green label contact sheet](green-label-contact-sheet.jpg).
-- [Red barcode contact sheet](red-barcode-contact-sheet.jpg) and
-  [green barcode contact sheet](green-barcode-contact-sheet.jpg).
+- Red label contact sheet and
+  green label contact sheet.
+- Red barcode contact sheet and
+  green barcode contact sheet.
 - `red/` and `green/`: original full-screen PNGs, accessibility node/frame JSON,
   and `sheet-heights.json`. On the iPhone 17e the safe area is 47 pt; the table
   excludes it from card height. The button y is its top screen coordinate.
@@ -55,7 +57,7 @@ Only `FoodCameraResultPanel.swift` changes shipping behavior:
   `heights.csv`. Actual Add Food/dashboard callers do not currently opt into the
   shared row's `isStacked` path; their pre-existing cramped accessibility layout
   is unchanged, not silently presented as fixed here.
-- [Original photo import](photo-import-original.png): the real PhotosPicker →
+- Original photo import: the real PhotosPicker →
   Vision OCR → label result path, including the original clipped editable name.
 - `photo-import-green-*.png` and `photo-import-green-heights.json`: final,
   uninstrumented PhotosPicker → OCR result. Actually pressing the stepper from

@@ -1,5 +1,7 @@
 # Camera card heights
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-card-layout-shift/comparison-add-food-accessibility.jpg`.
+
 Actual iPhone 17e, 390 pt wide. Card height excludes the 47 pt top safe area. Button y is its top edge, in screen points.
 
 | Kind | Servings | Red height | Green height | Red button y | Green button y |

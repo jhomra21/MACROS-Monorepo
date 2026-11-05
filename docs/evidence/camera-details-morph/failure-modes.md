@@ -1,5 +1,7 @@
 # Failure-first interaction checks
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-details-morph/green/ax5.png`.
+
 Recorded before implementation, after RED capture at 2026-11-03T21:34:00Z on 7034202.
 No new isolated unit tests are planned; the real fixture app and existing full suite are the validators.
 

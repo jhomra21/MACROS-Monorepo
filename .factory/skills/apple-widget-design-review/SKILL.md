@@ -12,7 +12,7 @@ Use this skill whenever work touches WidgetKit surfaces or widget design decisio
 Primary sources:
 - Apple Human Interface Guidelines: Widgets
 - Current app code under `cal-macro-tracker/CalMacroWidget/`
-- Project guidance in `AGENTS.md`, `swift-dev.mdc`, and relevant `changes-log.md` entries
+- Project guidance in `AGENTS.md`, `docs/development/swift.md`, and relevant `changes-log.md` entries
 
 ## When to Use
 
@@ -29,7 +29,7 @@ Do not use for unrelated SwiftUI screens unless they directly share widget compo
 
 Before giving design guidance or editing code:
 
-1. Read relevant local instructions (`AGENTS.md`, `swift-dev.mdc`) and changed widget files.
+1. Read relevant local instructions (`AGENTS.md`, `docs/development/swift.md`) and changed widget files.
 2. Inspect widget declarations:
    - `WidgetBundle`
    - `StaticConfiguration` / `AppIntentConfiguration`

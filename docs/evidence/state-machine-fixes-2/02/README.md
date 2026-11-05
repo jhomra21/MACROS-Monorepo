@@ -1,5 +1,7 @@
 # 02. Health history after backup replacement
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/state-machine-fixes/f2-e2e/green-history.png`.
+
 ## Exact live sequence
 
 1. In Apple's Health app on the isolated simulator, complete onboarding and add a synthetic 180 lb Weight. Grant Debug Pro in MACROS, enable Health weight reading, and grant Weight read access including all recorded history in the native authorization sheet.
@@ -15,9 +17,9 @@ Hooks log only `health start observation`, `health stop observation`, and `healt
 ## Result
 
 - RED: [before store](red-store-before.log), [before anchor](red-anchor-before.log), [after store](red-store-after.log), [after anchor](red-anchor-after.log), [trace](red-trace.log). One Health row plus 20 manual demo rows became zero rows. At `1793722304.894783` and `1793722304.897713`, restarted anchored queries returned zero samples; the anchor remained present.
-- GREEN, final implementation: [before store](green-store-before.log), [before anchor](green-anchor-before.log), [after store](green-store-after.log), [after anchor](green-anchor-after.log), [trace](green-trace.log), [weight screen](green-history.png). At `1793723515.041984`, observation stops; at `1793723515.407521–1793723515.407649`, restart invalidates old queries; at `1793723515.6251922`, all **three historical synthetic samples** replay and collapse to one same-day Health row. A following import returns zero. No source Health sample was added after replacement.
+- GREEN, final implementation: [before store](green-store-before.log), [before anchor](green-anchor-before.log), [after store](green-store-after.log), [after anchor](green-anchor-after.log), [trace](green-trace.log), weight screen. At `1793723515.041984`, observation stops; at `1793723515.407521–1793723515.407649`, restart invalidates old queries; at `1793723515.6251922`, all **three historical synthetic samples** replay and collapse to one same-day Health row. A following import returns zero. No source Health sample was added after replacement.
 - [First merge](green-merge-once.log) and [second merge](green-merge-twice.log) each retain exactly one Health row.
-- [Synthetic sample screenshot](health-sample.png); [final empty native Health list](health-cleanup.log).
+- Synthetic sample screenshot; [final empty native Health list](health-cleanup.log).
 
 Fix: `BackupImporter.swift:126–130` resets the anchor only after a successful replace commit. Merge leaves it untouched. `BackupSettingsSection.swift:137–143` stops old queries before replacement and restarts with current Pro/read access afterward, including the failure path. Restart also invalidates any query started by an intervening service refresh.
 

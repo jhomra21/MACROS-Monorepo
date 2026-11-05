@@ -1,5 +1,7 @@
 # Website consistency evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-consistency/after-404-1440-dark.jpg`.
+
 Baseline: `d1ca467`, November 4, 2026. Local builds only. Nothing deployed.
 The homepage is the visual standard. Copy, metadata, schema, publication gates,
 social rendering, the header ring script, and native transitions stay unchanged.

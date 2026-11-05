@@ -54,6 +54,8 @@
 		1A1111111111111111111121 /* Exceptions for "cal-macro-tracker" folder in "cal-macro-tracker" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AGENTS.md,
+				CalMacroWidget/AGENTS.md,
 				CalMacroWidget/CalMacroWidgetBundle.swift,
 				CalMacroWidget/DailyMacroAccessoryWidget.swift,
 				CalMacroWidget/DailyMacroWidget.swift,
@@ -83,6 +85,13 @@
 			);
 			target = 0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */;
 		};
+		4E0000000000000000000001 /* Widget documentation exclusion */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AGENTS.md,
+			);
+			target = 1A111111111111111111111B /* CalMacroWidget */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -101,6 +110,9 @@
 		};
 		1A1111111111111111111116 /* cal-macro-tracker/CalMacroWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4E0000000000000000000001 /* Widget documentation exclusion */,
+			);
 			path = "cal-macro-tracker/CalMacroWidget";
 			sourceTree = "<group>";
 		};

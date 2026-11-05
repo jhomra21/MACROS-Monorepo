@@ -1,5 +1,7 @@
 # Build 32 website refresh
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-refresh-build-32/home-1440-dark.jpg`.
+
 Source: `7585a8c` (TestFlight build 32). No app code changes or deployments.
 
 ## Media

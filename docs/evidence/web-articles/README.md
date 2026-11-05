@@ -1,5 +1,7 @@
 # Website articles and Astro performance evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-articles/blog-og.png`.
+
 November 4, 2026. Branch `web/articles`, based on `cca0518`. No deployment, production form submission, new dependency, or native source change.
 
 ## Copy review
