@@ -1,152 +1,76 @@
-# AGENTS.md
+# Working in MACROS
 
-## Philosophy
+## Scope and safety
 
-This codebase will outlive you. Every shortcut becomes someone else's burden. Every hack compounds into technical debt that slows the whole team down. 
-You are not just writing code, you are shaping the future of this project. The patterns you establish will be copied. The corners you cut will be cut again.
-Fight entropy. Leave the codebase better than you found it.
-Do not write plausible code, write accurate code backed by the reality of this codebase
+- Work in the active worktree. Preserve user changes, private data, and published history.
+- Never erase, reset, or seed the owner's simulator `9843E820-3A2A-4599-9206-D224B3035A47`.
+- Reuse existing simulators. Never create one for tests or QA. A new model/runtime may replace an old device only with owner approval.
+- Keep at most four simulators booted, at most one stock. The owner fixture and media iPhone stay stock.
+- Never shut down reserved, unknown, or actively claimed devices to meet that budget.
+- Before using a simulator, acquire its atomic directory lock at `/tmp/macros-sim-locks/<UDID>`. Never take another task's lock; release only your own lock after use.
+- Follow [safe selection and the dated inventory](docs/development/simulator-runbook.md). A stale inventory is not permission to change devices or runtimes.
+- Do not deploy production Convex, publish releases, apply remote migrations, upload evidence, or deploy services without explicit authorization.
+- Keep secrets and private user data out of source, logs, and evidence.
 
-## Code Thinking
+## Product invariants
 
-Review your implementation before stopping. Check whether there is a better or simpler approach whether any redundant code remains, whether duplicate logic was introduced, and whether any dead or unused code was left behind. If you find issues, fix them now; if not, briefly confirm the implementation is clean.
-                
-Think carefully and only action the specific task I have given you with the most concise and elegant solution that takes into consideration existing code across codebase.
-Prefer the most concise and elegant solutions that changes or adds as little code as possible.
+- Keep food logs and primary data on device. Normal tracking must work offline with no account.
+- Cache lookups and handle network absence with editable fallbacks.
+- Keep scanning, OCR, and network resolution separate so failure does not block manual logging.
+- Route missing foods, OCR mistakes, incomplete nutrients, and odd serving sizes through review/edit UX.
+- Use deterministic nutrition math: per-serving values times consumed servings, or per-100g values scaled by consumed grams.
+- Never invent grams for a volume-only serving. Require user-confirmed conversion or manual quantity.
 
-Read `swift-dev.mdc` for specific swift coding guidance.
+## Area map
 
-When behavior is unclear or tooling is non-obvious, verify it against primary docs or public repo examples instead of guessing. Use web research and GitHub/API lookups to confirm build-system, Xcode project, and framework details before changing project structure.
+Read the scoped instructions before editing an area. Root rules apply everywhere.
 
-Some Apple documentation URLs offer Markdown by appending `.md`; verify each URL.
-Example: https://developer.apple.com/documentation/xcode/build-settings-reference.md
+| Area | Instructions |
+| --- | --- |
+| Native app and shared source | [Native AGENTS](cal-macro-tracker/AGENTS.md), [Swift guide](docs/development/swift.md) |
+| Widget extension | [Widget AGENTS](cal-macro-tracker/CalMacroWidget/AGENTS.md), plus native rules |
+| Convex | [Generated backend instructions](convex-backend/AGENTS.md); leave generated AGENTS/CLAUDE blocks intact |
+| Workers | [Worker AGENTS](worker/AGENTS.md) |
+| Website | [Web AGENTS](web/AGENTS.md), [SEO](web/SEO.md) |
+| Architecture and docs | [Documentation map](docs/README.md), [architecture](docs/architecture/README.md) |
 
-## Engineering Rules (Non-Negotiable)
+## Engineering
 
-- Functional style first: prefer pure functions, immutable updates, explicit inputs/outputs.
-- Single responsibility: each function/module should have one reason to change.
-- Complexity budget:
-  - Target `O(1)` or `O(log n)` where practical.
-  - Avoid accidental `O(n^2+)` (nested scans in hot paths).
-  - Use `Map`/`Set` for membership and indexing instead of repeated linear lookups.
-- Performance footgun policy:
-  - Do not introduce `setTimeout`, `setInterval`, `requestAnimationFrame`, or self-rescheduling loops unless explicitly justified in code comments and cleaned up deterministically.
-  - No polling loops when event-driven/reactive alternatives exist.
-- Avoid hidden side effects: no mutation of shared module state unless clearly documented.
+- Prefer pure functions, immutable updates, and explicit inputs/outputs. Document unavoidable shared mutation.
+- Give each function/module one responsibility. Prefer composition; keep adapters thin and I/O at boundaries.
+- Keep related feature logic together. Avoid god-modules, needless layers, and unnecessary state.
+- Target O(1) or O(log n) where practical. Use maps/sets rather than repeated scans; avoid accidental quadratic hot paths.
+- Do not add timers, animation-frame loops, or self-rescheduling work without a code comment justifying it and deterministic cleanup.
+- Use event-driven updates instead of polling where available.
+- Verify unclear framework/build behavior against primary docs or public examples before changing structure.
+- Some Apple URLs offer Markdown via `.md`; verify the URL rather than assuming all do.
 
-## Code Maintainability
+## Validation
 
-- Two things that make code actually maintainable:
-  1. reduce the layers a reader has to trace
-  2. reduce the state a reader has to hold in their head
+- Run the relevant [existing checks](docs/development/validation.md) before finishing. A build is not a test run.
+- Use the existing XCTest target and isolated fixtures, never real stores, production services, or unrelated simulators.
+- Keep test resources in the test bundle, not the app bundle. Exclude instruction Markdown from synchronized Xcode target membership.
+- macOS builds remain deferred unless explicitly requested.
+- Use official swift-format with root `.swift-format`. Do not assume other linters exist.
+- Keep Oxlint rules, severities, complexity maximum 20, and source coverage intact. Fix owned source, not suppressions.
+- Oxlint's Astro script checks do not validate Astro markup. Run the web checks too.
+- Use Bun for support packages; there is no root package.json.
+- Use `cf` for authorized Cloudflare account/resource tasks, but keep web/worker `wrangler.jsonc` dev/deploy tooling.
+- Do not run `cf init`, `cf dev`, `cf build`, or `cf deploy` there during the Astro beta limitation. Re-evaluate migration only when cf docs remove it.
 
-## Code Organization
+## Documentation and evidence
 
-- Keep app-specific logic organized.
-- Prefer composition over inheritance; avoid god-modules.
-- Keep adapters thin and deterministic; isolate I/O at boundaries.
+- [changes-log.md](changes-log.md) is the canonical current app history; it links to older records.
+- [Plans](docs/plans/README.md) distinguish active, blocked, completed, and superseded work. Carry unresolved release/device checks forward.
+- Do not append routine validation command lists to history. Use one short validation summary when needed.
+- Put raw run output in ignored `build/evidence/<date>-<task>/`, not tracked capture directories.
+- Track a task README and at most five images totalling 2 MiB. No videos, frame sequences, or xcresult bundles; larger exceptions need a stated reason.
+- Follow the [evidence policy](docs/evidence/README.md). The 2 MiB tracked limit is stricter than the owner's general under-5-MB artifact rule.
 
-## Change Quality Bar
+## Change discipline
 
-- Keep diffs focused; do not mix refactors with feature behavior changes unless requested.
-- Preserve public contracts unless change is intentional and documented.
-- Validate before finishing
-- Do not append routine validation command lists to `changes-log.md` unless explicitly requested; if validation needs to be recorded, use one short summary line instead.
-- When a GPT-5.4/GPT-5.5-style model completes a multi-step implementation plan, run the project skill `/defensive-code-review` only after the planned work and normal validators are complete. This is a final cleanup pass for proven redundant guards, duplicated validation, and impossible-state branching; do not run it after every edit or for trivial one-off changes.
-
-## Commands
-
-- Simulator budget: at most four simulators booted on the Mac, and at most one of them stock (not slimmed). The iPad test runner and the stock iPhone 17, 17e, and Air are slimmed with simslim (`brew install mobai-app/tap/simslim`) using `tools/sim/macros-slim.json`; the owner's iPhone 18 Pro fixture and the iPhone 18 Pro Max media device stay stock. Measured on 2026-10-30 after 180 s settled: about 7.4 GB for a slim iPhone 17 versus about 10.6 GB for the stock iPhone 18 Pro Max. Check a device with `simslim verify <udid> --profile tools/sim/macros-slim.json` (it must be booted) and repair drift with `simslim on <udid> --profile tools/sim/macros-slim.json`. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
-- Simulator inventory (observed 2026-11-05): keep exactly one simulator per device model per iOS version. Live runtime discovery lists both iOS 27.0 (24A434) and iOS 26.5 (23F77), although no 26.5 devices exist. Do not remove runtimes based on an old inventory. The kept devices are:
-  - `9843E820-3A2A-4599-9206-D224B3035A47` iPhone 18 Pro: the owner's fixture with real app data and widgets. Never erase, reset, or load demo data on it.
-  - `D16C3D35-889F-404F-BDD4-C640A6DBC4EF` iPhone 18 Pro Max (`MACROS-iPhone-18-Pro-Max-2026-10-30`): App Store media capture (demo data, 9:41 status bar).
-  - `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB` iPad Air 11-inch (`MACROS-iPad-Air-11-2026-10-29`): test runner; the app runs in iPhone compatibility mode there.
-  - Stock iPhone 17, iPhone 17e, and iPhone Air on iOS 27.0, empty.
-  Never create a simulator for a test, QA pass, or any other process. Reuse these devices and modify them per task: erase, reinstall, change settings, or load demo data (DEBUG Settings > Developer) as the task needs, then leave them in a usable state. Clean-install checks go on the iPad test runner or one of the stock iPhones. The owner's iPhone 18 Pro fixture is the one exception: never erase, reset, or seed it. A new simulator is only ever created when a new device model or a newer iOS runtime is needed, and the one it replaces is deleted.
-- Historical StoreKit probes: iOS 26.4 rejected catalog activation with `SKInternalErrorDomain Code=3`; Xcode 27.0 hung an older probe. The known-good setup used iOS 27.0 and `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` (Xcode 26.4). On 2026-11-05 the active default is `/Applications/Xcode-26.4.1.app/Contents/Developer`, which reports Xcode 27.0 (27A266a), despite its folder name. Rerun `PurchaseStoreStoreKitTests` before recommending a different toolchain. No new payment-test result is implied.
-- Inspect project targets and schemes:
-  - `xcodebuild -list -project "cal-macro-tracker.xcodeproj"`
-- Build the app from the CLI (a build is not a test run):
-  - `make quality-build`
-- Run the full iOS Simulator test suite serially with a bounded per-test allowance. Replace the placeholder with the iPad Air 11-inch test runner's UUID (above), never the owner's iPhone 18 Pro fixture:
-  ```sh
-  xcodebuild \
-    -project "cal-macro-tracker.xcodeproj" \
-    -scheme "cal-macro-tracker" \
-    -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
-    -parallel-testing-enabled NO \
-    -test-timeouts-enabled YES \
-    -default-test-execution-time-allowance 30 \
-    -maximum-test-execution-time-allowance 45 \
-    test
-  ```
-- Run one supported test class using the same options and a real class selector, for example:
-  ```sh
-  xcodebuild \
-    -project "cal-macro-tracker.xcodeproj" \
-    -scheme "cal-macro-tracker" \
-    -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
-    -parallel-testing-enabled NO \
-    -test-timeouts-enabled YES \
-    -default-test-execution-time-allowance 30 \
-    -maximum-test-execution-time-allowance 45 \
-    -only-testing:cal-macro-trackerTests/InsightsAnalyticsTests \
-    test
-  ```
-  The shared `cal-macro-tracker` scheme includes the `cal-macro-trackerTests` target. Test resources, including migration fixtures, belong to the test bundle, not the app bundle.
-- macOS builds are intentionally deferred; do not use `-destination 'platform=macOS'` unless explicitly requested.
-- When interacting with Cloudflare, use the `cf` CLI for account and resource tasks (D1, DNS, deployments, cache). `web/` and `worker/*` stay on `wrangler.jsonc` for `dev`/`deploy`; do not run `cf init`, `cf dev`, `cf build`, or `cf deploy` in them: Astro 6+ does not build with `cf` during the beta. Re-evaluate `cf migrate` when the cf docs drop that limitation.
-- Lint / formatting:
-  - The repository formatter is the official `swift-format` tool, wired through `make quality-format-check` and `make format` with the root `.swift-format` configuration.
-  - `make lint-js` runs the isolated Bun/Oxlint package against owned JavaScript and TypeScript sources. It enables vendored anti-slop rules and classic `eslint/complexity` at error with a maximum of 20. Keep the rules, severities, and source coverage intact; fix findings in owned source rather than adding suppressions.
-  - Astro documents may be selected as Oxlint inputs, but this does not validate Astro template or markup semantics. Swift formatting remains separate and unchanged.
-  - Do not document or assume an additional linter unless it is added to the repository workflow.
-
-## Current Codebase Shape
-
-- `cal-macro-tracker.xcodeproj` contains the `cal-macro-tracker` app, `CalMacroWidget` extension, and `cal-macro-trackerTests` test target. The shared `cal-macro-tracker` scheme runs the app's XCTest target.
-- Native code is organized under app, data, shared, widget, and feature directories. The iPhone-first SwiftUI app uses SwiftData for local storage and includes food logging, scanning, history, insights, optional sharing, and StoreKit purchase flows.
-- The repository also includes the optional Convex sharing backend, Cloudflare workers, and an Astro site. These supporting packages have their own scripts and are not part of an Xcode app build.
-- Root-level [`swift-dev.mdc`](./swift-dev.mdc) is the main local coding guidance: prefer idiomatic modern SwiftUI, keep state close to where it is used, use `async/await`, and avoid unnecessary view-model or UIKit-style abstraction layers.
-
-Design for ambiguity explicitly: missing database items, OCR mistakes, incomplete nutrition values, and odd serving sizes are expected and must route through review/edit UX rather than silent assumptions.
-
-## Recommended Native Architecture
-
-### UI and App Structure
-
-- Use SwiftUI as the primary UI framework.
-- Keep views small and feature-focused.
-- Prefer SwiftUI state tools (`@State`, `@Binding`, `@Observable`, `@Environment`) over introducing view-model layers by default.
-- Organize future code by feature areas such as `Logging`, `FoodSearch`, `Scan`, `History`, `Settings`, rather than global `Views/Models/ViewModels` folders.
-
-### Persistence and Privacy
-
-- Keep primary user data in an on-device database.
-- Use iOS file protection / data protection for persisted files.
-- Store any small secrets, such as optional user-supplied API keys, in Keychain.
-- Plan for import/export of user data so people can migrate devices without requiring accounts.
-- Optional HealthKit integration is acceptable as an OS-permission-based feature and does not imply an app login system.
-
-## Calculation Rules
-
-- Prefer deterministic math only.
-- If nutrients are stored per serving, multiply by consumed servings.
-- If nutrients are stored per 100g, compute consumed nutrients from grams consumed.
-- If a source only provides a volume-based serving without grams, do not fake precision; require a user-confirmed conversion or manual quantity entry.
-
-## Implementation Notes for Future Agents
-
-- Favor native Swift/SwiftUI solutions even if a cross-platform approach seems possible.
-- Build offline-first behavior into every feature: local persistence, cached lookups, graceful network absence, and editable fallbacks.
-- Keep the app usable with zero account setup.
-- Treat scanning/OCR/network resolution as separate steps so each can fail independently without blocking manual logging.
-- Use the existing XCTest target and isolated fixtures for app behavior; keep test resources in the test bundle and avoid real user stores, production services, and unrelated simulators.
-- Website articles (`web/src/content/guides/`, `web/src/content/blog/`, and any other long-form page copy) always get an `unslop` skill pass before they ship, without waiting to be asked. Health and nutrition figures must cite primary sources, and anything describing app behavior must match the current code. Illustrate guides with real app screenshots from `web/src/assets/app-images/` (or fresh captures from the App Store media simulator) and with static diagrams built as inline SVG or HTML/CSS components, so pages ship no extra client JavaScript.
-- `make quality-build` compiles the app and is not test evidence. `make qa-network` runs the Node-native loopback HTTP/Miniflare runtime QA and registered Convex integration tests; install dependencies in `tools/runtime-qa/` and `convex-backend/` first. There is no root `package.json`.
-
-# Changes Log
-
-`changes-log.md` is the canonical project history file for implemented work, bugs found, decisions made, and validation results.
-
-Detailed implementation trackers live in `implementation-trackers/`
+- Implement only the requested scope with small, focused diffs. Do not mix refactors and behavior changes unless requested.
+- Preserve public contracts unless the change is intentional and documented.
+- Review the complete diff for redundant guards, duplicated logic, dead code, and simpler solutions after normal validation.
+- Use relevant installed review tools when useful; do not depend on a particular model or an absent skill.
+- Fix issues found in that review before stopping; otherwise briefly confirm the diff is clean.
