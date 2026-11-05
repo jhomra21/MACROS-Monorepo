@@ -487,6 +487,16 @@ summary {
 	}
 }
 
+@media (max-width: 22.5rem) {
+	.nav-list {
+		gap: 0;
+	}
+
+	.nav-link {
+		padding-inline: var(--space-1);
+	}
+}
+
 /* Hero */
 .hero {
 	padding-block: clamp(2.5rem, 6vw, 5rem) var(--space-4);
@@ -496,14 +506,25 @@ summary {
 .hero__grid {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	gap: var(--space-7);
+	grid-template-areas: 'copy' 'visual' 'signup';
+	gap: var(--space-5);
 	align-items: center;
 }
 
 .hero__copy {
+	grid-area: copy;
+}
+
+.hero__copy,
+.hero__signup {
 	display: grid;
 	gap: var(--space-5);
 	justify-items: start;
+}
+
+.hero__signup {
+	grid-area: signup;
+	gap: var(--space-4);
 }
 
 .hero__copy .lead {
@@ -516,13 +537,13 @@ summary {
 
 .hero__note {
 	max-width: 32rem;
-	margin-top: calc(var(--space-3) * -1);
 }
 
 .hero__visual {
+	grid-area: visual;
 	position: relative;
 	justify-self: center;
-	width: min(100%, 17.5rem);
+	width: min(100%, 15rem);
 }
 
 .hero__visual .device {
@@ -585,7 +606,16 @@ summary {
 @media (min-width: 56.25rem) {
 	.hero__grid {
 		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-		gap: var(--space-8);
+		grid-template-areas: 'copy visual' 'signup visual';
+		column-gap: var(--space-8);
+	}
+
+	.hero__copy {
+		align-self: end;
+	}
+
+	.hero__signup {
+		align-self: start;
 	}
 
 	.hero__visual {
@@ -891,7 +921,6 @@ summary {
 @media (min-width: 56.25rem) {
 	.showcase__track {
 		--fade: 3rem;
-		margin-inline: calc(var(--fade) * -1);
 		padding-inline: var(--fade);
 		scroll-padding-inline: var(--fade);
 		scrollbar-width: thin;
@@ -1785,10 +1814,6 @@ summary {
 .app-store-badge img {
 	width: auto;
 	height: 40px;
-}
-
-.hero__copy > .app-store-badge {
-	animation: none;
 }
 
 /* Footer */
