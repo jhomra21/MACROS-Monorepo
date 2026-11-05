@@ -4,21 +4,32 @@ import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { site } from '../data/site';
-import { absoluteURL, breadcrumbs, publishedEntries } from '../lib/seo';
+import { absoluteURL, breadcrumbs, pages, publishedEntries } from '../lib/seo';
 import type { JsonObject } from '../lib/json';
+import { socialImage, socialInput } from '../lib/social';
 
 interface Props {
 	title: string;
 	description: string;
 	noindex?: boolean;
-	image?: { src: string; width: number; height: number; alt: string };
 	article?: { published: Date; updated: Date };
 	structuredData?: JsonObject[];
 }
 
-const { title, description, noindex = false, image = site.ogImage, article, structuredData = [] } = Astro.props;
+const { title, description, noindex = false, article, structuredData = [] } = Astro.props;
 
 const canonicalURL = absoluteURL(Astro.url.pathname);
+
+const entry = article ? (await publishedEntries(Astro.url.pathname.startsWith('/guides/') ? 'guides' : 'blog'))
+	.find(entry => `/${entry.collection}/${entry.id}/` === Astro.url.pathname) : undefined;
+
+// The noindex 404 uses the existing home preview, without generating a public 404 image.
+const image = socialImage(await socialInput(
+	noindex ? '/' : Astro.url.pathname,
+	noindex ? pages['/'].title : title,
+	noindex ? pages['/'].description : description,
+	entry?.data.image,
+));
 
 const ogImageURL = absoluteURL(image.src);
 

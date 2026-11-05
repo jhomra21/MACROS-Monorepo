@@ -5,6 +5,7 @@ import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { absoluteURL, pages, publishedEntries } from '../../lib/seo';
+import { socialImage, socialInput } from '../../lib/social';
 
 export async function getStaticPaths() {
 	const sections = await Promise.all((['guides', 'blog'] as const).map(async section => {
@@ -33,25 +34,22 @@ const sectionName = section === 'guides' ? 'Guides' : 'Blog';
 
 const rendered = entry ? await render(entry) : undefined;
 
-const image = entry ? {
-	src: `/social/${section}/${entry.id}.png`, width: 1200, height: 630,
-	alt: `${entry.data.title}. MACROS for iPhone with a real app screenshot.`,
-} : undefined;
-
 const headings = rendered?.headings.filter(heading => heading.depth === 2) ?? [];
 
 const readingMinutes = entry ? Math.max(1, Math.ceil((entry.body ?? '').split(/\s+/).length / 200)) : 0;
 
 const metadata = entry ? { title: entry.data.title, description: entry.data.description } : pages[`/${section}/`];
 
-const articleSchema = entry && image ? [{
+const articleSchema = entry ? [{
 	'@type': 'Article',
 	headline: entry.data.title,
 	description: entry.data.description,
 	datePublished: entry.data.published.toISOString(),
 	dateModified: entry.data.updated.toISOString(),
 	author: { '@type': 'Person', name: site.author, url: absoluteURL('/about/') },
-	image: absoluteURL(image.src),
+	image: absoluteURL(socialImage(await socialInput(
+		`/${section}/${entry.id}/`, entry.data.title, entry.data.description, entry.data.image,
+	)).src),
 	mainEntityOfPage: absoluteURL(`/${section}/${entry.id}/`),
 }] : [];
 
@@ -60,7 +58,6 @@ const dateText = (date: Date) => date.toLocaleDateString('en-US', { year: 'numer
 const Content = rendered?.Content;
 ---
 <SiteLayout {...metadata}
-	image={image}
 	article={entry ? { published: entry.data.published, updated: entry.data.updated } : undefined}
 	structuredData={articleSchema}>
 	<article class="container editorial">

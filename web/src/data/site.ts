@@ -19,12 +19,6 @@ export const site = {
 	appStore: { id: '6767565938', live: false },
 	author: 'Juan Ramon Martinez Bulnes',
 	supportEmail: 'jhonra121@gmail.com',
-	ogImage: {
-		src: '/og.png',
-		alt: 'MACROS: Nutrition Tracker on an iPhone showing daily protein, carbs, and fat rings',
-		width: 1200,
-		height: 630,
-	},
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
 		{ href: '/#plans', label: 'Pro', secondary: true },

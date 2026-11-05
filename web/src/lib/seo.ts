@@ -40,16 +40,31 @@ export const pages = {
 	},
 } as const;
 
-export async function publicPages() {
+interface PublicPage {
+	path: string;
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	lastmod?: string;
+}
+
+export async function publicPages(): Promise<PublicPage[]> {
 	const [guides, posts] = await Promise.all([publishedEntries('guides'), publishedEntries('blog')]);
 
 	return [
 		...Object.keys(pages)
 			.filter(path => (path !== '/blog/' || posts.length > 0) && (path !== '/guides/' || guides.length > 0))
-			.map(path => ({ path })),
+			.map(path => ({
+				path,
+				// SAFETY: path comes directly from Object.keys(pages).
+				...pages[path as keyof typeof pages],
+			})),
 		...[...guides, ...posts].map(entry => ({
 			path: `/${entry.collection}/${entry.id}/`,
 			lastmod: entry.data.updated.toISOString(),
+			title: entry.data.title,
+			description: entry.data.description,
+			image: entry.data.image,
 		})),
 	];
 }

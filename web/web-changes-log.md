@@ -2,6 +2,13 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Content-hashed previews for every public page
+
+- Replaced the manually generated shared OG asset and article-only endpoint with one build-time 1200 × 630 renderer covering `publicPages()`. Page metadata/frontmatter supplies the title and description; a small map selects real screens for main pages and articles use frontmatter `image`.
+- Added deterministic header-ring branding, measured Pango text wrapping, and explicit macOS Helvetica without a dependency or client bundle change. Hashed URLs include page copy, screenshot/font bytes, path-seeded ring fills, renderer versions, and template version. Layout Open Graph/Twitter metadata and Article schema share the same URL helper.
+- Kept publication gates, sitemap entries, other schema/meta, header script, and native transitions unchanged. Removed `public/og.png`, its manual generator, and `site.ogImage`; documented template versioning and Mac font requirements.
+- Validation: check/build, root JS lint, whitespace checks, and built-output E2E pass for all seven final images; clean/repeat builds are byte-identical, a temporary title edit invalidates only its page, and isolated draft publication adds both blog previews. All final PNGs and repeatable evidence are in `docs/evidence/web-og/` (under 5 MB). No deployment.
+
 ## 2026-11-04 Article clarity, calculator visuals, and Astro performance
 
 - Edited the guide, draft launch post, and section descriptions for direct instructions and shorter sentences. Kept the numbers, equations, citations, and link destinations unchanged. The launch post remains a draft.
