@@ -2,43 +2,43 @@
   "pages": [
     {
       "path": "/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/home.506c688dfe25.png",
+      "url": "https://macros-web.jhonra121.workers.dev/social/home.0eb2b274470d.png",
       "sha256": "e5980f4b5789bcf46f83918386a2f60ea1e04000987ecccfefa782e08ffd8f2c",
       "bytes": 122198
     },
     {
       "path": "/about/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/about.a8dbce5a5685.png",
-      "sha256": "be35a4a3de987eeeecad2178258ccd426d7bfdf8db906d8979a7a09752153912",
-      "bytes": 120651
+      "url": "https://macros-web.jhonra121.workers.dev/social/about.aeda5b7a70c6.png",
+      "sha256": "d25071e57f27fda21fd8430d66605527fbe87d26a7aa490f1dcfcade13ba56f1",
+      "bytes": 110321
     },
     {
       "path": "/support/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/support.9f12ddbdaa8f.png",
-      "sha256": "68f767e830d913f30dde2f938e1c656472660fd390aefd5d26bb85ab4c44e071",
-      "bytes": 128691
+      "url": "https://macros-web.jhonra121.workers.dev/social/support.e46432dcde49.png",
+      "sha256": "caf7961aed60cd9017cc45d50079dbd37eb5290b5f857175c35f8453b93e258a",
+      "bytes": 119749
     },
     {
       "path": "/privacy/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/privacy.9aff7e0ad9d0.png",
-      "sha256": "d6ec929b264f982ec5068de42107f52450b1a319405291aa45ae4559ad418d14",
-      "bytes": 71933
+      "url": "https://macros-web.jhonra121.workers.dev/social/privacy.b10b9bb85851.png",
+      "sha256": "7805e25c49b28fbd354f33ceda46b2f786d552e0214750f4f0bcdc8ea2462446",
+      "bytes": 63142
     },
     {
       "path": "/terms/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/terms.20358f1b4d51.png",
-      "sha256": "f0dfcb089538e0c047d3a241ac279d06f3dd637e9b602ba9be1fe6c481d8a469",
-      "bytes": 79576
+      "url": "https://macros-web.jhonra121.workers.dev/social/terms.dae704fa10d3.png",
+      "sha256": "1f67005d512f6bd853b17b0e85950e2bad70b09a5ffed663a63671fd360be8cc",
+      "bytes": 72223
     },
     {
       "path": "/guides/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/guides.a9fe010191db.png",
-      "sha256": "aa0edfb084d71b78fee568c7348a19b75a2719c20e550d6722c941451bc6f2a4",
-      "bytes": 84838
+      "url": "https://macros-web.jhonra121.workers.dev/social/guides.fbc97153ea3b.png",
+      "sha256": "0bc02416c83d7a4d365b0cbfd6c21b7b1cfeaefd7db821069a647e758963e8f5",
+      "bytes": 80635
     },
     {
       "path": "/guides/how-to-set-macro-goals/",
-      "url": "https://macros-web.jhonra121.workers.dev/social/guides/how-to-set-macro-goals.7f104f846a0a.png",
+      "url": "https://macros-web.jhonra121.workers.dev/social/guides/how-to-set-macro-goals.851fc9aa911f.png",
       "sha256": "fcb828f2a826859626308b1c925a26e839069c36e7027bd41c957b8f501561a0",
       "bytes": 79955
     }
@@ -48,9 +48,9 @@
   "draftLeaks": false,
   "isolatedPublication": "Blog index and post both gain matching previews; existing pages unchanged",
   "buildSeconds": {
-    "clean": 6.78,
-    "repeat": 5.13,
-    "titleEdit": 5.18,
-    "publication": 5.4
+    "clean": 6.15,
+    "repeat": 6.08,
+    "titleEdit": 5.88,
+    "publication": 5.96
   }
 }

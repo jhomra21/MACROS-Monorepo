@@ -4,6 +4,7 @@
 
 ## 2026-11-04 Content-hashed previews for every public page
 
+- Follow-up: render and expose only the heading before ` | `; full titles still invalidate the hash. Bumped the template version and refreshed the seven-image E2E evidence.
 - Replaced the manually generated shared OG asset and article-only endpoint with one build-time 1200 × 630 renderer covering `publicPages()`. Page metadata/frontmatter supplies the title and description; a small map selects real screens for main pages and articles use frontmatter `image`.
 - Added deterministic header-ring branding, measured Pango text wrapping, and explicit macOS Helvetica without a dependency or client bundle change. Hashed URLs include page copy, screenshot/font bytes, path-seeded ring fills, renderer versions, and template version. Layout Open Graph/Twitter metadata and Article schema share the same URL helper.
 - Kept publication gates, sitemap entries, other schema/meta, header script, and native transitions unchanged. Removed `public/og.png`, its manual generator, and `site.ogImage`; documented template versioning and Mac font requirements.

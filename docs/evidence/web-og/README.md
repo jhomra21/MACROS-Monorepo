@@ -16,10 +16,10 @@ This build environment emits `Fontconfig error: Cannot load default config file:
 
 `socialImage()` is the pure identity helper used by the endpoint, SiteLayout, and Article schema. A 12-hex SHA-256 prefix hashes a fixed-order encoding of:
 
-- Template version (`macros-rings-1`), bumped for any layout, color, typography, or compositing change.
+- Template version (`macros-rings-2`), bumped for any layout, color, typography, or compositing change.
 - Locked Sharp/native renderer versions.
 - Canonical page path, which also seeds each ring's stable 25–95% fill.
-- Exact page title and description from `pages` or published frontmatter.
+- Exact page title (retained in the hash even though the rendered heading omits its ` | ` suffix) and description from `pages` or published frontmatter.
 - Subtitle from the small page/screen map or article section.
 - SHA-256 of the source screenshot bytes and explicit font file bytes.
 
@@ -31,13 +31,13 @@ Prefix image paths with `https://macros-web.jhonra121.workers.dev`. These are bu
 
 | Page | Image |
 | --- | --- |
-| `/` | `/social/home.506c688dfe25.png` |
-| `/about/` | `/social/about.a8dbce5a5685.png` |
-| `/support/` | `/social/support.9f12ddbdaa8f.png` |
-| `/privacy/` | `/social/privacy.9aff7e0ad9d0.png` |
-| `/terms/` | `/social/terms.20358f1b4d51.png` |
-| `/guides/` | `/social/guides.a9fe010191db.png` |
-| `/guides/how-to-set-macro-goals/` | `/social/guides/how-to-set-macro-goals.7f104f846a0a.png` |
+| `/` | `/social/home.0eb2b274470d.png` |
+| `/about/` | `/social/about.aeda5b7a70c6.png` |
+| `/support/` | `/social/support.e46432dcde49.png` |
+| `/privacy/` | `/social/privacy.b10b9bb85851.png` |
+| `/terms/` | `/social/terms.dae704fa10d3.png` |
+| `/guides/` | `/social/guides.fbc97153ea3b.png` |
+| `/guides/how-to-set-macro-goals/` | `/social/guides/how-to-set-macro-goals.851fc9aa911f.png` |
 
 Evidence PNG filenames flatten nested paths using `--`. `results.json` records the full URLs, lengths, and SHA-256 byte digests. Blog index/post images are absent from the final build because the announcement remains a draft.
 
@@ -53,4 +53,4 @@ cd /Users/juan/.t3/worktrees/cal-macro-tracker/web-og && make lint-js && git dif
 
 The E2E verifier reads the actual built sitemap, HTML, JSON-LD, and PNGs without a server. It verifies matching OG/Twitter URLs and alt, declared and actual dimensions, hashed filenames, Article image equality, exact image coverage, and missing draft pages/images/blog index/RSS. It builds an isolated temporary source copy twice and compares every filename and PNG digest with the original build. It edits only the home title, builds again, verifies only home's hash/bytes change, then restores the temporary source. It also temporarily publishes the draft and checks that blog index/post both acquire previews while existing pages stay byte-identical. Only the temporary copy is changed/deleted; the original draft stays untouched.
 
-Recorded full `bun run build` cost (including Wrangler types, Astro check, TypeScript, and static build): clean source copy **6.78s**, repeat **5.13s**, title edit **5.18s**, publication fixture **5.40s**. The seven social routes account for about **1.33s** clean and **0.76s** repeat, including first-use font initialization; subsequent images take roughly 40–70ms each. These are local wall-clock samples, not deployment or user-facing performance claims. See `builds.log` and `results.json`; all evidence stays below 5 MB.
+Recorded full `bun run build` cost (including Wrangler types, Astro check, TypeScript, and static build): clean source copy **6.15s**, repeat **6.08s**, title edit **5.88s**, publication fixture **5.96s**. The seven social routes account for about **1.53s** clean, including first-use font initialization; subsequent images take roughly 48–75ms each. These are local wall-clock samples, not deployment or user-facing performance claims. See `builds.log` and `results.json`; all evidence stays below 5 MB.

@@ -5,7 +5,7 @@ import sharp from 'sharp';
 import { xmlEscape } from './seo';
 
 // Bump when geometry, colors, type sizing, or compositing changes.
-export const templateVersion = 'macros-rings-1';
+export const templateVersion = 'macros-rings-2';
 
 export const fontFile = '/System/Library/Fonts/Helvetica.ttc';
 
@@ -22,6 +22,7 @@ const screens = {
 export interface SocialInput {
 	path: string;
 	title: string;
+	heading: string;
 	description: string;
 	subtitle: string;
 	screenshot: Buffer;
@@ -41,7 +42,7 @@ export function socialImage(input: SocialInput) {
 
 	return {
 		src: `/social/${slug}.${digest}.png`, width: 1200, height: 630,
-		alt: `${input.title}. MACROS for iPhone with a real app screenshot.`,
+		alt: `${input.heading}. MACROS for iPhone with a real app screenshot.`,
 	};
 }
 
@@ -57,7 +58,7 @@ export async function socialInput(path: string, title: string, description: stri
 
 	const [screenshot, font] = await Promise.all([readFile(screenshotFile), readFile(fontFile)]);
 
-	return { path, title, description, subtitle, screenshot, font };
+	return { path, title, heading: title.split(' | ')[0]!, description, subtitle, screenshot, font };
 }
 
 async function textLayer(value: string, size: number, width: number, height: number, bold = false, color = '#1d1d1f') {
@@ -103,7 +104,7 @@ export async function renderSocialImage(input: SocialInput) {
 	const [wordmark, subtitle, title, description, screenshot] = await Promise.all([
 		textLayer('MACROS', 34, 240, 42, true),
 		textLayer(input.subtitle, 23, 710, 30, false, '#66666b'),
-		textLayer(input.title, 58, 710, 225, true),
+		textLayer(input.heading, 58, 710, 225, true),
 		textLayer(input.description, 24, 710, 115, false, '#66666b'),
 		sharp(input.screenshot).resize({ height: 550 }).png().toBuffer({ resolveWithObject: true }),
 	]);
