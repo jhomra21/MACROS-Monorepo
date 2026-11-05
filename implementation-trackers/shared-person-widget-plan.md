@@ -36,7 +36,7 @@ Fixed owner decisions:
 | Existing authorization tests | `convex-backend/convex/_qa/sharing.integration.ts:181-230`: pause, inbound grant absent/ended, strangers, removal, deletion, and wrong day. Live smoke foundation: `convex-backend/scripts/sharingSmoke.ts:27-129`. |
 | Privacy declarations | `docs/app-store/privacy-labels.md:7-25`; `cal-macro-tracker/CalMacroWidget/PrivacyInfo.xcprivacy:5-28`; previous widget behavior/design decisions in `changes-log.md:143-148,209,243-258`. |
 
-Read `AGENTS.md`, `swift-dev.mdc`, the sharing-v2 plan, the `apple-widget-design-review` skill, and the generated Convex guidance. The skill's local-data fallback remains important, but the owner's explicit extension-fetch decision governs this feature.
+Read `AGENTS.md`, `docs/development/swift.md`, the sharing-v2 plan, the `apple-widget-design-review` skill, and the generated Convex guidance. The skill's local-data fallback remains important, but the owner's explicit extension-fetch decision governs this feature.
 
 Live-tool limitation: the Convex status tool returned **`No CONVEX_DEPLOYMENT set, run npx convex dev to configure a Convex project`** for this new worktree. No configuration, deploy, or live database write was attempted. The endpoint is verified from `SharingConfiguration.swift`; the flag's current off state is owner-provided, not independently queried here.
 

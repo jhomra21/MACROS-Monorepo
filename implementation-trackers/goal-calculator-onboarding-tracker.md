@@ -1,6 +1,6 @@
 # Goal Calculator and Onboarding Implementation Tracker (WS3)
 
-Branch `launch/ws3-goal-calculator`. Mac only. Read `AGENTS.md`, `swift-dev.mdc`, `changes-log.md` section "First-Run Goal Setup Onboarding", `Features/Onboarding/GoalSetupScreen.swift`, `Features/Settings/DailyGoalsSection.swift`, `Data/Models/DailyGoals.swift`, `Data/Services/DailyGoalsRepository.swift`, `Shared/SharedModelContainerFactory.swift`, `Data/Services/AppModelContainerFactory.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills if available.
+Branch `launch/ws3-goal-calculator`. Mac only. Read `AGENTS.md`, `docs/development/swift.md`, `changes-log.md` section "First-Run Goal Setup Onboarding", `Features/Onboarding/GoalSetupScreen.swift`, `Features/Settings/DailyGoalsSection.swift`, `Data/Models/DailyGoals.swift`, `Data/Services/DailyGoalsRepository.swift`, `Shared/SharedModelContainerFactory.swift`, `Data/Services/AppModelContainerFactory.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills if available.
 
 ## Shared Understanding
 

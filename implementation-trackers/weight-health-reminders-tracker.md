@@ -1,6 +1,6 @@
 # Weight Log, Apple Health, and Reminders Tracker (WS5)
 
-Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2 (Pro entitlements, `PaidFeature.weightTrends`, `.healthWeightImport`, `.multipleReminders`) and WS3 (`BodyProfile`) are merged into `main`. Read `AGENTS.md`, `swift-dev.mdc`, the WS2 and WS3 trackers, `Features/Insights/InsightsScreen.swift` and `InsightsAnalytics.swift`, `Data/Services/LogEntryRepository*.swift` (post-mutation notification used by sharing sync), `App/HomeScreenQuickActionSupport.swift`, `Shared/AppOpenRequest.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swift-concurrency-expert`, `swiftui-liquid-glass`, and `write-swift` skills if available.
+Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2 (Pro entitlements, `PaidFeature.weightTrends`, `.healthWeightImport`, `.multipleReminders`) and WS3 (`BodyProfile`) are merged into `main`. Read `AGENTS.md`, `docs/development/swift.md`, the WS2 and WS3 trackers, `Features/Insights/InsightsScreen.swift` and `InsightsAnalytics.swift`, `Data/Services/LogEntryRepository*.swift` (post-mutation notification used by sharing sync), `App/HomeScreenQuickActionSupport.swift`, `Shared/AppOpenRequest.swift`, and `implementation-trackers/launch-program-tracker.md`. Activate `swift-concurrency-expert`, `swiftui-liquid-glass`, and `write-swift` skills if available.
 
 ## Shared Understanding
 

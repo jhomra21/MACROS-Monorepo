@@ -2,7 +2,7 @@
 
 - Scope: d53a313 → final inline editor, shared extraction, Form/quantity defaults, reducer recovery and scanner lifecycle.
 - Model-risk reason: final GPT implementation pass, after normal validators, checking for duplicated validation, dead extracted state and impossible-state guards. No subagents per owner instruction.
-- Context: AGENTS.md, swift-dev.mdc, SOFTWARE_PATTERNS.md, changes-log, changed files, FoodDraftLoggingAction, numeric finalization, FoodQuantityState and repository logging boundary.
+- Context: AGENTS.md, docs/development/swift.md, docs/history/reference/software-patterns.md, changes-log, changed files, FoodDraftLoggingAction, numeric finalization, FoodQuantityState and repository logging boundary.
 
 ## Candidates
 

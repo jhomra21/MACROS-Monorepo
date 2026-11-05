@@ -59,7 +59,7 @@ Phase 1 runs in parallel. The parent merges Phase 1 branches into `main` in the 
 
 ## Design rules (iOS native, Liquid Glass where Apple would use it)
 
-- Read `swift-dev.mdc`. Activate the `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills before UI work when they are available in the environment; `swift-concurrency-expert` for new services.
+- Read `docs/development/swift.md`. Activate the `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills before UI work when they are available in the environment; `swift-concurrency-expert` for new services.
 - Liquid Glass belongs to the control layer that floats above content: toolbars, pinned action bars, floating buttons, sheet actions, pickers in onboarding. Content inside scrolling lists and forms stays on standard grouped backgrounds. Do not wrap list cells in glass.
 - Reuse the existing primitives before writing new ones: `AppAccentActionButton`, `BottomPinnedActionBar`, `BottomPinnedDualActionBar`, `GlassEffectContainer`, `appGlassRoundedRect(cornerRadius:)`, `.buttonStyle(.glass)`, `PlatformColors.groupedBackground`, `.inlineNavigationTitle()`, `.appTopBarLeading` / `.appTopBarTrailing`, `errorBanner(message:)`, `keyboardNavigationToolbar(focusedField:fields:)`, `AppNumericTextField`, `.sensoryFeedback`.
 - Known rule from `changes-log.md`: a glass control in a compact sheet detent can lose its refractive edge; do not fake the edge with strokes.
