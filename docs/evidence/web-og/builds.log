@@ -1,0 +1,572 @@
+
+ ⛅️ wrangler 4.156.0 (update available 4.157.0)
+───────────────────────────────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+18:54:08 [vite] Re-optimizing dependencies because vite config has changed
+18:54:08 [content] Syncing content
+18:54:08 [content] Synced content
+18:54:08 [types] Generated 416ms
+18:54:08 [check] Getting diagnostics for Astro files in /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4...
+Result (45 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+
+18:54:11 [content] Syncing content
+18:54:11 [content] Synced content
+18:54:11 [types] Generated 340ms
+18:54:11 [build] output: "static"
+18:54:11 [build] mode: "static"
+18:54:11 [build] directory: /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4/dist/
+18:54:11 [build] Collecting build info...
+18:54:11 [build] ✓ Completed in 349ms.
+18:54:11 [build] Building static entrypoints...
+18:54:11 [vite] ✓ built in 104ms
+18:54:11 [vite] ✓ built in 40ms
+18:54:11 [build] Rearranging server assets...
+
+ generating static routes
+18:54:12   ├─ /404.html (+8ms)
+18:54:12   ├─ /about/index.html (+6ms)
+18:54:12   ├─ /privacy/index.html (+5ms)
+18:54:12   ├─ /robots.txt (+1ms)
+18:54:12   ├─ /rss.xml (+1ms) (file not created, response body was empty)
+18:54:12   ├─ /sitemap.xml (+1ms)
+18:54:12   ├─ /social/home.0eb2b274470d.png (+503ms)
+18:54:12   ├─ /social/about.aeda5b7a70c6.png (+93ms)
+18:54:12   ├─ /social/support.e46432dcde49.png (+73ms)
+18:54:12   ├─ /social/privacy.b10b9bb85851.png (+43ms)
+18:54:12   ├─ /social/terms.dae704fa10d3.png (+48ms)
+18:54:12   ├─ /social/guides.fbc97153ea3b.png (+45ms)
+18:54:12   ├─ /social/guides/how-to-set-macro-goals.851fc9aa911f.png (+53ms)
+18:54:12   ├─ /support/index.html (+4ms)
+18:54:12   ├─ /terms/index.html (+3ms)
+18:54:12   ├─ /guides/index.html (+3ms)
+18:54:12   ├─ /guides/how-to-set-macro-goals/index.html (+7ms)
+18:54:12   ├─ /index.html (+5ms)
+18:54:12 ✓ Completed in 959ms.
+
+ generating optimized images
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_Jof0V.avif (reused cache entry) (+1ms) (1/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_2u9lgj.avif (reused cache entry) (+1ms) (2/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_Z10XaYu.avif (reused cache entry) (+1ms) (3/60)
+18:54:12   ▶ /_astro/app-scan-review.BPiqxuw5_Z2iuQ3v.webp (reused cache entry) (+1ms) (4/60)
+18:54:12   ▶ /_astro/app-add-food.DYK-DkjG_ZOTUmp.webp (reused cache entry) (+1ms) (5/60)
+18:54:12   ▶ /_astro/app-scan-details.jgvXt6XJ_EBGTC.webp (reused cache entry) (+1ms) (6/60)
+18:54:12   ▶ /_astro/app-history.C8Vq8ykN_Z1c7I1M.webp (reused cache entry) (+1ms) (7/60)
+18:54:12   ▶ /_astro/app-sharing-person.CCAEqpU__O1Jxp.webp (reused cache entry) (+1ms) (8/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_ZtsjLH.webp (reused cache entry) (+1ms) (9/60)
+18:54:12   ▶ /_astro/app-insights.Byp5KOla_1rkqOB.webp (reused cache entry) (+2ms) (10/60)
+18:54:12   ▶ /_astro/app-sharing.CGNY0Rvx_3xVE1.webp (reused cache entry) (+2ms) (11/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_2opppS.avif (reused cache entry) (+2ms) (12/60)
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_iiJiC.avif (reused cache entry) (+1ms) (13/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_1Edt88.avif (reused cache entry) (+1ms) (14/60)
+18:54:12   ▶ /_astro/app-scan-review.BPiqxuw5_Z2sfT2u.webp (reused cache entry) (+1ms) (15/60)
+18:54:12   ▶ /_astro/app-add-food.DYK-DkjG_1AeDYy.webp (reused cache entry) (+1ms) (16/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_K66W.avif (reused cache entry) (+1ms) (17/60)
+18:54:12   ▶ /_astro/app-scan-details.jgvXt6XJ_Zd3vrq.webp (reused cache entry) (+1ms) (18/60)
+18:54:12   ▶ /_astro/app-history.C8Vq8ykN_2vLo4f.webp (reused cache entry) (+1ms) (19/60)
+18:54:12   ▶ /_astro/app-sharing-person.CCAEqpU__Z2ne0iR.webp (reused cache entry) (+1ms) (20/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_1OBU81.webp (reused cache entry) (+1ms) (21/60)
+18:54:12   ▶ /_astro/app-sharing.CGNY0Rvx_Z1iJ53S.webp (reused cache entry) (+1ms) (22/60)
+18:54:12   ▶ /_astro/app-insights.Byp5KOla_Z1cH7Cm.webp (reused cache entry) (+1ms) (23/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1ba7Ai.avif (reused cache entry) (+1ms) (24/60)
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_Zm27af.avif (reused cache entry) (+1ms) (25/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_ZaaO1n.avif (reused cache entry) (+1ms) (26/60)
+18:54:12   ▶ /_astro/app-scan-review.BPiqxuw5_1yov6g.webp (reused cache entry) (+1ms) (27/60)
+18:54:12   ▶ /_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp (reused cache entry) (+1ms) (28/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_1JlXd4.avif (reused cache entry) (+1ms) (29/60)
+18:54:12   ▶ /_astro/app-sharing-person.CCAEqpU__1jzIXc.webp (reused cache entry) (+1ms) (30/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_15aS8q.webp (reused cache entry) (+1ms) (31/60)
+18:54:12   ▶ /_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp (reused cache entry) (+1ms) (32/60)
+18:54:12   ▶ /_astro/app-history.C8Vq8ykN_Z26SuBe.webp (reused cache entry) (+1ms) (33/60)
+18:54:12   ▶ /_astro/app-sharing.CGNY0Rvx_1fS9T8.webp (reused cache entry) (+1ms) (34/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1k9qCS.avif (reused cache entry) (+1ms) (35/60)
+18:54:12   ▶ /_astro/app-insights.Byp5KOla_28UhPV.webp (reused cache entry) (+1ms) (36/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_wGxPd.webp (reused cache entry) (+1ms) (37/60)
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_13Emz6.webp (reused cache entry) (+1ms) (38/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_Z1Ogjss.webp (reused cache entry) (+1ms) (39/60)
+18:54:12   ▶ /_astro/app-widgets.D065vgHg_ZLQ0oK.webp (reused cache entry) (+1ms) (40/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_Z1Om3ca.webp (reused cache entry) (+1ms) (41/60)
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_Z4SGXa.webp (reused cache entry) (+1ms) (42/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_1XtAGi.webp (reused cache entry) (+1ms) (43/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_nwvtD.webp (reused cache entry) (+0ms) (44/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_21cX96.webp (reused cache entry) (+1ms) (45/60)
+18:54:12   ▶ /_astro/app-widgets.D065vgHg_Z29927E.webp (reused cache entry) (+1ms) (46/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_Z25LMTn.webp (reused cache entry) (+0ms) (47/60)
+18:54:12   ▶ /_astro/app-calculator-profile.BP1P9_s-_ZJeyr2.webp (reused cache entry) (+0ms) (48/60)
+18:54:12   ▶ /_astro/app-calculator-review.CGV0z7gn_95iwM.webp (reused cache entry) (+0ms) (49/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_278nzK.webp (reused cache entry) (+1ms) (50/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_2h6rk7.webp (reused cache entry) (+1ms) (51/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_2bf1Dx.webp (reused cache entry) (+1ms) (52/60)
+18:54:12   ▶ /_astro/app-widgets.D065vgHg_ycn4U.webp (reused cache entry) (+1ms) (53/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_Zay3zt.webp (reused cache entry) (+1ms) (54/60)
+18:54:12   ▶ /_astro/app-calculator-activity.2UdhbwZm_2878hw.webp (reused cache entry) (+0ms) (55/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_ZysqzV.webp (reused cache entry) (+0ms) (56/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_2fAvLu.webp (reused cache entry) (+0ms) (57/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_qb51l.webp (reused cache entry) (+0ms) (58/60)
+18:54:12   ▶ /_astro/app-settings.DENtPOxW_Z2kXQwc.webp (reused cache entry) (+0ms) (59/60)
+18:54:12   ▶ /_astro/app-home.DWfpixHX_1qjXbo.webp (reused cache entry) (+0ms) (60/60)
+18:54:12 ✓ Completed in 7ms.
+
+18:54:12 [build] ✓ Completed in 1.13s.
+18:54:12 [build] 8 page(s) built in 1.48s
+18:54:12 [build] Complete!
+$ wrangler types && astro check && tsc --noEmit && astro build
+Fontconfig error: Cannot load default config file: File not found
+
+
+ ⛅️ wrangler 4.156.0 (update available 4.157.0)
+───────────────────────────────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+18:54:14 [content] Syncing content
+18:54:14 [content] Synced content
+18:54:14 [types] Generated 331ms
+18:54:14 [check] Getting diagnostics for Astro files in /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4...
+Result (45 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+
+18:54:17 [content] Syncing content
+18:54:17 [content] Synced content
+18:54:17 [types] Generated 283ms
+18:54:17 [build] output: "static"
+18:54:17 [build] mode: "static"
+18:54:17 [build] directory: /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4/dist/
+18:54:17 [build] Collecting build info...
+18:54:17 [build] ✓ Completed in 295ms.
+18:54:17 [build] Building static entrypoints...
+18:54:18 [vite] ✓ built in 117ms
+18:54:18 [vite] ✓ built in 27ms
+18:54:18 [build] Rearranging server assets...
+
+ generating static routes
+18:54:18   ├─ /404.html (+8ms)
+18:54:18   ├─ /about/index.html (+5ms)
+18:54:18   ├─ /privacy/index.html (+3ms)
+18:54:18   ├─ /robots.txt (+1ms)
+18:54:18   ├─ /rss.xml (+1ms) (file not created, response body was empty)
+18:54:18   ├─ /sitemap.xml (+1ms)
+18:54:18   ├─ /social/home.0eb2b274470d.png (+491ms)
+18:54:18   ├─ /social/about.aeda5b7a70c6.png (+49ms)
+18:54:18   ├─ /social/support.e46432dcde49.png (+69ms)
+18:54:18   ├─ /social/privacy.b10b9bb85851.png (+42ms)
+18:54:18   ├─ /social/terms.dae704fa10d3.png (+48ms)
+18:54:18   ├─ /social/guides.fbc97153ea3b.png (+45ms)
+18:54:18   ├─ /social/guides/how-to-set-macro-goals.851fc9aa911f.png (+50ms)
+18:54:18   ├─ /support/index.html (+4ms)
+18:54:18   ├─ /terms/index.html (+3ms)
+18:54:18   ├─ /guides/index.html (+3ms)
+18:54:18   ├─ /guides/how-to-set-macro-goals/index.html (+7ms)
+18:54:18   ├─ /index.html (+4ms)
+18:54:19 ✓ Completed in 877ms.
+
+ generating optimized images
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_Jof0V.avif (reused cache entry) (+1ms) (1/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_Z10XaYu.avif (reused cache entry) (+1ms) (2/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_2u9lgj.avif (reused cache entry) (+1ms) (3/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_2opppS.avif (reused cache entry) (+1ms) (4/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_ZtsjLH.webp (reused cache entry) (+1ms) (5/60)
+18:54:19   ▶ /_astro/app-scan-review.BPiqxuw5_Z2iuQ3v.webp (reused cache entry) (+1ms) (6/60)
+18:54:19   ▶ /_astro/app-add-food.DYK-DkjG_ZOTUmp.webp (reused cache entry) (+1ms) (7/60)
+18:54:19   ▶ /_astro/app-scan-details.jgvXt6XJ_EBGTC.webp (reused cache entry) (+1ms) (8/60)
+18:54:19   ▶ /_astro/app-history.C8Vq8ykN_Z1c7I1M.webp (reused cache entry) (+1ms) (9/60)
+18:54:19   ▶ /_astro/app-sharing.CGNY0Rvx_3xVE1.webp (reused cache entry) (+1ms) (10/60)
+18:54:19   ▶ /_astro/app-insights.Byp5KOla_1rkqOB.webp (reused cache entry) (+1ms) (11/60)
+18:54:19   ▶ /_astro/app-sharing-person.CCAEqpU__O1Jxp.webp (reused cache entry) (+1ms) (12/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_1OBU81.webp (reused cache entry) (+1ms) (13/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_1Edt88.avif (reused cache entry) (+1ms) (14/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_K66W.avif (reused cache entry) (+1ms) (15/60)
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_iiJiC.avif (reused cache entry) (+1ms) (16/60)
+18:54:19   ▶ /_astro/app-scan-details.jgvXt6XJ_Zd3vrq.webp (reused cache entry) (+1ms) (17/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1ba7Ai.avif (reused cache entry) (+1ms) (18/60)
+18:54:19   ▶ /_astro/app-add-food.DYK-DkjG_1AeDYy.webp (reused cache entry) (+1ms) (19/60)
+18:54:19   ▶ /_astro/app-history.C8Vq8ykN_2vLo4f.webp (reused cache entry) (+1ms) (20/60)
+18:54:19   ▶ /_astro/app-scan-review.BPiqxuw5_Z2sfT2u.webp (reused cache entry) (+1ms) (21/60)
+18:54:19   ▶ /_astro/app-sharing.CGNY0Rvx_Z1iJ53S.webp (reused cache entry) (+1ms) (22/60)
+18:54:19   ▶ /_astro/app-insights.Byp5KOla_Z1cH7Cm.webp (reused cache entry) (+1ms) (23/60)
+18:54:19   ▶ /_astro/app-sharing-person.CCAEqpU__Z2ne0iR.webp (reused cache entry) (+1ms) (24/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_ZaaO1n.avif (reused cache entry) (+1ms) (25/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_1JlXd4.avif (reused cache entry) (+1ms) (26/60)
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_Zm27af.avif (reused cache entry) (+1ms) (27/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_15aS8q.webp (reused cache entry) (+1ms) (28/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1k9qCS.avif (reused cache entry) (+1ms) (29/60)
+18:54:19   ▶ /_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp (reused cache entry) (+1ms) (30/60)
+18:54:19   ▶ /_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp (reused cache entry) (+1ms) (31/60)
+18:54:19   ▶ /_astro/app-history.C8Vq8ykN_Z26SuBe.webp (reused cache entry) (+1ms) (32/60)
+18:54:19   ▶ /_astro/app-sharing.CGNY0Rvx_1fS9T8.webp (reused cache entry) (+1ms) (33/60)
+18:54:19   ▶ /_astro/app-scan-review.BPiqxuw5_1yov6g.webp (reused cache entry) (+1ms) (34/60)
+18:54:19   ▶ /_astro/app-insights.Byp5KOla_28UhPV.webp (reused cache entry) (+2ms) (35/60)
+18:54:19   ▶ /_astro/app-sharing-person.CCAEqpU__1jzIXc.webp (reused cache entry) (+2ms) (36/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_Z1Ogjss.webp (reused cache entry) (+1ms) (37/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_wGxPd.webp (reused cache entry) (+1ms) (38/60)
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_13Emz6.webp (reused cache entry) (+1ms) (39/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_Z1Om3ca.webp (reused cache entry) (+1ms) (40/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_21cX96.webp (reused cache entry) (+1ms) (41/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_nwvtD.webp (reused cache entry) (+0ms) (42/60)
+18:54:19   ▶ /_astro/app-widgets.D065vgHg_ZLQ0oK.webp (reused cache entry) (+1ms) (43/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_1XtAGi.webp (reused cache entry) (+0ms) (44/60)
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_Z4SGXa.webp (reused cache entry) (+0ms) (45/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_Z25LMTn.webp (reused cache entry) (+1ms) (46/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_2h6rk7.webp (reused cache entry) (+0ms) (47/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_278nzK.webp (reused cache entry) (+0ms) (48/60)
+18:54:19   ▶ /_astro/app-widgets.D065vgHg_Z29927E.webp (reused cache entry) (+0ms) (49/60)
+18:54:19   ▶ /_astro/app-calculator-profile.BP1P9_s-_ZJeyr2.webp (reused cache entry) (+1ms) (50/60)
+18:54:19   ▶ /_astro/app-calculator-review.CGV0z7gn_95iwM.webp (reused cache entry) (+1ms) (51/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_Zay3zt.webp (reused cache entry) (+0ms) (52/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_2bf1Dx.webp (reused cache entry) (+1ms) (53/60)
+18:54:19   ▶ /_astro/app-calculator-activity.2UdhbwZm_2878hw.webp (reused cache entry) (+0ms) (54/60)
+18:54:19   ▶ /_astro/app-widgets.D065vgHg_ycn4U.webp (reused cache entry) (+1ms) (55/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_2fAvLu.webp (reused cache entry) (+1ms) (56/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_ZysqzV.webp (reused cache entry) (+1ms) (57/60)
+18:54:19   ▶ /_astro/app-settings.DENtPOxW_Z2kXQwc.webp (reused cache entry) (+0ms) (58/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_qb51l.webp (reused cache entry) (+0ms) (59/60)
+18:54:19   ▶ /_astro/app-home.DWfpixHX_1qjXbo.webp (reused cache entry) (+0ms) (60/60)
+18:54:19 ✓ Completed in 8ms.
+
+18:54:19 [build] ✓ Completed in 1.05s.
+18:54:19 [build] 8 page(s) built in 1.35s
+18:54:19 [build] Complete!
+$ wrangler types && astro check && tsc --noEmit && astro build
+Fontconfig error: Cannot load default config file: File not found
+
+
+ ⛅️ wrangler 4.156.0 (update available 4.157.0)
+───────────────────────────────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+18:54:20 [content] Syncing content
+18:54:20 [content] Synced content
+18:54:20 [types] Generated 252ms
+18:54:20 [check] Getting diagnostics for Astro files in /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4...
+Result (45 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+
+18:54:23 [content] Syncing content
+18:54:23 [content] Synced content
+18:54:23 [types] Generated 284ms
+18:54:23 [build] output: "static"
+18:54:23 [build] mode: "static"
+18:54:23 [build] directory: /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4/dist/
+18:54:23 [build] Collecting build info...
+18:54:23 [build] ✓ Completed in 296ms.
+18:54:23 [build] Building static entrypoints...
+18:54:23 [vite] ✓ built in 100ms
+18:54:23 [vite] ✓ built in 28ms
+18:54:23 [build] Rearranging server assets...
+
+ generating static routes
+18:54:24   ├─ /404.html (+7ms)
+18:54:24   ├─ /about/index.html (+5ms)
+18:54:24   ├─ /privacy/index.html (+4ms)
+18:54:24   ├─ /robots.txt (+1ms)
+18:54:24   ├─ /rss.xml (+1ms) (file not created, response body was empty)
+18:54:24   ├─ /sitemap.xml (+1ms)
+18:54:24   ├─ /social/home.02439607d9a1.png (+480ms)
+18:54:24   ├─ /social/about.aeda5b7a70c6.png (+49ms)
+18:54:24   ├─ /social/support.e46432dcde49.png (+71ms)
+18:54:24   ├─ /social/privacy.b10b9bb85851.png (+44ms)
+18:54:24   ├─ /social/terms.dae704fa10d3.png (+47ms)
+18:54:24   ├─ /social/guides.fbc97153ea3b.png (+47ms)
+18:54:24   ├─ /social/guides/how-to-set-macro-goals.851fc9aa911f.png (+51ms)
+18:54:24   ├─ /support/index.html (+7ms)
+18:54:24   ├─ /terms/index.html (+3ms)
+18:54:24   ├─ /guides/index.html (+3ms)
+18:54:24   ├─ /guides/how-to-set-macro-goals/index.html (+9ms)
+18:54:24   ├─ /index.html (+4ms)
+18:54:24 ✓ Completed in 894ms.
+
+ generating optimized images
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_2u9lgj.avif (reused cache entry) (+1ms) (1/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_Jof0V.avif (reused cache entry) (+1ms) (2/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_Z10XaYu.avif (reused cache entry) (+1ms) (3/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_ZtsjLH.webp (reused cache entry) (+1ms) (4/60)
+18:54:24   ▶ /_astro/app-scan-review.BPiqxuw5_Z2iuQ3v.webp (reused cache entry) (+1ms) (5/60)
+18:54:24   ▶ /_astro/app-scan-details.jgvXt6XJ_EBGTC.webp (reused cache entry) (+1ms) (6/60)
+18:54:24   ▶ /_astro/app-history.C8Vq8ykN_Z1c7I1M.webp (reused cache entry) (+1ms) (7/60)
+18:54:24   ▶ /_astro/app-insights.Byp5KOla_1rkqOB.webp (reused cache entry) (+1ms) (8/60)
+18:54:24   ▶ /_astro/app-add-food.DYK-DkjG_ZOTUmp.webp (reused cache entry) (+1ms) (9/60)
+18:54:24   ▶ /_astro/app-sharing.CGNY0Rvx_3xVE1.webp (reused cache entry) (+1ms) (10/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_2opppS.avif (reused cache entry) (+1ms) (11/60)
+18:54:24   ▶ /_astro/app-sharing-person.CCAEqpU__O1Jxp.webp (reused cache entry) (+1ms) (12/60)
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_1Edt88.avif (reused cache entry) (+1ms) (13/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_iiJiC.avif (reused cache entry) (+1ms) (14/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_K66W.avif (reused cache entry) (+1ms) (15/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_1OBU81.webp (reused cache entry) (+1ms) (16/60)
+18:54:24   ▶ /_astro/app-scan-review.BPiqxuw5_Z2sfT2u.webp (reused cache entry) (+1ms) (17/60)
+18:54:24   ▶ /_astro/app-scan-details.jgvXt6XJ_Zd3vrq.webp (reused cache entry) (+1ms) (18/60)
+18:54:24   ▶ /_astro/app-history.C8Vq8ykN_2vLo4f.webp (reused cache entry) (+1ms) (19/60)
+18:54:24   ▶ /_astro/app-insights.Byp5KOla_Z1cH7Cm.webp (reused cache entry) (+1ms) (20/60)
+18:54:24   ▶ /_astro/app-add-food.DYK-DkjG_1AeDYy.webp (reused cache entry) (+1ms) (21/60)
+18:54:24   ▶ /_astro/app-sharing.CGNY0Rvx_Z1iJ53S.webp (reused cache entry) (+1ms) (22/60)
+18:54:24   ▶ /_astro/app-sharing-person.CCAEqpU__Z2ne0iR.webp (reused cache entry) (+1ms) (23/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1ba7Ai.avif (reused cache entry) (+1ms) (24/60)
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_ZaaO1n.avif (reused cache entry) (+1ms) (25/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_Zm27af.avif (reused cache entry) (+1ms) (26/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_1JlXd4.avif (reused cache entry) (+1ms) (27/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_15aS8q.webp (reused cache entry) (+1ms) (28/60)
+18:54:24   ▶ /_astro/app-scan-review.BPiqxuw5_1yov6g.webp (reused cache entry) (+1ms) (29/60)
+18:54:24   ▶ /_astro/app-history.C8Vq8ykN_Z26SuBe.webp (reused cache entry) (+1ms) (30/60)
+18:54:24   ▶ /_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp (reused cache entry) (+1ms) (31/60)
+18:54:24   ▶ /_astro/app-insights.Byp5KOla_28UhPV.webp (reused cache entry) (+1ms) (32/60)
+18:54:24   ▶ /_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp (reused cache entry) (+1ms) (33/60)
+18:54:24   ▶ /_astro/app-sharing.CGNY0Rvx_1fS9T8.webp (reused cache entry) (+1ms) (34/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1k9qCS.avif (reused cache entry) (+1ms) (35/60)
+18:54:24   ▶ /_astro/app-sharing-person.CCAEqpU__1jzIXc.webp (reused cache entry) (+1ms) (36/60)
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_wGxPd.webp (reused cache entry) (+1ms) (37/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_13Emz6.webp (reused cache entry) (+1ms) (38/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_Z1Ogjss.webp (reused cache entry) (+1ms) (39/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_Z1Om3ca.webp (reused cache entry) (+1ms) (40/60)
+18:54:24   ▶ /_astro/app-widgets.D065vgHg_ZLQ0oK.webp (reused cache entry) (+1ms) (41/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_21cX96.webp (reused cache entry) (+0ms) (42/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_Z4SGXa.webp (reused cache entry) (+0ms) (43/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_nwvtD.webp (reused cache entry) (+0ms) (44/60)
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_1XtAGi.webp (reused cache entry) (+1ms) (45/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_Z25LMTn.webp (reused cache entry) (+1ms) (46/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_2h6rk7.webp (reused cache entry) (+0ms) (47/60)
+18:54:24   ▶ /_astro/app-calculator-profile.BP1P9_s-_ZJeyr2.webp (reused cache entry) (+0ms) (48/60)
+18:54:24   ▶ /_astro/app-widgets.D065vgHg_Z29927E.webp (reused cache entry) (+0ms) (49/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_278nzK.webp (reused cache entry) (+0ms) (50/60)
+18:54:24   ▶ /_astro/app-calculator-review.CGV0z7gn_95iwM.webp (reused cache entry) (+1ms) (51/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_2bf1Dx.webp (reused cache entry) (+1ms) (52/60)
+18:54:24   ▶ /_astro/app-calculator-activity.2UdhbwZm_2878hw.webp (reused cache entry) (+1ms) (53/60)
+18:54:24   ▶ /_astro/app-widgets.D065vgHg_ycn4U.webp (reused cache entry) (+1ms) (54/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_Zay3zt.webp (reused cache entry) (+1ms) (55/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_ZysqzV.webp (reused cache entry) (+0ms) (56/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_2fAvLu.webp (reused cache entry) (+0ms) (57/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_qb51l.webp (reused cache entry) (+0ms) (58/60)
+18:54:24   ▶ /_astro/app-settings.DENtPOxW_Z2kXQwc.webp (reused cache entry) (+0ms) (59/60)
+18:54:24   ▶ /_astro/app-home.DWfpixHX_1qjXbo.webp (reused cache entry) (+0ms) (60/60)
+18:54:24 ✓ Completed in 6ms.
+
+18:54:24 [build] ✓ Completed in 1.05s.
+18:54:24 [build] 8 page(s) built in 1.35s
+18:54:24 [build] Complete!
+$ wrangler types && astro check && tsc --noEmit && astro build
+Fontconfig error: Cannot load default config file: File not found
+
+
+ ⛅️ wrangler 4.156.0 (update available 4.157.0)
+───────────────────────────────────────────────
+Generating project types...
+
+interface __BaseEnv_Env {
+	SUPPORT_DB: D1Database;
+	SUPPORT_LIMITER: RateLimit;
+	WAITLIST_LIMITER: RateLimit;
+	ASSETS: Fetcher;
+}
+declare namespace Cloudflare {
+	interface GlobalProps {
+		mainModule: typeof import("./src/worker");
+	}
+	interface Env extends __BaseEnv_Env {}
+}
+interface Env extends __BaseEnv_Env {}
+
+Generating runtime types...
+
+Runtime types generated.
+
+
+✨ Types written to worker-configuration.d.ts
+
+📖 Read about runtime types
+https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+
+18:54:26 [content] Syncing content
+18:54:26 [content] Synced content
+18:54:26 [types] Generated 287ms
+18:54:26 [check] Getting diagnostics for Astro files in /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4...
+Result (45 files):
+- 0 errors
+- 0 warnings
+- 0 hints
+
+18:54:29 [content] Syncing content
+18:54:29 [content] Synced content
+18:54:29 [types] Generated 272ms
+18:54:29 [build] output: "static"
+18:54:29 [build] mode: "static"
+18:54:29 [build] directory: /private/var/folders/28/mq07hq557qj_f7ngqk6cwgp40000gn/T/macros-og-gGAYT4/dist/
+18:54:29 [build] Collecting build info...
+18:54:29 [build] ✓ Completed in 284ms.
+18:54:29 [build] Building static entrypoints...
+18:54:29 [vite] ✓ built in 91ms
+18:54:29 [vite] ✓ built in 26ms
+18:54:29 [build] Rearranging server assets...
+
+ generating static routes
+18:54:29   ├─ /404.html (+8ms)
+18:54:29   ├─ /about/index.html (+5ms)
+18:54:29   ├─ /privacy/index.html (+4ms)
+18:54:29   ├─ /robots.txt (+1ms)
+18:54:29   ├─ /rss.xml (+1ms)
+18:54:29   ├─ /sitemap.xml (+1ms)
+18:54:29   ├─ /social/home.0eb2b274470d.png (+479ms)
+18:54:30   ├─ /social/about.aeda5b7a70c6.png (+50ms)
+18:54:30   ├─ /social/support.e46432dcde49.png (+71ms)
+18:54:30   ├─ /social/privacy.b10b9bb85851.png (+45ms)
+18:54:30   ├─ /social/terms.dae704fa10d3.png (+51ms)
+18:54:30   ├─ /social/guides.fbc97153ea3b.png (+46ms)
+18:54:30   ├─ /social/blog.f68f92d1ffca.png (+51ms)
+18:54:30   ├─ /social/guides/how-to-set-macro-goals.851fc9aa911f.png (+54ms)
+18:54:30   ├─ /social/blog/macros-launch.6dc9e2a9fdf2.png (+54ms)
+18:54:30   ├─ /support/index.html (+5ms)
+18:54:30   ├─ /terms/index.html (+3ms)
+18:54:30   ├─ /guides/index.html (+3ms)
+18:54:30   ├─ /guides/how-to-set-macro-goals/index.html (+8ms)
+18:54:30   ├─ /blog/index.html (+3ms)
+18:54:30   ├─ /blog/macros-launch/index.html (+7ms)
+18:54:30   ├─ /index.html (+18ms)
+18:54:30 ✓ Completed in 1.02s.
+
+ generating optimized images
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_Jof0V.avif (reused cache entry) (+2ms) (1/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_2u9lgj.avif (reused cache entry) (+2ms) (2/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_ZtsjLH.webp (reused cache entry) (+2ms) (3/60)
+18:54:30   ▶ /_astro/app-history.C8Vq8ykN_Z1c7I1M.webp (reused cache entry) (+2ms) (4/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_Z10XaYu.avif (reused cache entry) (+2ms) (5/60)
+18:54:30   ▶ /_astro/app-add-food.DYK-DkjG_ZOTUmp.webp (reused cache entry) (+2ms) (6/60)
+18:54:30   ▶ /_astro/app-scan-details.jgvXt6XJ_EBGTC.webp (reused cache entry) (+2ms) (7/60)
+18:54:30   ▶ /_astro/app-scan-review.BPiqxuw5_Z2iuQ3v.webp (reused cache entry) (+2ms) (8/60)
+18:54:30   ▶ /_astro/app-sharing.CGNY0Rvx_3xVE1.webp (reused cache entry) (+2ms) (9/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_2opppS.avif (reused cache entry) (+2ms) (10/60)
+18:54:30   ▶ /_astro/app-insights.Byp5KOla_1rkqOB.webp (reused cache entry) (+2ms) (11/60)
+18:54:30   ▶ /_astro/app-sharing-person.CCAEqpU__O1Jxp.webp (reused cache entry) (+2ms) (12/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_1Edt88.avif (reused cache entry) (+1ms) (13/60)
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_iiJiC.avif (reused cache entry) (+1ms) (14/60)
+18:54:30   ▶ /_astro/app-history.C8Vq8ykN_2vLo4f.webp (reused cache entry) (+1ms) (15/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_1OBU81.webp (reused cache entry) (+1ms) (16/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_K66W.avif (reused cache entry) (+1ms) (17/60)
+18:54:30   ▶ /_astro/app-scan-details.jgvXt6XJ_Zd3vrq.webp (reused cache entry) (+1ms) (18/60)
+18:54:30   ▶ /_astro/app-scan-review.BPiqxuw5_Z2sfT2u.webp (reused cache entry) (+1ms) (19/60)
+18:54:30   ▶ /_astro/app-add-food.DYK-DkjG_1AeDYy.webp (reused cache entry) (+1ms) (20/60)
+18:54:30   ▶ /_astro/app-sharing.CGNY0Rvx_Z1iJ53S.webp (reused cache entry) (+1ms) (21/60)
+18:54:30   ▶ /_astro/app-insights.Byp5KOla_Z1cH7Cm.webp (reused cache entry) (+1ms) (22/60)
+18:54:30   ▶ /_astro/app-sharing-person.CCAEqpU__Z2ne0iR.webp (reused cache entry) (+1ms) (23/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1ba7Ai.avif (reused cache entry) (+1ms) (24/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_ZaaO1n.avif (reused cache entry) (+2ms) (25/60)
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_Zm27af.avif (reused cache entry) (+2ms) (26/60)
+18:54:30   ▶ /_astro/app-history.C8Vq8ykN_Z26SuBe.webp (reused cache entry) (+3ms) (27/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_15aS8q.webp (reused cache entry) (+3ms) (28/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_1JlXd4.avif (reused cache entry) (+3ms) (29/60)
+18:54:30   ▶ /_astro/app-scan-details.jgvXt6XJ_ZWUvcf.webp (reused cache entry) (+3ms) (30/60)
+18:54:30   ▶ /_astro/app-insights.Byp5KOla_28UhPV.webp (reused cache entry) (+3ms) (31/60)
+18:54:30   ▶ /_astro/app-scan-review.BPiqxuw5_1yov6g.webp (reused cache entry) (+3ms) (32/60)
+18:54:30   ▶ /_astro/app-sharing.CGNY0Rvx_1fS9T8.webp (reused cache entry) (+3ms) (33/60)
+18:54:30   ▶ /_astro/app-add-food.DYK-DkjG_Z2vi6Bq.webp (reused cache entry) (+3ms) (34/60)
+18:54:30   ▶ /_astro/app-sharing-person.CCAEqpU__1jzIXc.webp (reused cache entry) (+3ms) (35/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_Z1k9qCS.avif (reused cache entry) (+3ms) (36/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_wGxPd.webp (reused cache entry) (+1ms) (37/60)
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_13Emz6.webp (reused cache entry) (+1ms) (38/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_Z1Om3ca.webp (reused cache entry) (+1ms) (39/60)
+18:54:30   ▶ /_astro/app-widgets.D065vgHg_ZLQ0oK.webp (reused cache entry) (+1ms) (40/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_Z1Ogjss.webp (reused cache entry) (+1ms) (41/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_21cX96.webp (reused cache entry) (+0ms) (42/60)
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_Z4SGXa.webp (reused cache entry) (+0ms) (43/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_1XtAGi.webp (reused cache entry) (+1ms) (44/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_Z25LMTn.webp (reused cache entry) (+1ms) (45/60)
+18:54:30   ▶ /_astro/app-widgets.D065vgHg_Z29927E.webp (reused cache entry) (+0ms) (46/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_nwvtD.webp (reused cache entry) (+0ms) (47/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_2h6rk7.webp (reused cache entry) (+0ms) (48/60)
+18:54:30   ▶ /_astro/app-calculator-profile.BP1P9_s-_ZJeyr2.webp (reused cache entry) (+0ms) (49/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_278nzK.webp (reused cache entry) (+0ms) (50/60)
+18:54:30   ▶ /_astro/app-calculator-review.CGV0z7gn_95iwM.webp (reused cache entry) (+0ms) (51/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_2bf1Dx.webp (reused cache entry) (+0ms) (52/60)
+18:54:30   ▶ /_astro/app-widgets.D065vgHg_ycn4U.webp (reused cache entry) (+0ms) (53/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_Zay3zt.webp (reused cache entry) (+0ms) (54/60)
+18:54:30   ▶ /_astro/app-calculator-activity.2UdhbwZm_2878hw.webp (reused cache entry) (+1ms) (55/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_ZysqzV.webp (reused cache entry) (+0ms) (56/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_2fAvLu.webp (reused cache entry) (+0ms) (57/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_qb51l.webp (reused cache entry) (+0ms) (58/60)
+18:54:30   ▶ /_astro/app-settings.DENtPOxW_Z2kXQwc.webp (reused cache entry) (+0ms) (59/60)
+18:54:30   ▶ /_astro/app-home.DWfpixHX_1qjXbo.webp (reused cache entry) (+0ms) (60/60)
+18:54:30 ✓ Completed in 9ms.
+
+18:54:30 [build] ✓ Completed in 1.17s.
+18:54:30 [build] 10 page(s) built in 1.46s
+18:54:30 [build] Complete!
+$ wrangler types && astro check && tsc --noEmit && astro build
+Fontconfig error: Cannot load default config file: File not found
