@@ -43,3 +43,16 @@ All observed devices below were Shutdown on iOS 27.0. Rediscover before use.
 The 2026-10-26 probe activated the catalog on Xcode 26.4 (17E192) with iOS 27.0. It reported 18/18 entitlement tests, but only 11/14 StoreKit tests plus a separate Ask to Buy timeout. iOS 26.4 rejected activation with SKInternalErrorDomain Code=3; Xcode 27.0 hung that older probe. These are dated results, not a blanket current pass or prohibition.
 
 On 2026-11-05, Xcode 27.0 with the iPad runner on iOS 27.0 activated the catalog and ran all 15 PurchaseStoreStoreKitTests twice, using the serial [test command](validation.md) with `-only-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests`. Each run had one different failure: first `testAskToBuyApprovalUnlocksThroughListener` exceeded its time allowance, then `testLegacyGrantsLifetime` saw no entitlement right after `buyProduct` (`proSource` was nil). Both passed in the other run, so treat them as timing-sensitive tests, not proof of an app defect. Xcode 27.0 did not hang. Simulator results cannot close sandbox purchase, second-device restore, Family Sharing, or legacy real-account checks. See [active plans](../plans/README.md). No payment tests or device changes were made for this runbook.
+
+Follow-up on 2026-11-05: [StoreKit timing evidence](../evidence/storekit-test-timing/README.md)
+reproduced legacy publication timing (5/10 independent baseline failures) and
+verified cold legacy refresh works once StoreKit publishes the purchase. Test-only
+changes observe legacy delivery, keep synchronous Ask to Buy IPC off the main
+actor, sync reset/simulated mutations, and drain unfinished transactions after
+observed changes. Ten consecutive independent class runs passed 15/15 each;
+the remaining suite passed 262/262. The original Ask to Buy timeout was not
+reproduced or localized, so its blocking site remains unproven. Same-process
+method repetition still exposes intro-eligibility cache failures; use independent
+runs or `-test-repetition-relaunch-enabled YES`, not retries that mask failures.
+Use `-collect-test-diagnostics never` to avoid the earlier 600-second diagnostic
+collection stall. The iPad ended Shutdown and its lock was released.

@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-05 StoreKit test timing
+
+Stabilized StoreKit test delivery/reset ordering, moved Ask to Buy test IPC off the main actor, and retained cold legacy-refresh coverage without changing app entitlement behavior. Legacy publication timing reproduced; the historical Ask to Buy timeout's blocking site remains unproven. Validation: ten independent 15/15 StoreKit passes, 262/262 remaining tests, formatting, build, and catalog checks pass. See [evidence and same-process stress limitation](docs/evidence/storekit-test-timing/README.md).
+
 ## 2026-11-05 Apple configuration paths
 
 Moved the three Info plists and StoreKit catalog to `config/apple/`, updating Xcode, the shared scheme, validation tooling, and active docs without changing configuration contents or source. Validation: build, plist/settings, StoreKit config, lint, formatting, links, bundle parity and 262 tests pass; Xcode 26.4 StoreKit tests execute zero tests because the iPad destination is unavailable, reproduced on unchanged `a12f579`.
