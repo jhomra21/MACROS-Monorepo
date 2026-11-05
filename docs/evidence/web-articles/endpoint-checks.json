@@ -1,0 +1,70 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "title": "MACROS: Calorie Counter & Food Diary for iPhone",
+      "description": "Track calories and macros on iPhone with MACROS, a food diary with barcode and nutrition label scanners. Log meals on your device with no account required.",
+      "types": [
+        "MobileApplication",
+        "Organization",
+        "WebSite",
+        "FAQPage"
+      ]
+    },
+    {
+      "path": "/about/",
+      "title": "About MACROS | No-account calorie and macro tracker",
+      "description": "Meet MACROS, a calorie counter and macro tracker for iPhone. Keep a food diary on your device, scan barcodes and nutrition labels, and start with no account.",
+      "types": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/support/",
+      "title": "MACROS support | Food diary and macro tracker help",
+      "description": "Get help with the MACROS calorie counter and food diary for iPhone. Contact the developer about barcode scans, nutrition labels, daily goals, or purchases.",
+      "types": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/privacy/",
+      "title": "MACROS privacy | Your iPhone food diary and data",
+      "description": "Learn how MACROS stores your food diary on iPhone and handles food search, barcode scans, optional sharing, Apple Health, purchases, and website form data.",
+      "types": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/terms/",
+      "title": "MACROS terms | Calorie counter and food diary",
+      "description": "Read the terms for the MACROS calorie counter and food diary for iPhone, including optional Pro purchases, subscriptions, sharing, and nutrition information.",
+      "types": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/guides/",
+      "title": "Macro tracking guides for iPhone | MACROS",
+      "description": "Set protein, carb, and fat goals in MACROS for iPhone. Read the calculator math, check the cited nutrition ranges, and follow the steps to save your targets.",
+      "types": [
+        "BreadcrumbList"
+      ]
+    },
+    {
+      "path": "/guides/how-to-set-macro-goals/",
+      "title": "How to set protein, carb, and fat goals",
+      "description": "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets.",
+      "types": [
+        "BreadcrumbList",
+        "Article"
+      ]
+    }
+  ],
+  "sitemapURLs": 7,
+  "sitemapContentType": "application/xml; charset=utf-8",
+  "robotsContentType": "text/plain; charset=utf-8",
+  "hiddenBlogAndFeed": "404 + noindex",
+  "support": "303 to /support/#support-status-submitted",
+  "waitlist": "POST-only, noindex, honeypot, no database write"
+}

@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
@@ -35,6 +34,12 @@ const schema = [
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
+		{/* Make the transition opt-in available before external stylesheets load. */}
+		<style is:inline>
+			@media (prefers-reduced-motion: no-preference) {
+				@view-transition { navigation: auto; }
+			}
+		</style>
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
 		<meta name="color-scheme" content="light dark" />
 		<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
@@ -65,7 +70,6 @@ const schema = [
 		<meta name="twitter:image:alt" content={image.alt} />
 		{posts.length > 0 && <link rel="alternate" type="application/rss+xml" title="MACROS blog" href={absoluteURL('/rss.xml')} />}
 		{schema.length > 0 && <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': schema }).replace(/</g, '\\u003c')} />}
-		<ClientRouter />
 	</head>
 	<body>
 		<a class="skip-link" href="#main">Skip to content</a>
@@ -115,7 +119,7 @@ const schema = [
 				}
 			}
 
-			document.addEventListener('astro:page-load', initReveal);
+			initReveal();
 		</script>
 	</body>
 </html>

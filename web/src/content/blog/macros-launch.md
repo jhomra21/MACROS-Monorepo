@@ -14,10 +14,10 @@ MACROS 1.0 is my calorie counter and food diary for iPhone. I built it so you ca
 
 Search for food, scan a barcode or nutrition label, or enter a meal yourself. Review the serving size and nutrition values before you log it. Your food diary stays on your device. Sharing is optional.
 
-## Set goals you understand
+## Check how the calculator sets goals
 
 Read [how to set protein, carb, and fat goals](/guides/how-to-set-macro-goals/) for the calculator's math and the difference between its presets and adult nutrition reference ranges.
 
-Core logging and scanning are free. MACROS Pro adds longer Insights ranges, sharing invites, and other optional tools. See [the feature and pricing details](/#plans), [privacy policy](/privacy/), or [contact me for app help](/support/).
+Core logging and scanning are free. MACROS Pro adds longer Insights ranges, sharing invites, and other optional tools. See [the feature and pricing details](/#plans) and the [privacy policy](/privacy/). For app help, [contact me](/support/).
 
 <!-- Publish only after 1.0 is approved. Set actual published/updated dates and draft: false, then rebuild. -->

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "app-home.png",
+    "format": "webp",
+    "width": 640,
+    "bytes": 40452
+  },
+  {
+    "file": "app-home.png",
+    "format": "avif",
+    "width": 640,
+    "bytes": 27460
+  },
+  {
+    "file": "app-calculator-review.png",
+    "format": "webp",
+    "width": 640,
+    "bytes": 25888
+  },
+  {
+    "file": "app-calculator-review.png",
+    "format": "avif",
+    "width": 640,
+    "bytes": 16094
+  }
+]

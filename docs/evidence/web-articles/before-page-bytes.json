@@ -1,0 +1,30 @@
+[
+  {
+    "name": "home",
+    "width": 390,
+    "transfer": 169006,
+    "imageTransfer": 116150,
+    "fontRequests": 0
+  },
+  {
+    "name": "home",
+    "width": 1440,
+    "transfer": 171816,
+    "imageTransfer": 118960,
+    "fontRequests": 0
+  },
+  {
+    "name": "guide",
+    "width": 390,
+    "transfer": 49323,
+    "imageTransfer": 30428,
+    "fontRequests": 0
+  },
+  {
+    "name": "guide",
+    "width": 1440,
+    "transfer": 31421,
+    "imageTransfer": 12526,
+    "fontRequests": 0
+  }
+]

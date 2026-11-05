@@ -32,11 +32,11 @@ export const pages = {
 	},
 	'/guides/': {
 		title: 'Macro tracking guides for iPhone | MACROS',
-		description: 'Learn how to set protein, carb, and fat goals with plain-language macro tracking guides. See the math, primary sources, and how to enter targets in MACROS.',
+		description: 'Set protein, carb, and fat goals in MACROS for iPhone. Read the calculator math, check the cited nutrition ranges, and follow the steps to save your targets.',
 	},
 	'/blog/': {
 		title: 'MACROS blog | Calorie counter news and updates',
-		description: 'Read updates from the developer of MACROS, the no-account calorie counter and food diary for iPhone, with barcode scanning and nutrition label scanning.',
+		description: 'Read MACROS release news from its developer. Check what changed in the iPhone calorie counter and food diary, and find links to pricing, privacy, and help.',
 	},
 } as const;
 

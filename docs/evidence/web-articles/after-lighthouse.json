@@ -1,0 +1,632 @@
+[
+  {
+    "name": "home",
+    "mode": "mobile",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": {
+        "value": 756.2624000000001,
+        "display": "0.8 s"
+      },
+      "largest-contentful-paint": {
+        "value": 756.2624000000001,
+        "display": "0.8 s"
+      },
+      "total-blocking-time": {
+        "value": 0,
+        "display": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "value": 0,
+        "display": "0"
+      },
+      "speed-index": {
+        "value": 920.9681759833907,
+        "display": "0.9 s"
+      }
+    },
+    "bytes": {
+      "inlineJavaScript": 536,
+      "transfer": 84143,
+      "javascript": 102537,
+      "javascriptTransfer": 32477
+    },
+    "failures": [
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/json.DQD7ikNB.js",
+              "totalBytes": 25307,
+              "wastedBytes": 21517,
+              "wastedPercent": 85.02381137395513
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 21517,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "37DB1C39C066FD6DDE6D76497F7DA1EB": {
+                    "url": "http://127.0.0.1:8797/",
+                    "navStartToEndTime": 11,
+                    "transferSize": 7673,
+                    "isLongest": true,
+                    "children": {
+                      "42725.3": {
+                        "url": "http://127.0.0.1:8797/_astro/WaitlistForm.astro_astro_type_script_index_0_lang.BOt3ldoc.js",
+                        "navStartToEndTime": 35,
+                        "transferSize": 6938,
+                        "isLongest": true,
+                        "children": {
+                          "42725.20": {
+                            "url": "http://127.0.0.1:8797/_astro/json.DQD7ikNB.js",
+                            "navStartToEndTime": 41,
+                            "transferSize": 25539,
+                            "isLongest": true,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "42725.2": {
+                        "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+                        "navStartToEndTime": 15,
+                        "transferSize": 6969,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 41
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "No origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+              "totalBytes": 6969,
+              "wastedMs": 153
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "home",
+    "mode": "desktop",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": {
+        "value": 209.3179,
+        "display": "0.2 s"
+      },
+      "largest-contentful-paint": {
+        "value": 209.3179,
+        "display": "0.2 s"
+      },
+      "total-blocking-time": {
+        "value": 0,
+        "display": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "value": 0,
+        "display": "0"
+      },
+      "speed-index": {
+        "value": 356.9167096631762,
+        "display": "0.4 s"
+      }
+    },
+    "bytes": {
+      "inlineJavaScript": 536,
+      "transfer": 118632,
+      "javascript": 102537,
+      "javascriptTransfer": 32469
+    },
+    "failures": [
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/json.DQD7ikNB.js",
+              "totalBytes": 25299,
+              "wastedBytes": 21510,
+              "wastedPercent": 85.02381137395513
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 21510,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "2724C39B2D751FB1B9D081F869F387A4": {
+                    "url": "http://127.0.0.1:8797/",
+                    "navStartToEndTime": 10,
+                    "transferSize": 7673,
+                    "isLongest": true,
+                    "children": {
+                      "42738.3": {
+                        "url": "http://127.0.0.1:8797/_astro/WaitlistForm.astro_astro_type_script_index_0_lang.BOt3ldoc.js",
+                        "navStartToEndTime": 12,
+                        "transferSize": 6938,
+                        "isLongest": true,
+                        "children": {
+                          "42738.20": {
+                            "url": "http://127.0.0.1:8797/_astro/json.DQD7ikNB.js",
+                            "navStartToEndTime": 33,
+                            "transferSize": 25531,
+                            "isLongest": true,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "42738.2": {
+                        "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+                        "navStartToEndTime": 10,
+                        "transferSize": 6969,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 33
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "No origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+              "totalBytes": 6969
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "guide",
+    "mode": "mobile",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": {
+        "value": 755.4063000000001,
+        "display": "0.8 s"
+      },
+      "largest-contentful-paint": {
+        "value": 755.4063000000001,
+        "display": "0.8 s"
+      },
+      "total-blocking-time": {
+        "value": 0,
+        "display": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "value": 0,
+        "display": "0"
+      },
+      "speed-index": {
+        "value": 755.4063000000001,
+        "display": "0.8 s"
+      }
+    },
+    "bytes": {
+      "inlineJavaScript": 536,
+      "transfer": 16446,
+      "javascript": 0,
+      "javascriptTransfer": 0
+    },
+    "failures": [
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "A00D84F0C7D07D9DCB8BFBB0973C9E51": {
+                    "url": "http://127.0.0.1:8797/guides/how-to-set-macro-goals/",
+                    "navStartToEndTime": 9,
+                    "transferSize": 7872,
+                    "isLongest": true,
+                    "children": {
+                      "42754.2": {
+                        "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+                        "navStartToEndTime": 12,
+                        "transferSize": 6969,
+                        "isLongest": true,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 12
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "No origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+              "totalBytes": 6969,
+              "wastedMs": 153
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "guide",
+    "mode": "desktop",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": {
+        "value": 206.31380000000001,
+        "display": "0.2 s"
+      },
+      "largest-contentful-paint": {
+        "value": 206.31380000000001,
+        "display": "0.2 s"
+      },
+      "total-blocking-time": {
+        "value": 0,
+        "display": "0 ms"
+      },
+      "cumulative-layout-shift": {
+        "value": 0,
+        "display": "0"
+      },
+      "speed-index": {
+        "value": 206.31380000000001,
+        "display": "0.2 s"
+      }
+    },
+    "bytes": {
+      "inlineJavaScript": 536,
+      "transfer": 16446,
+      "javascript": 0,
+      "javascriptTransfer": 0
+    },
+    "failures": [
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "F6FF9B7902B4303087D279B13A924FB1": {
+                    "url": "http://127.0.0.1:8797/guides/how-to-set-macro-goals/",
+                    "navStartToEndTime": 10,
+                    "transferSize": 7872,
+                    "isLongest": true,
+                    "children": {
+                      "42758.2": {
+                        "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+                        "navStartToEndTime": 11,
+                        "transferSize": 6969,
+                        "isLongest": true,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 11
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "No origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:8797/_astro/SiteLayout.DVkbXDQp.css",
+              "totalBytes": 6969
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
