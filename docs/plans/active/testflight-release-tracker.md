@@ -18,7 +18,7 @@ Mac, on `main` after all Phase 1 and Phase 2 branches are merged and an interim 
 6. [ ] Owner: fill in and retain device results and defects in `build/testflight-qa-2026-10-26/QA.md`.
 7. [ ] Owner: complete the submission checklist: App Privacy labels (from WS8 mapping), screenshots (WS8 shot list), review notes, support and privacy URLs, subscription review screenshots, and age rating.
 
-Pre-checked on Windows (2026-10-26): `Info-iOS.plist` has `ITSAppUsesNonExemptEncryption` false and usage strings for camera, photo library, Health share and update; app icons are 1024×1024 RGB without alpha; the project initially had `MARKETING_VERSION` 1.0 / `CURRENT_PROJECT_VERSION` 1 with automatic signing for team `NK3K87K955`; the Pro unlock debug controls (`ProSettingsSection`, `PurchaseStore`) sit behind `#if DEBUG`; `tools/release/ExportOptions.plist` uses `app-store-connect`, `upload`, automatic signing, uploaded symbols, and Xcode-managed build numbering.
+Pre-checked on Windows (2026-10-26): `config/apple/Info-iOS.plist` (then at the repo root) has `ITSAppUsesNonExemptEncryption` false and usage strings for camera, photo library, Health share and update; app icons are 1024×1024 RGB without alpha; the project initially had `MARKETING_VERSION` 1.0 / `CURRENT_PROJECT_VERSION` 1 with automatic signing for team `NK3K87K955`; the Pro unlock debug controls (`ProSettingsSection`, `PurchaseStore`) sit behind `#if DEBUG`; `tools/release/ExportOptions.plist` uses `app-store-connect`, `upload`, automatic signing, uploaded symbols, and Xcode-managed build numbering.
 
 ## Carried-over verification items (must pass on the TestFlight device)
 

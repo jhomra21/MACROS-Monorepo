@@ -19,7 +19,7 @@ Branch `launch/ws5-weight-health-reminders`. Mac only. Phase 2: starts after WS2
 
 ### Apple Health (nutrition write free; weight import Pro)
 
-- Entitlement `com.apple.developer.healthkit` in `cal-macro-tracker.entitlements`; `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` in `Info-iOS.plist`; the Xcode target capability. Note for the owner: the App ID capability must exist in the developer portal (automatic signing adds it).
+- Entitlement `com.apple.developer.healthkit` in `cal-macro-tracker.entitlements`; `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` in `config/apple/Info-iOS.plist`; the Xcode target capability. Note for the owner: the App ID capability must exist in the developer portal (automatic signing adds it).
 - `Features/Health/HealthKitService.swift` (`@MainActor @Observable`, HealthKit calls on background tasks): `isAvailable`, `authorizationStatus`, `requestAuthorization()`, `writeNutrition(for entry:)`, `deleteNutrition(for entryID:)`, `backfill(days: 30)`, `startWeightObservation()`.
 - Write types: dietaryEnergyConsumed, dietaryProtein, dietaryCarbohydrates, dietaryFatTotal, dietaryFatSaturated, dietaryFiber, dietarySugar, dietarySodium, dietaryCholesterol. Each sample carries a per-entry/type `HKMetadataKeySyncIdentifier` and a strictly incrementing persisted `healthSyncVersion` as `HKMetadataKeySyncVersion` so edits replace in place; deletions remove by sync identifier. Nil nutrients write no sample.
 - Read (Pro, gated by `PaidFeature.healthWeightImport`): `HKAnchoredObjectQuery` on bodyMass with a persisted anchor; new samples become `WeightEntry(source: .healthKit)`.

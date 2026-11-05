@@ -96,7 +96,7 @@ Start with [setup](docs/development/setup.md), then run the relevant [validation
 - Xcode 26+ with a Swift 6 compiler; project language mode is Swift 5, iOS minimum 26.
 - Bun 1.4.4; web requires Node >=22.23.4. Runtime QA separately requires Node 22.18+.
 - `make quality-build` compiles the app. It does not execute tests.
-- `make quality-storekit` checks `MACROSPro.storekit`, the shared scheme reference, and four product IDs.
+- `make quality-storekit` checks `config/apple/MACROSPro.storekit`, the shared scheme reference, and four product IDs.
 - Run `make lint-js` after a frozen install in tools/oxlint. Each support package has its own check script and lockfile; there is no root package.json.
 - Keep raw QA output in ignored build/evidence; follow the [tracked evidence limits](docs/evidence/README.md).
 - Do not run deploy scripts as checks. Web deployment also applies remote D1 migrations.

@@ -46,7 +46,7 @@
 /* Begin PBXFileReference section */
 		0D8B87CD2F7D86E700453C64 /* cal-macro-tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cal-macro-tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A1111111111111111111111 /* CalMacroWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CalMacroWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		2B000000000000000000000C /* MACROSPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = MACROSPro.storekit; sourceTree = "<group>"; };
+		2B000000000000000000000C /* MACROSPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = config/apple/MACROSPro.storekit; sourceTree = "<group>"; };
 		3D0000000000000000000001 /* cal-macro-trackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "cal-macro-trackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -503,8 +503,8 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Info-iOS.plist";
-				"INFOPLIST_FILE[sdk=macosx*]" = "Info-macOS.plist";
+				INFOPLIST_FILE = "config/apple/Info-iOS.plist";
+				"INFOPLIST_FILE[sdk=macosx*]" = "config/apple/Info-macOS.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MACROS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -555,8 +555,8 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Info-iOS.plist";
-				"INFOPLIST_FILE[sdk=macosx*]" = "Info-macOS.plist";
+				INFOPLIST_FILE = "config/apple/Info-iOS.plist";
+				"INFOPLIST_FILE[sdk=macosx*]" = "config/apple/Info-macOS.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MACROS;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -593,7 +593,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Info-Widget.plist";
+				INFOPLIST_FILE = "config/apple/Info-Widget.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -635,7 +635,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Info-Widget.plist";
+				INFOPLIST_FILE = "config/apple/Info-Widget.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

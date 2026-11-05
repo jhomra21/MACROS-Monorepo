@@ -14,7 +14,7 @@ Shared contains nutrition snapshots, app-group configuration, formatting, and wi
 
 [CalMacroWidgetBundle](../../cal-macro-tracker/CalMacroWidget/CalMacroWidgetBundle.swift) registers personal and shared-person widgets. Providers read local snapshots or fetch authorized shared data, rather than driving app navigation or local logging. Shared-person credentials/cache/control records live behind Shared types. Privacy and revocation checks must survive app closure.
 
-[PurchaseStore](../../cal-macro-tracker/Features/Purchases/PurchaseStore.swift) owns StoreKit Pro plans and legacy lifetime support. The root MACROSPro.storekit catalog serves local testing; it is not the production product catalog. Backend Pro verification is separate from local Debug/Xcode entitlements.
+[PurchaseStore](../../cal-macro-tracker/Features/Purchases/PurchaseStore.swift) owns StoreKit Pro plans and legacy lifetime support. The `config/apple/MACROSPro.storekit` catalog serves local testing; it is not the production product catalog. Backend Pro verification is separate from local Debug/Xcode entitlements.
 
 ## Optional sharing
 

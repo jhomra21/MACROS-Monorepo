@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 EXPECTED_PRODUCT_IDS = {"macros.pro.yearly", "macros.pro.monthly", "macros.pro.lifetime", "fullunlock001"}
-EXPECTED_SCHEME_IDENTIFIER = "../../MACROSPro.storekit"
+EXPECTED_SCHEME_IDENTIFIER = "../../config/apple/MACROSPro.storekit"
 
 
 def fail(message: str) -> None:
@@ -85,6 +85,8 @@ def main() -> None:
     storekit_reference_count = project_text.count("/* MACROSPro.storekit */ = {isa = PBXFileReference;")
     if storekit_reference_count != 1:
         fail(f"project must contain exactly one MACROSPro.storekit file reference, found {storekit_reference_count}")
+    if project_text.count('path = config/apple/MACROSPro.storekit; sourceTree = "<group>";') != 1:
+        fail("project catalog reference must resolve to config/apple/MACROSPro.storekit")
 
     store_text = purchase_store_path.read_text()
     for product_id in EXPECTED_PRODUCT_IDS:
