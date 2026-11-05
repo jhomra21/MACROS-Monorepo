@@ -10,11 +10,11 @@ November 5, 2026. Branch `web/copy`, based on `e481272`. Nothing deployed. No si
 - At 390 × 844, the phone starts at 286.7px instead of 590.5px. Its bottom is 793.6px. The email form starts at 853.0px.
 - Desktop keeps the phone beside the copy and signup.
 - The App Store flag stays false. The official badge and Smart Banner remain gated by that flag.
-- Visible home copy has 886 words before and 718 after, 168 fewer words, a 19.0% cut.
+- Visible home copy has 886 words before and 720 after, 166 fewer words, an 18.7% cut.
 - Hero headline plus supporting copy falls from 29 words to 18.
-- Four tracked JPEGs total 423,443 bytes, under 2 MiB.
+- Four tracked JPEGs total 311,275 bytes, under 2 MiB.
 
-Word counts use rendered `document.body.innerText` at 390 × 844 after opening all six FAQ disclosures. They include header, comparison table, screenshot captions, FAQ answers, footer, and both form buttons. Scripts, hidden status messages, and image alt text are absent from that text. Removing the clipped honeypot and email labels, skip link, screen-reader table caption, repeated Included/Not included labels, and check/dash symbols gives 886 and 718 visible words. The unfiltered text has 977 and 809 tokens, a 17.2% reduction. The same browser and method count both versions. The hidden secondary desktop navigation adds three words to either version and does not change the reduction.
+Word counts use rendered `document.body.innerText` at 390 × 844 after opening all six FAQ disclosures. They include header, comparison table, screenshot captions, FAQ answers, footer, and both form buttons. Scripts, hidden status messages, and image alt text are absent from that text. Removing the clipped honeypot and email labels, skip link, screen-reader table caption, repeated Included/Not included labels, and check/dash symbols gives 886 and 720 visible words. The unfiltered text has 977 and 811 tokens, a 17.0% reduction. The same browser and method count both versions. The hidden secondary desktop navigation adds three words to either version and does not change the reduction.
 
 The local baseline already showed the top of the phone above the fold, unlike the owner's live screenshot. The before capture preserves the actual branch state. No screenshot was changed to mimic the reported layout.
 
@@ -24,8 +24,8 @@ Lighthouse 13.6.0, Playwright 1.64.1, Chromium 156.0.8078.4, Bun 1.4.2 on macOS.
 
 | Home | Before P / A / BP / SEO | After P / A / BP / SEO | LCP before → after | CLS | TBT |
 | --- | --- | --- | --- | --- | --- |
-| Mobile | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 1.361s → 1.437s | 0 → 0 | 0 → 0ms |
-| Desktop | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.354s → 0.372s | 0 → 0 | 0 → 0ms |
+| Mobile | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 1.361s → 0.756s | 0 → 0 | 0 → 0ms |
+| Desktop | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 | 0.354s → 0.262s | 0 → 0 | 0 → 0ms |
 
 The mobile phone is now fully visible and uses an appropriate 240px source size. The scores stayed at 100. The small LCP difference is not evidence of a performance improvement. Existing unused-JavaScript and render-blocking advisories remain. These are lab scores, not field INP or conversion results.
 
@@ -38,7 +38,7 @@ All final checks passed.
 - Root `git diff --check`.
 - `bun docs/evidence/web-og/verify-og.mjs`, seven previews, deterministic clean/repeat builds, isolated title invalidation, no draft leaks, and isolated publication checks. Home title stayed unchanged, so the title assertion needed no edit. The home description changed and its preview hash changed.
 - Existing `verifySite` exported by `docs/evidence/web-seo/verify.mjs`, invoked through Playwright against the built Worker. Seven sitemap routes, metadata lengths, canonicals, JSON-LD, exact visible FAQ/schema equality, internal links, hidden drafts/feed, 404, redirects, and honeypot form responses passed.
-- Additional browser checks at 320, 390, 768, 900, and 1440 in light and dark. One H1, no document overflow, loaded hero image, mobile image before signup, full phone within the 390px fold, native transition opt-in, header ring logo, and no hero animation under reduced motion all passed.
+- Additional browser checks at 320, 390, 768, 900, and 1440 in light and dark. The glass rings tile is centered below the phone screen through 768px, then sits left of the phone from 900px onward. Its bounding box stays inside the horizontal viewport and clear of the screen's visible content and macro ring at every tested width, with no document overflow. One H1, loaded hero image, mobile image before signup, full phone within the 390px fold, native transition opt-in, header ring logo, and no hero animation under reduced motion all passed.
 - Both waitlist forms retain their existing labels and behavior. The hero form rejects empty/invalid email, enables on a valid fixture address, shows keyboard focus, and resets after a mocked success response. No email was sent. The existing SEO verifier uses honeypots, not a real database write.
 - About and Support each rendered at 390px with one H1.
 - Read the complete diff after validation. No new client JavaScript, dependencies, duplicate forms, or unused badge CSS remain.
@@ -113,9 +113,9 @@ Unchanged names, navigation labels, accessible labels, prices, legal text, artic
 
 | String | Before | After |
 | --- | --- | --- |
-| features.0.title | No account. Open it and log. | Lunch first. No sign-up. |
+| features.0.title | No account. Open it and log. | Open it and start. |
 | features.0.body | Nothing to sign up for. Logging works as soon as the app opens. Sharing is optional. | Open the app and start your food diary. |
-| features.1.title | Scan a barcode or a nutrition label. | Less typing at the table. |
+| features.1.title | Scan a barcode or a nutrition label. | Scan it instead of typing it. |
 | features.1.body | One camera view reads both. If a scan misses, type the food in. | Scan the barcode or nutrition label on the pack. |
 | features.2.title | Your food log stays on your iPhone. | Keep your diary on your phone. |
 | features.2.body | Logs, saved foods, goals, and weight entries are stored on your iPhone, not on our servers. | Your food log lives on your iPhone. Sharing is your choice. |
@@ -215,7 +215,7 @@ Unchanged names, navigation labels, accessible labels, prices, legal text, artic
 | --- | --- | --- |
 | Hero launch line | Included in the longer privacy note below | Coming to the App Store. Join the waitlist. |
 | Hero privacy note | Join the waitlist for the App Store launch. We use your email for the waitlist only. See the privacy policy. | Your email is only for the waitlist. Privacy policy. |
-| Feature heading | Log fast. Check the numbers. Keep your data. | Make room for lunch. |
+| Feature heading | Log fast. Check the numbers. Keep your data. | Quick enough to keep doing. |
 | Feature supporting line | Quick logging, with every number in view. | Keep track without making a project of it. |
 | Screenshot heading | See a day in MACROS. | Take a look inside. |
 | Screenshot supporting line | From the first scan to the daily share card. | Your meals, all in one place. |

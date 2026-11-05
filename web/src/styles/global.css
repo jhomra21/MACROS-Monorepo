@@ -544,6 +544,7 @@ summary {
 	position: relative;
 	justify-self: center;
 	width: min(100%, 15rem);
+	padding-bottom: 5.5rem;
 }
 
 .hero__visual .device {
@@ -553,8 +554,8 @@ summary {
 /* Floating glass badge: three macro rings that draw in once on first view */
 .hero__rings {
 	position: absolute;
-	left: -0.75rem;
-	bottom: 22%;
+	left: 50%;
+	bottom: 0;
 	width: 5.5rem;
 	padding: var(--space-3);
 	border: 1px solid var(--glass-edge);
@@ -563,6 +564,7 @@ summary {
 	-webkit-backdrop-filter: saturate(180%) blur(20px);
 	backdrop-filter: saturate(180%) blur(20px);
 	box-shadow: var(--shadow-soft);
+	transform: translateX(-50%);
 }
 
 .hero__rings svg {
@@ -622,12 +624,14 @@ summary {
 		justify-self: end;
 		width: min(100%, 20rem);
 		margin-right: var(--space-5);
+		padding-bottom: 0;
 	}
 
 	.hero__rings {
-		left: -5.25rem;
+		left: -7.5rem;
 		bottom: 14%;
 		width: 6.5rem;
+		transform: none;
 	}
 }
 
