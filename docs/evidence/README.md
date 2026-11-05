@@ -15,7 +15,7 @@ Removed media remains in Git at main commit `074b10994f1b68d9d7a8d6c54ed7effb90d
 Example, from the repository root:
 
 ```sh
-git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-og/home.0123456789ab.png > build/recovered.png
+git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-og/home.0eb2b274470d.png > build/recovered.png
 ```
 
 Replace the example filename with the exact path in the report or `git ls-tree -r` at that commit. The ignored local cleanup manifest records every removed path, byte size, and SHA-256; it is a run artifact, not a new committed archive.

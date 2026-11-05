@@ -4,7 +4,7 @@
 
 Never erase, reset, or seed `9843E820-3A2A-4599-9206-D224B3035A47`, the owner's iPhone 18 Pro fixture. Do not use it for tests. Keep at most four devices booted and at most one stock. Never shut down a reserved, unknown, or actively claimed device to meet this budget.
 
-Reuse existing devices; do not create a simulator for QA or tests. Creation is only for an owner-approved new model/runtime replacing an old device. Clean-install checks use the iPad runner or an available empty iPhone, not private owner state. Authorized tasks may erase/reinstall/change settings/seed those disposable fixtures and must leave them usable.
+Keep exactly one simulator per device model per iOS version. Reuse existing devices; do not create a simulator for QA or tests. Creation is only for an owner-approved new model/runtime replacing an old device. Clean-install checks use the iPad runner or an available empty iPhone, not private owner state. Authorized tasks may erase/reinstall/change settings/seed those disposable fixtures and must leave them usable.
 
 Acquire `/tmp/macros-sim-locks/<UDID>` with atomic `mkdir` before device use. An existing lock means claimed, not stale by assumption. Record task ownership, do not steal locks, and release only your own lock with `rmdir` after cleanup. If no suitable device is free, report the blocker. Do not use shutdown-all, erase-all, or runtime removal as troubleshooting shortcuts.
 

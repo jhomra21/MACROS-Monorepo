@@ -2,6 +2,8 @@
 
 Run commands from the active repository root unless a package directory is shown. Install dependencies with `bun install --frozen-lockfile` in each package first. Keep logs under ignored build/evidence.
 
+Check local Markdown links with `python3 tools/quality/check_markdown_links.py --base origin/main`. It checks changed documents, relative files, HTML image/link targets, and Markdown heading fragments without fetching external URLs.
+
 ## Native checks
 
 ```sh
