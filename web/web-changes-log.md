@@ -2,6 +2,12 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Macro rings on section headings
+
+- Replaced the horizontal three-color heading bars with the same reusable three-ring SVG used by the header logo. Section rings are 2.25rem square, a modest 0.875rem increase over the 1.375rem logo, and align with left- and center-aligned headings.
+- Each section ring set gets independent randomized fills on load. Rings in revealed sections draw when the heading reveals; top-of-page headings draw on load. The header logo keeps its early inline randomization, while reduced-motion users get static final rings.
+- Validation: Astro check/build and social-image hash verification pass; the source contains no `macro-bar` references. No deployment.
+
 ## 2026-11-04 Inner-page design consistency
 
 - Reused the homepage section-heading and macro-bar in a shared PageHeading across About, support, legal, editorial, and 404 pages. Aligned page spacing and diagram radii, reused FeatureGlyph on About/support, and added existing scroll reveals to below-fold editorial visuals and lists without animating legal text or hiding the support form.

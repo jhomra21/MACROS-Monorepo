@@ -132,5 +132,6 @@ const schema = [
 
 			initReveal();
 		</script>
+		<script is:inline>document.querySelectorAll('.section-rings .ring-fill').forEach(ring => ring.style.setProperty('--fill', (25 + Math.random() * 70) | 0));</script>
 	</body>
 </html>
