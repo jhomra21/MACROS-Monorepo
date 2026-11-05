@@ -514,7 +514,7 @@ Page 2, 57 repositories:
 
 ## Implemented scope and obligation checklist
 
-Status: implemented: `366569f`, `a5a9f18`, `c11cb46`, `b21b3ae`, `edbd61c`, `f6a3c0a`, `fff5abc`. Final validation/link repairs and Linux CI are recorded in later commits on `chore/repo-cleanup`. This status supersedes the proposal-only wording below.
+Status: implemented: `366569f`, `a5a9f18`, `c11cb46`, `b21b3ae`, `edbd61c`, `f6a3c0a`, `fff5abc`, `bdba673`, `b68c367`. The last two commits record link validation/obligations and Linux CI. This status supersedes the proposal-only wording in the research record.
 
 Owner approval on 2026-11-05 expands the original proposal: items 1-6 and 9, old evidence-media removal, and Linux-only CI run now. Apple configuration moves remain excluded. Git history is the recovery archive, so no external upload/restore prerequisite applies to these approved normal deletions. Keep docs/app-store and web/src/assets/app-images untouched. Keep all generated Convex instruction blocks intact.
 
@@ -614,6 +614,7 @@ Additional owner policies remain explicit: atomic simulator locks at `/tmp/macro
 - Before media removal, origin/main was `074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5`. The ignored build/repo-cleanup manifest/report lists all deleted paths, byte sizes, checksums and per-folder counts. The three keep folders and all App Store/README assets are checked against that baseline.
 - Local checks pass: StoreKit config, JS lint, official Swift formatting, native build, both shared schemes, no Markdown in app/widget bundles, web check/build, OG clean/repeat/title/draft checks, Worker tests, offline runtime HTTP and registered Convex integrations. No XCTest/simulator run is claimed by cleanup.
 - Linux CI uses contents-read permission, SHA-pinned actions, frozen installs and per-job path selection. Jobs cover JS lint, web check only, Worker checks/tests, Convex offline tests and runtime QA. No macOS/Xcode, build/deploy, credentials, or artifact upload jobs.
+- All CI package commands were rerun on this Mac with isolated Bun 1.4.4 and Node 26.5.0. Auth passed 3 tests, food proxy 92, Convex 20 unit and 76 registered integration tests, and runtime QA 59 assertion groups across 129 loopback HTTP requests. Web check and JS lint passed. These are local results, not a claim that GitHub's Linux jobs have run.
 - Swift CI is omitted: local Homebrew swift-format is 602.0.0, the toolchain formatter reports main, and no local container runtime is available to validate an exact Swift 6 Linux match. The required local formatting gate remains unchanged.
 - The unslop writing instructions were read and applied to new/rewritten guidance. Dated history, tracker result text, generated backend blocks and retained evidence reports were not rewritten for style.
 
