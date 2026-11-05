@@ -17,21 +17,13 @@ const rings = [
 		<div class="hero__copy">
 			<h1 id="hero-title" class="display" style="--i: 0">{site.hero.title}</h1>
 			<p class="lead" style="--i: 1">{site.hero.lead}</p>
-			<div class="hero__form" style="--i: 2">
-				<WaitlistForm idPrefix="hero" />
-			</div>
-			<p class="caption hero__note" style="--i: 3">
-				Join the waitlist for the App Store launch. We use your email for the waitlist only. See the{' '}
-				<a href="/privacy/">privacy policy</a>.
-			</p>
-			<AppStoreBadge />
 		</div>
 		<div class="hero__visual">
 			<DeviceFrame
 				src={site.heroShowcase.src}
 				alt={site.heroShowcase.alt}
-				widths={[280, 320, 560, 640, 840, 960]}
-				sizes="(max-width: 900px) 280px, 320px"
+				widths={[240, 280, 320, 480, 560, 640, 840, 960]}
+				sizes="(max-width: 899px) 240px, 320px"
 				eager
 			/>
 			<div class="hero__rings" aria-hidden="true">
@@ -55,6 +47,16 @@ const rings = [
 					</g>
 				</svg>
 			</div>
+		</div>
+		<div class="hero__signup">
+			<p class="caption">Coming to the App Store. Join the waitlist.</p>
+			<div class="hero__form">
+				<WaitlistForm idPrefix="hero" />
+			</div>
+			<p class="caption hero__note">
+				Your email is only for the waitlist. <a href="/privacy/">Privacy policy</a>.
+			</p>
+			<AppStoreBadge />
 		</div>
 	</div>
 </section>

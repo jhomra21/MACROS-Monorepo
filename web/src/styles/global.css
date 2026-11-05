@@ -487,6 +487,16 @@ summary {
 	}
 }
 
+@media (max-width: 22.5rem) {
+	.nav-list {
+		gap: 0;
+	}
+
+	.nav-link {
+		padding-inline: var(--space-1);
+	}
+}
+
 /* Hero */
 .hero {
 	padding-block: clamp(2.5rem, 6vw, 5rem) var(--space-4);
@@ -496,14 +506,25 @@ summary {
 .hero__grid {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	gap: var(--space-7);
+	grid-template-areas: 'copy' 'visual' 'signup';
+	gap: var(--space-5);
 	align-items: center;
 }
 
 .hero__copy {
+	grid-area: copy;
+}
+
+.hero__copy,
+.hero__signup {
 	display: grid;
 	gap: var(--space-5);
 	justify-items: start;
+}
+
+.hero__signup {
+	grid-area: signup;
+	gap: var(--space-4);
 }
 
 .hero__copy .lead {
@@ -516,13 +537,14 @@ summary {
 
 .hero__note {
 	max-width: 32rem;
-	margin-top: calc(var(--space-3) * -1);
 }
 
 .hero__visual {
+	grid-area: visual;
 	position: relative;
 	justify-self: center;
-	width: min(100%, 17.5rem);
+	width: min(100%, 15rem);
+	padding-bottom: 5.5rem;
 }
 
 .hero__visual .device {
@@ -532,8 +554,8 @@ summary {
 /* Floating glass badge: three macro rings that draw in once on first view */
 .hero__rings {
 	position: absolute;
-	left: -0.75rem;
-	bottom: 22%;
+	left: 50%;
+	bottom: 0;
 	width: 5.5rem;
 	padding: var(--space-3);
 	border: 1px solid var(--glass-edge);
@@ -542,6 +564,7 @@ summary {
 	-webkit-backdrop-filter: saturate(180%) blur(20px);
 	backdrop-filter: saturate(180%) blur(20px);
 	box-shadow: var(--shadow-soft);
+	transform: translateX(-50%);
 }
 
 .hero__rings svg {
@@ -585,19 +608,30 @@ summary {
 @media (min-width: 56.25rem) {
 	.hero__grid {
 		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-		gap: var(--space-8);
+		grid-template-areas: 'copy visual' 'signup visual';
+		column-gap: var(--space-8);
+	}
+
+	.hero__copy {
+		align-self: end;
+	}
+
+	.hero__signup {
+		align-self: start;
 	}
 
 	.hero__visual {
 		justify-self: end;
 		width: min(100%, 20rem);
 		margin-right: var(--space-5);
+		padding-bottom: 0;
 	}
 
 	.hero__rings {
-		left: -5.25rem;
+		left: -7.5rem;
 		bottom: 14%;
 		width: 6.5rem;
+		transform: none;
 	}
 }
 
@@ -891,7 +925,6 @@ summary {
 @media (min-width: 56.25rem) {
 	.showcase__track {
 		--fade: 3rem;
-		margin-inline: calc(var(--fade) * -1);
 		padding-inline: var(--fade);
 		scroll-padding-inline: var(--fade);
 		scrollbar-width: thin;
@@ -1785,10 +1818,6 @@ summary {
 .app-store-badge img {
 	width: auto;
 	height: 40px;
-}
-
-.hero__copy > .app-store-badge {
-	animation: none;
 }
 
 /* Footer */

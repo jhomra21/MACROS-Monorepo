@@ -1,0 +1,1667 @@
+[
+  {
+    "name": "MacroFactor",
+    "url": "https://macrofactor.com/",
+    "counts": {
+      "feature": 0,
+      "outcome": 0
+    },
+    "assignments": [
+      {
+        "text": "How Hayden Got Stronger While Losing 80lbs With MacroFactor",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "How James Went From Fat Loss Goals to Considering the Stage",
+        "bucket": "excluded",
+        "words": 11
+      },
+      {
+        "text": "How Scott Lost 65lb and Built a System That Works With MacroFactor",
+        "bucket": "excluded",
+        "words": 12
+      },
+      {
+        "text": "How Zarina Learned Her True Expenditure With MacroFactor",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Benefits of Exercise Beyond the Scale",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "For some people, weight loss is what prompts them to start exercising. This article explores the benefits of exercise beyond weight loss, from building strength to supporting bone health.",
+        "bucket": "excluded",
+        "words": 29
+      },
+      {
+        "text": "Do Rest Times Matter for Performance or Muscle Growth?",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "This article looks at rest times between sets for strength and muscle growth, including what the research says and how you could save time without limiting performance.",
+        "bucket": "excluded",
+        "words": 27
+      },
+      {
+        "text": "How to Warm-Up for Resistance Training",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "This article dives into the current research on warming up for resistance training and explains how to implement load progressions if you’re new to warm-up sets.",
+        "bucket": "excluded",
+        "words": 26
+      },
+      {
+        "text": "How to Use Reps in Reserve for Lifting",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "This article covers the origin of Reps in Reserve (RIR) and how the system could help you gauge effort, rather than choosing weights at random.",
+        "bucket": "excluded",
+        "words": 25
+      },
+      {
+        "text": "In our Annual Report, we reflect on the improvements made to MacroFactor in its fifth year, and provide a sneak peek at the development we’re planning for Year 6 and beyond.",
+        "bucket": "excluded",
+        "words": 31
+      },
+      {
+        "text": "MacroFactor vs Cronometer: Which App Wins in 2026?",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "We compared MacroFactor to Cronometer, which has been known for its detailed nutrient reporting. However, how does Cronometer compare when it comes to estimating TDEE and providing recommendations that adapt over time?",
+        "bucket": "excluded",
+        "words": 32
+      },
+      {
+        "text": "At the end of each month, we send a digest including news about features, educational content, and what we’re working on.",
+        "bucket": "excluded",
+        "words": 21
+      },
+      {
+        "text": "Expenditure Accuracy, Hayden’s 80lb Loss, and Workout Updates Around the Corner",
+        "bucket": "excluded",
+        "words": 11
+      },
+      {
+        "text": "Annual Report, PPL Programs, Exercise Benefits, and Protein Timing",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "MacroFactor vs Cronometer, Wearable Calorie Estimates, Body Recomp, and User Wins",
+        "bucket": "excluded",
+        "words": 11
+      },
+      {
+        "text": "Plate Stack AI, Food Logging Updates, Lesser-Known Features, and a MacroFactor Case Study",
+        "bucket": "excluded",
+        "words": 13
+      },
+      {
+        "text": "The MacroFactor Knowledge Base contains helpful how-tos, answers to FAQs, and explanations of the app's unique features.",
+        "bucket": "excluded",
+        "words": 17
+      },
+      {
+        "text": "The MacroFactor public roadmap shows our plans for new features and improvements. We welcome your feature requests here too!",
+        "bucket": "excluded",
+        "words": 19
+      },
+      {
+        "text": "See our roadmap or request a feature",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "The MacroFactor groups are a great place to ask and answer questions and connect with a likeminded and supportive community.",
+        "bucket": "excluded",
+        "words": 20
+      },
+      {
+        "text": "Join the Facebook group or subreddit",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Start your free trial of MacroFactor Nutrition or MacroFactor Workouts today",
+        "bucket": "excluded",
+        "words": 11
+      }
+    ]
+  },
+  {
+    "name": "Cal AI",
+    "url": "https://www.calai.app/",
+    "counts": {
+      "feature": 206,
+      "outcome": 0
+    },
+    "assignments": [
+      {
+        "text": "Loved by 5M users with ⭐ 4.9 rating",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Meet Cal AI, the AI-powered app for easy calorie tracking. Snap a photo, scan a barcode, or describe your meal and get instant calorie and nutrient info.",
+        "bucket": "feature",
+        "words": 27
+      },
+      {
+        "text": "Used by your favorite fitness influencers 👀",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "Make a healthier choice for your latenight snack and use the Cal AI app to track your calories",
+        "bucket": "excluded",
+        "words": 18
+      },
+      {
+        "text": "Looking good as usual and my calories are too with Cal AI 🔥",
+        "bucket": "excluded",
+        "words": 13
+      },
+      {
+        "text": "Track with Cal AI app, if you're not tracking your calories while going for your goals then you're doing it all wrong.",
+        "bucket": "excluded",
+        "words": 22
+      },
+      {
+        "text": "Cal AI can literally track anything 🤯",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "If you're tracking your calories and macros correctly with Cal AI, you can get away with eating almost anything and still get in shape as long as it matches your daily goals.",
+        "bucket": "excluded",
+        "words": 32
+      },
+      {
+        "text": "Cal AI is literally the best calorie tracker. Fastest and most accurate I've ever used.",
+        "bucket": "excluded",
+        "words": 15
+      },
+      {
+        "text": "Track Your Food With Just a Picture",
+        "bucket": "feature",
+        "words": 7
+      },
+      {
+        "text": "Snap a photo with Cal AI, and your phone's depth sensor calculates food volume. Our AI then analyzes and breaks down your meal to determine calories, protein, carbs, and fat.",
+        "bucket": "feature",
+        "words": 30
+      },
+      {
+        "text": "Search Our Database of over 1 million foods",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Quickly find and log foods from our extensive database. Search by name, brand, or scan barcodes for instant nutritional information.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "Complete Progress Tracking and AI suggestions",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Monitor your weight, measurements, and nutrition goals. Get personalized AI suggestions to stay on track and optimize your diet.",
+        "bucket": "feature",
+        "words": 19
+      },
+      {
+        "text": "Keep track of your water and daily exercise",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Log your water intake and daily exercise effortlessly. Cal AI helps you stay hydrated and active, integrating seamlessly with your fitness routine.",
+        "bucket": "feature",
+        "words": 22
+      },
+      {
+        "text": "Cal AI is the most advanced calorie tracker.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Cal AI automatically calculates your calories, protein, carbs, and fat. You can also add your own foods and recipes. So no need to calculate calories manually.",
+        "bucket": "feature",
+        "words": 26
+      },
+      {
+        "text": "Integrate with your favorite fitness products",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Cal AI integrates with your favorite fitness products. So you can track your calories, protein, carbs, fat AND exercises.",
+        "bucket": "feature",
+        "words": 19
+      },
+      {
+        "text": "Thousands of users talk about us",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "The questions our support team hears most.",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "How do I cancel my subscription or free trial?",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "The app scanned my food totally wrong. It thinks my dinner is something else entirely",
+        "bucket": "excluded",
+        "words": 15
+      },
+      {
+        "text": "The app keeps crashing or won't open",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "My steps aren't showing up in CalAI",
+        "bucket": "excluded",
+        "words": 7
+      }
+    ]
+  },
+  {
+    "name": "Lose It!",
+    "url": "https://www.loseit.com/",
+    "counts": {
+      "feature": 44,
+      "outcome": 21
+    },
+    "assignments": [
+      {
+        "text": "NEW! Healthy living and weight loss advice from experts",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Say It. Snap It. Scan It.",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Nutrition tracking has never been so easy!",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Tell us what you want to achieve and receive personalized goals.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Learn about the foods you're eating and keep your calories within your daily budget.",
+        "bucket": "feature",
+        "words": 14
+      },
+      {
+        "text": "Reach your goals and continue to set new ones for a happier, healthier you!",
+        "bucket": "outcome",
+        "words": 14
+      },
+      {
+        "text": "Track your water intake to make sure you're getting the recommended amount daily.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "Track every single bite you take. You need to know how you're doing before dinner. If you don't, things can get away from you fast.\"",
+        "bucket": "excluded",
+        "words": 25
+      },
+      {
+        "text": "- Carla, 65 lbs lost without giving up pizza.",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Everyday is a battle, and you have to make the choice each morning to fight for your health and wellness\"",
+        "bucket": "excluded",
+        "words": 20
+      },
+      {
+        "text": "- Alex, lost 85 lbs for his wedding.",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Do Not Sell My Personal Information",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Lose It! is among the federally registered trademarks of FitNow, Inc., and may not be used by third parties without explicit permission.",
+        "bucket": "excluded",
+        "words": 22
+      }
+    ]
+  },
+  {
+    "name": "Cronometer",
+    "url": "https://cronometer.com/",
+    "counts": {
+      "feature": 240,
+      "outcome": 108
+    },
+    "assignments": [
+      {
+        "text": "Do not sell or share my personal information",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Science-backed nutrition tracking at your fingertips.",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "From macros to micros, Cronometer gives you personalized insight into your diet, exercise, and health data so you can make more informed decisions about your health.",
+        "bucket": "outcome",
+        "words": 26
+      },
+      {
+        "text": "Our lab-analyzed nutrition data will help you:",
+        "bucket": "feature",
+        "words": 7
+      },
+      {
+        "text": "See which of the essential vitamins and minerals you’re getting the most and least of, helping you eat a more balanced diet. Track up to 95 different nutrients and compounds.",
+        "bucket": "outcome",
+        "words": 30
+      },
+      {
+        "text": "Reach & maintain your goal weight",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "Monitor your food intake with detailed food journaling, verified nutrition information, and a built-in nutritional target wizard to keep yourself accountable.",
+        "bucket": "feature",
+        "words": 21
+      },
+      {
+        "text": "Get a holistic view of your health",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Sync Cronometer with all your devices and track all your biometrics from pain symptoms to gut health to blood sugar levels and more.",
+        "bucket": "feature",
+        "words": 23
+      },
+      {
+        "text": "We're proud to offer accurate nutrition information within a lock-tight framework to keep your data safe. We encrypt all data, uphold industry best practices, and enforce strict access controls.",
+        "bucket": "feature",
+        "words": 29
+      },
+      {
+        "text": "Syncs with all your favorite devices—on your wrist, finger, or phone",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "You’ll love how easily data flows between Cronometer and partner apps and devices.",
+        "bucket": "outcome",
+        "words": 13
+      },
+      {
+        "text": "Four easy ways to log your meals.",
+        "bucket": "feature",
+        "words": 7
+      },
+      {
+        "text": "Dive deeper into your nutrition with four quick and easy ways to track.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "Easily log meals with our AI Photo Logging feature.",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Simply speak to us or Siri to log your food.",
+        "bucket": "feature",
+        "words": 10
+      },
+      {
+        "text": "Use our classic text search to find food.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Scan the barcode of any product - for free!",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Designed for you. Trusted by doctors, dietitians and trainers",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Easily add food by using our free Barcode Scanner or select from a database of over 1M verified foods.",
+        "bucket": "feature",
+        "words": 19
+      },
+      {
+        "text": "From fat to protein to carbs, access personalized nutrition charts and dashboards to get a complete picture of your health.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "Get off the dieting yo-yo with data that builds momentum toward your long-term goals.",
+        "bucket": "outcome",
+        "words": 14
+      },
+      {
+        "text": "Keep track of my food intake",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Dietary analysis software for health professionals",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Cronometer Pro is a web-based platform built for nutritionists, dietitians, research teams, schools, and hospitals that syncs with patient data to provide on-demand dietary analysis covering up to 84 nutrients.",
+        "bucket": "feature",
+        "words": 30
+      },
+      {
+        "text": "If you count calories, macros, or micronutrients, you can count on us",
+        "bucket": "outcome",
+        "words": 12
+      },
+      {
+        "text": "Available on Web, iOS, and Android",
+        "bucket": "feature",
+        "words": 6
+      }
+    ]
+  },
+  {
+    "name": "Yazio",
+    "url": "https://www.yazio.com/en",
+    "counts": {
+      "feature": 63,
+      "outcome": 15
+    },
+    "assignments": [
+      {
+        "text": "Build healthy habits you’ll love to keep",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Get your custom plan in minutes",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Your all-in-one food, fitness and fasting tracker",
+        "bucket": "feature",
+        "words": 7
+      },
+      {
+        "text": "Get instant calorie and nutrition info with AI photo tracking, or track manually or by barcode.",
+        "bucket": "feature",
+        "words": 16
+      },
+      {
+        "text": "Keep fasting simple with built-in timers and flexible plans like 16:8, 5:2 and 6:1.",
+        "bucket": "feature",
+        "words": 14
+      },
+      {
+        "text": "Explore easy-to-track recipes tailored to your goals and preferences.",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Sync your fitness tracker to automatically track steps, activities and more.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Discover how people are transforming their lives with Yazio.",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Between running and biking every day, my weight has started coming down again and I have started seeing my body become very sculpted like I’ve never seen before.",
+        "bucket": "excluded",
+        "words": 28
+      },
+      {
+        "text": "If you want to accomplish something, then you will accomplish it, regardless of how bumpy the road is. I always told myself: I can't go back and start from the beginning, but I can start today and follow a new path!",
+        "bucket": "excluded",
+        "words": 41
+      },
+      {
+        "text": "Ready to see results? Start your plan today.",
+        "bucket": "outcome",
+        "words": 8
+      }
+    ]
+  },
+  {
+    "name": "Gentler Streak",
+    "url": "https://gentlerstories.com/gentlerstreak",
+    "counts": {
+      "feature": 385,
+      "outcome": 392
+    },
+    "assignments": [
+      {
+        "text": "Gentler Streak meets you where you are each day, keeping you motivated with simple, practical guidance. Build a fitness routine that lasts. Focused on consistency and personal progress, not generic goals.",
+        "bucket": "outcome",
+        "words": 31
+      },
+      {
+        "text": "Move at your own pace. Gentler Streak adapts your daily goals to how your body actually feels.",
+        "bucket": "outcome",
+        "words": 17
+      },
+      {
+        "text": "Built for the long game. No guilt, no punishment. The app keeps you moving for months and years, not just days.",
+        "bucket": "outcome",
+        "words": 21
+      },
+      {
+        "text": "Streaks that celebrate rest. Gentler Streak rewards consistency over perfection, so taking a break never means starting over.",
+        "bucket": "outcome",
+        "words": 18
+      },
+      {
+        "text": "Move for Life, Not Just Today",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "Staying active for life isn't about pushing harder. It's about moving smarter, listening to your body, and never feeling judged for where you are. Activity Path makes that possible.",
+        "bucket": "outcome",
+        "words": 29
+      },
+      {
+        "text": "Activity Path is your personal guide to staying active for life. It meets you where you are, adjusts when life gets in the way, and always keeps you moving forward at your own pace.",
+        "bucket": "outcome",
+        "words": 34
+      },
+      {
+        "text": "Meet Yorhart, your gentle companion on the journey. Always there, never judging, just cheering you on.",
+        "bucket": "outcome",
+        "words": 16
+      },
+      {
+        "text": "Three views, one path forward. Check your Daily Readiness, plan ahead with the 10-day view, or zoom out to your 30-day Activity Path to see a bigger picture.",
+        "bucket": "feature",
+        "words": 28
+      },
+      {
+        "text": "Set the status. Injuries happen, we get sick or we simply need a break. Change your activity status when needed and remove FOMO from sight and mind.",
+        "bucket": "outcome",
+        "words": 27
+      },
+      {
+        "text": "This Apple Watch App of the Year 2022 has all the must-have qualities of the best app tracker and is a unique tool to control fitness on the go!",
+        "bucket": "excluded",
+        "words": 29
+      },
+      {
+        "text": "Designed for the way you actually work out. Monitor your heart rate, stay on top of your HR zones, and get live daily guidance that tells you when to ease off - before you push too far.",
+        "bucket": "outcome",
+        "words": 37
+      },
+      {
+        "text": "Your daily guidance, always on your wrist. Know exactly how your body is feeling before you start so every workout begins on the right foot.",
+        "bucket": "outcome",
+        "words": 25
+      },
+      {
+        "text": "Track your heart rate and follow your elevation in real time. Every climb, every effort, visualized clearly on your wrist.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "The right workout, every day. Go Gentler keeps you building fitness without ever tipping into overtraining.",
+        "bucket": "outcome",
+        "words": 16
+      },
+      {
+        "text": "Wellness That Sees the Whole You",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "Your body is more than your workouts. With sleep, steps, body metrics, cardio fitness, and menstrual cycle tracking all in one place, Gentler Streak gives you the full picture without the overwhelm.",
+        "bucket": "outcome",
+        "words": 32
+      },
+      {
+        "text": "The metrics that matter most. From sleeping heart rate to blood oxygen, get a clear daily read on how your body is really doing.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "Small movements, big picture. See your daily steps and distance at a glance, with a 14-day view that keeps your everyday activity in perspective.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "More than just hours logged. Gentler Streak breaks down your sleep into stages and gives you a clear overview of duration and consistency, so you can see what a good night really looks like for you.",
+        "bucket": "feature",
+        "words": 36
+      },
+      {
+        "text": "Your cycle is part of your fitness story. Track where you are and let Gentler Streak adjust your guidance accordingly.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "Your cardio fitness, in context. Monitor your VO₂ max trend year by year and over the last 12 months, and always know where your fitness stands based on your 2-month average.",
+        "bucket": "feature",
+        "words": 31
+      },
+      {
+        "text": "Gentler Streak’s approach to fitness is carefully crafted for balance. Instead of pushing you to your limits, the app rewards little bits of exercise throughout a day, like dog-walking or daily chores. By suggesting rest days and providing delightfully designed charts and graphics, Gentler Streak showcases a level of care that kindly moves us forward.",
+        "bucket": "excluded",
+        "words": 55
+      },
+      {
+        "text": "Go Gentler takes the guesswork out of your training. Every day it suggests the workout that fits your body's current state, so you keep progressing without ever tipping into overtraining.",
+        "bucket": "outcome",
+        "words": 30
+      },
+      {
+        "text": "Gentler Streak connects seamlessly with Apple Health, reading and writing data in both directions to give you a simple, complete summaries that finally make sense of it all.",
+        "bucket": "feature",
+        "words": 28
+      },
+      {
+        "text": "Every detail of your workout, beautifully captured. Maps, photos, stats, charts, and more, all in one clean and easy to read summary.",
+        "bucket": "feature",
+        "words": 22
+      },
+      {
+        "text": "Weekly, monthly, and yearly recaps give you a clear view of how far you've come. And with Insights, short articles on health and fitness, you always have the knowledge to keep moving forward.",
+        "bucket": "feature",
+        "words": 33
+      },
+      {
+        "text": "Your month at a glance. Starting with your Activity Path overview, the monthly recap breaks down your sessions, duration, distance, elevation gain, active energy, and HR zones so you can see exactly how your month shaped up.",
+        "bucket": "feature",
+        "words": 37
+      },
+      {
+        "text": "A snapshot of your week. See your total duration, distance, elevation gain, and active energy all in one place, and carry what you learned into the week ahead.",
+        "bucket": "feature",
+        "words": 28
+      },
+      {
+        "text": "Your biggest picture yet. The yearly recap shows your fitness journey from start to finish so you can appreciate every step of the way.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "Go deeper with Insights. Bite-sized articles on health and fitness that help you understand the why behind your journey and make smarter decisions every day.",
+        "bucket": "outcome",
+        "words": 25
+      },
+      {
+        "text": "All Data Stays on Your Device",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "All analysis happens on your iPhone. Your personal information belongs to you, not to AI models or ad platforms. No user accounts. No servers.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "The gold standard of how a native iOS app should look: Gentler Streak! I always come back to it when I'm out of ideas how to solve a tough UX or design problem!",
+        "bucket": "excluded",
+        "words": 33
+      },
+      {
+        "text": "I've said it before and I'll say it again: great app. Really great, life changing app. Not everyone wants a PT yelling at them to try harder, or being made to feel lazy with daily streaks. Some of us thrive with gentle persuasion and encouragement.",
+        "bucket": "excluded",
+        "words": 45
+      },
+      {
+        "text": "This app has been so handy and useful since I have downloaded it. It told me the day that I pushed myself too hard, and I felt that in my body. I’ve learned how to listen to my body and take rest days when needed because of Gentler Streak.",
+        "bucket": "excluded",
+        "words": 49
+      },
+      {
+        "text": "A lifelong streak starts with day one",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Start gentle. Stay consistent. Gentler Streak will be with you every step of the way.",
+        "bucket": "outcome",
+        "words": 15
+      }
+    ]
+  },
+  {
+    "name": "Bevel",
+    "url": "https://www.bevel.health/",
+    "counts": {
+      "feature": 185,
+      "outcome": 94
+    },
+    "assignments": [
+      {
+        "text": "Make sense of your health data, from wearables to bloodwork, and everything in between.",
+        "bucket": "outcome",
+        "words": 14
+      },
+      {
+        "text": "Join over 2.5 million members on their health journey",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Turn your body's signals into clear, actionable metrics.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Track how hard you're pushing with one number that captures your daily effort and exertion.",
+        "bucket": "feature",
+        "words": 15
+      },
+      {
+        "text": "Discover what it takes to get a good night's rest by knowing your sleep stages and needs.",
+        "bucket": "outcome",
+        "words": 17
+      },
+      {
+        "text": "See if you're ready to tackle the day or if it's time to slow down and let your body recover.",
+        "bucket": "outcome",
+        "words": 20
+      },
+      {
+        "text": "Track your meals and get a full breakdown of what's fueling your body.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "Store your labs, clinical notes, and medical records in one secure place.",
+        "bucket": "feature",
+        "words": 12
+      },
+      {
+        "text": "Get personalized guidance and actionable advice from your own 24/7 coach.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Ask questions about your health and get answers grounded in your own metrics.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "Get reminders, daily summaries, and nudges without having to ask.",
+        "bucket": "feature",
+        "words": 10
+      },
+      {
+        "text": "Get answers informed by the latest research, articles, and trusted sources online.",
+        "bucket": "feature",
+        "words": 12
+      },
+      {
+        "text": "Generate workouts and training plans tailored to your goals and schedule.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Bevel also has the following features:",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "One score that shows how you're aging and how to improve.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Understand your body's rhythm and train smarter around it.",
+        "bucket": "outcome",
+        "words": 9
+      },
+      {
+        "text": "Log your lifts and watch your progress stack up.",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Track your habits and connect the dots over time.",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Track your coffee, tea, and everything in between.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Wake up at the perfect moment in your sleep cycle.",
+        "bucket": "outcome",
+        "words": 10
+      },
+      {
+        "text": "Let Bevel know when you're traveling, sick, or back at it.",
+        "bucket": "feature",
+        "words": 11
+      },
+      {
+        "text": "Keep track of every glass and hit your daily goal.",
+        "bucket": "feature",
+        "words": 10
+      },
+      {
+        "text": "Style your home screen with beautifully crafted widgets.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Your data is yours. We never sell it and protect it with industry-standard security.",
+        "bucket": "feature",
+        "words": 14
+      },
+      {
+        "text": "Don’t take our words for it. See why Bevel is trusted and loved by people around the world who want to feel better, live longer, and train smarter.",
+        "bucket": "excluded",
+        "words": 28
+      },
+      {
+        "text": "Amazing slick app with a great roadmap for the future",
+        "bucket": "excluded",
+        "words": 10
+      },
+      {
+        "text": "This is the Health app you are looking for",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Start with one step. One log at a time. Bevel meets you where you are and helps you move forward with clarity and confidence.",
+        "bucket": "outcome",
+        "words": 24
+      }
+    ]
+  },
+  {
+    "name": "Things",
+    "url": "https://culturedcode.com/things/",
+    "counts": {
+      "feature": 0,
+      "outcome": 83
+    },
+    "assignments": [
+      {
+        "text": "Things is the award-winning personal task manager that helps you plan your day, manage your projects, and make real progress toward your goals.",
+        "bucket": "outcome",
+        "words": 23
+      },
+      {
+        "text": "Things makes it easy. Within the hour, you’ll have everything off your mind and neatly organized – from routine tasks to your biggest life goals – and you can start focusing on what matters today.",
+        "bucket": "outcome",
+        "words": 35
+      },
+      {
+        "text": "Whatever it is you want to accomplish in life, Things can help you get there. Install the app today and see what you can do!",
+        "bucket": "outcome",
+        "words": 25
+      },
+      {
+        "text": "For more than a decade, Things has been helping people around the world get organized and achieve their goals. We love to hear it!",
+        "bucket": "excluded",
+        "words": 24
+      },
+      {
+        "text": "Things Updated for iPhone Duo With Adaptive Layout More… More…",
+        "bucket": "excluded",
+        "words": 10
+      },
+      {
+        "text": "Things by @culturedcode is the best to-do list app. I don’t get how people use Notion for it instead.",
+        "bucket": "excluded",
+        "words": 19
+      },
+      {
+        "text": "Honored twice with the prestigious Apple Design Award, Things has won over critics with its unique blend of powerful functionality and ease-of-use. Here’s what they have to say.",
+        "bucket": "excluded",
+        "words": 28
+      },
+      {
+        "text": "Subscribe to our newsletter to stay up-to-date on Things’ latest news. We only send it out a few times per year when we have something interesting to tell you.",
+        "bucket": "excluded",
+        "words": 29
+      },
+      {
+        "text": "Your privacy is very important to us. We’ll only ever use your address to send you this newsletter, and you can unsubscribe at any time. See our Privacy Policy.",
+        "bucket": "excluded",
+        "words": 29
+      }
+    ]
+  },
+  {
+    "name": "Flighty",
+    "url": "https://flighty.com/",
+    "counts": {
+      "feature": 293,
+      "outcome": 393
+    },
+    "assignments": [
+      {
+        "text": "Get the truth when you travel",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "The only app that tells you everything about your flight. Get real-time updates, the fastest alerts and delay predictions.",
+        "bucket": "outcome",
+        "words": 19
+      },
+      {
+        "text": "Everything you’ve ever wanted to know about your flight—and more.",
+        "bucket": "outcome",
+        "words": 10
+      },
+      {
+        "text": "Flighty keeps you informed by tracking more information about your flight than any other app—like the #1 and #2 biggest causes of delays. Know exactly what’s happening and how it affects your flight, so you can finally just enjoy your trip.",
+        "bucket": "outcome",
+        "words": 41
+      },
+      {
+        "text": "Airlines often keep delay information under wraps until the last minute. Flighty doesn’t. We track the inbound aircraft 25 hours before your flight, so we can predict a new departure time long before the airline notifies you.",
+        "bucket": "outcome",
+        "words": 37
+      },
+      {
+        "text": "Delay predictions. Long before airlines admit it.",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Late planes are the #1 cause of delays. Flighty uses machine learning to predict delays due to late arriving aircraft — up to 6 hours before the airline says anything.",
+        "bucket": "feature",
+        "words": 30
+      },
+      {
+        "text": "Direct from the tower. Air Traffic Control mandates are the #2 cause of delays. Flighty sifts through these and tells you what might impact your flight: like ground stops, weather, or airport issues.",
+        "bucket": "feature",
+        "words": 33
+      },
+      {
+        "text": "Some flights to JFK (but not this flight currently) are grounded for the next 24 min. due to thunderstorms. Probability of extension is 30-60%.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "First to know. First to go. Hear about delays and gate changes before anyone else, even the pilot. Flighty’s alerts are instant, clear, and unfiltered, giving you the earliest heads-up to rebook quickly and avoid long lines.",
+        "bucket": "outcome",
+        "words": 37
+      },
+      {
+        "text": "Putting the ‘Pro’ in approachable. Powerful, pilot-grade data that you can actually understand. Get gate info, departure times, baggage belts, and booking codes—all at a glance. Never stop and stare at a flight board again.",
+        "bucket": "outcome",
+        "words": 35
+      },
+      {
+        "text": "You can magically (read: extremely quickly) make your flights appear on Flighty from your calendar, TripIt, or your email. Get up & running with Flighty faster than you can say, “have a nice flight”.",
+        "bucket": "feature",
+        "words": 34
+      },
+      {
+        "text": "Share your flying with friends and family.",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "Flighty Friends lets you instantly share your flying with your loved ones, so they can monitor your trip status and get notified when you land. Add your loved ones just once, and you’ll never have to manually share flight details again.",
+        "bucket": "outcome",
+        "words": 41
+      },
+      {
+        "text": "Never hear, “can you send me your flight info?” ever again.",
+        "bucket": "outcome",
+        "words": 11
+      },
+      {
+        "text": "Choose who you want to share your flying with. They can then customize the notifications they get about your trip (like when you’ve landed, whether there are delays, and more).",
+        "bucket": "feature",
+        "words": 30
+      },
+      {
+        "text": "Get perfectly-timed notifications about your loved ones’ flights.",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "AA101 to New York departs in 4h",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "Mom took off for New York",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Arrives in 4h 30m at 8:34pm local time",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "6:32am (22m early) and ☀️ 88º",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Share to Instagram with Stories that actually look good.",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Look back on your travels with Flighty Passport",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "Whether you fly one time per year or one hundred, Flighty Passport gives you a record of all the fun details about your flights. How many times have you traveled around the Earth? What was your worst delay? What's your most-flown plane? Sit back and enjoy your lifetime of flying history, all on an Apple Design Award-winning interface.",
+        "bucket": "outcome",
+        "words": 58
+      },
+      {
+        "text": "A hall of fame for your flying history.",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "Kick back, relax, and enjoy scrolling through the most in-depth (and beautiful) compilation of your flying highlights you’ll find anywhere. Yes, you can import past flights.",
+        "bucket": "outcome",
+        "words": 26
+      },
+      {
+        "text": "Marvel at your most-flown aircraft. Keep track of your favorite seats and classes.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "Add up total time lost to delays.",
+        "bucket": "feature",
+        "words": 7
+      },
+      {
+        "text": "Know what’s happening at any airport. Right now.",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "Track 14,000+ airports worldwide with live arrivals, departures, delays, and operational performance — all in real time with Flighty Airports.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "With Flighty Airports get thousands of synthesized and official airport communications per minute. Flighty knows exactly what's happening at each airport, why, and when it may clear.",
+        "bucket": "feature",
+        "words": 27
+      },
+      {
+        "text": "Know What Could Disrupt Your Flight",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "New warnings for everything from hail, high wind, de-icing, and lighting to airport strikes, low staffing, or taxiway congestion. Even rare anomalies like buffalo on the runway.",
+        "bucket": "feature",
+        "words": 27
+      },
+      {
+        "text": "Flighty now ranks you and your friends by airport activity so you can flex, reflect, or shoot them a text to ask which lounge is best.",
+        "bucket": "feature",
+        "words": 26
+      },
+      {
+        "text": "More reasons you’ll want to take Flighty on your next trip",
+        "bucket": "excluded",
+        "words": 11
+      },
+      {
+        "text": "Family sharing. Share Flighty with up to 5 family members at a time.",
+        "bucket": "feature",
+        "words": 13
+      },
+      {
+        "text": "From first-time flyers to million-milers, people love Flighty.",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Ever since FlightTrack Pro died, I've searched for the ultimate flight-tracking app. Now I've found it: @Flighty.",
+        "bucket": "excluded",
+        "words": 17
+      },
+      {
+        "text": "Beautiful, clear, useful info (even tracks the INBOUND plane for your flight). Often tells me about delays before the airline does!",
+        "bucket": "excluded",
+        "words": 21
+      },
+      {
+        "text": "If you fly at all, Flighty is amazing. It really does get updates on delays faster than what you'll get from the airlines. The app itself is so clearly built with care, attention to detail, and skill. All the extra info on your flight and your all time passport are great as well.",
+        "bucket": "excluded",
+        "words": 53
+      },
+      {
+        "text": "The best flight tracking app I have ever experienced in 15 years and 650k miles of business travel.",
+        "bucket": "excluded",
+        "words": 18
+      },
+      {
+        "text": "Extremely stable, very pretty, and easy to use. Best of all, the app is super fast with gate changes and delay notifications. Flighty alerts me before the gate agents even know of a change.",
+        "bucket": "excluded",
+        "words": 34
+      },
+      {
+        "text": "It's like the old Apple motto: It just works. It does exactly what it needs to, nothing more, and it does it all flawlessly. It's genuinely my favorite app on my phone. Literal perfection. No notes. Now, if only every other app on my phone worked as well as Flighty.",
+        "bucket": "excluded",
+        "words": 50
+      },
+      {
+        "text": "Last month, traveling from PHL to SFO, I got a Flighty alert about a 1-hour delay while standing by the crew at the gate. I asked the captain, who laughed and said I was wrong, suggesting I just listen to the P.A. 5 minutes later, he got a call—reassigned to another flight last minute. We were left without a pilot, and the flight was delayed an hour. The captain apologized as he left. Quite funny how it all unfolded. Information rules!",
+        "bucket": "excluded",
+        "words": 81
+      },
+      {
+        "text": "I’m a 2+ million mile flyer, and this app is essential for navigating the complexities of travel. Airport monitors are slow to update, but Flighty keeps you ahead. Forewarned is forearmed—this app equips you with the info you need to handle inevitable travel issues. Absolutely worth the annual fee.",
+        "bucket": "excluded",
+        "words": 49
+      },
+      {
+        "text": "Signed up for @Flighty in an ongoing effort to get them on @RevenueCat, and the very first flight I used it for was cancelled. They let me know 30m (!) before the airline did, which meant that I hadn't left home yet. I'd have been on a train and would've wasted hours 🤯",
+        "bucket": "excluded",
+        "words": 53
+      },
+      {
+        "text": "Saved me HOURS of time! 6 Stars!",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "This app is one of the best on the App Store and worth every penny. The user interface is fast, and their notifications beat every airline. Yesterday, I had a 2+ hour layover in ATL on my way to MCI. There was an earlier flight, but Delta wouldn’t let me book it due to a tight connection time. I used Flighty to monitor it anyway. Mid-flight, at 30,000 ft., Flighty notified me the earlier flight was delayed by 15 minutes, while my flight was landing 5 minutes early. I had a chance! I rushed off, snagged a standby seat, and made it just in time. Got to see my family earlier because of this app. Thanks, Flighty devs!",
+        "bucket": "excluded",
+        "words": 118
+      },
+      {
+        "text": "We’ll handle the details. You just enjoy your trip. Available on iPhone, iPad, Mac and Apple Watch. Download for free.",
+        "bucket": "outcome",
+        "words": 20
+      },
+      {
+        "text": "Made with love in Austin, Barcelona and Oslo.",
+        "bucket": "excluded",
+        "words": 8
+      }
+    ]
+  },
+  {
+    "name": "Halide",
+    "url": "https://halide.cam/",
+    "counts": {
+      "feature": 259,
+      "outcome": 99
+    },
+    "assignments": [
+      {
+        "text": "The #1 App for Natural Photos.",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "Halide turns your iPhone into a traditional camera. Choose between the default iPhone look or beautiful, film-like shots with minimal processing and zero AI.",
+        "bucket": "outcome",
+        "words": 24
+      },
+      {
+        "text": "Ever feel like you're fighting your camera? That's AI \"fixing\" your photos for you. Halide Process Zero disables iPhone processing for natural color and contrast.",
+        "bucket": "outcome",
+        "words": 25
+      },
+      {
+        "text": "When you're ready to get creative, Halide includes alternatives processes called \"Looks.\" Powered by Process Zero, and developed with the help of a professional Hollywood colorist, Looks include physically accurate simulations that let your iPhone rival a standalone camera.",
+        "bucket": "feature",
+        "words": 39
+      },
+      {
+        "text": "If you're going for an analog feel, enable film simulation such as grain, halation, and MTF.",
+        "bucket": "feature",
+        "words": 16
+      },
+      {
+        "text": "If you shoot with a standalone camera, you can import your RAW files and render your photos with gorgeous results.",
+        "bucket": "feature",
+        "words": 20
+      },
+      {
+        "text": "Halide was designed with our favorite object in mind: the delightfully tactile and beautiful film camera, without compromising on the flexibility and power of mobile photography.",
+        "bucket": "outcome",
+        "words": 26
+      },
+      {
+        "text": "Gestures are modeled after the intuitive manipulation of dials: swiping up and down for exposure, and left and right for focus. The interface is simple and free of clutter, letting you focus on your artistic process.",
+        "bucket": "feature",
+        "words": 36
+      },
+      {
+        "text": "We pay homage to the design heritage of more than a century of camera design with completely custom typefaces and typography throughout based on etched type on camera bodies and lenses.",
+        "bucket": "feature",
+        "words": 31
+      },
+      {
+        "text": "Halide combines a zero-thinking-required, Machine-Learning assisted automatic mode with a powerful all-manual mode. Easily pick from letting Halide make decisions to total control over shutter speed, ISO and white balance.",
+        "bucket": "feature",
+        "words": 30
+      },
+      {
+        "text": "Sometimes your iPhone knows what should be in focus, but most of the time you know best. Halide not only offers easy, gesture-based manual focus, but also powerful tools to help nail a sharp shot like focus peaking and a new focus loupe.",
+        "bucket": "feature",
+        "words": 43
+      },
+      {
+        "text": "An easy way to become a better photographer with Halide.",
+        "bucket": "outcome",
+        "words": 10
+      },
+      {
+        "text": "Sign up for a 10-day set of lessons, right in the app.",
+        "bucket": "feature",
+        "words": 12
+      },
+      {
+        "text": "It sounds bizarre, but most photography apps send your information to Facebook or other third parties. Halide's camera has no tracking, does not collect or share any of your information or photos.",
+        "bucket": "feature",
+        "words": 32
+      },
+      {
+        "text": "That’s the way a camera should work, really.",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "Now on the App Store — with a free 1 week trial at signup:",
+        "bucket": "excluded",
+        "words": 14
+      },
+      {
+        "text": "Get it on the App Store",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Check out our Press Kit. You can also contact us.",
+        "bucket": "excluded",
+        "words": 10
+      },
+      {
+        "text": "Lux was founded in 2015. It has won iPhone App of the Year twice, for Kino and Spectre, and an Apple Design Award for Halide. Lux also publishes detailed articles about cameras and photography on its blog.",
+        "bucket": "excluded",
+        "words": 37
+      },
+      {
+        "text": "Check out our other app, Kino:",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "The best pro iPhone video camera",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Shown in Apple's \"Glowtime\" September event",
+        "bucket": "excluded",
+        "words": 6
+      }
+    ]
+  },
+  {
+    "name": "Structured",
+    "url": "https://structured.app/",
+    "counts": {
+      "feature": 12,
+      "outcome": 0
+    },
+    "assignments": [
+      {
+        "text": "Structured combines all your tasks and to-dos into a single visual timeline.",
+        "bucket": "feature",
+        "words": 12
+      },
+      {
+        "text": "As someone who struggles with scheduling things,",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "Can’t imagine living without it anymore.”",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "accountable try @structured_app! It literally changed",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "the way I spend my working days.”",
+        "bucket": "excluded",
+        "words": 7
+      },
+      {
+        "text": "Calenders. Structured really combines it all in the best",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "way and lets you bring ‘structure’ into your day”.",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Do you show ads or sell my data?",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "What if it's not right for me?",
+        "bucket": "excluded",
+        "words": 7
+      }
+    ]
+  },
+  {
+    "name": "Day One",
+    "url": "https://dayoneapp.com/",
+    "counts": {
+      "feature": 81,
+      "outcome": 44
+    },
+    "assignments": [
+      {
+        "text": "Free to use. Better with the Gold plan.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Focus on your writing with a layout that has everything you need and nothing you don’t.",
+        "bucket": "outcome",
+        "words": 16
+      },
+      {
+        "text": "Quickly revisit moments from the past.",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "Use On This Day to take a trip back in time. No time machine needed.",
+        "bucket": "outcome",
+        "words": 15
+      },
+      {
+        "text": "Add photos, videos, drawings, or audio recordings to bring your journal entries to life.",
+        "bucket": "feature",
+        "words": 14
+      },
+      {
+        "text": "You own the data, we keep it safe.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Protect your journal with passcodes and biometric security, end-to-end encryption, and automatic backups with the ability to export your data anytime.",
+        "bucket": "feature",
+        "words": 21
+      },
+      {
+        "text": "On your lap and in your pocket.",
+        "bucket": "outcome",
+        "words": 7
+      },
+      {
+        "text": "An award-winning Day One Mac application.",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Download the free Day One journal app on iPhone, Android, iPad, Mac, and Apple Watch. Or access your Day One Journal from any browser.",
+        "bucket": "feature",
+        "words": 24
+      },
+      {
+        "text": "Even if I physically journal, I’ll take a picture and upload it to Day One to keep track. I especially like how it reminds you where you were a year ago.",
+        "bucket": "excluded",
+        "words": 31
+      },
+      {
+        "text": "Constant source of joy: @dayoneapp’s “On this Day” feature which offers up memories from years past. I’m looking forward to these every day and it’s a great motivator to journal about all the big (and small) things that matter to me on any given day.",
+        "bucket": "excluded",
+        "words": 45
+      },
+      {
+        "text": "A little under two years ago I installed @dayoneapp, initially to keep a pandemic journal. It wasn’t long until I realized how beneficial is to write about my personal life as well! This is my favorite app. I use it everyday, if 72,000 words wasn’t telling enough 😂",
+        "bucket": "excluded",
+        "words": 48
+      },
+      {
+        "text": "my most prized possession in the entire world is my @dayoneapp library, with thousands of entries going back to 2014 covering every imaginable topic",
+        "bucket": "excluded",
+        "words": 24
+      },
+      {
+        "text": "The amount of times I pull out @dayoneapp",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "to answer the question…”When did we” or “where were we when” is amazing. 10 years digital yearbook and counting.",
+        "bucket": "excluded",
+        "words": 19
+      },
+      {
+        "text": "Check out our blog for journaling ideas and follow us on Instagram for tips and prompts to help you get the most from your journal.",
+        "bucket": "excluded",
+        "words": 25
+      }
+    ]
+  },
+  {
+    "name": "Opal",
+    "url": "https://opalapp.com/",
+    "counts": {
+      "feature": 81,
+      "outcome": 95
+    },
+    "assignments": [
+      {
+        "text": "Opal protects your focus automatically, so you can make technology work for you, not against you.",
+        "bucket": "outcome",
+        "words": 16
+      },
+      {
+        "text": "5 to 6 hours. That’s the average time you’ll spend on your phone today — often without realizing. It’s time to fight back.",
+        "bucket": "outcome",
+        "words": 23
+      },
+      {
+        "text": "Opal Score combines signals from your sleep, focus, and rest into a single measure of how technology aligns with your wellbeing.",
+        "bucket": "feature",
+        "words": 21
+      },
+      {
+        "text": "Take control of your day by blocking the apps of your choice, whether it's on your phone or desktop.",
+        "bucket": "feature",
+        "words": 19
+      },
+      {
+        "text": "Choose what you want to focus on, set the length, and lock in until the timer runs out.",
+        "bucket": "feature",
+        "words": 18
+      },
+      {
+        "text": "Discover beautiful rewards that celebrate every moment of focus",
+        "bucket": "feature",
+        "words": 9
+      },
+      {
+        "text": "Available on iPhone, Mac and Android",
+        "bucket": "feature",
+        "words": 6
+      },
+      {
+        "text": "Better than screen time settings, Opal helps you focus on what matters so you can make the most out of every day.",
+        "bucket": "outcome",
+        "words": 22
+      },
+      {
+        "text": "Average time saved thanks to Opal",
+        "bucket": "outcome",
+        "words": 6
+      },
+      {
+        "text": "*Calculated on the basis of daily Screen Time before and after Opal for over N=300,000 =>",
+        "bucket": "excluded",
+        "words": 16
+      },
+      {
+        "text": "Stay focused and minimize disruptions with proven, effective results.",
+        "bucket": "outcome",
+        "words": 9
+      },
+      {
+        "text": "Achieve significantly more each day with enhanced efficiency.",
+        "bucket": "outcome",
+        "words": 8
+      },
+      {
+        "text": "Experience a substantial boost in mental well-being and overall life balance.",
+        "bucket": "outcome",
+        "words": 11
+      },
+      {
+        "text": "No way out. You can't turn Opal off.",
+        "bucket": "feature",
+        "words": 8
+      },
+      {
+        "text": "Hear how Opal transforms lives, directly from those who've made the journey",
+        "bucket": "excluded",
+        "words": 12
+      },
+      {
+        "text": "ODC1, Prev. founding team at Avion School (YC W21)",
+        "bucket": "excluded",
+        "words": 9
+      },
+      {
+        "text": "Founder TZL Social and TheGenZClub, Forbes 30 under 30 GR.",
+        "bucket": "excluded",
+        "words": 10
+      },
+      {
+        "text": "Director of Operations at Backstage Capital",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Senior Director of Brand at Loom",
+        "bucket": "excluded",
+        "words": 6
+      },
+      {
+        "text": "Everything You Need to Break Up With Your Phone, From Free Tricks to Phone Safes",
+        "bucket": "excluded",
+        "words": 15
+      },
+      {
+        "text": "I’m spending £100 to block social media. We’re so hooked on mindless scrolling that companies are now helping us quit",
+        "bucket": "excluded",
+        "words": 20
+      },
+      {
+        "text": "It’s the third day of 2026. Are you resolving to get off your phone this year? Our writers have been grappling with their screen time lately.",
+        "bucket": "excluded",
+        "words": 26
+      },
+      {
+        "text": "What a Digital Detox Can Do for You",
+        "bucket": "excluded",
+        "words": 8
+      },
+      {
+        "text": "Harvard-Westlake blocks TikTok and Clash Royale on student phones. How’s that going down?",
+        "bucket": "excluded",
+        "words": 13
+      },
+      {
+        "text": "The best distraction blockers to jump-start your focus in the new year",
+        "bucket": "excluded",
+        "words": 12
+      },
+      {
+        "text": "Future of work piece “Your Phone Is Costing You Hours A Day — And Your Company Millions”",
+        "bucket": "excluded",
+        "words": 17
+      },
+      {
+        "text": "The Real-Life Diet of Chris Williamson, Who Thinks Fiber Is Coming for Protein’s Throne",
+        "bucket": "excluded",
+        "words": 14
+      },
+      {
+        "text": "Hold an ice cube – and shake like a dog: therapists on 16 simple, surprising ways to beat stress",
+        "bucket": "excluded",
+        "words": 19
+      },
+      {
+        "text": "Join the community and learn how other Gems use Opal for focus",
+        "bucket": "excluded",
+        "words": 12
+      },
+      {
+        "text": "Check out our Youtube channel to learn more about Opal",
+        "bucket": "excluded",
+        "words": 10
+      }
+    ]
+  }
+]
