@@ -75,8 +75,8 @@ The app stays local-first: no required account for normal tracking, on-device fo
 - **Insights** — premium nutrition graphs and trends for calories, macros, consistency, and goal progress
 - **Sharing dashboard** — optional no-account sharing with Convex-backed invite links, shared macro rings, today's totals, per-person controls, and revocation/delete flows
 - **Widgets**: Home Screen and Lock Screen widgets for your macros, plus shared-person widgets with MACROS Pro
-- **Settings** — daily goals, saved foods, macro ring colors, sharing, preferences, and Full Unlock purchase/restore
-- **Premium unlock** — StoreKit-backed Full Unlock for premium graphs and customization
+- **Settings**: daily goals, saved foods, macro ring colors, sharing, preferences, and MACROS Pro purchase/restore
+- **MACROS Pro**: yearly, monthly, and lifetime plans; the legacy Full Unlock non-consumable remains supported
 - **Offline-first** — local persistence, cached lookups, and graceful network absence
 
 ## Workspace Overview
@@ -93,7 +93,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 
 ### Apple app
 
-- **Xcode 26+** (Swift 6, SwiftUI, SwiftData, WidgetKit)
+- **Xcode 26+** with a Swift 6 compiler (the project uses Swift 5 language mode), SwiftUI, SwiftData, and WidgetKit; iOS 26 minimum
 - macOS with Xcode command-line tools installed
 - iPhone Simulator or device target
 
@@ -102,7 +102,7 @@ The app stays local-first: no required account for normal tracking, on-device fo
 - [Bun](https://bun.sh) for package management and scripts
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/) for local dev and deployment
 - A [USDA FoodData Central API key](https://fdc.nal.usda.gov/api-key-signup) for `worker/usda-proxy`
-- Node.js `>=22.12.0` for the Astro site runtime/tooling expectations
+- Node.js `>=22.23.4` and Bun `1.4.4` for the Astro site
 - Convex project configuration for optional sharing features
 
 ## Project Structure
@@ -142,7 +142,7 @@ xcodebuild -project "cal-macro-tracker.xcodeproj" \
   build
 ```
 
-The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme. Local StoreKit testing uses the shared scheme's `../../FullUnlock.storekit` reference to `FullUnlock.storekit`; `make quality-storekit` validates the reference and product identifier.
+The Apple project includes the main `cal-macro-tracker` app scheme and the `CalMacroWidget` widget extension scheme. Local StoreKit testing uses the shared scheme's `../../MACROSPro.storekit` reference to `MACROSPro.storekit`. `make quality-storekit` validates the reference and all four product IDs: `macros.pro.yearly`, `macros.pro.monthly`, `macros.pro.lifetime`, and legacy `fullunlock001`.
 
 ### Apple tests
 

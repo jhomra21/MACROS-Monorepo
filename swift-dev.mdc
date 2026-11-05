@@ -17,8 +17,8 @@ Write idiomatic SwiftUI code following Apple's latest architectural recommendati
 Use SwiftUI's built-in property wrappers appropriately:
 - `@State` - Local, ephemeral view state
 - `@Binding` - Two-way data flow between views
-- `@Observable` - Shared state (iOS 17+)
-- `@ObservableObject` - Legacy shared state (pre-iOS 17)
+- `@Observable` - Shared observable state; MACROS targets iOS 26
+- `@StateObject` and `@ObservedObject` - Ownership and observation of existing `ObservableObject` types (a protocol, not a property wrapper)
 - `@Environment` - Dependency injection for app-wide concerns
 
 ### 2. State Ownership Principles

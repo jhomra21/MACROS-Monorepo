@@ -18,8 +18,8 @@ Read `swift-dev.mdc` for specific swift coding guidance.
 
 When behavior is unclear or tooling is non-obvious, verify it against primary docs or public repo examples instead of guessing. Use web research and GitHub/API lookups to confirm build-system, Xcode project, and framework details before changing project structure.
 
-If you append `.md` to any of Apple's developer documentation it will render as markdown.
-Example: https://developer.apple.com/documentation/
+Some Apple documentation URLs offer Markdown by appending `.md`; verify each URL.
+Example: https://developer.apple.com/documentation/xcode/build-settings-reference.md
 
 ## Engineering Rules (Non-Negotiable)
 
@@ -57,15 +57,15 @@ Example: https://developer.apple.com/documentation/
 ## Commands
 
 - Simulator budget: at most four simulators booted on the Mac, and at most one of them stock (not slimmed). The iPad test runner and the stock iPhone 17, 17e, and Air are slimmed with simslim (`brew install mobai-app/tap/simslim`) using `tools/sim/macros-slim.json`; the owner's iPhone 18 Pro fixture and the iPhone 18 Pro Max media device stay stock. Measured on 2026-10-30 after 180 s settled: about 7.4 GB for a slim iPhone 17 versus about 10.6 GB for the stock iPhone 18 Pro Max. Check a device with `simslim verify <udid> --profile tools/sim/macros-slim.json` (it must be booted) and repair drift with `simslim on <udid> --profile tools/sim/macros-slim.json`. Never shut down reserved, unknown, or actively claimed devices merely to meet this budget.
-- Simulator inventory (cleaned 2026-10-30): exactly one simulator per device model per iOS version, and only the latest iOS runtime (27.0; the 26.4 runtime and all its devices were deleted). The kept set is:
+- Simulator inventory (observed 2026-11-05): keep exactly one simulator per device model per iOS version. Live runtime discovery lists both iOS 27.0 (24A434) and iOS 26.5 (23F77), although no 26.5 devices exist. Do not remove runtimes based on an old inventory. The kept devices are:
   - `9843E820-3A2A-4599-9206-D224B3035A47` iPhone 18 Pro: the owner's fixture with real app data and widgets. Never erase, reset, or load demo data on it.
   - `D16C3D35-889F-404F-BDD4-C640A6DBC4EF` iPhone 18 Pro Max (`MACROS-iPhone-18-Pro-Max-2026-10-30`): App Store media capture (demo data, 9:41 status bar).
   - `E91B597B-CE57-4C0B-A8A4-51CBDC3386AB` iPad Air 11-inch (`MACROS-iPad-Air-11-2026-10-29`): test runner; the app runs in iPhone compatibility mode there.
   - Stock iPhone 17, iPhone 17e, and iPhone Air on iOS 27.0, empty.
   Never create a simulator for a test, QA pass, or any other process. Reuse these devices and modify them per task: erase, reinstall, change settings, or load demo data (DEBUG Settings > Developer) as the task needs, then leave them in a usable state. Clean-install checks go on the iPad test runner or one of the stock iPhones. The owner's iPhone 18 Pro fixture is the one exception: never erase, reset, or seed it. A new simulator is only ever created when a new device model or a newer iOS runtime is needed, and the one it replaces is deleted.
-- Local StoreKit testing (`PurchaseStoreStoreKitTests`, real paywall prices in the simulator) needs the iOS 27.0 simulator runtime, the only one installed (the removed 26.4 runtime rejected catalog activation with `SKInternalErrorDomain Code=3`). Run it with the default Xcode 26.4 at `/Applications/Xcode.app`; Xcode 27.0 (installed as `/Applications/Xcode-26.4.1.app`) hung the same probe, so do not point `DEVELOPER_DIR` at it for StoreKit runs.
+- Historical StoreKit probes: iOS 26.4 rejected catalog activation with `SKInternalErrorDomain Code=3`; Xcode 27.0 hung an older probe. The known-good setup used iOS 27.0 and `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` (Xcode 26.4). On 2026-11-05 the active default is `/Applications/Xcode-26.4.1.app/Contents/Developer`, which reports Xcode 27.0 (27A266a), despite its folder name. Rerun `PurchaseStoreStoreKitTests` before recommending a different toolchain. No new payment-test result is implied.
 - Inspect project targets and schemes:
-  - `xcodebuild -list -project "/Users/juan/Documents/xcode/cal-macro-tracker/cal-macro-tracker.xcodeproj"`
+  - `xcodebuild -list -project "cal-macro-tracker.xcodeproj"`
 - Build the app from the CLI (a build is not a test run):
   - `make quality-build`
 - Run the full iOS Simulator test suite serially with a bounded per-test allowance. Replace the placeholder with the iPad Air 11-inch test runner's UUID (above), never the owner's iPhone 18 Pro fixture:
