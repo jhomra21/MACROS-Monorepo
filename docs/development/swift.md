@@ -1,18 +1,18 @@
 
-# Modern Swift Development
+# Modern Swift development
 
-Write idiomatic SwiftUI code following Apple's latest architectural recommendations and best practices.
+Use SwiftUI's state ownership and lifecycle tools. Keep the project's current Swift language mode unless a separate change requires otherwise.
 
-## Core Philosophy
+## Approach
 
-- SwiftUI is the default UI paradigm for Apple platforms - embrace its declarative nature
+- Use SwiftUI for native app UI
 - Avoid legacy UIKit patterns and unnecessary abstractions
 - Focus on simplicity, clarity, and native data flow
-- Let SwiftUI handle the complexity - don't fight the framework
+- Use SwiftUI's data flow rather than adding a parallel state system
 
-## Architecture Guidelines
+## Architecture guidelines
 
-### 1. Embrace Native State Management
+### 1. Native state management
 
 Use SwiftUI's built-in property wrappers appropriately:
 - `@State` - Local, ephemeral view state
@@ -21,37 +21,37 @@ Use SwiftUI's built-in property wrappers appropriately:
 - `@StateObject` and `@ObservedObject` - Ownership and observation of existing `ObservableObject` types (a protocol, not a property wrapper)
 - `@Environment` - Dependency injection for app-wide concerns
 
-### 2. State Ownership Principles
+### 2. State ownership
 
 - Views own their local state unless sharing is required
 - State flows down, actions flow up
 - Keep state as close to where it's used as possible
 - Extract shared state only when multiple views need it
 
-### 3. Modern Async Patterns
+### 3. Async work
 
 - Use `async/await` as the default for asynchronous operations
-- Leverage `.task` modifier for lifecycle-aware async work
+- Use the `.task` modifier for lifecycle-aware async work
 - Avoid Combine unless absolutely necessary
 - Handle errors gracefully with try/catch
 
-### 4. View Composition
+### 4. View composition
 
 - Build UI with small, focused views
 - Extract reusable components naturally
 - Use view modifiers to encapsulate common styling
 - Prefer composition over inheritance
 
-### 5. Code Organization
+### 5. Code organization
 
 - Organize by feature, not by type (avoid Views/, Models/, ViewModels/ folders)
 - Keep related code together in the same file when appropriate
 - Use extensions to organize large files
 - Follow Swift naming conventions consistently
 
-## Implementation Patterns
+## Examples
 
-### Simple State Example
+### Local state
 ```swift
 struct CounterView: View {
     @State private var count = 0
@@ -67,7 +67,7 @@ struct CounterView: View {
 }
 ```
 
-### Shared State with @Observable
+### Shared state with @Observable
 ```swift
 @Observable
 class UserSession {
@@ -92,7 +92,7 @@ struct MyApp: App {
 }
 ```
 
-### Async Data Loading
+### Async data loading
 ```swift
 struct ProfileView: View {
     @State private var profile: Profile?
@@ -127,9 +127,9 @@ struct ProfileView: View {
 }
 ```
 
-## Best Practices
+## Code review
 
-### DO:
+### Keep
 - Write self-contained views when possible
 - Use property wrappers as intended by Apple
 - Test logic in isolation, preview UI visually
@@ -137,7 +137,7 @@ struct ProfileView: View {
 - Keep views focused on presentation
 - Use Swift's type system for safety
 
-### DON'T:
+### Avoid
 - Create ViewModels for every view
 - Move state out of views unnecessarily
 - Add abstraction layers without clear benefit
@@ -145,22 +145,19 @@ struct ProfileView: View {
 - Fight SwiftUI's update mechanism
 - Overcomplicate simple features
 
-## Testing Strategy
+## Validation
 
-- Unit test business logic and data transformations
+- Test business logic and data transformations with isolated fixtures
+- List failure modes before writing tests and implementation
 - Use SwiftUI Previews for visual testing
 - Test @Observable classes independently
 - Keep tests simple and focused
 - Don't sacrifice code clarity for testability
 
-## Modern Swift Features
+## Swift features
 
 - Use Swift Concurrency (async/await, actors)
-- Leverage Swift 6 data race safety when available
-- Utilize property wrappers effectively
+- Use available Swift concurrency checks without silently changing language mode
+- Use property wrappers for their documented ownership and observation behavior
 - Embrace value types where appropriate
 - Use protocols for abstraction, not just for testing
-
-## Summary
-
-Write SwiftUI code that looks and feels like SwiftUI. The framework has matured significantly - trust its patterns and tools. Focus on solving user problems rather than implementing architectural patterns from other platforms.
