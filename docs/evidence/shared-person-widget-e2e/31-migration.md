@@ -1,5 +1,7 @@
 # Build-28 in-place upgrade
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/01-small-shared.png`.
+
 Device A: iPhone 17, `918D29B9-97D3-42C0-9C47-00605E01E8DB`.
 No erase, uninstall, identity reset, or re-pairing was performed.
 

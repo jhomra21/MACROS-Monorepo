@@ -1,5 +1,7 @@
 # Website SEO evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-seo/app-store-flag-on.jpg`.
+
 Validated locally on November 4, 2026, from branch `web/seo`, based on `74a0f79`. Nothing was deployed. The launch flag is off and the launch post is a draft in the final build.
 
 ## Lighthouse

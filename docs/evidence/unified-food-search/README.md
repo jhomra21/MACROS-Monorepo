@@ -1,5 +1,7 @@
 # Unified food search evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/unified-food-search/green-ax5-stacked.png`.
+
 Design: [`../../design/unified-food-search.md`](../../design/unified-food-search.md).
 Base: `origin/main` at `21921b1`; branch: `feat/unified-food-search`.
 

@@ -1,5 +1,7 @@
 # F2 / F3 reproduction and evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/state-machine-fixes/f2-e2e/baseline-dashboard.png`.
+
 Review follow-up (2026-11-03): [real SwiftData RED/GREEN simulator E2E](f2-e2e/README.md)
 supersedes the original F2 coverage limits below. There are now five migration
 tests: the obsolete `InterruptedStoreCopy` test/helper was deleted, and the

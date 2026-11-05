@@ -127,6 +127,6 @@ docs/evidence/shared-person-widget-e2e/integration-red.txt
 docs/evidence/shared-person-widget-e2e/intent-concurrency.txt
 docs/evidence/shared-person-widget-e2e/smoke-final.txt
 docs/evidence/shared-person-widget-e2e/validation-final.txt
-implementation-trackers/shared-person-widget-implementation.md
-implementation-trackers/shared-person-widget-plan-review.md
-implementation-trackers/shared-person-widget-plan.md
+docs/plans/active/shared-person-widget-implementation.md
+docs/plans/archive/shared-person-widget-plan-review.md
+docs/plans/archive/shared-person-widget-plan.md

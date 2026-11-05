@@ -1,5 +1,7 @@
 # Failure modes, written before D8/D9 code and tests
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-inline-details/baseline/e12-common-copy.png`.
+
 ## D8 dirty edit session
 - Opening an editor, including a collapsed-card renamed label, must be clean.
 - Editing then reverting a name or nutrient must return to clean.

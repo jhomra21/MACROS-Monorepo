@@ -1,5 +1,7 @@
 # Camera inline Details evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-inline-details/baseline/e12-common-copy.png`.
+
 ## Result and limits
 
 Details, label Edit details, and failed-barcode Enter manually use the shared editor inside the camera glass card. Name/brand/serving, all nutrients, source notes, Required Review, reusable-food behavior, Servings/Grams and Log remain available. Log collapses to Logged; Scan again starts a new item. Non-camera callers still push LogFoodScreen.

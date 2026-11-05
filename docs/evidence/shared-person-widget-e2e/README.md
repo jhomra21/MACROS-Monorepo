@@ -1,5 +1,7 @@
 # Shared-person widget E2E
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/01-small-shared.png`.
+
 Branch-only implementation, based on main `8ebd989` (build 28). The plan review's
 required changes 1–11 override the original plan. Do not release before 1.0
 approval and the production cutover. Only dev `energized-pigeon-822` is in scope.

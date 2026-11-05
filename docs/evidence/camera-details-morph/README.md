@@ -1,5 +1,7 @@
 # Camera Details morph, fix round 2
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/camera-details-morph/green/expanded.png`.
+
 Branch `feat/camera-details-morph`; review base **c8edb61**. Build 29 is unchanged.
 
 ## Correction
@@ -43,9 +45,9 @@ All current captures use the exclusively locked iPad runner **E91B597B-CE57-4C0B
 
 `green/compact-row-bounds.json` verifies equal raw action frames: Details **(32, 235.5, 92, 50.5)** and Log **(136, 235.5, 242, 50.5)** before and after. `green/compact-row-pixels.json` records **zero pixel difference** for that paired retained-session comparison. The script first opens/closes the unedited editor so both endpoints compare the same retained session. A separate first-mount comparison had identical geometry with a maximum native-glass raster difference of 1/255 (mean 0.0071/255); that rendering quantization is not described as pixel-identical.
 
-![Expanded header](green/expanded.png)
-![Scrolled to the final row](green/expanded-bottom.png)
-![Compact actions before and after](green/compact-before-after.png)
+Expanded header
+Scrolled to the final row
+Compact actions before and after
 
 ## Retained-state checks
 

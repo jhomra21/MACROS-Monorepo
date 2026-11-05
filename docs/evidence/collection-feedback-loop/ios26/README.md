@@ -1,5 +1,7 @@
 # iOS 26 collection feedback-loop investigation
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/collection-feedback-loop/ios26/build27-live-roster-ax.png`.
+
 ## Finding
 
 Reproduced in unmodified build 27 (`67e85ad`) and pinned main/build 29 (`7034202b594ea43c819ec7c8b796e4b84213a201`), on the same iPhone 17 simulator, iOS 26.5 (23F77), 402 × 874 points, 3× display.

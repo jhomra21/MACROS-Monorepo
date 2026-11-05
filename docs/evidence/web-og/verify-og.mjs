@@ -11,7 +11,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
 const web = join(root, 'web');
 
-const evidence = dirname(fileURLToPath(import.meta.url));
+const evidence = join(root, 'build/evidence/2026-11-05-web-og');
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 
@@ -156,7 +156,7 @@ try {
 		await cp(join(web, 'dist', new URL(page.url).pathname), join(evidence, new URL(page.url).pathname.slice('/social/'.length).replaceAll('/', '--')));
 	}
 
-	assert.ok(baseline.reduce((total, page) => total + page.bytes, 0) < 5_000_000);
+	assert.ok(baseline.reduce((total, page) => total + page.bytes, 0) < 2 * 1024 * 1024);
 	await writeFile(join(evidence, 'results.json'), JSON.stringify({
 		pages: baseline, identicalBuilds: true, isolatedTitleInvalidation: true, draftLeaks: false,
 		isolatedPublication: 'Blog index and post both gain matching previews; existing pages unchanged',

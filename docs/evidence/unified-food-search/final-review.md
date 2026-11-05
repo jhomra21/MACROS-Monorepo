@@ -1,5 +1,7 @@
 # Final cleanup review
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/unified-food-search/green-ax5-stacked.png`.
+
 ## Scope and reason
 
 Reviewed the Swift search/session/selection changes, Worker adapters/orchestration/cache/cursor/budget changes, legacy v1 extraction, tests, and evidence. This pass counters unnecessary GPT-added defenses and stale abstractions. It ran after normal Worker and Swift validators, locally without subagents.

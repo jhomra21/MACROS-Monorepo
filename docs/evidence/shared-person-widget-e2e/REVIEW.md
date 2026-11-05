@@ -1,5 +1,7 @@
 # Final implementation and defensive-code review
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/01-small-shared.png`.
+
 This earlier review missed the findings in REVIEW-OPUS.md. Its conclusions are
 superseded by [fix round 1](fix-round-1/REPORT.md), including fresh real widget
 taps, retry/duplicate diagnostics, and explicit remaining device gates.

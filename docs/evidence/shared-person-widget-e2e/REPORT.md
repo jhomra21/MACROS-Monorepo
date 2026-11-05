@@ -1,5 +1,7 @@
 # Shared-person widget validation report
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/01-small-shared.png`.
+
 Work in progress on `feat/shared-person-widget`, base `8ebd989` (build 28).
 This is not a release sign-off.
 

@@ -1,5 +1,7 @@
 # F2 review: real SwiftData migration E2E
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/state-machine-fixes/f2-e2e/baseline-dashboard.png`.
+
 Run on 2026-11-03, simulator B only:
 `F976E800-DA1F-4F20-B755-DFD964E33975`, iPhone 17e, iOS 27.0.
 Main baseline: `d53a31380a93d6ad84565bddb92a4cbdc26e3fe6`.

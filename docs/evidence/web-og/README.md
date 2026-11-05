@@ -1,5 +1,7 @@
 # Per-page link previews
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-og/about.aeda5b7a70c6.png`.
+
 Implemented on `web/og`, based on `b5ac3f0`. No deployment.
 
 ## Rendering and fonts

@@ -1,5 +1,7 @@
 # Macro ring evidence
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/web-rings/about-1440-dark.jpg`.
+
 Section rings are **2.25rem square**, small beside the headline and aligned to the heading grid. At 390px and 1440px they stay legible without competing with the title.
 
 The header logo randomizes its fills in its existing early inline script. A second one-line inline script randomizes every section ring independently after the page markup loads. Section rings draw only when their `[data-reveal]` heading reveals; the PageHeading ring draws on load. Both animations are disabled for reduced motion, leaving the randomized final ring values visible. Browser media emulation confirmed the section-ring animation name is `none` with reduced motion enabled.

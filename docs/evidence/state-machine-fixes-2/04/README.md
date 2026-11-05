@@ -1,5 +1,7 @@
 # 04. Overlapping backup decode
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/state-machine-fixes-2/04/red-newer-summary.png`.
+
 ## Exact live sequence
 
 1. Grant Debug Pro and export synthetic demo data. Create `Slow-A.json` (first 11 log entries, no weights, exported Nov 1) and `Fast-B.json` (first 22 log entries, no weights, exported Nov 2).
@@ -22,9 +24,9 @@ After assigning `presentation`, it logs `backup summary slow=<bool>`.
 
 ## Result
 
-- RED: [trace](red-trace.log), [newer presentation](red-newer-summary.png), [stale final summary](red-stale-summary.png). B publishes at `1793722178.1863542`, then A publishes at `1793722198.156598`; the final visible count is **11**.
-- GREEN: [disabled actions](green-disabled-actions.png), [accessibility capture](green-disabled-actions.log), [trace](green-trace.log). A pauses at `1793722940.699815`. Import and both exports are visibly disabled; tapping Import at the same position does not open Files. A finishes at `1793722988.754404`. Only afterward is B selected.
-- Final [newer summary screenshot](green-newer-summary.png) and [accessibility capture](green-newer-summary.log) show **22** log entries.
+- RED: [trace](red-trace.log), newer presentation, stale final summary. B publishes at `1793722178.1863542`, then A publishes at `1793722198.156598`; the final visible count is **11**.
+- GREEN: disabled actions, [accessibility capture](green-disabled-actions.log), [trace](green-trace.log). A pauses at `1793722940.699815`. Import and both exports are visibly disabled; tapping Import at the same position does not open Files. A finishes at `1793722988.754404`. Only afterward is B selected.
+- Final newer summary screenshot and [accessibility capture](green-newer-summary.log) show **22** log entries.
 
 Fix: `BackupSettingsSection.swift:77–82` acquires the existing `isWorking` flag synchronously before launching decode and releases it with `defer` on success, errors, empty selections, and picker failures. Export already owns the same flag. This serializes all three presentation-producing actions without another task handle, revision counter, or duplicated state.
 

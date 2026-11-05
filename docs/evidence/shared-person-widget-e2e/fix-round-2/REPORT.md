@@ -1,5 +1,7 @@
 # Shared-person widget fixes, round 2
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/fix-round-2/00-personal-native-before.png`.
+
 2026-11-03, `feat/shared-person-widget`, starting at `50fa3b9`.
 The cancelled worker's two finished commits were retained: `359a54c` (NB1)
 and `a3bac47` (NS1/NS2). `102ccf9` fixes all ten nits.

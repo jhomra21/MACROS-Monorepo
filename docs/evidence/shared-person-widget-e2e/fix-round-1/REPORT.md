@@ -1,5 +1,7 @@
 # Shared-person widget fixes, round 1
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/shared-person-widget-e2e/fix-round-1/01-legacy-before.png`.
+
 Branch: `feat/shared-person-widget`, rebased onto `origin/main` `da00bef`.
 No subagents, production calls, deployments, website edits, uploads, build bumps,
 or main merge. No unit tests were added; one existing fixture was adapted to

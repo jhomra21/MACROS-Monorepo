@@ -1,5 +1,7 @@
 # Build 27 collection-view crash investigation
 
+Media removed in the repo cleanup; retrieve with `git show 074b10994f1b68d9d7a8d6c54ed7effb90d5f1f5:docs/evidence/collection-feedback-loop/build27-nonrepro.mp4`.
+
 ## iOS 26 follow-up
 
 **Reproduced on iOS 26.5 in both build 27 and pinned main.** Repeated Today hero expansion/collapse triggers UIKit's feedback-loop debugger. Its collected records show the first row's preferred height alternating by one physical pixel. Populated live Sharing updates did not reproduce the crash.
