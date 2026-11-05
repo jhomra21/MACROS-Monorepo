@@ -17,6 +17,8 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         session.resetToDefaultState()
         session.clearTransactions()
         session.disableDialogs = true
+        // Clearing StoreKitTest transactions does not synchronously invalidate StoreKit's cache.
+        try await AppStore.sync()
         let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
         guard catalog.count == ProPlan.allCases.count else {
             throw NSError(
@@ -126,6 +128,8 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         let transaction = try XCTUnwrap(session.allTransactions().first { $0.productIdentifier == ProPlan.lifetime.productID })
         try await expectChange("Refund listener removes Pro", until: { !self.store.hasPro }) {
             try self.session.refundTransaction(identifier: transaction.identifier)
+            // Like simulated expiry, refund delivery can require an explicit StoreKitTest sync.
+            try await AppStore.sync()
         }
         XCTAssertFalse(store.hasPro)
     }
@@ -135,9 +139,15 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         session.askToBuyEnabled = true
         await store.purchase(.monthly)
         XCTAssertFalse(store.hasPro)
-        let pending = try XCTUnwrap(session.allTransactions().first(where: \.pendingAskToBuyConfirmation))
+        let session = try XCTUnwrap(session)
+        // StoreKitTest's synchronous IPC must not block the entitlement listener's main actor.
+        let pendingID = try await Task.detached {
+            try XCTUnwrap(session.allTransactions().first(where: \.pendingAskToBuyConfirmation)).identifier
+        }.value
         try await expectChange("Approval listener grants Pro", until: { self.store.hasPro }) {
-            try self.session.approveAskToBuyTransaction(identifier: pending.identifier)
+            try await Task.detached {
+                try session.approveAskToBuyTransaction(identifier: pendingID)
+            }.value
         }
         XCTAssertEqual(entitlements.proSource, .monthly)
     }
@@ -153,6 +163,7 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
             until: { self.entitlements.proExpirationDate.map { $0 > previousExpiration } ?? false }
         ) {
             try self.session.forceRenewalOfSubscription(productIdentifier: ProPlan.monthly.productID)
+            try await AppStore.sync()
         }
         XCTAssertTrue(store.hasPro)
     }
@@ -169,16 +180,25 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
             until: { self.store.subscriptionStatuses[ProPlan.monthly.productID] == .expires(expiration) }
         ) {
             try self.session.disableAutoRenewForTransaction(identifier: transaction.identifier)
+            try await AppStore.sync()
         }
         XCTAssertTrue(store.hasPro)
     }
 
     func testLegacyGrantsLifetime() async throws {
-        _ = try await session.buyProduct(identifier: PurchaseStore.legacyFullUnlockProductID)
-        await store.refreshEntitlements()
+        await store.start()
+        try await expectChange("Transaction listener grants legacy lifetime", until: { self.store.hasPro }) {
+            _ = try await self.session.buyProduct(identifier: PurchaseStore.legacyFullUnlockProductID)
+        }
         XCTAssertTrue(store.hasPro)
         XCTAssertEqual(entitlements.proSource, .legacyFullUnlock)
         XCTAssertNil(entitlements.proExpirationDate)
+        let coldEntitlements = AppEntitlements()
+        let coldStore = PurchaseStore(entitlements: coldEntitlements)
+        await coldStore.refreshEntitlements()
+        XCTAssertTrue(coldStore.hasPro)
+        XCTAssertEqual(coldEntitlements.proSource, .legacyFullUnlock)
+        XCTAssertNil(coldEntitlements.proExpirationDate)
     }
 
     func testLifetimeBeatsSubscription() async throws {
@@ -188,6 +208,7 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         }
         try await expectChange("Lifetime purchase outranks subscription", until: { self.entitlements.proSource == .lifetime }) {
             _ = try await self.session.buyProduct(identifier: ProPlan.lifetime.productID)
+            try await AppStore.sync()
         }
         XCTAssertEqual(entitlements.proSource, .lifetime)
         XCTAssertNil(entitlements.proExpirationDate)
@@ -251,5 +272,11 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         defer { isObserving = false }
         try await action()
         await fulfillment(of: [changed], timeout: 5)
+        // Entitlement publication precedes finish(); drain before mutating or clearing the test session.
+        for await result in Transaction.unfinished {
+            if case let .verified(transaction) = result {
+                await transaction.finish()
+            }
+        }
     }
 }
