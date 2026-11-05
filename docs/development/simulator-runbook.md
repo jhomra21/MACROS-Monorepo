@@ -23,7 +23,9 @@ xcrun simctl list devices
 
 Observed 2026-11-05, read-only: active `/Applications/Xcode-26.4.1.app/Contents/Developer` reports Xcode 27.0 (27A266a). `/Applications/Xcode.app` reports Xcode 26.4 (17E192). Select per command with DEVELOPER_DIR rather than changing the system default.
 
-Live runtime disk images were both Ready: iOS 27.0 (24A434), image `9BCFD3EA-65E8-4996-BD4E-218799C1F30F`; iOS 26.5 (23F77), image `EC37288C-B4E6-4240-8230-27CBD3BE073D`. Total: 2 images, 15.4G. This conflicts with the owner's 26.5 removal note; do not resolve that conflict by deleting anything. There were no 26.5 devices.
+The only simulator runtime is iOS 27.0 (24A434), image `9BCFD3EA-65E8-4996-BD4E-218799C1F30F`, 7.5 GiB. The owner-approved deletion of iOS 26.5 (23F77) completed on 2026-11-05; it had no devices and neither Xcode could use it.
+
+Xcode 26.4 lists no iOS simulator destinations: it asks for the iOS 26.4 runtime, which was deleted on 2026-10-30. Run simulator builds and tests with Xcode 27.0 (`DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer`), which sees the iPad runner and all five iPhones.
 
 All observed devices below were Shutdown on iOS 27.0. Rediscover before use.
 
@@ -40,4 +42,4 @@ All observed devices below were Shutdown on iOS 27.0. Rediscover before use.
 
 The 2026-10-26 probe activated the catalog on Xcode 26.4 (17E192) with iOS 27.0. It reported 18/18 entitlement tests, but only 11/14 StoreKit tests plus a separate Ask to Buy timeout. iOS 26.4 rejected activation with SKInternalErrorDomain Code=3; Xcode 27.0 hung that older probe. These are dated results, not a blanket current pass or prohibition.
 
-For the known-good toolchain use `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` explicitly with the serial [test command](validation.md). Rerun PurchaseStoreStoreKitTests before promoting another toolchain. Simulator results cannot close sandbox purchase, second-device restore, Family Sharing, or legacy real-account checks. See [active plans](../plans/README.md). No payment tests or device changes were made for this runbook.
+On 2026-11-05, Xcode 27.0 with the iPad runner on iOS 27.0 activated the catalog and ran all 15 PurchaseStoreStoreKitTests twice, using the serial [test command](validation.md) with `-only-testing:cal-macro-trackerTests/PurchaseStoreStoreKitTests`. Each run had one different failure: first `testAskToBuyApprovalUnlocksThroughListener` exceeded its time allowance, then `testLegacyGrantsLifetime` saw no entitlement right after `buyProduct` (`proSource` was nil). Both passed in the other run, so treat them as timing-sensitive tests, not proof of an app defect. Xcode 27.0 did not hang. Simulator results cannot close sandbox purchase, second-device restore, Family Sharing, or legacy real-account checks. See [active plans](../plans/README.md). No payment tests or device changes were made for this runbook.
