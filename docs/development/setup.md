@@ -12,7 +12,7 @@ make quality-storekit
 make quality-build
 ```
 
-The shared schemes are `cal-macro-tracker` and `CalMacroWidget`. The app scheme runs `cal-macro-trackerTests`. Its StoreKit reference is `../../MACROSPro.storekit`; the catalog also belongs to the test bundle. Pro plans are yearly, monthly, and lifetime, with legacy `fullunlock001` support. Catalog validation is not purchase-test evidence.
+The shared schemes are `cal-macro-tracker` and `CalMacroWidget`. The app scheme runs `cal-macro-trackerTests`. Its StoreKit reference is `../../config/apple/MACROSPro.storekit`; the catalog also belongs to the test bundle. Pro plans are yearly, monthly, and lifetime, with legacy `fullunlock001` support. Catalog validation is not purchase-test evidence.
 
 Install official swift-format (`brew install swift-format`) for formatting checks. Periphery is optional for `make quality-dead`. Read the [simulator runbook](simulator-runbook.md) before any device use. macOS builds are deferred.
 

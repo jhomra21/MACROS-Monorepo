@@ -100,7 +100,7 @@ Apple Help: [Create a Sandbox Apple Account](https://developer.apple.com/help/ap
 
 ## 9. Final verification
 
-| App Store Connect product | Expected `MACROSPro.storekit` identifier |
+| App Store Connect product | Expected `config/apple/MACROSPro.storekit` identifier |
 | --- | --- |
 | Yearly subscription | `macros.pro.yearly` |
 | Monthly subscription | `macros.pro.monthly` |

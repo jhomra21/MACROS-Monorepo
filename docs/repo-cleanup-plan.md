@@ -2,6 +2,8 @@
 
 Research date: 2026-11-05. Base: `074b109`. Owner-approved cleanup implemented on `chore/repo-cleanup`; see the scope and checklist below.
 
+Apple configuration follow-up: item 8 is now implemented separately on `chore/apple-config`. The three Info plists and `MACROSPro.storekit` live in `config/apple/`; the shared scheme uses `../../config/apple/MACROSPro.storekit`. Root paths below describe the original research baseline, not current configuration.
+
 ## Recommendation
 
 Keep the existing app, backend, worker, web, and tools directories. Fix the documentation first. Stop committing full QA capture runs. Archive completed plans without losing their unresolved release checks. Move the four Apple configuration files only in a separate, validated change.
@@ -166,7 +168,7 @@ Concrete excerpts:
 
 1. Keep a normal checked-in Xcode project for the signed app and WidgetKit extension. The sampled apps do this. None demonstrates a need to migrate MACROS to Tuist or XcodeGen.
 2. Keep configuration close to its target, or in a small explicit configuration directory outside synchronized source groups.
-3. Keep fixtures in test targets. MACROS already does this with migration stores, barcode images, and `MACROSPro.storekit`.
+3. Keep fixtures in test targets. MACROS already does this with migration stores, barcode images, and `config/apple/MACROSPro.storekit`.
 4. Keep official `swift-format`, explicit toolchain selection, and separate build/test reports.
 5. Write task-specific build/release instructions that link to scripts. Do not embed private machine setup throughout a global rules file.
 6. Separate release notes from engineering work logs. Shiki's versioned changelog is a better model for a release summary than MACROS' current daily diary.
@@ -186,7 +188,7 @@ These are current facts at research time. Historical test outcomes should remain
 | Owner request suspects `9843E820` is gone | `9843E820-3A2A-4599-9206-D224B3035A47`, iPhone 18 Pro, still exists and was Shutdown. Preserve its protected status. Existence does not independently establish what private data it contains. |
 | `AGENTS.md` calls Xcode 26.4 the default | `xcode-select -p` is `/Applications/Xcode-26.4.1.app/Contents/Developer`; its `xcodebuild -version` is Xcode **27.0**, build `27A266a`. `/Applications/Xcode.app` is Xcode **26.4**, build `17E192`. Folder names are misleading. |
 | StoreKit section says not to use Xcode 27 because an older probe hung | Keep the old result as a dated compatibility note. Do not infer a current StoreKit pass or failure. Use explicit `DEVELOPER_DIR` for the documented known-good 26.4 probe, and rerun `PurchaseStoreStoreKitTests` before promoting any toolchain to current recommendation. This proposal did not run payment tests. |
-| `README.md` says shared scheme references `../../FullUnlock.storekit` | Actual reference is `../../MACROSPro.storekit`. Old file is absent. `make quality-storekit` passes and verifies the scheme, test resource, prices, and four product IDs. |
+| `README.md` says shared scheme references `../../FullUnlock.storekit` | Current reference is `../../config/apple/MACROSPro.storekit` after item 8. Old file is absent. `make quality-storekit` verifies the scheme, test resource, prices, and four product IDs. |
 | README describes premium solely as "Full Unlock" | The `ProPlan` enum is in `cal-macro-tracker/Features/Purchases/PurchaseStore.swift`; the catalog contains `macros.pro.yearly`, `macros.pro.monthly`, `macros.pro.lifetime`, and legacy `fullunlock001`. Describe MACROS Pro and distinguish the legacy non-consumable. |
 | README says Node `>=22.12.0` for web | `web/package.json` declares `>=22.23.4`, with Bun `1.4.4`. Runtime-QA documentation separately says Node 22.18+ for native TypeScript. Do not collapse these requirements into one unverified minimum. |
 | README says "Swift 6" without distinguishing compiler and language mode | Project target settings currently have `SWIFT_VERSION = 5.0`, with iOS deployment target 26.0. A Swift 6 compiler does not imply Swift 6 language mode. Document the distinction; do not change language mode during cleanup. |
@@ -277,14 +279,14 @@ Proposed evidence policy:
 
 No Apple rule requires the three Info plists or StoreKit catalog to remain at repo root. Apple's [build settings reference](https://developer.apple.com/documentation/xcode/build-settings-reference.md) defines `INFOPLIST_FILE` as "The project-relative path to the property list file". The obstacle is MACROS' actual path contracts.
 
-- `project.pbxproj` has `INFOPLIST_FILE = "Info-iOS.plist"`, conditional `"INFOPLIST_FILE[sdk=macosx*]" = "Info-macOS.plist"`, and widget `Info-Widget.plist`, in both configurations. The macOS file is still referenced, even though macOS builds are deferred. Do not delete it as dead.
-- `MACROSPro.storekit` has an explicit PBX file reference and is a resource of the test target. The shared scheme resolves it from `xcshareddata` as `../../MACROSPro.storekit`. `tools/quality/validate_storekit_config.py` hard-codes the scheme identifier and checks PBX text. The filename is also referenced in App Store and purchase docs.
+- `project.pbxproj` now has `INFOPLIST_FILE = "config/apple/Info-iOS.plist"`, conditional `"INFOPLIST_FILE[sdk=macosx*]" = "config/apple/Info-macOS.plist"`, and widget `config/apple/Info-Widget.plist`, in both configurations. The macOS file is still referenced, even though macOS builds are deferred. Do not delete it as dead.
+- `config/apple/MACROSPro.storekit` has an explicit PBX file reference and is a resource of the test target. The shared scheme resolves it from `xcshareddata` as `../../config/apple/MACROSPro.storekit`. `tools/quality/validate_storekit_config.py` hard-codes the scheme identifier and checks PBX text. The filename is also referenced in App Store and purchase docs.
 - Source groups are `PBXFileSystemSynchronizedRootGroup`, with membership exceptions for widget/shared source. Put moved configuration in `config/apple/`, outside the synchronized app tree, to avoid accidental resource membership.
 - Keep `.swift-format` and `.oxlintrc.json` at root. `Makefile` and developer tools explicitly discover them there. Keep `.periphery.yml`, `.xcodebuildmcp/config.yaml`, and package-local Wrangler/Astro/TypeScript configs unless a concrete issue calls for moving them.
 - `cal-macro-tracker.xcodeproj/xcuserdata/juan.xcuserdatad/xcschemes/xcschememanagement.plist` is tracked despite ignore rules. Last change: 2026-04-27, `5da61e8`. No inbound text references found. Remove it from tracking only after verifying the shared schemes remain visible in a fresh clone.
 - `cal-macro-trackerTests/GoalCalculatorTests.md`, last changed 2026-10-25 at `c9fc7d7`, has no inbound filename references. Its contents are a useful failure-mode specification. Link or relocate it, do not discard it as dead.
 - `swift-dev.mdc`, last changed 2026-04-02 at `dd0276b`, is actively linked by AGENTS, the widget skill, and multiple plans. It is not dead.
-- `Info-macOS.plist` last changed 2026-05-08 at `7401216`; `MACROSPro.storekit` last changed 2026-10-25 at `5126cff`. Age alone says nothing about whether they are used.
+- Before the path move, `config/apple/Info-macOS.plist` last changed 2026-05-08 at `7401216`; `config/apple/MACROSPro.storekit` last changed 2026-10-25 at `5126cff`. Age alone says nothing about whether they are used.
 - Keep `tools/oxlint/anti-slop/anti-slop-pristine-snapshot.tar.gz`, `SHA256SUMS`, `UPSTREAM.md`, and vendored licenses. The archive is provenance, not stray build output.
 - Keep Convex `_generated` files and `worker-configuration.d.ts` for now. Their scripts and consumers define whether they belong in Git. The cleanup must not substitute a generic "delete generated files" rule for an audit.
 

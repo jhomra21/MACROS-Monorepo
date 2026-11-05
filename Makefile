@@ -36,7 +36,7 @@ quality-secrets:
 	sh "$(QUALITY_DIR)/test_validate_example_env_secrets.sh"
 	sh "$(QUALITY_DIR)/validate_example_env_secrets.sh" --root "."
 
-quality-storekit:
+quality-storekit: config/apple/MACROSPro.storekit
 	python3 "$(QUALITY_DIR)/validate_storekit_config.py"
 
 lint-js:

@@ -5,7 +5,7 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `docs/development/
 ## Shared Understanding
 
 - Current purchase code: `Features/Purchases/{PurchaseStore,AppEntitlements,PaidFeature,PaidFeatureGate,FullUnlockPaywallSheet}.swift`; Settings sections `FullUnlockSettingsSection` and `MacroRingColorSettingsSection` inside `Features/Settings/SettingsScreen.swift`; Insights gating in `Features/Insights/InsightsScreen.swift` (`PaidFeatureGate(.nutritionInsights)`, `InsightsLockedPreview` with fake `InsightsPreviewChart` bars); custom ring palette gates in `DashboardScreen` and `SharingDashboardScreen` (`entitlements.canUse(.customMacroRingColors)`).
-- StoreKit test config: root `FullUnlock.storekit`, referenced from the shared scheme as `../../FullUnlock.storekit`, validated by `tools/quality/validate_storekit_config.py` (`make quality-storekit`), and loaded by `cal-macro-trackerTests/PurchaseStoreStoreKitTests.swift` from the test bundle.
+- StoreKit test config: `config/apple/MACROSPro.storekit`, referenced from the shared scheme as `../../config/apple/MACROSPro.storekit`, validated by `tools/quality/validate_storekit_config.py` (`make quality-storekit`), and loaded by `cal-macro-trackerTests/PurchaseStoreStoreKitTests.swift` from the test bundle.
 - Entitlements are injected at the app root in `cal_macro_trackerApp.swift` (`AppEntitlements`, `PurchaseStore`) and read through `@Environment`.
 
 ## Core Decisions
@@ -13,7 +13,7 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `docs/development/
 ### Products
 
 - Subscription group reference name `MACROS Pro`; products `macros.pro.yearly` ($19.99, 1 year, introductory offer: free, 1 week, new subscribers), `macros.pro.monthly` ($2.99, 1 month); non-consumable `macros.pro.lifetime` ($49.99, family shareable). Legacy `fullunlock001` kept in the config for compatibility tests.
-- New StoreKit configuration file `MACROSPro.storekit` at the repo root (replace `FullUnlock.storekit`): subscription group with both subscriptions and the intro offer, the lifetime non-consumable, and the legacy product. Update the scheme reference to `../../MACROSPro.storekit`, the single `project.pbxproj` file reference, the test bundle resource, and the validator (expected product set, scheme identifier, project reference name, and the `PurchaseStore` constants it greps for).
+- StoreKit configuration file `config/apple/MACROSPro.storekit` (replaced `FullUnlock.storekit`): subscription group with both subscriptions and the intro offer, the lifetime non-consumable, and the legacy product. The scheme reference is `../../config/apple/MACROSPro.storekit`, with a single `project.pbxproj` file reference, a test bundle resource, and validator checks (expected product set, scheme identifier, project reference name, and the `PurchaseStore` constants it greps for).
 
 ### Entitlement model
 
@@ -41,7 +41,7 @@ Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `docs/development/
 
 ## Proposed File Shape
 
-- `MACROSPro.storekit` (new, root), delete `FullUnlock.storekit`.
+- `config/apple/MACROSPro.storekit` (replaces `FullUnlock.storekit`).
 - `cal-macro-tracker.xcodeproj/xcshareddata/xcschemes/cal-macro-tracker.xcscheme`, `project.pbxproj` (file reference rename, test target resource).
 - `tools/quality/validate_storekit_config.py`.
 - `Features/Purchases/PaidFeature.swift`, `AppEntitlements.swift`, `PurchaseStore.swift`, `ProPaywallSheet.swift` (new), `ProSettingsSection.swift` (new), `ProLegalLinks.swift` (new), `PurchaseFeedbackText` stays where it is or moves to its own file.
