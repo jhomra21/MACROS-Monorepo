@@ -1,6 +1,4 @@
 ---
-import MacroRings from './MacroRings.astro';
-
 interface Props {
 	heading: string;
 	lede?: string;
@@ -10,7 +8,6 @@ const { heading, lede } = Astro.props;
 ---
 
 <header class="section-heading page-heading">
-	<MacroRings class="section-rings" />
 	<h1 class="page-title">{heading}</h1>
 	{lede && <p class="lead">{lede}</p>}
 	<slot />

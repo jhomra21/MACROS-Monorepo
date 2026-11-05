@@ -426,12 +426,6 @@ summary {
 	height: 1.375rem;
 }
 
-.section-rings {
-	display: block;
-	width: 2.25rem;
-	height: 2.25rem;
-}
-
 .brand-mark .ring-fill {
 	animation-delay: calc(var(--ring-i) * 80ms);
 }
@@ -628,16 +622,6 @@ summary {
 	.ring-fill {
 		animation: ring-draw 900ms var(--ease-out) both;
 		animation-delay: calc(550ms + var(--ring-i) * 140ms);
-	}
-
-	.section-rings .ring-fill {
-		animation: none;
-	}
-
-	.page-heading .section-rings .ring-fill,
-	.section-heading.is-revealed .section-rings .ring-fill {
-		animation: ring-draw 500ms var(--ease-out) both;
-		animation-delay: calc(var(--ring-i) * 80ms);
 	}
 }
 
