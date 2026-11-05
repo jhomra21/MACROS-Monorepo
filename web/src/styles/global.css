@@ -21,7 +21,7 @@
 	--ink-muted: #66666b;
 	--hairline: rgb(0 0 0 / 0.12);
 	--link: #0066cc;
-	--action-bg: #007aff;
+	--action-bg: #0066cc;
 	--action-ink: #fff;
 	--header-bg: rgb(255 255 255 / 0.72);
 	--glass-bg: rgb(255 255 255 / 0.78);
@@ -67,6 +67,7 @@
 	--space-9: 6rem;
 	--section-space: clamp(4rem, 9vw, 7.5rem);
 	--heading-gap: clamp(2rem, 4vw, 3.5rem);
+	--page-top: clamp(3rem, 7vw, 5.5rem);
 
 	--radius-sm: 12px;
 	--radius-md: 20px;
@@ -78,6 +79,8 @@
 	--header-h: 3.75rem;
 
 	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--duration-rise: 800ms;
+	--duration-reveal: 700ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -90,7 +93,7 @@
 		--ink-muted: #a1a1a6;
 		--hairline: rgb(255 255 255 / 0.14);
 		--link: #2997ff;
-		--action-bg: #0a84ff;
+		--action-bg: #0070e0;
 		--action-ink: #fff;
 		--header-bg: rgb(0 0 0 / 0.7);
 		--glass-bg: rgb(44 44 46 / 0.72);
@@ -389,12 +392,6 @@ summary {
 	padding-inline: var(--space-6);
 }
 
-.button--sm {
-	min-height: 2.25rem;
-	padding-inline: var(--space-4);
-	font-size: var(--fs-small);
-}
-
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
 	.button:hover:not(:disabled) {
 		transform: translateY(-1px);
@@ -435,6 +432,8 @@ summary {
 }
 
 .brand {
+	flex-shrink: 0;
+	white-space: nowrap;
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-2);
@@ -468,6 +467,7 @@ summary {
 }
 
 .nav-link {
+	white-space: nowrap;
 	display: inline-flex;
 	align-items: center;
 	min-height: 2.75rem;
@@ -498,6 +498,14 @@ summary {
 }
 
 @media (max-width: 40rem) {
+	.site-header__inner {
+		gap: var(--space-2);
+	}
+
+	.nav-link {
+		padding-inline: var(--space-2);
+	}
+
 	.nav-item--secondary {
 		display: none;
 	}
@@ -627,7 +635,7 @@ summary {
 @media (prefers-reduced-motion: no-preference) {
 	.hero__copy > *,
 	.hero__visual {
-		animation: rise 0.8s var(--ease-out) both;
+		animation: rise var(--duration-rise) var(--ease-out) both;
 		animation-delay: calc(var(--i, 0) * 80ms);
 	}
 
@@ -1190,6 +1198,7 @@ summary {
 }
 
 .waitlist-form {
+	width: 100%;
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-2);
@@ -1264,10 +1273,6 @@ summary {
 	max-width: 30rem;
 }
 
-.waitlist-form {
-	width: 100%;
-}
-
 /* Status banners (hooks used by the form scripts) */
 .status {
 	font-size: var(--fs-small);
@@ -1315,20 +1320,19 @@ summary {
 
 /* Page header (about, support) */
 .page-header {
-	padding-block: clamp(3rem, 7vw, 5.5rem) var(--space-4);
+	padding-block: var(--page-top) var(--space-4);
 }
 
 .page-header + .section {
 	padding-top: var(--space-6);
 }
 
-.page-header__inner {
-	display: grid;
-	gap: var(--space-5);
+.page-header--standalone {
+	padding-bottom: var(--section-space);
 }
 
-.page-header__inner > * {
-	max-width: 48rem;
+.page-heading {
+	margin-bottom: 0;
 }
 
 .about-grid,
@@ -1467,16 +1471,7 @@ summary {
 .prose-layout {
 	display: grid;
 	gap: var(--space-7);
-	padding-block: clamp(3rem, 7vw, 5.5rem) var(--section-space);
-}
-
-.prose-header {
-	display: grid;
-	gap: var(--space-4);
-}
-
-.prose-header > * {
-	max-width: 44rem;
+	padding-block: var(--page-top) var(--section-space);
 }
 
 .prose-meta {
@@ -1566,7 +1561,7 @@ summary {
 /* Editorial pages reuse the site's reading measure, type scale, and surface tokens. */
 .editorial {
 	max-width: 46rem;
-	padding-block: var(--space-7) var(--section-space);
+	padding-block: var(--page-top) var(--section-space);
 }
 
 .breadcrumbs {
@@ -1574,9 +1569,7 @@ summary {
 }
 
 .editorial__header {
-	display: grid;
-	gap: var(--space-5);
-	margin-bottom: var(--space-8);
+	margin-bottom: var(--heading-gap);
 }
 
 .editorial .prose {
@@ -1591,7 +1584,6 @@ summary {
 .editorial .prose h2 {
 	margin-top: var(--space-8);
 	margin-bottom: var(--space-4);
-	font-size: var(--fs-h3);
 	scroll-margin-top: calc(var(--header-h) + var(--space-5));
 }
 
@@ -1664,7 +1656,7 @@ summary {
 .guide-diagram {
 	padding: clamp(1rem, 3vw, 1.5rem);
 	background: var(--band);
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-lg);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -1909,7 +1901,7 @@ summary {
 	[data-reveal] {
 		opacity: 0;
 		transform: translateY(20px);
-		transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+		transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
 		transition-delay: calc(var(--reveal-index, 0) * 70ms);
 	}
 

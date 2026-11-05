@@ -1,11 +1,13 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import PageHeading from '../components/PageHeading.astro';
 ---
 <SiteLayout title="Page not found | MACROS" description="This page could not be found. Return to MACROS or browse the macro tracking guides." noindex>
-	<section class="page-header">
-		<div class="container page-header__inner">
-			<h1 class="page-title">This page isn't here.</h1>
-			<p class="lead">Try the <a href="/">MACROS home page</a>, read our <a href="/guides/">macro tracking guides</a>, or <a href="/support/">contact support</a>.</p>
+	<section class="page-header page-header--standalone">
+		<div class="container">
+			<PageHeading heading="This page isn't here.">
+				<p class="lead">Try the <a href="/">MACROS home page</a>, read our <a href="/guides/">macro tracking guides</a>, or <a href="/support/">contact support</a>.</p>
+			</PageHeading>
 		</div>
 	</section>
 </SiteLayout>

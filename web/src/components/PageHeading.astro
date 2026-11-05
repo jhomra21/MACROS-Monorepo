@@ -1,0 +1,15 @@
+---
+interface Props {
+	heading: string;
+	lede?: string;
+}
+
+const { heading, lede } = Astro.props;
+---
+
+<header class="section-heading page-heading">
+	<span class="macro-bar" aria-hidden="true"><i></i><i></i><i></i></span>
+	<h1 class="page-title">{heading}</h1>
+	{lede && <p class="lead">{lede}</p>}
+	<slot />
+</header>

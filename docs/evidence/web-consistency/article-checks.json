@@ -1,0 +1,37 @@
+{
+  "diagrams": 3,
+  "screenshots": [
+    {
+      "width": 320,
+      "naturalWidth": 320,
+      "sizes": "(max-width: 360px) calc(100vw - 40px), 320px",
+      "loading": "eager"
+    },
+    {
+      "width": 320,
+      "naturalWidth": 320,
+      "sizes": "(max-width: 360px) calc(100vw - 40px), 320px",
+      "loading": "eager"
+    },
+    {
+      "width": 320,
+      "naturalWidth": 320,
+      "sizes": "(max-width: 360px) calc(100vw - 40px), 320px",
+      "loading": "eager"
+    },
+    {
+      "width": 320,
+      "naturalWidth": 320,
+      "sizes": "(max-width: 360px) calc(100vw - 40px), 320px",
+      "loading": "eager"
+    }
+  ],
+  "tocAnchors": 7,
+  "socialImage": "https://macros-web.jhonra121.workers.dev/social/guides/how-to-set-macro-goals.851fc9aa911f.png",
+  "draftSocialImage": 404,
+  "supportAfterNavigation": "passed, browser-mocked response, no database write",
+  "waitlistAfterNavigation": "passed, browser-mocked response, no database write",
+  "backNavigation": "passed",
+  "nativeTransitionsAndReveal": "passed, normal and reduced motion",
+  "pageErrors": []
+}

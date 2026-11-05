@@ -7,7 +7,7 @@ const steps = [
 	{ title: 'Round and adjust', value: '2,565 kcal', detail: '190 g protein, 260 g carbs, 85 g fat. Carbs rise from 255 g to reach the estimate.' },
 ];
 ---
-<figure class="guide-diagram" data-diagram aria-labelledby="calculator-caption">
+<figure class="guide-diagram" data-diagram data-reveal aria-labelledby="calculator-caption">
 	<p class="title">How this example reaches 2,565 kcal</p>
 	<ol class="calculator-steps">
 		{steps.map(step => <li><div><strong>{step.title}</strong><span>{step.value}</span></div><p class="caption">{step.detail}</p></li>)}

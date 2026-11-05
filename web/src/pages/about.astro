@@ -2,24 +2,28 @@
 export const prerender = true;
 
 import WaitlistCta from '../components/WaitlistCta.astro';
+import PageHeading from '../components/PageHeading.astro';
+import FeatureGlyph from '../components/FeatureGlyph.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { pages } from '../lib/seo';
 ---
 
 <SiteLayout {...pages['/about/']}>
 	<section class="page-header">
-		<div class="container page-header__inner">
-			<h1 class="page-title">Simple, accurate daily tracking.</h1>
-			<p class="lead">
-				MACROS: Nutrition Tracker is the App Store name. In the app it is MACROS, an iPhone calorie and macro tracker that
-				stores your log on the device.
-			</p>
+		<div class="container">
+			<PageHeading heading="Simple, accurate daily tracking.">
+				<p class="lead">
+					MACROS: Nutrition Tracker is the App Store name. In the app it is MACROS, an iPhone calorie and macro tracker that
+					stores your log on the device.
+				</p>
+			</PageHeading>
 		</div>
 	</section>
 
 	<section class="section" aria-label="The story">
 		<div class="container about-grid">
-			<article class="about-card" data-reveal>
+			<article class="about-card bento__card--protein" data-reveal>
+				<FeatureGlyph glyph="device" />
 				<h2 class="title">Why it exists</h2>
 				<p>I am Juan Ramon Martinez Bulnes, the developer of MACROS.</p>
 				<p>
@@ -28,7 +32,8 @@ import { pages } from '../lib/seo';
 				</p>
 			</article>
 
-			<article class="about-card" data-reveal style="--reveal-index: 1">
+			<article class="about-card bento__card--carbs" data-reveal style="--reveal-index: 1">
+				<FeatureGlyph glyph="scan" />
 				<h2 class="title">Core inputs</h2>
 				<p>
 					One camera view reads barcodes and nutrition labels. Manual entry is always
@@ -36,7 +41,8 @@ import { pages } from '../lib/seo';
 				</p>
 			</article>
 
-			<article class="about-card" data-reveal style="--reveal-index: 2">
+			<article class="about-card bento__card--fat" data-reveal style="--reveal-index: 2">
+				<FeatureGlyph glyph="review" />
 				<h2 class="title">What you review</h2>
 				<p>
 					Check serving size, quantity, calories, protein, carbs, and fat before an
