@@ -1,6 +1,6 @@
 # Bundled Food Database Implementation Tracker (WS4)
 
-Branch `launch/ws4-food-database`. Mac (pipeline is Bun; app side needs Xcode). Read `AGENTS.md`, `Data/Services/CommonFoodSeedLoader.swift`, `Data/Services/AppBootstrap.swift`, `Data/Models/FoodItem.swift` (`FoodItemLocalSearch`), `Features/AddFood/AddFoodSearchResults.swift`, `Features/AddFood/AddFoodScreen.swift`, `changes-log.md` sections "Food Search" and "Local Food Search Token-Match Follow-up", and `implementation-trackers/launch-program-tracker.md`.
+Branch `launch/ws4-food-database`. Mac (pipeline is Bun; app side needs Xcode). Read `AGENTS.md`, `Data/Services/CommonFoodSeedLoader.swift`, `Data/Services/AppBootstrap.swift`, `Data/Models/FoodItem.swift` (`FoodItemLocalSearch`), `Features/AddFood/AddFoodSearchResults.swift`, `Features/AddFood/AddFoodScreen.swift`, `changes-log.md` sections "Food Search" and "Local Food Search Token-Match Follow-up", and `docs/plans/archive/launch-program-tracker.md`.
 
 ## Shared Understanding
 

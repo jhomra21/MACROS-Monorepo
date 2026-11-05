@@ -1,6 +1,6 @@
 # Website, Legal, and App Store Metadata Tracker (WS8)
 
-Branch `launch/ws8-website-legal`. Astro/TypeScript and copy only; no Xcode. Read `AGENTS.md`, `README.md`, `web/src/pages/*.astro`, `web/src/data/site.ts`, `web/src/worker.ts`, `web/src/lib/*.ts`, `convex-backend/convex/schema.ts` (to describe sharing data accurately), `worker/usda-proxy/src/index.ts` (search data flow), and `implementation-trackers/launch-program-tracker.md`.
+Branch `launch/ws8-website-legal`. Astro/TypeScript and copy only; no Xcode. Read `AGENTS.md`, `README.md`, `web/src/pages/*.astro`, `web/src/data/site.ts`, `web/src/worker.ts`, `web/src/lib/*.ts`, `convex-backend/convex/schema.ts` (to describe sharing data accurately), `worker/usda-proxy/src/index.ts` (search data flow), and `docs/plans/archive/launch-program-tracker.md`.
 
 ## Status
 

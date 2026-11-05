@@ -1,6 +1,6 @@
 # MACROS Pro Subscription (StoreKit 2) Implementation Tracker (WS2)
 
-Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `docs/development/swift.md`, `changes-log.md` sections "App Store and TestFlight Release Prep", "Follow-up: Full Unlock sheet Liquid Glass button edge", "Follow-up: Full Unlock custom macro ring colors", "StoreKit Validator Path Correction", and `implementation-trackers/launch-program-tracker.md`. Activate the `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills if available.
+Branch `launch/ws2-pro-storekit`. Mac only. Read `AGENTS.md`, `docs/development/swift.md`, `changes-log.md` sections "App Store and TestFlight Release Prep", "Follow-up: Full Unlock sheet Liquid Glass button edge", "Follow-up: Full Unlock custom macro ring colors", "StoreKit Validator Path Correction", and `docs/plans/archive/launch-program-tracker.md`. Activate the `swiftui-liquid-glass`, `apple-design`, and `write-swift` skills if available.
 
 ## Shared Understanding
 

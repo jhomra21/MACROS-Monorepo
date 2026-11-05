@@ -11,7 +11,7 @@
 
 Status: WS7 implementation and code validation complete on `launch/ws7-retention-polish`; barcode 429 simulator E2E remains unverified because the simulator camera feed is blank.
 
-Branch `launch/ws7-retention-polish`. Mac only. Phase 2: starts after WS2 and WS4 are merged. Read `AGENTS.md`, `docs/development/swift.md`, `Features/Dashboard/DashboardScreen.swift`, `Features/Dashboard/DailyShareCardView.swift`, `Features/Onboarding/*`, `cal_macro_trackerApp.swift`, `Features/Insights/InsightsAnalytics.swift` (consistency helpers), and `implementation-trackers/launch-program-tracker.md`. Activate `swiftui-liquid-glass` and `apple-design` skills if available.
+Branch `launch/ws7-retention-polish`. Mac only. Phase 2: starts after WS2 and WS4 are merged. Read `AGENTS.md`, `docs/development/swift.md`, `Features/Dashboard/DashboardScreen.swift`, `Features/Dashboard/DailyShareCardView.swift`, `Features/Onboarding/*`, `cal_macro_trackerApp.swift`, `Features/Insights/InsightsAnalytics.swift` (consistency helpers), and `docs/plans/archive/launch-program-tracker.md`. Activate `swiftui-liquid-glass` and `apple-design` skills if available.
 
 ## Core Decisions
 

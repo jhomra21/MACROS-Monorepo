@@ -17,7 +17,7 @@
 - `cal-macro-tracker/Features/Insights/InsightsWeightCard.swift`: query weight history only in selected range (all history for All).
 - `cal-macro-trackerTests/InsightsAnalyticsTests.swift`: failure-mode-first tests for date math and pure chart bucketing.
 - `changes-log.md`: concise dated entry.
-- `implementation-trackers/insights-long-ranges-tracker.md`: record decisions, failure modes, completion, and QA.
+- `docs/plans/archive/insights-long-ranges-tracker.md`: record decisions, failure modes, completion, and QA.
 
 ## Failure modes covered before implementation
 

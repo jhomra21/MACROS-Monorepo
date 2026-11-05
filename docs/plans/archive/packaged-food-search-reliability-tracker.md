@@ -10,7 +10,7 @@ Working tracker for improving packaged food search reliability across the Cloudf
 - Legacy compatibility: `/v1` remains byte-compatible for App Review build 23 and TestFlight builds 27–30. Default v1 search remains OFF-backed; explicit `provider=openFoodFacts` is OFF-only and `provider=usda` is USDA-only. Its cache keys, routing, and test files are unchanged.
 - V2 named restaurant searches select legacy OFF once; other text uses Search-a-licious once. USDA runs concurrently, not as a fallback. Historical milestones below describe the v1 reliability work and are not the new app’s provider contract.
 - Data quality: Do not invent missing nutrition values. Return available source fields and let the app/user fill gaps when data is incomplete.
-- Current design and validation: [`../docs/design/unified-food-search.md`](../docs/design/unified-food-search.md); [`../docs/evidence/unified-food-search/README.md`](../docs/evidence/unified-food-search/README.md).
+- Current design and validation: [`../docs/design/unified-food-search.md`](../../design/unified-food-search.md); [`../docs/evidence/unified-food-search/README.md`](../../evidence/unified-food-search/README.md).
 
 ## Core Decisions
 

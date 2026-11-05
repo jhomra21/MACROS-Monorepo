@@ -1,6 +1,6 @@
 # Camera inline details: implementation plan
 
-Status: implemented and simulator-validated. Evidence, exact limitations and deferred device checks: [`../docs/evidence/camera-inline-details/README.md`](../docs/evidence/camera-inline-details/README.md). Base: `origin/main` d53a313 (includes the camera card layout-shift fix). All historical `file:line` cites are at that commit.
+Status: implemented and simulator-validated. Evidence, exact limitations and deferred device checks: [`../docs/evidence/camera-inline-details/README.md`](../../evidence/camera-inline-details/README.md). Base: `origin/main` d53a313 (includes the camera card layout-shift fix). All historical `file:line` cites are at that commit.
 
 ## Verified implementation notes
 

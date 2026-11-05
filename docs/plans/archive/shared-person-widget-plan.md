@@ -1,6 +1,6 @@
 # Shared-person Home Screen and Lock Screen widgets
 
-Status: implementation plan only, 2026-11-01. No app, backend, entitlement, or project changes are included.
+Status: superseded planning, implemented per the [implementation tracker](../active/shared-person-widget-implementation.md). Release approval/cutover and device checks remain blocked; see [follow-ups](../active/release-follow-ups.md). The dated plan below is preserved.
 
 ## 1. Scope and evidence baseline
 
@@ -19,7 +19,7 @@ Fixed owner decisions:
 
 | Area | Real code and relevant lines |
 | --- | --- |
-| Original sharing requirements | `implementation-trackers/sharing-v2-plan.md:5-11,43-53,62-72,157-183`. It is a historical plan, not a substitute for the implementation. For example, the implemented food storage is `sharedFoodDays`, not the originally proposed row-per-food table. |
+| Original sharing requirements | `docs/plans/active/sharing-v2-plan.md:5-11,43-53,62-72,157-183`. It is a historical plan, not a substitute for the implementation. For example, the implemented food storage is `sharedFoodDays`, not the originally proposed row-per-food table. |
 | Device identity and authentication | `cal-macro-tracker/Features/Sharing/SharingAuthService.swift:4-20,47-98,111-156`; `SharingSecureStorage.swift:11-53`; `SharingIdentityStore.swift:3-37` in the same directory. |
 | App's remote reads | `cal-macro-tracker/Features/Sharing/SharingRemoteClient.swift:75-96`; `SharingDashboardFeed.swift:11-16`; `SharingConfiguration.swift:3-8`. |
 | Feed ownership and lifecycle | `cal-macro-tracker/Features/Sharing/SharingSyncService.swift:221-295,310-320,410-480`; device enabled preference is currently standard defaults, not App Group storage (`SharingLocalStateStore.swift:7-18`). |

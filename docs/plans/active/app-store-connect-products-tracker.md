@@ -1,6 +1,6 @@
 # App Store Connect Products Tracker (WS9)
 
-Branch `launch/ws9-asc-products`. Manual App Store Connect setup selected 2026-10-25; the API script path is dropped. See the [click-by-click product checklist](../docs/app-store/asc-products-checklist.md).
+Branch `launch/ws9-asc-products`. Manual App Store Connect setup selected 2026-10-25; the API script path is dropped. See the [click-by-click product checklist](../../app-store/asc-products-checklist.md).
 
 ## Products to create (must match WS2 exactly)
 
@@ -14,4 +14,4 @@ Branch `launch/ws9-asc-products`. Manual App Store Connect setup selected 2026-1
 ## Decision (2026-10-25)
 
 - Manual App Store Connect setup is the chosen path. The API script path is dropped; no API key or API automation is needed.
-- Follow [docs/app-store/asc-products-checklist.md](../docs/app-store/asc-products-checklist.md) for verified navigation, fields, pricing, localization, review, sandbox, and final product-ID checks.
+- Follow [docs/app-store/asc-products-checklist.md](../../app-store/asc-products-checklist.md) for verified navigation, fields, pricing, localization, review, sandbox, and final product-ID checks.

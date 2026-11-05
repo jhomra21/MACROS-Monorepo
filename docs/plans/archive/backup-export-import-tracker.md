@@ -1,6 +1,6 @@
 # Backup Export and Import Tracker (WS6)
 
-Branch `launch/ws6-backup`. Mac only. Phase 2: starts after WS2, WS3, and WS5 are merged (so the backup covers `BodyProfile` and `WeightEntry`). Read `AGENTS.md`, `docs/development/swift.md`, all `Data/Models/*.swift`, `Data/Services/*Repository*.swift`, `App/AppStorageKeys.swift`, `Shared/MacroRingPalette.swift`, and `implementation-trackers/launch-program-tracker.md`.
+Branch `launch/ws6-backup`. Mac only. Phase 2: starts after WS2, WS3, and WS5 are merged (so the backup covers `BodyProfile` and `WeightEntry`). Read `AGENTS.md`, `docs/development/swift.md`, all `Data/Models/*.swift`, `Data/Services/*Repository*.swift`, `App/AppStorageKeys.swift`, `Shared/MacroRingPalette.swift`, and `docs/plans/archive/launch-program-tracker.md`.
 
 ## Status
 

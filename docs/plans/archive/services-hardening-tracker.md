@@ -1,6 +1,6 @@
 # Services Hardening Implementation Tracker (WS1)
 
-Branch `launch/ws1-services-hardening`. TypeScript only; no Xcode. Read `AGENTS.md`, `README.md`, `worker/usda-proxy/`, `worker/auth/`, `convex-backend/convex/_generated/ai/guidelines.md` (mandatory before Convex edits), `web/src/worker.ts`, and `implementation-trackers/launch-program-tracker.md`.
+Branch `launch/ws1-services-hardening`. TypeScript only; no Xcode. Read `AGENTS.md`, `README.md`, `worker/usda-proxy/`, `worker/auth/`, `convex-backend/convex/_generated/ai/guidelines.md` (mandatory before Convex edits), `web/src/worker.ts`, and `docs/plans/archive/launch-program-tracker.md`.
 
 ## Shared Understanding
 

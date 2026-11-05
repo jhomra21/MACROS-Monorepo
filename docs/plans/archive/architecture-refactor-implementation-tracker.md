@@ -1,5 +1,7 @@
 # Architecture Refactor Implementation Tracker
 
+Status: completed implementation record. The old CLI-test documentation finding is superseded by [current validation](../../development/validation.md). Release limitations remain in [active follow-ups](../active/release-follow-ups.md).
+
 Working tracker for the uncommitted architecture cleanup pass across food draft editing, food logging, secondary nutrient repair, remote lookup, repositories, and sharing sync. Update this file as implementation progresses with task status, bugs, quirks, findings, validation notes, and new decisions.
 
 ## Shared Understanding
