@@ -2,6 +2,8 @@
 export const prerender = true;
 
 import { site } from '../data/site';
+import PageHeading from '../components/PageHeading.astro';
+import FeatureGlyph from '../components/FeatureGlyph.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { pages } from '../lib/seo';
 import {
@@ -13,18 +15,20 @@ import {
 
 <SiteLayout {...pages['/support/']}>
 	<section class="page-header">
-		<div class="container page-header__inner">
-			<h1 class="page-title">Need help with the app?</h1>
-			<p class="lead">
-				Send your name, email, and a short description of the problem. We store the
-				request so we can answer it.
-			</p>
+		<div class="container">
+			<PageHeading heading="Need help with the app?">
+				<p class="lead">
+					Send your name, email, and a short description of the problem. We store the
+					request so we can answer it.
+				</p>
+			</PageHeading>
 		</div>
 	</section>
 
 	<section class="section">
 		<div class="container support-layout">
-			<aside class="support-card">
+			<aside class="support-card bento__card--protein" data-reveal>
+				<FeatureGlyph glyph="review" />
 				<h2 class="title">What to include</h2>
 				<ul class="support-list">
 					{site.supportChecklist.map((item) => <li>{item}</li>)}

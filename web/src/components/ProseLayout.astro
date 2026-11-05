@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import PageHeading from './PageHeading.astro';
 
 interface Props {
 	title: string;
@@ -33,11 +34,11 @@ const body = html.replace(/<h2([^>]*)>([^<]+)<\/h2>/g, (_match, attributes: stri
 
 <SiteLayout title={title} description={description}>
 	<div class="container prose-layout">
-		<header class="prose-header">
-			<h1 class="page-title">{heading}</h1>
-			{lede && <p class="lead">{lede}</p>}
-			<p class="prose-meta caption">Effective date: {effective}</p>
-		</header>
+		<div class="prose-header">
+			<PageHeading {heading} {lede}>
+				<p class="prose-meta caption">Effective date: {effective}</p>
+			</PageHeading>
+		</div>
 		<nav class="prose-toc" aria-label="On this page">
 			<p>On this page</p>
 			<ul>

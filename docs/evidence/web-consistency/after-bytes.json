@@ -1,0 +1,52 @@
+[
+  {
+    "name": "home",
+    "css": 27433,
+    "js": 103206
+  },
+  {
+    "name": "about",
+    "css": 27433,
+    "js": 103206
+  },
+  {
+    "name": "support",
+    "css": 27433,
+    "js": 93770
+  },
+  {
+    "name": "privacy",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "terms",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "guides",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "guide",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "404",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "blog",
+    "css": 27433,
+    "js": 669
+  },
+  {
+    "name": "post",
+    "css": 27433,
+    "js": 669
+  }
+]

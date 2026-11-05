@@ -2,6 +2,12 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Inner-page design consistency
+
+- Reused the homepage section-heading and macro-bar in a shared PageHeading across About, support, legal, editorial, and 404 pages. Aligned page spacing and diagram radii, reused FeatureGlyph on About/support, and added existing scroll reveals to below-fold editorial visuals and lists without animating legal text or hiding the support form.
+- Fixed wrapped mobile header labels and action-button contrast in both themes. Kept the macro palette, homepage composition, copy, metadata/schema, draft gating, ring script, social renderer, and native transitions unchanged. Removed redundant heading/waitlist CSS and an unused small-button rule.
+- Validation: check/build, JS lint, whitespace, SEO/article E2E, social determinism, dark contrast, and motion checks pass. All ten final Lighthouse runs score 100/100/100/100; support accessibility improved from 96. CSS adds 14 decoded bytes and JS is unchanged. Before/after captures for all ten page types, including scratch-only blog publication, and the audit are in `docs/evidence/web-consistency/`, under 5 MB. No deployment.
+
 ## 2026-11-04 Content-hashed previews for every public page
 
 - Follow-up: render and expose only the heading before ` | `; full titles still invalidate the hash. Bumped the template version and refreshed the seven-image E2E evidence.
