@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
-import { getImage, Image } from 'astro:assets';
+import { Image } from 'astro:assets';
+import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { absoluteURL, pages, publishedEntries } from '../../lib/seo';
@@ -32,7 +33,14 @@ const sectionName = section === 'guides' ? 'Guides' : 'Blog';
 
 const rendered = entry ? await render(entry) : undefined;
 
-const image = entry ? await getImage({ src: entry.data.image, width: 1200, format: 'webp' }) : undefined;
+const image = entry ? {
+	src: `/social/${section}/${entry.id}.png`, width: 1200, height: 630,
+	alt: `${entry.data.title}. MACROS for iPhone with a real app screenshot.`,
+} : undefined;
+
+const headings = rendered?.headings.filter(heading => heading.depth === 2) ?? [];
+
+const readingMinutes = entry ? Math.max(1, Math.ceil((entry.body ?? '').split(/\s+/).length / 200)) : 0;
 
 const metadata = entry ? { title: entry.data.title, description: entry.data.description } : pages[`/${section}/`];
 
@@ -52,7 +60,7 @@ const dateText = (date: Date) => date.toLocaleDateString('en-US', { year: 'numer
 const Content = rendered?.Content;
 ---
 <SiteLayout {...metadata}
-	image={entry && image ? { src: image.src, width: 1200, height: Math.round(entry.data.image.height * 1200 / entry.data.image.width), alt: entry.data.imageAlt } : undefined}
+	image={image}
 	article={entry ? { published: entry.data.published, updated: entry.data.updated } : undefined}
 	structuredData={articleSchema}>
 	<article class="container editorial">
@@ -64,13 +72,17 @@ const Content = rendered?.Content;
 			<h1 class="page-title">{entry?.data.title ?? sectionName}</h1>
 			<p class="lead">{metadata.description}</p>
 			{entry && <p class="caption">By <a href="/about/">{site.author}</a><br />
-				Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>.
+				Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>. About {readingMinutes} minutes to read.
 			</p>}
 		</header>
 		{Content ? <>
-			<div class="prose"><Content /></div>
-			{entry && <figure class="editorial__screenshot">
-				<Image src={entry.data.image} alt={entry.data.imageAlt} widths={[320, 640, 960]} sizes="(max-width: 390px) 100vw, 320px" format="webp" loading="lazy" />
+			{section === 'guides' && headings.length > 3 && <nav class="article-toc" aria-label="On this page">
+				<h2 class="title">On this page</h2>
+				<ul>{headings.map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
+			</nav>}
+			<div class="prose"><ArticleBody><Content /></ArticleBody></div>
+			{entry && !entry.body?.includes('<!-- visual:settings -->') && <figure class="editorial__screenshot">
+				<Image src={entry.data.image} alt={entry.data.imageAlt} width={320} layout="constrained" widths={[320, 640, 960]} sizes="(max-width: 360px) calc(100vw - 40px), 320px" format="webp" loading="lazy" />
 				<figcaption class="caption">{entry.data.imageCaption ?? entry.data.imageAlt}</figcaption>
 			</figure>}
 			<p class="editorial__related"><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>

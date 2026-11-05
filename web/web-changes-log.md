@@ -2,6 +2,14 @@
 
 `web-changes-log.md` is the web-project history file for implemented work, bugs found, deployment/config decisions, and validation results.
 
+## 2026-11-04 Article clarity, calculator visuals, and Astro performance
+
+- Edited the guide, draft launch post, and section descriptions for direct instructions and shorter sentences. Kept the numbers, equations, citations, and link destinations unchanged. The launch post remains a draft.
+- Added three static, accessible diagrams for calorie conversion, preset/AMDR comparison, and calculator steps. Placed the existing Settings image and three new real 1320 × 2868 calculator captures beside their instructions. The locked media simulator confirmed 2,565 kcal, 190 g protein, 260 g carbs, and 85 g fat; cleared the status bar and released the device afterward.
+- Added a headings-based contents list, approximate reading time, scrollable data tables, responsive lazy AVIF/WebP screenshots, and build-time 1200 × 630 article social images using the already installed sharp dependency. Draft social images stay absent.
+- Replaced ClientRouter and its prefetch behavior with native document transitions. The opt-in must arrive inline in the head; an external stylesheet caused intermittent Chromium transition aborts. Existing reveals and forms work after full-document and back navigation. Reduced motion skips transitions.
+- Validation: check/build, JS lint, whitespace checks, five existing Worker tests, endpoint/publication E2E, and 390/1440 light/dark captures pass. Home and guide retain 100/100/100/100 on mobile and desktop; decoded executable JS drops by 16,530 bytes on home and 16,483 on the guide. Full-page screenshot transfer and local timing caveats are recorded in `docs/evidence/web-articles/`. No deployment or native source changes.
+
 ## 2026-11-04 Search metadata, guides, and launch gates
 
 - Added typed guides/blog collections, a sourced macro-goal guide matching the native calculator, and a launch announcement held as a draft. Blog routes, nav, sitemap entries, and RSS appear only after publication.

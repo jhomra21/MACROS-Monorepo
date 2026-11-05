@@ -14,6 +14,12 @@ Guides and blog posts live in typed Astro Markdown collections. Frontmatter requ
 
 Only non-draft entries generate article routes or enter the sitemap. The blog index, navigation link, RSS discovery link, and RSS file stay absent until at least one blog post has `draft: false`. The launch announcement must remain a draft until 1.0 is approved. At publication, replace its provisional dates and review the release claims before rebuilding. No draft-preview route is shipped publicly.
 
+Article social images build at `/social/<collection>/<id>.png`, at 1200 × 630. The static endpoint uses Astro's installed sharp dependency, the article title, and a real app screenshot. Draft images do not build. Open Graph, Twitter, and Article schema use the same URL.
+
+Long guides use `render()` headings for their on-page contents list. Authors place static visuals with `<!-- visual:calorie-flow -->`, `amdr`, `calculator`, `settings`, `profile`, `activity`, or `review` comments. `ArticleBody.astro` renders those comments as Astro components at build time. Keep each comment between paragraphs, not inside a table or list. Screenshots use explicit dimensions, 320/640/960 sources, accurate sizes, lazy loading, and AVIF with WebP fallback. The system font stack needs no font download. External citations stay in the same tab, so they do not need `noopener`; do not add `nofollow` to the primary sources.
+
+Navigation uses browser-native document transitions, with the opt-in inline in the head so it is available before external CSS loads. Reduced motion uses ordinary document navigation. Page scripts initialize on document load, not `astro:page-load`. Keep prefetch off unless measurements justify its extra script and background traffic.
+
 Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inner public pages include BreadcrumbList; guides and posts also include Article and article Open Graph dates. The FAQ comes from the exact same data as the visible answers. Google restricts FAQ rich results mainly to authoritative government and health sites; valid markup does not promise a rich result. There are no ratings or reviews.
 
 ## App Store launch flag

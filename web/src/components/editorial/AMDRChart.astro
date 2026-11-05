@@ -1,0 +1,34 @@
+---
+const rows = [
+	{ name: 'Protein', color: 'protein', low: 10, high: 35, values: [30, 40, 35] },
+	{ name: 'Carbs', color: 'carbs', low: 45, high: 65, values: [40, 30, 20] },
+	{ name: 'Fat', color: 'fat', low: 20, high: 35, values: [30, 30, 45] },
+];
+
+const presets = ['Balanced', 'High protein', 'Low carb'];
+---
+<figure class="guide-diagram" data-diagram aria-labelledby="amdr-caption">
+	<p class="title">App presets against adult reference ranges</p>
+	<p class="caption">The shaded bands mark adult AMDRs. Markers show each preset before rounding.</p>
+	<div class="range-chart" aria-hidden="true">
+		<div class="range-axis"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+		{rows.map(row => <div class="range-group" style={`--macro-color: var(--${row.color})`}>
+			<p>{row.name} <span class="caption">AMDR {row.low}–{row.high}%</span></p>
+			<div class="range-tracks">
+				<div class="range-band" style={`left: ${row.low}%; width: ${row.high - row.low}%`}></div>
+				{row.values.map((value, index) => <div class="range-track">
+					<span class:list={['range-marker', `range-marker--${index}`]} style={`left: ${value}%`}></span>
+				</div>)}
+			</div>
+		</div>)}
+		<div class="range-legend">{presets.map((preset, index) => <span><i class:list={['range-marker', `range-marker--${index}`]}></i>{preset}</span>)}</div>
+	</div>
+	<div class="table-scroll" role="region" aria-label="Adult AMDR and preset percentages" tabindex="0">
+		<table>
+			<caption class="sr-only">Adult AMDRs compared with MACROS preset calorie percentages</caption>
+			<thead><tr><th scope="col">Macro</th><th scope="col">Adult AMDR</th>{presets.map(preset => <th scope="col">{preset}</th>)}</tr></thead>
+			<tbody>{rows.map(row => <tr><th scope="row">{row.name}</th><td>{row.low}–{row.high}%</td>{row.values.map(value => <td>{value}%</td>)}</tr>)}</tbody>
+		</table>
+	</div>
+	<figcaption id="amdr-caption" class="caption">No app preset meets all three adult AMDRs. The ranges come from the National Academies' Table 3-1 cited above. Presets are app settings, not dietary guidelines.</figcaption>
+</figure>

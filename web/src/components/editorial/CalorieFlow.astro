@@ -1,0 +1,21 @@
+---
+const nutrients = [
+	{ name: 'Protein', color: 'protein', percentage: 20, factor: 4, grams: '100' },
+	{ name: 'Carbs', color: 'carbs', percentage: 50, factor: 4, grams: '250' },
+	{ name: 'Fat', color: 'fat', percentage: 30, factor: 9, grams: '66.7' },
+];
+---
+<figure class="guide-diagram calorie-flow" data-diagram aria-labelledby="calorie-flow-caption">
+	<p class="title">From a calorie share to grams</p>
+	<div class="table-scroll" role="region" aria-label="Calorie-to-gram example" tabindex="0">
+		<table>
+			<caption class="sr-only">An illustrative 2,000-calorie day with a 20/50/30 split</caption>
+			<thead><tr><th scope="col">Macro</th><th scope="col">Calorie share</th><th scope="col">Divide by</th><th scope="col">Grams</th></tr></thead>
+			<tbody>{nutrients.map(nutrient => <tr>
+				<th scope="row"><span class="macro-dot" style={`--macro-color: var(--${nutrient.color})`}></span>{nutrient.name}</th>
+				<td>2,000 × {nutrient.percentage}%</td><td>÷ {nutrient.factor}</td><td><strong>{nutrient.grams} g</strong></td>
+			</tr>)}</tbody>
+		</table>
+	</div>
+	<figcaption id="calorie-flow-caption" class="caption">Multiply daily calories by the macro's share, then divide by 4 for protein or carbs and 9 for fat. This is a math example, not a calorie recommendation. Fat rounds to about 66.7 g.</figcaption>
+</figure>

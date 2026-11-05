@@ -1,0 +1,11 @@
+{
+  "sitemapURLs": 9,
+  "blogIndex": 200,
+  "launchPost": 200,
+  "navigationAndFeedDiscovery": true,
+  "articleMetadata": true,
+  "rssStatus": 200,
+  "rssContentType": "application/xml",
+  "parsedFeedItems": 1,
+  "note": "Temporary local-only publication check; draft restored before final build."
+}
