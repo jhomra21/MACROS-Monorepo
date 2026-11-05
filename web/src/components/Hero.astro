@@ -3,13 +3,6 @@ import { site } from '../data/site';
 import DeviceFrame from './DeviceFrame.astro';
 import WaitlistForm from './WaitlistForm.astro';
 import AppStoreBadge from './AppStoreBadge.astro';
-
-// Ring fill as a share of the circle, drawn with pathLength="100" so offsets stay readable.
-const rings = [
-	{ name: 'protein', radius: 26, fill: 78 },
-	{ name: 'carbs', radius: 18, fill: 64 },
-	{ name: 'fat', radius: 10, fill: 46 },
-];
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -26,27 +19,6 @@ const rings = [
 				sizes="(max-width: 899px) 240px, 320px"
 				eager
 			/>
-			<div class="hero__rings" aria-hidden="true">
-				<svg viewBox="0 0 64 64" fill="none" stroke-width="6" stroke-linecap="round">
-					<g transform="rotate(-90 32 32)">
-						{
-							rings.map((ring, index) => (
-								<>
-									<circle class="ring-track" cx="32" cy="32" r={ring.radius} />
-									<circle
-										class={`ring-fill ring-fill--${ring.name}`}
-										cx="32"
-										cy="32"
-										r={ring.radius}
-										pathLength="100"
-										style={`--fill: ${ring.fill}; --ring-i: ${index}`}
-									/>
-								</>
-							))
-						}
-					</g>
-				</svg>
-			</div>
 		</div>
 		<div class="hero__signup">
 			<p class="caption">Coming to the App Store. Join the waitlist.</p>

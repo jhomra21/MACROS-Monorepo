@@ -24,8 +24,6 @@
 	--action-bg: #0066cc;
 	--action-ink: #fff;
 	--header-bg: rgb(255 255 255 / 0.72);
-	--glass-bg: rgb(255 255 255 / 0.78);
-	--glass-edge: rgb(255 255 255 / 0.9);
 	--success: #1a7f37;
 	--danger: #d70015;
 	--device-bezel: #1a1a1c;
@@ -96,8 +94,6 @@
 		--action-bg: #0070e0;
 		--action-ink: #fff;
 		--header-bg: rgb(0 0 0 / 0.7);
-		--glass-bg: rgb(44 44 46 / 0.72);
-		--glass-edge: rgb(255 255 255 / 0.16);
 		--success: #30d158;
 		--danger: #ff6961;
 		--device-bezel: #2b2b2e;
@@ -426,10 +422,6 @@ summary {
 	height: 1.375rem;
 }
 
-.brand-mark .ring-fill {
-	animation-delay: calc(var(--ring-i) * 80ms);
-}
-
 .site-nav {
 	display: flex;
 	align-items: center;
@@ -544,33 +536,10 @@ summary {
 	position: relative;
 	justify-self: center;
 	width: min(100%, 15rem);
-	padding-bottom: 5.5rem;
 }
 
 .hero__visual .device {
 	--device-w: 100%;
-}
-
-/* Floating glass badge: three macro rings that draw in once on first view */
-.hero__rings {
-	position: absolute;
-	left: 50%;
-	bottom: 0;
-	width: 5.5rem;
-	padding: var(--space-3);
-	border: 1px solid var(--glass-edge);
-	border-radius: var(--radius-lg);
-	background: var(--glass-bg);
-	-webkit-backdrop-filter: saturate(180%) blur(20px);
-	backdrop-filter: saturate(180%) blur(20px);
-	box-shadow: var(--shadow-soft);
-	transform: translateX(-50%);
-}
-
-.hero__rings svg {
-	display: block;
-	width: 100%;
-	height: auto;
 }
 
 .ring-track {
@@ -624,14 +593,6 @@ summary {
 		justify-self: end;
 		width: min(100%, 20rem);
 		margin-right: var(--space-5);
-		padding-bottom: 0;
-	}
-
-	.hero__rings {
-		left: -7.5rem;
-		bottom: 14%;
-		width: 6.5rem;
-		transform: none;
 	}
 }
 
@@ -655,7 +616,7 @@ summary {
 
 	.ring-fill {
 		animation: ring-draw 900ms var(--ease-out) both;
-		animation-delay: calc(550ms + var(--ring-i) * 140ms);
+		animation-delay: calc(var(--ring-i) * 80ms);
 	}
 }
 
