@@ -8,11 +8,12 @@ import appSettingsImage from '../assets/app-images/app-settings.png';
 import appSharingImage from '../assets/app-images/app-sharing.png';
 import appSharingPersonImage from '../assets/app-images/app-sharing-person.png';
 import appWidgetsImage from '../assets/app-images/app-widgets.png';
+import { siteOrigin } from './origin';
 
 export const site = {
 	name: 'MACROS',
 	fullName: 'MACROS: Nutrition Tracker',
-	url: 'https://macros-web.jhonra121.workers.dev',
+	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description:
 		'MACROS is a calorie counter and macro tracker for iPhone. Keep your food diary on your device, scan a label, and get on with your day. No account needed.',
