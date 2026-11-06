@@ -34,7 +34,7 @@ The unmodified black English badge is from [Apple's marketing artwork](https://d
 
 The public origin is `https://macrosios.com`, set once in `src/data/origin.ts` and read by `site.url` and the Worker. `wrangler.jsonc` attaches `macrosios.com` and `www.macrosios.com` as Worker custom domains and keeps `workers_dev` on. `run_worker_first: true` makes every request pass through the Worker, which answers `www.macrosios.com` and `macros-web.jhonra121.workers.dev` with a permanent redirect to the same path and query on the apex host: 301 for GET and HEAD, 308 for other methods so a form POST stays a POST. Local hosts are not redirected. Keep these redirects indefinitely.
 
-Still to do by the owner: verify `macrosios.com` in Google Search Console (a Domain property through a Cloudflare DNS TXT record), submit `/sitemap.xml`, and use Change of Address if Search Console allows it for the old property. A workers.dev URL-prefix property may not qualify; the redirects and sitemap still move indexing.
+Search Console has a Domain property for `macrosios.com`. On 2026-11-06 `/sitemap.xml` was submitted (read successfully, 7 pages) and indexing was requested for every sitemap URL. The old workers.dev host was never a Search Console property, so there is no Change of Address to file; its 301s carry any existing links.
 ## Repeat local verification
 
 From the repository root, run `cd web && bun run check && bun run build`, then run `make lint-js` and `git diff --check` from the root. Use `bun run dev:worker` in `web/` for built-asset verification, not only the Astro dev server. Do not deploy as part of an SEO check.
