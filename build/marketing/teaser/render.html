@@ -24,7 +24,7 @@ const q=new URLSearchParams(location.search),kind=q.get("kind"),screen=q.get("sc
 document.body.className=kind==="tiktok"?"vertical":"";
 document.querySelector("#stage").classList.add(kind==="tiktok"?"line":kind);
 document.body.style.height=kind==="tiktok"?"1920px":"1350px";
-document.querySelector("#title").textContent=screen==="home"?"Log your food. Get on with your day.":"Your month, at a glance.";
+document.querySelector("#title").innerHTML=screen==="home"?"Log your food.<br>Get on with your day.":"Your month, at a glance.";
 document.querySelector("#title").style.display=kind==="clean"?"none":"block";
 document.querySelector("#screen").src=screen+".png";
 </script>
