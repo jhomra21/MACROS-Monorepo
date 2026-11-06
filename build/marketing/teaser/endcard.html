@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:SF;src:url("file:///System/Library/Fonts/SFNS.ttf");font-weight:100 900}
+*{box-sizing:border-box}html,body{margin:0;width:1080px;height:1920px;background:#000;color:#fff;font-family:SF,-apple-system,sans-serif;overflow:hidden}
+svg{position:absolute;left:300px;top:520px;width:480px;height:480px}
+circle{fill:none;stroke-width:30;transform:rotate(-90deg);transform-origin:240px 240px}
+.track{opacity:.16}.fill{stroke-linecap:round}
+h1{position:absolute;top:1248px;width:100%;margin:0;text-align:center;font-size:96px;font-weight:700;letter-spacing:-1.5px}
+p{position:absolute;top:1382px;width:100%;margin:0;text-align:center;font-size:40px;color:#ffffff99;font-weight:400}
+</style>
+<svg viewBox="0 0 480 480" aria-label="MACROS three rings">
+<circle class="track" cx="240" cy="240" r="210" stroke="#0a84ff"/>
+<circle class="track" cx="240" cy="240" r="166" stroke="#ff9f0a"/>
+<circle class="track" cx="240" cy="240" r="122" stroke="#ff375f"/>
+<circle class="fill" cx="240" cy="240" r="210" stroke="#0a84ff"/>
+<circle class="fill" cx="240" cy="240" r="166" stroke="#ff9f0a"/>
+<circle class="fill" cx="240" cy="240" r="122" stroke="#ff375f"/>
+</svg>
+<h1>MACROS</h1><p>Coming soon to iPhone</p>
+<script>
+window.renderFrame=time=>{
+  const progress=Math.min(1,time/.8),ease=1-Math.pow(1-progress,3);
+  document.querySelector("svg").style.opacity=Math.min(1,time/.2);
+  document.querySelector("h1").style.opacity=Math.min(1,time/.3);
+  document.querySelector("p").style.opacity=Math.min(1,time/.3);
+  document.querySelectorAll(".fill").forEach((circle,i)=>{
+    const length=2*Math.PI*Number(circle.getAttribute("r"));
+    circle.style.strokeDasharray=`${length*ease*[.84,.73,.64][i]} ${length}`;
+  });
+};
+renderFrame(0);
+</script>

@@ -1,30 +1,26 @@
 <!doctype html>
 <meta charset="utf-8">
 <style>
-@font-face { font-family:"SF Pro Display"; src:url("file:///System/Library/Fonts/SFNS.ttf") format("truetype"); font-weight:100 900 }
-* { box-sizing:border-box } html,body {margin:0;background:#f1f1f6;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
-body {width:1080px;height:1350px;overflow:hidden}.stage {height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px 38px;gap:28px}
-.title {font-family:"SF Pro Display","SF Pro",-apple-system,system-ui;font-size:68px;line-height:1.05;letter-spacing:-0.01em;font-weight:700;word-spacing:normal;color:#15151a;width:100%;text-align:left}
-.stage:not(.clean) .title {padding-left:20px}
-.phone {width:calc(100% - 120px);max-width:100%;height:100%;aspect-ratio:1320 / 2868;background:#fff;border-radius:52px;overflow:hidden;box-shadow:0 18px 52px #20263a18;display:flex;align-items:flex-start;justify-content:center}
-.phone img {width:100%;height:100%;object-fit:cover;object-position:top}
-.clean .phone {height:100%}.line .phone {height:calc(100% - 108px)}
-.crop .phone {width:calc(100% - 40px);height:calc(100% - 108px);aspect-ratio:auto;align-items:flex-start}
-.crop img {width:100%;height:100%;object-fit:cover;object-position:50% 50%;transform:none}
-.crop:has(img[src*="charts-crop"]) img {object-position:50% 50%;transform:none}
-.crop .phone {overflow:hidden}
-.crop .phone img {clip-path:inset(0 round 34px);border-radius:34px}
-.crop:has(img[src*="home-crop"]) .phone img {object-position:50% 50%;transform:none}
-.stage:not(.clean) {padding-top:80px}
-.vertical .stage {padding:130px 46px 90px;gap:62px}.vertical .title{font-size:68px}.vertical .line .phone{height:calc(100% - 240px);border-radius:68px}.vertical .clean .phone{border-radius:68px}
+@font-face{font-family:SF;src:url("file:///System/Library/Fonts/SFNS.ttf");font-weight:100 900}
+*{box-sizing:border-box}
+html,body{margin:0;background:#f2f2f7;font-family:SF,-apple-system,sans-serif}
+body{width:1080px;height:1350px}
+.stage{height:100%;padding:64px;display:flex;flex-direction:column;align-items:center;gap:40px}
+.title{margin:0;width:100%;font-size:64px;line-height:1.08;font-weight:700;letter-spacing:-.015em;color:#15151a}
+.phone{flex:none;overflow:hidden;background:#f2f2f7;box-shadow:0 20px 48px #20263a24}
+.phone img{display:block;width:100%;height:100%;object-fit:contain}
+.clean .title{display:none}
+.clean{justify-content:center}
 </style>
-<div class="stage" id="stage"><div class="title" id="title"></div><div class="phone"><img id="screen"></div></div>
+<main class="stage"><h1 class="title"></h1><div class="phone"><img alt="MACROS full iPhone screen"></div></main>
 <script>
-const q=new URLSearchParams(location.search),kind=q.get("kind"),screen=q.get("screen");
-document.body.className=kind==="tiktok"?"vertical":"";
-document.querySelector("#stage").classList.add(kind==="tiktok"?"line":kind);
-document.body.style.height=kind==="tiktok"?"1920px":"1350px";
-document.querySelector("#title").innerHTML=screen==="home"?"Log your food.<br>Get on with your day.":"Your month, at a glance.";
-document.querySelector("#title").style.display=kind==="clean"?"none":"block";
-document.querySelector("#screen").src=screen+".png";
+const q=new URLSearchParams(location.search);
+const height=Number(q.get("height")||1350),kind=q.get("kind")||"clean",screen=q.get("screen")||"home";
+document.body.style.height=height+"px";
+document.querySelector(".stage").classList.add(kind);
+document.querySelector(".title").innerHTML=screen==="home"?"Log your food.<br>Get on with your day.":"Your month, at a glance.";
+const titleHeight=kind==="clean"?0:(screen==="home"?138.24:69.12)+40;
+const h=height-128-titleHeight,w=h*1320/2868;
+Object.assign(document.querySelector(".phone").style,{width:w+"px",height:h+"px",borderRadius:w*.09+"px"});
+document.querySelector("img").src=screen+".png";
 </script>
