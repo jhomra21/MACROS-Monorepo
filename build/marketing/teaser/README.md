@@ -1,146 +1,149 @@
-# MACROS teaser v7
+# MACROS teaser v8
 
-Owner-requested marketing deliverables, including the video and eight image
-variants, are an explicit exception to the normal tracked-evidence size limit.
-Only files in this directory changed. Raw captures and end-card frame sequences
-remain outside Git.
+Shorter owner-requested teaser, with no Edit Entry step. Only this directory
+changes. Raw captures and the end-card frame sequence remain outside Git.
+The eight v7 marketing image variants, native screenshots, contact sheet,
+screen framing, colors, and end-card design are unchanged.
 
 ## Deliverables
 
-- `teaser.mp4`: 1080 × 1920, H.264 / yuv420p, 30 fps, silent, faststart.
-  Duration 23.066667 s; size 2,809,778 bytes (2.81 MB).
-- `home.png`, `charts.png`: recaptured native 1320 × 2868 screenshots.
-- `home-A`, `home-B`, `charts-A`, `charts-B`: 1080 × 1350.
-  Corresponding `-tiktok` files: 1080 × 1920. A is clean; B has a headline.
-- `contact-sheet.png`: the four 4:5 variants.
-- `frames.png`: required 2 fps, 160 px wide, 10 × 6 verification sheet.
-- `frame-widget.jpg`, `teaser-poster.jpg`: final unfaded Home Screen frame.
-- `frame-endcard.jpg`: filled end-card logo.
-- `frame-rings-after.jpg`: edited Today total.
+- `teaser.mp4`: **16.900000 s; 2,955,308 bytes (2.96 MB)**.
+- 1080 × 1920, H.264 / yuv420p, **60 fps constant**, 1,014 decoded frames.
+- Silent, faststart (`moov` before `mdat`), below 15 MB.
+- `frames.png`: `fps=2,scale=160:-1,tile=10x5`.
+- `frame-widget.jpg`, `teaser-poster.jpg`: both widgets at **1,415**.
+- `frame-endcard.jpg`: filled logo; `frame-rings-after.jpg`: Today at **1,415**.
 
-All image layouts preserve the native screen aspect ratio with `object-fit:
-contain`. No screen extraction/cropping remains. Video uses the entire native
-screen scaled to 884 × 1920, centered on #f2f2f7 with 80 px rounded corners.
-Status bar, keyboard bottom row, bottom screen area, and Home Screen dock were
-visually checked. The app itself hides the home indicator; no bottom pixels
-were removed. C variants were deleted.
+Entire native 1320 × 2868 screen, scaled to 884 × 1920, centered on #f2f2f7
+with the same 80 px rounded corners. No screen cropping. Status bar, keyboard,
+bottom screen area, and Home Screen dock are retained.
 
-## Recording and edit
+## Timeline
 
-Rehearsed the full flow before recording. The final take is one uninterrupted
-simctl screen capture. DEBUG Pro was granted before the take, with no app
-reopening until the take finished. The earlier take was rejected because
-reopening the app refreshes entitlements and resets DEBUG Pro.
+Times describe the final encoded video, not tool latency.
 
-Nutrition: **1,310 → 1,415 → 1,520 kcal**. Banana is 105 kcal; editing to two
-servings makes it 210 kcal. Both Home Screen widgets show 1,520 in the take.
+| Time | Screen / action |
+| --- | --- |
+| 0.00–0.69 | Today, **1,310** |
+| 0.69–2.35 | Add Food presentation and search list |
+| 2.35–5.5 | Type **banana**, keyboard and search results |
+| 5.5–6.48 | Pick Banana; Log Food form |
+| 6.48–7.88 | Log Food dismissal and rings fill to **1,415** |
+| 7.88–8.87 | Today hold, **1,415**, approximately 1 s |
+| 8.87–11.40 | Open unlocked 30-day Insights; short chart scroll |
+| 11.40–12.30 | Native Home zoom and widget refresh to **1,415** |
+| 12.30–13.80 | Both widgets at **1,415**, 1.5 s hold |
+| 13.80–14.40 | Fade to black, 0.6 s |
+| 14.40–16.90 | Same animated end card, rendered at 60 fps; 0.8 s ring fill |
 
-`render-video.py` uses `freezedetect=n=0.00001:d=0.4`, stricter than the requested
-0.001 threshold, and removes only the interior of long still spans. It leaves
-0.25 s on each side (about 0.5 s total). All short spans and every real animation
-remain at original speed, including stepper changes, sheet presentations,
-navigation, ring easing, scrolling, and the app-to-Home zoom. There is no optical
-flow, crossfade between app screens, or animation retiming. The Home Screen
-holds for approximately 1.5 s before the 0.6 s fade. The final 2.5 s is HTML
-rendered in headless Chrome at 30 fps; rings fill over 0.8 s.
+The widget refresh briefly shows the previous value before settling. This
+native behavior is preserved, not cut out. Both widgets show 1,415 throughout
+the deliberate final hold and in the poster.
 
-Rebuild in this worktree:
+## Recording and still-only edit
+
+Final source: `/tmp/teaser-raw-v8-final.mp4`, one uninterrupted whole-device
+recording through the T3-pinned agent-device CLI, requested at 60 fps with no
+touch overlay. The first rehearsal was rejected because a snapshot after
+Home reactivated the app. The final take has no snapshot or app reopening
+between recording start and stop.
+
+DEBUG Pro was granted before capture. The take logs one 105 kcal Banana:
+**1,310 → 1,415**. No entry editing, serving changes, or second logging step.
+
+`render-video.py` uses `freezedetect=n=0.00001:d=0.4`. Only detected still
+interiors are removed, leaving approximately 0.5 s, or 1 s for the Today hold.
+All sheet, keyboard, navigation, rings, scrolling, and Home animations remain
+at their original speed, in full. Removed source intervals:
+
+| Start | End |
+| --- | --- |
+| 0.438333 | 0.608333 |
+| 2.251667 | 2.448333 |
+| 6.588333 | 6.935000 |
+| 9.081667 | 9.205000 |
+| 11.690000 | 11.831667 |
+
+The VFR source is sampled by presentation timestamps using `fps=60`; retained
+frames use `setpts=N/(60*TB)`. Output uses `-r 60 -fps_mode cfr`. No optical
+flow, interpolation, animation speed-up, or crossfade between app screens.
+Only the final still is extended for the widget hold and fade.
+
+## Measured frame cadence
+
+**This is not a claim of uniformly 60 unique native frames per second.**
+The simulator delivers irregular VFR motion. Its nominal `r_frame_rate=600/1`
+is a timebase-derived value, not evidence of 600 fps.
+
+| File | r_frame_rate | avg_frame_rate | Decoded frames | Duration |
+| --- | --- | --- | --- | --- |
+| Raw | 600/1 | 128000/2653 (48.247 fps) | 640 | 13.265 s |
+| Final | 60/1 | 60/1 | 1,014 | 16.900 s |
+
+Unique-frame measurement uses default `mpdecimate` over the whole frame,
+with `-fps_mode passthrough`. These are moving spans, not whole-clip averages.
+The rings span includes the food-sheet dismissal and visible ring update.
+
+| Motion | Source interval | Source frames | Source unique frames / fps | Final interval | Final frames | Final unique frames / fps |
+| --- | --- | --- | --- | --- | --- | --- |
+| Rings fill | 7.200–7.800 | 60 | 40 / **66.67** | 6.500–7.100 | 36 | 27 / **45.00** |
+| App-to-Home zoom | 12.350–12.850 | 36 | 29 / **58.00** | 11.383333–11.883333 | 30 | 24 / **48.00** |
+
+Most encoded frames in both measured motion spans are unique (75% and 80%).
+VFR sampling needs repeated frames where native updates arrive irregularly;
+none are invented by interpolation. Native Home capture falls short of
+60 unique fps, and the encoded motion does not sustain 60 unique fps either.
+The end card is independently rendered as 150 frames at 60 fps, not upsampled
+from v7's 30 fps sequence.
+
+## Verification
+
+Ran `ffprobe -count_frames` on raw and final files. Checked every final frame's
+presentation timestamp against `frameIndex / 60`, stream codec, dimensions,
+pixel format, absence of audio, duration, file size, and faststart atom order.
+Inspected `frames.png`, full-size widget and end-card stills, and the native
+Home animation around both scene flags.
+
+Scene detection: `select='gt(scene,0.25)',showinfo`.
+
+| Flag | Timestamp | Visible content | Finding |
+| --- | --- | --- | --- |
+| 0 | **11.450000 s** | Insights shrinks into a rounded app card over the Home Screen | Continuous native Home animation, not an edit cut |
+| 1 | **11.483333 s** | Smaller Insights card over blurred wallpaper and widgets | Same native animation, not an edit cut |
+
+Exactly two flags; no other scene flags. The preceding still removal ends at
+raw 11.831667 s, before the raw 12.368 s Home motion. Both flags are within
+retained motion. Did not alter animation to hide detector false positives.
+
+Repeatable commands (run from the camera-zoom worktree):
 
 ```sh
 bun build/marketing/teaser/render-assets.mjs
 python3 build/marketing/teaser/render-video.py
+ffprobe -v error -count_frames -show_streams -show_format \
+  build/marketing/teaser/teaser.mp4
+ffmpeg -i build/marketing/teaser/teaser.mp4 \
+  -vf "select='gt(scene,0.25)',showinfo" -fps_mode passthrough -f null -
+ffmpeg -y -i build/marketing/teaser/teaser.mp4 \
+  -vf 'fps=2,scale=160:-1,tile=10x5' -frames:v 1 \
+  build/marketing/teaser/frames.png
+# Substitute the table's source or final interval for START and END.
+ffmpeg -i /tmp/teaser-raw-v8-final.mp4 \
+  -vf 'trim=start=7.2:end=7.8,mpdecimate,showinfo' \
+  -fps_mode passthrough -f null -
 ```
 
-Requires the raw take at `/tmp/teaser-raw-v7.mov`, existing local Playwright /
-Sharp dependencies at `/tmp/macros-teaser-renderer`, and ffmpeg / ffprobe.
-The raw take is intentionally not committed.
+Requires ffmpeg/ffprobe, the untracked raw take above, and existing Playwright /
+Sharp dependencies at `/tmp/macros-teaser-renderer`.
 
-## Verification
+## Restored simulator state
 
-Ran:
+Used only media simulator `D16C3D35-889F-404F-BDD4-C640A6DBC4EF`, under its
+exclusive `/tmp/macros-sim-locks/` directory lock. No app source or other
+simulator was changed; no Xcode build or app test run was needed.
 
-```sh
-ffmpeg -i build/marketing/teaser/teaser.mp4 \
-  -vf "select='gt(scene,0.25)',showinfo" -f null -
-ffmpeg -i build/marketing/teaser/teaser.mp4 \
-  -vf 'fps=2,scale=160:-1,tile=10x6' -frames:v 1 build/marketing/teaser/frames.png
-```
-
-Scene detection flags exactly:
-
-| Timestamp | Visible content | Finding |
-| --- | --- | --- |
-| 18.100000 s | Insights begins shrinking over the Home Screen | Native app-to-Home animation, not a cut |
-| 18.166667 s | App contracts toward its icon over blurred widgets | Same continuous native animation, not a cut |
-
-Inspected all 18 frames from 17.9–18.5 s at 30 fps: uninterrupted shrink,
-icon morph, and wallpaper/widget unblur. These are scene-detector false
-positives on real motion. No hard edit cut is flagged. Neither event is an edit
-boundary: the last removed still span ended at raw 65.015 s (edited ~16.75 s);
-the flagged motion is raw ~66.357–66.423 s. Did not modify the real animation
-to hide detector flags. Requested “none except possibly fade” is therefore
-not literally achieved; preserving the authentic animation takes precedence.
-
-Verified stream metadata, duration, size, no audio, full-screen aspect ratio,
-all eight image geometries, contact sheet, end card, and edit-span boundaries.
-No app source changed; no app build or app test run was needed.
-
-After capture, deleted only the added Banana. Today: **1,310 kcal / four foods**.
-Both widgets: **1,310 kcal**. Explicitly revoked DEBUG Pro and verified
-**MACROS Pro, Free** in Settings. Left the unchanged Home Screen layout visible,
-cleared the status-bar override, stopped the owned recorder, and released the
-media simulator lock. No other simulators were used.
-
-## Half-second timeline
-
-Times below sample the final encoded video, not wall-clock tool latency.
-
-| Time | Screen / action |
-| --- | --- |
-| 0.0 | Today, 1,310 |
-| 0.5 | Today, before Add Food |
-| 1.0 | Add Food presenting |
-| 1.5 | Add Food search list |
-| 2.0 | Add Food search list |
-| 2.5 | Search focus and keyboard presentation |
-| 3.0 | Banana search, complete keyboard |
-| 3.5 | Banana results |
-| 4.0 | Banana results |
-| 4.5 | Banana results |
-| 5.0 | Banana Log Food push |
-| 5.5 | Log Food form |
-| 6.0 | Log Food dismissal / ring update |
-| 6.5 | Today, 1,415 |
-| 7.0 | Today, 1,415 |
-| 7.5 | Banana edit sheet begins |
-| 8.0 | Edit Entry |
-| 8.5 | Edit Entry quantity |
-| 9.0 | Serving increment |
-| 9.5 | Serving increment |
-| 10.0 | Serving increment |
-| 10.5 | Two servings |
-| 11.0 | Edit form scrolling toward Save |
-| 11.5 | Save Changes visible |
-| 12.0 | Two servings, 210 kcal |
-| 12.5 | Two servings, 210 kcal |
-| 13.0 | Two servings, Save Changes |
-| 13.5 | Save dismissal |
-| 14.0 | Today, rings updating to 1,520 |
-| 14.5 | Today, 1,520 |
-| 15.0 | Today, 1,520 |
-| 15.5 | Insights navigation push |
-| 16.0 | Unlocked 30-day Insights |
-| 16.5 | Unlocked Insights |
-| 17.0 | Chart scroll |
-| 17.5 | Calories and macro charts |
-| 18.0 | Insights immediately before Home zoom |
-| 18.5 | Home zoom finishing, widgets 1,520 |
-| 19.0 | Home Screen hold, widgets 1,520 |
-| 19.5 | Home Screen hold, dock visible |
-| 20.0 | Fade to black |
-| 20.5 | Fade finishing |
-| 21.0 | End card, rings filling |
-| 21.5 | End card, rings filled |
-| 22.0 | MACROS / Coming soon to iPhone |
-| 22.5 | End card hold |
-| 23.0 | End card hold (ends at 23.067) |
+After capture, deleted only the added Banana and confirmed Today:
+**1,310 kcal / four foods**. Explicitly revoked DEBUG Pro and verified
+**MACROS Pro, Free** in Settings. Visually confirmed **both widgets at 1,310**.
+Cleared the 9:41 status-bar override, stopped the recorder, released the lock,
+and closed this thread's Device panel without shutting down the simulator.

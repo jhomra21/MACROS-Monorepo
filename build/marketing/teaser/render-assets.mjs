@@ -42,10 +42,10 @@ try {
   await page.setViewportSize({ width: 1080, height: 1920 });
   await page.goto(`file://${join(dir, "endcard.html")}`);
   await page.evaluate(() => document.fonts.ready);
-  await mkdir("/tmp/macros-endcard-v7", { recursive: true });
-  for (let frame = 0; frame < 75; frame++) {
-    await page.evaluate(time => window.renderFrame(time), frame / 30);
-    await page.screenshot({ path: `/tmp/macros-endcard-v7/${String(frame).padStart(3, "0")}.png` });
+  await mkdir("/tmp/macros-endcard-v8", { recursive: true });
+  for (let frame = 0; frame < 150; frame++) {
+    await page.evaluate(time => window.renderFrame(time), frame / 60);
+    await page.screenshot({ path: `/tmp/macros-endcard-v8/${String(frame).padStart(3, "0")}.png` });
   }
 } finally {
   await browser.close();
