@@ -7,7 +7,7 @@ MACROS is a local-first calorie and macro tracker for iPhone, with a small suppo
 - `worker/auth/` — the auth worker used by sharing
 - `worker/usda-proxy/` — the food-search API worker
 - `web/` — the product, privacy, waitlist, and support site
-  - <https://macros-web.jhonra121.workers.dev/>
+  - <https://macrosios.com/>
 
 The app stays local-first: no required account for normal tracking, on-device food/log data by default, and optional network features layered on top for invite sharing and food search.
 

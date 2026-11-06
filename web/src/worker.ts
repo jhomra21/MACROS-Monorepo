@@ -4,6 +4,7 @@ import {
 	supportStatusMessages,
 	validateSupportRequest,
 } from './lib/support';
+import { redirectHosts, siteOrigin } from './data/origin';
 import { isJsonRequest, jsonResponse, parseRequest } from './lib/request';
 import {
 	validateWaitlistRequest,
@@ -216,8 +217,26 @@ async function handleWaitlistRequest(request: Request, env: WorkerEnv): Promise<
 	}
 }
 
+function canonicalRedirect(request: Request): Response | null {
+	const url = new URL(request.url);
+
+	if (!redirectHosts.has(url.hostname)) return null;
+
+	// 308 keeps a form POST a POST; 301 is the conventional signal for page moves.
+	const status = request.method === 'GET' || request.method === 'HEAD' ? 301 : 308;
+
+	return new Response(null, {
+		status,
+		headers: { Location: new URL(url.pathname + url.search, siteOrigin).href },
+	});
+}
+
 export default {
 	async fetch(request: Request, env: WorkerEnv): Promise<Response> {
+		const redirect = canonicalRedirect(request);
+
+		if (redirect != null) return redirect;
+
 		const url = new URL(request.url);
 
 		if (request.method === 'POST' && url.pathname === '/api/support') {

@@ -4,6 +4,12 @@
   "main": "./src/worker.ts",
   "compatibility_date": "2026-04-15",
   "compatibility_flags": ["nodejs_compat"],
+  // workers.dev stays on so old links reach the Worker and get a 301 to macrosios.com.
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "macrosios.com", "custom_domain": true },
+    { "pattern": "www.macrosios.com", "custom_domain": true },
+  ],
   "triggers": {
     "crons": ["17 3 * * *"],
   },
@@ -19,7 +25,8 @@
     "directory": "./dist",
     "html_handling": "force-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*"],
+    // Every request runs the Worker first so non-canonical hosts redirect instead of serving duplicate pages.
+    "run_worker_first": true,
   },
   "observability": {
     "enabled": true,

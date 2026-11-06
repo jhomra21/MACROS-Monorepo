@@ -30,14 +30,11 @@ Set `site.appStore.live` to `true` only when the listing is available. Its ID dr
 
 The unmodified black English badge is from [Apple's marketing artwork](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg). Follow [Apple's guidelines](https://developer.apple.com/app-store/marketing/guidelines/): one badge per page, 40px minimum onscreen height, at least one-quarter-height clear space, no filtering, redrawing, stretching, or animation. The component provides 10px clear space around a 40px badge, uses its original aspect ratio, and appears in the home hero or an inner page's footer, never both. The flag-on local preview is in `../docs/evidence/web-seo/`; the committed flag is off.
 
-## Move to a custom domain
+## Custom domain
 
-1. Configure the new domain and TLS for this Worker.
-2. Change only `site.url` to the new HTTPS origin. Rebuild and verify canonical, Open Graph, JSON-LD, sitemap, robots, and RSS URLs.
-3. Add permanent **301 redirects** from the old workers.dev host to the new origin, preserving paths and query strings. This requires routing the old host through Worker code before static assets, or another host-aware redirect mechanism. Do not use a relative `_redirects` rule that also redirects the new host. Keep the old host responding with redirects, not duplicate content.
-4. Verify both properties in Google Search Console. Submit Change of Address if Search Console supports the property types involved; a workers.dev URL-prefix property may not qualify. If unavailable, use the 301 redirects and new sitemap, and monitor indexing instead.
-5. Resubmit `/sitemap.xml` for the new property. Check URL Inspection, redirects, robots access, and indexing. Keep redirects for at least a year, preferably indefinitely.
+The public origin is `https://macrosios.com`, set once in `src/data/origin.ts` and read by `site.url` and the Worker. `wrangler.jsonc` attaches `macrosios.com` and `www.macrosios.com` as Worker custom domains and keeps `workers_dev` on. `run_worker_first: true` makes every request pass through the Worker, which answers `www.macrosios.com` and `macros-web.jhonra121.workers.dev` with a permanent redirect to the same path and query on the apex host: 301 for GET and HEAD, 308 for other methods so a form POST stays a POST. Local hosts are not redirected. Keep these redirects indefinitely.
 
+Still to do by the owner: verify `macrosios.com` in Google Search Console (a Domain property through a Cloudflare DNS TXT record), submit `/sitemap.xml`, and use Change of Address if Search Console allows it for the old property. A workers.dev URL-prefix property may not qualify; the redirects and sitemap still move indexing.
 ## Repeat local verification
 
 From the repository root, run `cd web && bun run check && bun run build`, then run `make lint-js` and `git diff --check` from the root. Use `bun run dev:worker` in `web/` for built-asset verification, not only the Astro dev server. Do not deploy as part of an SEO check.

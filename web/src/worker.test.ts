@@ -177,3 +177,68 @@ describe('website form retention', () => {
 		expect(database.batches).toBe(100);
 	});
 });
+
+// Custom-domain failure list: an old workers.dev or www link must not serve duplicate
+// content; the redirect must keep the path and query; form POSTs on an old host must not
+// be downgraded to GET or write anything; the canonical host and local dev hosts must
+// reach assets untouched.
+describe('canonical host redirects', () => {
+	function hostEnv() {
+		const db = fakeDatabase();
+		let assetCalls = 0;
+
+		const env = {
+			ASSETS: {
+				fetch: async () => {
+					assetCalls += 1;
+
+					return new Response('asset');
+				},
+			},
+			SUPPORT_DB: db,
+		};
+
+		return { env, db, get assetCalls() { return assetCalls; } };
+	}
+
+	it('permanently redirects the workers.dev host, keeping path and query', async () => {
+		const ctx = hostEnv();
+		const response = await worker.fetch(new Request('https://macros-web.jhonra121.workers.dev/guides/how-to-set-macro-goals/?ref=ig'), ctx.env);
+
+		expect(response.status).toBe(301);
+		expect(response.headers.get('location')).toBe('https://macrosios.com/guides/how-to-set-macro-goals/?ref=ig');
+		expect(ctx.assetCalls).toBe(0);
+	});
+
+	it('permanently redirects www to the apex host', async () => {
+		const ctx = hostEnv();
+		const response = await worker.fetch(new Request('https://www.macrosios.com/'), ctx.env);
+
+		expect(response.status).toBe(301);
+		expect(response.headers.get('location')).toBe('https://macrosios.com/');
+	});
+
+	it('uses 308 for form posts on an old host and writes nothing', async () => {
+		const ctx = hostEnv();
+
+		const response = await worker.fetch(new Request('https://macros-web.jhonra121.workers.dev/api/waitlist', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json', accept: 'application/json' },
+			body: JSON.stringify({ email: 'test@example.com' }),
+		}), ctx.env);
+
+		expect(response.status).toBe(308);
+		expect(response.headers.get('location')).toBe('https://macrosios.com/api/waitlist');
+		expect(ctx.db.writes).toBe(0);
+	});
+
+	it('serves the canonical host and local dev hosts from assets', async () => {
+		for (const url of ['https://macrosios.com/guides/', 'http://localhost:8787/', 'https://example.test/about/']) {
+			const ctx = hostEnv();
+			const response = await worker.fetch(new Request(url), ctx.env);
+
+			expect(response.status).toBe(200);
+			expect(ctx.assetCalls).toBe(1);
+		}
+	});
+});
