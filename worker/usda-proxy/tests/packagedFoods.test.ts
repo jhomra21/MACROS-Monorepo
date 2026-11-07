@@ -940,15 +940,112 @@ describe('fetchUSDAFood', () => {
     }
   })
 
-  it('keeps unscaled per-100 g USDA values on a 100 g serving when serving grams are unknown', async () => {
+  it('scales per-100 ml USDA nutrients to volume servings without claiming grams', async () => {
+    for (const servingSizeUnit of ['MLT', 'mlt', 'ml', 'ML', 'milliliter', 'Milliliters']) {
+      for (const householdServingFullText of ['8 fl oz', undefined]) {
+        const response = await fetchUSDAFood(321, 'test-usda-key', async () => Response.json({
+          ...usdaBeverageDetailsPayload(),
+          servingSizeUnit,
+          householdServingFullText,
+        }))
+
+        expect(response).toMatchObject({ servingDescription: householdServingFullText ?? '240 ml', ...USDA_240_ML_EXPECTED })
+        expect(response.gramsPerServing).toBeUndefined()
+      }
+    }
+  })
+
+  it('gives the same volume serving from v1 search, v1 details, and v2 when unit spellings differ', async () => {
+    // Independent records shaped like an FDC Branded beverage: search reports MLT, details report ml.
+    const searchRecord = {
+      fdcId: 321,
+      dataType: 'Branded',
+      description: 'FIZZ COLA',
+      brandOwner: 'FIZZ BEVERAGE CO.',
+      servingSize: 240,
+      servingSizeUnit: 'MLT',
+      foodNutrients: [
+        { nutrientId: 1008, value: 42 },
+        { nutrientId: 1003, value: 0 },
+        { nutrientId: 1004, value: 0 },
+        { nutrientId: 1005, value: 10.6 },
+        { nutrientId: 1093, value: 4 },
+      ],
+    }
+
+    const detailsRecord = {
+      fdcId: 321,
+      dataType: 'Branded',
+      description: 'FIZZ COLA',
+      brandOwner: 'FIZZ BEVERAGE CO.',
+      servingSize: 240.0,
+      servingSizeUnit: 'ml',
+      foodNutrients: [
+        { amount: 42, nutrient: { id: 1008 } },
+        { amount: 0, nutrient: { id: 1003 } },
+        { amount: 0, nutrient: { id: 1004 } },
+        { amount: 10.6, nutrient: { id: 1005 } },
+        { amount: 4, nutrient: { id: 1093 } },
+      ],
+    }
+
+    const search = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'fizz cola' },
+      'test-usda-key',
+      async () => Response.json({ totalHits: 1, foods: [searchRecord] }),
+    )
+
+    const details = await fetchUSDAFood(321, 'test-usda-key', async () => Response.json(detailsRecord))
+    const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+    const v1Key = (food: typeof details) => [food.name, food.brand, food.servingDescription, food.gramsPerServing, food.caloriesPerServing, food.proteinPerServing, food.fatPerServing, food.carbsPerServing, food.sodiumPerServing]
+    const { calories, protein, fat, carbs, sodium } = v2.nutrition
+
+    // 240 ml is 2.4 × the per-100 ml values: 100.8 → 101 kcal, 25.44 → 25.4 g carbs, 9.6 mg sodium.
+    expect(v1Key(details)).toEqual(['Fizz Cola', 'Fizz Beverage', '240 ml', undefined, 101, 0, 0, 25.4, 9.6])
+    expect(v1Key(search.results[0]!)).toEqual(v1Key(details))
+    expect([v2.name, v2.brand, v2.servingDescription, v2.gramsPerServing, calories, protein, fat, carbs, sodium]).toEqual(v1Key(details))
+  })
+
+  it('keeps unscaled per-100 values on a "100 g or ml" serving without grams when a Branded basis is unknown', async () => {
     for (const serving of [
-      { servingSizeUnit: 'MLT' },
       { servingSizeUnit: undefined },
+      { servingSizeUnit: 'IU' },
       { servingSize: 0 },
+      { servingSize: -50 },
       { servingSize: undefined },
+      { dataType: undefined, servingSizeUnit: undefined },
+    ]) {
+      const details = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json({ ...usdaDetailsPayload(), ...serving }))
+      const searchRecord = { ...usdaPayload().foods[0], ...serving }
+      const search = await searchUSDAFoods(DEFAULT_QUERY, 'test-usda-key', async () => Response.json({ totalHits: 1, foods: [searchRecord] }))
+      const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+
+      for (const food of [details, search.results[0]!]) {
+        expect(food).toMatchObject({
+          servingDescription: '100 g or ml',
+          caloriesPerServing: 420,
+          proteinPerServing: 40,
+          fatPerServing: 14,
+          carbsPerServing: 36,
+          sodiumPerServing: 640,
+        })
+        expect(food.gramsPerServing).toBeUndefined()
+      }
+
+      expect(v2.servingDescription).toBe('100 g or ml')
+      expect(v2.gramsPerServing).toBeUndefined()
+      expect(v2.nutrition).toMatchObject({ calories: 420, protein: 40, fat: 14, carbs: 36, sodium: 640 })
+    }
+  })
+
+  it('keeps the 100 g basis for per-100 g non-branded records, even beside a volume serving', async () => {
+    for (const dataType of ['Foundation', 'SR Legacy', 'Survey (FNDDS)']) for (const serving of [
+      { servingSize: undefined, servingSizeUnit: undefined, householdServingFullText: undefined },
+      { servingSize: 240, servingSizeUnit: 'MLT' },
     ]) {
       const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json({
         ...usdaDetailsPayload(),
+        dataType,
         ...serving,
       }))
 
@@ -1011,12 +1108,12 @@ describe('fetchUSDAFood', () => {
     expect([v2.name, v2.brand, v2.servingDescription, v2.gramsPerServing, calories, protein, fat, carbs]).toEqual(v1Key(details))
   })
 
-  it('keeps household serving text and non-gram unit spellings', async () => {
+  it('keeps household serving text and renders volume unit spellings as ml', async () => {
     const withHousehold = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(usdaDetailsPayload()))
     const volume = usdaSourceFood({ ...usdaDetailsPayload(), householdServingFullText: undefined, servingSize: 240, servingSizeUnit: 'MLT' })
 
     expect(withHousehold.servingDescription).toBe('1 bar')
-    expect(volume?.servingDescription).toBe('240 MLT')
+    expect(volume?.servingDescription).toBe('240 ml')
   })})
 
 describe('packaged food cache policy', () => {
@@ -1441,6 +1538,7 @@ const USDA_PER_100_G = [
 function usdaBrandedRecord() {
   return {
     fdcId: 123,
+    dataType: 'Branded',
     description: 'Protein Bar',
     brandName: 'Macro Co',
     gtinUpc: '0123456789012',
@@ -1459,6 +1557,38 @@ function usdaBrandedRecord() {
       sodium: { value: 320 },
       cholesterol: { value: 15 },
     },
+  }
+}
+
+// FDC Branded beverage shape: servingSizeUnit is volume, so foodNutrients are per 100 ml.
+const USDA_PER_100_ML = [
+  [1008, 42],
+  [1003, 0],
+  [1004, 0],
+  [1005, 10.6],
+  [2000, 10.6],
+  [1093, 4],
+] as const
+
+// 240 ml is 2.4 × per 100 ml: 100.8 → 101 kcal, 25.44 → 25.4 g carbs and sugars, 9.6 mg sodium.
+const USDA_240_ML_EXPECTED = {
+  caloriesPerServing: 101,
+  proteinPerServing: 0,
+  fatPerServing: 0,
+  carbsPerServing: 25.4,
+  sugarsPerServing: 25.4,
+  sodiumPerServing: 9.6,
+}
+
+function usdaBeverageDetailsPayload() {
+  return {
+    fdcId: 321,
+    dataType: 'Branded',
+    description: 'FIZZ COLA',
+    brandOwner: 'FIZZ BEVERAGE CO.',
+    servingSize: 240,
+    servingSizeUnit: 'MLT',
+    foodNutrients: USDA_PER_100_ML.map(([id, amount]) => ({ amount, nutrient: { id } })),
   }
 }
 

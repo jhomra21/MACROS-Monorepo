@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { normalizeOpenFoodFactsFood, normalizeUSDAFood } from '../src/normalizedFood'
+import { usdaSourceFood } from '../src/usda'
 
 const usda = (name: string, brand?: string) => normalizeUSDAFood({
   id: 'usda:1',
@@ -16,11 +17,13 @@ const usda = (name: string, brand?: string) => normalizeUSDAFood({
 describe('v2 search presentation boundary', () => {
   it('rounds USDA nutrition after serving scaling, without float noise', () => {
     expect(usda('Yogurt').nutrition).toEqual({ calories: 60, protein: 10, sodium: 12.3 })
-    expect(normalizeUSDAFood({
-      id: 'usda:2', name: 'Yogurt', servingDescription: '50 g', gramsPerServing: 50,
-      sourceName: 'USDA', sourceURL: 'https://example.com',
-      caloriesPerServing: 119.84000000000002, proteinPerServing: 20.048000000000002,
-    }).nutrition).toEqual({ calories: 60, protein: 10 })
+    expect(normalizeUSDAFood(usdaSourceFood({
+      fdcId: 2, description: 'Yogurt', servingSize: 50, servingSizeUnit: 'g',
+      foodNutrients: [
+        { nutrientId: 1008, value: 119.84000000000002 },
+        { nutrientId: 1003, value: 20.048000000000002 },
+      ],
+    })!).nutrition).toEqual({ calories: 60, protein: 10 })
   })
 
   it('rounds OFF nutrition after grams/mg conversion and serving scaling', () => {

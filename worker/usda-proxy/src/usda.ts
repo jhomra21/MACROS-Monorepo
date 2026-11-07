@@ -15,6 +15,8 @@ const MAX_PAGE = 10
 
 const GRAM_UNITS = new Set(['g', 'grm', 'gram', 'grams'])
 
+const VOLUME_UNITS = new Set(['ml', 'mlt', 'milliliter', 'milliliters'])
+
 const CACHE_TTL_SECONDS = 300
 
 const jsonValueSchema = z.json()
@@ -51,6 +53,7 @@ const detailsNutrientSchema = z.object({
 
 const searchFoodSchema = z.object({
   fdcId: optionalNumber,
+  dataType: optionalString,
   description: optionalString,
   brandName: optionalString,
   brandOwner: optionalString,
@@ -63,6 +66,7 @@ const searchFoodSchema = z.object({
 
 const detailsFoodSchema = z.object({
   fdcId: optionalNumber,
+  dataType: optionalString,
   description: optionalString,
   brandName: optionalString,
   brandOwner: optionalString,
@@ -215,22 +219,29 @@ export function usdaSourceFood(food: USDAFood) {
   if (id == null || !Number.isSafeInteger(id) || id <= 0 || name == null) return null
 
   const values = nutrientValueMap(food)
+  const { servingDescription, gramsPerServing, multiplier } = servingBasis(food)
+
+  const perServing = (nutrientId: number) => {
+    const value = values.get(nutrientId)
+
+    return value == null ? undefined : value * multiplier
+  }
 
   return {
     id: `usda:${id}`, fdcId: id, name,
     brand: firstNonEmpty(food.brandOwner, food.brandName),
-    servingDescription: makeServingDescription(food),
-    gramsPerServing: gramsPerServing(food),
-    caloriesPerServing: values.get(NUTRIENT_IDS.calories),
-    proteinPerServing: values.get(NUTRIENT_IDS.protein),
-    fatPerServing: values.get(NUTRIENT_IDS.fat),
-    carbsPerServing: values.get(NUTRIENT_IDS.carbs),
-    saturatedFatPerServing: values.get(NUTRIENT_IDS.saturatedFat),
-    fiberPerServing: values.get(NUTRIENT_IDS.fiber),
-    sugarsPerServing: values.get(NUTRIENT_IDS.sugars),
-    addedSugarsPerServing: values.get(NUTRIENT_IDS.addedSugars),
-    sodiumPerServing: values.get(NUTRIENT_IDS.sodium),
-    cholesterolPerServing: values.get(NUTRIENT_IDS.cholesterol),
+    servingDescription,
+    gramsPerServing,
+    caloriesPerServing: perServing(NUTRIENT_IDS.calories),
+    proteinPerServing: perServing(NUTRIENT_IDS.protein),
+    fatPerServing: perServing(NUTRIENT_IDS.fat),
+    carbsPerServing: perServing(NUTRIENT_IDS.carbs),
+    saturatedFatPerServing: perServing(NUTRIENT_IDS.saturatedFat),
+    fiberPerServing: perServing(NUTRIENT_IDS.fiber),
+    sugarsPerServing: perServing(NUTRIENT_IDS.sugars),
+    addedSugarsPerServing: perServing(NUTRIENT_IDS.addedSugars),
+    sodiumPerServing: perServing(NUTRIENT_IDS.sodium),
+    cholesterolPerServing: perServing(NUTRIENT_IDS.cholesterol),
     sourceName: USDA_PROVIDER_NAME,
     sourceURL: `https://fdc.nal.usda.gov/food-details/${id}`,
     barcode: normalizedText(food.gtinUpc),
@@ -320,7 +331,7 @@ type USDAFoodNutrient = USDASearchFoodNutrient | USDAFoodDetailsNutrient
 
 type USDASourceFood = NonNullable<ReturnType<typeof usdaSourceFood>>
 
-// v1 reuses the v2 normalizer so both contracts share one serving basis, scaling, rounding, and display text;
+// v1 reuses the v2 normalizer on usdaSourceFood output so both contracts share one serving basis, scaling, rounding, and display text;
 // the secondary-nutrient repair key depends on them matching exactly.
 function makeProxyFoodResult(source: USDASourceFood): USDAProxyFoodResult | null {
   const food = normalizeUSDAFood(source)
@@ -353,34 +364,26 @@ function makeProxyFoodResult(source: USDASourceFood): USDAProxyFoodResult | null
   }
 }
 
-function makeServingDescription(food: USDAFood): string {
-  const householdServing = normalizedText(food.householdServingFullText)
+// FDC Branded foodNutrients are per 100 g or per 100 ml by servingSizeUnit; other data types are per 100 g.
+// Values are scaled to a known metric serving, and only gram servings claim grams. A missing dataType counts
+// as Branded so an unknown basis never claims grams.
+function servingBasis(food: USDAFood) {
+  const branded = food.dataType == null || food.dataType === BRANDED_DATA_TYPE
+  const size = food.servingSize
+  const unit = normalizedText(food.servingSizeUnit)?.toLowerCase()
+  const metricUnit = unit == null ? undefined : GRAM_UNITS.has(unit) ? 'g' : branded && VOLUME_UNITS.has(unit) ? 'ml' : undefined
 
-  if (householdServing != null) {
-    return householdServing
+  if (metricUnit != null && size != null && Number.isFinite(size) && size > 0) {
+    return {
+      servingDescription: normalizedText(food.householdServingFullText) ?? `${roundForDisplay(size)} ${metricUnit}`,
+      gramsPerServing: metricUnit === 'g' ? size : undefined,
+      multiplier: size / 100,
+    }
   }
 
-  const servingSize = food.servingSize
-  const servingSizeUnit = normalizedText(food.servingSizeUnit)
-
-  if (servingSize != null && Number.isFinite(servingSize) && servingSize > 0 && servingSizeUnit != null) {
-    const unit = GRAM_UNITS.has(servingSizeUnit.toLowerCase()) ? 'g' : servingSizeUnit
-
-    return `${roundForDisplay(servingSize)} ${unit}`
-  }
-
-  return '1 serving'
-}
-
-function gramsPerServing(food: USDAFood): number | undefined {
-  const servingSize = food.servingSize
-  const servingSizeUnit = normalizedText(food.servingSizeUnit)?.toLowerCase()
-
-  if (servingSize == null || Number.isFinite(servingSize) === false || servingSize <= 0) {
-    return undefined
-  }
-
-  return servingSizeUnit != null && GRAM_UNITS.has(servingSizeUnit) ? servingSize : undefined
+  return branded
+    ? { servingDescription: '100 g or ml', multiplier: 1 }
+    : { servingDescription: '100 g', gramsPerServing: 100, multiplier: 1 }
 }
 
 function normalizedText(value: string | undefined): string | undefined {
