@@ -2,6 +2,9 @@
 import CalorieFlow from './CalorieFlow.astro';
 import AMDRChart from './AMDRChart.astro';
 import CalculatorSteps from './CalculatorSteps.astro';
+import ServingLabel from './ServingLabel.astro';
+import CalorieGap from './CalorieGap.astro';
+import ProteinLookup from './ProteinLookup.astro';
 import type { ComponentProps } from 'astro/types';
 import GuideScreenshot from './GuideScreenshot.astro';
 import { visualMarker } from '../../lib/article-visuals';
@@ -18,5 +21,8 @@ const parts = html.split(visualMarker);
 	part === 'calorie-flow' ? <CalorieFlow /> :
 	part === 'amdr' ? <AMDRChart /> :
 	part === 'calculator' ? <CalculatorSteps /> :
+	part === 'serving-label' ? <ServingLabel /> :
+	part === 'calorie-gap' ? <CalorieGap /> :
+	part === 'protein-lookup' ? <ProteinLookup /> :
 	<GuideScreenshot screen={part as ComponentProps<typeof GuideScreenshot>['screen']} />
 )}

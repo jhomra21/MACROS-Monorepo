@@ -1,0 +1,26 @@
+---
+// 1.6 g/kg on the exact weight. Kilograms are shown rounded, but grams use the unrounded value.
+const kgPerLb = 0.45359237;
+
+const rows = [120, 140, 160, 180, 200, 220, 240].map(lb => ({
+	lb,
+	kg: Math.round(lb * kgPerLb),
+	grams: Math.round(lb * kgPerLb * 1.6),
+}));
+
+const most = Math.max(...rows.map(row => row.grams));
+---
+<figure class="guide-diagram protein-lookup" data-diagram aria-labelledby="protein-lookup-caption">
+	<p class="title">Protein a day at 1.6 g/kg (0.73 g per lb)</p>
+	<div class="table-scroll" role="region" aria-label="Daily protein by body weight" tabindex="0">
+		<table>
+			<caption class="sr-only">Daily protein at 1.6 g per kg for body weights from 120 to 240 lb</caption>
+			<thead><tr><th scope="col"><span class="sr-only">Body weight in </span>lb</th><th scope="col"><span class="sr-only">Body weight in </span>kg</th><th scope="col">Protein a day</th></tr></thead>
+			<tbody>{rows.map(row => <tr>
+				<th scope="row">{row.lb}</th><td>{row.kg}</td>
+				<td><div class="protein-lookup__grams"><strong>{row.grams} g</strong><span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span></div></td>
+			</tr>)}</tbody>
+		</table>
+	</div>
+	<figcaption id="protein-lookup-caption" class="caption">These are daily totals, not amounts for one meal. Kilograms are rounded to the nearest whole number. Grams come from the exact weight, so rounded kilograms times 1.6, or pounds times 0.73, can differ by 1 g.</figcaption>
+</figure>
