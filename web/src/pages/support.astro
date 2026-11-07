@@ -3,7 +3,6 @@ export const prerender = true;
 
 import { site } from '../data/site';
 import PageHeading from '../components/PageHeading.astro';
-import FeatureGlyph from '../components/FeatureGlyph.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { pages } from '../lib/seo';
 import {
@@ -27,8 +26,7 @@ import {
 
 	<section class="section">
 		<div class="container support-layout">
-			<aside class="support-card bento__card--protein" data-reveal>
-				<FeatureGlyph glyph="review" />
+			<aside class="support-notes">
 				<h2 class="title">What to include</h2>
 				<ul class="support-list">
 					{site.supportChecklist.map((item) => <li>{item}</li>)}
