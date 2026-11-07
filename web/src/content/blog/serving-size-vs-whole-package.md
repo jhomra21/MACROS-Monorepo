@@ -35,11 +35,15 @@ Eat half the package and you had 2 servings, so 560 calories and 30 g of protein
 
 Now say you weighed your plate and got 340 g (12 oz). That's 340 divided by 227, or about 1.5 servings. You ate about 420 calories and 22.5 g of protein.
 
+<!-- visual:serving-ruler -->
+
 ## Let the label do some of the work
 
 Some packages save you the math. If a package sold on its own holds less than twice the reference amount, the whole package counts as one serving. Some of these add a smaller column for a typical serving, so read the column for the whole container.
 
 Packages that hold two to three times the reference amount must show a second column for the whole package, with a few exceptions. FDA calls these dual-column labels. If you ate the whole thing, read the package column.
+
+<!-- visual:package-columns -->
 
 Makers round the servings count, and the word "about" tells you so. A package that says "about 2.5 servings" may hold a little more or a little less. Dividing the package weight by the serving weight gives a closer count. For canned food packed in liquid you don't eat, the label counts the drained food, so use the drained weight.
 

@@ -26,6 +26,8 @@ That estimate is loose, and it came from a subset of the trials. The likely rang
 
 The International Society of Sports Nutrition lands in a similar place. Its 2017 position stand says 1.4 to 2.0 g/kg (0.64 to 0.91 g per pound) a day suits most people who exercise. People who lift while eating fewer calories than they burn may need 2.3 to 3.1 g/kg (1.04 to 1.41 g per pound) to keep their muscle.
 
+<!-- visual:protein-range -->
+
 ## Find your daily grams
 
 Multiply your weight in kilograms by 1.6. Use 2.2 instead if you're aiming high.
@@ -34,15 +36,21 @@ Multiply your weight in kilograms by 1.6. Use 2.2 instead if you're aiming high.
 
 If you weigh yourself in pounds, multiply your weight by 0.73 for 1.6 g/kg, or by 1 for 2.2 g/kg. Don't use the per-kilogram numbers with your weight in pounds. That more than doubles the result.
 
+<!-- visual:protein-units -->
+
 ## Spread it through the day
 
 The same position stand suggests about 0.25 g/kg (0.11 g per pound) in each meal, or 20 to 40 g, every 3 to 4 hours.
 
 Take an 80 kg (176 lb) lifter aiming for 1.6 g/kg. That's 128 g a day. Four meals with 32 g each get there, and each meal lands inside the 20 to 40 g range.
 
+<!-- visual:protein-meals -->
+
 ## How it fits your calories
 
 Each gram of protein has about 4 calories, so 128 g is 512 calories. In a 2,500-calorie day, that's about 20% of your calories. The National Academies put the adult range for protein at 10% to 35% of calories, so that fits. These numbers are a math example, not a meal plan.
+
+<!-- visual:protein-share -->
 
 ## Set your protein goal in grams
 

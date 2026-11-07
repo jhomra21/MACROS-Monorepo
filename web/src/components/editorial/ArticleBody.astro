@@ -5,6 +5,12 @@ import CalculatorSteps from './CalculatorSteps.astro';
 import ServingLabel from './ServingLabel.astro';
 import CalorieGap from './CalorieGap.astro';
 import ProteinLookup from './ProteinLookup.astro';
+import ProteinRange from './ProteinRange.astro';
+import ProteinUnits from './ProteinUnits.astro';
+import ProteinMeals from './ProteinMeals.astro';
+import ProteinShare from './ProteinShare.astro';
+import ServingRuler from './ServingRuler.astro';
+import PackageColumns from './PackageColumns.astro';
 import CarbFactors from './CarbFactors.astro';
 import LabelRounding from './LabelRounding.astro';
 import ProteinBarSteps from './ProteinBarSteps.astro';
@@ -27,6 +33,12 @@ const parts = html.split(visualMarker);
 	part === 'serving-label' ? <ServingLabel /> :
 	part === 'calorie-gap' ? <CalorieGap /> :
 	part === 'protein-lookup' ? <ProteinLookup /> :
+	part === 'protein-range' ? <ProteinRange /> :
+	part === 'protein-units' ? <ProteinUnits /> :
+	part === 'protein-meals' ? <ProteinMeals /> :
+	part === 'protein-share' ? <ProteinShare /> :
+	part === 'serving-ruler' ? <ServingRuler /> :
+	part === 'package-columns' ? <PackageColumns /> :
 	part === 'carb-factors' ? <CarbFactors /> :
 	part === 'label-rounding' ? <LabelRounding /> :
 	part === 'protein-bar-steps' ? <ProteinBarSteps /> :
