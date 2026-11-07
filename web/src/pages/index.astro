@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 
+import DemoVideo from '../components/DemoVideo.astro';
 import FAQ from '../components/FAQ.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import Hero from '../components/Hero.astro';
@@ -14,6 +15,7 @@ import { homeStructuredData, pages } from '../lib/seo';
 <SiteLayout {...pages['/']} structuredData={homeStructuredData}>
 	<Hero />
 	<FeatureGrid />
+	<DemoVideo />
 	<Showcase />
 	<ProPlans />
 	<FAQ />

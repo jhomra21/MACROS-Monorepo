@@ -8,6 +8,8 @@ HTML pages use trailing slashes. Astro emits directory indexes; Wrangler forces 
 
 Support result states are fragments on `/support/`, not separate pages. Waitlist results are inline or POST-only text responses with `X-Robots-Tag: noindex`. Do not mark the useful support page or home page `noindex`.
 
+Videos live in `public/media/` with a SHA-256 prefix in the filename, and `public/_headers` caches `/media/*` for a year as immutable, so a re-encoded file must get a new name. Workers static assets ignore `Range` and always return the whole file, but Safari plays MP4 only after a `206`. The Worker therefore slices `/media/` responses itself (`src/lib/byte-range.ts`). The home demo uses `preload="none"`, plays only while half visible, and never plays on its own under reduced motion.
+
 ## Publish editorial content
 
 Guides and blog posts live in typed Astro Markdown collections. Frontmatter requires `title`, `description`, `published`, `updated`, `draft`, `image`, and `imageAlt`. Dates must be truthful; update `updated` when the content materially changes. The sitemap uses that date for article `lastmod`.

@@ -26,6 +26,8 @@
     "html_handling": "force-trailing-slash",
     "not_found_handling": "404-page",
     // Every request runs the Worker first so non-canonical hosts redirect instead of serving duplicate pages.
+    // Keep /media/* reaching the Worker too: static assets ignore Range, and src/lib/byte-range.ts is what
+    // answers Safari's bytes=0-1 probe with a 206. A pattern list that skips /media/* would break iPhone playback.
     "run_worker_first": true,
   },
   "observability": {
