@@ -5,6 +5,7 @@ import {
 	validateSupportRequest,
 } from './lib/support';
 import { redirectHosts, siteOrigin } from './data/origin';
+import { withByteRange } from './lib/byte-range';
 import { isJsonRequest, jsonResponse, parseRequest } from './lib/request';
 import {
 	validateWaitlistRequest,
@@ -259,7 +260,9 @@ export default {
 			return handleWaitlistRequest(request, env);
 		}
 
-		return env.ASSETS.fetch(request);
+		const asset = await env.ASSETS.fetch(request);
+
+		return url.pathname.startsWith('/media/') ? withByteRange(request, asset) : asset;
 	},
 	async scheduled(controller: Pick<ScheduledController, 'scheduledTime'>, env: WorkerEnv): Promise<void> {
 		await purgeExpiredForms(env.SUPPORT_DB, controller.scheduledTime);

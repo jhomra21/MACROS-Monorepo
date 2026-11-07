@@ -1,0 +1,83 @@
+---
+import { getImage } from 'astro:assets';
+import poster from '../assets/demo/macros-demo-poster.jpg';
+
+// A video poster takes one URL, so there is no srcset: the 720 px source covers the
+// 320 px display at 2x. WebP rather than AVIF, because a poster has no format fallback.
+const posterImage = await getImage({ src: poster, format: 'webp', width: 720 });
+
+// The name carries the file's SHA-256 prefix so /media/* can be cached as immutable.
+// Re-encoding the video means renaming it: `shasum -a 256 public/media/<file>`.
+const videoSrc = '/media/macros-demo.246b3b23.mp4';
+---
+
+<section class="section demo" aria-labelledby="demo-title">
+	<div class="container demo__grid">
+		<div class="section-heading demo__copy">
+			<h2 id="demo-title" class="headline">One banana, one protein bar.</h2>
+			<p id="demo-description" class="lead">
+				Search for a banana and log it, then scan a protein bar. The rings fill as you go, and the day shows up in your
+				charts and Home Screen widgets.
+			</p>
+		</div>
+		<div class="demo__media">
+			<video
+				data-demo-video
+				src={videoSrc}
+				poster={posterImage.src}
+				width="720"
+				height="1280"
+				muted
+				playsinline
+				loop
+				controls
+				controlslist="nodownload noremoteplayback"
+				disablepictureinpicture
+				preload="none"
+				aria-label="MACROS app demo, 18 seconds, no sound"
+				aria-describedby="demo-description"
+			></video>
+		</div>
+	</div>
+</section>
+
+<script>
+	// The demo plays only while at least half of it is on screen, so visitors who never reach
+	// it download nothing, and it stops using the CPU once they scroll past. Reduced-motion
+	// visitors get the poster and the native controls; nothing starts on its own. Controls stay
+	// for everyone so autoplaying motion can always be paused (WCAG 2.2.2). The observer lives
+	// as long as the document: the site uses full page loads, so leaving the page releases it.
+	const video = document.querySelector<HTMLVideoElement>('[data-demo-video]');
+
+	const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+	if (video) {
+		let inView = false;
+		let autoplay = true;
+
+		// A pause while visible is the visitor's choice; scrolling back must not undo it.
+		video.addEventListener('pause', () => {
+			if (inView) autoplay = false;
+		});
+		video.addEventListener('play', () => {
+			autoplay = true;
+		});
+		reduceMotion.addEventListener('change', () => {
+			if (reduceMotion.matches) video.pause();
+		});
+
+		new IntersectionObserver(
+			([entry]) => {
+				inView = entry.isIntersecting;
+
+				if (!inView) {
+					video.pause();
+				} else if (autoplay && !reduceMotion.matches) {
+					// Autoplay can still be refused (Low Power Mode); the controls remain.
+					video.play().catch(() => {});
+				}
+			},
+			{ threshold: 0.5 },
+		).observe(video);
+	}
+</script>

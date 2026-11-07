@@ -686,6 +686,51 @@ summary {
 	}
 }
 
+/* Demo video: the clip carries its own light #f2f2f7 canvas, like the light feature images,
+   so it keeps that surface in both schemes and gets the same hairline edge. */
+.demo__grid {
+	display: grid;
+	gap: var(--space-6);
+	align-items: center;
+}
+
+.demo__copy {
+	margin-bottom: 0;
+}
+
+.demo__media {
+	justify-self: center;
+	width: min(100%, 17.5rem);
+	aspect-ratio: 720 / 1280;
+	border: 1px solid var(--hairline);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	background: #f2f2f7;
+}
+
+.demo__media video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+@media (min-width: 56.25rem) {
+	.demo__grid {
+		grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+		grid-template-areas: 'media copy';
+		column-gap: var(--space-8);
+	}
+
+	.demo__copy {
+		grid-area: copy;
+	}
+
+	.demo__media {
+		grid-area: media;
+		width: min(100%, 20rem);
+	}
+}
 /* Showcase: one scroll-snap row at every width, faded at the edges so the next frame peeks in */
 .showcase__track {
 	--fade: var(--gutter);
