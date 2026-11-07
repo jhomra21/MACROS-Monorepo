@@ -1,11 +1,11 @@
 ---
 const rows = [
-	{ name: 'Protein', color: 'protein', low: 10, high: 35, values: [30, 40, 35] },
-	{ name: 'Carbs', color: 'carbs', low: 45, high: 65, values: [40, 30, 20] },
-	{ name: 'Fat', color: 'fat', low: 20, high: 35, values: [30, 30, 45] },
+	{ name: 'Protein', color: 'protein', low: 10, high: 35, values: [20, 31, 20] },
+	{ name: 'Carbs', color: 'carbs', low: 45, high: 65, values: [50, 47, 47] },
+	{ name: 'Fat', color: 'fat', low: 20, high: 35, values: [30, 22, 33] },
 ];
 
-const presets = ['Balanced', 'High protein', 'Low carb'];
+const presets = ['Balanced', 'High protein', 'Higher fat'];
 ---
 <figure class="guide-diagram" data-diagram aria-labelledby="amdr-caption">
 	<p class="title">App presets against adult reference ranges</p>
@@ -30,5 +30,5 @@ const presets = ['Balanced', 'High protein', 'Low carb'];
 			<tbody>{rows.map(row => <tr><th scope="row">{row.name}</th><td>{row.low}–{row.high}%</td>{row.values.map(value => <td>{value}%</td>)}</tr>)}</tbody>
 		</table>
 	</div>
-	<figcaption id="amdr-caption" class="caption">No app preset meets all three adult AMDRs. The ranges come from the National Academies' Table 3-1 cited above. Presets are app settings, not dietary guidelines.</figcaption>
+	<figcaption id="amdr-caption" class="caption">Every app preset falls within all three adult AMDRs, with room for the app's 5 g rounding. The ranges come from the National Academies' Table 3-1 cited above. Presets are app settings, not dietary guidelines.</figcaption>
 </figure>

@@ -33,7 +33,7 @@ final class BodyProfileDraftTests: XCTestCase {
         draft.goalDirection = .lose
         draft.weeklyRate = 0.75
 
-        let restored = BodyProfileDraft(profile: draft.makeProfile(preset: .lowCarb))
+        let restored = BodyProfileDraft(profile: draft.makeProfile(preset: .higherFat))
 
         XCTAssertEqual(restored.goalDirection, .lose)
         XCTAssertEqual(restored.weeklyRate, 0.75)
@@ -134,11 +134,11 @@ final class BodyProfileDraftTests: XCTestCase {
         draft.goalDirection = .lose
 
         try repository.save(draft.makeProfile(preset: .highProtein), operation: "Save body profile")
-        try repository.save(draft.makeProfile(preset: .lowCarb), operation: "Save body profile")
+        try repository.save(draft.makeProfile(preset: .higherFat), operation: "Save body profile")
 
         let profiles = try container.mainContext.fetch(FetchDescriptor<BodyProfile>())
         XCTAssertEqual(profiles.count, 1)
-        XCTAssertEqual(profiles.first?.macroPreset, .lowCarb)
+        XCTAssertEqual(profiles.first?.macroPreset, .higherFat)
         XCTAssertEqual(profiles.first?.heightCm, 172)
         XCTAssertEqual(profiles.first?.weightKg, 70)
         XCTAssertEqual(profiles.first?.goalCalorieOffset, -500)
