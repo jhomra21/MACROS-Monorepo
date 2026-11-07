@@ -20,6 +20,7 @@ struct LocalFoodSearchResult: Identifiable {
     let protein: Double
     let carbs: Double
     let fat: Double
+    let savedFoodID: UUID?
 
     nonisolated init(food: FoodItem) {
         id = food.id
@@ -28,6 +29,7 @@ struct LocalFoodSearchResult: Identifiable {
         protein = food.proteinPerServing
         carbs = food.carbsPerServing
         fat = food.fatPerServing
+        savedFoodID = food.source == FoodSource.common.rawValue ? nil : food.id
     }
 }
 
@@ -80,6 +82,7 @@ struct SearchFoodListView: View {
     @State private var selectedLocalFoodDraft: FoodDraft?
     @State private var selectedMeal: Meal?
     @State private var selectedRemoteResult: RemoteSearchResult?
+    @State private var localSearchRevision = 0
 
     var body: some View {
         List {
@@ -132,12 +135,17 @@ struct SearchFoodListView: View {
             }
         }
         .listStyle(.plain)
+        .savedFoodDeletion { id in
+            localResults.removeAll { $0.id == id }
+        } onRestored: { _ in
+            localSearchRevision += 1
+        }
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
             max(0, scrollGeometry.contentOffset.y)
         } action: { _, newOffset in
             onScrollOffsetChange(newOffset)
         }
-        .task(id: searchText) {
+        .task(id: FoodSearchRequest(query: searchText, revision: localSearchRevision)) {
             await updateLocalFoods(for: searchText)
         }
         .task(id: FoodSearchRequest(query: searchText, revision: remoteSearch.revision)) {
@@ -248,6 +256,7 @@ struct SearchFoodListView: View {
                 LocalFoodSearchResultRow(result: food)
             }
             .buttonStyle(.plain)
+            .savedFoodDeleteSwipeAction(foodID: food.savedFoodID)
         case let .meal(meal):
             Button {
                 selectedMeal = localMeal(for: meal.id)

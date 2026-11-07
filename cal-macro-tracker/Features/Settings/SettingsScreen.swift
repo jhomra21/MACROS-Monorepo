@@ -105,6 +105,7 @@ struct SettingsScreen: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .keyboardNavigationToolbar(focusedField: $focusedField, fields: DailyGoalsField.formOrder)
+        .savedFoodDeletion()
         .navigationTitle("Settings")
         .inlineNavigationTitle()
         .onDisappear {
@@ -338,6 +339,7 @@ private struct SavedFoodsListScreen: View {
                 }
             }
         }
+        .savedFoodDeletion()
         .navigationTitle(title)
         .inlineNavigationTitle()
     }
@@ -352,6 +354,7 @@ private struct SavedFoodNavigationLink: View {
         } label: {
             SavedFoodRow(food: food)
         }
+        .savedFoodDeleteSwipeAction(foodID: food.id)
     }
 }
 

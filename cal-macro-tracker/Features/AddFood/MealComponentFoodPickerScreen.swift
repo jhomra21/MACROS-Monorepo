@@ -14,6 +14,9 @@ struct MealComponentFoodPickerScreen: View {
     @State private var isSearching = false
     @State private var remoteSearch = FoodSearchSession()
     @State private var selectedRemoteResult: RemoteSearchResult?
+    @State private var localSearchRevision = 0
+    /// Set when the latest deleted food was selected, so Undo can select it again.
+    @State private var selectionToRestore: UUID?
 
     var body: some View {
         List {
@@ -46,6 +49,7 @@ struct MealComponentFoodPickerScreen: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .savedFoodDeleteSwipeAction(foodID: food.savedFoodID)
                     }
                 }
             }
@@ -56,6 +60,15 @@ struct MealComponentFoodPickerScreen: View {
             ) { result in
                 selectedRemoteResult = result
             }
+        }
+        .savedFoodDeletion { id in
+            foods.removeAll { $0.id == id }
+            selectionToRestore = selectedFoodIDs.remove(id)
+        } onRestored: { id in
+            if selectionToRestore == id {
+                selectedFoodIDs.insert(id)
+            }
+            localSearchRevision += 1
         }
         .navigationTitle("Choose Foods")
         .inlineNavigationTitle()
@@ -71,7 +84,7 @@ struct MealComponentFoodPickerScreen: View {
         .onSubmit(of: .search) {
             remoteSearch.submit(query: searchText)
         }
-        .task(id: searchText) {
+        .task(id: FoodSearchRequest(query: searchText, revision: localSearchRevision)) {
             await updateFoods()
         }
         .task(id: FoodSearchRequest(query: searchText, revision: remoteSearch.revision)) {

@@ -60,7 +60,56 @@ extension FoodItemRepository {
             }
 
             isolatedContext.delete(isolatedFood)
+            #if DEBUG
+            try throwDebugForcedFailure("debugFailSavedFoodDeletes")
+            #endif
         }
+    }
+
+    /// Inserts a deleted reusable food again with its original identity and values.
+    func restoreReusableFood(_ food: FoodItem, operation: String) throws {
+        try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
+            guard try savedFoodDuplicating(food, in: isolatedContext) == nil else {
+                throw NSError(
+                    domain: "FoodItemRepository",
+                    code: 5,
+                    userInfo: [NSLocalizedDescriptionKey: "\(food.name) was saved again, so there is nothing to undo."]
+                )
+            }
+
+            isolatedContext.insert(food)
+            #if DEBUG
+            try throwDebugForcedFailure("debugFailSavedFoodRestores")
+            #endif
+        }
+    }
+
+    /// A saved food that `food` would duplicate if inserted again: the same row, or an external food with the same
+    /// external product ID or barcode (any alias) from either lookup provider. Saving does not merge a USDA search food
+    /// with an Open Food Facts scan of the same barcode, but for Undo they are the same product.
+    private func savedFoodDuplicating(_ food: FoodItem, in context: ModelContext) throws -> FoodItem? {
+        if let sameFood = try fetchReusableFood(id: food.id, in: context) {
+            return sameFood
+        }
+
+        guard preservesExternalIdentity(for: food.sourceKind) else {
+            return nil
+        }
+
+        let externalSources: [FoodSource] = [.barcodeLookup, .searchLookup]
+        if let externalProductID = food.externalProductID {
+            for source in externalSources {
+                if let match = try fetchReusableFood(source: source, externalProductID: externalProductID, in: context) {
+                    return match
+                }
+            }
+        }
+
+        guard let barcode = food.barcode else {
+            return nil
+        }
+
+        return try fetchBarcodeFood(barcode: barcode, preferredSources: externalSources, in: context)
     }
 
     @discardableResult
@@ -224,3 +273,16 @@ extension FoodItemRepository {
         food.normalizeForPersistence()
     }
 }
+
+#if DEBUG
+private var debugForcedFailureCounts: [String: Int] = [:]
+
+/// E2E hook: launching with `-<key> <n>` makes the next n matching saves throw after their changes are staged,
+/// so `PersistenceReporter` exercises its real rollback path.
+private func throwDebugForcedFailure(_ key: String) throws {
+    let remaining = debugForcedFailureCounts[key] ?? UserDefaults.standard.integer(forKey: key)
+    debugForcedFailureCounts[key] = max(0, remaining - 1)
+    guard remaining > 0 else { return }
+    throw NSError(domain: "DebugForcedFailure", code: 1, userInfo: [NSLocalizedDescriptionKey: "Forced save failure (DEBUG)."])
+}
+#endif
