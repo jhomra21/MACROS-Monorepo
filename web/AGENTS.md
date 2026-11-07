@@ -9,6 +9,6 @@
 - Cite primary sources for health/nutrition figures. App behavior claims must match current code.
 - Illustrate guides with real app screenshots from `src/assets/app-images/` or authorized fresh media-simulator captures.
 - Use static inline SVG or HTML/CSS diagrams, with no extra client JavaScript for illustrations.
-- Give numbers and math in blog posts and guides a visual explainer, placed with a `<!-- visual:... -->` marker as described in [SEO](SEO.md), rather than a bare table or prose math.
+- Prefer a visual explainer for numbers and math in blog posts and guides: a static HTML/CSS or inline SVG diagram placed with a `<!-- visual:... -->` marker as described in [SEO](SEO.md), rather than a bare table or long prose math.
 - Follow [SEO](SEO.md); preserve support/waitlist privacy and retention behavior when changing forms.
 - Keep README screenshots and `docs/app-store/` creative assets. Raw captures belong in ignored build/evidence; tracked evidence follows the root 2 MiB/five-image policy.

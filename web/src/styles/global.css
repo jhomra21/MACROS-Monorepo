@@ -1972,23 +1972,36 @@ summary {
 	white-space: nowrap;
 }
 
-/* Each weight's bar sits on its own row under its numbers, so every bar spans the full table width. */
-.editorial .prose .protein-lookup tbody tr:not(.protein-lookup__bar-row) > * {
-	padding-bottom: var(--space-1);
-	border-bottom: 0;
+/* Each weight's bar lives in its row header, not a row of its own, so screen readers count one row
+   per weight. It still spans the whole row under the numbers: the header cell starts at the row's
+   edge and runs its full height, and 100cqi is the table width. */
+.editorial .prose .protein-lookup tbody > tr > * {
+	padding-bottom: calc(var(--space-2) + 0.75em + var(--space-3));
 }
 
-.editorial .prose .protein-lookup .protein-lookup__bar-row td {
-	padding: var(--space-1) var(--space-1) var(--space-3);
+.editorial .prose .protein-lookup tbody th {
+	position: relative;
+}
+
+.protein-lookup__track {
+	position: absolute;
+	inset-inline-start: var(--space-1);
+	bottom: var(--space-3);
+	width: calc(100cqi - 2 * var(--space-1));
 }
 
 /* With large text on a narrow screen the bars and legend go. Four number columns no longer fit,
    so each weight becomes a short block that labels its own numbers. Labels are visual only (empty
-   alt text); screen readers still hear the hidden column headers. */
-@container (max-width: 14rem) {
+   alt text); screen readers still hear the hidden column headers. The explicit ARIA roles keep the
+   table semantics through these display changes. */
+@container (max-width: 15rem) {
 	.protein-lookup__legend,
-	.protein-lookup__bar-row {
+	.protein-lookup__track {
 		display: none;
+	}
+
+	.protein-lookup__body > .table-scroll {
+		margin-top: 0;
 	}
 
 	.protein-lookup .table-scroll table,
@@ -2005,7 +2018,7 @@ summary {
 		white-space: nowrap;
 	}
 
-	.editorial .prose .protein-lookup tbody tr:not(.protein-lookup__bar-row) {
+	.editorial .prose .protein-lookup tbody > tr {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0 var(--space-2);
@@ -2013,7 +2026,12 @@ summary {
 		border-bottom: 1px solid var(--hairline);
 	}
 
-	.editorial .prose .protein-lookup tbody tr:not(.protein-lookup__bar-row) > :is(th, td) {
+	.editorial .prose .protein-lookup tbody > tr:first-child {
+		padding-top: 0;
+	}
+
+	/* .table-scroll outranks the column-width rule's :not(:last-child). */
+	.editorial .prose .protein-lookup .table-scroll tbody > tr > :is(th, td) {
 		width: auto;
 		padding: 0;
 		border: 0;

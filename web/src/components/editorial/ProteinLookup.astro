@@ -28,17 +28,14 @@ const most = Math.max(...rows.map(row => row.high));
 					<th scope="col" role="columnheader"><span class="sr-only">Protein a day at </span>1.6 g/kg</th>
 					<th scope="col" role="columnheader"><span class="sr-only">Protein a day at </span>2.2 g/kg</th>
 				</tr></thead>
-				<tbody role="rowgroup">{rows.map(row => <Fragment>
-					<tr role="row">
-						<th scope="row" role="rowheader" data-unit="lb">{row.lb}</th>
-						<td role="cell" data-unit="kg">{row.kg}</td>
-						<td role="cell" data-label="1.6 g/kg"><strong>{row.low}&nbsp;g</strong></td>
-						<td role="cell" data-label="2.2 g/kg">{row.high}&nbsp;g</td>
-					</tr>
-					<tr class="protein-lookup__bar-row" aria-hidden="true"><td colspan="4"><span class="diagram-bar protein-lookup__range" style={`--share: ${(row.high / most) * 100}%; --low: ${(row.low / row.high) * 100}%`}></span></td></tr>
-				</Fragment>)}</tbody>
+				<tbody role="rowgroup">{rows.map(row => <tr role="row">
+					<th scope="row" role="rowheader" data-unit="lb">{row.lb}<span class="protein-lookup__track" aria-hidden="true"><span class="diagram-bar protein-lookup__range" style={`--share: ${(row.high / most) * 100}%; --low: ${(row.low / row.high) * 100}%`}></span></span></th>
+					<td role="cell" data-unit="kg">{row.kg}</td>
+					<td role="cell" data-label="1.6 g/kg"><strong>{row.low}&nbsp;g</strong></td>
+					<td role="cell" data-label="2.2 g/kg">{row.high}&nbsp;g</td>
+				</tr>)}</tbody>
 			</table>
 		</div>
 	</div>
-	<figcaption id="protein-lookup-caption" class="caption">These are daily totals, not amounts for one meal. Kilograms are rounded to the nearest whole number. Grams come from the exact weight, so rounded kilograms times 1.6 or 2.2, or pounds times 0.73, can differ by 1 g. Pounds times 1 can come out 1 g high, as it does at 240 lb, because 2.2 g/kg is 0.998 g per pound.</figcaption>
+	<figcaption id="protein-lookup-caption" class="caption">These are daily totals, not amounts for one meal. Kilograms are rounded, but grams use the exact weight, so shortcuts like rounded kilograms times 1.6 or 2.2, or pounds times 0.73 or 1, can be off by 1 g.</figcaption>
 </figure>
