@@ -7,14 +7,6 @@ import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { pages, personStructuredData } from '../lib/seo';
 
-/*
- * TODO(owner): the "Why it exists" item holds only facts already public on this site. Add, in your own words:
- * - Your background: what you do and where you work from.
- * - Why you built MACROS.
- * - Your own experience tracking food or training.
- * - Optional: a photo of yourself, and the same photo as `image` on the Person schema in src/lib/seo.ts.
- * Add nothing you would not want public. Remove this comment when done.
- */
 ---
 
 <SiteLayout {...pages['/about/']} structuredData={[personStructuredData]}>
@@ -33,10 +25,7 @@ import { pages, personStructuredData } from '../lib/seo';
 		<div class="container about-grid">
 			<article class="about-item" id={site.authorSlug}>
 				<h2 class="title">Why it exists</h2>
-				<p>
-					I am {site.author}, the developer of MACROS. I write the guides and posts
-					on this site. You can find me on <a href={site.instagramURL}>Instagram</a>.
-				</p>
+				<p>I am {site.author}, the developer of MACROS.</p>
 				<p>
 					Tracking should be fast and trustworthy. MACROS needs no sign-up and shows
 					every number.
@@ -61,24 +50,14 @@ import { pages, personStructuredData } from '../lib/seo';
 		</div>
 	</section>
 
-	<section class="section" aria-label="How this site is written">
+	<section class="section" aria-label="Medical advice and corrections">
 		<div class="container about-grid">
 			<article class="about-item">
-				<h2 class="title">How posts are made</h2>
+				<h2 class="title">Not medical advice</h2>
 				<p>
-					I write every guide and post myself. I check each app claim against the
-					current build and date the check. Health and nutrition figures come from
-					primary sources, and I link them. AI tools help me draft and edit. I check
-					every fact before it goes live.
-				</p>
-			</article>
-
-			<article class="about-item">
-				<h2 class="title">What I am not</h2>
-				<p>
-					I am not a dietitian or a doctor. MACROS and its guides give general
-					information for healthy adults, not medical advice. Ask a qualified
-					professional about your own diet or health.
+					MACROS and its guides give general information for healthy adults. I am not
+					a dietitian or a doctor. Ask a qualified professional about your own diet or
+					health.
 				</p>
 			</article>
 
