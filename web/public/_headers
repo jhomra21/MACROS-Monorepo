@@ -7,3 +7,10 @@
 # Media names carry a content hash (see DemoVideo.astro), so a changed file gets a new URL.
 /media/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Content-hashed file names change whenever their bytes change.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/social/*
+  Cache-Control: public, max-age=31536000, immutable
