@@ -859,8 +859,8 @@ describe('fetchUSDAFood', () => {
     expect(seenQueries).toEqual(['Wendy’s nuggets', 'wendys nuggets'])
     expect(response.query).toBe('Wendy’s nuggets')
     expect(response.results[0]).toMatchObject({
-      name: 'WENDYS CHICKEN NUGGETS',
-      brand: 'WENDYS',
+      name: 'Wendys Chicken Nuggets',
+      brand: 'Wendys',
     })
   })
 
@@ -886,7 +886,7 @@ describe('fetchUSDAFood', () => {
       }),
     )
 
-    expect(response.results.map((result) => result.name)).toEqual(['WENDYS CHICKEN NUGGETS'])
+    expect(response.results.map((result) => result.name)).toEqual(['Wendys Chicken Nuggets'])
   })
 
   it('maps USDA food details into the proxy contract', async () => {
@@ -896,7 +896,7 @@ describe('fetchUSDAFood', () => {
       id: 'usda:123',
       fdcId: 123,
       name: 'Protein Bar',
-      brand: 'Macro Co',
+      brand: 'Macro',
       servingDescription: '1 bar',
       gramsPerServing: 50,
       caloriesPerServing: 210,
@@ -913,6 +913,54 @@ describe('fetchUSDAFood', () => {
       sourceURL: 'https://fdc.nal.usda.gov/food-details/123',
       barcode: '0123456789012',
     })
+  })
+
+  it('scales per-100 g USDA nutrients to the label serving for every gram unit spelling', async () => {
+    for (const servingSizeUnit of ['GRM', 'grm', 'g', 'G', 'grams']) {
+      const payload = { ...usdaDetailsPayload(), servingSizeUnit }
+      const label = payload.labelNutrients
+      const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(payload))
+
+      expect([
+        response.gramsPerServing,
+        response.caloriesPerServing,
+        response.proteinPerServing,
+        response.fatPerServing,
+        response.carbsPerServing,
+        response.sodiumPerServing,
+      ]).toEqual([
+        50,
+        label.calories.value,
+        label.protein.value,
+        label.fat.value,
+        label.carbohydrates.value,
+        label.sodium.value,
+      ])
+    }
+  })
+
+  it('keeps unscaled per-100 g USDA values on a 100 g serving when serving grams are unknown', async () => {
+    for (const serving of [
+      { servingSizeUnit: 'MLT' },
+      { servingSizeUnit: undefined },
+      { servingSize: 0 },
+      { servingSize: undefined },
+    ]) {
+      const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json({
+        ...usdaDetailsPayload(),
+        ...serving,
+      }))
+
+      expect(response).toMatchObject({
+        servingDescription: '100 g',
+        gramsPerServing: 100,
+        caloriesPerServing: 420,
+        proteinPerServing: 40,
+        fatPerServing: 14,
+        carbsPerServing: 36,
+        sodiumPerServing: 640,
+      })
+    }
   })
 })
 
@@ -1295,30 +1343,51 @@ function sparseUsableOpenFoodFactsPayload(page: number) {
   }
 }
 
+// FDC Branded shape: foodNutrients are per 100 g; labelNutrients are the 50 g label serving.
+const USDA_PER_100_G = [
+  [1008, 420],
+  [1003, 40],
+  [1004, 14],
+  [1005, 36],
+  [1258, 4],
+  [1079, 12],
+  [2000, 10],
+  [1235, 8],
+  [1093, 640],
+  [1253, 30],
+] as const
+
+function usdaBrandedRecord() {
+  return {
+    fdcId: 123,
+    description: 'Protein Bar',
+    brandName: 'Macro Co',
+    gtinUpc: '0123456789012',
+    servingSize: 50,
+    servingSizeUnit: 'GRM',
+    householdServingFullText: '1 bar',
+    labelNutrients: {
+      calories: { value: 210 },
+      protein: { value: 20 },
+      fat: { value: 7 },
+      carbohydrates: { value: 18 },
+      saturatedFat: { value: 2 },
+      fiber: { value: 6 },
+      sugars: { value: 5 },
+      addedSugar: { value: 4 },
+      sodium: { value: 320 },
+      cholesterol: { value: 15 },
+    },
+  }
+}
+
 function usdaPayload() {
   return {
     totalHits: 1,
     foods: [
       {
-        fdcId: 123,
-        description: 'Protein Bar',
-        brandName: 'Macro Co',
-        gtinUpc: '0123456789012',
-        servingSize: 50,
-        servingSizeUnit: 'g',
-        householdServingFullText: '1 bar',
-        foodNutrients: [
-          { nutrientId: 1008, value: 210 },
-          { nutrientId: 1003, value: 20 },
-          { nutrientId: 1004, value: 7 },
-          { nutrientId: 1005, value: 18 },
-          { nutrientId: 1258, value: 2 },
-          { nutrientId: 1079, value: 6 },
-          { nutrientId: 2000, value: 5 },
-          { nutrientId: 1235, value: 4 },
-          { nutrientId: 1093, value: 320 },
-          { nutrientId: 1253, value: 15 },
-        ],
+        ...usdaBrandedRecord(),
+        foodNutrients: USDA_PER_100_G.map(([nutrientId, value]) => ({ nutrientId, value })),
       },
     ],
   }
@@ -1326,25 +1395,8 @@ function usdaPayload() {
 
 function usdaDetailsPayload() {
   return {
-    fdcId: 123,
-    description: 'Protein Bar',
-    brandName: 'Macro Co',
-    gtinUpc: '0123456789012',
-    servingSize: 50,
-    servingSizeUnit: 'g',
-    householdServingFullText: '1 bar',
-    foodNutrients: [
-      { amount: 210, nutrient: { id: 1008, number: '208' } },
-      { amount: 20, nutrient: { id: 1003, number: '203' } },
-      { amount: 7, nutrient: { id: 1004, number: '204' } },
-      { amount: 18, nutrient: { id: 1005, number: '205' } },
-      { amount: 2, nutrient: { id: 1258, number: '606' } },
-      { amount: 6, nutrient: { id: 1079, number: '291' } },
-      { amount: 5, nutrient: { id: 2000, number: '269' } },
-      { amount: 4, nutrient: { id: 1235, number: '539' } },
-      { amount: 320, nutrient: { id: 1093, number: '307' } },
-      { amount: 15, nutrient: { id: 1253, number: '601' } },
-    ],
+    ...usdaBrandedRecord(),
+    foodNutrients: USDA_PER_100_G.map(([id, amount]) => ({ amount, nutrient: { id } })),
   }
 }
 

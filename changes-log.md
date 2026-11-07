@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-07 USDA v1 nutrition basis
+
+v1 USDA search, packaged search, and details now reuse the v2 normalizer. FDC per-100 g nutrients are scaled to known gram servings and otherwise use an explicit 100 g serving, so build 23 shows label values (2026852: 519 → 270 kcal per 52 g). `GRM` now counts as grams for v1 and v2. v1 values are rounded and its names and brands are display-cased like v2, so v2-saved foods match the repair key; foods saved by older builds become not repairable. Worker tests, runtime QA, Convex integration, lint, and a live `DEMO_KEY` comparison pass. Not deployed. See [evidence](docs/evidence/usda-v1-basis/README.md).
+
 ## 2026-11-07 AMDR macro presets
 
 Moved the goal calculator presets inside the adult AMDRs (protein 10–35%, carbs 45–65%, fat 20–35%): Balanced 30/40/30 → 20/50/30, High protein 40/30/30 → 31/47/22, and Low carb 35/20/45 → renamed Higher fat at 20/47/33, keeping the stored raw value `lowCarb` so existing profiles and backups decode. The edge presets stop a few points inside the limits because 5 g rounding moves saved shares by up to about 2 points; a replay of every target from 1,200 to 4,500 kcal finds none outside the AMDR. Saved goals change only when the user taps Continue. The macro goals guide, AMDR chart, calculator steps, and launch post now use the new presets and worked example (130/320/85 g); the website needs a separate deploy. See [evidence](docs/evidence/amdr-macro-presets/README.md).
