@@ -20,6 +20,7 @@ struct LocalFoodSearchResult: Identifiable {
     let protein: Double
     let carbs: Double
     let fat: Double
+    let savedFoodID: UUID?
 
     nonisolated init(food: FoodItem) {
         id = food.id
@@ -28,6 +29,7 @@ struct LocalFoodSearchResult: Identifiable {
         protein = food.proteinPerServing
         carbs = food.carbsPerServing
         fat = food.fatPerServing
+        savedFoodID = food.source == FoodSource.common.rawValue ? nil : food.id
     }
 }
 
@@ -132,6 +134,9 @@ struct SearchFoodListView: View {
             }
         }
         .listStyle(.plain)
+        .savedFoodDeletion { id in
+            localResults.removeAll { $0.id == id }
+        }
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
             max(0, scrollGeometry.contentOffset.y)
         } action: { _, newOffset in
@@ -248,6 +253,7 @@ struct SearchFoodListView: View {
                 LocalFoodSearchResultRow(result: food)
             }
             .buttonStyle(.plain)
+            .savedFoodDeleteSwipeAction(foodID: food.savedFoodID)
         case let .meal(meal):
             Button {
                 selectedMeal = localMeal(for: meal.id)

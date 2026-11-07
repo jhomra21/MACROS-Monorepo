@@ -46,6 +46,7 @@ struct MealComponentFoodPickerScreen: View {
                             }
                         }
                         .buttonStyle(.plain)
+                        .savedFoodDeleteSwipeAction(foodID: food.savedFoodID)
                     }
                 }
             }
@@ -56,6 +57,10 @@ struct MealComponentFoodPickerScreen: View {
             ) { result in
                 selectedRemoteResult = result
             }
+        }
+        .savedFoodDeletion { id in
+            foods.removeAll { $0.id == id }
+            selectedFoodIDs.remove(id)
         }
         .navigationTitle("Choose Foods")
         .inlineNavigationTitle()

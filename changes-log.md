@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-07 Delete saved foods
+
+Added a native trailing swipe-to-delete for saved foods in Add Food's On Device list, the meal builder's food picker, and Settings' saved food lists. Common seed foods and foods used by saved meals offer no action; their existing editor still explains the meal block. Log entries and logged meals are snapshots with a plain food ID, so deletion leaves diary history, totals, widgets, Health sync versions, and shared-day data unchanged. E2E store digests matched before and after deletes; format, build, and 262 tests pass. A confirmation-dialog first draft crashed UICollectionView and was replaced. See [failure modes and evidence](docs/evidence/delete-saved-foods/README.md).
+
 ## 2026-11-06 Website feature screenshots
 
 Revised the crops to fill continuous cover frames without letterboxing. Logging extends its sampled app background; Privacy starts at food rows; Portion uses the compact scan-review controls; Widgets shows only the medium personal widget on real wallpaper. Four reduced-motion 2× captures, web checks, nine Worker tests, build and lint pass; desktop AVIFs total 77,398 bytes.
