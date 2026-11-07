@@ -1,0 +1,167 @@
+---
+// Periods as this policy states them. They match the food-search Worker's cache times (300, 3,600, and 86,400 seconds)
+// and 0.1 log sampling rate, the 7-day invite expiry, and the 365-day form purge.
+const minutes = { minute: 1, hour: 60, day: 60 * 24, week: 60 * 24 * 7, year: 60 * 24 * 365 };
+
+// A log scale, so 5 minutes and 12 months both stay readable on one line.
+const at = (length: number) => `${(Math.log10(length) / Math.log10(minutes.year)) * 100}%`;
+
+const rows = [
+	{ name: 'Empty search results', detail: 'Food-search cache', length: 5, label: 'Up to 5 minutes' },
+	{ name: 'Open Food Facts results', detail: 'Food-search cache', length: minutes.hour, label: 'Up to 1 hour' },
+	{ name: 'USDA results', detail: 'Food-search cache', length: minutes.day, label: 'Up to 24 hours' },
+	{ name: 'Barcode responses', detail: 'Food-search cache', length: minutes.day, label: 'Up to 24 hours' },
+	{ name: 'Sampled operational logs', detail: 'About 1 in 10 requests', length: minutes.week, label: 'Up to 7 days', sampled: true },
+	{ name: 'Sharing invite link', detail: 'Unless you revoke it sooner', length: minutes.week, label: 'Expires after 7 days' },
+	{ name: 'Waitlist and support forms', detail: 'Then deleted', length: minutes.year, label: '12 months' },
+];
+
+const ticks = [
+	{ label: '1 minute', length: minutes.minute },
+	{ label: '1 hour', length: minutes.hour },
+	{ label: '1 day', length: minutes.day },
+	{ label: '1 week', length: minutes.week },
+	{ label: '1 year', length: minutes.year },
+];
+---
+<figure class="guide-diagram retention" aria-labelledby="retention-caption">
+	<p class="title">How long each item is kept</p>
+	<div class="retention__body">
+		<ul class="retention__rows" role="list">
+			{rows.map(row => <li>
+				<p class="retention__name"><span>{row.name}</span> <span class="caption">{row.sampled && <span class="retention__sample" aria-hidden="true">{Array.from({ length: 10 }, (_, index) => <i class:list={{ 'retention__hit': index === 0 }}></i>)}</span>}{row.detail}</span></p>
+				<span class="retention__track" aria-hidden="true"><span class="diagram-bar" style={`--share: ${at(row.length)}`}></span></span>
+				<strong class="retention__value">{row.label}</strong>
+			</li>)}
+		</ul>
+		<p class="retention__axis caption" aria-hidden="true"><span>{ticks.map(tick => <b style={`left: ${at(tick.length)}`}>{tick.label}</b>)}</span></p>
+	</div>
+	<figcaption id="retention-caption" class="caption">The longest each item is kept under this policy. The sections below give the details. Each step on the scale is a bigger jump in time, so a few minutes and a year fit on one line.</figcaption>
+</figure>
+
+<style>
+	.retention__body {
+		container-type: inline-size;
+	}
+
+	.retention__rows {
+		display: grid;
+		gap: var(--space-4);
+	}
+
+	.retention__rows li,
+	.retention__axis {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: var(--space-1) var(--space-4);
+	}
+
+	.retention__name {
+		display: grid;
+		font-size: var(--fs-small);
+		line-height: 1.35;
+	}
+
+	.retention__name .caption {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.retention__value {
+		grid-row: 1;
+		grid-column: 2;
+		font-size: var(--fs-small);
+		text-align: end;
+	}
+
+	.retention__track {
+		display: block;
+		grid-column: 1 / -1;
+		height: 0.625rem;
+		border-radius: var(--radius-pill);
+		background: color-mix(in srgb, var(--ink) 12%, transparent);
+	}
+
+	.retention__track .diagram-bar {
+		height: 100%;
+	}
+
+	/* One filled square in ten: the share of requests that are logged. */
+	.retention__sample {
+		display: inline-flex;
+		gap: 2px;
+	}
+
+	.retention__sample i {
+		width: 0.5rem;
+		height: 0.5rem;
+		border: 1px solid var(--ink-muted);
+	}
+
+	.retention__sample .retention__hit {
+		border-color: var(--ink);
+		background: var(--ink);
+	}
+
+	/* Labels alternate between two lines, so neighbors such as 1 day and 1 week never touch. */
+	.retention__axis > span {
+		position: relative;
+		grid-column: 1 / -1;
+		height: 3rem;
+		border-top: 1px solid var(--ink-muted);
+	}
+
+	.retention__axis b {
+		position: absolute;
+		top: var(--space-1);
+		font-weight: 400;
+		white-space: nowrap;
+		transform: translateX(-50%);
+	}
+
+	.retention__axis b:nth-child(even) {
+		top: 1.6rem;
+	}
+
+	.retention__axis b:first-child {
+		transform: none;
+	}
+
+	.retention__axis b:last-child {
+		transform: translateX(-100%);
+	}
+
+	/* With room, the bars share one column so their ends line up on the axis. */
+	@container (min-width: 36rem) {
+		.retention__rows li,
+		.retention__axis {
+			grid-template-columns: 12rem minmax(0, 1fr) 9rem;
+		}
+
+		.retention__track,
+		.retention__axis > span {
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.retention__value {
+			grid-column: 3;
+		}
+	}
+
+	/* With large text on a narrow screen the axis labels would collide, so the bars keep only their text. */
+	@container (max-width: 15rem) {
+		.retention__axis {
+			display: none;
+		}
+
+		.retention__value {
+			grid-row: auto;
+			grid-column: 1 / -1;
+			text-align: start;
+		}
+	}
+</style>

@@ -1,0 +1,117 @@
+---
+import { site } from '../data/site';
+
+// Trial length and price come from the plan list, so the timeline matches the prices shown on the home page.
+const yearly = site.proPrices.find(option => option.name === 'Yearly');
+
+const trialDays = Number(/^(\d+)-day free trial$/.exec(yearly?.note ?? '')?.[1]);
+
+if (!yearly || !trialDays) throw new Error('The Yearly plan needs a "<n>-day free trial" note in site.proPrices.');
+
+// The terms ask for cancellation at least 24 hours before the trial ends.
+const cutoff = trialDays - 1;
+
+const days = Array.from({ length: trialDays + 1 }, (_, day) => day);
+
+const at = (day: number) => `${(day / trialDays) * 100}%`;
+
+const steps = [
+	{ day: 0, title: 'The trial starts.', body: 'Nothing is charged yet.' },
+	{ day: cutoff, title: '24 hours before the trial ends.', body: 'Cancel by now so the trial does not convert.' },
+	{ day: trialDays, title: 'The trial ends.', body: `The yearly subscription starts at ${yearly.price} and renews each year unless you cancel.` },
+];
+---
+<figure class="guide-diagram trial-timeline" aria-labelledby="trial-timeline-caption" style={`--cutoff: ${at(cutoff)}`}>
+	<p class="title">The yearly free trial, day by day</p>
+	<div class="trial-timeline__body">
+		<div class="trial-timeline__line" aria-hidden="true">
+			{steps.map((step, index) => <span class="diagram-key" style={`left: ${at(step.day)}`}>{index + 1}</span>)}
+			<span class="trial-timeline__track"></span>
+			<span class="trial-timeline__days caption">{days.map(day => <b style={`left: ${at(day)}`}>{day}</b>)}</span>
+		</div>
+		<ol class="trial-timeline__steps" role="list">
+			{steps.map((step, index) => <li>
+				<span class="diagram-key" aria-hidden="true">{index + 1}</span>
+				<p><strong>Day {step.day}. {step.title}</strong> {step.body}</p>
+			</li>)}
+		</ol>
+	</div>
+	<figcaption id="trial-timeline-caption" class="caption">An illustration of the paragraph above, counting days from the moment the trial starts. The dark end of the bar is the last 24 hours. The terms text governs, and Apple shows the price for your region before you buy.</figcaption>
+</figure>
+
+<style>
+	.trial-timeline__body {
+		container-type: inline-size;
+	}
+
+	.trial-timeline__body > * + * {
+		margin-top: var(--space-4);
+	}
+
+	/* Keys sit over their day; the line is inset so the end keys stay inside the figure. */
+	.trial-timeline__line {
+		position: relative;
+		height: 4.5rem;
+		margin-inline: var(--space-3);
+	}
+
+	.trial-timeline__line .diagram-key {
+		position: absolute;
+		top: 0;
+		transform: translateX(-50%);
+	}
+
+	.trial-timeline__line .diagram-key::after {
+		content: '';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		height: calc(2.25rem - 1.5em);
+		border-left: 2px solid var(--ink-muted);
+		transform: translateX(-50%);
+	}
+
+	.trial-timeline__track {
+		position: absolute;
+		inset-inline: 0;
+		top: 2.25rem;
+		height: 0.625rem;
+		border-radius: var(--radius-pill);
+		background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 16%, transparent) var(--cutoff), var(--ink) var(--cutoff));
+	}
+
+	.trial-timeline__days b {
+		position: absolute;
+		top: 3.25rem;
+		font-weight: 400;
+		transform: translateX(-50%);
+	}
+
+	.trial-timeline__steps {
+		display: grid;
+		gap: var(--space-3);
+	}
+
+	.trial-timeline__steps li {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+	}
+
+	.trial-timeline__steps p {
+		font-size: var(--fs-small);
+	}
+
+	/* With large text on a narrow screen the day keys would overlap, so the numbered steps carry the timeline. */
+	@container (max-width: 18rem) {
+		.trial-timeline__line {
+			display: none;
+		}
+
+		.trial-timeline__steps li {
+			display: grid;
+			justify-items: start;
+			gap: var(--space-1);
+		}
+	}
+</style>

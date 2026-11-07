@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import ProseLayout from '../components/ProseLayout.astro';
+import RetentionTimeline from '../components/RetentionTimeline.astro';
 import { pages } from '../lib/seo';
 ---
 
@@ -11,6 +12,8 @@ import { pages } from '../lib/seo';
 	lede="This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request."
 	effective="November 7, 2026"
 >
+	<RetentionTimeline />
+
 	<section>
 		<h2>Information stored on your device</h2>
 		<p>Food logs, saved foods and meals, goals, body profile, and weight entries are stored in the app's protected container on your device. They are not uploaded to our servers. Delete them with the app's in-app controls or by deleting the app. A device backup is controlled by your device and Apple settings.</p>
