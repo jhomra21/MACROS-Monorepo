@@ -847,7 +847,6 @@ summary {
 	color: var(--ink-muted);
 	font-size: var(--fs-small);
 	text-align: end;
-	white-space: nowrap;
 }
 
 .pro-prices__price strong {
