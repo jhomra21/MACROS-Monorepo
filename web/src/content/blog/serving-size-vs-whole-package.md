@@ -8,7 +8,6 @@ image: ../../assets/app-images/app-scan-review.png
 imageAlt: "MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons"
 related:
   - blog/label-calories-4-4-9
-  - blog/label-scan-vs-food-database
   - guides/how-to-set-macro-goals
 ---
 
@@ -74,19 +73,27 @@ Some labels give only a volume, such as fluid ounces or milliliters for drinks. 
 
 ## How MACROS handles it
 
-- When you scan a label, MACROS shows one serving's size and grams, such as "1 cup (40g) each", and a running gram total.
-- The scan-review Servings stepper runs from 0.25 to 20 in quarter-serving steps. Calories, protein, carbs, and fat scale with it. Half a pack of a 2-serving package is 1 serving.
-- MACROS does not use the "servings per container" line to set the quantity automatically.
+To log by servings:
+
+1. Scan the label. The card shows one serving's size and grams, such as "1 cup (40g) each", and the total grams for your portion.
+2. Set the Servings stepper to what you ate. It starts at 1, not at the servings per container, and moves in quarter servings from 0.25 to 20. Half a pack of a 2-serving package is 1 serving.
+3. Check that calories, protein, carbs, and fat changed with it, then tap Log.
 
 <!-- visual:scan-review -->
 
-- For gram logging, open Edit details, choose Grams, and adjust the Grams stepper. It changes by 5 g and cannot go below 1 g. When you work from a package weight, use the weight in the same form as the label, such as the drained weight for a food labeled on a drained basis.
-- Servings move in quarter-serving steps and grams in 5 g steps, so an exact weighed amount may land between two steps. Pick the closest step. Do not change grams per serving to reach a weight, because that changes the per-gram math for the food.
-- Logging by grams needs grams per serving. If the label gives only a volume, the Grams option stays off until you add the gram weight yourself. MACROS does not guess grams from a volume.
+To log by weight:
+
+1. Tap Edit details and choose Grams.
+2. Set the Grams stepper to the weight you ate. It moves in 5 g steps and stops at 1 g. For a food labeled on a drained basis, use the drained weight.
+3. Tap Log.
+
+Servings move in quarter servings and grams in 5 g steps, so an exact weighed amount may fall between two steps. Pick the closest one. Leave the serving's gram amount as printed on the label, because changing it to reach your weight changes the calories in every gram you log.
+
+If the label gives only a volume, Grams stays off until you enter the serving's gram weight yourself. Otherwise, log by servings.
 
 <!-- visual:scan-grams -->
 
-The math is the same as above: per-serving values × servings, or grams eaten ÷ grams per serving.
+The calories and macros on screen follow the same math as above: label value × servings, or label value × (grams eaten ÷ grams per serving).
 
 ## How this was checked
 
@@ -95,6 +102,6 @@ The math is the same as above: per-serving values × servings, or grams eaten ÷
 - [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (b)(1), (b)(6), (b)(7), (b)(8), (b)(9), and (b)(12)(i): serving definition, single-serving packages, how serving size is expressed, rounding of servings per container, the drained-solids basis, and the per-package column with its exceptions.
 - [21 CFR 101.12(b)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12): reference amounts for cookies, grain-based bars, and yogurt.
 
-MACROS publishes this site. This post uses the eCFR text as amended through November 5, 2026. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian reviewed this post.
+MACROS publishes this site. This post uses the eCFR text as amended through November 5, 2026. MACROS checked the app steps against the current app on November 7, 2026. No dietitian reviewed this post.
 
 <!-- TODO (owner): optionally add 2 or 3 worked examples from real packages you own, with label photos and the product name, before publishing. -->

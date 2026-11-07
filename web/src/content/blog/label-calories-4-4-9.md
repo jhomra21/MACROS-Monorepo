@@ -6,7 +6,6 @@ updated: 2026-11-07
 draft: true
 related:
   - guides/how-to-set-macro-goals
-  - blog/label-scan-vs-food-database
   - blog/serving-size-vs-whole-package
 image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size"
@@ -99,13 +98,15 @@ Look closer if the label total is far from every method above, or if a scan show
 
 ## How MACROS handles it
 
-- MACROS logs the calories it reads from a label, a database entry, or your typing. It does not recalculate calories from protein, carbs, and fat.
+1. Scan the label and compare the calories on the card with the printed calories. MACROS logs the label's number as is, so your entry matches the package even when 4-4-9 gives a different total.
+2. If a scanned number does not match the package, tap Edit details and correct it before you log.
+3. Tap Log.
 
 <!-- visual:scan-details -->
 
-- Daily totals add up the logged calories and the logged grams separately.
-- The goal calculator is the one place MACROS uses 4-4-9. After it rounds your protein, carb, and fat goals, it sets the calorie goal from them. Food entries retain the calorie value supplied to the logging form rather than recalculating it from macros. So your calorie progress and your macro progress may not line up exactly. That is expected.
-- Every value stays editable before you log.
+Your daily calorie total adds up the calories you logged, and each macro total adds up the grams you logged.
+
+If you set goals with Recalculate Targets, MACROS uses 4-4-9 to turn your protein, carb, and fat goals into a calorie goal. Your food entries keep their label calories, so your calorie ring and your macro rings may not fill at exactly the same pace. That is expected.
 
 ## How this was checked
 
@@ -113,4 +114,4 @@ Look closer if the label total is far from every method above, or if a scan show
 - [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label): the sample lasagna label in example 1.
 - Examples 2 and 3 are made-up labels to show the arithmetic. They are not real products.
 
-MACROS publishes this site. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian reviewed this post.
+MACROS publishes this site. MACROS checked the app steps against the current app on November 7, 2026. No dietitian reviewed this post.

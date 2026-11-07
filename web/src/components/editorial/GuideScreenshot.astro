@@ -7,9 +7,6 @@ import review from '../../assets/app-images/app-calculator-review.png';
 import scanReview from '../../assets/app-images/app-scan-review.png';
 import scanGrams from '../../assets/app-images/app-scan-grams.png';
 import scanDetails from '../../assets/app-images/app-scan-details.png';
-import scanRequiredReview from '../../assets/app-images/app-scan-required-review.png';
-import barcodeSource from '../../assets/app-images/app-barcode-source.png';
-import addFood from '../../assets/app-images/app-add-food.png';
 
 const images = {
 	settings: { src: settings, alt: 'MACROS Settings with editable Daily Goals and Recalculate Targets.', caption: 'Settings > Daily Goals. These demo values show the controls, not the worked example or a recommended diet.' },
@@ -19,9 +16,6 @@ const images = {
 	'scan-review': { src: scanReview, alt: 'MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons.', caption: 'A label scan of a demo cereal label. The Servings stepper moves in quarter servings and scales calories, macros, and the gram total.' },
 	'scan-grams': { src: scanGrams, alt: 'MACROS Edit details for the demo Oat Crunch Cereal label in Grams mode: the Grams stepper at 60 g, 285 kcal, P 7.5, C 54, F 4.5, and a serving size of 1 cup (40g).', caption: 'Edit details in Grams mode. At 60 g, MACROS scales the 40 g serving by 1.5, so 190 kcal becomes 285 kcal.' },
 	'scan-details': { src: scanDetails, alt: 'MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size.', caption: 'MACROS keeps the label\'s calorie number. On this demo label, 4 × 5 + 4 × 36 + 9 × 3 = 191, which rounds to the printed 190.' },
-	'scan-required-review': { src: scanRequiredReview, alt: 'MACROS label scan details for a demo label with the protein amount covered: P 0, a note that protein was not confidently detected, and a Required Review section with a "Protein is intentionally 0" switch.', caption: 'A demo label with the protein amount covered. MACROS asks you to enter protein or confirm it is 0 before you log.' },
-	'barcode-source': { src: barcodeSource, alt: 'MACROS details for a barcode result, Nutella by Ferrero at 539 kcal per 100 g, with a Review section showing Source: Open Food Facts and a View Source link.', caption: 'A barcode result in Details. The Review section names Open Food Facts as the source and links to its product page.' },
-	'add-food': { src: addFood, alt: 'MACROS search for greek yogurt, with On Device matches followed by Search Results showing different brands and calorie values.', caption: 'A search for "greek yogurt". On Device matches come first, then Search Results with the brand under each name. Check the brand and serving before you pick one.' },
 };
 
 interface Props { screen: keyof typeof images }

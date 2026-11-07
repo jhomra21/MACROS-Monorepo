@@ -11,7 +11,7 @@ const html = (await Astro.slots.render('default'))
 	.replaceAll('<table>', '<div class="table-scroll" role="region" aria-label="Article data table" tabindex="0"><table>')
 	.replaceAll('</table>', '</table></div>');
 
-const parts = html.split(/<!-- visual:(calorie-flow|amdr|calculator|settings|profile|activity|review|scan-review|scan-grams|scan-details|scan-required-review|barcode-source|add-food) -->/);
+const parts = html.split(/<!-- visual:(calorie-flow|amdr|calculator|settings|profile|activity|review|scan-review|scan-grams|scan-details) -->/);
 ---
 {parts.map((part, index) => index % 2 === 0 ? <Fragment set:html={part} /> :
 	part === 'calorie-flow' ? <CalorieFlow /> :

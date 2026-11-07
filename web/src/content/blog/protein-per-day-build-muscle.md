@@ -72,9 +72,13 @@ Using FDA's general factor of 4 calories per gram of protein ([21 CFR 101.9(c)(1
 
 ## How MACROS handles it
 
-MACROS does not ask for a g/kg protein target. Its goal calculator sets protein as a share of calories, using the presets in the [macro goals guide](/guides/how-to-set-macro-goals/).
+Recalculate Targets sets protein as a share of calories, using the presets in the [macro goals guide](/guides/how-to-set-macro-goals/). To use a g/kg target instead, enter the grams yourself:
 
-To use a g/kg target, work out your grams with the table above. Then open Settings, find Daily Goals, type the grams into Protein, and tap Save Goals. Editing Protein does not change your calorie goal. Adjust calories, carbs, or fat yourself so the four numbers fit together.
+1. Find your daily grams in the table above.
+2. Open Settings and find Daily Goals.
+3. Type the grams into Protein.
+4. Adjust Calories, Carbs, or Fat so the four numbers fit together. Changing Protein does not change your calorie goal.
+5. Tap Save Goals.
 
 <!-- visual:settings -->
 
@@ -86,4 +90,4 @@ To use a g/kg target, work out your grams with the table above. Then open Settin
 - [National Academies AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5): adult protein range of 10% to 35% of calories.
 - [21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9): the general factor of 4 calories per gram of protein.
 
-MACROS publishes this site. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian or doctor reviewed this post.
+MACROS publishes this site. MACROS checked the app steps against the current app on November 7, 2026. No dietitian or doctor reviewed this post.
