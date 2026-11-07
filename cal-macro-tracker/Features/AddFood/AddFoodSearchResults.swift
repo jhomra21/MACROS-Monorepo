@@ -82,6 +82,7 @@ struct SearchFoodListView: View {
     @State private var selectedLocalFoodDraft: FoodDraft?
     @State private var selectedMeal: Meal?
     @State private var selectedRemoteResult: RemoteSearchResult?
+    @State private var localSearchRevision = 0
 
     var body: some View {
         List {
@@ -136,13 +137,15 @@ struct SearchFoodListView: View {
         .listStyle(.plain)
         .savedFoodDeletion { id in
             localResults.removeAll { $0.id == id }
+        } onRestored: { _ in
+            localSearchRevision += 1
         }
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
             max(0, scrollGeometry.contentOffset.y)
         } action: { _, newOffset in
             onScrollOffsetChange(newOffset)
         }
-        .task(id: searchText) {
+        .task(id: FoodSearchRequest(query: searchText, revision: localSearchRevision)) {
             await updateLocalFoods(for: searchText)
         }
         .task(id: FoodSearchRequest(query: searchText, revision: remoteSearch.revision)) {

@@ -60,6 +60,27 @@ extension FoodItemRepository {
             }
 
             isolatedContext.delete(isolatedFood)
+            #if DEBUG
+            try throwDebugForcedFailure("debugFailSavedFoodDeletes")
+            #endif
+        }
+    }
+
+    /// Inserts a deleted reusable food again with its original identity and values.
+    func restoreReusableFood(_ food: FoodItem, operation: String) throws {
+        try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
+            guard try reusableFood(for: FoodDraft(foodItem: food), in: isolatedContext) == nil else {
+                throw NSError(
+                    domain: "FoodItemRepository",
+                    code: 5,
+                    userInfo: [NSLocalizedDescriptionKey: "\(food.name) was saved again, so there is nothing to undo."]
+                )
+            }
+
+            isolatedContext.insert(food)
+            #if DEBUG
+            try throwDebugForcedFailure("debugFailSavedFoodRestores")
+            #endif
         }
     }
 
@@ -224,3 +245,16 @@ extension FoodItemRepository {
         food.normalizeForPersistence()
     }
 }
+
+#if DEBUG
+private var debugForcedFailureCounts: [String: Int] = [:]
+
+/// E2E hook: launching with `-<key> <n>` makes the next n matching saves throw after their changes are staged,
+/// so `PersistenceReporter` exercises its real rollback path.
+private func throwDebugForcedFailure(_ key: String) throws {
+    let remaining = debugForcedFailureCounts[key] ?? UserDefaults.standard.integer(forKey: key)
+    debugForcedFailureCounts[key] = max(0, remaining - 1)
+    guard remaining > 0 else { return }
+    throw NSError(domain: "DebugForcedFailure", code: 1, userInfo: [NSLocalizedDescriptionKey: "Forced save failure (DEBUG)."])
+}
+#endif
