@@ -1,0 +1,133 @@
+---
+// Steps match the app's quantity steppers: Servings move by 0.25 and stop at 0.25; Grams move by 5 g and stop at 1 g.
+const gramsPerOunce = 28.349523125;
+
+const steps = (from: number, to: number, step: number) => Array.from({ length: Math.round((to - from) / step) + 1 }, (_, index) => from + index * step);
+
+// The Grams example: the stepper shows 40 g and the scale reads 42 g.
+const shown = 40;
+
+const reading = 42;
+
+const gramTicks = steps(shown - 10, shown + 10, 5);
+
+const closest = gramTicks.reduce((best, grams) => (Math.abs(grams - reading) < Math.abs(best - reading) ? grams : best));
+
+const rulers = [
+	{
+		name: 'Servings',
+		step: '0.25 a tap',
+		low: 0,
+		high: 2,
+		ticks: steps(0.25, 2, 0.25),
+		labels: [0.5, 1, 1.5, 2],
+		minor: [0.5, 1.5],
+		dot: 1,
+		note: 'It starts at 1. Half of a 2-serving bag is 1 serving, and a quarter of the bag is 0.5.',
+	},
+	{
+		name: 'Grams',
+		step: '5 g a tap',
+		low: gramTicks[0],
+		high: gramTicks.at(-1)!,
+		ticks: gramTicks,
+		labels: gramTicks,
+		minor: [shown - 5, shown + 5],
+		dot: closest,
+		ring: reading,
+		note: `Say the stepper shows ${shown}\u00a0g and your scale reads ${reading}\u00a0g (${(reading / gramsPerOunce).toFixed(1)}\u00a0oz). One tap gives ${shown - 5} or ${shown + 5}\u00a0g, so ${closest}\u00a0g is the closest step.`,
+	},
+];
+---
+<figure class="guide-diagram quantity-steps" data-diagram aria-labelledby="quantity-steps-caption">
+	<p class="title">How far one tap moves the amount</p>
+	<ul class="quantity-steps__rulers" role="list">
+		{rulers.map(ruler => {
+			const at = (value: number) => `${((value - ruler.low) / (ruler.high - ruler.low)) * 100}%`;
+
+			return <li>
+				<p class="quantity-steps__name"><strong>{ruler.name}</strong> <span class="caption">{ruler.step}</span></p>
+				<span class="quantity-steps__line" aria-hidden="true">
+					{ruler.ticks.map(tick => <i style={`left: ${at(tick)}`}></i>)}
+					{ruler.ring !== undefined && <b class="quantity-steps__ring" style={`left: ${at(ruler.ring)}`}></b>}
+					<b class="quantity-steps__dot" style={`left: ${at(ruler.dot)}`}></b>
+					{ruler.labels.map(label => <span class:list={['caption', { 'quantity-steps__minor': ruler.minor.includes(label) }]} style={`left: ${at(label)}`}>{label}</span>)}
+				</span>
+				<p class="caption">{ruler.note}</p>
+			</li>;
+		})}
+	</ul>
+	<figcaption id="quantity-steps-caption" class="caption">Each tick is one tap. The filled dot is the amount you log, and the ring is the example scale reading. Calories and macros change with the amount.</figcaption>
+</figure>
+
+<style>
+	:global(.editorial .prose) .quantity-steps__rulers {
+		container-type: inline-size;
+		display: grid;
+		gap: var(--space-5);
+		padding-left: 0;
+		list-style: none;
+	}
+
+	.quantity-steps__rulers li {
+		display: grid;
+		gap: var(--space-2);
+		margin-top: 0;
+	}
+
+	.quantity-steps__name {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0 var(--space-3);
+	}
+
+	/* A baseline with one tick per tap; labels hang below their ticks. The inset keeps end labels inside the figure. */
+	.quantity-steps__line {
+		position: relative;
+		display: block;
+		height: 2.75rem;
+		margin-inline: var(--space-3);
+		background: linear-gradient(var(--ink-muted) 0 0) 0 0.75rem / 100% 1px no-repeat;
+	}
+
+	.quantity-steps__line i {
+		position: absolute;
+		top: 0.375rem;
+		width: 1px;
+		height: 0.75rem;
+		background: var(--ink-muted);
+	}
+
+	.quantity-steps__line b {
+		position: absolute;
+		top: 0.75rem;
+		width: 0.875rem;
+		height: 0.875rem;
+		border-radius: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.quantity-steps__dot {
+		background: var(--ink);
+	}
+
+	.quantity-steps__ring {
+		border: 2px solid var(--ink);
+		background: var(--band);
+	}
+
+	.quantity-steps__line span {
+		position: absolute;
+		top: 1.25rem;
+		white-space: nowrap;
+		transform: translateX(-50%);
+	}
+
+	/* With large text on a narrow screen, every other label goes so the rest stay apart. */
+	@container (max-width: 16rem) {
+		.quantity-steps__line .quantity-steps__minor {
+			display: none;
+		}
+	}
+</style>

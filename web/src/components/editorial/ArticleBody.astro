@@ -19,6 +19,9 @@ import RestingEstimate from './RestingEstimate.astro';
 import ActivityMultipliers from './ActivityMultipliers.astro';
 import GoalOffsets from './GoalOffsets.astro';
 import RoundingWindow from './RoundingWindow.astro';
+import QuantitySteps from './QuantitySteps.astro';
+import RoundingRules from './RoundingRules.astro';
+import HeightUnits from './HeightUnits.astro';
 import type { ComponentProps } from 'astro/types';
 import GuideScreenshot from './GuideScreenshot.astro';
 import { visualMarker } from '../../lib/article-visuals';
@@ -52,5 +55,8 @@ const parts = html.split(visualMarker);
 	part === 'activity-multipliers' ? <ActivityMultipliers /> :
 	part === 'goal-offsets' ? <GoalOffsets /> :
 	part === 'rounding-window' ? <RoundingWindow /> :
+	part === 'quantity-steps' ? <QuantitySteps /> :
+	part === 'rounding-rules' ? <RoundingRules /> :
+	part === 'height-units' ? <HeightUnits /> :
 	<GuideScreenshot screen={part as ComponentProps<typeof GuideScreenshot>['screen']} />
 )}
