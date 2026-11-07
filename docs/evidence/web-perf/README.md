@@ -155,7 +155,11 @@ These checks passed:
      - Rule 1: when `(http.host eq "www.macrosios.com" and http.request.method in {"GET" "HEAD"})`, use a dynamic redirect to `concat("https://macrosios.com", http.request.uri.path)` with status 301 and preserve query string on.
      - Rule 2: when `(http.host eq "www.macrosios.com" and not http.request.method in {"GET" "HEAD"})`, use the same target with status 308 and preserve query string on.
      - Verify with `curl -sI https://www.macrosios.com/x/?a=1` while tailing; the request must not appear in the tail.
-   - Decide on workers.dev. Zone rules cannot redirect it. Either set `"workers_dev": false`, which breaks old workers.dev links (SEO.md currently says to keep those redirects indefinitely), or keep the current Worker-first page routing. Only after both steps can `run_worker_first` become `["/api/*"]`. Keep `canonicalRedirect` in the Worker as the API fallback.
+   - Decide on workers.dev. Zone rules cannot redirect it. Either set `"workers_dev": false`, which breaks old workers.dev links (SEO.md currently says to keep those redirects indefinitely), or keep the current Worker-first page routing. Only after both steps can `run_worker_first` become `["/api/*", "/media/*"]`. `/media/*` must stay Worker-first once `web/demo-video` lands, because that branch's Worker answers HTTP Range requests for MP4s. Static assets ignore `Range`, and Safari needs 206 responses. Keep `canonicalRedirect` in the Worker as the API fallback.
+
+## Merging with `web/demo-video`
+
+This branch's `run_worker_first` list (`"/*"` minus static-file exclusions) does not exclude `/media/*`, so the demo branch's byte-range handling keeps working. Do not add `!/media/*`. Both branches append a block to `web/public/_headers`. Keep all three rules: `/media/*`, `/_astro/*`, and `/social/*` immutable. `wrangler.jsonc` should merge cleanly, because that branch does not change `run_worker_first`.
 
 ## Repeat
 
