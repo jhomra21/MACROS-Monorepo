@@ -3,7 +3,7 @@ title: "Why label calories don't add up to 4-4-9"
 description: "Did the 4-4-9 math on a label and got a different number? Learn why food makers' calorie methods and rounding cause the gap, and which number to log."
 published: 2026-11-07
 updated: 2026-11-07
-draft: true
+draft: false
 related:
   - guides/how-to-set-macro-goals
   - blog/serving-size-vs-whole-package
