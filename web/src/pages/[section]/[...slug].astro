@@ -95,7 +95,9 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li>
 				<h2 class="title"><a href={`/${section}/${item.id}/`}>{item.data.title}</a></h2>
 				<p>{item.data.description}</p>
-				<p class="caption"><time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time></p>
+				<p class="caption">{dateText(item.data.updated) === dateText(item.data.published)
+					? <time datetime={item.data.published.toISOString()}>Published {dateText(item.data.published)}</time>
+					: <time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time>}</p>
 			</li>)}
 		</ul>}
 	</article>

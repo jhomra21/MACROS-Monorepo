@@ -1168,7 +1168,11 @@ summary {
 
 /* The notes below the story continue the same grid, so they get a grid gap, not a section gap. */
 .about-story {
-	padding-bottom: var(--space-7);
+	padding-bottom: var(--space-6);
+}
+
+.about-story + .section {
+	padding-top: 0;
 }
 
 .about-item {
@@ -1534,6 +1538,16 @@ summary {
 .editorial__list .title a {
 	color: var(--ink);
 	text-decoration: none;
+}
+
+/* The focus ring outlines the whole entry, matching the click area. */
+.editorial__list .title a:focus-visible {
+	outline: none;
+}
+
+.editorial__list li:has(.title a:focus-visible) {
+	outline: 3px solid var(--link);
+	outline-offset: 3px;
 }
 
 .editorial__list .title a::after {
