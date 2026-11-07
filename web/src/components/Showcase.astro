@@ -1,6 +1,6 @@
 ---
 import { site } from '../data/site';
-import DeviceFrame from './DeviceFrame.astro';
+import AppScreen from './AppScreen.astro';
 ---
 
 <section id="showcase" class="section section--soft" aria-labelledby="showcase-title">
@@ -12,7 +12,7 @@ import DeviceFrame from './DeviceFrame.astro';
 			{
 				site.screenshots.map((shot) => (
 					<figure class="showcase__card" role="listitem">
-						<DeviceFrame
+						<AppScreen
 							src={shot.src}
 							alt={shot.alt}
 							small
