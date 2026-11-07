@@ -11,6 +11,9 @@ const USDA_PROVIDER_NAME = 'USDA FoodData Central' as const
 
 const BRANDED_DATA_TYPE = 'Branded'
 
+// FDC data types whose nutrients are always per 100 g. Anything else, including an unexpected spelling, takes the Branded path so it never claims grams.
+const PER_100_GRAM_DATA_TYPES = new Set(['Foundation', 'SR Legacy', 'Survey (FNDDS)'])
+
 const MAX_PAGE = 10
 
 const GRAM_UNITS = new Set(['g', 'grm', 'gram', 'grams'])
@@ -368,7 +371,7 @@ function makeProxyFoodResult(source: USDASourceFood): USDAProxyFoodResult | null
 // Values are scaled to a known metric serving, and only gram servings claim grams. A missing dataType counts
 // as Branded so an unknown basis never claims grams.
 function servingBasis(food: USDAFood) {
-  const branded = food.dataType == null || food.dataType === BRANDED_DATA_TYPE
+  const branded = food.dataType == null || !PER_100_GRAM_DATA_TYPES.has(food.dataType)
   const size = food.servingSize
   const unit = normalizedText(food.servingSizeUnit)?.toLowerCase()
   const metricUnit = unit == null ? undefined : GRAM_UNITS.has(unit) ? 'g' : branded && VOLUME_UNITS.has(unit) ? 'ml' : undefined
