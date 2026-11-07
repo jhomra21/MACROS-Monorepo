@@ -1,39 +1,16 @@
 ---
-// Rounding rules from 21 CFR 101.9(c). The amounts are the post's examples before rounding.
+// Rounding rules from 21 CFR 101.9(c). The amounts are the post's small snack before rounding.
 type Example = { name: string; exact: number; step: number; unit: string; rule: string };
 
-const groups: { title: string; rules: { range: string; rule: string }[]; examples: Example[] }[] = [
-	{
-		title: 'Calories',
-		rules: [
-			{ range: 'Under 5', rule: 'can print as 0' },
-			{ range: '5 to 50', rule: 'nearest 5' },
-			{ range: 'Above 50', rule: 'nearest 10' },
-		],
-		examples: [
-			{ name: 'Small snack', exact: 39, step: 5, unit: '', rule: 'nearest 5' },
-			{ name: 'Protein bar', exact: 187, step: 10, unit: '', rule: 'nearest 10' },
-			{ name: 'Lasagna', exact: 277, step: 10, unit: '', rule: 'nearest 10' },
-		],
-	},
-	{
-		title: 'Grams in the small snack',
-		rules: [
-			{ range: 'Protein, carbs', rule: 'nearest 1 g' },
-			{ range: 'Fat under 5 g', rule: 'nearest 0.5 g' },
-			{ range: 'Fat above 5 g', rule: 'nearest 1 g' },
-			{ range: 'Under 0.5 g', rule: 'can print as 0' },
-		],
-		examples: [
-			{ name: 'Protein', exact: 0.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
-			{ name: 'Carbs', exact: 4.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
-			{ name: 'Fat', exact: 2.24, step: 0.5, unit: ' g', rule: 'nearest 0.5 g' },
-		],
-	},
+const examples: Example[] = [
+	{ name: 'Calories', exact: 39, step: 5, unit: '', rule: 'nearest 5' },
+	{ name: 'Protein', exact: 0.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
+	{ name: 'Carbs', exact: 4.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
+	{ name: 'Fat', exact: 2.24, step: 0.5, unit: ' g', rule: 'nearest 0.5 g' },
 ];
 
 // Steps are 0.5 or larger, so rounding the step count to 1e-9 removes float noise like 4.4 / 1 = 4.4000000001.
-const lines = (examples: Example[]) => examples.map(example => {
+const lines = examples.map(example => {
 	const steps = Math.round((example.exact / example.step) * 1e9) / 1e9;
 	const low = Math.floor(steps) * example.step;
 	const high = low + example.step;
@@ -43,35 +20,29 @@ const lines = (examples: Example[]) => examples.map(example => {
 });
 ---
 <figure class="guide-diagram label-rounding" data-diagram aria-labelledby="label-rounding-caption">
-	<p class="title">How the label rounds</p>
+	<p class="title">How the small snack's label rounds</p>
 	<div class="label-rounding__body">
 		<p class="label-rounding__legend caption" aria-hidden="true">
 			<span><i class="label-rounding__ring"></i>Exact amount</span>
 			<span><i class="label-rounding__dot"></i>Printed number</span>
 			<span><i class="label-rounding__half"></i>Halfway</span>
 		</p>
-		{groups.map(group => <div class="label-rounding__group">
-			<p class="label-rounding__heading"><strong>{group.title}</strong></p>
-			<ul class="label-rounding__rules" role="list">
-				{group.rules.map(rule => <li><strong>{rule.range}</strong><span>{rule.rule}</span></li>)}
-			</ul>
-			<ul class="label-rounding__examples" role="list">
-				{lines(group.examples).map(line => <li>
-					<p class="label-rounding__name"><span>{line.name}</span><span class="caption">{line.rule}</span></p>
-					<p class="label-rounding__result"><span>{line.exact}{line.unit}</span><span aria-hidden="true"> → </span><span class="sr-only"> prints as </span><strong>{line.printed}{line.unit}</strong></p>
-					<span class="label-rounding__line" aria-hidden="true" style={`--at: ${line.at * 100}%; --printed: ${line.printed === line.high ? '100%' : '0%'}`}>
-						<span class="label-rounding__move"></span>
-						<i class="label-rounding__half"></i>
-						<i class="label-rounding__ring"></i>
-						<i class="label-rounding__dot"></i>
-						<span class="label-rounding__tick label-rounding__tick--low">{line.low}</span>
-						<span class="label-rounding__tick label-rounding__tick--high">{line.high}</span>
-					</span>
-				</li>)}
-			</ul>
-		</div>)}
+		<ul class="label-rounding__examples" role="list">
+			{lines.map(line => <li>
+				<p class="label-rounding__name"><span>{line.name}</span><span class="caption">{line.rule}</span></p>
+				<p class="label-rounding__result"><span>{line.exact}{line.unit}</span><span aria-hidden="true"> → </span><span class="sr-only"> prints as </span><strong>{line.printed}{line.unit}</strong></p>
+				<span class="label-rounding__line" aria-hidden="true" style={`--at: ${line.at * 100}%; --printed: ${line.printed === line.high ? '100%' : '0%'}`}>
+					<span class="label-rounding__move"></span>
+					<i class="label-rounding__ring"></i>
+					<i class="label-rounding__dot"></i>
+					<i class="label-rounding__half"></i>
+					<span class="label-rounding__tick label-rounding__tick--low">{line.low}</span>
+					<span class="label-rounding__tick label-rounding__tick--high">{line.high}</span>
+				</span>
+			</li>)}
+		</ul>
 	</div>
-	<figcaption id="label-rounding-caption" class="caption">Each line runs from one printed step to the next. Past halfway, the number rounds up. The small snack and the protein bar are made-up labels. The lasagna is FDA's sample label.</figcaption>
+	<figcaption id="label-rounding-caption" class="caption">Each line runs from one printed step to the next. Past halfway, the number rounds up. Fat sits just under its halfway mark of 2.25 g, so it prints as 2 g. Run 4‑4‑9 on the printed grams and you get 34. The small snack is a made-up label.</figcaption>
 </figure>
 
 <style>
@@ -95,38 +66,7 @@ const lines = (examples: Example[]) => examples.map(example => {
 		height: 1rem;
 	}
 
-	.label-rounding__group > * + * {
-		margin-top: var(--space-3);
-	}
-
 	/* The figure class lifts these above the prose list rules (padding, bullets, li + li margin). */
-	.label-rounding .label-rounding__rules {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1px;
-		padding: 0;
-		list-style: none;
-		border: 1px solid var(--hairline);
-		border-radius: var(--radius-sm);
-		background: var(--hairline);
-		overflow: hidden;
-		font-size: var(--fs-small);
-		line-height: 1.3;
-	}
-
-	.label-rounding .label-rounding__rules > li {
-		display: grid;
-		flex: 1 1 6.5rem;
-		gap: var(--space-1);
-		margin: 0;
-		padding: var(--space-2) var(--space-3);
-		background: var(--bg);
-	}
-
-	.label-rounding__rules span {
-		color: var(--ink-muted);
-	}
-
 	.label-rounding .label-rounding__examples {
 		padding: 0;
 		list-style: none;
@@ -209,10 +149,16 @@ const lines = (examples: Example[]) => examples.map(example => {
 		border-inline-start: 2px dashed var(--ink-muted);
 	}
 
+	/*
+	 * On the line the halfway mark is thin and drawn over the ring, taller than it, so an amount just
+	 * under halfway (fat at 2.24 of 2.25) still shows its ring centered left of the mark on narrow screens.
+	 */
 	.label-rounding__line .label-rounding__half {
-		top: 0.5rem;
+		top: 0.125rem;
 		left: 50%;
-		translate: -1px 0;
+		height: 1.75rem;
+		border-inline-start-width: 1px;
+		translate: -0.5px 0;
 	}
 
 	.label-rounding__ring,
