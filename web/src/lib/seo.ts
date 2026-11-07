@@ -51,7 +51,7 @@ export const pages = {
 	},
 	'/blog/': {
 		title: 'MACROS blog | Serving sizes, label calories, and protein',
-		description: 'Posts from MACROS on logging a serving, why label calories skip 4-4-9 math, and how much protein to eat to build muscle. Each cites its sources.',
+		description: 'Everyday nutrition questions, answered simply.',
 	},
 } as const;
 
