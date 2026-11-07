@@ -2,7 +2,9 @@
 import CalorieFlow from './CalorieFlow.astro';
 import AMDRChart from './AMDRChart.astro';
 import CalculatorSteps from './CalculatorSteps.astro';
+import type { ComponentProps } from 'astro/types';
 import GuideScreenshot from './GuideScreenshot.astro';
+import { visualMarker } from '../../lib/article-visuals';
 
 // Markdown keeps these explicit placement comments. Render the slot first so
 // Astro still resolves Markdown assets, then insert static Astro components.
@@ -10,11 +12,11 @@ const html = (await Astro.slots.render('default'))
 	.replaceAll('<table>', '<div class="table-scroll" role="region" aria-label="Article data table" tabindex="0"><table>')
 	.replaceAll('</table>', '</table></div>');
 
-const parts = html.split(/<!-- visual:(calorie-flow|amdr|calculator|settings|profile|activity|review) -->/);
+const parts = html.split(visualMarker);
 ---
 {parts.map((part, index) => index % 2 === 0 ? <Fragment set:html={part} /> :
 	part === 'calorie-flow' ? <CalorieFlow /> :
 	part === 'amdr' ? <AMDRChart /> :
 	part === 'calculator' ? <CalculatorSteps /> :
-	<GuideScreenshot screen={part as 'settings' | 'profile' | 'activity' | 'review'} />
+	<GuideScreenshot screen={part as ComponentProps<typeof GuideScreenshot>['screen']} />
 )}

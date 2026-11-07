@@ -5,6 +5,7 @@ import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import { visualMarker } from '../../lib/article-visuals';
 import { absoluteURL, organizationReference, pages, publishedEntries, relatedEntries } from '../../lib/seo';
 import { socialImage, socialInput } from '../../lib/social';
 
@@ -82,7 +83,7 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 				<ul>{headings.map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
 			</nav>}
 			<div class="prose"><ArticleBody><Content /></ArticleBody></div>
-			{entry && !entry.body?.includes('<!-- visual:settings -->') && <figure class="editorial__screenshot">
+			{entry && !visualMarker.test(entry.body ?? '') && <figure class="editorial__screenshot">
 				<Image src={entry.data.image} alt={entry.data.imageAlt} width={320} layout="constrained" widths={[320, 640, 960]} sizes="(max-width: 360px) calc(100vw - 40px), 320px" format="webp" loading="lazy" />
 				<figcaption class="caption">{entry.data.imageCaption ?? entry.data.imageAlt}</figcaption>
 			</figure>}
