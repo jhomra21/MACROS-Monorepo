@@ -1,4 +1,5 @@
-import { z } from 'zod';
+// zod/mini is tree-shakable; these schemas ship to the browser with the form scripts.
+import * as z from 'zod/mini';
 
 export const jsonValueSchema = z.json();
 
@@ -11,8 +12,8 @@ export const jsonObjectSchema = z.record(z.string(), jsonValueSchema);
 export type JsonObject = z.infer<typeof jsonObjectSchema>;
 
 export const formResponseSchema = z.object({
-	message: z.string().optional(),
-	fieldErrors: z.record(z.string(), jsonValueSchema).optional(),
+	message: z.optional(z.string()),
+	fieldErrors: z.optional(z.record(z.string(), jsonValueSchema)),
 });
 
 export type FormResponse = z.infer<typeof formResponseSchema>;

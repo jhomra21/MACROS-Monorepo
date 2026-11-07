@@ -232,6 +232,18 @@ function canonicalRedirect(request: Request): Response | null {
 	});
 }
 
+// not_found_handling is "none", so every miss reaches the Worker. The 404 page is fetched by its own
+// path: _headers rules match the request path, so a miss under /_astro/* would otherwise get immutable.
+async function serveAsset(request: Request, env: WorkerEnv): Promise<Response> {
+	const response = await env.ASSETS.fetch(request);
+
+	if (response.status !== 404) return response;
+
+	const page = await env.ASSETS.fetch(new URL('/404/', request.url));
+
+	return new Response(page.body, { status: 404, headers: page.headers });
+}
+
 export default {
 	async fetch(request: Request, env: WorkerEnv): Promise<Response> {
 		const redirect = canonicalRedirect(request);
@@ -260,7 +272,7 @@ export default {
 			return handleWaitlistRequest(request, env);
 		}
 
-		const asset = await env.ASSETS.fetch(request);
+		const asset = await serveAsset(request, env);
 
 		return url.pathname.startsWith('/media/') ? withByteRange(request, asset) : asset;
 	},
