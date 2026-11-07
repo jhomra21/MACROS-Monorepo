@@ -404,7 +404,7 @@ summary {
 	transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
-.nav-link[aria-current='page'] {
+.nav-link[aria-current] {
 	background: color-mix(in srgb, var(--ink) 7%, transparent);
 	color: var(--ink);
 	font-weight: 600;
