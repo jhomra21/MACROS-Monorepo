@@ -30,13 +30,7 @@ The International Society of Sports Nutrition lands in a similar place. Its 2017
 
 Multiply your weight in kilograms by 1.6. Use 2.2 instead if you're aiming high.
 
-| Body weight | At 1.6 g/kg | At 2.2 g/kg |
-| --- | --- | --- |
-| 60 kg (132 lb) | 96 g | 132 g |
-| 70 kg (154 lb) | 112 g | 154 g |
-| 80 kg (176 lb) | 128 g | 176 g |
-| 90 kg (198 lb) | 144 g | 198 g |
-| 100 kg (220 lb) | 160 g | 220 g |
+<!-- visual:protein-lookup -->
 
 If you weigh yourself in pounds, multiply your weight by 0.73 for 1.6 g/kg, or by 1 for 2.2 g/kg. Don't use the per-kilogram numbers with your weight in pounds. That more than doubles the result.
 

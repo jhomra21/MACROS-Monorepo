@@ -15,6 +15,8 @@ You checked a label the way many people learn to. Protein times 4, carbs times 4
 
 The label is usually still right. Two things explain the gap. Food makers can count calories in more than one way, and they round every number on the label.
 
+<!-- visual:calorie-gap -->
+
 ## Makers can count calories more than one way
 
 FDA allows several ways to count calories. Plain 4-4-9 on protein, total carbs, and fat is only one of them. Others use factors for a specific food or measure the energy in a lab.

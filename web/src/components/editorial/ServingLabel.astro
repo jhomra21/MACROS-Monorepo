@@ -1,0 +1,30 @@
+---
+// Values from FDA's sample frozen lasagna label, as cited in the post.
+const servings = 4;
+
+const calories = 280;
+---
+<figure class="guide-diagram serving-label" data-diagram aria-labelledby="serving-label-caption">
+	<p class="title">Read the serving line first</p>
+	<div class="serving-label__layout">
+		<div class="nutrition-label">
+			<p class="nutrition-label__heading">Nutrition Facts</p>
+			<p class="nutrition-label__mark"><span class="diagram-key" aria-hidden="true">1</span><span>{servings} servings per container</span></p>
+			<p class="nutrition-label__mark nutrition-label__size"><span class="diagram-key" aria-hidden="true">2</span><span>Serving size</span><span>1 cup (227g)</span></p>
+			<p class="nutrition-label__per">Amount per serving</p>
+			<p class="nutrition-label__calories"><span>Calories</span><span>{calories}</span></p>
+			<p class="nutrition-label__row"><span><b>Protein</b> 15g</span></p>
+		</div>
+		<div class="serving-label__notes">
+			<ol>
+				<li><span class="diagram-key" aria-hidden="true">1</span><p><strong>{servings} servings per container.</strong> Eat the whole package and you ate {servings} servings.</p></li>
+				<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>Serving size 1 cup (227 g).</strong> Every number below this line is for one cup.</p></li>
+			</ol>
+			<div class="serving-label__math">
+				<p><span>1 serving</span><strong>{calories} calories</strong></p>
+				<p><span>Whole package, {servings} × {calories}</span><strong>{(servings * calories).toLocaleString('en-US')} calories</strong></p>
+			</div>
+		</div>
+	</div>
+	<figcaption id="serving-label-caption" class="caption">Part of FDA's sample label for frozen lasagna. This excerpt skips the lines between Calories and Protein. Multiply each number by the servings you ate.</figcaption>
+</figure>

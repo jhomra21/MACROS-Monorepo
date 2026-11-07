@@ -29,6 +29,8 @@ Multiply each number on the label by the servings you ate. If you weighed your f
 
 FDA's sample label for frozen lasagna shows how this works. One serving is 1 cup (227 g), with 280 calories and 15 g of protein. The package holds 4 servings.
 
+<!-- visual:serving-label -->
+
 Eat half the package and you had 2 servings, so 560 calories and 30 g of protein. Eat the whole thing and it's 1,120 calories and 60 g of protein.
 
 Now say you weighed your plate and got 340 g (12 oz). That's 340 divided by 227, or about 1.5 servings. You ate about 420 calories and 22.5 g of protein.

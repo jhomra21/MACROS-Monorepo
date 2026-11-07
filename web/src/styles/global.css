@@ -1707,6 +1707,235 @@ summary {
 .editorial .prose .calculator-steps {
 	padding-left: var(--space-5);
 }
+/* Numbered keys tie a highlighted line in a diagram to its note. */
+.diagram-key {
+	display: inline-grid;
+	place-items: center;
+	flex: none;
+	min-width: 1.5em;
+	height: 1.5em;
+	border-radius: 50%;
+	background: var(--action-bg);
+	color: var(--action-ink);
+	font-size: var(--fs-caption);
+	font-weight: 700;
+	line-height: 1;
+}
+
+.diagram-bar {
+	display: block;
+	width: var(--share);
+	height: 0.75em;
+	border-radius: var(--radius-pill);
+	background: var(--bar-color, var(--ink));
+}
+
+.serving-label__layout {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+	gap: var(--space-5);
+	align-items: center;
+}
+
+/* A printed label is black on white in both schemes, like the package it comes from. */
+.nutrition-label {
+	--label-mark: #0066cc;
+	width: 100%;
+	max-width: 19rem;
+	padding: var(--space-1) var(--space-3) var(--space-2);
+	border: 1px solid #000;
+	background: #fff;
+	color: #000;
+	font-size: var(--fs-small);
+	line-height: 1.3;
+}
+
+.nutrition-label > * + * {
+	margin-top: var(--space-1);
+}
+
+.nutrition-label .diagram-key {
+	background: var(--label-mark);
+	color: #fff;
+}
+
+.nutrition-label__heading {
+	padding-bottom: var(--space-1);
+	border-bottom: 1px solid #000;
+	font-size: 1.75rem;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+}
+
+.nutrition-label__mark,
+.nutrition-label__calories,
+.nutrition-label__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0 var(--space-2);
+}
+
+.nutrition-label__mark {
+	margin-inline: calc(var(--space-2) * -1);
+	padding: var(--space-1) var(--space-2);
+	border-radius: 6px;
+	outline: 2px solid var(--label-mark);
+	outline-offset: -2px;
+	background: rgb(0 102 204 / 0.1);
+}
+
+.nutrition-label__size {
+	font-size: 1rem;
+	font-weight: 800;
+}
+
+.nutrition-label__size > :last-child,
+.nutrition-label__calories > :last-child {
+	margin-left: auto;
+}
+
+.nutrition-label__per {
+	padding-top: var(--space-1);
+	border-top: 10px solid #000;
+	font-weight: 700;
+}
+
+.nutrition-label__calories {
+	padding-bottom: var(--space-1);
+	border-bottom: 5px solid #000;
+	font-size: 1.5rem;
+	font-weight: 800;
+	line-height: 1.1;
+}
+
+.nutrition-label__row {
+	padding-bottom: var(--space-1);
+	border-bottom: 1px solid #000;
+}
+
+.serving-label__notes {
+	display: grid;
+	gap: var(--space-5);
+}
+
+.editorial .prose .serving-label__notes ol {
+	display: grid;
+	gap: var(--space-4);
+	padding-left: 0;
+	list-style: none;
+}
+
+.editorial .prose .serving-label__notes li {
+	display: flex;
+	gap: var(--space-3);
+	margin-top: 0;
+}
+
+.serving-label__math {
+	border-top: 1px solid var(--hairline);
+}
+
+.serving-label__math p {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 0 var(--space-4);
+	padding-block: var(--space-2);
+	border-bottom: 1px solid var(--hairline);
+}
+
+.editorial .prose .calorie-gap__list {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	padding-left: 0;
+	list-style: none;
+}
+
+.editorial .prose .calorie-gap__list li {
+	display: grid;
+	gap: var(--space-2);
+	margin-top: 0;
+	padding-block: var(--space-4);
+	border-bottom: 1px solid var(--hairline);
+}
+
+.editorial .prose .calorie-gap__list li:first-child {
+	padding-top: 0;
+}
+
+.calorie-gap__name,
+.calorie-gap__grams {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--space-1) var(--space-3);
+}
+
+/* Rows share one subgrid, so both bars start at the same x at any text size. */
+.calorie-gap__bars {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	gap: var(--space-2) var(--space-3);
+	padding-block: var(--space-1);
+	font-size: var(--fs-small);
+}
+
+.calorie-gap__bars p {
+	display: grid;
+	grid-column: 1 / -1;
+	grid-template-columns: subgrid;
+	align-items: center;
+}
+
+.calorie-gap__bars strong {
+	text-align: end;
+}
+
+.calorie-gap__sum {
+	--bar-color: var(--ink-muted);
+	color: var(--ink-muted);
+}
+
+.protein-lookup .table-scroll {
+	container-type: inline-size;
+}
+
+.protein-lookup .table-scroll table {
+	--cell-end: var(--space-3);
+	min-width: 0;
+}
+
+/* Number columns shrink to their content; the bar column takes the rest. */
+.editorial .prose .protein-lookup :is(th, td):not(:last-child) {
+	width: 1%;
+	padding-inline: var(--space-1) var(--cell-end);
+	text-align: end;
+}
+
+.protein-lookup__grams {
+	--bar-color: var(--protein);
+	display: grid;
+	grid-template-columns: 3.5em minmax(0, 1fr);
+	align-items: center;
+	gap: var(--space-3);
+}
+
+/* With large text on a narrow screen the numbers keep the room and the bars go. */
+@container (max-width: 14rem) {
+	.protein-lookup .table-scroll table {
+		--cell-end: var(--space-1);
+	}
+
+	.protein-lookup__grams {
+		display: block;
+	}
+
+	.protein-lookup__grams .diagram-bar {
+		display: none;
+	}
+}
 
 .calculator-steps li {
 	padding: var(--space-3) 0 var(--space-3) var(--space-2);
