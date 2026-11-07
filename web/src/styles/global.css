@@ -1452,8 +1452,10 @@ summary {
 	text-wrap: pretty;
 }
 
+/* Cells wrap between words, never inside one ("Activit/y"). A word that still does not fit scrolls the .table-scroll region. */
 .editorial .prose table {
 	width: 100%;
+	overflow-wrap: normal;
 	border-collapse: collapse;
 	font-size: var(--fs-small);
 	font-variant-numeric: tabular-nums;
