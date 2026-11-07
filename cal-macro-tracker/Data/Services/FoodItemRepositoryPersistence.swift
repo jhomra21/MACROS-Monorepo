@@ -69,7 +69,7 @@ extension FoodItemRepository {
     /// Inserts a deleted reusable food again with its original identity and values.
     func restoreReusableFood(_ food: FoodItem, operation: String) throws {
         try PersistenceReporter.persist(in: modelContext.container, operation: operation) { isolatedContext in
-            guard try reusableFood(for: FoodDraft(foodItem: food), in: isolatedContext) == nil else {
+            guard try savedFoodDuplicating(food, in: isolatedContext) == nil else {
                 throw NSError(
                     domain: "FoodItemRepository",
                     code: 5,
@@ -82,6 +82,34 @@ extension FoodItemRepository {
             try throwDebugForcedFailure("debugFailSavedFoodRestores")
             #endif
         }
+    }
+
+    /// A saved food that `food` would duplicate if inserted again: the same row, or an external food with the same
+    /// external product ID or barcode (any alias) from either lookup provider. Saving does not merge a USDA search food
+    /// with an Open Food Facts scan of the same barcode, but for Undo they are the same product.
+    private func savedFoodDuplicating(_ food: FoodItem, in context: ModelContext) throws -> FoodItem? {
+        if let sameFood = try fetchReusableFood(id: food.id, in: context) {
+            return sameFood
+        }
+
+        guard preservesExternalIdentity(for: food.sourceKind) else {
+            return nil
+        }
+
+        let externalSources: [FoodSource] = [.barcodeLookup, .searchLookup]
+        if let externalProductID = food.externalProductID {
+            for source in externalSources {
+                if let match = try fetchReusableFood(source: source, externalProductID: externalProductID, in: context) {
+                    return match
+                }
+            }
+        }
+
+        guard let barcode = food.barcode else {
+            return nil
+        }
+
+        return try fetchBarcodeFood(barcode: barcode, preferredSources: externalSources, in: context)
     }
 
     @discardableResult

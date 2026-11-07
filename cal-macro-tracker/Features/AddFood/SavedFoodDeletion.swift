@@ -83,9 +83,9 @@ private struct SavedFoodDeletionModifier: ViewModifier {
                 // Undo is offered for a few seconds, like a system snackbar. SwiftUI cancels this task when a newer
                 // delete, Undo, or an error alert changes the id, or the screen goes away; a cancelled sleep returns
                 // before clearing, so a stale timer never hides a newer banner, and dismissing an alert restarts the
-                // countdown. VoiceOver users keep the banner until they act or leave.
-                guard undoCountdownID != nil, voiceOverEnabled == false,
-                    (try? await Task.sleep(for: .seconds(5))) != nil
+                // countdown. VoiceOver users keep the banner until they act or leave; turning VoiceOver off starts a
+                // fresh countdown, and turning it on cancels a running one.
+                guard undoCountdownID != nil, (try? await Task.sleep(for: .seconds(5))) != nil
                 else { return }
                 deletedFood = nil
             }
@@ -93,7 +93,7 @@ private struct SavedFoodDeletionModifier: ViewModifier {
     }
 
     private var undoCountdownID: UUID? {
-        errorMessage == nil ? deletedFood?.food.id : nil
+        errorMessage == nil && voiceOverEnabled == false ? deletedFood?.food.id : nil
     }
 
     private func delete(_ foodID: UUID) {
