@@ -26,6 +26,32 @@ Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inn
 
 Authorship is one linked graph. The Organization (`/#organization`) carries the app icon as `logo` (the 180 × 180 `apple-touch-icon.png`) and `sameAs` for the Instagram profile. The About page defines the author as a Person with the stable `@id` `/about/#juan` and the same `sameAs`. Every Article `author` points at that `@id`, and every Article `publisher` points at the Organization `@id`. The author is shown publicly by name and Instagram only. Add other profiles to `sameAs` only if the owner decides to publish them. At App Store launch, add the listing URL to the Organization `sameAs`.
 
+## Notify IndexNow after a deploy
+
+IndexNow tells Bing and its partner engines which URLs changed. Bing asks for it in its [webmaster guidelines](https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a), and the protocol is in the [IndexNow documentation](https://www.indexnow.org/documentation). A `200` or `202` response means the engine received the list, not that it indexed anything.
+
+The key file is `public/<key>.txt`, served at `https://macrosios.com/<key>.txt` and containing only the key. The key is public by design: it proves host ownership, not authority. Keep exactly one such file. The script reads the key from the file name.
+
+This is a manual step after an authorized deploy. It is not part of `check`, `build`, `test`, or `deploy`, and no validation run may send it.
+
+1. Deploy, with authorization, so the pages and the key file are live.
+2. From `web/`, run `bun run indexnow --dry-run` and read the payload. It sends nothing and skips the live key check.
+3. Run `bun run indexnow` to submit every URL in `dist/sitemap.xml` (and any `dist/sitemap-*.xml`). Prefer explicit URLs for a small change: `bun run indexnow https://macrosios.com/blog/example/`.
+
+The script refuses to send when something is wrong. Exit codes:
+
+| Code | Cause |
+| --- | --- |
+| 1 | Unknown flag |
+| 2 | Not exactly one `<32 hex>.txt` key file in `public/`, or its content differs from its name |
+| 3 | `dist/` or its sitemap is missing, or the sitemap lists no pages. Build first, or pass explicit URLs |
+| 4 | A URL is not canonical: not https, not the apex host, has a query or fragment, or an HTML page lacks its trailing slash |
+| 5 | The key file is not live at `keyLocation`. Deploy first |
+| 6 | The key check or the POST could not reach the network |
+| 7 | IndexNow answered something other than 200 or 202: 400 bad format, 403 key not valid, 422 URLs not on the host or key mismatch, 429 too many requests |
+
+Submit only URLs that really changed or were added. Draft posts are not in the sitemap, so a sitemap run never announces one. Do not send a URL for a draft by hand.
+
 ## App Store launch flag
 
 Set `site.appStore.live` to `true` only when the listing is available. Its ID drives both the Smart App Banner and the listing link. With the flag off, neither the banner nor the badge or its trademark credit renders.
