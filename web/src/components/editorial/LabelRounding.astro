@@ -1,0 +1,266 @@
+---
+// Rounding rules from 21 CFR 101.9(c). The amounts are the post's examples before rounding.
+type Example = { name: string; exact: number; step: number; unit: string; rule: string };
+
+const groups: { title: string; rules: { range: string; rule: string }[]; examples: Example[] }[] = [
+	{
+		title: 'Calories',
+		rules: [
+			{ range: 'Under 5', rule: 'can print as 0' },
+			{ range: '5 to 50', rule: 'nearest 5' },
+			{ range: 'Above 50', rule: 'nearest 10' },
+		],
+		examples: [
+			{ name: 'Small snack', exact: 39, step: 5, unit: '', rule: 'nearest 5' },
+			{ name: 'Protein bar', exact: 187, step: 10, unit: '', rule: 'nearest 10' },
+			{ name: 'Lasagna', exact: 277, step: 10, unit: '', rule: 'nearest 10' },
+		],
+	},
+	{
+		title: 'Grams in the small snack',
+		rules: [
+			{ range: 'Protein, carbs', rule: 'nearest 1 g' },
+			{ range: 'Fat under 5 g', rule: 'nearest 0.5 g' },
+			{ range: 'Fat above 5 g', rule: 'nearest 1 g' },
+			{ range: 'Under 0.5 g', rule: 'can print as 0' },
+		],
+		examples: [
+			{ name: 'Protein', exact: 0.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
+			{ name: 'Carbs', exact: 4.4, step: 1, unit: ' g', rule: 'nearest 1 g' },
+			{ name: 'Fat', exact: 2.24, step: 0.5, unit: ' g', rule: 'nearest 0.5 g' },
+		],
+	},
+];
+
+// Steps are 0.5 or larger, so rounding the step count to 1e-9 removes float noise like 4.4 / 1 = 4.4000000001.
+const lines = (examples: Example[]) => examples.map(example => {
+	const steps = Math.round((example.exact / example.step) * 1e9) / 1e9;
+	const low = Math.floor(steps) * example.step;
+	const high = low + example.step;
+	const at = (example.exact - low) / example.step;
+
+	return { ...example, low, high, at, printed: at >= 0.5 ? high : low };
+});
+---
+<figure class="guide-diagram label-rounding" data-diagram aria-labelledby="label-rounding-caption">
+	<p class="title">How the label rounds</p>
+	<div class="label-rounding__body">
+		<p class="label-rounding__legend caption" aria-hidden="true">
+			<span><i class="label-rounding__ring"></i>Exact amount</span>
+			<span><i class="label-rounding__dot"></i>Printed number</span>
+			<span><i class="label-rounding__half"></i>Halfway</span>
+		</p>
+		{groups.map(group => <div class="label-rounding__group">
+			<p class="label-rounding__heading"><strong>{group.title}</strong></p>
+			<ul class="label-rounding__rules" role="list">
+				{group.rules.map(rule => <li><strong>{rule.range}</strong><span>{rule.rule}</span></li>)}
+			</ul>
+			<ul class="label-rounding__examples" role="list">
+				{lines(group.examples).map(line => <li>
+					<p class="label-rounding__name"><span>{line.name}</span><span class="caption">{line.rule}</span></p>
+					<p class="label-rounding__result"><span>{line.exact}{line.unit}</span><span aria-hidden="true"> → </span><span class="sr-only"> prints as </span><strong>{line.printed}{line.unit}</strong></p>
+					<span class="label-rounding__line" aria-hidden="true" style={`--at: ${line.at * 100}%; --printed: ${line.printed === line.high ? '100%' : '0%'}`}>
+						<span class="label-rounding__move"></span>
+						<i class="label-rounding__half"></i>
+						<i class="label-rounding__ring"></i>
+						<i class="label-rounding__dot"></i>
+						<span class="label-rounding__tick label-rounding__tick--low">{line.low}</span>
+						<span class="label-rounding__tick label-rounding__tick--high">{line.high}</span>
+					</span>
+				</li>)}
+			</ul>
+		</div>)}
+	</div>
+	<figcaption id="label-rounding-caption" class="caption">Each line runs from one printed step to the next. Past halfway, the number rounds up. The small snack and the protein bar are made-up labels. The lasagna is FDA's sample label.</figcaption>
+</figure>
+
+<style>
+	.label-rounding__body > * + * {
+		margin-top: var(--space-5);
+	}
+
+	.label-rounding__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-1) var(--space-5);
+	}
+
+	.label-rounding__legend > span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.label-rounding__legend .label-rounding__half {
+		height: 1rem;
+	}
+
+	.label-rounding__group > * + * {
+		margin-top: var(--space-3);
+	}
+
+	/* The figure class lifts these above the prose list rules (padding, bullets, li + li margin). */
+	.label-rounding .label-rounding__rules {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1px;
+		padding: 0;
+		list-style: none;
+		border: 1px solid var(--hairline);
+		border-radius: var(--radius-sm);
+		background: var(--hairline);
+		overflow: hidden;
+		font-size: var(--fs-small);
+		line-height: 1.3;
+	}
+
+	.label-rounding .label-rounding__rules > li {
+		display: grid;
+		flex: 1 1 6.5rem;
+		gap: var(--space-1);
+		margin: 0;
+		padding: var(--space-2) var(--space-3);
+		background: var(--bg);
+	}
+
+	.label-rounding__rules span {
+		color: var(--ink-muted);
+	}
+
+	.label-rounding .label-rounding__examples {
+		padding: 0;
+		list-style: none;
+	}
+
+	.label-rounding .label-rounding__examples > li {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 0 var(--space-4);
+		margin: 0;
+		padding-block: var(--space-3) var(--space-2);
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	/* Names wrap between words; a value that no longer fits drops to its own line instead of squeezing them. */
+	.label-rounding__name {
+		flex: 1 1 0;
+		overflow-wrap: break-word;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-2);
+	}
+
+	.label-rounding__result {
+		margin-inline-start: auto;
+		white-space: nowrap;
+	}
+
+	.label-rounding__result > :first-child {
+		color: var(--ink-muted);
+	}
+
+	/* Every line has the same width, so each spans exactly one rounding step. */
+	.label-rounding__line {
+		position: relative;
+		flex-basis: 100%;
+		height: 2.5rem;
+		margin-top: var(--space-2);
+		/* The axis sits at 1rem; tick labels hang below it. */
+		background: linear-gradient(var(--ink-muted) 0 0) 0 calc(1rem - 1px) / 100% 2px no-repeat;
+	}
+
+	.label-rounding__line > * {
+		position: absolute;
+	}
+
+	.label-rounding__line::before,
+	.label-rounding__line::after {
+		content: '';
+		position: absolute;
+		top: 0.5rem;
+		width: 2px;
+		height: 1rem;
+		background: var(--ink-muted);
+	}
+
+	.label-rounding__line::before {
+		left: 0;
+	}
+
+	.label-rounding__line::after {
+		right: 0;
+	}
+
+	.label-rounding__move {
+		top: calc(1rem - 2px);
+		left: min(var(--at), var(--printed));
+		width: calc(max(var(--at), var(--printed)) - min(var(--at), var(--printed)));
+		height: 4px;
+		background: var(--ink);
+	}
+
+	.label-rounding__half {
+		display: inline-block;
+		width: 0;
+		height: 1rem;
+		border-inline-start: 2px dashed var(--ink-muted);
+	}
+
+	.label-rounding__line .label-rounding__half {
+		top: 0.5rem;
+		left: 50%;
+		translate: -1px 0;
+	}
+
+	.label-rounding__ring,
+	.label-rounding__dot {
+		display: inline-block;
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 50%;
+	}
+
+	.label-rounding__ring {
+		border: 2px solid var(--ink);
+		background: var(--band);
+	}
+
+	.label-rounding__dot {
+		background: var(--ink);
+	}
+
+	/* Dots sit on the line; at the two ends they stay inside it rather than hanging past the edge. */
+	.label-rounding__line .label-rounding__ring,
+	.label-rounding__line .label-rounding__dot {
+		top: 1rem;
+		left: clamp(0px, var(--x) - 0.375rem, 100% - 0.75rem);
+		translate: 0 -50%;
+	}
+
+	.label-rounding__line .label-rounding__ring {
+		--x: var(--at);
+	}
+
+	.label-rounding__line .label-rounding__dot {
+		--x: var(--printed);
+	}
+
+	.label-rounding__tick {
+		top: 1.6rem;
+		color: var(--ink-muted);
+		font-size: var(--fs-caption);
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.label-rounding__tick--low {
+		left: 0;
+	}
+
+	.label-rounding__tick--high {
+		right: 0;
+	}
+</style>
