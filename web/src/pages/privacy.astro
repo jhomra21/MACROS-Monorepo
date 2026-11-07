@@ -53,7 +53,7 @@ import { pages } from '../lib/seo';
 
 	<section>
 		<h2>Website analytics</h2>
-		<p>The website uses <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> to count visits and measure page speed. Cloudflare adds a script from static.cloudflareinsights.com to our pages. The script sends the page path (without query strings), the referring site, your country, your browser, operating system, and device type, and page load timings to the /cdn-cgi/rum address on our own domain.</p>
+		<p>The website uses <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> to count visits and measure page speed. Cloudflare adds a script from static.cloudflareinsights.com to our pages. The script sends the page address, the referring site, and page load timings to the /cdn-cgi/rum address on our own domain. Cloudflare uses that request to report your country, browser, operating system, and device type in aggregate.</p>
 		<p>Cloudflare says it does not use cookies or localStorage for this, and does not track visitors over time by IP address, user agent, or fingerprinting. We see aggregate visit counts and page performance, not individual visitors. We do not use this data for advertising. Cloudflare describes <a href="https://developers.cloudflare.com/web-analytics/data-metrics/data-origin-and-collection/">what it collects</a> and its <a href="https://blog.cloudflare.com/privacy-first-web-analytics/">privacy approach</a> in its own documentation. An ad blocker can stop the script.</p>
 		<p>The app has no analytics SDK or advertising tracker. Analytics apply to the website only.</p>
 	</section>
