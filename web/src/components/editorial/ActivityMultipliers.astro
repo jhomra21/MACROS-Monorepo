@@ -1,0 +1,174 @@
+---
+// Names, descriptions, and multipliers match GoalActivityLevel in the app. The resting estimate is the guide's worked example.
+const resting = 10 * 70 + 6.25 * 175 - 5 * 30 + 5;
+
+const levels = [
+	{ name: 'Sedentary', description: 'Mostly sitting, little planned exercise', multiplier: 1.2 },
+	{ name: 'Light', description: 'Light exercise 1–3 days per week', multiplier: 1.375 },
+	{ name: 'Moderate', description: 'Moderate exercise 3–5 days per week', multiplier: 1.55, example: true },
+	{ name: 'Active', description: 'Hard exercise 6–7 days per week', multiplier: 1.725 },
+	{ name: 'Very active', description: 'Very hard training or a physical job', multiplier: 1.9 },
+].map(level => ({ ...level, total: resting * level.multiplier }));
+
+const most = Math.max(...levels.map(level => level.total));
+
+const kcal = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+---
+<figure class="guide-diagram activity-multipliers" data-diagram aria-labelledby="activity-multipliers-caption">
+	<p class="title">Resting estimate times activity</p>
+	<div class="activity-multipliers__body">
+		<p class="activity-multipliers__legend caption" aria-hidden="true">
+			<span><i class="activity-multipliers__swatch"></i>Solid: resting estimate</span>
+			<span><i class="activity-multipliers__swatch activity-multipliers__swatch--added"></i>Striped: added by activity</span>
+		</p>
+		<ul class="activity-multipliers__list" role="list">
+			{levels.map(level => <li>
+				<p><strong>{level.name}</strong>{level.example && <span class="activity-multipliers__tag">Worked example</span>}<span class="caption">{level.description}</span></p>
+				<span class="activity-multipliers__math">{kcal(resting)} × {level.multiplier}</span>
+				<span class="diagram-bar activity-multipliers__bar" style={`--share: ${(level.total / most) * 100}%; --resting: ${(resting / level.total) * 100}%`} aria-hidden="true"></span>
+				<strong class="activity-multipliers__total">{kcal(level.total)} kcal</strong>
+			</li>)}
+		</ul>
+	</div>
+	<figcaption id="activity-multipliers-caption" class="caption">Uses the worked example's resting estimate of 1,648.75 kcal. The descriptions are the app's own. The guide's example uses Moderate, so its daily estimate is 2,555.56 kcal.</figcaption>
+</figure>
+
+<style>
+	/* Solid ink reaches the resting estimate; stripes continue to the activity total, so the two read apart without color. */
+	.activity-multipliers {
+		--stripes: repeating-linear-gradient(-45deg, var(--ink-muted) 0 1.5px, transparent 1.5px 4px);
+	}
+
+	.activity-multipliers__body {
+		container-type: inline-size;
+	}
+
+	.activity-multipliers__body > * + * {
+		margin-top: var(--space-3);
+	}
+
+	.activity-multipliers__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2) var(--space-5);
+	}
+
+	.activity-multipliers__legend > span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.activity-multipliers__swatch,
+	.activity-multipliers__bar {
+		outline: 1px solid var(--ink-muted);
+		outline-offset: -1px;
+	}
+
+	.activity-multipliers__swatch {
+		display: inline-block;
+		width: 1.75em;
+		height: 0.75em;
+		border-radius: var(--radius-pill);
+		background: var(--ink-muted);
+	}
+
+	.activity-multipliers__swatch--added {
+		background: var(--stripes);
+	}
+
+	.activity-multipliers__bar {
+		background: linear-gradient(var(--ink-muted) 0 0) 0 0 / var(--resting) 100% no-repeat, var(--stripes);
+	}
+
+	:global(.editorial .prose) .activity-multipliers__list {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		column-gap: var(--space-4);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	.activity-multipliers__list li {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+		row-gap: var(--space-1);
+		margin-top: 0;
+		padding-block: var(--space-3);
+		border-top: 1px solid var(--hairline);
+	}
+
+	.activity-multipliers__list p {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-2);
+	}
+
+	.activity-multipliers__list p .caption {
+		flex-basis: 100%;
+	}
+
+	.activity-multipliers__tag {
+		padding: 0 var(--space-2);
+		border: 1px solid var(--hairline);
+		border-radius: var(--radius-sm);
+		font-size: var(--fs-caption);
+	}
+
+	.activity-multipliers__math {
+		grid-row: 2;
+		grid-column: 1;
+		color: var(--ink-muted);
+	}
+
+	.activity-multipliers__total {
+		grid-row: 1 / 3;
+		grid-column: 2;
+		text-align: end;
+		white-space: nowrap;
+	}
+
+	.activity-multipliers__bar {
+		grid-row: 3;
+		grid-column: 1 / -1;
+		margin-top: var(--space-1);
+	}
+
+	@container (min-width: 32rem) {
+		:global(.editorial .prose) .activity-multipliers__list {
+			grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) auto;
+		}
+
+		.activity-multipliers__bar {
+			grid-row: 1 / 3;
+			grid-column: 2;
+			margin-top: 0;
+		}
+
+		.activity-multipliers__total {
+			grid-column: 3;
+		}
+	}
+
+	/* With large text on a narrow screen the numbers keep the room and the bars and legend go. */
+	@container (max-width: 14rem) {
+		.activity-multipliers__legend,
+		.activity-multipliers__bar {
+			display: none;
+		}
+
+		:global(.editorial .prose) .activity-multipliers__list {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.activity-multipliers__total {
+			grid-row: auto;
+			grid-column: 1;
+			text-align: start;
+		}
+	}
+</style>

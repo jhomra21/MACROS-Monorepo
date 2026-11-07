@@ -1,0 +1,241 @@
+---
+// The worked example in the guide: Male, age 30, 70 kg, 175 cm.
+const terms = [
+	{ name: 'Weight', math: '10 × 70 kg', value: 10 * 70 },
+	{ name: 'Height', math: '6.25 × 175 cm', value: 6.25 * 175 },
+	{ name: 'Age', math: '−5 × 30 years', value: -5 * 30 },
+	{ name: 'Sex constant', math: 'Male', value: 5 },
+];
+
+// Each term starts where the running total ended, like a waterfall.
+const steps = terms.map((term, index) => {
+	const end = terms.slice(0, index + 1).reduce((sum, item) => sum + item.value, 0);
+
+	return { ...term, start: end - term.value, end };
+});
+
+const total = steps.at(-1)?.end ?? 0;
+
+const scale = Math.max(...steps.map(step => step.end));
+
+const percent = (value: number) => `${(value / scale) * 100}%`;
+
+const number = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+const signed = (value: number) => `${value < 0 ? '−' : '+'}${number(Math.abs(value))}`;
+
+// Female and Male are the published constants. Unspecified is the app's midpoint of the two.
+const constants = [
+	{ sex: 'Female', value: -161 },
+	{ sex: 'Unspecified', value: (-161 + 5) / 2 },
+	{ sex: 'Male', value: 5 },
+];
+
+const low = constants[0].value;
+
+const span = constants[2].value - low;
+---
+<figure class="guide-diagram resting-estimate" data-diagram aria-labelledby="resting-estimate-caption">
+	<p class="title">The resting estimate, term by term</p>
+	<div class="resting-estimate__body">
+		<ol class="resting-estimate__terms" role="list">
+			{steps.map(step => <li class:list={{ 'resting-estimate__minus': step.value < 0 }}>
+				<p><strong>{step.name}</strong><span class="caption">{step.math}</span></p>
+				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: ${percent(Math.min(step.start, step.end))}; width: ${percent(Math.abs(step.value))}`}></span></span>
+				<strong class="resting-estimate__value">{signed(step.value)}</strong>
+			</li>)}
+			<li class="resting-estimate__total">
+				<p><strong>Resting estimate</strong></p>
+				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: 0; width: ${percent(total)}`}></span></span>
+				<strong class="resting-estimate__value">{number(total)} kcal</strong>
+			</li>
+		</ol>
+		<div class="resting-estimate__constants">
+			<p class="caption">Sex constant</p>
+			<div class="resting-estimate__line" aria-hidden="true">
+				{constants.map(constant => <i style={`left: ${((constant.value - low) / span) * 100}%`}></i>)}
+				<b style={`left: ${((0 - low) / span) * 100}%`}>0</b>
+			</div>
+			<ol class="resting-estimate__points" role="list">
+				{constants.map(constant => <li><strong>{signed(constant.value)}</strong> {constant.sex}</li>)}
+			</ol>
+			<p class="caption">MACROS uses the midpoint for Unspecified: (−161 + 5) ÷ 2 = −78.</p>
+		</div>
+	</div>
+	<figcaption id="resting-estimate-caption" class="caption">Uses the worked example below: Male, age 30, 70 kg (154 lb), 175 cm (5 ft 9 in). Weight and height add calories, age subtracts them, and the sex constant shifts the total.</figcaption>
+</figure>
+
+<style>
+	.resting-estimate__body {
+		container-type: inline-size;
+	}
+
+	.resting-estimate__body > * + * {
+		margin-top: var(--space-5);
+	}
+
+	:global(.editorial .prose) .resting-estimate__terms {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		column-gap: var(--space-4);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	.resting-estimate__terms li {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+		row-gap: var(--space-2);
+		margin-top: 0;
+		padding-block: var(--space-2);
+		border-top: 1px solid var(--hairline);
+	}
+
+	.resting-estimate__terms p {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-2);
+	}
+
+	.resting-estimate__track {
+		position: relative;
+		grid-row: 2;
+		grid-column: 1 / -1;
+		height: 0.75em;
+	}
+
+	.resting-estimate__track > span {
+		position: absolute;
+		inset-block: 0;
+		min-width: 3px;
+		border-radius: 2px;
+		background: var(--ink-muted);
+	}
+
+	/* A subtracted term is hatched, not filled, and its value carries a minus sign. */
+	.resting-estimate__minus .resting-estimate__track > span {
+		outline: 1px solid var(--ink-muted);
+		outline-offset: -1px;
+		background: repeating-linear-gradient(-45deg, var(--ink-muted) 0 1.5px, transparent 1.5px 4px);
+	}
+
+	.resting-estimate__total .resting-estimate__track > span {
+		background: var(--ink);
+	}
+
+	.resting-estimate__value {
+		grid-row: 1;
+		grid-column: 2;
+		text-align: end;
+		white-space: nowrap;
+	}
+
+	.resting-estimate__total {
+		border-top-color: var(--ink);
+	}
+
+	.resting-estimate__constants > * + * {
+		margin-top: var(--space-2);
+	}
+
+	/* The line runs from −161 to +5, so the midpoint −78 sits exactly halfway. */
+	.resting-estimate__line {
+		position: relative;
+		height: 1.75rem;
+		margin-inline: 0.375rem;
+		background: linear-gradient(var(--ink-muted) 0 0) 0 75% / 100% 1px no-repeat;
+	}
+
+	.resting-estimate__line i {
+		position: absolute;
+		top: 75%;
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 50%;
+		background: var(--ink);
+		transform: translate(-50%, -50%);
+	}
+
+	.resting-estimate__line b {
+		position: absolute;
+		top: 0;
+		color: var(--ink-muted);
+		font-size: var(--fs-caption);
+		font-weight: 400;
+		line-height: 1;
+		transform: translateX(-50%);
+	}
+
+	.resting-estimate__line b::after {
+		content: '';
+		position: absolute;
+		top: calc(100% + 0.125rem);
+		left: 50%;
+		width: 1px;
+		height: 0.625rem;
+		background: var(--ink-muted);
+	}
+
+	:global(.editorial .prose) .resting-estimate__points {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		gap: var(--space-1) var(--space-3);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	.resting-estimate__points li {
+		margin-top: 0;
+	}
+
+	.resting-estimate__points li:nth-child(2) {
+		text-align: center;
+	}
+
+	.resting-estimate__points li:last-child {
+		text-align: end;
+	}
+
+	@container (min-width: 32rem) {
+		:global(.editorial .prose) .resting-estimate__terms {
+			grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto;
+		}
+
+		.resting-estimate__track {
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.resting-estimate__value {
+			grid-column: 3;
+		}
+	}
+
+	/* With large text on a narrow screen the numbers keep the room: bars and the line go, and the three constants stack. */
+	@container (max-width: 14rem) {
+		.resting-estimate__track,
+		.resting-estimate__line {
+			display: none;
+		}
+
+		:global(.editorial .prose) .resting-estimate__terms,
+		:global(.editorial .prose) .resting-estimate__points {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.resting-estimate__value {
+			grid-row: auto;
+			grid-column: 1;
+			text-align: start;
+		}
+
+		.resting-estimate__points li:is(:nth-child(2), :last-child) {
+			text-align: start;
+		}
+	}
+</style>

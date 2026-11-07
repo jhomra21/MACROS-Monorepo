@@ -5,6 +5,11 @@ import CalculatorSteps from './CalculatorSteps.astro';
 import ServingLabel from './ServingLabel.astro';
 import CalorieGap from './CalorieGap.astro';
 import ProteinLookup from './ProteinLookup.astro';
+import ProteinUnits from './ProteinUnits.astro';
+import RestingEstimate from './RestingEstimate.astro';
+import ActivityMultipliers from './ActivityMultipliers.astro';
+import GoalOffsets from './GoalOffsets.astro';
+import RoundingWindow from './RoundingWindow.astro';
 import type { ComponentProps } from 'astro/types';
 import GuideScreenshot from './GuideScreenshot.astro';
 import { visualMarker } from '../../lib/article-visuals';
@@ -24,5 +29,10 @@ const parts = html.split(visualMarker);
 	part === 'serving-label' ? <ServingLabel /> :
 	part === 'calorie-gap' ? <CalorieGap /> :
 	part === 'protein-lookup' ? <ProteinLookup /> :
+	part === 'protein-units' ? <ProteinUnits /> :
+	part === 'resting-estimate' ? <RestingEstimate /> :
+	part === 'activity-multipliers' ? <ActivityMultipliers /> :
+	part === 'goal-offsets' ? <GoalOffsets /> :
+	part === 'rounding-window' ? <RoundingWindow /> :
 	<GuideScreenshot screen={part as ComponentProps<typeof GuideScreenshot>['screen']} />
 )}
