@@ -1,6 +1,6 @@
 ---
 title: "Why label calories don't add up to 4-4-9"
-description: "Label calories can differ from protein × 4 + carbs × 4 + fat × 9. Learn why FDA's calorie methods and rounding cause it, with worked examples."
+description: "Did the 4-4-9 math on a label and got a different number? Learn why food makers' calorie methods and rounding cause the gap, and which number to log."
 published: 2026-11-07
 updated: 2026-11-07
 draft: true
@@ -11,107 +11,53 @@ image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size"
 ---
 
-Label calories often differ from protein × 4 + carbs × 4 + fat × 9 because FDA lets food makers choose among several calorie methods, and because every number on the label is rounded. Fiber and sugar alcohols can create larger differences because they count toward total carbohydrate but can contribute fewer than 4 calories per gram.
+You checked a label the way many people learn to. Protein times 4, carbs times 4, fat times 9. The total came out a few calories off from the number printed on the package. Sometimes it's off by a lot more.
 
-MACROS checked the regulation below on November 7, 2026, in the eCFR text amended through November 5, 2026.
+The label is usually still right. Two things explain the gap. Food makers can count calories in more than one way, and they round every number on the label.
 
-## The methods FDA allows
+## Makers can count calories more than one way
 
-FDA's labeling rule lists the ways a maker may calculate calories per serving ([21 CFR 101.9(c)(1)(i)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)):
+FDA allows five methods for counting calories. Plain 4-4-9 on protein, total carbs, and fat is only one of them. Others use factors for a specific food or measure the energy in a lab.
 
-| Method | How calories are counted |
-| --- | --- |
-| (A) Specific Atwater factors | Food-specific factors from USDA Handbook No. 74 |
-| (B) General factors | 4 per gram of protein, 4 per gram of total carbohydrate, 9 per gram of fat |
-| (C) General factors, adjusted carbs | 4, 4, and 9, but carbohydrate minus non-digestible carbohydrates and sugar alcohols. Soluble non-digestible carbohydrate counts 2 per gram. Sugar alcohols use their own factors. |
-| (D) FDA-approved food factors | Specific factors for particular foods or ingredients |
-| (E) Bomb calorimetry | Lab-measured energy, minus 1.25 calories per gram of protein |
+One method matters most for high-fiber and sugar-free foods. Fiber and sugar alcohols count toward total carbs on the label, but they give you fewer than 4 calories per gram. With that method, soluble fiber counts as 2 calories per gram and erythritol counts as 0. Other sugar alcohols count between 1.6 and 3.
 
-Only method (B) is plain 4-4-9. The same rule says the factors apply to the actual amounts "before rounding."
+## The label rounds every number
 
-Method (C) uses these sugar alcohol factors, in calories per gram ([21 CFR 101.9(c)(1)(i)(F)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)):
+Calories round to the nearest 5 up to 50, and to the nearest 10 above that. Protein and carbs round to the nearest gram. Fat rounds to the nearest half gram below 5 g, then to the nearest gram. Tiny amounts can show as 0.
 
-| Sugar alcohol | Calories per gram |
-| --- | --- |
-| Erythritol | 0 |
-| Mannitol | 1.6 |
-| Isomalt | 2.0 |
-| Lactitol | 2.0 |
-| Maltitol | 2.1 |
-| Xylitol | 2.4 |
-| Sorbitol | 2.6 |
-| Hydrogenated starch hydrolysates | 3.0 |
+The maker does the math on the real amounts, before rounding. You do it on the rounded ones. On a small serving, that alone can move the total.
 
-## The rounding rules
+Picture a small snack with 0.4 g of protein, 4.4 g of carbs, and 2.24 g of fat. That's 39 calories, so the label says 40. But the label prints 0 g of protein, 4 g of carbs, and 2 g of fat. Run 4-4-9 on those and you get 34.
 
-Each line on the label is rounded on its own ([21 CFR 101.9(c)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)):
+## Two more examples
 
-| Label line | Rounding |
-| --- | --- |
-| Calories | Nearest 5 up to and including 50. Nearest 10 above 50. Under 5 may be shown as 0. |
-| Total fat | Nearest 0.5 g below 5 g. Nearest 1 g above 5 g. Under 0.5 g is shown as 0. |
-| Total carbohydrate | Nearest 1 g. Under 1 g may say "less than 1 gram." Under 0.5 g may be shown as 0. |
-| Protein | Nearest 1 g. Under 1 g may say "less than 1 gram." Under 0.5 g may be shown as 0. |
+FDA's sample lasagna label lists 15 g of protein, 34 g of carbs, and 9 g of fat. 4-4-9 gives 277 calories. Round to the nearest 10 and you get the 280 printed on the label. Rounding covers the whole gap.
 
-So when you multiply the printed grams by 4, 4, and 9, you are working from rounded numbers. The maker worked from unrounded ones.
+Now picture a made-up protein bar with 20 g of protein, 7 g of fat, and 24 g of carbs. Of those carbs, 10 g are soluble fiber and 8 g are erythritol. Plain 4-4-9 says 239 calories.
 
-## Three worked examples
+Count the fiber at 2 calories per gram and the erythritol at 0, and the bar comes to 187. The label rounds that to 190. The 49-calorie gap comes from the method the maker chose.
 
-### Example 1: FDA's sample label is consistent with rounding
+## Let the label's calories stand
 
-FDA's sample lasagna label lists 280 calories, 15 g protein, 34 g total carbohydrate, and 9 g fat per serving ([FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label)). It is a teaching example, not a product for sale.
+Log the calorie number printed on the label. The maker worked it out from exact amounts with an allowed method. Redoing it from rounded grams only adds error.
 
-- 4 × 15 + 4 × 34 + 9 × 9 = 60 + 136 + 81 = 277.
-- 277 is above 50, so it rounds to the nearest 10: 280.
+Look closer only when the label is far from every example above, or when a scanned number doesn't match the package. That can mean a misprint or a misread digit.
 
-These printed values produce 280 after calorie rounding. They do not show which calculation method or unrounded amounts produced the label.
+MACROS keeps the label's number when you log.
 
-### Example 2: a small serving, rounding only
-
-This is an illustrative, made-up label. Suppose the actual amounts per serving are 0.4 g protein, 4.4 g carbohydrate, and 2.24 g fat, and the maker uses method (B).
-
-- Actual calories: 4 × 0.4 + 4 × 4.4 + 9 × 2.24 = 1.6 + 17.6 + 20.16 = 39.36.
-- 39.36 is under 50, so it rounds to the nearest 5: the label says 40.
-- The label shows 0 g protein (under 0.5 g), 4 g carbohydrate, and 2 g fat (2.24 rounds to the nearest 0.5).
-- From the printed grams: 4 × 0 + 4 × 4 + 9 × 2 = 0 + 16 + 18 = 34.
-
-The printed grams give 34. The label says 40. Both follow the rules.
-
-### Example 3: a bar with fiber and erythritol, method (C)
-
-This is also an illustrative, made-up label. Suppose a bar has 20 g protein, 7 g fat, and 24 g total carbohydrate. That carbohydrate includes 10 g of dietary fiber, all soluble, and 8 g of erythritol. Every amount is a whole number, so rounding the grams changes nothing.
-
-- Digestible carbohydrate: 24 − 10 − 8 = 6 g, at 4 per gram = 24.
-- Soluble fiber: 10 g at 2 per gram = 20.
-- Erythritol: 8 g at 0 per gram = 0.
-- Protein: 20 × 4 = 80. Fat: 7 × 9 = 63.
-- Total: 80 + 63 + 24 + 20 + 0 = 187, which rounds to 190.
-- Plain 4-4-9 on the printed grams: 4 × 20 + 4 × 24 + 9 × 7 = 80 + 96 + 63 = 239.
-
-The label says 190. Plain 4-4-9 says 239. The gap of 49 calories comes from the method, not from an error.
-
-## Which number to log
-
-Log the calorie number printed on the label. The maker calculated it from unrounded amounts with an allowed method. Recalculating from rounded grams adds error.
-
-Look closer if the label total is far from every method above, or if a scan shows numbers that do not match the package. That can point to a misprint or a misread digit. Check the label you are holding.
-
-## How MACROS handles it
-
-1. Scan the label and compare the calories on the card with the printed calories. MACROS logs the label's number as is, so your entry matches the package even when 4-4-9 gives a different total.
-2. If a scanned number does not match the package, tap Edit details and correct it before you log.
+1. Scan the label and compare the calories on the card with the package.
+2. If a number doesn't match, tap Edit details and fix it.
 3. Tap Log.
 
 <!-- visual:scan-details -->
 
-Your daily calorie total adds up the calories you logged, and each macro total adds up the grams you logged.
+Your daily calories add up the calories you logged. Each macro adds up the grams you logged. If you set goals with Recalculate Targets, MACROS uses 4-4-9 to turn your macro goals into a calorie goal. So your calorie ring and your macro rings may not fill at exactly the same pace. That's expected.
 
-If you set goals with Recalculate Targets, MACROS uses 4-4-9 to turn your protein, carb, and fat goals into a calorie goal. Your food entries keep their label calories, so your calorie ring and your macro rings may not fill at exactly the same pace. That is expected.
+## Sources
 
-## How this was checked
+- [21 CFR 101.9(c)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9) lists the calorie methods, the sugar alcohol factors, and the rounding rules.
+- [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label) has the sample lasagna label.
 
-- [21 CFR 101.9(c)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9): the calorie methods in (c)(1)(i)(A) to (F), the sugar alcohol factors, and the rounding rules for calories, fat, carbohydrate, and protein.
-- [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label): the sample lasagna label in example 1.
-- Examples 2 and 3 are made-up labels to show the arithmetic. They are not real products.
+The snack and the protein bar are made-up labels that show the math. They are not real products.
 
-MACROS publishes this site. MACROS checked the app steps against the current app on November 7, 2026. No dietitian reviewed this post.
+MACROS publishes this site. MACROS checked these sources, in the eCFR text as amended through November 5, 2026, and the app steps on November 7, 2026. No dietitian reviewed this post.

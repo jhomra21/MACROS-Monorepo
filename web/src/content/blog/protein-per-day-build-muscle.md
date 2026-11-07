@@ -1,6 +1,6 @@
 ---
 title: "How much protein per day to build muscle"
-description: "Research on adults who lift points to about 1.6 g of protein per kg of body weight per day, up to about 2.2 g/kg. Sources, math, and a kg and lb table."
+description: "Lifting and want more muscle? Research on adults who train points to about 1.6 g of protein per kg of body weight a day. Find your daily grams."
 published: 2026-11-07
 updated: 2026-11-07
 draft: true
@@ -12,82 +12,60 @@ related:
   - blog/serving-size-vs-whole-package
 ---
 
-For healthy adults who do resistance training, a large meta-analysis found that gains in fat-free mass leveled off at about 1.6 g of protein per kilogram of body weight per day. Its authors suggest up to about 2.2 g/kg for people trying to get the most out of training. The adult RDA of 0.8 g/kg is set to meet the basic needs of nearly all healthy adults. It is not a muscle-building target.
+You're lifting, and you want to know how much protein it takes to build muscle. For healthy adults who train, research points to about 1.6 g of protein per kilogram of body weight a day. Going up to about 2.2 g/kg may help if you want to get the most out of training.
 
-MACROS checked each figure below against the source on November 7, 2026.
+You may have seen a much lower number, 0.8 g/kg. That's the adult RDA. It covers the basic needs of nearly all healthy adults, and it isn't a target for building muscle.
 
-This post is for generally healthy adults. It is not medical advice. If you have a medical condition, are pregnant, or have a history of an eating disorder, talk to a doctor or registered dietitian before changing your protein intake.
+This post is for generally healthy adults and isn't medical advice. If you have a medical condition, are pregnant, or have a history of an eating disorder, talk with a doctor or registered dietitian before you change how much protein you eat.
 
-## Where the numbers come from
+## Where 1.6 comes from
 
-| Source | What it says | Who it covers |
+A 2018 review pooled 49 trials with 1,863 healthy adults. Everyone did resistance training for at least six weeks and took protein supplements. Gains in fat-free mass leveled off at about 1.6 g/kg a day.
+
+That estimate is loose. The likely range ran from about 1.0 to 2.2 g/kg. So the authors suggested aiming near 2.2 g/kg if you want every bit of gain. That's a cautious upper target. It isn't a safety limit, and it doesn't prove that everyone gains more at 2.2 than at 1.6.
+
+The International Society of Sports Nutrition lands in a similar place. Its 2017 position stand says 1.4 to 2.0 g/kg a day suits most people who exercise. People who lift while eating fewer calories than they burn may need 2.3 to 3.1 g/kg to keep their muscle.
+
+## Find your daily grams
+
+Multiply your weight in kilograms by 1.6. Use 2.2 instead if you're aiming high.
+
+| Body weight | At 1.6 g/kg | At 2.2 g/kg |
 | --- | --- | --- |
-| National Academies, Dietary Reference Intakes | RDA of 0.8 g protein per kg of body weight per day for adults | Healthy people. An RDA meets the needs of nearly all healthy people in a group, 97 to 98 percent of them. |
-| Morton et al. 2018, *British Journal of Sports Medicine* | Gains in fat-free mass leveled off at 1.62 g/kg/day (95% CI 1.03 to 2.20). The authors say it "may be prudent" to recommend about 2.2 g/kg/day to maximize gains. | 49 randomized trials, 1,863 healthy adults, resistance training for at least 6 weeks with protein supplements |
-| Jäger et al. 2017, International Society of Sports Nutrition position stand | 1.4 to 2.0 g/kg/day is sufficient for most exercising people. 2.3 to 3.1 g/kg/day may be needed to keep lean mass in resistance-trained people eating fewer calories than they burn. | Healthy, exercising people |
+| 60 kg | 96 g | 132 g |
+| 70 kg | 112 g | 154 g |
+| 80 kg | 128 g | 176 g |
+| 90 kg | 144 g | 198 g |
+| 100 kg | 160 g | 220 g |
 
-Sources: the RDA and its definition are in the [National Academies DRI summary tables](https://www.nationalacademies.org/read/25353/chapter/28), protein footnote b. The Morton figures are in the [PubMed abstract](https://pubmed.ncbi.nlm.nih.gov/28698222/) and the [full text on PubMed Central](https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/). The Jäger figures are in the [PubMed abstract](https://pubmed.ncbi.nlm.nih.gov/28642676/).
+If you weigh yourself in pounds, multiply your weight by 0.73 for 1.6 g/kg, or by 1 for 2.2 g/kg. Don't use the per-kilogram numbers with your weight in pounds. That more than doubles the result.
 
-The plateau estimate came from 42 study arms with 723 participants. The two-segment model was not significantly better than a linear model, p = 0.079, and the estimated break point had a wide 95% confidence interval of 1.03 to 2.20 g/kg/day. To allow for that uncertainty, the authors suggested about 2.2 g/kg/day for people seeking to maximize training-related gains. This is not a safety limit or proof that everyone gains more at 2.2 than at 1.6.
+## Spread it through the day
 
-## Daily protein by body weight
+The same position stand suggests about 0.25 g/kg in each meal, or 20 to 40 g, every 3 to 4 hours.
 
-The tables use 1 lb = 0.45359237 kg and round grams to the nearest whole gram. 0.8 g/kg is the RDA. 1.6 g/kg is the Morton break point, rounded. 2.2 g/kg is the upper end of its confidence interval.
-
-| Body weight (kg) | Body weight (lb) | 0.8 g/kg (g/day) | 1.6 g/kg (g/day) | 2.2 g/kg (g/day) |
-| --- | --- | --- | --- | --- |
-| 50 | 110.2 | 40 | 80 | 110 |
-| 60 | 132.3 | 48 | 96 | 132 |
-| 70 | 154.3 | 56 | 112 | 154 |
-| 80 | 176.4 | 64 | 128 | 176 |
-| 90 | 198.4 | 72 | 144 | 198 |
-| 100 | 220.5 | 80 | 160 | 220 |
-| 110 | 242.5 | 88 | 176 | 242 |
-
-| Body weight (lb) | Body weight (kg) | 0.8 g/kg (g/day) | 1.6 g/kg (g/day) | 2.2 g/kg (g/day) |
-| --- | --- | --- | --- | --- |
-| 110 | 49.9 | 40 | 80 | 110 |
-| 130 | 59.0 | 47 | 94 | 130 |
-| 150 | 68.0 | 54 | 109 | 150 |
-| 170 | 77.1 | 62 | 123 | 170 |
-| 190 | 86.2 | 69 | 138 | 190 |
-| 210 | 95.3 | 76 | 152 | 210 |
-| 230 | 104.3 | 83 | 167 | 230 |
-
-Per pound, 0.8 g/kg is 0.36 g/lb, 1.6 g/kg is 0.73 g/lb, and 2.2 g/kg is 1.00 g/lb (0.9979, to four places). Do not use a per-kilogram number with your weight in pounds. That more than doubles the result.
-
-## Splitting it across meals
-
-The ISSN position stand suggests about 0.25 g of high-quality protein per kg of body weight per serving, or 20 to 40 g, spread evenly every 3 to 4 hours ([Jäger et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28642676/)).
-
-For an 80 kg adult aiming for 1.6 g/kg:
-
-- Daily target: 80 × 1.6 = 128 g.
-- Per meal at 0.25 g/kg: 80 × 0.25 = 20 g.
-- Over 4 meals: 128 ÷ 4 = 32 g each, inside the 20 to 40 g range.
+Take an 80 kg lifter aiming for 1.6 g/kg. That's 128 g a day. Four meals with 32 g each get there, and each meal lands inside the 20 to 40 g range.
 
 ## How it fits your calories
 
-Using FDA's general factor of 4 calories per gram of protein ([21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)), 128 g supplies 512 calories. In an illustrative 2,500-calorie day, that is 512 ÷ 2,500 = 20.5% of calories. That sits inside the adult protein range of 10% to 35% of calories ([National Academies AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5)). These calorie figures are a math example, not a recommendation.
+Each gram of protein has about 4 calories, so 128 g is 512 calories. In a 2,500-calorie day, that's about 20% of your calories. The National Academies put the adult range for protein at 10% to 35% of calories, so that fits. These numbers are a math example, not a meal plan.
 
-## How MACROS handles it
+## Set your protein goal in grams
 
-Recalculate Targets sets protein as a share of calories, using the presets in the [macro goals guide](/guides/how-to-set-macro-goals/). To use a g/kg target instead, enter the grams yourself:
+Once you have your number, put it straight into your goals. Recalculate Targets in MACROS sets protein as a share of calories, using the presets in the [macro goals guide](/guides/how-to-set-macro-goals/). To use a g/kg target, type the grams in yourself.
 
-1. Find your daily grams in the table above.
-2. Open Settings and find Daily Goals.
-3. Type the grams into Protein.
-4. Adjust Calories, Carbs, or Fat so the four numbers fit together. Changing Protein does not change your calorie goal.
-5. Tap Save Goals.
+1. Open Settings and find Daily Goals.
+2. Type your grams into Protein. Then adjust Calories, Carbs, or Fat so the four numbers fit together, because changing Protein doesn't change your calorie goal.
+3. Tap Save Goals.
 
 <!-- visual:settings -->
 
-## How this was checked
+## Sources
 
-- [National Academies, DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28): adult RDA of 0.8 g/kg and the RDA definition.
-- [Morton et al. 2018, PubMed 28698222](https://pubmed.ncbi.nlm.nih.gov/28698222/), with the [full text](https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/): 49 trials and 1,863 participants, the 1.62 g/kg break point and its 95% CI of 1.03 to 2.20, the p = 0.079 model comparison, and the suggestion of about 2.2 g/kg. Disclosures include Stuart Phillips's support from the US National Dairy Council and, in a [2020 correction](https://pmc.ncbi.nlm.nih.gov/articles/PMC7513243/), Brad Schoenfeld's advisory-board role with Dymatize Nutrition.
-- [Jäger et al. 2017, PubMed 28642676](https://pubmed.ncbi.nlm.nih.gov/28642676/): 1.4 to 2.0 g/kg/day, 2.3 to 3.1 g/kg/day during calorie deficits, 0.25 g/kg or 20 to 40 g per serving, every 3 to 4 hours.
-- [National Academies AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5): adult protein range of 10% to 35% of calories.
-- [21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9): the general factor of 4 calories per gram of protein.
+- The [National Academies DRI summary tables](https://www.nationalacademies.org/read/25353/chapter/28), protein footnote b, give the adult RDA of 0.8 g/kg and define the RDA.
+- Morton et al. 2018, in the [PubMed abstract](https://pubmed.ncbi.nlm.nih.gov/28698222/) and [full text](https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/), is the review of 49 trials. Stuart Phillips disclosed support from the US National Dairy Council. A [2020 correction](https://pmc.ncbi.nlm.nih.gov/articles/PMC7513243/) added Brad Schoenfeld's advisory-board role with Dymatize Nutrition.
+- Jäger et al. 2017, the [ISSN position stand](https://pubmed.ncbi.nlm.nih.gov/28642676/), gives the daily ranges and the per-meal amounts.
+- The [National Academies AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5), gives the adult protein range of 10% to 35% of calories.
+- [21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9) gives the general factor of 4 calories per gram of protein.
 
-MACROS publishes this site. MACROS checked the app steps against the current app on November 7, 2026. No dietitian or doctor reviewed this post.
+MACROS publishes this site. MACROS checked each figure against its source, and the app steps against the current app, on November 7, 2026. No dietitian or doctor reviewed this post.

@@ -1,6 +1,6 @@
 ---
 title: "Serving size vs. the whole package: log what you ate"
-description: "Check whether Nutrition Facts lists values per serving or per package. Learn how to scale calories and macros by servings or grams."
+description: "Ate half the bag or the whole tub? Learn how to read the serving line on a Nutrition Facts label and scale calories and macros to what you ate."
 published: 2026-11-07
 updated: 2026-11-07
 draft: true
@@ -11,97 +11,65 @@ related:
   - guides/how-to-set-macro-goals
 ---
 
-Nutrition Facts usually lists calories and nutrients per serving, though some labels also show a per-package column. Check the column heading, then multiply per-serving values by the servings you ate.
+You finished half a bag of chips, or the whole tub of yogurt. The label gives its numbers for one serving, and that is rarely what you ate. So you need to scale them.
 
-To log by weight, divide the grams you ate by the grams in one serving and multiply the per-serving values by that.
+The fix takes one multiplication. Find the serving size, work out how many servings you ate, and multiply.
 
-MACROS checked the FDA pages and regulations below on November 7, 2026.
+## Start with the serving line
 
-## Find the serving line first
+The serving size sits near the top of the Nutrition Facts label. The number of servings in the package is right beside it.
 
-The serving size and the number of servings per container sit at the top of the label. Serving size is usually shown as a household measure, such as a cup or a piece, followed by grams for solid foods or milliliters for fluids. Single-serving containers may omit that parenthetical amount ([FDA, Serving Size on the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/serving-size-nutrition-facts-label); [21 CFR 101.9(b)(7)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)).
+Serving size usually reads as a kitchen measure, such as a cup or a piece, followed by grams. Drinks show milliliters instead.
 
-In the per-serving column, the calorie and nutrient amounts refer to the listed serving size. FDA puts it this way: "all the nutrient amounts shown on the label, including the number of calories, refer to the size of the serving" ([FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label)).
+Every number below that line is for one serving, calories included. A serving reflects how much people usually eat at one time. It isn't advice on how much you should eat. FDA sets a reference amount for each kind of food, such as 30 g for cookies and 170 g for yogurt, and makers start from those.
 
-A serving is not advice on how much to eat. By regulation, it is the "amount of food customarily consumed per eating occasion" by people 4 and older ([21 CFR 101.9(b)(1)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). Makers start from FDA's reference amounts for each food category ([21 CFR 101.12(b)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12)). A few of them:
+## Scale it to what you ate
 
-| Food category | Reference amount per eating occasion |
-| --- | --- |
-| Cookies | 30 g |
-| Grain-based bars, such as granola bars | 40 g |
-| Yogurt | 170 g |
+Multiply each number on the label by the servings you ate. If you weighed your food, first divide your grams by the grams in one serving. That gives you your servings.
 
-## Do the math
+FDA's sample label for frozen lasagna shows how this works. One serving is 1 cup (227 g), with 280 calories and 15 g of protein. The package holds 4 servings.
 
-The rule is the same for every nutrient:
+Eat half the package and you had 2 servings, so 560 calories and 30 g of protein. Eat the whole thing and it's 1,120 calories and 60 g of protein.
 
-- By servings: label value × servings eaten.
-- By weight: label value × (grams eaten ÷ grams per serving).
+Now say you weighed your plate and got 340 g. That's 340 divided by 227, or about 1.5 servings. You ate about 420 calories and 22.5 g of protein.
 
-FDA's sample lasagna label lists 1 cup (227 g) per serving, 280 calories, and 15 g protein, with 4 servings in the package ([FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label)). It is FDA's teaching example, not a product you can buy. Here is how different portions work out:
+## Let the label do some of the work
 
-| What you ate | Servings | Calories (kcal) | Protein (g) |
-| --- | --- | --- | --- |
-| 1 cup | 1 | 280 | 15 |
-| 2 cups | 2 | 560 | 30 |
-| Half the package | 2 | 560 | 30 |
-| The whole package | 4 | 1,120 | 60 |
-| 340 g, weighed | 340 ÷ 227 = 1.4978 | 280 × 1.4978 = 419 | 15 × 1.4978 = 22.5 |
+Some packages save you the math. If a package holds less than twice the reference amount, the maker must label the whole thing as one serving. A single bottle or a small snack bag shows the full contents in one column.
 
-The first four rows match FDA's own figures for one serving, two servings, and the whole package. The last row applies the same math to a weighed portion.
+Larger single packages often get a second column for the whole package. That applies to packages holding two to three times the reference amount, with a few exceptions. FDA calls these dual-column labels. If you ate the whole thing, read the package column.
 
-## Read "servings per container" with care
+Makers round the servings count, and the word "about" tells you so. A package that says "about 2.5 servings" may hold a little more or a little less. If the label's serving weight and the package weight describe the same form of the food, divide the package weight by the serving weight for a closer count. For canned food labeled on a drained basis, use the drained weight.
 
-Servings per container is generally rounded to a whole number, or to the nearest half serving between 2 and 5. "About" indicates rounding. Random-weight products have separate rules ([21 CFR 101.9(b)(8)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). A package that says "about 2.5 servings" may hold a little more or a little less than that.
+## Weigh it when you can
 
-If the label values and package weight describe the same form of the food, dividing package weight by serving weight can give a closer estimate. For foods labeled on a drained basis, use the drained food's weight, not the weight including discarded liquid. The rule for foods packed in liquid you normally pour off is to declare nutrition "based on the drained solids" ([21 CFR 101.9(b)(9)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)).
+If the label gives grams and you have a kitchen scale, weigh your food. You won't have to guess how full the cup was.
 
-## Single-serving packages and two-column labels
+Some labels give only a volume, such as fluid ounces on a drink. A volume can't tell you the weight, so log those by servings.
 
-Two rules make some packages simpler to log.
+## Log half a bag without doing the math
 
-- If a package sold on its own holds less than 200% of the reference amount, the whole package must be labeled as one serving ([21 CFR 101.9(b)(6)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)).
-- Individually sold packages containing 200% through 300% of the reference amount generally need both per-serving and per-package columns. The regulation lists exceptions, including some small packages and products with other permitted labeling formats ([21 CFR 101.9(b)(12)(i)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). FDA calls these "dual-column" labels ([FDA, Serving Size on the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/serving-size-nutrition-facts-label)).
+Once you know how much you ate, MACROS does the scaling for you.
 
-With a dual-column label, use the per-package column if you ate the whole thing. Use the per-serving column for anything less.
-
-## Household measures or grams
-
-If the label gives grams and you weigh your food, use the gram figure. Then you don't have to guess how full your cup or spoon was.
-
-Some labels give only a volume, such as fluid ounces or milliliters for drinks. A volume does not tell you the weight, so log those by servings unless the label also gives grams.
-
-## How MACROS handles it
-
-To log by servings:
-
-1. Scan the label. The card shows one serving's size and grams, such as "1 cup (40g) each", and the total grams for your portion.
-2. Set the Servings stepper to what you ate. It starts at 1, not at the servings per container, and moves in quarter servings from 0.25 to 20. Half a pack of a 2-serving package is 1 serving.
-3. Check that calories, protein, carbs, and fat changed with it, then tap Log.
+1. Scan the label. The card shows one serving, such as "1 cup (40g) each", and the total grams for your portion.
+2. Set the Servings stepper to what you ate. It starts at 1 and moves in quarter servings, so half of a 2-serving bag is 1. Calories and macros change as you go.
+3. Tap Log.
 
 <!-- visual:scan-review -->
 
-To log by weight:
+To log by weight, tap Edit details, choose Grams, and set the weight you ate. The Grams stepper moves in 5 g steps, so pick the step closest to your scale. Leave the serving's grams as printed on the label. Changing them would change the calories in every gram you log.
 
-1. Tap Edit details and choose Grams.
-2. Set the Grams stepper to the weight you ate. It moves in 5 g steps and stops at 1 g. For a food labeled on a drained basis, use the drained weight.
-3. Tap Log.
-
-Servings move in quarter servings and grams in 5 g steps, so an exact weighed amount may fall between two steps. Pick the closest one. Leave the serving's gram amount as printed on the label, because changing it to reach your weight changes the calories in every gram you log.
-
-If the label gives only a volume, Grams stays off until you enter the serving's gram weight yourself. Otherwise, log by servings.
+If the label gives only a volume, Grams stays off until you enter the serving's weight in grams yourself.
 
 <!-- visual:scan-grams -->
 
-The calories and macros on screen follow the same math as above: label value × servings, or label value × (grams eaten ÷ grams per serving).
+## Sources
 
-## How this was checked
+- [FDA, Serving Size on the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/serving-size-nutrition-facts-label) explains the serving line and dual-column labels.
+- [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label) has the sample lasagna label.
+- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9) defines a serving and covers single-serving packages, dual-column labels, rounded servings counts, and the drained basis.
+- [21 CFR 101.12](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12) lists the reference amounts for each kind of food.
 
-- [FDA, Serving Size on the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/serving-size-nutrition-facts-label): where the serving line sits, what a serving means, per-package information on some containers, and dual-column labels.
-- [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label): the sample lasagna label and its 1, 2, and 4 serving figures.
-- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (b)(1), (b)(6), (b)(7), (b)(8), (b)(9), and (b)(12)(i): serving definition, single-serving packages, how serving size is expressed, rounding of servings per container, the drained-solids basis, and the per-package column with its exceptions.
-- [21 CFR 101.12(b)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12): reference amounts for cookies, grain-based bars, and yogurt.
-
-MACROS publishes this site. This post uses the eCFR text as amended through November 5, 2026. MACROS checked the app steps against the current app on November 7, 2026. No dietitian reviewed this post.
+MACROS publishes this site. MACROS checked these sources, in the eCFR text as amended through November 5, 2026, and the app steps on November 7, 2026. No dietitian reviewed this post.
 
 <!-- TODO (owner): optionally add 2 or 3 worked examples from real packages you own, with label photos and the product name, before publishing. -->
