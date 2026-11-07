@@ -414,6 +414,13 @@ summary {
 	outline-offset: 0;
 }
 
+/* The tap highlight is off site-wide and hover needs a fine pointer, so a press needs its own state. */
+.nav-link:active {
+	background: color-mix(in srgb, var(--ink) 10%, transparent);
+	color: var(--ink);
+	transition-duration: 0ms;
+}
+
 @media (hover: hover) and (pointer: fine) {
 	.nav-link:hover {
 		background: color-mix(in srgb, var(--ink) 7%, transparent);
