@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-07 USDA v1 nutrition basis
+
+v1 USDA search, packaged search, and details now reuse the v2 normalizer. FDC per-100 g nutrients are scaled to known gram servings and otherwise use an explicit 100 g serving, so build 23 shows label values (2026852: 519 → 270 kcal per 52 g). `GRM` now counts as grams for v1 and v2. v1 values are rounded and its names and brands are display-cased like v2, so v2-saved foods match the repair key; foods saved by older builds become not repairable. Worker tests, runtime QA, Convex integration, lint, and a live `DEMO_KEY` comparison pass. Not deployed. See [evidence](docs/evidence/usda-v1-basis/README.md).
+
 ## 2026-11-07 Saved food Undo: cross-provider duplicates and VoiceOver countdown
 
 Undo now refuses to restore an external saved food when the same product was saved again through the other lookup provider. It matches by external product ID or by barcode across `barcodeLookup` and `searchLookup`, using the existing Open Food Facts barcode aliases, so 12- and 13-digit forms of one barcode match. Before, a USDA food deleted, rescanned through Open Food Facts, then undone was inserted as a duplicate. VoiceOver is now part of the Undo countdown's task identity: turning it on mid-countdown keeps the banner, and turning it off starts a fresh 5-second countdown instead of leaving the banner up for good. E2E ran red then green through a loopback fixture for the lookup proxy and a photo-picked barcode; it also covered AX5 layout and Undo failures on Add Food and the meal picker. Format, build, and 262 iPad tests pass. See [evidence](docs/evidence/delete-saved-foods/README.md).
