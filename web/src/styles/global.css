@@ -19,9 +19,6 @@
 	--header-bg: rgb(255 255 255 / 0.72);
 	--success: #1a7f37;
 	--danger: #d70015;
-	--device-bezel: #1a1a1c;
-	--device-ring: rgb(255 255 255 / 0);
-	--shadow-device: 0 40px 70px -30px rgb(0 0 0 / 0.35);
 
 	/* Macro palette: rings, logo, and macro data only, never decoration. */
 	--protein: #007aff;
@@ -80,9 +77,6 @@
 		--header-bg: rgb(0 0 0 / 0.7);
 		--success: #30d158;
 		--danger: #ff6961;
-		--device-bezel: #2b2b2e;
-		--device-ring: rgb(255 255 255 / 0.14);
-		--shadow-device: none;
 	}
 }
 
@@ -496,8 +490,8 @@ summary {
 	width: min(100%, 15rem);
 }
 
-.hero__visual .device {
-	--device-w: 100%;
+.hero__visual .app-screen {
+	--screen-w: 100%;
 }
 
 .ring-track {
@@ -562,14 +556,9 @@ summary {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	.hero__copy > *,
-	.hero__visual {
+	.hero__copy > * {
 		animation: rise var(--duration-rise) var(--ease-out) both;
 		animation-delay: calc(var(--i, 0) * 80ms);
-	}
-
-	.hero__visual {
-		--i: 3;
 	}
 
 	.ring-fill {
@@ -578,73 +567,38 @@ summary {
 	}
 }
 
-/* Device frame */
-.device {
-	--device-w: 17.5rem;
-	container-type: inline-size;
+/* App screen: a plain rounded screenshot, no simulated device hardware */
+.app-screen {
+	--screen-w: 17.5rem;
 	position: relative;
-	width: min(var(--device-w), 100%);
+	width: min(var(--screen-w), 100%);
 	margin-inline: auto;
-}
-
-.device--sm {
-	--device-w: 15rem;
-}
-
-.device__body {
-	position: relative;
-	padding: 2.6cqw;
-	border-radius: 14.5cqw;
-	background: var(--device-bezel);
-	box-shadow: inset 0 0 0 0.4cqw var(--device-ring), var(--shadow-device);
-}
-
-.device__body::before,
-.device__body::after {
-	content: '';
-	position: absolute;
-	width: 0.9cqw;
-	border-radius: 0.5cqw;
-	background: var(--device-bezel);
-}
-
-.device__body::before {
-	left: -0.7cqw;
-	top: 22cqw;
-	height: 12cqw;
-}
-
-.device__body::after {
-	right: -0.7cqw;
-	top: 32cqw;
-	height: 18cqw;
-}
-
-.device__screen {
-	position: relative;
 	aspect-ratio: 1320 / 2868;
-	border-radius: 11.9cqw;
+	/* Elliptical radii keep the corner circular at about 9% of the width on this tall aspect ratio. */
+	border-radius: 9% / calc(9% * 1320 / 2868);
 	overflow: hidden;
 	background: var(--bg-soft);
 }
 
-.device__screen img {
+.app-screen--sm {
+	--screen-w: 15rem;
+}
+
+.app-screen img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-.device__island {
+/* Hairline drawn above the image so white or black screens stay separated from either page background. */
+.app-screen::after {
+	content: '';
 	position: absolute;
-	top: 3.2cqw;
-	left: 50%;
-	width: 26.9cqw;
-	height: 7.7cqw;
-	border-radius: var(--radius-pill);
-	background: #000;
-	translate: -50% 0;
+	inset: 0;
+	border: 1px solid var(--hairline);
+	border-radius: inherit;
+	pointer-events: none;
 }
-
 /* Feature bento */
 .bento {
 	display: grid;
