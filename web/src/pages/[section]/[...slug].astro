@@ -5,7 +5,7 @@ import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { absoluteURL, authorReference, pages, publishedEntries, publisherReference } from '../../lib/seo';
+import { absoluteURL, authorReference, pages, publishedEntries, publisherReference, relatedEntries } from '../../lib/seo';
 import { socialImage, socialInput } from '../../lib/social';
 
 export async function getStaticPaths() {
@@ -58,6 +58,8 @@ const articleSchema = entry ? [{
 const dateText = (date: Date) => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 
 const Content = rendered?.Content;
+
+const related = entry ? await relatedEntries(entry.data.related) : [];
 ---
 <SiteLayout {...metadata}
 	article={entry ? { published: entry.data.published, updated: entry.data.updated } : undefined}
@@ -84,7 +86,10 @@ const Content = rendered?.Content;
 				<Image src={entry.data.image} alt={entry.data.imageAlt} width={320} layout="constrained" widths={[320, 640, 960]} sizes="(max-width: 360px) calc(100vw - 40px), 320px" format="webp" loading="lazy" />
 				<figcaption class="caption">{entry.data.imageCaption ?? entry.data.imageAlt}</figcaption>
 			</figure>}
-			<p class="editorial__related"><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>
+			{related.length > 0 ? <nav class="editorial__related" aria-label="Related">
+				<h2 class="title">Related</h2>
+				<ul>{related.map(item => <li><a href={`/${item.collection}/${item.id}/`}>{item.data.title}</a></li>)}</ul>
+			</nav> : <p class="editorial__related"><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>}
 		</> : <ul class="editorial__list">
 			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li>
 				<h2 class="title"><a href={`/${section}/${item.id}/`}>{item.data.title}</a></h2>
