@@ -263,6 +263,26 @@ describe('canonical host redirects', () => {
 		expect(requested[1]?.headers.has('range')).toBe(false);
 	});
 
+	it('answers a missing video with the plain 404 page, not a byte range', async () => {
+		const env = {
+			ASSETS: {
+				fetch: async (input: RequestInfo | URL) => new URL(new Request(input).url).pathname === '/404/'
+					? new Response('not found page')
+					: new Response(null, { status: 404, headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } }),
+			},
+			SUPPORT_DB: fakeDatabase(),
+		};
+
+		const response = await worker.fetch(new Request('https://macrosios.com/media/missing.abc123.mp4', {
+			headers: { Range: 'bytes=0-1' },
+		}), env);
+
+		expect(response.status).toBe(404);
+		expect(await response.text()).toBe('not found page');
+		expect(response.headers.has('content-range')).toBe(false);
+		expect(response.headers.get('cache-control')).toBeNull();
+	});
+
 	it('serves the canonical host and local dev hosts from assets', async () => {
 		for (const url of ['https://macrosios.com/guides/', 'http://localhost:8787/', 'https://example.test/about/']) {
 			const ctx = hostEnv();

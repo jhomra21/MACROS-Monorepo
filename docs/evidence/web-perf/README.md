@@ -88,7 +88,7 @@ AI Crawl Control over the last 7 days blocked no crawler, and every crawler requ
 
 | Change | Files |
 | --- | --- |
-| `run_worker_first` lists only existing pages and feeds plus `/api/*`: `["/", "/*/", "/sitemap.xml", "/robots.txt", "/rss.xml", "/api/*"]`. `not_found_handling` is `"none"`, so every miss reaches the Worker, which redirects www and workers.dev and otherwise serves `404.html` with status 404. Existing static files match no pattern and skip the Worker on every host. See [Missing static files](#missing-static-files-review-follow-up). | `web/wrangler.jsonc`, `web/src/worker.ts` |
+| `run_worker_first` lists only existing pages and feeds plus `/api/*`: `["/", "/*/", "/sitemap.xml", "/robots.txt", "/rss.xml", "/api/*", "/media/*"]`, where `/media/*` keeps the demo video's byte-range handling. `not_found_handling` is `"none"`, so every miss reaches the Worker, which redirects www and workers.dev and otherwise serves `404.html` with status 404. Existing static files match no pattern and skip the Worker on every host. See [Missing static files](#missing-static-files-review-follow-up). | `web/wrangler.jsonc`, `web/src/worker.ts` |
 | `/_astro/*` and `/social/*` (content-hashed) get `Cache-Control: public, max-age=31536000, immutable`. Existing static files on www and workers.dev get `X-Robots-Tag: noindex`. | `web/public/_headers` |
 | `build.inlineStylesheets: 'always'` | `web/astro.config.mjs` |
 | Client-shared JSON schemas use `zod/mini`, with identical results on null, object, wrong-type, nested-function, and string inputs. The server's form schemas keep full zod. | `web/src/lib/json.ts` |
@@ -140,6 +140,12 @@ The first version of this branch used `"/*"` with `!/_astro/*`, `!/social/*`, an
 9. Static files that exist on www or workers.dev are indexable as duplicates of the apex files.
 10. A fix needs a generated list that outgrows a platform limit or silently goes stale when files are added.
 
+Added before rebasing onto the demo-video merge (`f7f83f0`), which made `/media/*` Worker-first and immutable:
+
+11. An existing `/media/*` MP4 stops answering `Range: bytes=0-1` with a 206, or loses `immutable`.
+12. A missing `/media/*` file returns a 404 with `immutable`, or a 206 or 416 sliced from the 404 page.
+13. `/media/*` on www or workers.dev stops redirecting.
+
 ### How the routing works
 
 Sources: [`run_worker_first`](https://developers.cloudflare.com/workers/static-assets/binding/#run_worker_first), the [routing decision diagram](https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/), [`_headers`](https://developers.cloudflare.com/workers/static-assets/headers/), [static-asset limits](https://developers.cloudflare.com/workers/platform/limits/#static-assets), and [billing](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/). Where the docs are silent, the behavior was read from the router that Wrangler 4.156.0 runs locally (`miniflare/dist/src/workers/assets/`, built from `workers-shared`).
@@ -157,6 +163,8 @@ Sources: [`run_worker_first`](https://developers.cloudflare.com/workers/static-a
 | (c) Detach `Cache-Control` from 404s in `_headers` | Not possible. Rules match the request path, so a rule on `/404.html` never applies to `/_astro/missing.js`. `! Cache-Control` on `/_astro/*` would strip the header from hits too. |
 | (d) Positive patterns for pages, `not_found_handling: "none"`, and the Worker serves the 404 page | **Chosen.** No generated lists. Existing static files never run the Worker. Every miss on every host runs the Worker, which redirects alias hosts like any unknown path. On the apex, it fetches `/404/` by its own URL, so no `/_astro/*` rule attaches, and no conditional or range header is forwarded. |
 
+`/media/*` stays a positive pattern because the Worker slices MP4 byte ranges (`src/lib/byte-range.ts`). It runs `withByteRange` on the result of `serveAsset`, which passes any non-200 through, so a missing MP4 gets the plain 404 page. On `main`, `run_worker_first: true` with `"404-page"` already sent media misses to the Worker, but the 404 page came from the missed path, so `/media/*`'s immutable rule attached to it.
+
 Option (d) adds a Worker invocation only for misses under `/_astro/` and `/social/`, which were the only misses not already running the Worker. The 1,500+ scanner 404s a day already ran it, both before this branch and under its `"/*"` list. The Worker change is 6 lines in `serveAsset`. Two trade-offs:
 
 - A page URL without its trailing slash (`/about`) on www or workers.dev gets the asset router's 307 to `/about/` on the same host, then the Worker's 301. Before, it got the 301 directly. Every link the site publishes ends in `/`.
@@ -168,7 +176,7 @@ Existing static files on www and workers.dev return 200 without the Worker, so t
 
 ### Local matrix
 
-`worker` is 1 when the response ran Worker code (`probe-worker.ts` marks it) and 0 when the asset router answered alone. The JS and PNG are real hashed files from `dist`. Raw before and after output: `build/evidence/2026-11-07-web-perf/routing-{before,after}.txt`.
+`worker` is 1 when the response ran Worker code (`probe-worker.ts` marks it) and 0 when the asset router answered alone. The JS, PNG, and MP4 are real hashed files from `dist`. "Before" is the first version of this branch (`3fe4828`), except the `/media/` rows, which are `main` at `f7f83f0`. "After" is this branch rebased onto `f7f83f0`. Raw output for `main` and after is in `build/evidence/2026-11-07-web-perf/routing-{main,after}.txt`; the first-version run is recorded only in this table.
 
 | Host | Request | Before | After |
 | --- | --- | --- | --- |
@@ -180,17 +188,21 @@ Existing static files on www and workers.dev return 200 without the Worker, so t
 | apex | `/`, guide, `/sitemap.xml`, `/robots.txt` | 200, worker 1 | 200, worker 1 |
 | apex | `/about` | 307 to `/about/`, worker 1 | 307 to `/about/`, worker 0 |
 | apex | `POST /api/waitlist` (invalid) | 400, worker 1 | 400, worker 1 |
+| apex | existing `/media/*.mp4` with `Range: bytes=0-1` | 206, worker 1, immutable, `bytes 0-1/1164984` | 206, worker 1, immutable, `bytes 0-1/1164984` (body `00 00`; without `Range`, 200 with all 1,164,984 bytes) |
+| apex | `/media/missing.abc123.mp4`, with and without `Range`, and `/media/` | 404, worker 1, **immutable** | 404 page, worker 1, revalidate, no `Content-Range` |
 | www, workers.dev | `/`, guide with `?ref=ig`, `/sitemap.xml`, `/robots.txt`, `/missing/` | 301 to apex | 301 to apex |
 | www, workers.dev | `/_astro/missing.abc123.js`, `/social/missing.abc123.png`, `/_astro/`, `/social/` | **404, worker 0, immutable** | 301 to apex, worker 1 |
 | www, workers.dev | existing hashed files, favicon, touch icon | 200, worker 0, no `X-Robots-Tag` | 200, worker 0, `noindex` (hashed files keep immutable) |
 | www, workers.dev | `/about` | 301 to apex `/about` | 307 to `/about/` (noindex), then 301 |
 | www, workers.dev | `POST /api/waitlist` | 308 to apex | 308 to apex |
+| www, workers.dev | existing and missing `/media/*.mp4` (with `Range`), `/media/` | 301 to apex | 301 to apex |
+
 ## Validation
 
 These checks passed:
 
-- In `web/`: `bun install --frozen-lockfile`, `bun run check` (0 errors, warnings, and hints), `bun test src/worker.test.ts` (10 pass), `bun run build`, and `bun run deploy:dry-run` (no warnings).
-- At the root: `make lint-js` (0 warnings and errors on 136 files) and `git diff --check`.
+- In `web/`: `bun install --frozen-lockfile`, `bun run check` (0 errors, warnings, and hints), `bun test src/worker.test.ts` (25 pass, including the demo-video byte-range tests), `bun run build`, and `bun run deploy:dry-run` (no warnings).
+- At the root: `make lint-js` (0 warnings and errors on 139 files) and `git diff --check`.
 - Lighthouse scripts: with `LH=/bin/false`, and with `LH=/bin/true` (exits 0, writes no report), `lighthouse.sh` reported 12 `FAIL` lines and exited 1. `lh-summary.py` exited 1 on an empty folder and on a folder missing one of the 12 reports. A real local run (Lighthouse 13.6.0) wrote all 12 reports, and both scripts exited 0.
 
 ## Verify after deploy
@@ -216,15 +228,11 @@ These checks passed:
      - Rule 1: when `(http.host eq "www.macrosios.com" and http.request.method in {"GET" "HEAD"})`, use a dynamic redirect to `concat("https://macrosios.com", http.request.uri.path)` with status 301 and preserve query string on.
      - Rule 2: when `(http.host eq "www.macrosios.com" and not http.request.method in {"GET" "HEAD"})`, use the same target with status 308 and preserve query string on.
      - Verify with `curl -sI https://www.macrosios.com/x/?a=1` while tailing; the request must not appear in the tail.
-   - Decide on workers.dev. Zone rules cannot redirect it. Either set `"workers_dev": false`, which breaks old workers.dev links (SEO.md currently says to keep those redirects indefinitely), or keep the current Worker-first page routing. Only after both steps can `run_worker_first` become `["/api/*", "/media/*"]`. Keep `not_found_handling: "none"`, so misses still get the Worker's 404 page. `/media/*` must stay Worker-first once `web/demo-video` lands, because that branch's Worker answers HTTP Range requests for MP4s. Static assets ignore `Range`, and Safari needs 206 responses. Keep `canonicalRedirect` in the Worker as the API fallback.
+   - Decide on workers.dev. Zone rules cannot redirect it. Either set `"workers_dev": false`, which breaks old workers.dev links (SEO.md currently says to keep those redirects indefinitely), or keep the current Worker-first page routing. Only after both steps can `run_worker_first` become `["/api/*", "/media/*"]`. Keep `not_found_handling: "none"`, so misses still get the Worker's 404 page. `/media/*` must stay Worker-first, because the Worker answers HTTP Range requests for MP4s. Static assets ignore `Range`, and Safari needs 206 responses. Keep `canonicalRedirect` in the Worker as the API fallback.
 
-## Merging with `web/demo-video`
+## Demo video (`/media/*`)
 
-This branch's `run_worker_first` list names only pages, feeds, and `/api/*`, so existing `/media/*` files would skip the Worker and lose the demo branch's byte-range handling. The merge must:
-
-- Add `"/media/*"` to `run_worker_first`. Never add `!/media/*`.
-- Apply `withByteRange` to the result of `serveAsset` for `/media/` paths, so a missing MP4 still gets the 404 page.
-- Keep all `_headers` rules: `/media/*`, `/_astro/*`, and `/social/*` immutable, plus the two alias-host `noindex` rules. A miss under `/media/*` reaches the Worker and gets the revalidating 404 page, not `immutable`.
+`web/demo-video` merged to `main` as `f7f83f0`, and this branch is rebased onto it. `"/media/*"` is in `run_worker_first`; never add `!/media/*`, which would skip the Range handling and send misses to the asset router. `_headers` keeps the `/media/*`, `/_astro/*`, and `/social/*` immutable rules and the two alias-host `noindex` rules. The streamed 206 has no `Content-Length`, because workerd drops the manual one and sends it chunked; that is valid and unchanged here.
 
 ## Repeat
 
