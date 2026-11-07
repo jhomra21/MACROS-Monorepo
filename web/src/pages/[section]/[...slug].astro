@@ -73,7 +73,7 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 		<div class="editorial__header">
 			<PageHeading heading={entry?.data.title ?? sectionName} lede={metadata.description}>
 				{entry && <p class="caption">By <a href="/about/">{site.name}</a><br />
-					Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>. About {readingMinutes} minutes to read.
+					Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>.{dateText(entry.data.updated) !== dateText(entry.data.published) && <> Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>.</>} About {readingMinutes} {readingMinutes === 1 ? 'minute' : 'minutes'} to read.
 				</p>}
 			</PageHeading>
 		</div>
