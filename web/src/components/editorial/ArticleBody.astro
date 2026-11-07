@@ -9,6 +9,8 @@ import ProteinRange from './ProteinRange.astro';
 import ProteinUnits from './ProteinUnits.astro';
 import ProteinMeals from './ProteinMeals.astro';
 import ProteinShare from './ProteinShare.astro';
+import ServingRuler from './ServingRuler.astro';
+import PackageColumns from './PackageColumns.astro';
 import type { ComponentProps } from 'astro/types';
 import GuideScreenshot from './GuideScreenshot.astro';
 import { visualMarker } from '../../lib/article-visuals';
@@ -32,5 +34,7 @@ const parts = html.split(visualMarker);
 	part === 'protein-units' ? <ProteinUnits /> :
 	part === 'protein-meals' ? <ProteinMeals /> :
 	part === 'protein-share' ? <ProteinShare /> :
+	part === 'serving-ruler' ? <ServingRuler /> :
+	part === 'package-columns' ? <PackageColumns /> :
 	<GuideScreenshot screen={part as ComponentProps<typeof GuideScreenshot>['screen']} />
 )}
