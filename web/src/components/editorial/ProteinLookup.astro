@@ -1,26 +1,41 @@
 ---
-// 1.6 g/kg on the exact weight. Kilograms are shown rounded, but grams use the unrounded value.
+// Grams use the exact weight. Kilograms are shown rounded.
 const kgPerLb = 0.45359237;
 
-const rows = [120, 140, 160, 180, 200, 220, 240].map(lb => ({
-	lb,
-	kg: Math.round(lb * kgPerLb),
-	grams: Math.round(lb * kgPerLb * 1.6),
-}));
+const rows = [120, 140, 160, 180, 200, 220, 240].map(lb => {
+	const kg = lb * kgPerLb;
 
-const most = Math.max(...rows.map(row => row.grams));
+	return { lb, kg: Math.round(kg), low: Math.round(kg * 1.6), high: Math.round(kg * 2.2) };
+});
+
+// Every bar shares one scale, set by the heaviest row at 2.2 g/kg.
+const most = Math.max(...rows.map(row => row.high));
 ---
 <figure class="guide-diagram protein-lookup" data-diagram aria-labelledby="protein-lookup-caption">
-	<p class="title">Protein a day at 1.6 g/kg (0.73 g per lb)</p>
-	<div class="table-scroll" role="region" aria-label="Daily protein by body weight" tabindex="0">
-		<table>
-			<caption class="sr-only">Daily protein at 1.6 g per kg for body weights from 120 to 240 lb</caption>
-			<thead><tr><th scope="col"><span class="sr-only">Body weight in </span>lb</th><th scope="col"><span class="sr-only">Body weight in </span>kg</th><th scope="col">Protein a day</th></tr></thead>
-			<tbody>{rows.map(row => <tr>
-				<th scope="row">{row.lb}</th><td>{row.kg}</td>
-				<td><div class="protein-lookup__grams"><strong>{row.grams} g</strong><span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span></div></td>
-			</tr>)}</tbody>
-		</table>
+	<p class="title">Protein a day, 1.6 to 2.2 g/kg</p>
+	<div class="protein-lookup__body">
+		<p class="protein-lookup__legend caption" aria-hidden="true">
+			<span><i class="protein-lookup__swatch"></i>Solid bar: 1.6 g/kg</span>
+			<span><i class="protein-lookup__swatch protein-lookup__swatch--high"></i>Striped end: 2.2 g/kg</span>
+		</p>
+		<div class="table-scroll" role="region" aria-label="Daily protein by body weight" tabindex="0">
+			{/* Explicit roles keep table semantics when large text restyles the rows as blocks. */}
+			<table role="table">
+				<caption class="sr-only">Daily protein at 1.6 and 2.2 g per kg for body weights from 120 to 240 lb</caption>
+				<thead role="rowgroup"><tr role="row">
+					<th scope="col" role="columnheader"><span class="sr-only">Body weight in </span>lb</th>
+					<th scope="col" role="columnheader"><span class="sr-only">Body weight in </span>kg</th>
+					<th scope="col" role="columnheader"><span class="sr-only">Protein a day at </span>1.6 g/kg</th>
+					<th scope="col" role="columnheader"><span class="sr-only">Protein a day at </span>2.2 g/kg</th>
+				</tr></thead>
+				<tbody role="rowgroup">{rows.map(row => <tr role="row">
+					<th scope="row" role="rowheader" data-unit="lb">{row.lb}<span class="protein-lookup__track" aria-hidden="true"><span class="diagram-bar protein-lookup__range" style={`--share: ${(row.high / most) * 100}%; --low: ${(row.low / row.high) * 100}%`}></span></span></th>
+					<td role="cell" data-unit="kg">{row.kg}</td>
+					<td role="cell" data-label="1.6 g/kg"><strong>{row.low}&nbsp;g</strong></td>
+					<td role="cell" data-label="2.2 g/kg">{row.high}&nbsp;g</td>
+				</tr>)}</tbody>
+			</table>
+		</div>
 	</div>
-	<figcaption id="protein-lookup-caption" class="caption">These are daily totals, not amounts for one meal. Kilograms are rounded to the nearest whole number. Grams come from the exact weight, so rounded kilograms times 1.6, or pounds times 0.73, can differ by 1 g.</figcaption>
+	<figcaption id="protein-lookup-caption" class="caption">These are daily totals, not amounts for one meal. Kilograms are rounded, but grams use the exact weight, so shortcuts like rounded kilograms times 1.6 or 2.2, or pounds times 0.73 or 1, can be off by 1 g.</figcaption>
 </figure>

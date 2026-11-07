@@ -1908,8 +1908,52 @@ summary {
 	}
 }
 
-.protein-lookup .table-scroll {
+/* Solid protein reaches the 1.6 g/kg total; stripes continue to 2.2 g/kg, so the two read apart without color. */
+.protein-lookup {
+	--stripes: repeating-linear-gradient(-45deg, var(--protein) 0 1.5px, transparent 1.5px 4px);
+	--tint: color-mix(in srgb, var(--protein) 18%, transparent);
+}
+
+.protein-lookup__body {
 	container-type: inline-size;
+}
+
+.protein-lookup__body > * + * {
+	margin-top: var(--space-3);
+}
+
+.protein-lookup__legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2) var(--space-5);
+}
+
+.protein-lookup__legend > span {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.protein-lookup__swatch,
+.protein-lookup__range {
+	outline: 1px solid var(--protein);
+	outline-offset: -1px;
+}
+
+.protein-lookup__swatch {
+	display: inline-block;
+	width: 1.75em;
+	height: 0.75em;
+	border-radius: var(--radius-pill);
+	background: var(--protein);
+}
+
+.protein-lookup__swatch--high {
+	background: var(--stripes) var(--tint);
+}
+
+.protein-lookup__range {
+	background: linear-gradient(var(--protein) 0 0) 0 0 / var(--low) 100% no-repeat, var(--stripes) var(--tint);
 }
 
 .protein-lookup .table-scroll table {
@@ -1917,33 +1961,100 @@ summary {
 	min-width: 0;
 }
 
-/* Number columns shrink to their content; the bar column takes the rest. */
+/* The first three columns shrink to their content; the 2.2 g/kg column takes the rest. */
 .editorial .prose .protein-lookup :is(th, td):not(:last-child) {
 	width: 1%;
 	padding-inline: var(--space-1) var(--cell-end);
 	text-align: end;
 }
 
-.protein-lookup__grams {
-	--bar-color: var(--protein);
-	display: grid;
-	grid-template-columns: 3.5em minmax(0, 1fr);
-	align-items: center;
-	gap: var(--space-3);
+.editorial .prose .protein-lookup thead th {
+	white-space: nowrap;
 }
 
-/* With large text on a narrow screen the numbers keep the room and the bars go. */
-@container (max-width: 14rem) {
-	.protein-lookup .table-scroll table {
-		--cell-end: var(--space-1);
+/* Each weight's bar lives in its row header, not a row of its own, so screen readers count one row
+   per weight. It still spans the whole row under the numbers: the header cell starts at the row's
+   edge and runs its full height, and 100cqi is the table width. */
+.editorial .prose .protein-lookup tbody > tr > * {
+	padding-bottom: calc(var(--space-2) + 0.75em + var(--space-3));
+}
+
+.editorial .prose .protein-lookup tbody th {
+	position: relative;
+}
+
+.protein-lookup__track {
+	position: absolute;
+	inset-inline-start: var(--space-1);
+	bottom: var(--space-3);
+	width: calc(100cqi - 2 * var(--space-1));
+}
+
+/* With large text on a narrow screen the bars and legend go. Four number columns no longer fit,
+   so each weight becomes a short block that labels its own numbers. Labels are visual only (empty
+   alt text); screen readers still hear the hidden column headers. The explicit ARIA roles keep the
+   table semantics through these display changes. */
+@container (max-width: 15rem) {
+	.protein-lookup__legend,
+	.protein-lookup__track {
+		display: none;
 	}
 
-	.protein-lookup__grams {
+	.protein-lookup__body > .table-scroll {
+		margin-top: 0;
+	}
+
+	.protein-lookup .table-scroll table,
+	.protein-lookup tbody {
 		display: block;
 	}
 
-	.protein-lookup__grams .diagram-bar {
-		display: none;
+	.protein-lookup thead {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.editorial .prose .protein-lookup tbody > tr {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 var(--space-2);
+		padding-block: var(--space-3);
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.editorial .prose .protein-lookup tbody > tr:first-child {
+		padding-top: 0;
+	}
+
+	/* .table-scroll outranks the column-width rule's :not(:last-child). */
+	.editorial .prose .protein-lookup .table-scroll tbody > tr > :is(th, td) {
+		width: auto;
+		padding: 0;
+		border: 0;
+		text-align: start;
+	}
+
+	.protein-lookup [data-label] {
+		flex-basis: 100%;
+	}
+
+	.protein-lookup [data-unit]::after {
+		content: ' ' attr(data-unit);
+		content: ' ' attr(data-unit) / '';
+	}
+
+	.protein-lookup [data-label]::before {
+		content: attr(data-label);
+		content: attr(data-label) / '';
+		display: block;
+		margin-top: var(--space-1);
+		color: var(--ink-muted);
+		font-size: var(--fs-caption);
+		font-weight: 400;
 	}
 }
 
