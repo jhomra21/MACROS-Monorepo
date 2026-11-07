@@ -59,7 +59,7 @@ Lighthouse advisories:
 5. **The compatibility date was 2026-04-15.** The flags that became defaults between then and the local workerd release (2026-10-23) do not touch this Worker's APIs: error serialization, Workflows, Python, TLS options, Durable Objects, `dispatchEvent`, and Node defaults that `nodejs_compat` already enabled. [Flags](https://developers.cloudflare.com/workers/configuration/compatibility-flags/)
 6. **CI skipped the Worker tests.** The web job ran `bun run check` only, so `src/worker.test.ts` was never run in CI. The job does not run `build`, which matches the macOS-only Helvetica requirement for OG images.
 7. **Web Analytics conflicts with the privacy page (dashboard).** Cloudflare Web Analytics automatic setup injects `static.cloudflareinsights.com/beacon.min.js` into HTML for browser requests. `/privacy/` says, "We do not use analytics SDKs or advertising trackers on the website or in the app." This is an owner decision.
-8. **HTML has no ETag (dashboard).** Assets get the documented `ETag`, but HTML gets none, even for non-browser requests. Cloudflare drops strong ETags when it may modify HTML. [ETags](https://developers.cloudflare.com/cache/reference/etag-headers/) Email Obfuscation is not rewriting the footer address, and live HTML matches `dist` byte for byte, so the likely cause is Web Analytics HTML injection. The wrangler token cannot read zone settings to confirm it. The impact is small: the browser re-downloads 3–12 KB of compressed HTML instead of getting a 304, at the same round-trip cost.
+8. **HTML has no ETag (dashboard).** Assets get the documented `ETag`, but HTML gets none, even for non-browser requests. Cloudflare keeps an origin's strong ETag only when Email Obfuscation, Rocket Loader, and Replace insecure JavaScript libraries are all off. [ETags](https://developers.cloudflare.com/cache/reference/etag-headers/) The owner's dashboard (checked by the parent, 2026-11-07) shows **Email Address Obfuscation ON**, which is a documented cause of the drop. Web Analytics HTML injection may also contribute. A real Chromium load of `/`, `/support/`, and `/about/` found no actual rewrite: no `email-decode.min.js`, no `__cf_email__` markup, and the footer address in plain text. Live HTML for non-browser requests also matches `dist` byte for byte. So today the setting costs the ETag but adds no page weight. The impact is small: the browser re-downloads 3–12 KB of compressed HTML instead of getting a 304, at the same round-trip cost.
 9. **Ruled out:**
    - Fonts: the site uses system fonts with no downloads.
    - Images: AVIF and WebP with explicit sizes; image-delivery and LCP audits passed.
@@ -70,6 +70,10 @@ Lighthouse advisories:
    - Deployments: `wrangler deployments list` shows routine 100% deployments with no failures.
    - CI: the last 20 runs all succeeded.
    - Wrangler: 4.156.0 is pinned; 4.158.0 is available, and it was not upgraded.
+
+## Zone security context (dashboard, parent-verified 2026-11-07)
+
+AI Crawl Control over the last 7 days blocked no crawler, and every crawler request succeeded. The busiest were archive.org_bot (209), Googlebot (73), GPTBot (36), and Applebot (14). Bot Fight Mode, AI Labyrinth, and Hotlink protection are off. Browser Integrity Check is on; its cost is already included in the timings above. Live `robots.txt` is the site's own (allow all, plus the sitemap), not a Cloudflare-managed one. None of these settings is a performance problem. Nothing was changed.
 
 ## Guidance checked
 
@@ -144,7 +148,8 @@ These checks passed:
 1. **Web Analytics (owner decision, privacy).** Either disable automatic injection or change the privacy text so it describes Cloudflare Web Analytics.
    - To disable it: in Web Analytics, select `macrosios.com`, open **Manage site**, and choose **Disable**. [Web Analytics setup](https://developers.cloudflare.com/web-analytics/get-started/)
    - Disabling removes a 10.5 KB third-party script, a second TLS connection, and the RUM posts. It probably also restores HTML ETags.
-   - Verify: `curl -s -A 'Mozilla/5.0' -H 'accept: text/html' https://macrosios.com/ | grep -c cloudflareinsights` should print `0`, and `curl -sI https://macrosios.com/` should then show an `etag`.
+   - Verify: `curl -s -A 'Mozilla/5.0' -H 'accept: text/html' https://macrosios.com/ | grep -c cloudflareinsights` should print `0`.
+1. **Email Address Obfuscation (optional).** Turning it off (Security > Settings, or Scrape Shield) should restore strong HTML ETags, so repeat views get a 304 instead of the full page. It does not rewrite these pages today. If it ever starts, it would add an `email-decode.min.js` request on every page, because every page footer has the address. The trade-off is that the address stays readable to scrapers, which is already true today. Verify after both proposals: `curl -sI -H 'accept-encoding: br' https://macrosios.com/ | grep -i etag` shows a value, and a second request with `If-None-Match` set to that value returns 304.
 2. **Optional: keep HTML off the Worker too.** This saves about 8 ms at the median per page and removes the Worker's wall-time tail. It needs both of the following, in this order:
    - Add two Single Redirect rules on zone `macrosios.com`, and keep the existing www custom domain, which supplies its DNS record. Rules run before the Worker, so www never reaches it.
      - Rule 1: when `(http.host eq "www.macrosios.com" and http.request.method in {"GET" "HEAD"})`, use a dynamic redirect to `concat("https://macrosios.com", http.request.uri.path)` with status 301 and preserve query string on.
