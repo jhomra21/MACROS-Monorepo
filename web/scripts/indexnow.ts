@@ -94,6 +94,9 @@ function nonCanonicalReason(value: string): string | undefined {
 
 	if (url.username || url.password) return 'has credentials';
 
+	// force-trailing-slash redirects /page/index.html and /page.html to /page/, so they are aliases.
+	if (/\.html?$/i.test(url.pathname)) return 'HTML file alias; use the trailing-slash URL';
+
 	if (!url.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(url.pathname)) return 'HTML page without a trailing slash';
 
 	return undefined;
