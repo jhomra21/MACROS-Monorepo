@@ -176,12 +176,13 @@ Existing static files on www and workers.dev return 200 without the Worker, so t
 
 ### Local matrix
 
-`worker` is 1 when the response ran Worker code (`probe-worker.ts` marks it) and 0 when the asset router answered alone. The JS, PNG, and MP4 are real hashed files from `dist`. "Before" is the first version of this branch (`3fe4828`), except the `/media/` rows, which are `main` at `f7f83f0`. "After" is this branch rebased onto `f7f83f0`. Raw output for `main` and after is in `build/evidence/2026-11-07-web-perf/routing-{main,after}.txt`; the first-version run is recorded only in this table.
+`worker` is 1 when the response ran Worker code (`probe-worker.ts` marks it) and 0 when the asset router answered alone. The JS, PNG, and MP4 are real hashed files from `dist`. "Before" is the first version of this branch (`3fe4828`), except the `/media/` rows, which are `main` at `f7f83f0`. "After" is this branch rebased onto `main` at `e930d05`, which added the IndexNow key file. Raw output for `main` and after is in `build/evidence/2026-11-07-web-perf/routing-{main,after}.txt`; the first-version run is recorded only in this table.
 
 | Host | Request | Before | After |
 | --- | --- | --- | --- |
 | apex | existing `/_astro/*.js`, `/social/*.png` | 200, worker 0, immutable | 200, worker 0, immutable |
 | apex | `/favicon.svg`, `/apple-touch-icon.png` | 200, worker 0, revalidate | 200, worker 0, revalidate |
+| apex | IndexNow key `/e318eb91764f851a50c779d954962280.txt` | not on the branch yet | 200, worker 0, `text/plain; charset=utf-8`, body is the key |
 | apex | `/_astro/missing.abc123.js`, `/social/missing.abc123.png`, `/_astro/`, `/social/` | 404, worker 0, **immutable** | 404 page, worker 1, `max-age=0, must-revalidate` |
 | apex | missing `.js` with `If-None-Match` and `Range` | 404, worker 0, **immutable** | 404 page, worker 1, revalidate |
 | apex | `/missing/`, also with `Sec-Fetch-Mode: navigate` | 404 page, worker 1 | 404 page, worker 1 (title "Page not found", `noindex, follow`) |
@@ -192,7 +193,7 @@ Existing static files on www and workers.dev return 200 without the Worker, so t
 | apex | `/media/missing.abc123.mp4`, with and without `Range`, and `/media/` | 404, worker 1, **immutable** | 404 page, worker 1, revalidate, no `Content-Range` |
 | www, workers.dev | `/`, guide with `?ref=ig`, `/sitemap.xml`, `/robots.txt`, `/missing/` | 301 to apex | 301 to apex |
 | www, workers.dev | `/_astro/missing.abc123.js`, `/social/missing.abc123.png`, `/_astro/`, `/social/` | **404, worker 0, immutable** | 301 to apex, worker 1 |
-| www, workers.dev | existing hashed files, favicon, touch icon | 200, worker 0, no `X-Robots-Tag` | 200, worker 0, `noindex` (hashed files keep immutable) |
+| www, workers.dev | existing hashed files, favicon, touch icon, IndexNow key | 200, worker 0, no `X-Robots-Tag` | 200, worker 0, `noindex` (hashed files keep immutable; the key keeps `text/plain` and its body) |
 | www, workers.dev | `/about` | 301 to apex `/about` | 307 to `/about/` (noindex), then 301 |
 | www, workers.dev | `POST /api/waitlist` | 308 to apex | 308 to apex |
 | www, workers.dev | existing and missing `/media/*.mp4` (with `Range`), `/media/` | 301 to apex | 301 to apex |
@@ -202,7 +203,7 @@ Existing static files on www and workers.dev return 200 without the Worker, so t
 These checks passed:
 
 - In `web/`: `bun install --frozen-lockfile`, `bun run check` (0 errors, warnings, and hints), `bun test src/worker.test.ts` (25 pass, including the demo-video byte-range tests), `bun run build`, and `bun run deploy:dry-run` (no warnings).
-- At the root: `make lint-js` (0 warnings and errors on 139 files) and `git diff --check`.
+- At the root: `make lint-js` (0 warnings and errors on 140 files) and `git diff --check`.
 - Lighthouse scripts: with `LH=/bin/false`, and with `LH=/bin/true` (exits 0, writes no report), `lighthouse.sh` reported 12 `FAIL` lines and exited 1. `lh-summary.py` exited 1 on an empty folder and on a folder missing one of the 12 reports. A real local run (Lighthouse 13.6.0) wrote all 12 reports, and both scripts exited 0.
 
 ## Verify after deploy
