@@ -46,7 +46,7 @@ Choose a monthly or yearly subscription, or a one-time lifetime purchase. Eligib
 
 Payment is charged to your Apple Account at confirmation, or when your free trial ends. Monthly and yearly subscriptions renew automatically unless canceled at least 24 hours before the current period ends. Your account is charged for renewal within 24 hours before the current period ends. Manage or cancel subscriptions in your Apple Account subscription settings. Lifetime access is a one-time purchase and does not renew.
 
-Privacy Policy: https://macros-web.jhonra121.workers.dev/privacy
+Privacy Policy: https://macrosios.com/privacy/
 Terms of Use: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 MACROS is a tracking tool, not medical advice. Nutrition information may be incomplete; review entries and consult a qualified health professional for health decisions.
