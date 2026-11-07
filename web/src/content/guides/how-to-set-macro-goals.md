@@ -25,7 +25,7 @@ The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogr
 
 At 70 kg (154 lb), the calculation is 70 × 0.8 = 56 g of protein per day. In pounds, 154.3 lb ÷ 2.20462 ≈ 70 kg, so the same calculation gives about 56 g. Do not confuse grams per kilogram with grams per pound. Multiplying 154.3 lb by 0.8 gives about 123 g, more than twice the RDA.
 
-<!-- visual:protein-units -->
+<!-- visual:kg-lb-units -->
 
 ## Turn calories into grams
 
@@ -45,7 +45,7 @@ MACROS uses the Mifflin–St Jeor equation to estimate resting energy needs:
 
 Resting calories = 10 × weight in kg + 6.25 × height in cm − 5 × age in years + a sex constant.
 
-Divide pounds by 2.2046 to get kilograms. Multiply inches by 2.54 to get centimeters. The constant is +5 for Male and −161 for Female. For Unspecified, MACROS uses their midpoint, −78. That midpoint is an app convention, not a separately validated equation. The [original Mifflin–St Jeor study](https://pubmed.ncbi.nlm.nih.gov/2305711/) studied healthy adults. An estimate cannot measure your individual metabolism.
+Divide pounds by 2.20462 to get kilograms. Multiply inches by 2.54 to get centimeters. The constant is +5 for Male and −161 for Female. For Unspecified, MACROS uses their midpoint, −78. That midpoint is an app convention, not a separately validated equation. The [original Mifflin–St Jeor study](https://pubmed.ncbi.nlm.nih.gov/2305711/) studied healthy adults. An estimate cannot measure your individual metabolism.
 
 <!-- visual:resting-estimate -->
 
@@ -53,7 +53,7 @@ The app multiplies resting calories by the activity factor you select. The facto
 
 <!-- visual:activity-multipliers -->
 
-These factors are the app's estimation settings. They are not part of the original resting-energy equation. Maintain uses that total unchanged. Lose subtracts 250, 500, or 750 calories per day for the selected weekly pace of 0.25 kg (0.55 lb), 0.5 kg (1.10 lb), or 0.75 kg (1.65 lb). Gain adds 250 or 500 calories for 0.25 kg (0.55 lb) or 0.5 kg (1.10 lb) per week. These settings do not guarantee a particular weight change.
+These factors are the app's estimation settings. They are not part of the original resting-energy equation. Maintain uses that total unchanged. Lose subtracts 250, 500, or 750 calories per day for the selected weekly pace of 0.25 kg (0.6 lb), 0.5 kg (1.1 lb), or 0.75 kg (1.7 lb). Gain adds 250 or 500 calories for 0.25 kg (0.6 lb) or 0.5 kg (1.1 lb) per week. These settings do not guarantee a particular weight change.
 
 The calculator clamps its result to at least 1,500 calories for Male or 1,200 for Female and Unspecified. It flags a requested target below that floor. These are software limits, not proof that a calorie target is safe or adequate for you.
 
@@ -65,7 +65,7 @@ The age field starts at 30. If you clear it, the app uses 30 and shows a notice.
 
 MACROS offers three starting splits before rounding. Balanced is 20% protein, 50% carbs, and 30% fat. High protein is 31% protein, 47% carbs, and 22% fat. Higher fat is 20% protein, 47% carbs, and 33% fat. The reference-range chart earlier in this guide plots all three.
 
-The preset names are product labels, not dietary guidelines. All three presets fall within the adult AMDRs. High protein and Higher fat stop a few points short of the protein and fat limits on purpose. The calculator rounds grams to 5 g, which can move the final shares by up to about 2 percentage points. These splits keep the rounded goals inside every AMDR for targets from 1,200 to 4,500 calories. Choose manual goals if you want a different split or targets agreed with a professional.
+The preset names are product labels, not dietary guidelines. All three presets fall within the adult AMDRs. High protein and Higher fat stop a few points short of the protein and fat limits on purpose. The calculator rounds grams to 5 g, which can move each final share by less than 3 percentage points. These splits keep the rounded goals inside every AMDR for targets from 1,200 to 4,500 calories. Choose manual goals if you want a different split or targets agreed with a professional.
 
 The calculator rounds protein and fat to the nearest 5 g. It first rounds carbs to 5 g too. It accepts a calorie total between the requested total and 2% above it. Outside that range, the app replaces carbs with the smallest 5 g step that reaches the target. That adjustment can raise or lower carbs. It then calculates the displayed calorie goal from the final grams with 4/4/9. The saved goal can therefore differ from the initial calorie estimate. In the worked example below, the window runs from 2,555.56 to 2,606.67 calories.
 

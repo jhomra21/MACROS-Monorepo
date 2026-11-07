@@ -23,9 +23,10 @@ const kcal = (value: number) => value.toLocaleString('en-US', { minimumFractionD
 		</p>
 		<ul class="activity-multipliers__list" role="list">
 			{levels.map(level => <li>
-				<p><strong>{level.name}</strong>{level.example && <span class="activity-multipliers__tag">Worked example</span>}<span class="caption">{level.description}</span></p>
-				<span class="activity-multipliers__math">{kcal(resting)} × {level.multiplier}</span>
+				<p><strong>{level.name}</strong>{level.example && <>{' '}<span class="activity-multipliers__tag">Worked example</span></>}{' '}<span class="caption">{level.description}</span></p>
+				{' '}<span class="activity-multipliers__math">{kcal(resting)} × {level.multiplier}</span>
 				<span class="diagram-bar activity-multipliers__bar" style={`--share: ${(level.total / most) * 100}%; --resting: ${(resting / level.total) * 100}%`} aria-hidden="true"></span>
+				<span class="sr-only"> = </span>
 				<strong class="activity-multipliers__total">{kcal(level.total)} kcal</strong>
 			</li>)}
 		</ul>

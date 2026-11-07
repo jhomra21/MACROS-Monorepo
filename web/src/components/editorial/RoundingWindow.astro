@@ -39,8 +39,8 @@ const kcal = (value: number, digits = 2) => value.toLocaleString('en-US', { mini
 		</div>
 		<ol class="rounding-window__steps" role="list">
 			{steps.map(step => <li class:list={{ 'rounding-window__kept': step.status === 'Kept' }}>
-				<strong>{kcal(step.total, 0)} kcal</strong>
-				<span>{step.carbs} g carbs</span>
+				<strong>{kcal(step.total, 0)} kcal</strong>{' '}
+				<span>{step.carbs} g carbs</span>{' '}
 				<span class="caption">{step.status}</span>
 			</li>)}
 		</ol>

@@ -9,7 +9,7 @@ const floors = { male: 1500, other: 1200 };
 
 const axis = { low: 1000, high: 3500, ticks: [1000, 2000, 3000] };
 
-const pace = (kg: number) => `${kg} kg (${(kg / kgPerLb).toFixed(2)} lb) a week`;
+const pace = (kg: number) => `${kg} kg (${(kg / kgPerLb).toFixed(1)} lb) a week`;
 
 const rows = [
 	...[0.5, 0.25].map(kg => ({ name: 'Gain', detail: pace(kg), offset: Math.min(500, kg * 1000) })),
@@ -32,12 +32,12 @@ const signed = (value: number) => (value === 0 ? '0' : `${value < 0 ? '−' : '+
 		</ul>
 		<ul class="goal-offsets__rows" role="list">
 			{rows.map(row => <li class:list={{ 'goal-offsets__maintain': row.offset === 0 }}>
-				<p><strong>{row.name}</strong><span class="caption">{row.detail}</span></p>
+				<p><strong>{row.name}</strong>{' '}<span class="caption">{row.detail}</span></p>
 				<span class="goal-offsets__track" aria-hidden="true">
 					{row.offset !== 0 && <span class="goal-offsets__bar" style={`left: ${at(Math.min(row.target, maintenance))}%; width: ${(Math.abs(row.offset) / (axis.high - axis.low)) * 100}%`}></span>}
 					<i style={`left: ${at(row.target)}%`}></i>
-				</span>
-				<p class="goal-offsets__numbers"><strong>{kcal(row.target)} kcal</strong><span class="caption">{signed(row.offset)}<span class="sr-only"> kcal a day</span></span></p>
+				</span>{' '}
+				<p class="goal-offsets__numbers"><strong>{kcal(row.target)} kcal</strong>{' '}<span class="caption">{signed(row.offset)}<span class="sr-only"> kcal a day</span></span></p>
 			</li>)}
 		</ul>
 		<div class="goal-offsets__axis" aria-hidden="true">
@@ -120,7 +120,6 @@ const signed = (value: number) => (value === 0 ? '0' : `${value < 0 ? '−' : '+
 		font-weight: 800;
 	}
 
-	/* Tracks in neighboring rows touch, so the floors and the maintenance guide read as continuous lines. */
 	.goal-offsets__track,
 	.goal-offsets__axis > span {
 		position: relative;
@@ -133,23 +132,32 @@ const signed = (value: number) => (value === 0 ? '0' : `${value < 0 ? '−' : '+
 		grid-column: 1 / -1;
 		align-self: stretch;
 		min-height: 1.5rem;
-		background: linear-gradient(var(--hairline) 0 0) var(--maintenance) 0 / 1px 100% no-repeat;
 	}
 
+	/* Narrow rows stack the track under the labels, so floor lines would break into stubs. Mark each floor once on the axis instead. */
 	.goal-offsets__track::before,
-	.goal-offsets__track::after {
-		content: '';
+	.goal-offsets__track::after,
+	.goal-offsets__axis > span::before,
+	.goal-offsets__axis > span::after {
 		position: absolute;
-		inset-block: 0;
 		margin-left: -1px;
 		border-left: 2px solid var(--ink);
 	}
 
-	.goal-offsets__track::before {
+	.goal-offsets__axis > span::before,
+	.goal-offsets__axis > span::after {
+		content: '';
+		bottom: 100%;
+		height: 1rem;
+	}
+
+	.goal-offsets__track::before,
+	.goal-offsets__axis > span::before {
 		left: var(--floor-male);
 	}
 
-	.goal-offsets__track::after {
+	.goal-offsets__track::after,
+	.goal-offsets__axis > span::after {
 		left: var(--floor-other);
 		border-left-style: dashed;
 	}
@@ -206,9 +214,22 @@ const signed = (value: number) => (value === 0 ? '0' : `${value < 0 ? '−' : '+
 			column-gap: var(--space-4);
 		}
 
+		/* Tracks in neighboring rows touch, so the floors and the maintenance guide read as continuous lines. */
 		.goal-offsets__track {
 			grid-row: 1;
 			grid-column: 2;
+			background: linear-gradient(var(--hairline) 0 0) var(--maintenance) 0 / 1px 100% no-repeat;
+		}
+
+		.goal-offsets__track::before,
+		.goal-offsets__track::after {
+			content: '';
+			inset-block: 0;
+		}
+
+		.goal-offsets__axis > span::before,
+		.goal-offsets__axis > span::after {
+			content: none;
 		}
 
 		.goal-offsets__numbers {

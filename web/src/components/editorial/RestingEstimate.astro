@@ -40,13 +40,13 @@ const span = constants[2].value - low;
 	<div class="resting-estimate__body">
 		<ol class="resting-estimate__terms" role="list">
 			{steps.map(step => <li class:list={{ 'resting-estimate__minus': step.value < 0 }}>
-				<p><strong>{step.name}</strong><span class="caption">{step.math}</span></p>
-				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: ${percent(Math.min(step.start, step.end))}; width: ${percent(Math.abs(step.value))}`}></span></span>
+				<p><strong>{step.name}</strong>{' '}<span class="caption">{step.math}</span></p>
+				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: ${percent(Math.min(step.start, step.end))}; width: ${percent(Math.abs(step.value))}`}></span></span>{' '}
 				<strong class="resting-estimate__value">{signed(step.value)}</strong>
 			</li>)}
 			<li class="resting-estimate__total">
 				<p><strong>Resting estimate</strong></p>
-				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: 0; width: ${percent(total)}`}></span></span>
+				<span class="resting-estimate__track" aria-hidden="true"><span style={`left: 0; width: ${percent(total)}`}></span></span>{' '}
 				<strong class="resting-estimate__value">{number(total)} kcal</strong>
 			</li>
 		</ol>
@@ -54,7 +54,6 @@ const span = constants[2].value - low;
 			<p class="caption">Sex constant</p>
 			<div class="resting-estimate__line" aria-hidden="true">
 				{constants.map(constant => <i style={`left: ${((constant.value - low) / span) * 100}%`}></i>)}
-				<b style={`left: ${((0 - low) / span) * 100}%`}>0</b>
 			</div>
 			<ol class="resting-estimate__points" role="list">
 				{constants.map(constant => <li><strong>{signed(constant.value)}</strong> {constant.sex}</li>)}
@@ -158,26 +157,6 @@ const span = constants[2].value - low;
 		border-radius: 50%;
 		background: var(--ink);
 		transform: translate(-50%, -50%);
-	}
-
-	.resting-estimate__line b {
-		position: absolute;
-		top: 0;
-		color: var(--ink-muted);
-		font-size: var(--fs-caption);
-		font-weight: 400;
-		line-height: 1;
-		transform: translateX(-50%);
-	}
-
-	.resting-estimate__line b::after {
-		content: '';
-		position: absolute;
-		top: calc(100% + 0.125rem);
-		left: 50%;
-		width: 1px;
-		height: 0.625rem;
-		background: var(--ink-muted);
 	}
 
 	:global(.editorial .prose) .resting-estimate__points {

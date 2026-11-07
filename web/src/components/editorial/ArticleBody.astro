@@ -5,7 +5,7 @@ import CalculatorSteps from './CalculatorSteps.astro';
 import ServingLabel from './ServingLabel.astro';
 import CalorieGap from './CalorieGap.astro';
 import ProteinLookup from './ProteinLookup.astro';
-import ProteinUnits from './ProteinUnits.astro';
+import KgLbUnits from './KgLbUnits.astro';
 import RestingEstimate from './RestingEstimate.astro';
 import ActivityMultipliers from './ActivityMultipliers.astro';
 import GoalOffsets from './GoalOffsets.astro';
@@ -29,7 +29,7 @@ const parts = html.split(visualMarker);
 	part === 'serving-label' ? <ServingLabel /> :
 	part === 'calorie-gap' ? <CalorieGap /> :
 	part === 'protein-lookup' ? <ProteinLookup /> :
-	part === 'protein-units' ? <ProteinUnits /> :
+	part === 'kg-lb-units' ? <KgLbUnits /> :
 	part === 'resting-estimate' ? <RestingEstimate /> :
 	part === 'activity-multipliers' ? <ActivityMultipliers /> :
 	part === 'goal-offsets' ? <GoalOffsets /> :

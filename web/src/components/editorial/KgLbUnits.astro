@@ -16,27 +16,27 @@ const rows = [
 
 const most = Math.max(...rows.map(row => row.grams));
 ---
-<figure class="guide-diagram protein-units" data-diagram aria-labelledby="protein-units-caption">
+<figure class="guide-diagram kg-lb-units" data-diagram aria-labelledby="kg-lb-units-caption">
 	<p class="title">Protein RDA in kilograms and pounds</p>
-	<div class="protein-units__ruler" aria-hidden="true" style={`--at: ${kg}%; --lb-tick: ${20 * kgPerLb}%`}>
-		<span>{kg} kg</span>
-		<span class="protein-units__scale"></span>
+	<div class="kg-lb-units__ruler" aria-hidden="true" style={`--at: ${kg}%; --lb-tick: ${20 * kgPerLb}%`}>
+		<span>{kg} kg</span>{' '}
+		<span class="kg-lb-units__scale"></span>
 		<span>{lb} lb</span>
 	</div>
-	<div class="protein-units__body">
-		<ul class="protein-units__list" role="list">
-			{rows.map(row => <li class:list={{ 'protein-units__wrong': row.wrong }}>
-				<p><strong>{row.name}</strong><span class="caption">{row.math}</span></p>
-				<span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span>
-				<strong class="protein-units__grams">{row.sign} {Math.round(row.grams)} g</strong>
+	<div class="kg-lb-units__body">
+		<ul class="kg-lb-units__list" role="list">
+			{rows.map(row => <li class:list={{ 'kg-lb-units__wrong': row.wrong }}>
+				<p><strong>{row.name}</strong>{' '}<span class="caption">{row.math}</span></p>
+				<span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span>{' '}
+				<strong class="kg-lb-units__grams">{row.sign} {Math.round(row.grams)} g</strong>
 			</li>)}
 		</ul>
 	</div>
-	<figcaption id="protein-units-caption" class="caption">The scale shows 70 kg and 154.3 lb as the same weight. The RDA is 0.8 g per kilogram, so either route gives about 56 g a day. Using 0.8 with pounds gives more than twice that.</figcaption>
+	<figcaption id="kg-lb-units-caption" class="caption">The scale shows 70 kg and 154.3 lb as the same weight. The RDA is 0.8 g per kilogram, so either route gives about 56 g a day. Using 0.8 with pounds gives more than twice that.</figcaption>
 </figure>
 
 <style>
-	.protein-units__ruler {
+	.kg-lb-units__ruler {
 		display: grid;
 		gap: var(--space-1);
 		margin-inline: var(--space-2);
@@ -45,7 +45,7 @@ const most = Math.max(...rows.map(row => row.grams));
 	}
 
 	/* Each label is centered on the 70 kg mark. */
-	.protein-units__ruler > span:not(.protein-units__scale) {
+	.kg-lb-units__ruler > span:not(.kg-lb-units__scale) {
 		justify-self: start;
 		margin-left: var(--at);
 		transform: translateX(-50%);
@@ -53,7 +53,7 @@ const most = Math.max(...rows.map(row => row.grams));
 	}
 
 	/* A ruler: 10 kg ticks along the top edge, 20 lb ticks along the bottom. */
-	.protein-units__scale {
+	.kg-lb-units__scale {
 		position: relative;
 		height: 1.5rem;
 		color: var(--ink-muted);
@@ -63,7 +63,7 @@ const most = Math.max(...rows.map(row => row.grams));
 			linear-gradient(currentColor 0 0) center / 100% 1px no-repeat;
 	}
 
-	.protein-units__scale::after {
+	.kg-lb-units__scale::after {
 		content: '';
 		position: absolute;
 		inset-block: calc(var(--space-1) * -1);
@@ -73,11 +73,11 @@ const most = Math.max(...rows.map(row => row.grams));
 		background: var(--ink);
 	}
 
-	.protein-units__body {
+	.kg-lb-units__body {
 		container-type: inline-size;
 	}
 
-	:global(.editorial .prose) .protein-units__list {
+	:global(.editorial .prose) .kg-lb-units__list {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: var(--space-2) var(--space-4);
@@ -87,7 +87,7 @@ const most = Math.max(...rows.map(row => row.grams));
 	}
 
 	/* Rows share one subgrid, so bars and grams line up at any text size. */
-	.protein-units__list li {
+	.kg-lb-units__list li {
 		display: grid;
 		grid-column: 1 / -1;
 		grid-template-columns: subgrid;
@@ -98,17 +98,17 @@ const most = Math.max(...rows.map(row => row.grams));
 		border-top: 1px solid var(--hairline);
 	}
 
-	.protein-units__list p {
+	.kg-lb-units__list p {
 		display: grid;
 	}
 
-	.protein-units__list .diagram-bar {
+	.kg-lb-units__list .diagram-bar {
 		--bar-color: var(--protein);
 		grid-row: 2;
 		grid-column: 1 / -1;
 	}
 
-	.protein-units__grams {
+	.kg-lb-units__grams {
 		grid-row: 1;
 		grid-column: 2;
 		text-align: end;
@@ -116,38 +116,38 @@ const most = Math.max(...rows.map(row => row.grams));
 	}
 
 	/* The wrong result is an outline, not a fill, and its row is labeled Mix-up. */
-	.protein-units__wrong .diagram-bar {
+	.kg-lb-units__wrong .diagram-bar {
 		background: transparent;
 		outline: 2px dashed var(--ink-muted);
 		outline-offset: -2px;
 	}
 
 	@container (min-width: 32rem) {
-		:global(.editorial .prose) .protein-units__list {
+		:global(.editorial .prose) .kg-lb-units__list {
 			grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) auto;
 		}
 
-		.protein-units__list .diagram-bar {
+		.kg-lb-units__list .diagram-bar {
 			grid-row: 1;
 			grid-column: 2;
 		}
 
-		.protein-units__grams {
+		.kg-lb-units__grams {
 			grid-column: 3;
 		}
 	}
 
 	/* With large text on a narrow screen the numbers keep the room and the bars go. */
 	@container (max-width: 14rem) {
-		.protein-units__list .diagram-bar {
+		.kg-lb-units__list .diagram-bar {
 			display: none;
 		}
 
-		:global(.editorial .prose) .protein-units__list {
+		:global(.editorial .prose) .kg-lb-units__list {
 			grid-template-columns: minmax(0, 1fr);
 		}
 
-		.protein-units__grams {
+		.kg-lb-units__grams {
 			grid-row: auto;
 			grid-column: 1;
 			text-align: start;
