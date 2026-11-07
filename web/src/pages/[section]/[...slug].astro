@@ -5,7 +5,7 @@ import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { absoluteURL, pages, publishedEntries } from '../../lib/seo';
+import { absoluteURL, authorReference, pages, publishedEntries, publisherReference } from '../../lib/seo';
 import { socialImage, socialInput } from '../../lib/social';
 
 export async function getStaticPaths() {
@@ -47,7 +47,8 @@ const articleSchema = entry ? [{
 	description: entry.data.description,
 	datePublished: entry.data.published.toISOString(),
 	dateModified: entry.data.updated.toISOString(),
-	author: { '@type': 'Person', name: site.author, url: absoluteURL('/about/') },
+	author: authorReference,
+	publisher: publisherReference,
 	image: absoluteURL(socialImage(await socialInput(
 		`/${section}/${entry.id}/`, entry.data.title, entry.data.description, entry.data.image,
 	)).src),

@@ -22,7 +22,9 @@ Long guides use `render()` headings for their on-page contents list. Authors pla
 
 Navigation uses browser-native document transitions, with the opt-in inline in the head so it is available before external CSS loads. Reduced motion uses ordinary document navigation. Page scripts initialize on document load, not `astro:page-load`. Keep prefetch off unless measurements justify its extra script and background traffic.
 
-Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inner public pages include BreadcrumbList; guides and posts also include Article and article Open Graph dates. The FAQ comes from the exact same data as the visible answers. Google restricts FAQ rich results mainly to authoritative government and health sites; valid markup does not promise a rich result. There are no ratings or reviews.
+Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inner public pages include BreadcrumbList; guides and posts also include Article and article Open Graph dates. The FAQ comes from the exact same data as the visible answers. Google stopped showing FAQ rich results on May 7, 2026 and removed the feature's documentation on June 12 (see [Search Central updates](https://developers.google.com/search/updates)). Keep the FAQPage markup anyway: it matches the visible text and costs nothing, but expect no rich result from it. There are no ratings or reviews.
+
+Authorship is one linked graph. The Organization (`/#organization`) carries the app icon as `logo` (the 180 × 180 `apple-touch-icon.png`) and `sameAs` for the Instagram profile. The About page defines the author as a Person with the stable `@id` `/about/#juan` and the same `sameAs`. Every Article `author` points at that `@id`, and every Article `publisher` points at the Organization `@id`. The author is shown publicly by name and Instagram only. Add other profiles to `sameAs` only if the owner decides to publish them. At App Store launch, add the listing URL to the Organization `sameAs`.
 
 ## App Store launch flag
 
