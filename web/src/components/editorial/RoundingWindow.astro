@@ -1,0 +1,191 @@
+---
+// Mirrors GoalCalculator.carbGrams for the guide's worked example: protein 130 g and fat 85 g are fixed,
+// carbs move in 5 g steps, and a total from the target to 2% above it is accepted.
+const target = (10 * 70 + 6.25 * 175 - 5 * 30 + 5) * 1.55;
+
+const top = target * 1.02;
+
+const proteinAndFat = 130 * 4 + 85 * 9;
+
+const firstRounding = Math.round((target * 0.5) / 4 / 5) * 5;
+
+const steps = [-1, 0, 1, 2, 3].map(step => {
+	const carbs = firstRounding + step * 5;
+	const total = proteinAndFat + carbs * 4;
+	const inside = total >= target && total <= top;
+	const status = carbs === firstRounding && inside ? 'Kept' : inside ? 'Inside' : total < target ? 'Below target' : 'Above 2%';
+
+	return { carbs, total, inside, status };
+});
+
+// Steps sit at the centers of five equal columns: 10%, 30%, 50%, 70%, and 90% of the line.
+const low = steps[0].total - 10;
+
+const high = steps.at(-1)!.total + 10;
+
+const at = (kcal: number) => ((kcal - low) / (high - low)) * 100;
+
+const kcal = (value: number, digits = 2) => value.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+---
+<figure class="guide-diagram rounding-window" data-diagram aria-labelledby="rounding-window-caption" style={`--from: ${at(target)}%; --to: ${at(top)}%`}>
+	<p class="title">The 2% window in the worked example</p>
+	<div class="rounding-window__body">
+		<ul class="rounding-window__edges" role="list">
+			<li><span class="caption">Target</span> <strong>{kcal(target)} kcal</strong></li>
+			<li><span class="caption">2% above</span> <strong>{kcal(top)} kcal</strong></li>
+		</ul>
+		<div class="rounding-window__line" aria-hidden="true">
+			{steps.map(step => <i class:list={{ 'rounding-window__in': step.inside, 'rounding-window__kept': step.status === 'Kept' }} style={`left: ${at(step.total)}%`}></i>)}
+		</div>
+		<ol class="rounding-window__steps" role="list">
+			{steps.map(step => <li class:list={{ 'rounding-window__kept': step.status === 'Kept' }}>
+				<strong>{kcal(step.total, 0)} kcal</strong>{' '}
+				<span>{step.carbs} g carbs</span>{' '}
+				<span class="caption">{step.status}</span>
+			</li>)}
+		</ol>
+	</div>
+	<figcaption id="rounding-window-caption" class="caption">Protein 130 g and fat 85 g give {kcal(proteinAndFat, 0)} kcal. Each 5 g of carbs adds 20 kcal. Filled dots fall inside the window. The first rounding, 320 g, is inside, so the app keeps it.</figcaption>
+</figure>
+
+<style>
+	.rounding-window__body {
+		container-type: inline-size;
+	}
+
+	.rounding-window__body > * + * {
+		margin-top: var(--space-2);
+	}
+
+	:global(.editorial .prose) .rounding-window__edges {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: var(--space-1) var(--space-4);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	.rounding-window__edges li {
+		display: grid;
+		margin-top: 0;
+		line-height: 1.3;
+	}
+
+	.rounding-window__edges li:last-child {
+		text-align: end;
+	}
+
+	/* The window is shaded between two solid edges; the line runs past it on both sides. */
+	.rounding-window__line {
+		position: relative;
+		height: 2rem;
+		background: linear-gradient(var(--ink-muted) 0 0) 0 50% / 100% 1px no-repeat;
+	}
+
+	.rounding-window__line::before {
+		content: '';
+		position: absolute;
+		inset-block: 0;
+		left: var(--from);
+		width: calc(var(--to) - var(--from));
+		margin-left: -1px;
+		border-inline: 2px solid var(--ink);
+		background: color-mix(in srgb, var(--link) 16%, transparent);
+	}
+
+	.rounding-window__line i {
+		position: absolute;
+		top: 50%;
+		width: 0.75rem;
+		height: 0.75rem;
+		border: 2px solid var(--ink);
+		border-radius: 50%;
+		background: var(--band);
+		transform: translate(-50%, -50%);
+	}
+
+	.rounding-window__line .rounding-window__in {
+		background: var(--ink);
+	}
+
+	.rounding-window__line .rounding-window__kept {
+		width: 1.125rem;
+		height: 1.125rem;
+		outline: 2px solid var(--ink);
+		outline-offset: 2px;
+	}
+
+	:global(.editorial .prose) .rounding-window__steps {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: var(--space-1);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-caption);
+		text-align: center;
+	}
+
+	.rounding-window__steps li {
+		display: grid;
+		align-content: start;
+		margin-top: 0;
+		line-height: 1.3;
+	}
+
+	.rounding-window__steps .rounding-window__kept .caption {
+		color: var(--ink);
+		font-weight: 700;
+	}
+
+	/* With room, each edge label sits over its edge of the window. */
+	@container (min-width: 32rem) {
+		:global(.editorial .prose) .rounding-window__edges {
+			position: relative;
+			display: block;
+			height: 2.75rem;
+		}
+
+		.rounding-window__edges li {
+			position: absolute;
+			bottom: 0;
+			white-space: nowrap;
+		}
+
+		.rounding-window__edges li:first-child {
+			right: calc(100% - var(--from));
+			padding-right: var(--space-2);
+			text-align: end;
+		}
+
+		.rounding-window__edges li:last-child {
+			left: var(--to);
+			padding-left: var(--space-2);
+			text-align: start;
+		}
+	}
+
+	/* With large text on a narrow screen the line goes and the steps become a plain list. */
+	@container (max-width: 14rem) {
+		.rounding-window__edges li:last-child {
+			text-align: start;
+		}
+
+		.rounding-window__line {
+			display: none;
+		}
+
+		:global(.editorial .prose) .rounding-window__steps {
+			grid-template-columns: minmax(0, 1fr);
+			gap: var(--space-2);
+			text-align: start;
+		}
+
+		.rounding-window__steps li {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0 var(--space-3);
+		}
+	}
+</style>

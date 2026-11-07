@@ -1,0 +1,156 @@
+---
+// Weight is on one scale from 0 to 100 kg, with ticks every 10 kg above and every 20 lb below.
+const kgPerLb = 0.45359237;
+
+const kg = 70;
+
+const lb = 154.3;
+
+const rda = 0.8;
+
+const rows = [
+	{ name: 'Kilograms', math: `${kg} kg × ${rda} g/kg`, grams: kg * rda, sign: '=' },
+	{ name: 'Pounds, converted first', math: `${lb} lb ÷ 2.20462 ≈ ${kg} kg, then × ${rda} g/kg`, grams: (lb / 2.20462) * rda, sign: '≈' },
+	{ name: 'Mix-up', math: `${lb} lb × ${rda} treats pounds as kilograms`, grams: lb * rda, sign: '≈', wrong: true },
+];
+
+const most = Math.max(...rows.map(row => row.grams));
+---
+<figure class="guide-diagram kg-lb-units" data-diagram aria-labelledby="kg-lb-units-caption">
+	<p class="title">Protein RDA in kilograms and pounds</p>
+	<div class="kg-lb-units__ruler" aria-hidden="true" style={`--at: ${kg}%; --lb-tick: ${20 * kgPerLb}%`}>
+		<span>{kg} kg</span>{' '}
+		<span class="kg-lb-units__scale"></span>
+		<span>{lb} lb</span>
+	</div>
+	<div class="kg-lb-units__body">
+		<ul class="kg-lb-units__list" role="list">
+			{rows.map(row => <li class:list={{ 'kg-lb-units__wrong': row.wrong }}>
+				<p><strong>{row.name}</strong>{' '}<span class="caption">{row.math}</span></p>
+				<span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span>{' '}
+				<strong class="kg-lb-units__grams">{row.sign} {Math.round(row.grams)} g</strong>
+			</li>)}
+		</ul>
+	</div>
+	<figcaption id="kg-lb-units-caption" class="caption">The scale shows 70 kg and 154.3 lb as the same weight. The RDA is 0.8 g per kilogram, so either route gives about 56 g a day. Using 0.8 with pounds gives more than twice that.</figcaption>
+</figure>
+
+<style>
+	.kg-lb-units__ruler {
+		display: grid;
+		gap: var(--space-1);
+		margin-inline: var(--space-2);
+		font-size: var(--fs-caption);
+		font-weight: 600;
+	}
+
+	/* Each label is centered on the 70 kg mark. */
+	.kg-lb-units__ruler > span:not(.kg-lb-units__scale) {
+		justify-self: start;
+		margin-left: var(--at);
+		transform: translateX(-50%);
+		white-space: nowrap;
+	}
+
+	/* A ruler: 10 kg ticks along the top edge, 20 lb ticks along the bottom. */
+	.kg-lb-units__scale {
+		position: relative;
+		height: 1.5rem;
+		color: var(--ink-muted);
+		background:
+			repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px 10%) top / 100% 40% no-repeat,
+			repeating-linear-gradient(to right, currentColor 0 1px, transparent 1px var(--lb-tick)) bottom / 100% 40% no-repeat,
+			linear-gradient(currentColor 0 0) center / 100% 1px no-repeat;
+	}
+
+	.kg-lb-units__scale::after {
+		content: '';
+		position: absolute;
+		inset-block: calc(var(--space-1) * -1);
+		left: var(--at);
+		width: 2px;
+		margin-left: -1px;
+		background: var(--ink);
+	}
+
+	.kg-lb-units__body {
+		container-type: inline-size;
+	}
+
+	:global(.editorial .prose) .kg-lb-units__list {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: var(--space-2) var(--space-4);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	/* Rows share one subgrid, so bars and grams line up at any text size. */
+	.kg-lb-units__list li {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+		gap: var(--space-2) var(--space-4);
+		margin-top: 0;
+		padding-block: var(--space-3);
+		border-top: 1px solid var(--hairline);
+	}
+
+	.kg-lb-units__list p {
+		display: grid;
+	}
+
+	.kg-lb-units__list .diagram-bar {
+		--bar-color: var(--protein);
+		grid-row: 2;
+		grid-column: 1 / -1;
+	}
+
+	.kg-lb-units__grams {
+		grid-row: 1;
+		grid-column: 2;
+		text-align: end;
+		white-space: nowrap;
+	}
+
+	/* The wrong result is an outline, not a fill, and its row is labeled Mix-up. */
+	.kg-lb-units__wrong .diagram-bar {
+		background: transparent;
+		outline: 2px dashed var(--ink-muted);
+		outline-offset: -2px;
+	}
+
+	@container (min-width: 32rem) {
+		:global(.editorial .prose) .kg-lb-units__list {
+			grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) auto;
+		}
+
+		.kg-lb-units__list .diagram-bar {
+			grid-row: 1;
+			grid-column: 2;
+		}
+
+		.kg-lb-units__grams {
+			grid-column: 3;
+		}
+	}
+
+	/* With large text on a narrow screen the numbers keep the room and the bars go. */
+	@container (max-width: 14rem) {
+		.kg-lb-units__list .diagram-bar {
+			display: none;
+		}
+
+		:global(.editorial .prose) .kg-lb-units__list {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.kg-lb-units__grams {
+			grid-row: auto;
+			grid-column: 1;
+			text-align: start;
+		}
+	}
+</style>
