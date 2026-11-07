@@ -1447,9 +1447,13 @@ summary {
 	margin: var(--space-7) auto;
 }
 
+/* Same corner and hairline as .app-screen, so dark and light screens keep an edge on either page background.
+   The inset outline paints above the image and follows the radius. */
 .editorial__screenshot img {
 	width: 100%;
-	border-radius: var(--radius-lg);
+	border-radius: 9% / calc(9% * 1320 / 2868);
+	outline: 1px solid var(--hairline);
+	outline-offset: -1px;
 }
 
 .editorial__related {
