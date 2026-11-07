@@ -73,7 +73,7 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 		<div class="editorial__header">
 			<PageHeading heading={entry?.data.title ?? sectionName} lede={metadata.description}>
 				{entry && <p class="caption">By <a href="/about/">{site.name}</a><br />
-					Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>. About {readingMinutes} minutes to read.
+					Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>.{dateText(entry.data.updated) !== dateText(entry.data.published) && <> Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>.</>} About {readingMinutes} {readingMinutes === 1 ? 'minute' : 'minutes'} to read.
 				</p>}
 			</PageHeading>
 		</div>
@@ -95,7 +95,9 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li>
 				<h2 class="title"><a href={`/${section}/${item.id}/`}>{item.data.title}</a></h2>
 				<p>{item.data.description}</p>
-				<p class="caption"><time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time></p>
+				<p class="caption">{dateText(item.data.updated) === dateText(item.data.published)
+					? <time datetime={item.data.published.toISOString()}>Published {dateText(item.data.published)}</time>
+					: <time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time>}</p>
 			</li>)}
 		</ul>}
 	</article>

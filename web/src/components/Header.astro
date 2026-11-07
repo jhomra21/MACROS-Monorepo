@@ -6,6 +6,9 @@ import MacroRings from './MacroRings.astro';
 const posts = await publishedEntries('blog');
 
 const currentPath = Astro.url.pathname;
+
+// A section link stays marked on its articles too, as aria-current="true" rather than "page".
+const current = (href: string) => currentPath === href ? 'page' : !href.includes('#') && currentPath.startsWith(href) ? 'true' : undefined;
 ---
 
 <header class="site-header">
@@ -20,13 +23,13 @@ const currentPath = Astro.url.pathname;
 				{
 					site.navItems.map((item) => (
 						<li class:list={[item.secondary && 'nav-item--secondary']}>
-							<a class="nav-link" href={item.href} aria-current={currentPath === item.href ? 'page' : undefined}>
+							<a class="nav-link" href={item.href} aria-current={current(item.href)}>
 								{item.label}
 							</a>
 						</li>
 					))
 				}
-				{posts.length > 0 && <li><a class="nav-link" href="/blog/">Blog</a></li>}
+				{posts.length > 0 && <li><a class="nav-link" href="/blog/" aria-current={current('/blog/')}>Blog</a></li>}
 			</ul>
 		</nav>
 	</div>
