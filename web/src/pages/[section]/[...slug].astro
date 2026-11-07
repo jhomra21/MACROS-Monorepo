@@ -79,13 +79,13 @@ const Content = rendered?.Content;
 				<ul>{headings.map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
 			</nav>}
 			<div class="prose"><ArticleBody><Content /></ArticleBody></div>
-			{entry && !entry.body?.includes('<!-- visual:settings -->') && <figure class="editorial__screenshot" data-reveal>
+			{entry && !entry.body?.includes('<!-- visual:settings -->') && <figure class="editorial__screenshot">
 				<Image src={entry.data.image} alt={entry.data.imageAlt} width={320} layout="constrained" widths={[320, 640, 960]} sizes="(max-width: 360px) calc(100vw - 40px), 320px" format="webp" loading="lazy" />
 				<figcaption class="caption">{entry.data.imageCaption ?? entry.data.imageAlt}</figcaption>
 			</figure>}
-			<p class="editorial__related" data-reveal><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>
+			<p class="editorial__related"><a href={`/${section}/`}>More {sectionName.toLowerCase()}</a> · <a href="/support/">Get help with MACROS</a> · <a href="/privacy/">How your food diary stays private</a></p>
 		</> : <ul class="editorial__list">
-			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li data-reveal>
+			{entries.sort((a, b) => b.data.published.getTime() - a.data.published.getTime()).map(item => <li>
 				<h2 class="title"><a href={`/${section}/${item.id}/`}>{item.data.title}</a></h2>
 				<p>{item.data.description}</p>
 				<p class="caption"><time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time></p>

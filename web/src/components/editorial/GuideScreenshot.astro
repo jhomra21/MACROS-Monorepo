@@ -16,7 +16,7 @@ interface Props { screen: keyof typeof images }
 
 const image = images[Astro.props.screen];
 ---
-<figure class="editorial__screenshot" data-reveal>
+<figure class="editorial__screenshot">
 	<Picture src={image.src} alt={image.alt} width={320} layout="constrained" widths={[320, 640, 960]}
 		sizes="(max-width: 360px) calc(100vw - 40px), 320px" formats={['avif']} fallbackFormat="webp" loading="lazy" />
 	<figcaption class="caption">{image.caption}</figcaption>

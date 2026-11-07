@@ -12,18 +12,14 @@ const imageSizes = {
 
 <section id="why" class="section" aria-labelledby="why-title">
 	<div class="container">
-		<div class="section-heading" data-reveal>
+		<div class="section-heading">
 			<h2 id="why-title" class="headline">Quick enough to keep doing.</h2>
 			<p class="lead">Keep track without making a project of it.</p>
 		</div>
 		<div class="bento">
 			{
-				site.features.map((feature, index) => (
-					<article
-						class={`bento__card bento__card--${feature.size} bento__card--${feature.accent}`}
-						data-reveal
-						style={`--reveal-index: ${index}`}
-					>
+				site.features.map((feature) => (
+					<article class={`bento__card bento__card--${feature.size}`}>
 						<div class="bento__image" style={`--image-background: ${feature.background}; --image-ratio: ${feature.image.width} / ${feature.image.height}`}>
 							<Picture
 								src={feature.image}
@@ -38,7 +34,6 @@ const imageSizes = {
 								decoding="async"
 							/>
 						</div>
-						<p class="eyebrow">{feature.eyebrow}</p>
 						<h3 class="title">{feature.title}</h3>
 						<p>{feature.body}</p>
 					</article>

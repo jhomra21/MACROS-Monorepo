@@ -90,48 +90,5 @@ const schema = [
 			<slot />
 		</main>
 		<Footer />
-
-		<script>
-			// Adds .is-revealed once per element as it nears the viewport. CSS only hides
-			// [data-reveal] when scripting is enabled and reduced motion is not requested.
-			function initReveal() {
-				const targets = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-revealed)');
-
-				if (!('IntersectionObserver' in window)) {
-					for (const target of targets) {
-						target.classList.add('is-revealed');
-					}
-
-					return;
-				}
-
-				const observer = new IntersectionObserver(
-					(entries) => {
-						for (const entry of entries) {
-							if (entry.isIntersecting) {
-								const target = entry.target;
-								target.classList.add('is-revealed');
-								observer.unobserve(target);
-								// Drop the reveal transition and delay once settled so later style changes stay instant.
-								target.addEventListener('transitionend', (event) => {
-									// SAFETY: transitionend listeners always receive a TransitionEvent.
-									if (event.target === target && (event as TransitionEvent).propertyName === 'opacity') {
-										target.removeAttribute('data-reveal');
-										target.classList.remove('is-revealed');
-									}
-								});
-							}
-						}
-					},
-					{ rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
-				);
-
-				for (const target of targets) {
-					observer.observe(target);
-				}
-			}
-
-			initReveal();
-		</script>
 	</body>
 </html>

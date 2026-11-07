@@ -2,15 +2,15 @@
 import { site } from '../data/site';
 ---
 
-<section id="faq" class="section section--soft" aria-labelledby="faq-title">
+<section id="faq" class="section" aria-labelledby="faq-title">
 	<div class="container faq">
-		<div class="section-heading" data-reveal>
+		<div class="section-heading">
 			<h2 id="faq-title" class="headline">A few things to know.</h2>
 			<p class="lead">
 				Something else? <a href="/support/">Ask us</a>.
 			</p>
 		</div>
-		<div class="faq__list" data-reveal>
+		<div class="faq__list">
 			{
 				site.faq.map((item) => (
 					<details class="faq-item">

@@ -3,7 +3,6 @@ export const prerender = true;
 
 import WaitlistCta from '../components/WaitlistCta.astro';
 import PageHeading from '../components/PageHeading.astro';
-import FeatureGlyph from '../components/FeatureGlyph.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { pages } from '../lib/seo';
 ---
@@ -22,8 +21,7 @@ import { pages } from '../lib/seo';
 
 	<section class="section" aria-label="The story">
 		<div class="container about-grid">
-			<article class="about-card bento__card--protein" data-reveal>
-				<FeatureGlyph glyph="device" />
+			<article class="about-item">
 				<h2 class="title">Why it exists</h2>
 				<p>I am Juan Ramon Martinez Bulnes, the developer of MACROS.</p>
 				<p>
@@ -32,8 +30,7 @@ import { pages } from '../lib/seo';
 				</p>
 			</article>
 
-			<article class="about-card bento__card--carbs" data-reveal style="--reveal-index: 1">
-				<FeatureGlyph glyph="scan" />
+			<article class="about-item">
 				<h2 class="title">Core inputs</h2>
 				<p>
 					One camera view reads barcodes and nutrition labels. Manual entry is always
@@ -41,8 +38,7 @@ import { pages } from '../lib/seo';
 				</p>
 			</article>
 
-			<article class="about-card bento__card--fat" data-reveal style="--reveal-index: 2">
-				<FeatureGlyph glyph="review" />
+			<article class="about-item">
 				<h2 class="title">What you review</h2>
 				<p>
 					Check serving size, quantity, calories, protein, carbs, and fat before an
@@ -54,10 +50,10 @@ import { pages } from '../lib/seo';
 
 	<section class="section section--soft" aria-labelledby="principles-title">
 		<div class="container">
-			<div class="section-heading" data-reveal>
+			<div class="section-heading">
 				<h2 id="principles-title" class="headline">Principles</h2>
 			</div>
-			<ul class="principles" data-reveal>
+			<ul class="principles">
 				<li>No login to start tracking.</li>
 				<li>Your log is stored on your device.</li>
 				<li>Every nutrition value is editable when the source data is incomplete.</li>

@@ -3,33 +3,31 @@ import { site } from '../data/site';
 ---
 
 <section id="plans" class="section" aria-labelledby="plans-title">
-	<div class="container">
-		<div class="section-heading section-heading--center" data-reveal>
+	<div class="container plans">
+		<div class="section-heading">
 			<h2 id="plans-title" class="headline">Your food diary is free.</h2>
 			<p class="lead">Want a longer view of your progress? That's what Pro is for.</p>
 		</div>
 
-		<div class="plans">
-			{
-				site.plans.map((plan, index) => (
-					<article class:list={['plan', plan.featured && 'plan--featured']} data-reveal style={`--reveal-index: ${index}`}>
-						{plan.badge && <p class="plan__badge">{plan.badge}</p>}
-						<h3 class="title">{plan.name}</h3>
-						<p class="plan__price">
-							<span class="plan__amount">{plan.price}</span>
-							<span class="muted">{plan.cadence}</span>
-						</p>
-						<p class="muted">{plan.summary}</p>
-						<ul class="plan__list">
-							{plan.highlights.map((item) => <li>{item}</li>)}
-						</ul>
-					</article>
-				))
-			}
+		<div class="pro-offer">
+			<h3 class="title">MACROS Pro</h3>
+			<ul class="pro-prices" role="list">
+				{
+					site.proPrices.map((option) => (
+						<li>
+							<span class="pro-prices__name">{option.name}</span>
+							<span class="pro-prices__price">
+								<strong>{option.price}</strong> {option.cadence}
+							</span>
+							<span class="pro-prices__note">{option.note}</span>
+						</li>
+					))
+				}
+			</ul>
+			<p class="caption">{site.plansNote}</p>
 		</div>
-		<p class="plans-note caption">{site.plansNote}</p>
 
-		<div class="compare" data-reveal>
+		<div class="compare">
 			<h3 class="subhead">Compare Free and Pro</h3>
 			<div class="table-wrap">
 				<table class="compare-table">
