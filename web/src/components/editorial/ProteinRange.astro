@@ -1,0 +1,200 @@
+---
+// Daily protein in g/kg as the post states it. Pound figures are g/kg × 0.45359237, rounded to 0.01.
+const max = 3.2;
+
+const at = (g: number) => `${(g / max) * 100}%`;
+
+const perLb = (g: number) => String(Number((g * 0.45359237).toFixed(2)));
+
+const kg = (g: number) => g.toFixed(1);
+
+const rows = [
+	{ name: 'Adult RDA', low: 0.8, high: 0.8, note: 'Meets the needs of nearly all healthy adults. Not a muscle-building target.' },
+	{ name: 'Morton et al. 2018, where gains leveled off', low: 1.0, high: 2.2, about: true, plateau: 1.6, note: 'Fat-free mass gains leveled off near 1.6. The bar is the uncertainty around that point, not a target range.' },
+	{ name: 'ISSN, most people who exercise', low: 1.4, high: 2.0 },
+	{ name: 'ISSN, lifting while eating less', low: 2.3, high: 3.1, note: 'May be needed to keep muscle.' },
+];
+
+const guides = [1.6, 2.2];
+
+const axis = [0, 1, 2, 3];
+---
+<figure class="guide-diagram protein-range" data-diagram aria-labelledby="protein-range-caption">
+	<p class="title">Daily protein per kg of body weight</p>
+	<div class="protein-range__body">
+		<div class="protein-range__chart">
+			<p class="protein-range__marks caption" aria-hidden="true">{guides.map(g => <span style={`--at: ${at(g)}`}>{kg(g)}</span>)}</p>
+			<ul class="protein-range__rows" role="list">
+				{rows.map(row => <li class="protein-range__row">
+					<p class="protein-range__label">
+						<strong>{row.name}</strong>{' '}
+						<span class="caption">{row.low === row.high
+							? `${kg(row.low)} g/kg (${perLb(row.low)} g/lb).`
+							: `${row.about ? 'About ' : ''}${kg(row.low)} to ${kg(row.high)} g/kg (${perLb(row.low)} to ${perLb(row.high)} g/lb).`}{row.note && ` ${row.note}`}</span>
+					</p>
+					<span class="protein-range__track" aria-hidden="true">
+						{guides.map(g => <span class="protein-range__guide" style={`--at: ${at(g)}`}></span>)}
+						{row.low === row.high
+							? <span class="protein-range__point" style={`--at: ${at(row.low)}`}></span>
+							: <span class="protein-range__band" style={`--at: ${at(row.low)}; --span: ${at(row.high - row.low)}`}></span>}
+						{row.plateau && <span class="protein-range__plateau" style={`--at: ${at(row.plateau)}`}></span>}
+					</span>
+				</li>)}
+			</ul>
+			<p class="protein-range__axis caption" aria-hidden="true">{axis.map(g => <span style={`--at: ${at(g)}`}>{g}</span>)}</p>
+		</div>
+	</div>
+	<figcaption id="protein-range-caption" class="caption">Dashed lines mark the two targets in this post, 1.6 and 2.2 g/kg. The diamond marks where fat-free mass gains leveled off in the 2018 review, and its bar shows how uncertain that point is. The RDA is half of 1.6.</figcaption>
+</figure>
+
+<style>
+	.protein-range__body {
+		container-type: inline-size;
+	}
+
+	.protein-range__chart {
+		--line: color-mix(in srgb, var(--ink) 55%, transparent);
+	}
+
+	.protein-range__marks,
+	.protein-range__axis {
+		position: relative;
+		height: 1.5em;
+	}
+
+	.protein-range__marks span,
+	.protein-range__axis span {
+		position: absolute;
+		left: var(--at);
+		translate: -50% 0;
+	}
+
+	.protein-range__marks span {
+		color: var(--ink);
+		font-weight: 600;
+	}
+
+	.protein-range__axis span:first-child {
+		translate: 0 0;
+	}
+
+	:global(.editorial .prose) .protein-range__rows {
+		display: grid;
+		gap: var(--space-3);
+		margin-top: var(--space-1);
+		padding-left: 0;
+		list-style: none;
+	}
+
+	:global(.editorial .prose) .protein-range__row {
+		display: grid;
+		gap: var(--space-1);
+		margin-top: 0;
+	}
+
+	.protein-range__label {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-2);
+		font-size: var(--fs-small);
+		line-height: 1.4;
+	}
+
+	.protein-range__track {
+		position: relative;
+		display: block;
+		min-height: 1.5rem;
+	}
+
+	.protein-range__track::before {
+		content: '';
+		position: absolute;
+		inset-inline: 0;
+		top: 50%;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.protein-range__guide {
+		position: absolute;
+		inset-block: 0;
+		left: var(--at);
+		border-left: 1px dashed var(--line);
+	}
+
+	.protein-range__band,
+	.protein-range__point,
+	.protein-range__plateau {
+		position: absolute;
+		top: 50%;
+		left: var(--at);
+		height: 0.75rem;
+	}
+
+	.protein-range__band {
+		width: var(--span);
+		translate: 0 -50%;
+		border: 1px solid var(--protein);
+		border-radius: var(--radius-pill);
+		background: color-mix(in srgb, var(--protein) 22%, transparent);
+	}
+
+	.protein-range__point,
+	.protein-range__plateau {
+		width: 0.75rem;
+		background: var(--ink);
+		translate: -50% -50%;
+	}
+
+	.protein-range__point {
+		border-radius: 50%;
+	}
+
+	.protein-range__plateau {
+		width: 0.8rem;
+		height: 0.8rem;
+		border: 2px solid var(--band);
+		rotate: 45deg;
+	}
+
+	/* Wide columns put each label beside its track, so the dashed guides run unbroken down the chart. */
+	@container (min-width: 34rem) {
+		.protein-range__chart {
+			display: grid;
+			grid-template-columns: 13rem minmax(0, 1fr);
+			column-gap: var(--space-4);
+		}
+
+		.protein-range__marks,
+		.protein-range__axis {
+			grid-column: 2;
+		}
+
+		:global(.editorial .prose) .protein-range__rows {
+			grid-column: 1 / -1;
+			grid-template-columns: subgrid;
+			gap: 0;
+		}
+
+		:global(.editorial .prose) .protein-range__row {
+			grid-column: 1 / -1;
+			grid-template-columns: subgrid;
+			gap: 0;
+		}
+
+		.protein-range__label {
+			flex-direction: column;
+			gap: 0;
+			padding-block: var(--space-2);
+		}
+	}
+
+	/* With large text on a narrow screen the scale goes and each range reads as text. */
+	@container (max-width: 15rem) {
+		.protein-range__marks,
+		.protein-range__axis,
+		.protein-range__track {
+			display: none;
+		}
+	}
+</style>
