@@ -31,7 +31,7 @@ const lines = examples.map(example => {
 			{lines.map(line => <li>
 				<p class="label-rounding__name"><span>{line.name}</span><span class="caption">{line.rule}</span></p>
 				<p class="label-rounding__result"><span>{line.exact}{line.unit}</span><span aria-hidden="true"> → </span><span class="sr-only"> prints as </span><strong>{line.printed}{line.unit}</strong></p>
-				<span class="label-rounding__line" aria-hidden="true" style={`--at: ${line.at * 100}%; --printed: ${line.printed === line.high ? '100%' : '0%'}`}>
+				<span class:list={['label-rounding__line', { 'label-rounding__line--under': line.at < 0.5 }]} aria-hidden="true" style={`--at: ${line.at * 100}%; --printed: ${line.printed === line.high ? '100%' : '0%'}`}>
 					<span class="label-rounding__move"></span>
 					<i class="label-rounding__ring"></i>
 					<i class="label-rounding__dot"></i>
@@ -104,12 +104,21 @@ const lines = examples.map(example => {
 
 	/* Every line has the same width, so each spans exactly one rounding step. */
 	.label-rounding__line {
+		/*
+		 * The ring keeps a small gap from the halfway mark on the side it rounds toward. Fat at 2.24 of
+		 * 2.25 g is only about 5px from halfway at 320px, less than the ring's radius, and would sit on it.
+		 */
+		--ring-x: max(var(--at), 50% + 0.625rem);
 		position: relative;
 		flex-basis: 100%;
 		height: 2.5rem;
 		margin-top: var(--space-2);
 		/* The axis sits at 1rem; tick labels hang below it. */
 		background: linear-gradient(var(--ink-muted) 0 0) 0 calc(1rem - 1px) / 100% 2px no-repeat;
+	}
+
+	.label-rounding__line--under {
+		--ring-x: min(var(--at), 50% - 0.625rem);
 	}
 
 	.label-rounding__line > * {
@@ -136,8 +145,8 @@ const lines = examples.map(example => {
 
 	.label-rounding__move {
 		top: calc(1rem - 2px);
-		left: min(var(--at), var(--printed));
-		width: calc(max(var(--at), var(--printed)) - min(var(--at), var(--printed)));
+		left: min(var(--ring-x), var(--printed));
+		width: calc(max(var(--ring-x), var(--printed)) - min(var(--ring-x), var(--printed)));
 		height: 4px;
 		background: var(--ink);
 	}
@@ -149,10 +158,7 @@ const lines = examples.map(example => {
 		border-inline-start: 2px dashed var(--ink-muted);
 	}
 
-	/*
-	 * On the line the halfway mark is thin and drawn over the ring, taller than it, so an amount just
-	 * under halfway (fat at 2.24 of 2.25) still shows its ring centered left of the mark on narrow screens.
-	 */
+	/* On the line the halfway mark is thinner and taller than the ring so it reads as a guide, not a step. */
 	.label-rounding__line .label-rounding__half {
 		top: 0.125rem;
 		left: 50%;
@@ -187,7 +193,7 @@ const lines = examples.map(example => {
 	}
 
 	.label-rounding__line .label-rounding__ring {
-		--x: var(--at);
+		--x: var(--ring-x);
 	}
 
 	.label-rounding__line .label-rounding__dot {
