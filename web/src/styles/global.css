@@ -1481,10 +1481,31 @@ summary {
 	margin-top: var(--space-7);
 }
 
+/* Hairline rows like the About principles, with full-width 44px targets instead of bare text links. */
 .editorial__related ul {
-	display: grid;
-	gap: var(--space-3);
 	margin-top: var(--space-4);
+	border-top: 1px solid var(--hairline);
+}
+
+.editorial__related li {
+	border-bottom: 1px solid var(--hairline);
+}
+
+.editorial__related li a {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+	padding-block: var(--space-3);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	text-decoration: none;
+	text-wrap: pretty;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.editorial__related li a:hover {
+		text-decoration: underline;
+	}
 }
 
 .editorial__list li {
