@@ -108,7 +108,7 @@ struct TargetReviewScreen: View {
                 )
 
                 Picker("Macro balance", selection: $macroPreset) {
-                    ForEach([GoalMacroPreset.balanced, .highProtein, .lowCarb], id: \.self) { preset in
+                    ForEach([GoalMacroPreset.balanced, .highProtein, .higherFat], id: \.self) { preset in
                         Text(preset.title).tag(preset)
                     }
                 }

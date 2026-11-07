@@ -8,6 +8,10 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 Added a native trailing swipe-to-delete for saved foods in Add Food's On Device list, the meal builder's food picker, and Settings' saved food lists. Common seed foods and foods used by saved meals offer no action; their existing editor still explains the meal block. Log entries and logged meals are snapshots with a plain food ID, so deletion leaves diary history, totals, widgets, Health sync versions, and shared-day data unchanged. E2E store digests matched before and after deletes; format, build, and 262 tests pass. A confirmation-dialog first draft crashed UICollectionView and was replaced. See [failure modes and evidence](docs/evidence/delete-saved-foods/README.md).
 
+## 2026-11-07 AMDR macro presets
+
+Moved the goal calculator presets inside the adult AMDRs (protein 10–35%, carbs 45–65%, fat 20–35%): Balanced 30/40/30 → 20/50/30, High protein 40/30/30 → 31/47/22, and Low carb 35/20/45 → renamed Higher fat at 20/47/33, keeping the stored raw value `lowCarb` so existing profiles and backups decode. The edge presets stop a few points inside the limits because 5 g rounding moves saved shares by up to about 2 points; a replay of every target from 1,200 to 4,500 kcal finds none outside the AMDR. Saved goals change only when the user taps Continue. The macro goals guide, AMDR chart, calculator steps, and launch post now use the new presets and worked example (130/320/85 g); the website needs a separate deploy. See [evidence](docs/evidence/amdr-macro-presets/README.md).
+
 ## 2026-11-06 Website feature screenshots
 
 Revised the crops to fill continuous cover frames without letterboxing. Logging extends its sampled app background; Privacy starts at food rows; Portion uses the compact scan-review controls; Widgets shows only the medium personal widget on real wallpaper. Four reduced-motion 2× captures, web checks, nine Worker tests, build and lint pass; desktop AVIFs total 77,398 bytes.

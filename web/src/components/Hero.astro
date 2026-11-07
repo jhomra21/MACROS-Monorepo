@@ -1,6 +1,6 @@
 ---
 import { site } from '../data/site';
-import DeviceFrame from './DeviceFrame.astro';
+import AppScreen from './AppScreen.astro';
 import WaitlistForm from './WaitlistForm.astro';
 import AppStoreBadge from './AppStoreBadge.astro';
 ---
@@ -12,7 +12,7 @@ import AppStoreBadge from './AppStoreBadge.astro';
 			<p class="lead" style="--i: 1">{site.hero.lead}</p>
 		</div>
 		<div class="hero__visual">
-			<DeviceFrame
+			<AppScreen
 				src={site.heroShowcase.src}
 				alt={site.heroShowcase.alt}
 				widths={[240, 280, 320, 480, 560, 640, 840, 960]}

@@ -2,7 +2,7 @@
 title: How to set protein, carb, and fat goals
 description: "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets."
 published: 2026-11-04
-updated: 2026-11-04
+updated: 2026-11-06
 draft: false
 image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
@@ -23,7 +23,7 @@ The National Academies' Acceptable Macronutrient Distribution Ranges, or AMDRs, 
 | Carbohydrate | 45–65% |
 | Fat | 20–35% |
 
-These are population reference ranges, not a personalized prescription. The [National Academies' AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5) lists these adult values and explains their use in dietary planning. Choose percentages that add to 100%. A 20% protein, 50% carbohydrate, and 30% fat split is one example within all three ranges.
+These are population reference ranges, not a personalized prescription. The [National Academies' AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5) lists these adult values and explains their use in dietary planning. Choose percentages that add to 100%. A 20% protein, 50% carbohydrate, and 30% fat split is one example within all three ranges. It is also the app's Balanced preset.
 
 The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogram of body weight per day. The [National Academies' DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28) state this figure. It is a reference intended to meet the needs of nearly all healthy adults, not an upper limit or a sports-performance target. Individual needs can differ.
 
@@ -71,11 +71,11 @@ MACROS offers these starting splits before rounding:
 
 | Preset | Protein | Carbs | Fat |
 | --- | --- | --- | --- |
-| Balanced | 30% | 40% | 30% |
-| High protein | 40% | 30% | 30% |
-| Low carb | 35% | 20% | 45% |
+| Balanced | 20% | 50% | 30% |
+| High protein | 31% | 47% | 22% |
+| Higher fat | 20% | 47% | 33% |
 
-The preset names are product labels, not dietary guidelines. None of these presets falls within all three adult AMDRs. Balanced puts carbs below 45%. High protein also puts protein above 35%. Low carb puts carbs below 45% and fat above 35%. Choose manual goals if you want a split within the reference ranges or targets agreed with a professional.
+The preset names are product labels, not dietary guidelines. All three presets fall within the adult AMDRs. High protein and Higher fat stop a few points short of the protein and fat limits on purpose. The calculator rounds grams to 5 g, which can move the final shares by up to about 2 percentage points. These splits keep the rounded goals inside every AMDR for targets from 1,200 to 4,500 calories. Choose manual goals if you want a different split or targets agreed with a professional.
 
 <!-- visual:amdr -->
 
@@ -88,9 +88,9 @@ Take a hypothetical 30-year-old adult using Male, 70 kg, 175 cm, Moderate activi
 1. The resting estimate is 10 × 70 + 6.25 × 175 − 5 × 30 + 5 = 1,648.75 calories.
 2. The activity estimate is 1,648.75 × 1.55 = 2,555.56 calories.
 3. Maintain adds zero. The result is above the app's calorie floor.
-4. The 30/40/30 split gives about 191.67 g protein, 255.56 g carbs, and 85.19 g fat before rounding.
-5. The app rounds to 190 g protein, 255 g carbs, and 85 g fat. That totals 2,545 calories, below the estimate.
-6. It raises carbs to 260 g. The final goal is 2,565 calories, 190 g protein, 260 g carbs, and 85 g fat.
+4. The 20/50/30 split gives about 127.78 g protein, 319.45 g carbs, and 85.19 g fat before rounding.
+5. The app rounds to 130 g protein, 320 g carbs, and 85 g fat. That totals 2,565 calories, within 2% above the estimate, so carbs need no adjustment.
+6. The final goal is 2,565 calories, 130 g protein, 320 g carbs, and 85 g fat.
 
 <!-- visual:calculator -->
 
@@ -98,7 +98,7 @@ In imperial units, 70 kg is about 154.3 lb and 175 cm is about 5 ft 8.9 in. Ente
 
 ## Sources and scope
 
-I am the developer of MACROS, not a medical reviewer. I checked the sources below on November 4, 2026, and compared the calculator explanation with this version of the app.
+I am the developer of MACROS, not a medical reviewer. I checked the sources below on November 4, 2026. I last compared the calculator explanation with the app on November 6, 2026, after the presets changed.
 
 - [National Academies, 2024 AMDR report, chapter 3 and Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5): adult percentage ranges and their limits.
 - [National Academies, 2019 DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28): adult protein RDA of 0.8 g/kg.
