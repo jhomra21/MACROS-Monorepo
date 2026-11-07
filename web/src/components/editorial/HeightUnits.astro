@@ -34,6 +34,9 @@ const entries = [
 	{ name: 'Imperial entry', input: '154.3 lb, 5 ft 8.9 in', target: estimate(154.3 * kgPerLb, (5 * 12 + 8.9) * cmPerInch) },
 ].map(entry => ({ ...entry, goals: goals(entry.target) }));
 
+// The caption says both entries give the same goals. These checks run in `astro build` (macOS), not in Linux CI.
+if (JSON.stringify(entries[0].goals) !== JSON.stringify(entries[1].goals)) throw new Error('Height example: metric and imperial goals differ.');
+
 const ruler = { low: shownInches - 0.5, high: shownInches + 0.5 };
 
 const at = (inches: number) => `${((inches - ruler.low) / (ruler.high - ruler.low)) * 100}%`;

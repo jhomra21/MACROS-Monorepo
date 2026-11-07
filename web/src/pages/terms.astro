@@ -4,6 +4,16 @@ export const prerender = true;
 import ProseLayout from '../components/ProseLayout.astro';
 import TrialTimeline from '../components/TrialTimeline.astro';
 import { pages } from '../lib/seo';
+import { site } from '../data/site';
+
+// The subscription paragraph below types its prices out; fail the build if they drift from the plan list the visuals use.
+const termsPrices = new Map([['Monthly', '$2.99'], ['Yearly', '$19.99'], ['Lifetime', '$49.99']]);
+
+for (const option of site.proPrices) {
+	if (termsPrices.get(option.name) !== option.price) throw new Error(`Terms text lists a different ${option.name} price than site.proPrices.`);
+}
+
+if (site.proPrices.find(option => option.name === 'Yearly')?.note !== '7-day free trial') throw new Error('Terms text says a 7-day yearly trial; site.proPrices disagrees.');
 ---
 
 <ProseLayout

@@ -11,8 +11,8 @@ const rows = [
 	{ name: 'Open Food Facts results', detail: 'Food-search cache', length: minutes.hour, label: 'Up to 1 hour' },
 	{ name: 'USDA results', detail: 'Food-search cache', length: minutes.day, label: 'Up to 24 hours' },
 	{ name: 'Barcode responses', detail: 'Food-search cache', length: minutes.day, label: 'Up to 24 hours' },
-	{ name: 'Sampled operational logs', detail: 'About 1 in 10 requests', length: minutes.week, label: 'Up to 7 days', sampled: true },
-	{ name: 'Sharing invite link', detail: 'Unless you revoke it sooner', length: minutes.week, label: 'Expires after 7 days' },
+	{ name: 'Food-search operational logs', detail: 'Sampled, about 1 in 10 requests', length: minutes.week, label: 'Up to 7 days', sampled: true },
+	{ name: 'Sharing invite link', detail: 'The invite record stays until you delete your sharing profile', length: minutes.week, label: 'Stops working after 7 days' },
 	{ name: 'Waitlist and support forms', detail: 'Then deleted', length: minutes.year, label: '12 months' },
 ];
 
@@ -25,7 +25,7 @@ const ticks = [
 ];
 ---
 <figure class="guide-diagram retention" aria-labelledby="retention-caption">
-	<p class="title">How long each item is kept</p>
+	<p class="title">How long the timed items last</p>
 	<div class="retention__body">
 		<ul class="retention__rows" role="list">
 			{rows.map(row => <li>
@@ -36,7 +36,7 @@ const ticks = [
 		</ul>
 		<p class="retention__axis caption" aria-hidden="true"><span>{ticks.map(tick => <b style={`left: ${at(tick.length)}`}>{tick.label}</b>)}</span></p>
 	</div>
-	<figcaption id="retention-caption" class="caption">The longest each item is kept under this policy. The sections below give the details. Each step on the scale is a bigger jump in time, so a few minutes and a year fit on one line.</figcaption>
+	<figcaption id="retention-caption" class="caption">A summary of the periods stated in this policy. The policy text below governs, and items without a fixed period are described in their sections. Each step on the scale is a bigger jump in time, so a few minutes and a year fit on one line.</figcaption>
 </figure>
 
 <style>

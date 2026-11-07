@@ -18,7 +18,7 @@ const at = (day: number) => `${(day / trialDays) * 100}%`;
 const steps = [
 	{ day: 0, title: 'The trial starts.', body: 'Nothing is charged yet.' },
 	{ day: cutoff, title: '24 hours before the trial ends.', body: 'Cancel by now so the trial does not convert.' },
-	{ day: trialDays, title: 'The trial ends.', body: `The yearly subscription starts at ${yearly.price} and renews each year unless you cancel.` },
+	{ day: trialDays, title: 'The trial ends.', body: `The yearly subscription begins at ${yearly.price} a year and renews each year unless you cancel.` },
 ];
 ---
 <figure class="guide-diagram trial-timeline" aria-labelledby="trial-timeline-caption" style={`--cutoff: ${at(cutoff)}`}>

@@ -7,7 +7,11 @@ const cents = (name: string) => {
 
 	if (!option) throw new Error(`No ${name} price in site.proPrices`);
 
-	return Math.round(Number(option.price.replace('$', '')) * 100);
+	const value = Number(option.price.replace('$', ''));
+
+	if (!Number.isFinite(value)) throw new Error(`${name} price is not a plain dollar amount: ${option.price}`);
+
+	return Math.round(value * 100);
 };
 
 const monthly = cents('Monthly');
@@ -42,7 +46,7 @@ function dollars(value: number) {
 <figure class="guide-diagram pro-cost" aria-labelledby="pro-cost-caption" style={`--lifetime: ${at(lifetime)}`}>
 	<p class="title">What each plan costs over {years.length} years</p>
 	<div class="pro-cost__math">
-		<p><span>Yearly, {dollars(yearly)} ÷ 12</span> <strong>about {dollars(Math.round(yearly / 12))} a month</strong></p>
+		<p><span>Yearly, about {dollars(Math.round(yearly / 12))} a month</span> <strong>{dollars(yearly)} billed yearly</strong></p>
 		<p><span>Monthly, 12 × {dollars(monthly)}</span> <strong>{dollars(twelveMonths)} a year</strong></p>
 	</div>
 	<ul class="pro-cost__plans" role="list">

@@ -3,14 +3,14 @@
 const months = 12;
 ---
 <figure class="guide-diagram support-timeline" aria-labelledby="support-timeline-caption">
-	<p class="title">What happens to your request</p>
+	<p class="title">What happens to a form request</p>
 	<div class="support-timeline__bar" aria-hidden="true">
 		<span class="support-timeline__months">{Array.from({ length: months }, () => <i></i>)}</span>
 		<span class="caption"><span>Month 1</span><span>Month {months}</span></span>
 	</div>
 	<ol class="support-timeline__steps" role="list">
 		<li><span class="diagram-key" aria-hidden="true">1</span><p><strong>You send it.</strong> We store your name, email address, and message.</p></li>
-		<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>We reply by email.</strong></p></li>
+		<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>We reply by email when we can.</strong></p></li>
 		<li><span class="diagram-key" aria-hidden="true">3</span><p><strong>After {months} months, we delete it.</strong> Ask in a request if you want it deleted sooner.</p></li>
 	</ol>
 	<figcaption id="support-timeline-caption" class="caption">Each block is one month. Requests are stored in Cloudflare D1, as the <a href="/privacy/#website-forms-and-cloudflare-logs">privacy policy</a> explains.</figcaption>
