@@ -1159,6 +1159,11 @@ summary {
 	gap: var(--space-6);
 }
 
+/* The notes below the story continue the same grid, so they get a grid gap, not a section gap. */
+.about-story {
+	padding-bottom: var(--space-7);
+}
+
 .about-item {
 	display: grid;
 	align-content: start;
