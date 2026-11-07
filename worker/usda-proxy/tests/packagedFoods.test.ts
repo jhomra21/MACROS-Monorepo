@@ -2,12 +2,13 @@ import { describe, expect, it } from 'bun:test'
 import { z } from 'zod'
 
 import { fetchOpenFoodFactsProduct } from '../src/openFoodFacts'
-import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
+import { cacheReadOrder, cacheWritePlan, usdaFoodCacheKey, usdaSearchCacheKey } from '../src/packagedFoodSearchCache'
 import { searchPackagedFoods } from '../src/packagedFoods'
 import { isRestaurantLikeQuery } from '../src/restaurantSearch'
 import type { PackagedFoodSearchDependencies, PackagedFoodSearchExecution } from '../src/packagedFoods'
 import type { PackagedFoodSearchQuery, PackagedFoodSearchResponse } from '../src/types'
-import { fetchUSDAFood, searchUSDAFoods } from '../src/usda'
+import { normalizeUSDAFood } from '../src/normalizedFood'
+import { fetchUSDAFood, searchUSDAFoods, usdaSourceFood } from '../src/usda'
 
 const DEFAULT_QUERY: PackagedFoodSearchQuery = {
   query: 'protein bar',
@@ -962,7 +963,61 @@ describe('fetchUSDAFood', () => {
       })
     }
   })
-})
+  it('renders gram fallback servings the same from search and details when unit spellings differ', async () => {
+    // Independent records shaped like FDC 2026852: search reports GRM, details report g, neither has household text.
+    const searchRecord = {
+      fdcId: 2026852,
+      description: 'NUTELLA WITH BREADSTICKS',
+      brandOwner: 'FERRERO U.S.A., INCORPORATED',
+      servingSize: 52,
+      servingSizeUnit: 'GRM',
+      foodNutrients: [
+        { nutrientId: 1008, value: 519 },
+        { nutrientId: 1003, value: 7.69 },
+        { nutrientId: 1004, value: 26.92 },
+        { nutrientId: 1005, value: 65.38 },
+        { nutrientId: 1093, value: 250 },
+      ],
+    }
+
+    const detailsRecord = {
+      fdcId: 2026852,
+      description: 'NUTELLA WITH BREADSTICKS',
+      brandOwner: 'FERRERO U.S.A., INCORPORATED',
+      servingSize: 52.0,
+      servingSizeUnit: 'g',
+      foodNutrients: [
+        { amount: 519, nutrient: { id: 1008 } },
+        { amount: 7.69, nutrient: { id: 1003 } },
+        { amount: 26.92, nutrient: { id: 1004 } },
+        { amount: 65.38, nutrient: { id: 1005 } },
+        { amount: 250, nutrient: { id: 1093 } },
+      ],
+    }
+
+    const search = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'nutella breadsticks' },
+      'test-usda-key',
+      async () => Response.json({ totalHits: 1, foods: [searchRecord] }),
+    )
+
+    const details = await fetchUSDAFood(2026852, 'test-usda-key', async () => Response.json(detailsRecord))
+    const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+    const v1Key = (food: typeof details) => [food.name, food.brand, food.servingDescription, food.gramsPerServing, food.caloriesPerServing, food.proteinPerServing, food.fatPerServing, food.carbsPerServing]
+    const { calories, protein, fat, carbs } = v2.nutrition
+
+    expect(v1Key(details)).toEqual(['Nutella with Breadsticks', 'Ferrero U.S.A., Incorporated', '52 g', 52, 270, 4, 14, 34])
+    expect(v1Key(search.results[0]!)).toEqual(v1Key(details))
+    expect([v2.name, v2.brand, v2.servingDescription, v2.gramsPerServing, calories, protein, fat, carbs]).toEqual(v1Key(details))
+  })
+
+  it('keeps household serving text and non-gram unit spellings', async () => {
+    const withHousehold = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(usdaDetailsPayload()))
+    const volume = usdaSourceFood({ ...usdaDetailsPayload(), householdServingFullText: undefined, servingSize: 240, servingSizeUnit: 'MLT' })
+
+    expect(withHousehold.servingDescription).toBe('1 bar')
+    expect(volume?.servingDescription).toBe('240 MLT')
+  })})
 
 describe('packaged food cache policy', () => {
   it('shares successful pinned Open Food Facts results under the default read key', () => {
@@ -1089,7 +1144,33 @@ describe('packaged food cache policy', () => {
     expect(pinnedOpenFoodFactsWithFallback.request.url).toBe(pinnedOpenFoodFactsWithoutFallback.request.url)
     expect(pinnedUSDAWithFallback.request.url).toBe(pinnedUSDAWithoutFallback.request.url)
   })
-})
+  it('versions only the USDA basis cache keys and leaves Open Food Facts keys byte-identical', () => {
+    const url = new URL(BASE_URL)
+    const restaurant = { ...DEFAULT_QUERY, query: 'Raising cane’s' }
+    const urls = (params: PackagedFoodSearchQuery) => cacheReadOrder(url, params).map((entry) => entry.request.url)
+
+    expect(urls(DEFAULT_QUERY)).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=protein+bar&page=1&pageSize=10',
+      'https://example.com/v1/packaged-foods/search/default?q=protein+bar&page=1&pageSize=10&fallbackOnEmpty=1',
+    ])
+    expect(urls({ ...DEFAULT_QUERY, provider: 'openFoodFacts' })).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts/pinned?q=protein+bar&page=1&pageSize=10',
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=protein+bar&page=1&pageSize=10',
+    ])
+    expect(urls(restaurant)).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=raising+cane%E2%80%99s&page=1&pageSize=10&restaurantRetry=4',
+    ])
+    expect(urls({ ...DEFAULT_QUERY, provider: 'usda' })).toEqual([
+      'https://example.com/v1/packaged-foods/search/usda?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    ])
+    expect(cacheWritePlan(url, DEFAULT_QUERY, makeResponse('usda')).map((entry) => entry.request.url)).toEqual([
+      'https://example.com/v1/packaged-foods/search/usda?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    ])
+    expect(usdaSearchCacheKey(url, DEFAULT_QUERY).url).toBe(
+      'https://example.com/v1/usda/search?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    )
+    expect(usdaFoodCacheKey(url, 2026852).url).toBe('https://example.com/v1/usda/foods/2026852?usdaBasis=2')
+  })})
 
 function requestURL(input: RequestInfo | URL): string {
   return input instanceof Request ? input.url : new URL(input).toString()

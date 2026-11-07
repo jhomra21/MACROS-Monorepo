@@ -364,7 +364,9 @@ function makeServingDescription(food: USDAFood): string {
   const servingSizeUnit = normalizedText(food.servingSizeUnit)
 
   if (servingSize != null && Number.isFinite(servingSize) && servingSize > 0 && servingSizeUnit != null) {
-    return `${roundForDisplay(servingSize)} ${servingSizeUnit}`
+    const unit = GRAM_UNITS.has(servingSizeUnit.toLowerCase()) ? 'g' : servingSizeUnit
+
+    return `${roundForDisplay(servingSize)} ${unit}`
   }
 
   return '1 serving'

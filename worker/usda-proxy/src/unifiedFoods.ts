@@ -86,7 +86,8 @@ async function loadSource(
   cursor: string | null,
   dependencies: FoodSearchDependencies,
 ): Promise<SourcePage> {
-  const key = JSON.stringify([3, source.id, query, cursor ?? '1'])
+  // USDA pages use version 4 since its nutrient basis changed; other sources keep their warm entries.
+  const key = JSON.stringify([source.id === 'usda' ? 4 : 3, source.id, query, cursor ?? '1'])
   const cached = await dependencies.cache?.read(key)
 
   if (cached != null) return cached

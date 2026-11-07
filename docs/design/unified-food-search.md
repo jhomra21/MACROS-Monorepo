@@ -1,6 +1,6 @@
 # Unified food search (approval checkpoint)
 
-**Contract/compatibility.** `GET /v2/foods/search?q=chicken%20breast[&cursor=…]`. Normalize case/whitespace; require 3–120 characters (`zz` → 400, zero upstream calls). Any successful source, including empty, means 200; all active sources failing means 503; client throttling means 429 + `Retry-After`. Errors: `{"error":"Try again"}`. Preserve `/v1` bytes, behavior, caches, and existing tests. Deploy Worker before app.
+**Contract/compatibility.** `GET /v2/foods/search?q=chicken%20breast[&cursor=…]`. Normalize case/whitespace; require 3–120 characters (`zz` → 400, zero upstream calls). Any successful source, including empty, means 200; all active sources failing means 503; client throttling means 429 + `Retry-After`. Errors: `{"error":"Try again"}`. Preserve `/v1` bytes, behavior, caches, and existing tests. Intentional exception (2026-11-07): `/v1` USDA results use the v2 serving basis, rounding, and display text, and their cache keys carry a basis version ([evidence](../evidence/usda-v1-basis/README.md)). Deploy Worker before app.
 
 ```json
 {"query":"chicken breast","results":[{"id":"usda:123","source":"usda","externalProductID":"usda:123","sourceName":"USDA FoodData Central","sourceURL":"https://fdc.nal.usda.gov/food-details/123","name":"Chicken breast","brand":null,"barcode":null,"servingDescription":"100 g","gramsPerServing":100,"nutrition":{"calories":120,"protein":22,"fat":3,"carbs":0},"requiredReviewNutrients":[]}],"nextCursor":null}

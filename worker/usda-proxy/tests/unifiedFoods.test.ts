@@ -60,6 +60,16 @@ const run = (sources: FoodSource[], cursor?: string, cache?: SourcePageCache) =>
   searchUnifiedFoods({ query: 'chicken breast', cursor }, { sources, cache, deadline: deadline() })
 
 describe('unified food search failures, written before implementation', () => {
+  it('versions only the USDA source-page cache key', async () => {
+    const { cache, writes } = memoryCache()
+
+    await run([terminal('openFoodFacts'), terminal('usda')], undefined, cache)
+
+    expect(writes.map((write) => write.key)).toEqual([
+      '[3,"openFoodFacts","chicken breast","1"]',
+      '[4,"usda","chicken breast","1"]',
+    ])
+  })
   it('starts every source concurrently, including unknown future source IDs', async () => {
     const started: string[] = []
     const releases: Array<() => void> = []

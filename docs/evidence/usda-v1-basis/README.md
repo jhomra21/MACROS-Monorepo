@@ -21,7 +21,7 @@ FDC Branded `foodNutrients` are per 100 g. The v1 contract returned them as `*Pe
 
 ## Red/green
 
-Source base: `origin/main` `f7f83f0`. Bun 1.4.2, Node runtime QA, Miniflare. Raw logs are in ignored `build/evidence/2026-11-07-usda-v1-basis/`.
+Source base: `origin/main` `f7f83f0`. Bun 1.4.2, Node runtime QA, Miniflare. Raw logs stayed local in `/tmp/usda-v1-basis-evidence/` and are not tracked; this README keeps the summaries.
 
 | Check | Before fix | After fix |
 | --- | --- | --- |
@@ -55,8 +55,76 @@ An offline replay compared `origin/main` and the fix through `usdaSourceFood` �
 
 ## Repair effect
 
-The app's `SecondaryNutrientRepairKey` compares source, trimmed lowercase name, brand, and serving, plus exact `gramsPerServing` and the four macros. Repair builds the refreshed draft from `/v1/usda/foods/:fdcId` (`USDAFoodDraftMapper`). Before this fix, USDA foods saved from v2 never matched. Now v1 details carry the same basis, rounding, and display text, so they match. Foods saved by older builds through v1 hold per-100 g values and raw text, so they no longer match. Repair marks them not repairable and does not change them. The owner accepted this.
+The app's `SecondaryNutrientRepairKey` compares source, trimmed lowercase name, brand, and serving, plus exact `gramsPerServing` and the four macros. Repair builds the refreshed draft from `/v1/usda/foods/:fdcId` (`USDAFoodDraftMapper`).
+
+- **USDA foods saved from v2.** Before this fix, fresh v1 details matched only when they happened to agree with v2: a "100 g" serving with `gramsPerServing` 100, macros that v2's rounding left unchanged (for example integral values), and a brand that display casing did not alter. Other v2 foods did not match. v1 details now use the same basis, rounding, and display text as v2, so a v2-saved food matches when FDC data has not changed since it was saved.
+- **Missing household text.** When a record has no `householdServingFullText`, the serving text comes from the size and unit. Round 1 kept the upstream spelling, so a v2 search record with `GRM` ("52 GRM") and v1 details with `g` ("52 g") disagreed. Round 2 renders every gram spelling as "<size> g". v2 foods saved before round 2 with "… GRM" text can still mismatch.
+- **Warm caches.** Until round 2, the v1 and v2 USDA caches could keep serving pre-fix values for up to 24 h after a deploy, so a fresh v1 detail could disagree with a v2 page. The versioned keys below stop this.
+- **Foods saved by older builds through v1.** These hold per-100 g values with the raw serving text. They still match when the new v1 details produce the same fields, for example a 100 g gram serving whose values already survive the new rounding and whose name and brand are unchanged by display casing. Otherwise repair marks them not repairable and does not change them. The owner accepted this.
 
 ## Edge cache
 
-v1 responses are stored in the colo-local Cache API for 24 h (`CACHE_TTL_SECONDS` in `index.ts`), and a deploy does not clear them. Clients get only `s-maxage`, which private caches ignore. Bumping one shared line in `buildCacheKey` would also flush the unrelated Open Food Facts search and barcode caches. A targeted bump needs three edits (the `usda`/`default` packaged-search keys and the two `/v1/usda` routes), so it was not implemented. Build 23 is not released yet. Deploying this at least 24 h before release lets old entries expire. If that is too slow, add a `basis` item to those three USDA cache keys.
+v1 responses are stored in the colo-local Cache API for 24 h (`CACHE_TTL_SECONDS` in `index.ts`), and v2 stores normalized USDA source pages for 24 h. A deploy clears neither. Round 2 versions only the USDA keys:
+
+| Cache | Before | After |
+| --- | --- | --- |
+| Packaged search `usda` (pinned and default fallback) | `/v1/packaged-foods/search/usda?q=protein+bar&page=1&pageSize=10` | `…&pageSize=10&usdaBasis=2` |
+| `/v1/usda/search` | `/v1/usda/search?q=protein+bar&page=1&pageSize=10` | `…&pageSize=10&usdaBasis=2` |
+| `/v1/usda/foods/:fdcId` | `/v1/usda/foods/2026852` | `/v1/usda/foods/2026852?usdaBasis=2` |
+| v2 USDA source page | `[3,"usda","chicken breast","1"]` | `[4,"usda","chicken breast","1"]` |
+| Packaged search `openFoodFacts`, `openFoodFacts/pinned`, `default`, restaurant retry | unchanged | unchanged (asserted byte for byte) |
+| v2 Open Food Facts source page | `[3,"openFoodFacts",…]` | unchanged |
+| Barcode | `/v1/packaged-foods/barcodes/<code>` | unchanged |
+
+The packaged-search `default` key stores only Open Food Facts responses (USDA fallbacks go to the `usda` key), so it keeps its warm entries.
+## Round 2 failure modes (written before the round 2 fix)
+
+11. **Unit spelling in fallback serving text.** With no `householdServingFullText`, the serving text keeps the upstream unit: v2 search records (`GRM`) give "52 GRM" while v1 details (`g`) give "52 g". The repair key compares serving text exactly (lowercased), so repair fails or marks the food not repairable. Every gram spelling must render as "<size> g" in the shared path. Volume and other units keep their spelling (they become "100 g" anyway).
+12. **Household text still wins.** The gram rendering must only apply when household text is missing; "1 bar" stays "1 bar".
+13. **Copied fixtures hide drift.** A parity test that reuses one record for search and details cannot catch a difference between the endpoints. The search and details fixtures must differ in unit spelling and be built independently.
+14. **Warm v1 caches serve pre-fix numbers.** `/v1/packaged-foods/search` with the `usda` key (pinned or default fallback), `/v1/usda/search`, and `/v1/usda/foods/:fdcId` serve the colo cache for 24 h, so old per-100 g values outlive the deploy. Each USDA key needs a basis version item.
+15. **Warm v2 USDA source pages.** `/v2/foods/search` caches normalized USDA pages for 24 h. An old `GRM` page can return a "100 g" food while fresh v1 details return the label serving, so repair keys disagree. The USDA source-page key needs a version.
+16. **Collateral cache flush.** Open Food Facts search (`openFoodFacts`, `openFoodFactsPinned`), the packaged-search `default` key (it stores only Open Food Facts responses), barcode keys, and the v2 Open Food Facts source-page key must stay byte-identical, or a deploy needlessly flushes them and spends upstream budget.
+17. **Version collision.** The new USDA keys must differ from the old ones, or the old entries are still read.
+
+## Round 2 fix
+
+- `makeServingDescription` in `usda.ts` (shared by v1 and v2) renders any `GRAM_UNITS` spelling as "<size> g" when household text is missing. Household text and non-gram units keep their spelling.
+- `packagedFoodSearchCache.ts` adds `usdaBasis=2` to the packaged-search `usda` key and builds both `/v1/usda` keys (`usdaSearchCacheKey`, `usdaFoodCacheKey`), which `index.ts` now uses. `unifiedFoods.ts` writes USDA source pages under version 4 and every other source under version 3.
+
+## Round 2 red/green
+
+Base: rebased onto `origin/main` `c84b848`. Raw logs are local in `/tmp/usda-v1-basis-evidence/round2/`, not tracked.
+
+| Check | Before fix | After fix |
+| --- | --- | --- |
+| `worker/usda-proxy` `bun test` | 95 pass, 3 fail: search gave "52 GRM" vs details "52 g"; packaged `usda` key lacked `usdaBasis=2` (the Open Food Facts and `default` assertions before it passed); v2 wrote `[3,"usda",…]` | 98 pass |
+| Runtime QA (`make qa-network`) | — | PASS, 130 HTTP requests, 60 assertion groups |
+| Convex integration (`make qa-network`) | — | 76 pass |
+| `bun run check`, `make lint-js`, `git diff --check` | — | pass |
+
+The parity test builds the search record (`GRM`, `nutrientId`/`value`) and the details record (`g`, 52.0, `amount`/`nutrient.id`) separately, both without household text, and requires v1 search, v1 details, and v2 to give the same repair key fields, "52 g", and the label values 270 / 4 / 14 / 34.
+
+## Round 2 live check (local `wrangler dev`, `DEMO_KEY`)
+
+`DEMO_KEY` allows 10 requests per rolling hour per IP. Each probe ran once, with no retries. A temporary `.dev.vars` (`DEMO_KEY` only) was written for each run and deleted afterward. "Before" is round 1 (`d817c9f`); "after" is round 2. Values are serving / grams / kcal / protein / fat / carbs / sodium mg.
+
+| Probe | Before (live) | After (live) |
+| --- | --- | --- |
+| `/v1/packaged-foods/search?q=nutella breadsticks&provider=usda`, 2026852 | "1 CONTAINER" / 52 / 270 / 4 / 14 / 34 / 130 | 503, quota spent |
+| `/v1/usda/foods/2026852` | same as above | 503, quota spent |
+| `/v2/foods/search?q=nutella breadsticks`, USDA 2560070 | "1 Unit (52g)" / 52 / 260 / 4 / 13 / 34 / 130 | 200, USDA skipped (quota) |
+| `/v1/packaged-foods/search?q=kind chewy granola bars&provider=usda`, 2577959 (`GRM`, empty household text) | "23 GRM" / 23 / 100 / 1 / 3.5 / 16 / 65.1 | 503, quota spent |
+| `/v1/usda/foods/2577959` | 503, quota spent | 503, quota spent |
+| `/v2/foods/search?q=kind chewy granola bars` | 200, USDA skipped (quota) | 200, USDA skipped (quota) |
+
+Because the quota ran out, the FDC JSON captured live (`/fdc/v1/food/2026852`, `/fdc/v1/food/2577959`, and a Branded search page containing 2577959) was replayed through each build's real `searchUSDAFoods`, `fetchUSDAFood`, and `usdaSourceFood` → `normalizeUSDAFood`:
+
+| Replay of live FDC JSON | Round 1 | Round 2 | Label |
+| --- | --- | --- | --- |
+| 2026852 v1 details | "1 CONTAINER" / 52 / 270 / 4 / 14 / 34 / 130 | same | 270 / 4 / 14 / 34 / 130 |
+| 2577959 v1 search | "23 GRM" / 23 / 100 / 1 / 3.5 / 16 / 65.1 | "23 g", values unchanged | 100 / 1 / 3.5 / 16 / 65.1 |
+| 2577959 v1 details | "23 GRM", values as above | "23 g", values unchanged | same |
+| 2577959 v2 search | "23 GRM", values as above | "23 g", values unchanged | same |
+
+In 2577959, both endpoints report `GRM`, so round 1 already matched across endpoints. Round 2 changes only the text, which future records with different spellings need (the parity test covers that). Saved v2 foods with "23 GRM" text will not match the new "23 g" details.
