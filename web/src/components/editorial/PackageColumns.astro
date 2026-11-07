@@ -35,22 +35,22 @@ const largest = Math.max(...foods.map(food => food.grams));
 		</div>
 	</div>
 	<ol class="package-columns__zones" role="list">
-		<li><span class="diagram-key" aria-hidden="true">1</span><p><strong>Under 2×: one serving.</strong> <span class="caption">A package "packaged and sold individually" that holds "less than 200 percent" of the reference amount is a single-serving container. Its "entire content" is "labeled as one serving."</span></p></li>
-		<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>More than 1.5×, under 2×: still one serving.</strong> <span class="caption">Above "150 percent," the label "may voluntarily" add a column for about one reference amount. The main column still covers the whole package.</span></p></li>
-		<li><span class="diagram-key" aria-hidden="true">3</span><p><strong>2× to 3×: two columns.</strong> <span class="caption">From "at least 200 percent" "up to and including 300 percent," the label "must provide" a column per serving and a column "for the entire package." A few products are exempt.</span></p></li>
-		<li><span class="diagram-key" aria-hidden="true">4</span><p><strong>Over 3×: per serving.</strong> <span class="caption">The two-column rule stops at 300 percent, so no package column is required. Multiply by the servings you ate.</span></p></li>
+		<li><span class="diagram-key" aria-hidden="true">1</span><p><strong>Up to 1.5×: one serving.</strong> <span class="caption">A package sold on its own that holds less than twice the reference amount counts as one serving. The label's numbers cover the whole package.</span></p></li>
+		<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>Over 1.5×, under 2×: still one serving.</strong> <span class="caption">The main column still covers the whole package. Some labels add a second column for a smaller serving of about 1×. If you ate it all, read the whole-package column.</span></p></li>
+		<li><span class="diagram-key" aria-hidden="true">3</span><p><strong>2× to 3×: two columns.</strong> <span class="caption">Counting exactly 2× and 3×. The label must show one column for a serving and one for the whole package. A few foods can skip the second column, such as very small packages and raw fruit, vegetables, and seafood.</span></p></li>
+		<li><span class="diagram-key" aria-hidden="true">4</span><p><strong>Over 3×: no package column required.</strong> <span class="caption">The two-column rule stops at 3×. Multiply the per-serving numbers by the servings you ate.</span></p></li>
 	</ol>
 	<div class="package-columns__foods">
-		<p><strong>1× depends on the food</strong></p>
+		<p><strong>What 1× means for two foods</strong></p>
 		<ul role="list">
 			{foods.map(food => <li>
 				<p class="package-columns__food"><span>{food.name}</span><span class="diagram-bar" style={`--share: ${(food.grams / largest) * 100}%`} aria-hidden="true"></span><strong>{food.grams}&nbsp;g ({food.ounces}&nbsp;oz)</strong></p>
-				<p class="caption">One serving under {2 * food.grams}&nbsp;g. Two columns from {2 * food.grams}&nbsp;g to {3 * food.grams}&nbsp;g.</p>
+				<p class="caption">A package under {2 * food.grams}&nbsp;g is one serving. From {2 * food.grams}&nbsp;g to {3 * food.grams}&nbsp;g, it shows two columns.</p>
 			</li>)}
 		</ul>
 	</div>
 	</div>
-	<figcaption id="package-columns-caption" class="caption">1× is FDA's reference amount for that kind of food, listed in 21 CFR 101.12. Quoted rules are from 21 CFR 101.9(b)(6) and (b)(12)(i) and cover packages sold on their own.</figcaption>
+	<figcaption id="package-columns-caption" class="caption">1× is FDA's reference amount: how much of that kind of food people usually eat at one time. These rules cover packages sold on their own. Sources: 21 CFR 101.9(b)(6) and (b)(12)(i), and 21 CFR 101.12 for reference amounts.</figcaption>
 </figure>
 
 <style>
@@ -79,7 +79,7 @@ const largest = Math.max(...foods.map(food => food.grams));
 
 	.package-columns .package-columns__zone--single {
 		border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-		background: color-mix(in srgb, var(--ink) 20%, var(--band));
+		background: color-mix(in srgb, var(--ink) 30%, var(--band));
 	}
 
 	.package-columns .package-columns__zone--optional {
@@ -95,7 +95,7 @@ const largest = Math.max(...foods.map(food => food.grams));
 	}
 
 	.package-columns .package-columns__zone--beyond {
-		border: 2px dashed color-mix(in srgb, var(--ink) 45%, transparent);
+		border: 2px dashed color-mix(in srgb, var(--ink) 60%, transparent);
 		border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 		background: var(--band);
 	}
@@ -154,22 +154,15 @@ const largest = Math.max(...foods.map(food => food.grams));
 		border-top: 1px solid var(--hairline);
 	}
 
+	/* Both rows share the label and value columns, so the bars start at the same x and share one gram scale. */
 	.package-columns .package-columns__foods ul {
+		grid-template-columns: auto minmax(0, 1fr) auto;
 		gap: var(--space-3);
 		margin-top: var(--space-2);
 	}
 
 	.package-columns .package-columns__foods li {
 		margin-top: 0;
-	}
-
-	/* Both rows share the label and value columns, so the bars start at the same x and share one gram scale. */
-	.package-columns .package-columns__foods ul {
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		column-gap: var(--space-3);
-	}
-
-	.package-columns .package-columns__foods li {
 		display: grid;
 		grid-column: 1 / -1;
 		grid-template-columns: subgrid;
