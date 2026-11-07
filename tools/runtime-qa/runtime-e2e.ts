@@ -211,7 +211,20 @@ try {
   const providers = createFetchMock(); providers.disableNetConnect(); mocks.push(providers);
   let mode = "success", upstreamCalls = 0;
   const offProduct = { code: "1234567890123", product_name: "QA cereal", brands: "QA", nutriments: { "energy-kcal_100g": 100, proteins_100g: 10, fat_100g: 2, carbohydrates_100g: 20 } };
-  const usdaFood = { fdcId: 42, description: "QA cereal", brandName: "QA", servingSize: 30, servingSizeUnit: "g", foodNutrients: [{ nutrientId: 1008, value: 100 }, { nutrientId: 1003, value: 10 }, { nutrientId: 1004, value: 2 }, { nutrientId: 1005, value: 20 }] };
+  // FDC Branded shape (per-100 g foodNutrients, GRM unit) with the printed 20 g label values.
+  const usdaLabel = { calories: 71.8, protein: 2.56, fat: 1.28, carbohydrates: 14.9 };
+  const usdaFood = { fdcId: 42, description: "QA cereal", brandOwner: "QA FOODS, INC.", brandName: "QA", servingSize: 20, servingSizeUnit: "GRM", householdServingFullText: "3/4 cup (20g)", foodNutrients: [{ nutrientId: 1008, value: 359 }, { nutrientId: 1003, value: 12.82 }, { nutrientId: 1004, value: 6.41 }, { nutrientId: 1005, value: 74.36 }] };
+
+  // Mirrors the app's SecondaryNutrientRepairKey: trimmed lowercase text, exact numbers.
+  const repairText = (value: string | undefined) => value?.trim().toLowerCase() || undefined;
+
+  const usdaRepairKey = z.object({ name: z.string(), brand: z.string().optional(), servingDescription: z.string(), gramsPerServing: z.number().optional(), caloriesPerServing: z.number(), proteinPerServing: z.number(), fatPerServing: z.number(), carbsPerServing: z.number() })
+    .transform((food) => [repairText(food.name), repairText(food.brand), repairText(food.servingDescription), food.gramsPerServing, food.caloriesPerServing, food.proteinPerServing, food.fatPerServing, food.carbsPerServing]);
+
+  const v2RepairKey = z.object({ name: z.string(), brand: z.string().optional(), servingDescription: z.string(), gramsPerServing: z.number().optional(), nutrition: z.object({ calories: z.number(), protein: z.number(), fat: z.number(), carbs: z.number() }) })
+    .transform(({ nutrition, ...food }) => usdaRepairKey.parse({ ...food, caloriesPerServing: nutrition.calories, proteinPerServing: nutrition.protein, fatPerServing: nutrition.fat, carbsPerServing: nutrition.carbs }));
+
+  const expectedUSDARepairKey = ["qa cereal", "qa foods", "3/4 cup (20g)", 20, Math.round(usdaLabel.calories), Math.round(usdaLabel.protein * 10) / 10, Math.round(usdaLabel.fat * 10) / 10, usdaLabel.carbohydrates];
 
   for (const origin of ["https://api.nal.usda.gov", "https://search.openfoodfacts.org", "https://world.openfoodfacts.org", "https://world.openfoodfacts.net"]) {
     providers.get(origin).intercept({ path: /.*/, method: origin.includes("usda") ? "POST" : "GET" }).reply((options) => {
@@ -255,7 +268,7 @@ try {
   const pageCalls = upstreamCalls;
   await request(usda.url, "/v1/usda/search?q=QA%20cereal&pageSize=2&page=2");
   assert(upstreamCalls > pageCalls);
-  assert.equal(responseResults(result)[0].caloriesPerServing, 100);
+  assert.deepEqual(usdaRepairKey.parse(responseResults(result)[0]), expectedUSDARepairKey);
   pass("USDA complete nutrition, incomplete result filtered, pagination and real runtime cache hit");
   const off = await request(usda.url, "/v1/packaged-foods/search?q=QA%20cereal&provider=openFoodFacts");
   assert.equal(off.status, 200); assert.equal(responseResults(off).length, 2); assert.equal(responseBody(off).resolvedProvider, "openFoodFacts");
@@ -357,8 +370,14 @@ try {
     ...usdaFood, foodNutrients: usdaFood.foodNutrients.map(n => ({ nutrient: { id: n.nutrientId }, amount: n.value })),
   }), { headers: { "content-type": "application/json" } }).persist();
   const details = await request(usda.url, "/v1/usda/foods/42");
-  assert.equal(details.status, 200); assert.equal(responseBody(details).fdcId, 42); assert.equal(responseBody(details).proteinPerServing, 10);
-  pass("USDA food details real route normalizes detail nutrient shape");
+  assert.equal(details.status, 200); assert.equal(responseBody(details).fdcId, 42);
+  assert.deepEqual(usdaRepairKey.parse(responseBody(details)), expectedUSDARepairKey);
+  pass("USDA food details real route normalizes detail nutrient shape to the label serving");
+  const unified = await request(usda.url, "/v2/foods/search?q=QA%20cereal");
+  assert.equal(unified.status, 200);
+  const unifiedUSDA = z.object({ results: z.array(z.object({ id: z.string() }).passthrough()) }).parse(unified.decoded).results.find((food) => food.id === "usda:42");
+  assert.deepEqual(v2RepairKey.parse(unifiedUSDA), usdaRepairKey.parse(responseBody(details)));
+  pass("v2-saved USDA food matches v1 details repair key");
   mode = "empty";
   const empty = await request(usda.url, "/v1/packaged-foods/search?q=filteredempty&page=2&provider=openFoodFacts");
   assert.equal(empty.status, 200); assert.equal(responseResults(empty).length, 0); assert.equal(responseBody(empty).hasMore, true);

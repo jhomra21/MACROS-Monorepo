@@ -22,6 +22,9 @@ const USDA_CACHE_PATH = '/v1/packaged-foods/search/usda'
 
 const RESTAURANT_RETRY_CACHE_VERSION = '4'
 
+// Bump when USDA nutrient basis or display text changes; deploys do not clear the colo cache.
+const USDA_BASIS_CACHE_ITEM: [string, string] = ['usdaBasis', '2']
+
 export function cacheReadOrder(url: URL, params: PackagedFoodSearchQuery): NamedCacheKey[] {
   switch (params.provider) {
   case 'openFoodFacts':
@@ -120,11 +123,28 @@ function cacheQueryItems(kind: PackagedFoodCacheKeyKind, params: PackagedFoodSea
     items.push(['fallbackOnEmpty', params.fallbackOnEmpty ? '1' : '0'])
   }
 
+  if (kind === 'usda') {
+    items.push(USDA_BASIS_CACHE_ITEM)
+  }
+
   if (isRestaurantLikeQuery(params.query) && (kind === 'openFoodFacts' || kind === 'openFoodFactsPinned')) {
     items.push(['restaurantRetry', RESTAURANT_RETRY_CACHE_VERSION])
   }
 
   return items
+}
+
+export function usdaSearchCacheKey(url: URL, params: { query: string; page: number; pageSize: number }): Request {
+  return buildCacheKey(url, '/v1/usda/search', [
+    ['q', params.query.toLowerCase()],
+    ['page', String(params.page)],
+    ['pageSize', String(params.pageSize)],
+    USDA_BASIS_CACHE_ITEM,
+  ])
+}
+
+export function usdaFoodCacheKey(url: URL, fdcId: number): Request {
+  return buildCacheKey(url, `/v1/usda/foods/${fdcId}`, [USDA_BASIS_CACHE_ITEM])
 }
 
 export function buildCacheKey(url: URL, path: string, queryItems: Array<[string, string]>): Request {

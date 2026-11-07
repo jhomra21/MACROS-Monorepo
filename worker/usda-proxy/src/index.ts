@@ -9,6 +9,8 @@ import {
   buildCacheKey,
   cacheReadOrder,
   cacheWritePlan,
+  usdaFoodCacheKey,
+  usdaSearchCacheKey,
 } from './packagedFoodSearchCache'
 import { searchPackagedFoods } from './packagedFoods'
 import type { PackagedFoodSearchExecution } from './packagedFoods'
@@ -180,11 +182,7 @@ app.get('/v1/usda/search', async (c) => {
 
   const cache = await caches.open('usda-proxy')
 
-  const cacheKey = buildCacheKey(new URL(c.req.url), '/v1/usda/search', [
-    ['q', params.query.toLowerCase()],
-    ['page', String(params.page)],
-    ['pageSize', String(params.pageSize)],
-  ])
+  const cacheKey = usdaSearchCacheKey(new URL(c.req.url), params)
 
   const cachedResponse = await cache.match(cacheKey)
 
@@ -248,7 +246,7 @@ app.get('/v1/usda/foods/:fdcId', async (c) => {
   }
 
   const cache = await caches.open('usda-proxy')
-  const cacheKey = buildCacheKey(new URL(c.req.url), `/v1/usda/foods/${fdcId}`, [])
+  const cacheKey = usdaFoodCacheKey(new URL(c.req.url), fdcId)
   const cachedResponse = await cache.match(cacheKey)
 
   if (cachedResponse != null) {

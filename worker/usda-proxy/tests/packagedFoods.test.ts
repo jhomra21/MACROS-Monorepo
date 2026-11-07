@@ -2,12 +2,13 @@ import { describe, expect, it } from 'bun:test'
 import { z } from 'zod'
 
 import { fetchOpenFoodFactsProduct } from '../src/openFoodFacts'
-import { cacheReadOrder, cacheWritePlan } from '../src/packagedFoodSearchCache'
+import { cacheReadOrder, cacheWritePlan, usdaFoodCacheKey, usdaSearchCacheKey } from '../src/packagedFoodSearchCache'
 import { searchPackagedFoods } from '../src/packagedFoods'
 import { isRestaurantLikeQuery } from '../src/restaurantSearch'
 import type { PackagedFoodSearchDependencies, PackagedFoodSearchExecution } from '../src/packagedFoods'
 import type { PackagedFoodSearchQuery, PackagedFoodSearchResponse } from '../src/types'
-import { fetchUSDAFood, searchUSDAFoods } from '../src/usda'
+import { normalizeUSDAFood } from '../src/normalizedFood'
+import { fetchUSDAFood, searchUSDAFoods, usdaSourceFood } from '../src/usda'
 
 const DEFAULT_QUERY: PackagedFoodSearchQuery = {
   query: 'protein bar',
@@ -859,8 +860,8 @@ describe('fetchUSDAFood', () => {
     expect(seenQueries).toEqual(['Wendy’s nuggets', 'wendys nuggets'])
     expect(response.query).toBe('Wendy’s nuggets')
     expect(response.results[0]).toMatchObject({
-      name: 'WENDYS CHICKEN NUGGETS',
-      brand: 'WENDYS',
+      name: 'Wendys Chicken Nuggets',
+      brand: 'Wendys',
     })
   })
 
@@ -886,7 +887,7 @@ describe('fetchUSDAFood', () => {
       }),
     )
 
-    expect(response.results.map((result) => result.name)).toEqual(['WENDYS CHICKEN NUGGETS'])
+    expect(response.results.map((result) => result.name)).toEqual(['Wendys Chicken Nuggets'])
   })
 
   it('maps USDA food details into the proxy contract', async () => {
@@ -896,7 +897,7 @@ describe('fetchUSDAFood', () => {
       id: 'usda:123',
       fdcId: 123,
       name: 'Protein Bar',
-      brand: 'Macro Co',
+      brand: 'Macro',
       servingDescription: '1 bar',
       gramsPerServing: 50,
       caloriesPerServing: 210,
@@ -914,7 +915,206 @@ describe('fetchUSDAFood', () => {
       barcode: '0123456789012',
     })
   })
-})
+
+  it('scales per-100 g USDA nutrients to the label serving for every gram unit spelling', async () => {
+    for (const servingSizeUnit of ['GRM', 'grm', 'g', 'G', 'grams']) {
+      const payload = { ...usdaDetailsPayload(), servingSizeUnit }
+      const label = payload.labelNutrients
+      const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(payload))
+
+      expect([
+        response.gramsPerServing,
+        response.caloriesPerServing,
+        response.proteinPerServing,
+        response.fatPerServing,
+        response.carbsPerServing,
+        response.sodiumPerServing,
+      ]).toEqual([
+        50,
+        label.calories.value,
+        label.protein.value,
+        label.fat.value,
+        label.carbohydrates.value,
+        label.sodium.value,
+      ])
+    }
+  })
+
+  it('scales per-100 ml USDA nutrients to volume servings without claiming grams', async () => {
+    for (const servingSizeUnit of ['MLT', 'mlt', 'ml', 'ML', 'milliliter', 'Milliliters']) {
+      for (const householdServingFullText of ['8 fl oz', undefined]) {
+        const response = await fetchUSDAFood(321, 'test-usda-key', async () => Response.json({
+          ...usdaBeverageDetailsPayload(),
+          servingSizeUnit,
+          householdServingFullText,
+        }))
+
+        expect(response).toMatchObject({ servingDescription: householdServingFullText ?? '240 ml', ...USDA_240_ML_EXPECTED })
+        expect(response.gramsPerServing).toBeUndefined()
+      }
+    }
+  })
+
+  it('gives the same volume serving from v1 search, v1 details, and v2 when unit spellings differ', async () => {
+    // Independent records shaped like an FDC Branded beverage: search reports MLT, details report ml.
+    const searchRecord = {
+      fdcId: 321,
+      dataType: 'Branded',
+      description: 'FIZZ COLA',
+      brandOwner: 'FIZZ BEVERAGE CO.',
+      servingSize: 240,
+      servingSizeUnit: 'MLT',
+      foodNutrients: [
+        { nutrientId: 1008, value: 42 },
+        { nutrientId: 1003, value: 0 },
+        { nutrientId: 1004, value: 0 },
+        { nutrientId: 1005, value: 10.6 },
+        { nutrientId: 1093, value: 4 },
+      ],
+    }
+
+    const detailsRecord = {
+      fdcId: 321,
+      dataType: 'Branded',
+      description: 'FIZZ COLA',
+      brandOwner: 'FIZZ BEVERAGE CO.',
+      servingSize: 240.0,
+      servingSizeUnit: 'ml',
+      foodNutrients: [
+        { amount: 42, nutrient: { id: 1008 } },
+        { amount: 0, nutrient: { id: 1003 } },
+        { amount: 0, nutrient: { id: 1004 } },
+        { amount: 10.6, nutrient: { id: 1005 } },
+        { amount: 4, nutrient: { id: 1093 } },
+      ],
+    }
+
+    const search = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'fizz cola' },
+      'test-usda-key',
+      async () => Response.json({ totalHits: 1, foods: [searchRecord] }),
+    )
+
+    const details = await fetchUSDAFood(321, 'test-usda-key', async () => Response.json(detailsRecord))
+    const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+    const v1Key = (food: typeof details) => [food.name, food.brand, food.servingDescription, food.gramsPerServing, food.caloriesPerServing, food.proteinPerServing, food.fatPerServing, food.carbsPerServing, food.sodiumPerServing]
+    const { calories, protein, fat, carbs, sodium } = v2.nutrition
+
+    // 240 ml is 2.4 × the per-100 ml values: 100.8 → 101 kcal, 25.44 → 25.4 g carbs, 9.6 mg sodium.
+    expect(v1Key(details)).toEqual(['Fizz Cola', 'Fizz Beverage', '240 ml', undefined, 101, 0, 0, 25.4, 9.6])
+    expect(v1Key(search.results[0]!)).toEqual(v1Key(details))
+    expect([v2.name, v2.brand, v2.servingDescription, v2.gramsPerServing, calories, protein, fat, carbs, sodium]).toEqual(v1Key(details))
+  })
+
+  it('keeps unscaled per-100 values on a "100 g or ml" serving without grams when a Branded basis is unknown', async () => {
+    for (const serving of [
+      { servingSizeUnit: undefined },
+      { servingSizeUnit: 'IU' },
+      { servingSize: 0 },
+      { servingSize: -50 },
+      { servingSize: undefined },
+      { dataType: undefined, servingSizeUnit: undefined },
+    ]) {
+      const details = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json({ ...usdaDetailsPayload(), ...serving }))
+      const searchRecord = { ...usdaPayload().foods[0], ...serving }
+      const search = await searchUSDAFoods(DEFAULT_QUERY, 'test-usda-key', async () => Response.json({ totalHits: 1, foods: [searchRecord] }))
+      const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+
+      for (const food of [details, search.results[0]!]) {
+        expect(food).toMatchObject({
+          servingDescription: '100 g or ml',
+          caloriesPerServing: 420,
+          proteinPerServing: 40,
+          fatPerServing: 14,
+          carbsPerServing: 36,
+          sodiumPerServing: 640,
+        })
+        expect(food.gramsPerServing).toBeUndefined()
+      }
+
+      expect(v2.servingDescription).toBe('100 g or ml')
+      expect(v2.gramsPerServing).toBeUndefined()
+      expect(v2.nutrition).toMatchObject({ calories: 420, protein: 40, fat: 14, carbs: 36, sodium: 640 })
+    }
+  })
+
+  it('keeps the 100 g basis for per-100 g non-branded records, even beside a volume serving', async () => {
+    for (const dataType of ['Foundation', 'SR Legacy', 'Survey (FNDDS)']) for (const serving of [
+      { servingSize: undefined, servingSizeUnit: undefined, householdServingFullText: undefined },
+      { servingSize: 240, servingSizeUnit: 'MLT' },
+    ]) {
+      const response = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json({
+        ...usdaDetailsPayload(),
+        dataType,
+        ...serving,
+      }))
+
+      expect(response).toMatchObject({
+        servingDescription: '100 g',
+        gramsPerServing: 100,
+        caloriesPerServing: 420,
+        proteinPerServing: 40,
+        fatPerServing: 14,
+        carbsPerServing: 36,
+        sodiumPerServing: 640,
+      })
+    }
+  })
+  it('renders gram fallback servings the same from search and details when unit spellings differ', async () => {
+    // Independent records shaped like FDC 2026852: search reports GRM, details report g, neither has household text.
+    const searchRecord = {
+      fdcId: 2026852,
+      description: 'NUTELLA WITH BREADSTICKS',
+      brandOwner: 'FERRERO U.S.A., INCORPORATED',
+      servingSize: 52,
+      servingSizeUnit: 'GRM',
+      foodNutrients: [
+        { nutrientId: 1008, value: 519 },
+        { nutrientId: 1003, value: 7.69 },
+        { nutrientId: 1004, value: 26.92 },
+        { nutrientId: 1005, value: 65.38 },
+        { nutrientId: 1093, value: 250 },
+      ],
+    }
+
+    const detailsRecord = {
+      fdcId: 2026852,
+      description: 'NUTELLA WITH BREADSTICKS',
+      brandOwner: 'FERRERO U.S.A., INCORPORATED',
+      servingSize: 52.0,
+      servingSizeUnit: 'g',
+      foodNutrients: [
+        { amount: 519, nutrient: { id: 1008 } },
+        { amount: 7.69, nutrient: { id: 1003 } },
+        { amount: 26.92, nutrient: { id: 1004 } },
+        { amount: 65.38, nutrient: { id: 1005 } },
+        { amount: 250, nutrient: { id: 1093 } },
+      ],
+    }
+
+    const search = await searchUSDAFoods(
+      { ...DEFAULT_QUERY, query: 'nutella breadsticks' },
+      'test-usda-key',
+      async () => Response.json({ totalHits: 1, foods: [searchRecord] }),
+    )
+
+    const details = await fetchUSDAFood(2026852, 'test-usda-key', async () => Response.json(detailsRecord))
+    const v2 = normalizeUSDAFood(usdaSourceFood(searchRecord)!)
+    const v1Key = (food: typeof details) => [food.name, food.brand, food.servingDescription, food.gramsPerServing, food.caloriesPerServing, food.proteinPerServing, food.fatPerServing, food.carbsPerServing]
+    const { calories, protein, fat, carbs } = v2.nutrition
+
+    expect(v1Key(details)).toEqual(['Nutella with Breadsticks', 'Ferrero U.S.A., Incorporated', '52 g', 52, 270, 4, 14, 34])
+    expect(v1Key(search.results[0]!)).toEqual(v1Key(details))
+    expect([v2.name, v2.brand, v2.servingDescription, v2.gramsPerServing, calories, protein, fat, carbs]).toEqual(v1Key(details))
+  })
+
+  it('keeps household serving text and renders volume unit spellings as ml', async () => {
+    const withHousehold = await fetchUSDAFood(123, 'test-usda-key', async () => Response.json(usdaDetailsPayload()))
+    const volume = usdaSourceFood({ ...usdaDetailsPayload(), householdServingFullText: undefined, servingSize: 240, servingSizeUnit: 'MLT' })
+
+    expect(withHousehold.servingDescription).toBe('1 bar')
+    expect(volume?.servingDescription).toBe('240 ml')
+  })})
 
 describe('packaged food cache policy', () => {
   it('shares successful pinned Open Food Facts results under the default read key', () => {
@@ -1041,7 +1241,33 @@ describe('packaged food cache policy', () => {
     expect(pinnedOpenFoodFactsWithFallback.request.url).toBe(pinnedOpenFoodFactsWithoutFallback.request.url)
     expect(pinnedUSDAWithFallback.request.url).toBe(pinnedUSDAWithoutFallback.request.url)
   })
-})
+  it('versions only the USDA basis cache keys and leaves Open Food Facts keys byte-identical', () => {
+    const url = new URL(BASE_URL)
+    const restaurant = { ...DEFAULT_QUERY, query: 'Raising cane’s' }
+    const urls = (params: PackagedFoodSearchQuery) => cacheReadOrder(url, params).map((entry) => entry.request.url)
+
+    expect(urls(DEFAULT_QUERY)).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=protein+bar&page=1&pageSize=10',
+      'https://example.com/v1/packaged-foods/search/default?q=protein+bar&page=1&pageSize=10&fallbackOnEmpty=1',
+    ])
+    expect(urls({ ...DEFAULT_QUERY, provider: 'openFoodFacts' })).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts/pinned?q=protein+bar&page=1&pageSize=10',
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=protein+bar&page=1&pageSize=10',
+    ])
+    expect(urls(restaurant)).toEqual([
+      'https://example.com/v1/packaged-foods/search/openFoodFacts?q=raising+cane%E2%80%99s&page=1&pageSize=10&restaurantRetry=4',
+    ])
+    expect(urls({ ...DEFAULT_QUERY, provider: 'usda' })).toEqual([
+      'https://example.com/v1/packaged-foods/search/usda?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    ])
+    expect(cacheWritePlan(url, DEFAULT_QUERY, makeResponse('usda')).map((entry) => entry.request.url)).toEqual([
+      'https://example.com/v1/packaged-foods/search/usda?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    ])
+    expect(usdaSearchCacheKey(url, DEFAULT_QUERY).url).toBe(
+      'https://example.com/v1/usda/search?q=protein+bar&page=1&pageSize=10&usdaBasis=2',
+    )
+    expect(usdaFoodCacheKey(url, 2026852).url).toBe('https://example.com/v1/usda/foods/2026852?usdaBasis=2')
+  })})
 
 function requestURL(input: RequestInfo | URL): string {
   return input instanceof Request ? input.url : new URL(input).toString()
@@ -1295,30 +1521,84 @@ function sparseUsableOpenFoodFactsPayload(page: number) {
   }
 }
 
+// FDC Branded shape: foodNutrients are per 100 g; labelNutrients are the 50 g label serving.
+const USDA_PER_100_G = [
+  [1008, 420],
+  [1003, 40],
+  [1004, 14],
+  [1005, 36],
+  [1258, 4],
+  [1079, 12],
+  [2000, 10],
+  [1235, 8],
+  [1093, 640],
+  [1253, 30],
+] as const
+
+function usdaBrandedRecord() {
+  return {
+    fdcId: 123,
+    dataType: 'Branded',
+    description: 'Protein Bar',
+    brandName: 'Macro Co',
+    gtinUpc: '0123456789012',
+    servingSize: 50,
+    servingSizeUnit: 'GRM',
+    householdServingFullText: '1 bar',
+    labelNutrients: {
+      calories: { value: 210 },
+      protein: { value: 20 },
+      fat: { value: 7 },
+      carbohydrates: { value: 18 },
+      saturatedFat: { value: 2 },
+      fiber: { value: 6 },
+      sugars: { value: 5 },
+      addedSugar: { value: 4 },
+      sodium: { value: 320 },
+      cholesterol: { value: 15 },
+    },
+  }
+}
+
+// FDC Branded beverage shape: servingSizeUnit is volume, so foodNutrients are per 100 ml.
+const USDA_PER_100_ML = [
+  [1008, 42],
+  [1003, 0],
+  [1004, 0],
+  [1005, 10.6],
+  [2000, 10.6],
+  [1093, 4],
+] as const
+
+// 240 ml is 2.4 × per 100 ml: 100.8 → 101 kcal, 25.44 → 25.4 g carbs and sugars, 9.6 mg sodium.
+const USDA_240_ML_EXPECTED = {
+  caloriesPerServing: 101,
+  proteinPerServing: 0,
+  fatPerServing: 0,
+  carbsPerServing: 25.4,
+  sugarsPerServing: 25.4,
+  sodiumPerServing: 9.6,
+}
+
+function usdaBeverageDetailsPayload() {
+  return {
+    fdcId: 321,
+    dataType: 'Branded',
+    description: 'FIZZ COLA',
+    brandOwner: 'FIZZ BEVERAGE CO.',
+    servingSize: 240,
+    servingSizeUnit: 'MLT',
+    foodNutrients: USDA_PER_100_ML.map(([id, amount]) => ({ amount, nutrient: { id } })),
+  }
+}
+
 function usdaPayload() {
   return {
     totalHits: 1,
     foods: [
       {
-        fdcId: 123,
-        description: 'Protein Bar',
-        brandName: 'Macro Co',
-        gtinUpc: '0123456789012',
-        servingSize: 50,
-        servingSizeUnit: 'g',
-        householdServingFullText: '1 bar',
-        foodNutrients: [
-          { nutrientId: 1008, value: 210 },
-          { nutrientId: 1003, value: 20 },
-          { nutrientId: 1004, value: 7 },
-          { nutrientId: 1005, value: 18 },
-          { nutrientId: 1258, value: 2 },
-          { nutrientId: 1079, value: 6 },
-          { nutrientId: 2000, value: 5 },
-          { nutrientId: 1235, value: 4 },
-          { nutrientId: 1093, value: 320 },
-          { nutrientId: 1253, value: 15 },
-        ],
+        ...usdaBrandedRecord(),
+        foodNutrients: USDA_PER_100_G.map(([nutrientId, value]) => ({ nutrientId, value })),
       },
     ],
   }
@@ -1326,25 +1606,8 @@ function usdaPayload() {
 
 function usdaDetailsPayload() {
   return {
-    fdcId: 123,
-    description: 'Protein Bar',
-    brandName: 'Macro Co',
-    gtinUpc: '0123456789012',
-    servingSize: 50,
-    servingSizeUnit: 'g',
-    householdServingFullText: '1 bar',
-    foodNutrients: [
-      { amount: 210, nutrient: { id: 1008, number: '208' } },
-      { amount: 20, nutrient: { id: 1003, number: '203' } },
-      { amount: 7, nutrient: { id: 1004, number: '204' } },
-      { amount: 18, nutrient: { id: 1005, number: '205' } },
-      { amount: 2, nutrient: { id: 1258, number: '606' } },
-      { amount: 6, nutrient: { id: 1079, number: '291' } },
-      { amount: 5, nutrient: { id: 2000, number: '269' } },
-      { amount: 4, nutrient: { id: 1235, number: '539' } },
-      { amount: 320, nutrient: { id: 1093, number: '307' } },
-      { amount: 15, nutrient: { id: 1253, number: '601' } },
-    ],
+    ...usdaBrandedRecord(),
+    foodNutrients: USDA_PER_100_G.map(([id, amount]) => ({ amount, nutrient: { id } })),
   }
 }
 
