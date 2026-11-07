@@ -1509,10 +1509,34 @@ summary {
 }
 
 .editorial__list li {
+	position: relative;
 	display: grid;
 	gap: var(--space-4);
 	padding-block: var(--space-6);
 	border-block-start: 1px solid var(--hairline);
+}
+
+/* The title link covers the whole entry, so the summary is a target too. */
+.editorial__list .title a {
+	color: var(--ink);
+	text-decoration: none;
+}
+
+.editorial__list .title a::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+}
+
+.editorial__list li > p:not(.caption) {
+	color: var(--ink-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.editorial__list li:hover .title a {
+		color: var(--link);
+		text-decoration: underline;
+	}
 }
 
 .article-toc {
