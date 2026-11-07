@@ -148,16 +148,14 @@ type USDANutritionField = 'caloriesPerServing' | 'proteinPerServing' | 'fatPerSe
 
 type USDASourceFood = Omit<USDAProxyFoodResult, USDANutritionField | 'fdcId'> & Partial<Pick<USDAProxyFoodResult, USDANutritionField>>
 
+// The serving basis and scaling come from usdaSourceFood; this only rounds and display-cases.
 export function normalizeUSDAFood(food: USDASourceFood): NormalizedFood {
-  const grams = usable(food.gramsPerServing)
-  const knownGrams = grams != null && grams > 0 ? grams : undefined
-  const multiplier = (knownGrams ?? 100) / 100
   const nutrition: FoodNutrition = {}
 
   for (const key of nutrientKeys) {
     const value = usable(food[`${key}PerServing`])
 
-    if (value != null) nutrition[key] = roundNutrient(key, value * multiplier)
+    if (value != null) nutrition[key] = roundNutrient(key, value)
   }
 
   return {
@@ -169,8 +167,8 @@ export function normalizeUSDAFood(food: USDASourceFood): NormalizedFood {
     name: foodDisplayText(food.name),
     brand: foodDisplayBrand(food.brand),
     barcode: food.barcode,
-    servingDescription: knownGrams != null ? food.servingDescription : '100 g',
-    gramsPerServing: knownGrams ?? 100,
+    servingDescription: food.servingDescription,
+    gramsPerServing: food.gramsPerServing,
     nutrition,
     requiredReviewNutrients: required.filter((key) => nutrition[key] == null),
   }

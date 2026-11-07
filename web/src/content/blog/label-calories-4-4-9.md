@@ -23,13 +23,17 @@ FDA allows several ways to count calories. Plain 4-4-9 on protein, total carbs, 
 
 One method matters most for high-fiber and sugar-free foods. Fiber and sugar alcohols count toward total carbs on the label, but they give you fewer than 4 calories per gram. With that method, soluble fiber counts as 2 calories per gram, insoluble fiber counts as 0, and erythritol counts as 0. Other sugar alcohols count between 1.6 and 3.
 
+<!-- visual:carb-factors -->
+
 ## The label rounds every number
 
-Calories round to the nearest 5 up to 50, and to the nearest 10 above that. Protein and carbs round to the nearest gram. Fat rounds to the nearest half gram below 5 g, then to the nearest gram. Tiny amounts can show as 0.
+Calories round to the nearest 5 up to 50, and to the nearest 10 above that. Protein and carbs round to the nearest gram. Fat rounds to the nearest half gram below 5 g, then to the nearest gram. Under 5 calories, or under half a gram of protein or carbs, can show as 0. Fat under half a gram always shows as 0.
 
 The maker does the math on the real amounts, before rounding. You do it on the rounded ones. On a small serving, that alone can move the total.
 
 Picture a small snack with 0.4 g of protein, 4.4 g of carbs, and 2.24 g of fat. That's 39 calories, so the label says 40. But the label can print 0 g of protein, 4 g of carbs, and 2 g of fat. Run 4-4-9 on those and you get 34.
+
+<!-- visual:label-rounding -->
 
 ## Two more examples
 
@@ -37,7 +41,9 @@ FDA's sample lasagna label lists 15 g of protein, 34 g of carbs, and 9 g of fat.
 
 Now picture a made-up protein bar with 20 g of protein, 7 g of fat, and 24 g of carbs. Of those carbs, 10 g are soluble fiber and 8 g are erythritol. Plain 4-4-9 says 239 calories.
 
-Count the fiber at 2 calories per gram and the erythritol at 0, and the bar comes to 187. The label rounds that to 190. Nearly all of the 49-calorie gap comes from the method the maker chose.
+Count the fiber at 2 calories per gram and the erythritol at 0, and the bar comes to 187. The label rounds that to 190. The method the maker chose removes 52 calories, and rounding adds 3 back. That's the 49-calorie gap.
+
+<!-- visual:protein-bar-steps -->
 
 ## Let the label's calories stand
 

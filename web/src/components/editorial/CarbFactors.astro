@@ -1,0 +1,180 @@
+---
+// Calories per gram from 21 CFR 101.9(c)(1)(i)(C) and (F), for carbs that count toward total carbs on the label.
+const most = 4;
+
+const rows = [
+	{ name: 'Other carbs', note: 'the 4 in 4‑4‑9', low: most, high: most },
+	{ name: 'Soluble fiber', low: 2, high: 2 },
+	{ name: 'Insoluble fiber', low: 0, high: 0 },
+	{ name: 'Erythritol', note: 'a sugar alcohol', low: 0, high: 0 },
+	{ name: 'Other sugar alcohols', note: 'depends on which one', low: 1.6, high: 3 },
+].map(row => ({ ...row, range: row.low !== row.high }));
+
+const share = (value: number) => `${(value / most) * 100}%`;
+---
+<figure class="guide-diagram carb-factors" data-diagram aria-labelledby="carb-factors-caption">
+	<p class="title">Calories per gram, by kind of carb</p>
+	<div class="carb-factors__chart">
+		<p class="carb-factors__legend caption" aria-hidden="true">
+			<span><i class="carb-factors__swatch carb-factors__swatch--line"></i>Dashed line: 4 calories per gram</span>
+			<span><i class="carb-factors__swatch carb-factors__swatch--range"></i>Open bar: a range</span>
+		</p>
+		<ul class="carb-factors__rows" role="list">
+			{rows.map(row => <li class:list={{ 'carb-factors__reference': row.name === 'Other carbs' }}>
+				<p class="carb-factors__name"><span>{row.name}</span>{row.note && <span class="caption">{row.note}</span>}</p>
+				<span class="carb-factors__track" aria-hidden="true">
+					<span class:list={['carb-factors__bar', { 'carb-factors__bar--range': row.range, 'carb-factors__bar--zero': row.high === 0 }]} style={`--from: ${row.range ? share(row.low) : '0%'}; --to: ${share(row.high)}`}></span>
+				</span>
+				<strong class="carb-factors__value">{row.range ? `${row.low} to ${row.high}` : row.low}<span class="sr-only"> calories per gram</span></strong>
+			</li>)}
+		</ul>
+	</div>
+	<figcaption id="carb-factors-caption" class="caption">These are the factors for one of FDA's calorie methods. Fiber and sugar alcohols still count in total carbs on the label, so plain 4‑4‑9 counts them at 4.</figcaption>
+</figure>
+
+<style>
+	.carb-factors__chart {
+		container-type: inline-size;
+	}
+
+	.carb-factors__chart > * + * {
+		margin-top: var(--space-3);
+	}
+
+	.carb-factors__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-1) var(--space-5);
+	}
+
+	.carb-factors__legend > span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.carb-factors__swatch {
+		display: inline-block;
+		flex: none;
+	}
+
+	.carb-factors__swatch--line {
+		width: 0;
+		height: 1rem;
+		border-inline-start: 2px dashed var(--ink-muted);
+	}
+
+	.carb-factors__swatch--range {
+		width: 1.5rem;
+		height: 0.75rem;
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-pill);
+	}
+
+	/* Rows share one subgrid so every track starts and ends at the same x, and the dashed 4 line stays straight.
+	   The figure class lifts these above the prose list rules (padding, bullets, li + li margin). */
+	.carb-factors .carb-factors__rows {
+		display: grid;
+		grid-template-columns: minmax(0, auto) minmax(4rem, 1fr) auto;
+		column-gap: var(--space-4);
+		padding: 0;
+		list-style: none;
+	}
+
+	.carb-factors .carb-factors__rows > li {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+		margin: 0;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.carb-factors__rows > li > * {
+		padding-block: var(--space-3);
+	}
+
+	.carb-factors__name {
+		display: grid;
+		line-height: 1.3;
+	}
+
+	.carb-factors__track {
+		align-self: stretch;
+		display: flex;
+		align-items: center;
+		border-inline-end: 2px dashed var(--ink-muted);
+	}
+
+	.carb-factors__bar {
+		height: 0.75em;
+		margin-inline-start: var(--from);
+		width: calc(var(--to) - var(--from));
+		border-radius: var(--radius-pill);
+		background: var(--ink);
+	}
+
+	.carb-factors__reference .carb-factors__bar {
+		background: var(--ink-muted);
+	}
+
+	.carb-factors__bar--range {
+		background: none;
+		border: 2px solid var(--ink);
+	}
+
+	/* A zero still gets a mark at the axis, so the row does not read as missing data. */
+	.carb-factors__bar--zero {
+		width: 2px;
+		height: 1.25em;
+		border-radius: 1px;
+	}
+
+	.carb-factors__value {
+		text-align: end;
+		white-space: nowrap;
+	}
+
+	/* Narrow: each track takes the full row under its label and value, the same layout as the other article charts. */
+	@container (max-width: 28rem) {
+		.carb-factors .carb-factors__rows {
+			display: block;
+		}
+
+		.carb-factors .carb-factors__rows > li {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			gap: 0 var(--space-3);
+			padding-block: var(--space-3);
+		}
+
+		.carb-factors .carb-factors__rows > li > * {
+			padding-block: 0;
+		}
+
+		/* Names wrap between words; a value that no longer fits drops to its own line instead of squeezing them. */
+		.carb-factors__name {
+			flex: 1 1 0;
+			overflow-wrap: break-word;
+		}
+
+		.carb-factors__value {
+			margin-inline-start: auto;
+		}
+
+		.carb-factors__track {
+			order: 1;
+			flex-basis: 100%;
+			height: 1.25rem;
+			margin-top: var(--space-2);
+		}
+	}
+
+	@container (max-width: 14rem) {
+		.carb-factors__legend,
+		.carb-factors__track {
+			display: none;
+		}
+	}
+</style>

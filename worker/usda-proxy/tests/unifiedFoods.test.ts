@@ -10,6 +10,7 @@ import { createFoodSearchApp } from '../src/foodSearchRoute'
 import { createOpenFoodFactsSource } from '../src/foodSources/openFoodFacts'
 import { createUSDASource } from '../src/foodSources/usda'
 import { normalizeOpenFoodFactsFood, normalizeUSDAFood } from '../src/normalizedFood'
+import { usdaSourceFood } from '../src/usda'
 import { decideFoodSearchBudget } from '../src/foodSearchBudgetLogic'
 import fixtures from '../../../cal-macro-trackerTests/Fixtures/UnifiedFoodSearchParity.json'
 
@@ -60,6 +61,16 @@ const run = (sources: FoodSource[], cursor?: string, cache?: SourcePageCache) =>
   searchUnifiedFoods({ query: 'chicken breast', cursor }, { sources, cache, deadline: deadline() })
 
 describe('unified food search failures, written before implementation', () => {
+  it('versions only the USDA source-page cache key', async () => {
+    const { cache, writes } = memoryCache()
+
+    await run([terminal('openFoodFacts'), terminal('usda')], undefined, cache)
+
+    expect(writes.map((write) => write.key)).toEqual([
+      '[3,"openFoodFacts","chicken breast","1"]',
+      '[4,"usda","chicken breast","1"]',
+    ])
+  })
   it('starts every source concurrently, including unknown future source IDs', async () => {
     const started: string[] = []
     const releases: Array<() => void> = []
@@ -434,32 +445,30 @@ describe('normalization parity fixtures', () => {
       )
     })
 
-  it('USDA converts per-100g nutrients to known serving grams, but not milliliters', () => {
+  it('USDA scales per-100 nutrients to known gram or milliliter servings, claiming grams only for grams', () => {
     const raw = {
-      id: 'usda:1',
       fdcId: 1,
-      name: 'Food',
-      servingDescription: '1 piece',
-      gramsPerServing: 50,
-      caloriesPerServing: 200,
-      proteinPerServing: 10,
-      fatPerServing: 4,
-      carbsPerServing: 30,
-      sodiumPerServing: 100,
-      sourceName: 'USDA FoodData Central',
-      sourceURL: 'https://fdc.nal.usda.gov/food-details/1',
+      dataType: 'Branded',
+      description: 'Food',
+      servingSize: 50,
+      servingSizeUnit: 'GRM',
+      householdServingFullText: '1 piece',
+      foodNutrients: [
+        { nutrientId: 1008, value: 200 },
+        { nutrientId: 1003, value: 10 },
+        { nutrientId: 1004, value: 4 },
+        { nutrientId: 1005, value: 30 },
+        { nutrientId: 1093, value: 100 },
+      ],
     }
 
-    expect(normalizeUSDAFood(raw).nutrition).toEqual({
-      calories: 100,
-      protein: 5,
-      fat: 2,
-      carbs: 15,
-      sodium: 50,
-    })
-    expect(normalizeUSDAFood({ ...raw, gramsPerServing: undefined }).servingDescription).toBe(
-      '100 g',
-    )
-    expect(normalizeUSDAFood({ ...raw, gramsPerServing: undefined }).nutrition.calories).toBe(200)
+    const normalized = (overrides: Partial<typeof raw>) => normalizeUSDAFood(usdaSourceFood({ ...raw, ...overrides })!)
+    const halved = { calories: 100, protein: 5, fat: 2, carbs: 15, sodium: 50 }
+
+    expect(normalized({})).toMatchObject({ servingDescription: '1 piece', gramsPerServing: 50, nutrition: halved })
+    expect(normalized({ servingSizeUnit: 'MLT' })).toMatchObject({ servingDescription: '1 piece', nutrition: halved })
+    expect(normalized({ servingSizeUnit: 'MLT' }).gramsPerServing).toBeUndefined()
+    expect(normalized({ servingSizeUnit: undefined })).toMatchObject({ servingDescription: '100 g or ml', nutrition: { calories: 200 } })
+    expect(normalized({ servingSizeUnit: undefined }).gramsPerServing).toBeUndefined()
   })
 })

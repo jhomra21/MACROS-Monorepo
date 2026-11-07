@@ -1,0 +1,188 @@
+---
+// The post's example: an 80 kg lifter at 1.6 g/kg eats 128 g in four equal meals.
+const daily = 80 * 1.6;
+
+const meals = Array.from({ length: 4 }, () => daily / 4);
+
+const band = { low: 20, high: 40 };
+
+const top = 48;
+---
+<figure class="guide-diagram protein-meals" data-diagram aria-labelledby="protein-meals-caption" style={`--top: ${top}; --low: ${band.low}; --high: ${band.high}`}>
+	<p class="title">{daily}&nbsp;g a day in {meals.length} meals</p>
+	<div class="protein-meals__body">
+		<p class="protein-meals__key caption"><i aria-hidden="true"></i>ISSN suggests {band.low} to {band.high}&nbsp;g a meal, every 3 to 4 hours</p>
+		<div class="protein-meals__plot">
+			<span class="protein-meals__band" aria-hidden="true"><span class="caption">{band.high}&nbsp;g</span><span class="caption">{band.low}&nbsp;g</span></span>
+			<ol class="protein-meals__meals" role="list">
+				{meals.map((grams, index) => <li>
+					<span class="protein-meals__bar" style={`--g: ${grams}`} aria-hidden="true"></span>
+					<strong style={`--g: ${grams}`}>{grams}&nbsp;g</strong>{' '}
+					<span class="protein-meals__name caption">Meal {index + 1}</span>
+				</li>)}
+			</ol>
+			<p class="protein-meals__gaps caption" aria-hidden="true">{meals.slice(1).map(() => <span>3 to 4 h</span>)}</p>
+		</div>
+	</div>
+	<figcaption id="protein-meals-caption" class="caption">An 80&nbsp;kg (176&nbsp;lb) lifter at 1.6&nbsp;g/kg: {meals.length} × {meals[0]}&nbsp;g = {daily}&nbsp;g. Each meal lands inside the {band.low} to {band.high}&nbsp;g range.</figcaption>
+</figure>
+
+<style>
+	.protein-meals {
+		--plot: 8rem;
+		--tint: color-mix(in srgb, var(--protein) 16%, transparent);
+	}
+
+	.protein-meals__key {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+	}
+
+	.protein-meals__key i {
+		flex: none;
+		width: 1rem;
+		height: 0.75rem;
+		border-block: 1px dashed var(--protein);
+		background: var(--tint);
+	}
+
+	.protein-meals__body {
+		container-type: inline-size;
+	}
+
+	.protein-meals__plot {
+		position: relative;
+		margin-top: var(--space-4);
+		padding-left: 2.75rem;
+	}
+
+	/* The baseline sits under the bars, at the bottom of the plot rows. */
+	.protein-meals__plot::before {
+		content: '';
+		position: absolute;
+		top: var(--plot);
+		inset-inline: 2.75rem 0;
+		border-top: 1px solid var(--hairline);
+	}
+
+	.protein-meals__band {
+		position: absolute;
+		top: calc(var(--plot) * (1 - var(--high) / var(--top)));
+		inset-inline: 0;
+		height: calc(var(--plot) * (var(--high) - var(--low)) / var(--top));
+		border-block: 1px dashed var(--protein);
+		background: linear-gradient(var(--tint) 0 0) 2.75rem 0 / calc(100% - 2.75rem) 100% no-repeat;
+	}
+
+	.protein-meals__band span {
+		position: absolute;
+		left: 0;
+		padding-right: var(--space-1);
+		background: var(--band);
+		line-height: 1;
+	}
+
+	.protein-meals__band span:first-child {
+		top: 0;
+		translate: 0 -50%;
+	}
+
+	.protein-meals__band span:last-child {
+		bottom: 0;
+		translate: 0 50%;
+	}
+
+	:global(.editorial .prose) .protein-meals__meals {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		padding-left: 0;
+		list-style: none;
+	}
+
+	:global(.editorial .prose) .protein-meals__meals li {
+		display: grid;
+		grid-template-rows: var(--plot) auto;
+		justify-items: center;
+		margin-top: 0;
+	}
+
+	.protein-meals__bar,
+	.protein-meals__meals strong {
+		grid-area: 1 / 1;
+		align-self: end;
+	}
+
+	.protein-meals__bar {
+		width: min(55%, 2.5rem);
+		height: calc(var(--g) / var(--top) * 100%);
+		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+		background: var(--protein);
+	}
+
+	.protein-meals__meals strong {
+		margin-bottom: calc(var(--plot) * var(--g) / var(--top) + var(--space-1));
+		font-size: var(--fs-small);
+		line-height: 1.2;
+	}
+
+	.protein-meals__name {
+		grid-row: 2;
+		padding-top: var(--space-1);
+	}
+
+	/* Gap labels sit on the boundaries between meal columns: half, one, one, one, half. */
+	.protein-meals__gaps {
+		display: none;
+		grid-template-columns: 0.5fr 1fr 1fr 1fr 0.5fr;
+		margin-top: var(--space-1);
+		text-align: center;
+	}
+
+	.protein-meals__gaps span:first-child {
+		grid-column: 2;
+	}
+
+	@container (min-width: 22rem) {
+		.protein-meals__gaps {
+			display: grid;
+		}
+	}
+
+	/* With large text on a narrow screen the chart goes and each meal reads as a row. */
+	@container (max-width: 15rem) {
+		.protein-meals__plot {
+			margin-top: var(--space-2);
+			padding-left: 0;
+		}
+
+		.protein-meals__key i,
+		.protein-meals__plot::before,
+		.protein-meals__band,
+		.protein-meals__bar {
+			display: none;
+		}
+
+		:global(.editorial .prose) .protein-meals__meals {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		:global(.editorial .prose) .protein-meals__meals li {
+			display: flex;
+			justify-content: space-between;
+			gap: var(--space-3);
+			padding-block: var(--space-2);
+			border-bottom: 1px solid var(--hairline);
+		}
+
+		.protein-meals__meals strong {
+			order: 2;
+			margin-bottom: 0;
+		}
+
+		.protein-meals__name {
+			padding-top: 0;
+		}
+	}
+</style>

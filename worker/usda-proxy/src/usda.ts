@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { HTTPFetcher, USDAProxyFoodResult, USDAProxySearchResponse } from './types'
 import { matchesSearchTokens, normalizedSearchText, searchTokens } from './searchText'
+import { normalizeUSDAFood } from './normalizedFood'
 
 const USDA_SEARCH_URL = 'https://api.nal.usda.gov/fdc/v1/foods/search'
 
@@ -10,7 +11,14 @@ const USDA_PROVIDER_NAME = 'USDA FoodData Central' as const
 
 const BRANDED_DATA_TYPE = 'Branded'
 
+// FDC data types whose nutrients are always per 100 g. Anything else, including an unexpected spelling, takes the Branded path so it never claims grams.
+const PER_100_GRAM_DATA_TYPES = new Set(['Foundation', 'SR Legacy', 'Survey (FNDDS)'])
+
 const MAX_PAGE = 10
+
+const GRAM_UNITS = new Set(['g', 'grm', 'gram', 'grams'])
+
+const VOLUME_UNITS = new Set(['ml', 'mlt', 'milliliter', 'milliliters'])
 
 const CACHE_TTL_SECONDS = 300
 
@@ -48,6 +56,7 @@ const detailsNutrientSchema = z.object({
 
 const searchFoodSchema = z.object({
   fdcId: optionalNumber,
+  dataType: optionalString,
   description: optionalString,
   brandName: optionalString,
   brandOwner: optionalString,
@@ -60,6 +69,7 @@ const searchFoodSchema = z.object({
 
 const detailsFoodSchema = z.object({
   fdcId: optionalNumber,
+  dataType: optionalString,
   description: optionalString,
   brandName: optionalString,
   brandOwner: optionalString,
@@ -138,10 +148,12 @@ export async function searchUSDAFoodsOnce(
   const { foods, hasMore } = await fetchUSDASearchRecords(input, apiKey, fetcher)
   const queryTokens = searchTokens(input.query, { removeApostrophes: true })
 
-  const results = foods
-    .map(makeProxyFoodResult)
-    .filter((value): value is USDAProxyFoodResult => value != null)
-    .filter((food) => matchesSearchQuery(food, queryTokens))
+  const results = foods.flatMap((raw) => {
+    const source = usdaSourceFood(raw)
+    const result = source != null && matchesSearchQuery(source, queryTokens) ? makeProxyFoodResult(source) : null
+
+    return result == null ? [] : [result]
+  })
 
   return {
     query: input.query,
@@ -202,30 +214,37 @@ export async function fetchUSDASearchRecords(input: USDAQuery, apiKey: string, f
   }
 }
 
-// The v2 source preserves incomplete records; the v1 completeness filter stays above.
-export function usdaSourceFood(food: USDASearchFood) {
+// Shared by v1 and v2: v2 preserves incomplete records; v1's makeProxyFoodResult drops them.
+export function usdaSourceFood(food: USDAFood) {
   const id = food.fdcId
   const name = normalizedText(food.description)
 
   if (id == null || !Number.isSafeInteger(id) || id <= 0 || name == null) return null
 
   const values = nutrientValueMap(food)
+  const { servingDescription, gramsPerServing, multiplier } = servingBasis(food)
+
+  const perServing = (nutrientId: number) => {
+    const value = values.get(nutrientId)
+
+    return value == null ? undefined : value * multiplier
+  }
 
   return {
-    id: `usda:${id}`, name,
+    id: `usda:${id}`, fdcId: id, name,
     brand: firstNonEmpty(food.brandOwner, food.brandName),
-    servingDescription: makeServingDescription(food),
-    gramsPerServing: gramsPerServing(food),
-    caloriesPerServing: values.get(NUTRIENT_IDS.calories),
-    proteinPerServing: values.get(NUTRIENT_IDS.protein),
-    fatPerServing: values.get(NUTRIENT_IDS.fat),
-    carbsPerServing: values.get(NUTRIENT_IDS.carbs),
-    saturatedFatPerServing: values.get(NUTRIENT_IDS.saturatedFat),
-    fiberPerServing: values.get(NUTRIENT_IDS.fiber),
-    sugarsPerServing: values.get(NUTRIENT_IDS.sugars),
-    addedSugarsPerServing: values.get(NUTRIENT_IDS.addedSugars),
-    sodiumPerServing: values.get(NUTRIENT_IDS.sodium),
-    cholesterolPerServing: values.get(NUTRIENT_IDS.cholesterol),
+    servingDescription,
+    gramsPerServing,
+    caloriesPerServing: perServing(NUTRIENT_IDS.calories),
+    proteinPerServing: perServing(NUTRIENT_IDS.protein),
+    fatPerServing: perServing(NUTRIENT_IDS.fat),
+    carbsPerServing: perServing(NUTRIENT_IDS.carbs),
+    saturatedFatPerServing: perServing(NUTRIENT_IDS.saturatedFat),
+    fiberPerServing: perServing(NUTRIENT_IDS.fiber),
+    sugarsPerServing: perServing(NUTRIENT_IDS.sugars),
+    addedSugarsPerServing: perServing(NUTRIENT_IDS.addedSugars),
+    sodiumPerServing: perServing(NUTRIENT_IDS.sodium),
+    cholesterolPerServing: perServing(NUTRIENT_IDS.cholesterol),
     sourceName: USDA_PROVIDER_NAME,
     sourceURL: `https://fdc.nal.usda.gov/food-details/${id}`,
     barcode: normalizedText(food.gtinUpc),
@@ -273,8 +292,8 @@ export async function fetchUSDAFood(
     throw new USDAClientError('USDA food details are unavailable right now.', 503)
   }
 
-  const decoded = detailsFoodSchema.parse(await response.json())
-  const result = makeProxyFoodResult(decoded)
+  const source = usdaSourceFood(detailsFoodSchema.parse(await response.json()))
+  const result = source == null ? null : makeProxyFoodResult(source)
 
   if (result == null) {
     throw new USDAClientError('USDA food details are unavailable right now.', 503)
@@ -305,7 +324,7 @@ function normalizedSearchQuery(query: string): string {
   return normalizedSearchText(query, { removeApostrophes: true })
 }
 
-function matchesSearchQuery(food: USDAProxyFoodResult, tokens: string[]): boolean {
+function matchesSearchQuery(food: { name: string; brand?: string }, tokens: string[]): boolean {
   return matchesSearchTokens([food.name, food.brand], tokens, { removeApostrophes: true })
 }
 
@@ -313,107 +332,61 @@ type USDAFood = USDASearchFood | USDAFoodDetails
 
 type USDAFoodNutrient = USDASearchFoodNutrient | USDAFoodDetailsNutrient
 
-function makeProxyFoodResult(food: USDAFood): USDAProxyFoodResult | null {
-  const fdcId = food.fdcId
-  const name = food.description?.trim()
-  const servingDescription = makeServingDescription(food)
-  const nutrientValues = nutrientValueMap(food)
-  const calories = nutrientValues.get(NUTRIENT_IDS.calories) ?? null
-  const protein = nutrientValues.get(NUTRIENT_IDS.protein) ?? null
-  const fat = nutrientValues.get(NUTRIENT_IDS.fat) ?? null
-  const carbs = nutrientValues.get(NUTRIENT_IDS.carbs) ?? null
-  const saturatedFat = nutrientValues.get(NUTRIENT_IDS.saturatedFat) ?? null
-  const fiber = nutrientValues.get(NUTRIENT_IDS.fiber) ?? null
-  const sugars = nutrientValues.get(NUTRIENT_IDS.sugars) ?? null
-  const addedSugars = nutrientValues.get(NUTRIENT_IDS.addedSugars) ?? null
-  const sodium = nutrientValues.get(NUTRIENT_IDS.sodium) ?? null
-  const cholesterol = nutrientValues.get(NUTRIENT_IDS.cholesterol) ?? null
+type USDASourceFood = NonNullable<ReturnType<typeof usdaSourceFood>>
 
-  const mainNutrition = { calories, protein, fat, carbs }
-  const foodData = { fdcId, name, mainNutrition }
+// v1 reuses the v2 normalizer on usdaSourceFood output so both contracts share one serving basis, scaling, rounding, and display text;
+// the secondary-nutrient repair key depends on them matching exactly.
+function makeProxyFoodResult(source: USDASourceFood): USDAProxyFoodResult | null {
+  const food = normalizeUSDAFood(source)
+  const { calories, protein, fat, carbs } = food.nutrition
 
-  if (!hasRequiredFoodData(foodData)) {
+  if (calories == null || protein == null || fat == null || carbs == null) {
     return null
   }
 
   return {
-    id: `usda:${foodData.fdcId}`,
-    fdcId: foodData.fdcId,
-    name: foodData.name,
-    brand: firstNonEmpty(food.brandOwner, food.brandName),
-    servingDescription,
-    gramsPerServing: gramsPerServing(food),
-    caloriesPerServing: foodData.mainNutrition.calories,
-    proteinPerServing: foodData.mainNutrition.protein,
-    fatPerServing: foodData.mainNutrition.fat,
-    carbsPerServing: foodData.mainNutrition.carbs,
-    saturatedFatPerServing: saturatedFat ?? undefined,
-    fiberPerServing: fiber ?? undefined,
-    sugarsPerServing: sugars ?? undefined,
-    addedSugarsPerServing: addedSugars ?? undefined,
-    sodiumPerServing: sodium ?? undefined,
-    cholesterolPerServing: cholesterol ?? undefined,
-    sourceName: USDA_PROVIDER_NAME,
-    sourceURL: `https://fdc.nal.usda.gov/food-details/${fdcId}`,
-    barcode: normalizedText(food.gtinUpc),
+    id: food.id,
+    fdcId: source.fdcId,
+    name: food.name,
+    brand: food.brand,
+    servingDescription: food.servingDescription,
+    gramsPerServing: food.gramsPerServing,
+    caloriesPerServing: calories,
+    proteinPerServing: protein,
+    fatPerServing: fat,
+    carbsPerServing: carbs,
+    saturatedFatPerServing: food.nutrition.saturatedFat,
+    fiberPerServing: food.nutrition.fiber,
+    sugarsPerServing: food.nutrition.sugars,
+    addedSugarsPerServing: food.nutrition.addedSugars,
+    sodiumPerServing: food.nutrition.sodium,
+    cholesterolPerServing: food.nutrition.cholesterol,
+    sourceName: source.sourceName,
+    sourceURL: source.sourceURL,
+    barcode: food.barcode,
   }
 }
 
-function hasRequiredFoodData(foodData: {
-  fdcId: number | undefined
-  name: string | undefined
-  mainNutrition: { calories: number | null; protein: number | null; fat: number | null; carbs: number | null }
-}): foodData is {
-  fdcId: number
-  name: string
-  mainNutrition: { calories: number; protein: number; fat: number; carbs: number }
-} {
-  return foodData.fdcId != null
-    && Number.isFinite(foodData.fdcId)
-    && foodData.name != null
-    && foodData.name.length > 0
-    && hasCompleteMainNutrition(foodData.mainNutrition)
-}
+// FDC Branded foodNutrients are per 100 g or per 100 ml by servingSizeUnit; other data types are per 100 g.
+// Values are scaled to a known metric serving, and only gram servings claim grams. A missing dataType counts
+// as Branded so an unknown basis never claims grams.
+function servingBasis(food: USDAFood) {
+  const branded = food.dataType == null || !PER_100_GRAM_DATA_TYPES.has(food.dataType)
+  const size = food.servingSize
+  const unit = normalizedText(food.servingSizeUnit)?.toLowerCase()
+  const metricUnit = unit == null ? undefined : GRAM_UNITS.has(unit) ? 'g' : branded && VOLUME_UNITS.has(unit) ? 'ml' : undefined
 
-function hasCompleteMainNutrition(values: {
-  calories: number | null
-  protein: number | null
-  fat: number | null
-  carbs: number | null
-}): values is { calories: number; protein: number; fat: number; carbs: number } {
-  return values.calories != null && values.protein != null && values.fat != null && values.carbs != null
-}
-
-function makeServingDescription(food: USDAFood): string {
-  const householdServing = normalizedText(food.householdServingFullText)
-
-  if (householdServing != null) {
-    return householdServing
+  if (metricUnit != null && size != null && Number.isFinite(size) && size > 0) {
+    return {
+      servingDescription: normalizedText(food.householdServingFullText) ?? `${roundForDisplay(size)} ${metricUnit}`,
+      gramsPerServing: metricUnit === 'g' ? size : undefined,
+      multiplier: size / 100,
+    }
   }
 
-  const servingSize = food.servingSize
-  const servingSizeUnit = normalizedText(food.servingSizeUnit)
-
-  if (servingSize != null && Number.isFinite(servingSize) && servingSize > 0 && servingSizeUnit != null) {
-    return `${roundForDisplay(servingSize)} ${servingSizeUnit}`
-  }
-
-  return '1 serving'
-}
-
-function gramsPerServing(food: USDAFood): number | undefined {
-  const servingSize = food.servingSize
-  const servingSizeUnit = normalizedText(food.servingSizeUnit)?.toLowerCase()
-
-  if (servingSize == null || Number.isFinite(servingSize) === false || servingSize <= 0) {
-    return undefined
-  }
-
-  if (servingSizeUnit === 'g' || servingSizeUnit === 'gram' || servingSizeUnit === 'grams') {
-    return servingSize
-  }
-
-  return undefined
+  return branded
+    ? { servingDescription: '100 g or ml', multiplier: 1 }
+    : { servingDescription: '100 g', gramsPerServing: 100, multiplier: 1 }
 }
 
 function normalizedText(value: string | undefined): string | undefined {
