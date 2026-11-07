@@ -10,12 +10,11 @@ related:
   - blog/serving-size-vs-whole-package
 image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size"
-imageCaption: "MACROS keeps the label's calorie number. On this demo label, 4 × 5 + 4 × 36 + 9 × 3 = 191, which rounds to the printed 190."
 ---
 
 Label calories often differ from protein × 4 + carbs × 4 + fat × 9 because FDA lets food makers choose among several calorie methods, and because every number on the label is rounded. Fiber and sugar alcohols can create larger differences because they count toward total carbohydrate but can contribute fewer than 4 calories per gram.
 
-I checked the regulation below on November 7, 2026, in the eCFR text amended through November 5, 2026.
+MACROS checked the regulation below on November 7, 2026, in the eCFR text amended through November 5, 2026.
 
 ## The methods FDA allows
 
@@ -66,7 +65,7 @@ FDA's sample lasagna label lists 280 calories, 15 g protein, 34 g total carbohyd
 - 4 × 15 + 4 × 34 + 9 × 9 = 60 + 136 + 81 = 277.
 - 277 is above 50, so it rounds to the nearest 10: 280.
 
-These printed values produce 280 after calorie rounding. They do not tell us which calculation method or unrounded amounts produced the label.
+These printed values produce 280 after calorie rounding. They do not show which calculation method or unrounded amounts produced the label.
 
 ### Example 2: a small serving, rounding only
 
@@ -100,17 +99,18 @@ Look closer if the label total is far from every method above, or if a scan show
 
 ## How MACROS handles it
 
-This section is about my app, MACROS.
-
 - MACROS logs the calories it reads from a label, a database entry, or your typing. It does not recalculate calories from protein, carbs, and fat.
+
+<!-- visual:scan-details -->
+
 - Daily totals add up the logged calories and the logged grams separately.
 - The goal calculator is the one place MACROS uses 4-4-9. After it rounds your protein, carb, and fat goals, it sets the calorie goal from them. Food entries retain the calorie value supplied to the logging form rather than recalculating it from macros. So your calorie progress and your macro progress may not line up exactly. That is expected.
 - Every value stays editable before you log.
 
-## How I checked
+## How this was checked
 
 - [21 CFR 101.9(c)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9): the calorie methods in (c)(1)(i)(A) to (F), the sugar alcohol factors, and the rounding rules for calories, fat, carbohydrate, and protein.
 - [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label): the sample lasagna label in example 1.
 - Examples 2 and 3 are made-up labels to show the arithmetic. They are not real products.
 
-I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian.
+MACROS publishes this site. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian reviewed this post.

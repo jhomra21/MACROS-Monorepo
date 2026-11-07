@@ -14,7 +14,7 @@ related:
 
 For healthy adults who do resistance training, a large meta-analysis found that gains in fat-free mass leveled off at about 1.6 g of protein per kilogram of body weight per day. Its authors suggest up to about 2.2 g/kg for people trying to get the most out of training. The adult RDA of 0.8 g/kg is set to meet the basic needs of nearly all healthy adults. It is not a muscle-building target.
 
-I checked each figure below against the source on November 7, 2026.
+MACROS checked each figure below against the source on November 7, 2026.
 
 This post is for generally healthy adults. It is not medical advice. If you have a medical condition, are pregnant, or have a history of an eating disorder, talk to a doctor or registered dietitian before changing your protein intake.
 
@@ -72,15 +72,13 @@ Using FDA's general factor of 4 calories per gram of protein ([21 CFR 101.9(c)(1
 
 ## How MACROS handles it
 
-This section is about my app, MACROS.
-
 MACROS does not ask for a g/kg protein target. Its goal calculator sets protein as a share of calories, using the presets in the [macro goals guide](/guides/how-to-set-macro-goals/).
 
 To use a g/kg target, work out your grams with the table above. Then open Settings, find Daily Goals, type the grams into Protein, and tap Save Goals. Editing Protein does not change your calorie goal. Adjust calories, carbs, or fat yourself so the four numbers fit together.
 
 <!-- visual:settings -->
 
-## How I checked
+## How this was checked
 
 - [National Academies, DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28): adult RDA of 0.8 g/kg and the RDA definition.
 - [Morton et al. 2018, PubMed 28698222](https://pubmed.ncbi.nlm.nih.gov/28698222/), with the [full text](https://pmc.ncbi.nlm.nih.gov/articles/PMC5867436/): 49 trials and 1,863 participants, the 1.62 g/kg break point and its 95% CI of 1.03 to 2.20, the p = 0.079 model comparison, and the suggestion of about 2.2 g/kg. Disclosures include Stuart Phillips's support from the US National Dairy Council and, in a [2020 correction](https://pmc.ncbi.nlm.nih.gov/articles/PMC7513243/), Brad Schoenfeld's advisory-board role with Dymatize Nutrition.
@@ -88,4 +86,4 @@ To use a g/kg target, work out your grams with the table above. Then open Settin
 - [National Academies AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5): adult protein range of 10% to 35% of calories.
 - [21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9): the general factor of 4 calories per gram of protein.
 
-I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian or doctor.
+MACROS publishes this site. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian or doctor reviewed this post.

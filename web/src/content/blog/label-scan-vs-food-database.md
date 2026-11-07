@@ -6,7 +6,6 @@ updated: 2026-11-07
 draft: true
 image: ../../assets/app-images/app-add-food.png
 imageAlt: "MACROS search for greek yogurt, with two on-device matches followed by remote results showing different brands and calorie values."
-imageCaption: "A MACROS search for \"greek yogurt\". The results show different brands and calorie values. Check the brand and serving before you pick one."
 related:
   - blog/serving-size-vs-whole-package
   - blog/label-calories-4-4-9
@@ -16,7 +15,7 @@ A label scan reads your package. USDA Branded Foods and Open Food Facts entries 
 
 The usual causes are a changed recipe, a different regional version, a different serving basis, rounding, a typing error, or a scan misread. When they disagree, check the scan against the label you are holding, then fix the entry before you log it.
 
-I checked the sources below on November 7, 2026.
+MACROS checked the sources below on November 7, 2026.
 
 ## Where each number comes from
 
@@ -39,11 +38,11 @@ The USDA row comes from the [FoodData Central data type documentation](https://f
 
 The printed label is not exact either. FDA's compliance rule generally treats a food as misbranded when calories measured in a composite sample exceed the declared value by more than 20%, subject to the rule's analytical-variability qualification. The sampling procedure combines 12 consumer-unit subsamples ([21 CFR 101.9(g)(2) and (g)(5)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). This is an enforcement rule, not an estimate of the error in your individual package.
 
-## Our check
+## A label-versus-database check
 
 <!-- TODO (owner): run the check below on your own products, fill in the tables, and write a one-sentence headline result here. Do not publish with empty rows. -->
 
-TODO (owner): headline result goes here after the product checks. Example shape: "In N products I bought in [month], X of the USDA entries and Y of the Open Food Facts entries matched the label calories exactly."
+TODO (owner): headline result goes here after the product checks. Example shape: "In N products bought in [month], X of the USDA entries and Y of the Open Food Facts entries matched the label calories exactly."
 
 ### Method
 
@@ -85,22 +84,29 @@ OFF is Open Food Facts.
 
 ### Limits
 
-This is a small sample of products I chose, not a random sample. It shows how often these copies drift from the label for these products on these dates. It does not measure how accurate either database is overall.
+This is a small, hand-picked sample of products, not a random sample. It shows how often these copies drift from the label for these products on these dates. It does not measure how accurate either database is overall.
 
 ## How MACROS handles it
 
-This section is about my app, MACROS.
-
 - Label scans run on your iPhone with Apple's Vision text recognition. The photo is not sent to a server for reading.
 - Barcode lookups use Open Food Facts through the MACROS food-search service. Text search can return Open Food Facts and USDA Branded Foods results below your on-device matches ([privacy policy](/privacy/)).
-- In Edit details, a barcode result names Open Food Facts as its source, with a link to the product page.
-- If a label scan could not read calories, protein, carbs, or fat, MACROS asks you to enter them or confirm they are 0 before you log.
+
+<!-- visual:add-food -->
+
+In Edit details, a barcode result names Open Food Facts as its source, with a link to the product page.
+
+<!-- visual:barcode-source -->
+
+If a label scan could not read calories, protein, carbs, or fat, MACROS asks you to enter them or confirm they are 0 before you log.
+
+<!-- visual:scan-required-review -->
+
 - Every value is editable before you log. When you edit a saved database food before logging and then log it, MACROS updates its reusable local copy. Selecting that saved copy again uses your corrections.
 
-## How I checked
+## How this was checked
 
 - [FoodData Central data type documentation](https://fdc.nal.usda.gov/data-documentation): Branded Foods come from manufacturers' label information and update monthly.
 - [Open Food Facts, Discover](https://world.openfoodfacts.org/discover): volunteer, collaborative database built from barcode scans and label photos.
-- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (c), (g)(2), and (g)(5): label rounding, the 12-subsample composite, and the 20% calorie compliance limit with its analytical-variability qualification. I read the eCFR text as amended through November 5, 2026.
+- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (c), (g)(2), and (g)(5): label rounding, the 12-subsample composite, and the 20% calorie compliance limit with its analytical-variability qualification, in the eCFR text as amended through November 5, 2026.
 
-I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian.
+MACROS publishes this site. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian reviewed this post.

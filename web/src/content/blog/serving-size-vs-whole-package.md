@@ -6,7 +6,6 @@ updated: 2026-11-07
 draft: true
 image: ../../assets/app-images/app-scan-review.png
 imageAlt: "MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons"
-imageCaption: "A MACROS label scan of a demo label. The Servings stepper scales calories and macros, and the gram total updates with it."
 related:
   - blog/label-calories-4-4-9
   - blog/label-scan-vs-food-database
@@ -17,7 +16,7 @@ Nutrition Facts usually lists calories and nutrients per serving, though some la
 
 To log by weight, divide the grams you ate by the grams in one serving and multiply the per-serving values by that.
 
-I checked the FDA pages and regulations below on November 7, 2026.
+MACROS checked the FDA pages and regulations below on November 7, 2026.
 
 ## Find the serving line first
 
@@ -50,7 +49,7 @@ FDA's sample lasagna label lists 1 cup (227 g) per serving, 280 calories, and 15
 | The whole package | 4 | 1,120 | 60 |
 | 340 g, weighed | 340 ÷ 227 = 1.4978 | 280 × 1.4978 = 419 | 15 × 1.4978 = 22.5 |
 
-The first four rows match FDA's own figures for one serving, two servings, and the whole package. The last row is my arithmetic.
+The first four rows match FDA's own figures for one serving, two servings, and the whole package. The last row applies the same math to a weighed portion.
 
 ## Read "servings per container" with care
 
@@ -75,23 +74,27 @@ Some labels give only a volume, such as fluid ounces or milliliters for drinks. 
 
 ## How MACROS handles it
 
-This section is about my app, MACROS.
-
 - When you scan a label, MACROS shows one serving's size and grams, such as "1 cup (40g) each", and a running gram total.
 - The scan-review Servings stepper runs from 0.25 to 20 in quarter-serving steps. Calories, protein, carbs, and fat scale with it. Half a pack of a 2-serving package is 1 serving.
 - MACROS does not use the "servings per container" line to set the quantity automatically.
-- For gram logging, open Edit details, choose Grams, and adjust the Grams stepper. It changes by 5 g and cannot go below 1 g. When you work from a package weight, use the weight in the same form as the label, such as the drained weight for a food labeled on a drained basis.
-- The steppers may not land on the exact amount you weighed. Pick the closest step. Do not change grams per serving to reach a weight, because that changes the per-gram math for the food.
-- Logging by grams needs grams per serving. If the label gives only a volume, the Grams option stays off until you add the gram weight yourself. MACROS does not guess grams from a volume.
-- The math is the same as above: per-serving values × servings, or grams eaten ÷ grams per serving.
 
-## How I checked
+<!-- visual:scan-review -->
+
+- For gram logging, open Edit details, choose Grams, and adjust the Grams stepper. It changes by 5 g and cannot go below 1 g. When you work from a package weight, use the weight in the same form as the label, such as the drained weight for a food labeled on a drained basis.
+- Servings move in quarter-serving steps and grams in 5 g steps, so an exact weighed amount may land between two steps. Pick the closest step. Do not change grams per serving to reach a weight, because that changes the per-gram math for the food.
+- Logging by grams needs grams per serving. If the label gives only a volume, the Grams option stays off until you add the gram weight yourself. MACROS does not guess grams from a volume.
+
+<!-- visual:scan-grams -->
+
+The math is the same as above: per-serving values × servings, or grams eaten ÷ grams per serving.
+
+## How this was checked
 
 - [FDA, Serving Size on the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/serving-size-nutrition-facts-label): where the serving line sits, what a serving means, per-package information on some containers, and dual-column labels.
 - [FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label): the sample lasagna label and its 1, 2, and 4 serving figures.
 - [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (b)(1), (b)(6), (b)(7), (b)(8), (b)(9), and (b)(12)(i): serving definition, single-serving packages, how serving size is expressed, rounding of servings per container, the drained-solids basis, and the per-package column with its exceptions.
 - [21 CFR 101.12(b)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12): reference amounts for cookies, grain-based bars, and yogurt.
 
-I read the eCFR text as amended through November 5, 2026. I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian.
+MACROS publishes this site. This post uses the eCFR text as amended through November 5, 2026. MACROS compared the section about the app with its source code on November 7, 2026. No dietitian reviewed this post.
 
 <!-- TODO (owner): optionally add 2 or 3 worked examples from real packages you own, with label photos and the product name, before publishing. -->
