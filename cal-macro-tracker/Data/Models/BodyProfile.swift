@@ -24,7 +24,8 @@ enum GoalActivityLevel: String, CaseIterable, Identifiable, Hashable, Codable {
 enum GoalMacroPreset: String, CaseIterable, Identifiable, Hashable, Codable {
     case balanced
     case highProtein
-    case lowCarb
+    /// Stored as "lowCarb", the preset's former name, so saved profiles and backups keep decoding.
+    case higherFat = "lowCarb"
     case custom
 
     var id: String { rawValue }
