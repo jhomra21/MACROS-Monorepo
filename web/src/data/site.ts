@@ -25,6 +25,8 @@ export const site = {
 		'MACROS is a calorie counter and macro tracker for iPhone. Keep your food diary on your device, scan a label, and get on with your day. No account needed.',
 	appStore: { id: '6767565938', live: false },
 	author: 'Juan Ramon Martinez Bulnes',
+	authorSlug: 'juan',
+	instagramURL: 'https://www.instagram.com/macrosios/',
 	supportEmail: 'jhonra121@gmail.com',
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },

@@ -9,6 +9,21 @@ export const appStoreURL = () => `https://apps.apple.com/app/id${site.appStore.i
 export const publishedEntries = (collection: 'guides' | 'blog') =>
 	getCollection(collection, ({ data }) => !data.draft);
 
+// Resolves frontmatter `related` references. A typo fails the build; a draft target is skipped, so a draft is never linked.
+export async function relatedEntries(related: readonly string[] = []) {
+	const all = (await Promise.all([getCollection('guides'), getCollection('blog')])).flat();
+
+	const byReference = new Map(all.map(entry => [`${entry.collection}/${entry.id}`, entry]));
+
+	return related.flatMap(reference => {
+		const entry = byReference.get(reference);
+
+		if (!entry) throw new Error(`Unknown related entry "${reference}". Use "guides/<id>" or "blog/<id>".`);
+
+		return entry.data.draft ? [] : [entry];
+	});
+}
+
 export const pages = {
 	'/': {
 		title: 'MACROS: Calorie Counter & Food Diary for iPhone',
@@ -89,6 +104,27 @@ export function breadcrumbs(path: string, title: string) {
 	};
 }
 
+export const organizationId = absoluteURL('/#organization');
+
+export const personId = absoluteURL(`/about/#${site.authorSlug}`);
+
+// Pages that reference the author carry the name and URL too, because crawlers do not resolve an @id defined on another page.
+export const authorReference: JsonObject = {
+	'@type': 'Person', '@id': personId, name: site.author, url: absoluteURL('/about/'),
+};
+
+export const personStructuredData: JsonObject = { ...authorReference, sameAs: [site.instagramURL] };
+
+// The Apple touch icon is the 180 x 180 app icon, above Google's 112 px logo minimum.
+const organization: JsonObject = {
+	'@type': 'Organization', '@id': organizationId, name: site.name, url: absoluteURL('/'),
+	logo: absoluteURL('/apple-touch-icon.png'),
+	sameAs: [site.instagramURL],
+	founder: authorReference,
+};
+
+export const publisherReference: JsonObject = { '@type': 'Organization', '@id': organizationId, name: site.name };
+
 export const homeStructuredData: JsonObject[] = [
 	{
 		'@type': 'MobileApplication', name: site.fullName, url: absoluteURL('/'),
@@ -96,8 +132,8 @@ export const homeStructuredData: JsonObject[] = [
 		description: `${site.description} Optional MACROS Pro in-app purchases are available.`,
 		offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 	},
-	{ '@type': 'Organization', '@id': absoluteURL('/#organization'), name: site.name, url: absoluteURL('/'), founder: { '@type': 'Person', name: site.author } },
-	{ '@type': 'WebSite', name: site.fullName, url: absoluteURL('/'), publisher: { '@id': absoluteURL('/#organization') } },
+	organization,
+	{ '@type': 'WebSite', name: site.fullName, url: absoluteURL('/'), publisher: { '@id': organizationId } },
 	{ '@type': 'FAQPage', mainEntity: site.faq.map(faq => ({
 		'@type': 'Question', name: faq.question, acceptedAnswer: { '@type': 'Answer', text: faq.answer },
 	})) },

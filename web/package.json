@@ -18,6 +18,7 @@
     "deploy:dry-run": "bun run build && wrangler deploy --dry-run",
     "check": "wrangler types && astro check && tsc --noEmit",
     "types": "wrangler types",
+    "indexnow": "bun scripts/indexnow.ts",
     "db:migrations:apply:local": "wrangler d1 migrations apply SUPPORT_DB --local",
     "db:migrations:apply:remote": "wrangler d1 migrations apply SUPPORT_DB --remote",
     "astro": "astro"

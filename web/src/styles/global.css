@@ -1452,6 +1452,12 @@ summary {
 	margin-top: var(--space-7);
 }
 
+.editorial__related ul {
+	display: grid;
+	gap: var(--space-3);
+	margin-top: var(--space-4);
+}
+
 .editorial__list li {
 	display: grid;
 	gap: var(--space-4);

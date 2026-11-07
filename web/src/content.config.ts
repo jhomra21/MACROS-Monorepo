@@ -12,6 +12,8 @@ const editorialSchema = ({ image }: { image: () => z.ZodType<ImageMetadata> }) =
 		image: image(),
 		imageAlt: z.string(),
 		imageCaption: z.string().optional(),
+		// Entries to link under "Related", written as "guides/<id>" or "blog/<id>". Drafts are skipped.
+		related: z.array(z.string().regex(/^(guides|blog)\/[a-z0-9-]+$/)).max(4).optional(),
 	}).refine(data => data.updated >= data.published, 'Updated must not precede published');
 
 export const collections = {

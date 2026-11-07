@@ -16,6 +16,10 @@ Guides and blog posts live in typed Astro Markdown collections. Frontmatter requ
 
 Only non-draft entries generate article routes or enter the sitemap. The blog index, navigation link, RSS discovery link, and RSS file stay absent until at least one blog post has `draft: false`. The launch announcement must remain a draft until 1.0 is approved. At publication, replace its provisional dates and review the release claims before rebuilding. No draft-preview route is shipped publicly.
 
+The blog link in the main navigation needs no separate flag. `Header.astro` renders it only while a blog post has `draft: false`, so publishing the first post is the one-line switch.
+
+Posts and guides take an optional `related` list in frontmatter, such as `related: [guides/how-to-set-macro-goals, blog/serving-size]` (up to four, each `guides/<id>` or `blog/<id>`). The page renders those titles as a "Related" list in place of the generic More guides, Get help, and privacy row. A reference to an entry that does not exist fails the build. A reference to a draft is skipped, so a draft is never linked in production, and the link appears once the target is published. When a post goes live, add it to the `related` list of each guide and post that should point to it. The title is the link text, so keep titles descriptive.
+
 Every `publicPages()` path gets a prerendered 1200 × 630 PNG at `/social/<path>.<hash>.png` (home uses `home`). Metadata comes from `pages` or published entry frontmatter; article screenshots use frontmatter `image`, while other screens and section labels live in the small `social.ts` map. Open Graph, Twitter, and Article schema use the same pure URL helper. Draft images and the unpublished blog index stay absent.
 
 The SHA-256 prefix includes the title, description, subtitle, path (which seeds ring fills), screenshot bytes, macOS Helvetica font bytes, sharp renderer versions, and template version. Bump `templateVersion` in `src/lib/social.ts` whenever rendering geometry, typography, or colors change. Images regenerate at build time only; there is no runtime renderer or client dependency. Sharp/Pango measures glyph widths and fits complete text blocks, replacing the old character-count wrap. Builds require `/System/Library/Fonts/Helvetica.ttc`, deliberately failing rather than silently substituting a font. See `../docs/evidence/web-og/README.md` for costs and repeatable checks.
@@ -24,7 +28,35 @@ Long guides use `render()` headings for their on-page contents list. Authors pla
 
 Navigation uses browser-native document transitions, with the opt-in inline in the head so it is available before external CSS loads. Reduced motion uses ordinary document navigation. Page scripts initialize on document load, not `astro:page-load`. Keep prefetch off unless measurements justify its extra script and background traffic.
 
-Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inner public pages include BreadcrumbList; guides and posts also include Article and article Open Graph dates. The FAQ comes from the exact same data as the visible answers. Google restricts FAQ rich results mainly to authoritative government and health sites; valid markup does not promise a rich result. There are no ratings or reviews.
+Home JSON-LD includes MobileApplication, Organization, WebSite, and FAQPage. Inner public pages include BreadcrumbList; guides and posts also include Article and article Open Graph dates. The FAQ comes from the exact same data as the visible answers. Google stopped showing FAQ rich results on May 7, 2026 and removed the feature's documentation on June 15 (see [Search Central updates](https://developers.google.com/search/updates)). Keep the FAQPage markup anyway: it matches the visible text and costs nothing, but expect no rich result from it. There are no ratings or reviews.
+
+Authorship is one linked graph. The Organization (`/#organization`) carries the app icon as `logo` (the 180 × 180 `apple-touch-icon.png`) and `sameAs` for the Instagram profile. The About page defines the author as a Person with the stable `@id` `/about/#juan` and the same `sameAs`. Every Article `author` points at that `@id`, and every Article `publisher` points at the Organization `@id`. The author is shown publicly by name and Instagram only. Add other profiles to `sameAs` only if the owner decides to publish them. At App Store launch, add the listing URL to the Organization `sameAs`.
+
+## Notify IndexNow after a deploy
+
+IndexNow tells Bing and its partner engines which URLs changed. Bing asks for it in its [webmaster guidelines](https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a), and the protocol is in the [IndexNow documentation](https://www.indexnow.org/documentation). A `200` or `202` response means the engine received the list, not that it indexed anything.
+
+The key file is `public/<key>.txt`, served at `https://macrosios.com/<key>.txt` and containing only the key. The key is public by design: it proves host ownership, not authority. Keep exactly one such file. The script reads the key from the file name.
+
+This is a manual step after an authorized deploy. It is not part of `check`, `build`, `test`, or `deploy`, and no validation run may send it.
+
+1. Deploy, with authorization, so the pages and the key file are live.
+2. From `web/`, run `bun run indexnow --dry-run` and read the payload. It sends nothing and skips the live key check.
+3. Run `bun run indexnow` to submit every URL in `dist/sitemap.xml` (and any `dist/sitemap-*.xml`). Prefer explicit URLs for a small change: `bun run indexnow https://macrosios.com/blog/example/`.
+
+The script refuses to send when something is wrong. Exit codes:
+
+| Code | Cause |
+| --- | --- |
+| 1 | Unknown flag |
+| 2 | Not exactly one `<32 hex>.txt` key file in `public/`, or its content differs from its name |
+| 3 | `dist/` or its sitemap is missing, or the sitemap lists no pages. Build first, or pass explicit URLs |
+| 4 | A URL is not canonical: not https, not the apex host, has a query or fragment, or an HTML page lacks its trailing slash |
+| 5 | The key file is not live at `keyLocation`. Deploy first |
+| 6 | The key check or the POST could not reach the network |
+| 7 | IndexNow answered something other than 200 or 202: 400 bad format, 403 key not valid, 422 URLs not on the host or key mismatch, 429 too many requests |
+
+Submit only URLs that really changed or were added. Draft posts are not in the sitemap, so a sitemap run never announces one. Do not send a URL for a draft by hand.
 
 ## App Store launch flag
 
