@@ -1403,6 +1403,11 @@ summary {
 	margin-top: var(--space-5);
 }
 
+/* Running text keeps the site measure; tables, figures, and diagrams use the full column. */
+.editorial .prose > :is(p, ul, ol) {
+	max-width: var(--measure);
+}
+
 .editorial .prose h2 {
 	margin-top: var(--space-8);
 	margin-bottom: var(--space-4);
@@ -1424,6 +1429,11 @@ summary {
 
 .editorial .prose li + li {
 	margin-top: var(--space-3);
+}
+
+.editorial .prose li,
+.editorial figcaption {
+	text-wrap: pretty;
 }
 
 .editorial .prose table {
