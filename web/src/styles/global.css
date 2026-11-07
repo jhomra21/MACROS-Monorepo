@@ -347,11 +347,13 @@ summary {
 	}
 }
 
+/* Wrapping keeps every link on screen at 320px and with enlarged text, instead of widening the page. */
 .site-header__inner {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--space-4);
+	gap: 0 var(--space-4);
 	min-height: var(--header-h);
 }
 
@@ -361,7 +363,7 @@ summary {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-2);
-	min-height: 2.75rem;
+	min-height: 44px;
 	color: var(--ink);
 	font-size: 1.25rem;
 	font-weight: 800;
@@ -382,15 +384,17 @@ summary {
 
 .nav-list {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--space-1);
 }
 
+/* Header targets stay 44px tall in px, so enlarged text does not double the sticky header. */
 .nav-link {
 	white-space: nowrap;
 	display: inline-flex;
 	align-items: center;
-	min-height: 2.75rem;
+	min-height: 44px;
 	padding-inline: var(--space-3);
 	border-radius: var(--radius-pill);
 	color: var(--ink-muted);
@@ -419,7 +423,7 @@ summary {
 
 @media (max-width: 40rem) {
 	.site-header__inner {
-		gap: var(--space-2);
+		column-gap: var(--space-2);
 	}
 
 	.nav-link {
@@ -431,7 +435,7 @@ summary {
 	}
 }
 
-@media (max-width: 22.5rem) {
+@media (max-width: 25rem) {
 	.nav-list {
 		gap: 0;
 	}
