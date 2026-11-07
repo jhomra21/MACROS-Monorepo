@@ -1380,8 +1380,19 @@ summary {
 	padding-block: var(--page-top) var(--section-space);
 }
 
+/* One line: the current title is cut with an ellipsis, since the h1 right below shows it in full. */
 .breadcrumbs {
+	display: flex;
+	align-items: center;
+	gap: 0 0.35em;
 	margin-bottom: var(--space-6);
+	white-space: nowrap;
+}
+
+.breadcrumbs [aria-current] {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .breadcrumbs a {
