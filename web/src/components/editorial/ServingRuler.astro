@@ -1,0 +1,143 @@
+---
+// FDA's sample frozen lasagna label, as cited in the post: 1 cup (227 g) a serving, 4 servings a package.
+const gramsPerServing = 227;
+
+const caloriesPerServing = 280;
+
+const proteinPerServing = 15;
+
+const servingsPerPackage = 4;
+
+const packageGrams = gramsPerServing * servingsPerPackage;
+
+const ticks = Array.from({ length: servingsPerPackage + 1 }, (_, servings) => ({ servings, grams: servings * gramsPerServing }));
+
+const number = (value: number) => value.toLocaleString('en-US');
+
+// The weighed plate is 340 ÷ 227 = 1.498 servings, so the post rounds it to about 1.5 before multiplying.
+const marks = [
+	{ name: 'Weighed plate', amount: '340\u00a0g (12\u00a0oz)', grams: 340, servings: 1.5, math: '340 ÷ 227 is about 1.5 servings', about: true },
+	{ name: 'Half the package', amount: `2 cups (${number(2 * gramsPerServing)}\u00a0g)`, grams: 2 * gramsPerServing, servings: 2, math: '2 servings', about: false },
+	{ name: 'Whole package', amount: `4 cups (${number(packageGrams)}\u00a0g)`, grams: packageGrams, servings: 4, math: '4 servings', about: false },
+].map(mark => ({ ...mark, calories: mark.servings * caloriesPerServing, protein: mark.servings * proteinPerServing }));
+---
+<figure class="guide-diagram serving-ruler" data-diagram aria-labelledby="serving-ruler-caption">
+	<p class="title">One lasagna, measured in servings</p>
+	<div class="serving-ruler__chart">
+		<div class="serving-ruler__axis caption" aria-hidden="true">
+			{ticks.map(tick => <span style={`--at: ${(tick.servings / servingsPerPackage) * 100}%`}><b>{tick.servings}</b>{number(tick.grams)}&nbsp;g</span>)}
+		</div>
+		<ol class="serving-ruler__marks" role="list">
+			{marks.map(mark => <li>
+				<p class="serving-ruler__name"><strong>{mark.name}</strong><span>{mark.amount}</span></p>
+				<span class="serving-ruler__track" aria-hidden="true">
+					<span class="diagram-bar" style={`--share: ${(mark.grams / packageGrams) * 100}%`}></span>
+					{ticks.slice(1, -1).map(tick => <i style={`--at: ${(tick.servings / servingsPerPackage) * 100}%`}></i>)}
+				</span>
+				<p class="serving-ruler__math caption">{mark.math}, so {mark.about ? 'about ' : ''}<strong>{number(mark.calories)} calories</strong> and <strong>{mark.protein}&nbsp;g protein</strong>.</p>
+			</li>)}
+		</ol>
+	</div>
+	<figcaption id="serving-ruler-caption" class="caption">Each block on the ruler is one serving: 1 cup (227&nbsp;g), 280 calories, and 15&nbsp;g of protein on FDA's sample lasagna label. Multiply those numbers by the servings you ate.</figcaption>
+</figure>
+
+<style>
+	.serving-ruler .serving-ruler__chart {
+		container-type: inline-size;
+	}
+
+	/* Tick labels sit over the block edges below; the end labels align inward so neither leaves the figure. */
+	.serving-ruler .serving-ruler__axis {
+		position: relative;
+		height: 2.75em;
+		margin-bottom: var(--space-2);
+		line-height: 1.3;
+	}
+
+	.serving-ruler .serving-ruler__axis span {
+		position: absolute;
+		left: var(--at);
+		display: grid;
+		justify-items: center;
+		transform: translateX(-50%);
+		white-space: nowrap;
+	}
+
+	.serving-ruler .serving-ruler__axis span:first-child {
+		justify-items: start;
+		transform: none;
+	}
+
+	.serving-ruler .serving-ruler__axis span:last-child {
+		justify-items: end;
+		transform: translateX(-100%);
+	}
+
+	.serving-ruler .serving-ruler__axis b {
+		color: var(--ink);
+		font-weight: 700;
+	}
+
+	.serving-ruler .serving-ruler__marks {
+		display: grid;
+		padding-left: 0;
+		list-style: none;
+	}
+
+	.serving-ruler .serving-ruler__marks li {
+		display: grid;
+		gap: var(--space-2);
+		margin-top: 0;
+		padding-block: var(--space-4);
+		border-top: 1px solid var(--hairline);
+	}
+
+	.serving-ruler .serving-ruler__marks li:last-child {
+		padding-bottom: 0;
+	}
+
+	.serving-ruler .serving-ruler__name {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0 var(--space-3);
+	}
+
+	.serving-ruler .serving-ruler__name span {
+		color: var(--ink-muted);
+	}
+
+	/* Band-colored gaps cut the track and its fill into one block per serving. */
+	.serving-ruler .serving-ruler__track {
+		position: relative;
+		display: block;
+		height: 0.75rem;
+		border-radius: var(--radius-pill);
+		background: color-mix(in srgb, var(--ink) 12%, transparent);
+		overflow: hidden;
+	}
+
+	.serving-ruler .serving-ruler__track .diagram-bar {
+		height: 100%;
+	}
+
+	.serving-ruler .serving-ruler__track i {
+		position: absolute;
+		inset-block: 0;
+		left: var(--at);
+		width: 3px;
+		background: var(--band);
+		transform: translateX(-50%);
+	}
+
+	.serving-ruler .serving-ruler__math strong {
+		color: var(--ink);
+	}
+
+	/* With large text on a narrow screen the tick labels would collide, so the rows keep only their text and blocks. */
+	@container (max-width: 15rem) {
+		.serving-ruler .serving-ruler__axis {
+			display: none;
+		}
+	}
+</style>
