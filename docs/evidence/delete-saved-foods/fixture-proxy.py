@@ -95,6 +95,8 @@ def write_barcode_png(path, code=BARCODE, module=8, quiet=20, bar_height=480, wi
 
 
 if __name__ == "__main__":
+    if len(sys.argv) != 3 or sys.argv[1] not in ("serve", "barcode"):
+        sys.exit("usage: fixture-proxy.py serve <port> | barcode <png>")
     if sys.argv[1] == "serve":
         ThreadingHTTPServer(("127.0.0.1", int(sys.argv[2])), Handler).serve_forever()
     elif sys.argv[1] == "barcode":

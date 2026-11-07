@@ -187,7 +187,12 @@ Round 2's `settings-last-row-undo-banner.png` and `dashboard-meal-history.png` w
 ### Repeat (round 3)
 
 1. Acquire the iPhone 17e lock, erase it, install the Debug build, onboard, and run DEBUG Settings → Load Demo Data.
-2. `python3 docs/evidence/delete-saved-foods/fixture-proxy.py serve 8787`, then `xcrun simctl spawn <UDID> launchctl setenv PACKAGED_FOOD_SEARCH_BASE_URL_OVERRIDE http://127.0.0.1:8787`. Write the barcode with `fixture-proxy.py barcode <png>` and `xcrun simctl addmedia <UDID> <png>`.
+2. `python3 docs/evidence/delete-saved-foods/fixture-proxy.py serve 8797`, then `xcrun simctl spawn <UDID> launchctl setenv PACKAGED_FOOD_SEARCH_BASE_URL_OVERRIDE http://127.0.0.1:8797`. Avoid 8787: `wrangler dev` for the website and food-search Worker and the Debug app's default lookup URL all use it, and the round 3 run collided with a website check there. Write the barcode with `fixture-proxy.py barcode <png>` and `xcrun simctl addmedia <UDID> <png>`.
 3. Set the VoiceOver flag as above. Search "fixture skyr" and log it. Swipe Delete it in Add Food, open Camera → More camera options → Choose a Photo → the barcode → Log, close Camera, and tap Undo. Expect "Can't Undo" and one `barcodeLookup` row.
 4. For the countdown, delete a food and flip the flag while the banner is up. Flag on: no timer. Flag off: the banner hides about 5 seconds later.
-5. Reset with `agent-device settings text-size large` and the flag set to false.
+5. Reset with `agent-device settings text-size large`, the flag set to false, and `xcrun simctl spawn <UDID> launchctl unsetenv PACKAGED_FOOD_SEARCH_BASE_URL_OVERRIDE`, so the shared simulator stops sending lookups to the stopped proxy.
+
+### Follow-ups found in review
+
+- USDA barcodes can be 14 digits (`00012345678905`), but `OpenFoodFactsIdentity.barcodeAliases` only pairs the 12- and 13-digit forms. Undo, and scanning's saved-food lookup, can miss that match. Fix it separately in `barcodeAliases`.
+- If a USDA row and an Open Food Facts row for the same barcode both existed before a delete, Undo refuses as "saved again". Normal use can't create both rows; old or restored data can. A fix would compare the matching row's `createdAt` with the delete time.
