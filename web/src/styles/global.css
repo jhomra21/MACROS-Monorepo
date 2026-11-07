@@ -705,13 +705,16 @@ summary {
 	display: none;
 }
 
-.showcase__card {
+.showcase__item {
 	flex: 0 0 min(68vw, 16.5rem);
+	scroll-snap-align: start;
+}
+
+.showcase__card {
 	display: grid;
 	align-content: start;
 	gap: var(--space-4);
 	justify-items: center;
-	scroll-snap-align: start;
 }
 
 .showcase__card figcaption {
@@ -732,7 +735,7 @@ summary {
 		scrollbar-color: var(--hairline) transparent;
 	}
 
-	.showcase__card {
+	.showcase__item {
 		flex-basis: 16.5rem;
 	}
 }

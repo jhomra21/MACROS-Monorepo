@@ -11,16 +11,18 @@ import AppScreen from './AppScreen.astro';
 		<div class="showcase__track" role="list" tabindex="0" aria-label="App screenshots">
 			{
 				site.screenshots.map((shot) => (
-					<figure class="showcase__card" role="listitem">
-						<AppScreen
-							src={shot.src}
-							alt={shot.alt}
-							small
-							widths={[240, 480]}
-							sizes="(max-width: 900px) 240px, 240px"
-						/>
-						<figcaption>{shot.title}</figcaption>
-					</figure>
+					<div class="showcase__item" role="listitem">
+						<figure class="showcase__card">
+							<AppScreen
+								src={shot.src}
+								alt={shot.alt}
+								small
+								widths={[240, 480]}
+								sizes="(max-width: 900px) 240px, 240px"
+							/>
+							<figcaption>{shot.title}</figcaption>
+						</figure>
+					</div>
 				))
 			}
 		</div>
