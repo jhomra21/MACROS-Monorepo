@@ -84,7 +84,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 26.5.0
-      - run: bun install --frozen-lockfile && bun run check
+      - run: bun install --frozen-lockfile && bun run check && bun test src/worker.test.ts
 
   workers:
     needs: changes
