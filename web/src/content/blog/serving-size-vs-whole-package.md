@@ -65,6 +65,8 @@ Once you know how much you ate, MACROS does the scaling for you.
 
 To log by weight, tap Edit details, choose Grams, and set the weight you ate. The Grams stepper moves in 5 g steps, so pick the step closest to your scale. Leave the serving's grams as printed on the label. Changing them would change the calories in every gram you log.
 
+<!-- visual:quantity-steps -->
+
 If the label gives only a volume, Grams stays off until you enter the serving's weight in grams yourself.
 
 <!-- visual:scan-grams -->

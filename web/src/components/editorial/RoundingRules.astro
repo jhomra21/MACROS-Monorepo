@@ -1,0 +1,122 @@
+---
+// Rounding rules from 21 CFR 101.9(c), as the post states them. Each tick is a number the label can print.
+const steps = (from: number, to: number, step: number) => Array.from({ length: Math.round((to - from) / step) + 1 }, (_, index) => from + index * step);
+
+const rows = [
+	{
+		name: 'Calories',
+		end: 100,
+		ticks: [0, ...steps(5, 50, 5), ...steps(60, 100, 10)],
+		marks: [5, 50, 100],
+		zones: [
+			{ range: 'Under 5', rule: 'can print 0' },
+			{ range: '5 to 50', rule: 'nearest 5' },
+			{ range: 'Over 50', rule: 'nearest 10' },
+		],
+	},
+	{
+		name: 'Protein and carbs',
+		end: 10,
+		ticks: [0, ...steps(1, 10, 1)],
+		marks: [0.5, 10],
+		zones: [
+			{ range: 'Under 0.5 g', rule: 'can print 0' },
+			{ range: '0.5 g and up', rule: 'nearest 1 g' },
+		],
+	},
+	{
+		name: 'Fat',
+		end: 10,
+		ticks: [0, ...steps(0.5, 4.5, 0.5), ...steps(5, 10, 1)],
+		marks: [0.5, 5, 10],
+		zones: [
+			{ range: 'Under 0.5 g', rule: 'prints 0' },
+			{ range: '0.5 g to under 5 g', rule: 'nearest 0.5 g' },
+			{ range: '5 g and up', rule: 'nearest 1 g' },
+		],
+	},
+];
+---
+<figure class="guide-diagram rounding-rules" data-diagram aria-labelledby="rounding-rules-caption">
+	<p class="title">The label's rounding rules</p>
+	<ul class="rounding-rules__rows" role="list">
+		{rows.map(row => {
+			const at = (value: number) => `${(value / row.end) * 100}%`;
+
+			return <li>
+				<p><strong>{row.name}</strong></p>
+				<span class="rounding-rules__ruler" aria-hidden="true">
+					{row.ticks.map(tick => <i style={`left: ${at(tick)}`}></i>)}
+					{row.marks.map(mark => <b class="caption" style={`left: ${at(mark)}`}>{mark}</b>)}
+				</span>
+				<ul class="rounding-rules__zones caption" role="list">
+					{row.zones.map(zone => <li><strong>{zone.range}</strong> {zone.rule}</li>)}
+				</ul>
+			</li>;
+		})}
+	</ul>
+	<figcaption id="rounding-rules-caption" class="caption">Each tick is a number the label can print, so the gap between ticks is the rounding step. Calories run from 0 to 100 and grams from 0 to 10 g. The steps keep going past the end of each scale.</figcaption>
+</figure>
+
+<style>
+	:global(.editorial .prose) .rounding-rules__rows,
+	:global(.editorial .prose) .rounding-rules__zones {
+		padding-left: 0;
+		list-style: none;
+	}
+
+	:global(.editorial .prose) .rounding-rules__rows {
+		display: grid;
+		gap: var(--space-5);
+	}
+
+	.rounding-rules__rows > li {
+		display: grid;
+		gap: var(--space-2);
+		margin-top: 0;
+	}
+
+	/* Ticks hang from a baseline; boundary numbers sit below. The inset keeps the end numbers inside the figure. */
+	.rounding-rules__ruler {
+		position: relative;
+		display: block;
+		height: 2.5rem;
+		margin-inline: var(--space-3);
+		background: linear-gradient(var(--ink) 0 0) 0 0 / 100% 2px no-repeat;
+	}
+
+	.rounding-rules__ruler i {
+		position: absolute;
+		top: 0;
+		width: 1px;
+		height: 0.875rem;
+		background: var(--ink);
+	}
+
+	.rounding-rules__ruler b {
+		position: absolute;
+		top: 1.125rem;
+		font-weight: 400;
+		white-space: nowrap;
+		transform: translateX(-50%);
+	}
+
+	.rounding-rules__ruler b:last-child {
+		transform: translateX(-100%);
+	}
+
+	:global(.editorial .prose) .rounding-rules__zones {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-1) var(--space-4);
+	}
+
+	:global(.editorial .prose) .rounding-rules__zones li {
+		margin-top: 0;
+	}
+
+	.rounding-rules__zones strong {
+		color: var(--ink);
+		font-weight: 600;
+	}
+</style>

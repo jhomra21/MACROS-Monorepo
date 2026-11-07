@@ -1,0 +1,166 @@
+---
+// App conversions: pounds × 0.45359237 to kg and inches × 2.54 to cm. Height shows to the nearest whole inch.
+// Entries are the guide's worked example: Male, age 30, Moderate (1.55), Maintain, Balanced 20/50/30.
+const kgPerLb = 0.45359237;
+
+const cmPerInch = 2.54;
+
+const cm = 175;
+
+const exactInches = cm / cmPerInch;
+
+const shownInches = Math.round(exactInches);
+
+const feet = (inches: number, digits: number) => `${Math.floor(inches / 12)} ft ${(inches % 12).toFixed(digits)} in`;
+
+const roundTo5 = (grams: number) => Math.round(grams / 5) * 5;
+
+const estimate = (kg: number, height: number) => (10 * kg + 6.25 * height - 5 * 30 + 5) * 1.55;
+
+const goals = (target: number) => {
+	const protein = roundTo5((target * 0.2) / 4);
+	const carbs = roundTo5((target * 0.5) / 4);
+	const fat = roundTo5((target * 0.3) / 9);
+	const total = protein * 4 + carbs * 4 + fat * 9;
+
+	// The app keeps the first rounding only inside this window; the guide's claim depends on it.
+	if (total < target || total > target * 1.02) throw new Error('Height example left the 2% window.');
+
+	return { protein, carbs, fat, total };
+};
+
+const entries = [
+	{ name: 'Metric entry', input: `70 kg, ${cm} cm`, target: estimate(70, cm) },
+	{ name: 'Imperial entry', input: '154.3 lb, 5 ft 8.9 in', target: estimate(154.3 * kgPerLb, (5 * 12 + 8.9) * cmPerInch) },
+].map(entry => ({ ...entry, goals: goals(entry.target) }));
+
+// The caption says both entries give the same goals. These checks run in `astro build` (macOS), not in Linux CI.
+if (JSON.stringify(entries[0].goals) !== JSON.stringify(entries[1].goals)) throw new Error('Height example: metric and imperial goals differ.');
+
+const ruler = { low: shownInches - 0.5, high: shownInches + 0.5 };
+
+const at = (inches: number) => `${((inches - ruler.low) / (ruler.high - ruler.low)) * 100}%`;
+
+const ticks = Array.from({ length: 11 }, (_, index) => ruler.low + index / 10);
+
+const kcal = (value: number, digits = 2) => value.toLocaleString('en-US', { minimumFractionDigits: digits, maximumFractionDigits: digits });
+---
+<figure class="guide-diagram height-units" data-diagram aria-labelledby="height-units-caption">
+	<p class="title">What the app keeps and what it shows</p>
+	<span class="height-units__ruler" aria-hidden="true">
+		{ticks.map((tick, index) => <i class:list={{ 'height-units__major': index % 5 === 0 }} style={`left: ${at(tick)}`}></i>)}
+		<b class="height-units__ring" style={`left: ${at(exactInches)}`}></b>
+		<b class="height-units__dot" style={`left: ${at(shownInches)}`}></b>
+		{[ruler.low, shownInches, ruler.high].map(inches => <span class="caption" style={`left: ${at(inches)}`}>{inches} in</span>)}
+	</span>
+	<ul class="height-units__keys" role="list">
+		<li><i class="height-units__ring" aria-hidden="true"></i><span><strong>Kept: {cm} cm</strong> <span class="caption">{cm} ÷ {cmPerInch} = {exactInches.toFixed(2)} in, about {feet(exactInches, 1)}</span></span></li>
+		<li><i class="height-units__dot" aria-hidden="true"></i><span><strong>Shown: {feet(shownInches, 0)}</strong> <span class="caption">Rounded to a whole inch</span></span></li>
+	</ul>
+	<ul class="height-units__entries" role="list">
+		{entries.map(entry => <li>
+			<p><strong>{entry.name}</strong> <span class="caption">{entry.input}</span></p>
+			<p><span class="caption">Estimate</span> <strong>{kcal(entry.target)} kcal</strong></p>
+			<p class="caption">Goals: {kcal(entry.goals.total, 0)} kcal, {entry.goals.protein} g protein, {entry.goals.carbs} g carbs, {entry.goals.fat} g fat</p>
+		</li>)}
+	</ul>
+	<figcaption id="height-units-caption" class="caption">Each small tick is 0.1 in. Switching units changes the height on screen, not the {cm} cm the app keeps. The rounded imperial entry lands about {kcal(entries[0].target - entries[1].target)} kcal lower before rounding, and both give the same goals.</figcaption>
+</figure>
+
+<style>
+	.height-units {
+		container-type: inline-size;
+	}
+
+	/* The ruler spans one inch around the shown height; the inset keeps end labels inside the figure. */
+	.height-units__ruler {
+		position: relative;
+		display: block;
+		height: 3rem;
+		margin-inline: var(--space-6);
+		background: linear-gradient(var(--ink) 0 0) 0 1rem / 100% 2px no-repeat;
+	}
+
+	.height-units__ruler i {
+		position: absolute;
+		top: 0.5rem;
+		width: 1px;
+		height: 0.5rem;
+		background: var(--ink-muted);
+	}
+
+	.height-units__ruler .height-units__major {
+		top: 0.25rem;
+		height: 0.75rem;
+		background: var(--ink);
+	}
+
+	.height-units__ruler b {
+		position: absolute;
+		top: 1rem;
+		transform: translate(-50%, -50%);
+	}
+
+	.height-units__ruler span {
+		position: absolute;
+		top: 1.5rem;
+		white-space: nowrap;
+		transform: translateX(-50%);
+	}
+
+	.height-units__ring,
+	.height-units__dot {
+		display: inline-block;
+		flex: none;
+		width: 0.875rem;
+		height: 0.875rem;
+		border-radius: 50%;
+	}
+
+	.height-units__ring {
+		border: 2px solid var(--ink);
+		background: var(--band);
+	}
+
+	.height-units__dot {
+		background: var(--ink);
+	}
+
+	:global(.editorial .prose) .height-units__keys,
+	:global(.editorial .prose) .height-units__entries {
+		display: grid;
+		gap: var(--space-2);
+		padding-left: 0;
+		list-style: none;
+		font-size: var(--fs-small);
+	}
+
+	.height-units__keys li {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-2);
+		margin-top: 0;
+	}
+
+	:global(.editorial .prose) .height-units__entries {
+		grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+		gap: var(--space-4);
+	}
+
+	.height-units__entries li {
+		margin-top: 0;
+		padding-top: var(--space-2);
+		border-top: 1px solid var(--hairline);
+	}
+
+	/* With large text on a narrow screen, only the shown height keeps its label. */
+	@container (max-width: 18rem) {
+		.height-units__ruler {
+			margin-inline: var(--space-2);
+		}
+
+		.height-units__ruler span:not(:nth-last-child(2)) {
+			display: none;
+		}
+	}
+</style>

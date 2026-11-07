@@ -86,6 +86,8 @@ Take a hypothetical 30-year-old adult using Male, 70 kg (154 lb), 175 cm (5 ft 9
 
 In imperial units, 70 kg is about 154.3 lb and 175 cm is about 5 ft 8.9 in. Entering those rounded imperial values gives nearly the same estimate and the same rounded macro goals. The app displays height conversions to a whole inch, so switching units may show 5 ft 9 in while retaining the original centimeters internally.
 
+<!-- visual:height-units -->
+
 ## Sources and scope
 
 This guide is general information, not medical advice, and no doctor or dietitian reviewed it. Sources checked November 4, 2026. The calculator steps were last compared with the app on November 7, 2026.

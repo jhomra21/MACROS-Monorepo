@@ -29,6 +29,8 @@ One method matters most for high-fiber and sugar-free foods. Fiber and sugar alc
 
 Calories round to the nearest 5 up to 50, and to the nearest 10 above that. Protein and carbs round to the nearest gram. Fat rounds to the nearest half gram below 5 g, then to the nearest gram. Under 5 calories, or under half a gram of protein or carbs, can show as 0. Fat under half a gram always shows as 0.
 
+<!-- visual:rounding-rules -->
+
 The maker does the math on the real amounts, before rounding. You do it on the rounded ones. On a small serving, that alone can move the total.
 
 Picture a small snack with 0.4 g of protein, 4.4 g of carbs, and 2.24 g of fat. That's 39 calories, so the label says 40. But the label can print 0 g of protein, 4 g of carbs, and 2 g of fat. Run 4-4-9 on those and you get 34.

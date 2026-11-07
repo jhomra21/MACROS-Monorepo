@@ -1,0 +1,79 @@
+---
+// The privacy policy keeps form submissions for 12 months; the Worker purges rows older than 365 days.
+const months = 12;
+---
+<figure class="guide-diagram support-timeline" aria-labelledby="support-timeline-caption">
+	<p class="title">What happens to a form request</p>
+	<div class="support-timeline__bar" aria-hidden="true">
+		<span class="support-timeline__months">{Array.from({ length: months }, () => <i></i>)}</span>
+		<span class="caption"><span>Month 1</span><span>Month {months}</span></span>
+	</div>
+	<ol class="support-timeline__steps" role="list">
+		<li><span class="diagram-key" aria-hidden="true">1</span><p><strong>You send it.</strong> We store your name, email address, and message.</p></li>
+		<li><span class="diagram-key" aria-hidden="true">2</span><p><strong>We reply by email when we can.</strong></p></li>
+		<li><span class="diagram-key" aria-hidden="true">3</span><p><strong>After {months} months, we delete it.</strong> Ask in a request if you want it deleted sooner.</p></li>
+	</ol>
+	<figcaption id="support-timeline-caption" class="caption">Each block is one month. Requests are stored in Cloudflare D1, as the <a href="/privacy/#website-forms-and-cloudflare-logs">privacy policy</a> explains.</figcaption>
+</figure>
+
+<style>
+	.support-timeline {
+		container-type: inline-size;
+	}
+
+	.support-timeline__bar {
+		display: grid;
+		gap: var(--space-1);
+	}
+
+	.support-timeline__months {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		gap: 3px;
+	}
+
+	.support-timeline__months i {
+		height: 0.625rem;
+		background: var(--ink);
+	}
+
+	.support-timeline__months i:first-child {
+		border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+	}
+
+	.support-timeline__months i:last-child {
+		border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
+	}
+
+	.support-timeline__bar .caption {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0 var(--space-3);
+		white-space: nowrap;
+	}
+
+	.support-timeline__steps {
+		display: grid;
+		gap: var(--space-3);
+	}
+
+	.support-timeline__steps li {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-3);
+	}
+
+	.support-timeline__steps p {
+		font-size: var(--fs-small);
+	}
+
+	/* With large text in a narrow column, each key sits above its step so the text keeps the full width. */
+	@container (max-width: 16rem) {
+		.support-timeline__steps li {
+			display: grid;
+			justify-items: start;
+			gap: var(--space-1);
+		}
+	}
+</style>

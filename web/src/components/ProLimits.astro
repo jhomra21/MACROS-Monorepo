@@ -1,0 +1,120 @@
+---
+// Ranges match InsightsRange in the app; Free keeps the first. Reminders match ReminderLimits.maxCount, which counts the daily reminder.
+const ranges = ['7 days', '14 days', '30 days', '90 days', '1 year', 'All time'];
+
+const freeRanges = 1;
+
+const maxReminders = 3;
+
+const groups = [
+	{
+		name: 'Insights look-back',
+		kind: 'ranges',
+		slots: ranges,
+		rows: [
+			{ plan: 'Free', count: freeRanges, summary: ranges[0] },
+			{ plan: 'Pro', count: ranges.length, summary: '7, 14, 30, or 90 days, 1 year, or all time' },
+		],
+	},
+	{
+		name: 'Reminders',
+		kind: 'reminders',
+		slots: Array.from({ length: maxReminders }, () => ''),
+		rows: [
+			{ plan: 'Free', count: 1, summary: '1 daily reminder' },
+			{ plan: 'Pro', count: maxReminders, summary: `Up to ${maxReminders}, counting the daily one` },
+		],
+	},
+];
+---
+<figure class="guide-diagram pro-limits" aria-labelledby="pro-limits-caption">
+	<p class="title">Where Free stops and Pro goes on</p>
+	<div class="pro-limits__body">
+	{groups.map(group => <div class="pro-limits__group">
+		<p><strong>{group.name}</strong></p>
+		<ul class="pro-limits__rows" role="list">
+			{group.rows.map(row => <li>
+				<span class="pro-limits__plan">{row.plan}</span>
+				<span class:list={['pro-limits__slots', `pro-limits__slots--${group.kind}`]} aria-hidden="true">
+					{group.slots.map((slot, index) => <span class:list={{ 'pro-limits__on': index < row.count }}>{slot}</span>)}
+				</span>
+				<span class="pro-limits__summary caption">{row.summary}</span>
+			</li>)}
+		</ul>
+	</div>)}
+	</div>
+	<figcaption id="pro-limits-caption" class="caption">Filled blocks are included; outlined ones need Pro. Insights ranges are named as on the Insights screen.</figcaption>
+</figure>
+
+<style>
+	.pro-limits__body {
+		display: grid;
+		gap: var(--space-5);
+		container-type: inline-size;
+	}
+
+	.pro-limits__group {
+		display: grid;
+		gap: var(--space-2);
+	}
+
+	.pro-limits__rows {
+		display: grid;
+		gap: var(--space-3);
+	}
+
+	.pro-limits__rows li {
+		display: grid;
+		gap: var(--space-1);
+	}
+
+	.pro-limits__plan {
+		font-size: var(--fs-small);
+		font-weight: 600;
+	}
+
+	.pro-limits__slots {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-1);
+	}
+
+	.pro-limits__slots span {
+		display: inline-grid;
+		place-items: center;
+		min-height: 1.75rem;
+		border: 1px dashed var(--ink-muted);
+		border-radius: var(--radius-sm);
+		color: var(--ink-muted);
+		font-size: var(--fs-caption);
+		white-space: nowrap;
+	}
+
+	.pro-limits__slots--ranges span {
+		padding-inline: var(--space-2);
+	}
+
+	.pro-limits__slots--reminders span {
+		width: 1.75rem;
+		border-radius: 50%;
+	}
+
+	.pro-limits__slots .pro-limits__on {
+		border: 1px solid var(--ink);
+		background: var(--ink);
+		color: var(--band);
+	}
+
+	/* With room, the plan name sits beside its blocks. */
+	@container (min-width: 24rem) {
+		.pro-limits__rows li {
+			grid-template-columns: 2.5rem minmax(0, 1fr);
+			align-items: center;
+			column-gap: var(--space-3);
+		}
+
+		.pro-limits__summary {
+			grid-column: 2;
+		}
+	}
+</style>
