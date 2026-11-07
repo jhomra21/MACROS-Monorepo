@@ -9,6 +9,12 @@ import appSharingImage from '../assets/app-images/app-sharing.png';
 import appSharingPersonImage from '../assets/app-images/app-sharing-person.png';
 import appWidgetsImage from '../assets/app-images/app-widgets.png';
 import { siteOrigin } from './origin';
+import loggingCrop from '../assets/feature-crops/logging.png';
+import scanningCrop from '../assets/feature-crops/scanning.png';
+import privacyCrop from '../assets/feature-crops/privacy.png';
+import portionCrop from '../assets/feature-crops/portion.png';
+import sharingCrop from '../assets/feature-crops/sharing.png';
+import widgetsCrop from '../assets/feature-crops/widgets.png';
 
 export const site = {
 	name: 'MACROS',
@@ -60,7 +66,8 @@ export const site = {
 	features: [
 		{
 			eyebrow: 'Logging',
-			glyph: 'rings',
+			image: loggingCrop,
+			alt: 'Daily rings showing 1,310 of 2,200 kcal, 95 g protein, 162 g carbs, and 34 g fat.',
 			accent: 'protein',
 			title: 'Open it and start.',
 			body: 'Open the app and start your food diary.',
@@ -68,7 +75,8 @@ export const site = {
 		},
 		{
 			eyebrow: 'Scanning',
-			glyph: 'scan',
+			image: scanningCrop,
+			alt: 'Oat Crunch Cereal scan result: 190 kcal, one 40 g serving, and the Log button.',
 			accent: 'carbs',
 			title: 'Scan it instead of typing it.',
 			body: 'Scan the barcode or nutrition label on the pack.',
@@ -76,7 +84,8 @@ export const site = {
 		},
 		{
 			eyebrow: 'Privacy',
-			glyph: 'device',
+			image: privacyCrop,
+			alt: 'Daily totals of 1,310 kcal above four logged foods: protein bar, chicken and rice bowl, Greek yogurt, and oatmeal with banana.',
 			accent: 'fat',
 			title: 'Keep your diary on your phone.',
 			body: 'Your food log lives on your iPhone. Sharing is your choice.',
@@ -84,7 +93,8 @@ export const site = {
 		},
 		{
 			eyebrow: 'Your portion',
-			glyph: 'review',
+			image: portionCrop,
+			alt: 'Portion editor showing one serving, Servings and Grams options, and a serving size of 1 cup (40 g).',
 			accent: 'protein',
 			title: 'Half the pack? Make it half.',
 			body: 'Check your portion before you log it.',
@@ -92,7 +102,8 @@ export const site = {
 		},
 		{
 			eyebrow: 'Sharing',
-			glyph: 'people',
+			image: sharingCrop,
+			alt: 'Sharing list with Alex at 1,650 kcal and Sam at 1,420 kcal, with protein, carbs, and fat totals.',
 			accent: 'carbs',
 			title: 'Let someone check in.',
 			body: 'Invite someone with Pro, or accept their invite for free.',
@@ -100,7 +111,8 @@ export const site = {
 		},
 		{
 			eyebrow: 'Widgets',
-			glyph: 'widget',
+			image: widgetsCrop,
+			alt: 'Small and medium personal MACROS widgets showing 1,310 kcal, 95 g protein, 162 g carbs, and 34 g fat.',
 			accent: 'fat',
 			title: 'A glance before dinner.',
 			body: 'See your daily totals without opening the app.',

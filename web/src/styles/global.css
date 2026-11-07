@@ -697,15 +697,37 @@ summary {
 .bento__card {
 	--glow: var(--glow-rest);
 	display: grid;
-	grid-template-rows: 1fr repeat(3, auto);
+	grid-template-rows: auto auto auto 1fr;
 	gap: var(--space-3);
 	min-height: 15rem;
-	padding: var(--space-6);
+	padding: var(--space-5);
 	border-radius: var(--radius-lg);
 	background:
 		radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--accent) calc(var(--glow) * 100%), transparent), transparent 65%),
 		var(--bg-soft);
 	transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out), --glow 200ms var(--ease-out);
+}
+
+.bento__image {
+	display: grid;
+	place-items: center;
+	height: 17.5rem;
+	margin-bottom: var(--space-3);
+	border: 1px solid var(--hairline);
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	background: var(--bg-raised);
+}
+
+.bento__image picture {
+	display: contents;
+}
+
+.bento__image img {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	object-fit: contain;
 }
 
 .bento__card--protein {
@@ -796,6 +818,10 @@ summary {
 	.bento {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
+
+	.bento__image {
+		height: 15rem;
+	}
 }
 
 @media (min-width: 56.25rem) {
@@ -805,7 +831,10 @@ summary {
 
 	.bento__card {
 		min-height: 22rem;
-		padding: var(--space-7);
+	}
+
+	.bento__image {
+		height: 19rem;
 	}
 
 	.glyph {

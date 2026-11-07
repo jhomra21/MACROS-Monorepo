@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-06 Website feature screenshots
+
+Replaced the six home feature glyphs with deterministic app screenshot crops and responsive AVIF/WebP images, preserving copy and motion. Personal widget crops exclude shared data. Web checks, nine Worker tests, build, lint, and six viewport/theme captures pass; desktop images total 58 KB at 1×. See [crop rectangles and visual evidence](docs/evidence/web-feature-images/README.md).
+
 ## 2026-11-05 StoreKit test timing
 
 Stabilized StoreKit test delivery/reset ordering, moved Ask to Buy test IPC off the main actor, and retained cold legacy-refresh coverage without changing app entitlement behavior. Legacy publication timing reproduced; the historical Ask to Buy timeout's blocking site remains unproven. Validation: ten independent 15/15 StoreKit passes, 262/262 remaining tests, formatting, build, and catalog checks pass. See [evidence and same-process stress limitation](docs/evidence/storekit-test-timing/README.md).
