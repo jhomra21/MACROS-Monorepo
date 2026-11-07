@@ -859,6 +859,8 @@ summary {
 
 	.compare {
 		grid-column: 1 / -1;
+		justify-self: center;
+		width: 100%;
 		margin-top: var(--space-6);
 	}
 }

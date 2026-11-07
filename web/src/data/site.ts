@@ -133,7 +133,7 @@ export const site = {
 		'Multiple and smart reminders',
 	],
 	proPrices: [
-		{ name: 'Monthly', price: '$2.99', cadence: 'per month', note: 'No trial' },
+		{ name: 'Monthly', price: '$2.99', cadence: 'per month', note: 'No free trial' },
 		{ name: 'Yearly', price: '$19.99', cadence: 'per year', note: '7-day free trial' },
 		{ name: 'Lifetime', price: '$49.99', cadence: 'one time', note: 'No renewals. One purchase per Apple Account.' },
 	],
