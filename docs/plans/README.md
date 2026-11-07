@@ -20,6 +20,7 @@ Release owner owns App Store/account/device gates; native maintainer owns app ch
 | [Retention](active/retention-polish-tracker.md) | Implemented, device check blocked | Barcode 429 non-retryable/Retry-After feedback on TestFlight with camera |
 | [Weight/Health/reminders](active/weight-health-reminders-tracker.md) | Implemented, hardware checks blocked | Health authorization/write/readback, delivered notification cold/background taps, multiple/smart firing times |
 | [Bundled foods](active/bundled-food-database-tracker.md) | Implemented, device checks open | Saved barcode digits, brand prefix and mixed meal/food ordering |
+| [Typed quantity entry](active/typed-quantity-entry.md) | Proposed, not started | Owner request 2026-11-07: tap Servings/Grams to type an exact amount; settle validation rules, then E2E |
 | [Website/legal](active/website-legal-metadata-tracker.md) | Implemented, submission open | Release owner reconciles listing placeholders, privacy mapping, screenshots, review notes/URLs and age rating |
 
 ## Completed implementation records
