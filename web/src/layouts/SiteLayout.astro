@@ -62,7 +62,8 @@ const schema = [
 		<meta name="generator" content={Astro.generator} />
 		<link rel="canonical" href={canonicalURL} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta property="og:type" content={article ? 'article' : 'website'} />
 		{article && <meta property="article:published_time" content={article.published.toISOString()} />}
 		{article && <meta property="article:modified_time" content={article.updated.toISOString()} />}
