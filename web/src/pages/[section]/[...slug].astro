@@ -5,7 +5,7 @@ import ArticleBody from '../../components/editorial/ArticleBody.astro';
 import PageHeading from '../../components/PageHeading.astro';
 import { site } from '../../data/site';
 import SiteLayout from '../../layouts/SiteLayout.astro';
-import { absoluteURL, authorReference, pages, publishedEntries, publisherReference, relatedEntries } from '../../lib/seo';
+import { absoluteURL, organizationReference, pages, publishedEntries, relatedEntries } from '../../lib/seo';
 import { socialImage, socialInput } from '../../lib/social';
 
 export async function getStaticPaths() {
@@ -47,8 +47,8 @@ const articleSchema = entry ? [{
 	description: entry.data.description,
 	datePublished: entry.data.published.toISOString(),
 	dateModified: entry.data.updated.toISOString(),
-	author: authorReference,
-	publisher: publisherReference,
+	author: organizationReference,
+	publisher: organizationReference,
 	image: absoluteURL(socialImage(await socialInput(
 		`/${section}/${entry.id}/`, entry.data.title, entry.data.description, entry.data.image,
 	)).src),
@@ -71,7 +71,7 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 		</nav>
 		<div class="editorial__header">
 			<PageHeading heading={entry?.data.title ?? sectionName} lede={metadata.description}>
-				{entry && <p class="caption">By <a href="/about/">{site.author}</a><br />
+				{entry && <p class="caption">By <a href="/about/">{site.name}</a><br />
 					Published <time datetime={entry.data.published.toISOString()}>{dateText(entry.data.published)}</time>. Updated <time datetime={entry.data.updated.toISOString()}>{dateText(entry.data.updated)}</time>. About {readingMinutes} minutes to read.
 				</p>}
 			</PageHeading>

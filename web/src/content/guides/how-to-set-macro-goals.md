@@ -98,7 +98,7 @@ In imperial units, 70 kg is about 154.3 lb and 175 cm is about 5 ft 8.9 in. Ente
 
 ## Sources and scope
 
-I am the developer of MACROS, not a medical reviewer. I checked the sources below on November 4, 2026. I last compared the calculator explanation with the app on November 6, 2026, after the presets changed.
+MACROS publishes this guide. No medical reviewer checked it. MACROS checked the sources below on November 4, 2026, and last compared the calculator explanation with the app on November 6, 2026, after the presets changed.
 
 - [National Academies, 2024 AMDR report, chapter 3 and Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5): adult percentage ranges and their limits.
 - [National Academies, 2019 DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28): adult protein RDA of 0.8 g/kg.
@@ -125,4 +125,4 @@ Check the macro balance and targets before applying them. These calculator scree
 
 Revisit your targets with a professional if they do not fit your needs. A macro total alone does not tell you whether your diet provides enough fiber, vitamins, or minerals.
 
-Read [how MACROS handles your food diary data](/privacy/) or [contact the developer for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features.
+Read [how MACROS handles your food diary data](/privacy/) or [contact MACROS support for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features.
