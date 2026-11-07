@@ -11,13 +11,13 @@ const top = 48;
 <figure class="guide-diagram protein-meals" data-diagram aria-labelledby="protein-meals-caption" style={`--top: ${top}; --low: ${band.low}; --high: ${band.high}`}>
 	<p class="title">{daily}&nbsp;g a day in {meals.length} meals</p>
 	<div class="protein-meals__body">
-		<p class="protein-meals__key caption"><i aria-hidden="true"></i>Aim for {band.low} to {band.high}&nbsp;g a meal, every 3 to 4 hours</p>
+		<p class="protein-meals__key caption"><i aria-hidden="true"></i>ISSN suggests {band.low} to {band.high}&nbsp;g a meal, every 3 to 4 hours</p>
 		<div class="protein-meals__plot">
 			<span class="protein-meals__band" aria-hidden="true"><span class="caption">{band.high}&nbsp;g</span><span class="caption">{band.low}&nbsp;g</span></span>
 			<ol class="protein-meals__meals" role="list">
 				{meals.map((grams, index) => <li>
 					<span class="protein-meals__bar" style={`--g: ${grams}`} aria-hidden="true"></span>
-					<strong style={`--g: ${grams}`}>{grams}&nbsp;g</strong>
+					<strong style={`--g: ${grams}`}>{grams}&nbsp;g</strong>{' '}
 					<span class="protein-meals__name caption">Meal {index + 1}</span>
 				</li>)}
 			</ol>

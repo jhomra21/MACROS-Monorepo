@@ -15,9 +15,9 @@ const most = Math.max(...rows.map(row => row.grams));
 	<p class="title">Pounds take 0.73, not 1.6</p>
 	<div class="protein-units__body"><div class="protein-units__rows">
 		{rows.map(row => <p class:list={['protein-units__row', row.wrong && 'protein-units__row--wrong']}>
-			<span class="protein-units__label"><span class="protein-units__tag">{row.tag}</span><span>{row.math}</span></span>
+			<span class="protein-units__label"><span class="protein-units__tag">{row.tag}</span>{' '}<span>{row.math}</span></span>
 			<span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span>
-			<strong>{row.grams}&nbsp;g</strong>
+			<span class="sr-only"> = </span><strong>{row.grams}&nbsp;g</strong>
 		</p>)}
 	</div></div>
 	<figcaption id="protein-units-caption" class="caption">{lb} lb is {kg.toFixed(1)} kg, and {kg.toFixed(1)} × 1.6 also gives {Math.round(kg * 1.6)} g. The 1.6 is per kilogram, so using it with pounds gives {rows[1].grams} g, more than double.</figcaption>
@@ -63,7 +63,7 @@ const most = Math.max(...rows.map(row => row.grams));
 		--bar-color: var(--protein);
 	}
 
-	/* The mistake is a hollow dashed bar and its tag says so, so it never relies on color alone. */
+	/* The mistake is a tinted dashed bar and its tag says so, so it never relies on color alone. */
 	.protein-units__row--wrong .protein-units__tag {
 		color: var(--danger);
 	}

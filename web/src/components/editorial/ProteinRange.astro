@@ -9,10 +9,10 @@ const perLb = (g: number) => String(Number((g * 0.45359237).toFixed(2)));
 const kg = (g: number) => g.toFixed(1);
 
 const rows = [
-	{ name: 'Adult RDA', low: 0.8, high: 0.8, note: 'Covers basic needs, not a muscle target.' },
-	{ name: 'Morton et al. 2018, likely range', low: 1.0, high: 2.2, about: true, plateau: 1.6, note: 'Gains leveled off near 1.6.' },
+	{ name: 'Adult RDA', low: 0.8, high: 0.8, note: 'Meets the needs of nearly all healthy adults. Not a muscle-building target.' },
+	{ name: 'Morton et al. 2018, where gains leveled off', low: 1.0, high: 2.2, about: true, plateau: 1.6, note: 'Fat-free mass gains leveled off near 1.6. The bar is the uncertainty around that point, not a target range.' },
 	{ name: 'ISSN, most people who exercise', low: 1.4, high: 2.0 },
-	{ name: 'ISSN, lifting while eating less', low: 2.3, high: 3.1, note: 'To keep muscle.' },
+	{ name: 'ISSN, lifting while eating less', low: 2.3, high: 3.1, note: 'May be needed to keep muscle.' },
 ];
 
 const guides = [1.6, 2.2];
@@ -27,7 +27,7 @@ const axis = [0, 1, 2, 3];
 			<ul class="protein-range__rows" role="list">
 				{rows.map(row => <li class="protein-range__row">
 					<p class="protein-range__label">
-						<strong>{row.name}</strong>
+						<strong>{row.name}</strong>{' '}
 						<span class="caption">{row.low === row.high
 							? `${kg(row.low)} g/kg (${perLb(row.low)} g/lb).`
 							: `${row.about ? 'About ' : ''}${kg(row.low)} to ${kg(row.high)} g/kg (${perLb(row.low)} to ${perLb(row.high)} g/lb).`}{row.note && ` ${row.note}`}</span>
@@ -44,7 +44,7 @@ const axis = [0, 1, 2, 3];
 			<p class="protein-range__axis caption" aria-hidden="true">{axis.map(g => <span style={`--at: ${at(g)}`}>{g}</span>)}</p>
 		</div>
 	</div>
-	<figcaption id="protein-range-caption" class="caption">Dashed lines mark the two targets in this post, 1.6 and 2.2 g/kg. The diamond marks where gains leveled off in the 2018 review. The RDA is half of 1.6.</figcaption>
+	<figcaption id="protein-range-caption" class="caption">Dashed lines mark the two targets in this post, 1.6 and 2.2 g/kg. The diamond marks where fat-free mass gains leveled off in the 2018 review, and its bar shows how uncertain that point is. The RDA is half of 1.6.</figcaption>
 </figure>
 
 <style>

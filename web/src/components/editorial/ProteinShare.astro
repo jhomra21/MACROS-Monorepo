@@ -13,8 +13,8 @@ const range = { low: 10, high: 35 };
 <figure class="guide-diagram protein-share" data-diagram aria-labelledby="protein-share-caption" style={`--share: ${share}%; --low: ${range.low}%; --high: ${range.high}%`}>
 	<p class="title">Protein in a {day.toLocaleString('en-US')}-calorie day</p>
 	<div class="protein-share__math">
-		<p><span>{grams}&nbsp;g × 4 calories per gram</span><strong>{calories} calories</strong></p>
-		<p><span>{calories} ÷ {day.toLocaleString('en-US')} calories</span><strong>about {Math.round(share)}%</strong></p>
+		<p><span>{grams}&nbsp;g × 4 calories per gram</span><span class="sr-only"> = </span><strong>{calories} calories</strong></p>
+		<p><span>{calories} ÷ {day.toLocaleString('en-US')} calories</span><span class="sr-only"> = </span><strong>about {Math.round(share)}%</strong></p>
 	</div>
 	<div class="protein-share__body">
 		<div class="protein-share__chart" aria-hidden="true">
@@ -23,7 +23,7 @@ const range = { low: 10, high: 35 };
 			<p class="protein-share__axis caption"><span>0%</span><strong>{Math.round(share)}%</strong><span>100%</span></p>
 		</div>
 	</div>
-	<figcaption id="protein-share-caption" class="caption">The bar is the whole day. Protein's {calories} calories fill about {Math.round(share)}% of it and end inside the National Academies' adult range of {range.low}% to {range.high}% of calories. This is a math example, not a meal plan.</figcaption>
+	<figcaption id="protein-share-caption" class="caption">The bar is the whole day. Protein's {calories} calories fill about {Math.round(share)}% of it and land inside the National Academies' adult range of {range.low}% to {range.high}% of calories. This is a math example, not a meal plan.</figcaption>
 </figure>
 
 <style>
