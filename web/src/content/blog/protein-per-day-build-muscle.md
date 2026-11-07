@@ -1,9 +1,9 @@
 ---
 title: "How much protein per day to build muscle"
-description: "Lifting and want more muscle? Research on adults who train points to about 1.6 g of protein per kg of body weight a day. Find your daily grams."
+description: "Lifting and want more muscle? Research on adults who train points to about 1.6 g of protein per kg (0.73 g per lb) of body weight a day. Find your daily grams."
 published: 2026-11-07
 updated: 2026-11-07
-draft: true
+draft: false
 image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
 related:
@@ -12,9 +12,9 @@ related:
   - blog/serving-size-vs-whole-package
 ---
 
-You're lifting, and you want to know how much protein it takes to build muscle. For healthy adults who train, research points to about 1.6 g of protein per kilogram of body weight a day. Going up to about 2.2 g/kg may help if you want to get the most out of training.
+You're lifting, and you want to know how much protein it takes to build muscle. For healthy adults who train, research points to about 1.6 g of protein per kilogram of body weight a day (about 0.73 g per pound). Going up to about 2.2 g/kg (1 g per pound) may help if you want to get the most out of training.
 
-You may have seen a much lower number, 0.8 g/kg. That's the adult RDA. It covers the basic needs of nearly all healthy adults, and it isn't a target for building muscle.
+You may have seen a much lower number, 0.8 g/kg (0.36 g per pound). That's the adult RDA. It covers the basic needs of nearly all healthy adults, and it isn't a target for building muscle.
 
 This post is for generally healthy adults and isn't medical advice. If you have a medical condition, are pregnant, or have a history of an eating disorder, talk with a doctor or registered dietitian before you change how much protein you eat.
 
@@ -22,9 +22,9 @@ This post is for generally healthy adults and isn't medical advice. If you have 
 
 A 2018 review pooled 49 trials with 1,863 healthy adults. Each trial put people on resistance training for at least six weeks and compared a group taking protein supplements with a group that trained without them. Gains in fat-free mass leveled off at about 1.6 g/kg a day.
 
-That estimate is loose, and it came from a subset of the trials. The likely range ran from about 1.0 to 2.2 g/kg. So the authors suggested aiming near 2.2 g/kg if you want every bit of gain. That's a cautious upper target. It isn't a safety limit, and it doesn't prove that everyone gains more at 2.2 than at 1.6.
+That estimate is loose, and it came from a subset of the trials. The likely range ran from about 1.0 to 2.2 g/kg (0.45 to 1 g per pound). So the authors suggested aiming near 2.2 g/kg if you want every bit of gain. That's a cautious upper target. It isn't a safety limit, and it doesn't prove that everyone gains more at 2.2 than at 1.6.
 
-The International Society of Sports Nutrition lands in a similar place. Its 2017 position stand says 1.4 to 2.0 g/kg a day suits most people who exercise. People who lift while eating fewer calories than they burn may need 2.3 to 3.1 g/kg to keep their muscle.
+The International Society of Sports Nutrition lands in a similar place. Its 2017 position stand says 1.4 to 2.0 g/kg (0.64 to 0.91 g per pound) a day suits most people who exercise. People who lift while eating fewer calories than they burn may need 2.3 to 3.1 g/kg (1.04 to 1.41 g per pound) to keep their muscle.
 
 ## Find your daily grams
 
@@ -32,19 +32,19 @@ Multiply your weight in kilograms by 1.6. Use 2.2 instead if you're aiming high.
 
 | Body weight | At 1.6 g/kg | At 2.2 g/kg |
 | --- | --- | --- |
-| 60 kg | 96 g | 132 g |
-| 70 kg | 112 g | 154 g |
-| 80 kg | 128 g | 176 g |
-| 90 kg | 144 g | 198 g |
-| 100 kg | 160 g | 220 g |
+| 60 kg (132 lb) | 96 g | 132 g |
+| 70 kg (154 lb) | 112 g | 154 g |
+| 80 kg (176 lb) | 128 g | 176 g |
+| 90 kg (198 lb) | 144 g | 198 g |
+| 100 kg (220 lb) | 160 g | 220 g |
 
 If you weigh yourself in pounds, multiply your weight by 0.73 for 1.6 g/kg, or by 1 for 2.2 g/kg. Don't use the per-kilogram numbers with your weight in pounds. That more than doubles the result.
 
 ## Spread it through the day
 
-The same position stand suggests about 0.25 g/kg in each meal, or 20 to 40 g, every 3 to 4 hours.
+The same position stand suggests about 0.25 g/kg (0.11 g per pound) in each meal, or 20 to 40 g, every 3 to 4 hours.
 
-Take an 80 kg lifter aiming for 1.6 g/kg. That's 128 g a day. Four meals with 32 g each get there, and each meal lands inside the 20 to 40 g range.
+Take an 80 kg (176 lb) lifter aiming for 1.6 g/kg. That's 128 g a day. Four meals with 32 g each get there, and each meal lands inside the 20 to 40 g range.
 
 ## How it fits your calories
 

@@ -3,7 +3,7 @@ title: "Serving size vs. the whole package: log what you ate"
 description: "Ate half the bag or the whole tub? Learn how to read the serving line on a Nutrition Facts label and scale calories and macros to what you ate."
 published: 2026-11-07
 updated: 2026-11-07
-draft: true
+draft: false
 image: ../../assets/app-images/app-scan-review.png
 imageAlt: "MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons"
 related:
@@ -21,7 +21,7 @@ The serving size sits near the top of the Nutrition Facts label. The number of s
 
 Serving size usually reads as a kitchen measure, such as a cup or a piece, followed by grams. Drinks show milliliters instead.
 
-On most labels, every number below that line is for one serving, calories included. Some labels add a second column, covered below. A serving reflects how much people usually eat at one time. It isn't advice on how much you should eat. FDA sets a reference amount for each kind of food, such as 30 g for cookies and 170 g for yogurt, and makers start from those.
+On most labels, every number below that line is for one serving, calories included. Some labels add a second column, covered below. A serving reflects how much people usually eat at one time. It isn't advice on how much you should eat. FDA sets a reference amount for each kind of food, such as 30 g (1 oz) for cookies and 170 g (6 oz) for yogurt, and makers start from those.
 
 ## Scale it to what you ate
 
@@ -31,7 +31,7 @@ FDA's sample label for frozen lasagna shows how this works. One serving is 1 cup
 
 Eat half the package and you had 2 servings, so 560 calories and 30 g of protein. Eat the whole thing and it's 1,120 calories and 60 g of protein.
 
-Now say you weighed your plate and got 340 g. That's 340 divided by 227, or about 1.5 servings. You ate about 420 calories and 22.5 g of protein.
+Now say you weighed your plate and got 340 g (12 oz). That's 340 divided by 227, or about 1.5 servings. You ate about 420 calories and 22.5 g of protein.
 
 ## Let the label do some of the work
 

@@ -4,6 +4,12 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [web archive index](../docs/history/web/README.md) for every archived heading. See [plans](../docs/plans/README.md) for current obligations.
 
+## November 7, 2026: three blog posts published, with US units
+
+The owner approved publishing the serving size, label calories, and protein posts. Publishing turns on the Blog index, its header and footer links, the RSS feed and link, and the posts in the sitemap, and their related links now resolve. The launch announcement stays a draft. The Blog index description, its social image subtitle, and the RSS description no longer promise release news.
+
+Body weights now carry pounds (for example 80 kg (176 lb)), heights carry feet and inches, per-kilogram protein rates carry a per-pound form on first use, and the protein table shows pounds. Food portions a reader would weigh carry ounces. Nutrient grams and quoted app text stay in grams. The macro goals guide and its calculator figure caption and screenshot alt use the same units. Build is Mac-only and was not run here. No deployment.
+
 ## November 7, 2026: faster static delivery
 
 Measured production from the Mac and Worker analytics. Every request, including images, CSS, and icons, invoked the Worker before the asset lookup, and hashed files revalidated on every use. Existing static files now skip the Worker on all hosts, while pages, feeds, forms, and every miss still run it, so www and workers.dev keep their redirects and a missing hashed file, including a `/media/` video, gets the revalidating 404 page instead of an immutable one. Media keeps its Worker-first Range handling. Hashed files are cached as immutable, alias-host static files are marked noindex, the stylesheet is inlined, the browser form scripts use zod/mini (client chunk 90 KB to 21 KB), and the Worker is minified with a current compatibility date. CI now runs the Worker tests. HTML is still served without an ETag; turning off Email Obfuscation is an owner dashboard decision.

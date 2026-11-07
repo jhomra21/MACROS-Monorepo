@@ -16,7 +16,7 @@ const screens = {
 	'/privacy/': ['app-sharing.png', 'Privacy & your data'],
 	'/terms/': ['app-settings.png', 'Terms of use'],
 	'/guides/': ['app-calculator-review.png', 'Macro tracking guides'],
-	'/blog/': ['app-home.png', 'News from MACROS'],
+	'/blog/': ['app-home.png', 'The MACROS blog'],
 } as const;
 
 export interface SocialInput {
@@ -49,7 +49,7 @@ export function socialImage(input: SocialInput) {
 export async function socialInput(path: string, title: string, description: string, image?: ImageMetadata): Promise<SocialInput> {
 	// SAFETY: static page paths are keys of screens; article paths use the fallback.
 	const screen = screens[path as keyof typeof screens];
-	const subtitle = screen?.[1] ?? (path.startsWith('/guides/') ? 'Macro tracking guides' : 'News from MACROS');
+	const subtitle = screen?.[1] ?? (path.startsWith('/guides/') ? 'Macro tracking guides' : 'The MACROS blog');
 
 	// SAFETY: Astro 7 createImageAsset adds non-enumerable fsPath to local collection images
 	// (dist/assets/utils/image-asset.js); the public ImageMetadata type omits it.

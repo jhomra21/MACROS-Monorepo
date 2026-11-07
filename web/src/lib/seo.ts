@@ -50,8 +50,8 @@ export const pages = {
 		description: 'Set protein, carb, and fat goals in MACROS for iPhone. Read the calculator math, check the cited nutrition ranges, and follow the steps to save your targets.',
 	},
 	'/blog/': {
-		title: 'MACROS blog | Calorie counter news and updates',
-		description: 'Read MACROS release news. Check what changed in the iPhone calorie counter and food diary, and find links to pricing, privacy, and help.',
+		title: 'MACROS blog | Serving sizes, label calories, and protein',
+		description: 'Posts from MACROS on logging a serving, why label calories skip 4-4-9 math, and how much protein to eat to build muscle. Each cites its sources.',
 	},
 } as const;
 

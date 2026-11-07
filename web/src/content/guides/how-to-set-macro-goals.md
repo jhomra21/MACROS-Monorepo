@@ -25,9 +25,9 @@ The National Academies' Acceptable Macronutrient Distribution Ranges, or AMDRs, 
 
 These are population reference ranges, not a personalized prescription. The [National Academies' AMDR report, Table 3-1](https://www.nationalacademies.org/read/27957/chapter/5) lists these adult values and explains their use in dietary planning. Choose percentages that add to 100%. A 20% protein, 50% carbohydrate, and 30% fat split is one example within all three ranges. It is also the app's Balanced preset.
 
-The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogram of body weight per day. The [National Academies' DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28) state this figure. It is a reference intended to meet the needs of nearly all healthy adults, not an upper limit or a sports-performance target. Individual needs can differ.
+The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogram of body weight per day (about 0.36 grams per pound). The [National Academies' DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28) state this figure. It is a reference intended to meet the needs of nearly all healthy adults, not an upper limit or a sports-performance target. Individual needs can differ.
 
-At 70 kg, the calculation is 70 × 0.8 = 56 g of protein per day. In pounds, 154.3 lb ÷ 2.20462 ≈ 70 kg, so the same calculation gives about 56 g. Do not confuse grams per kilogram with grams per pound.
+At 70 kg (154 lb), the calculation is 70 × 0.8 = 56 g of protein per day. In pounds, 154.3 lb ÷ 2.20462 ≈ 70 kg, so the same calculation gives about 56 g. Do not confuse grams per kilogram with grams per pound.
 
 ## Turn calories into grams
 
@@ -47,7 +47,7 @@ MACROS uses the Mifflin–St Jeor equation to estimate resting energy needs:
 
 Resting calories = 10 × weight in kg + 6.25 × height in cm − 5 × age in years + a sex constant.
 
-The constant is +5 for Male and −161 for Female. For Unspecified, MACROS uses their midpoint, −78. That midpoint is an app convention, not a separately validated equation. The [original Mifflin–St Jeor study](https://pubmed.ncbi.nlm.nih.gov/2305711/) studied healthy adults. An estimate cannot measure your individual metabolism.
+Divide pounds by 2.2046 to get kilograms. Multiply inches by 2.54 to get centimeters. The constant is +5 for Male and −161 for Female. For Unspecified, MACROS uses their midpoint, −78. That midpoint is an app convention, not a separately validated equation. The [original Mifflin–St Jeor study](https://pubmed.ncbi.nlm.nih.gov/2305711/) studied healthy adults. An estimate cannot measure your individual metabolism.
 
 The app multiplies resting calories by the activity factor you select:
 
@@ -59,7 +59,7 @@ The app multiplies resting calories by the activity factor you select:
 | Active | Hard exercise 6–7 days per week | 1.725 |
 | Very active | Very hard training or a physical job | 1.9 |
 
-These factors are the app's estimation settings. They are not part of the original resting-energy equation. Maintain uses that total unchanged. Lose subtracts 250, 500, or 750 calories per day for the selected 0.25, 0.5, or 0.75 kg weekly pace. Gain adds 250 or 500 calories for 0.25 or 0.5 kg per week. The pound equivalents are about 0.55, 1.10, and 1.65 lb. These settings do not guarantee a particular weight change.
+These factors are the app's estimation settings. They are not part of the original resting-energy equation. Maintain uses that total unchanged. Lose subtracts 250, 500, or 750 calories per day for the selected weekly pace of 0.25 kg (0.55 lb), 0.5 kg (1.10 lb), or 0.75 kg (1.65 lb). Gain adds 250 or 500 calories for 0.25 kg (0.55 lb) or 0.5 kg (1.10 lb) per week. These settings do not guarantee a particular weight change.
 
 The calculator clamps its result to at least 1,500 calories for Male or 1,200 for Female and Unspecified. It flags a requested target below that floor. These are software limits, not proof that a calorie target is safe or adequate for you.
 
@@ -83,7 +83,7 @@ The calculator rounds protein and fat to the nearest 5 g. It first rounds carbs 
 
 ## A worked calculator example in kg and lb
 
-Take a hypothetical 30-year-old adult using Male, 70 kg, 175 cm, Moderate activity, Maintain, and Balanced. This is an explanation of the software, not advice to use these settings.
+Take a hypothetical 30-year-old adult using Male, 70 kg (154 lb), 175 cm (5 ft 9 in), Moderate activity, Maintain, and Balanced. This is an explanation of the software, not advice to use these settings.
 
 1. The resting estimate is 10 × 70 + 6.25 × 175 − 5 × 30 + 5 = 1,648.75 calories.
 2. The activity estimate is 1,648.75 × 1.55 = 2,555.56 calories.
