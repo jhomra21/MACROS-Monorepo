@@ -1,15 +1,19 @@
 ---
 title: "Why label calories don't add up to 4-4-9"
-description: "Label calories can differ from protein × 4 + carbs × 4 + fat × 9. FDA allows several calorie methods and rounds every number. Worked math inside."
+description: "Label calories can differ from protein × 4 + carbs × 4 + fat × 9. Learn why FDA's calorie methods and rounding cause it, with worked examples."
 published: 2026-11-07
 updated: 2026-11-07
 draft: true
+related:
+  - guides/how-to-set-macro-goals
+  - blog/label-scan-vs-food-database
+  - blog/serving-size-vs-whole-package
 image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size"
 imageCaption: "MACROS keeps the label's calorie number. On this demo label, 4 × 5 + 4 × 36 + 9 × 3 = 191, which rounds to the printed 190."
 ---
 
-Label calories often differ from protein × 4 + carbs × 4 + fat × 9 because FDA lets food makers choose among several calorie methods, and because every number on the label is rounded. Fiber and sugar alcohols cause the biggest gaps: they count toward total carbohydrate grams but can be counted at fewer than 4 calories per gram.
+Label calories often differ from protein × 4 + carbs × 4 + fat × 9 because FDA lets food makers choose among several calorie methods, and because every number on the label is rounded. Fiber and sugar alcohols can create larger differences because they count toward total carbohydrate but can contribute fewer than 4 calories per gram.
 
 I checked the regulation below on November 7, 2026, in the eCFR text amended through November 5, 2026.
 
@@ -55,14 +59,14 @@ So when you multiply the printed grams by 4, 4, and 9, you are working from roun
 
 ## Three worked examples
 
-### Example 1: FDA's sample label, rounding only
+### Example 1: FDA's sample label is consistent with rounding
 
 FDA's sample lasagna label lists 280 calories, 15 g protein, 34 g total carbohydrate, and 9 g fat per serving ([FDA, How to Understand and Use the Nutrition Facts Label](https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label)). It is a teaching example, not a product for sale.
 
 - 4 × 15 + 4 × 34 + 9 × 9 = 60 + 136 + 81 = 277.
 - 277 is above 50, so it rounds to the nearest 10: 280.
 
-The label matches 4-4-9 once you apply the calorie rounding rule.
+These printed values produce 280 after calorie rounding. They do not tell us which calculation method or unrounded amounts produced the label.
 
 ### Example 2: a small serving, rounding only
 
@@ -100,7 +104,7 @@ This section is about my app, MACROS.
 
 - MACROS logs the calories it reads from a label, a database entry, or your typing. It does not recalculate calories from protein, carbs, and fat.
 - Daily totals add up the logged calories and the logged grams separately.
-- The goal calculator is the one place MACROS uses 4-4-9. After it rounds your protein, carb, and fat goals, it sets the calorie goal from them. Food entries keep their label calories, so your calorie progress and your macro progress may not line up exactly. That is expected.
+- The goal calculator is the one place MACROS uses 4-4-9. After it rounds your protein, carb, and fat goals, it sets the calorie goal from them. Food entries retain the calorie value supplied to the logging form rather than recalculating it from macros. So your calorie progress and your macro progress may not line up exactly. That is expected.
 - Every value stays editable before you log.
 
 ## How I checked
@@ -110,9 +114,3 @@ This section is about my app, MACROS.
 - Examples 2 and 3 are made-up labels to show the arithmetic. They are not real products.
 
 I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian.
-
-## Related
-
-- [How to set protein, carb, and fat goals](/guides/how-to-set-macro-goals/)
-- [Why your label scan and the food database disagree](/blog/label-scan-vs-food-database/)
-- [Serving size vs. the whole package](/blog/serving-size-vs-whole-package/)

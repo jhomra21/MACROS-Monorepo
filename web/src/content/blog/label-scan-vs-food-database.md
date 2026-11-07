@@ -5,11 +5,14 @@ published: 2026-11-07
 updated: 2026-11-07
 draft: true
 image: ../../assets/app-images/app-add-food.png
-imageAlt: "MACROS food search for greek yogurt: two on-device matches, then search results for several Greek yogurt products with calories from 67 to 230 kcal"
-imageCaption: "A MACROS search for \"greek yogurt\". Different products share a name but not their numbers, so check the brand and serving before you pick one."
+imageAlt: "MACROS search for greek yogurt, with two on-device matches followed by remote results showing different brands and calorie values."
+imageCaption: "A MACROS search for \"greek yogurt\". The results show different brands and calorie values. Check the brand and serving before you pick one."
+related:
+  - blog/serving-size-vs-whole-package
+  - blog/label-calories-4-4-9
 ---
 
-A label scan reads the package in your hand. A database entry is a copy of a label from some other time, place, or person, so the two can disagree.
+A label scan reads your package. USDA Branded Foods and Open Food Facts entries can reflect a different package version, serving basis, or transcription.
 
 The usual causes are a changed recipe, a different regional version, a different serving basis, rounding, a typing error, or a scan misread. When they disagree, check the scan against the label you are holding, then fix the entry before you log it.
 
@@ -25,8 +28,6 @@ I checked the sources below on November 7, 2026.
 
 The USDA row comes from the [FoodData Central data type documentation](https://fdc.nal.usda.gov/data-documentation). The Open Food Facts row comes from its [Discover page](https://world.openfoodfacts.org/discover), which describes a "collaborative" database built by "a non-profit association of volunteers."
 
-None of these sources is wrong by design. They are copies made at different times by different people.
-
 ## Why the numbers differ
 
 - **The recipe changed.** A maker can change a product and its label. An older database entry keeps the old numbers until someone updates it.
@@ -36,31 +37,51 @@ None of these sources is wrong by design. They are copies made at different time
 - **Someone typed it wrong.** A misplaced decimal or a value in the wrong field happens in any hand-entered data.
 - **The scan misread the label.** Glare, curves, and small print can make text recognition miss or misread a digit.
 
-The printed label is not exact either. FDA treats a food as misbranded if lab testing finds calories more than 20% above the label value ([21 CFR 101.9(g)(5)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). That rule is about enforcement. It does not tell you how far any single package is off.
+The printed label is not exact either. FDA's compliance rule generally treats a food as misbranded when calories measured in a composite sample exceed the declared value by more than 20%, subject to the rule's analytical-variability qualification. The sampling procedure combines 12 consumer-unit subsamples ([21 CFR 101.9(g)(2) and (g)(5)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9)). This is an enforcement rule, not an estimate of the error in your individual package.
 
 ## Our check
 
-<!-- TODO (owner): run the check below on your own products, fill in the table, and write a one-sentence headline result here. Do not publish with empty rows. -->
+<!-- TODO (owner): run the check below on your own products, fill in the tables, and write a one-sentence headline result here. Do not publish with empty rows. -->
 
 TODO (owner): headline result goes here after the product checks. Example shape: "In N products I bought in [month], X of the USDA entries and Y of the Open Food Facts entries matched the label calories exactly."
 
 ### Method
 
 1. Buy or pick products from your kitchen. Write down the store and date.
-2. Photograph each Nutrition Facts label.
+2. Photograph each Nutrition Facts label and note the photo date.
 3. Look up the barcode in [FoodData Central](https://fdc.nal.usda.gov/) and in [Open Food Facts](https://world.openfoodfacts.org/).
-4. Record calories, protein, carbs, and fat per serving from each source. If a source gives only per 100 g, convert with the label's serving weight and note that you did.
-5. Record the difference from the label and the most likely cause.
+4. Record each source's lookup date, record ID or barcode, original nutrition basis, serving weight, calories, protein, carbs, and fat. Normalize all values to the same labeled serving, keeping the original values and the conversion.
+5. Calculate USDA minus label and Open Food Facts minus label separately. Record an explanation only when verified. Otherwise write "cause not established."
 
-### Results
+### Source records
 
-| Product (brand, size) | Label photographed | Label kcal per serving | USDA kcal per serving (FDC ID) | Open Food Facts kcal per serving (barcode) | Difference (kcal) | Likely cause |
+One row per source per product.
+
+| Product (brand, size) | Source | Date (photo or lookup) | Record ID or barcode | Original basis | Serving weight (g) | Conversion to labeled serving |
+| --- | --- | --- | --- | --- | --- | --- |
+| TODO | Label | TODO | TODO | Per serving | TODO | None |
+| TODO | USDA | TODO | TODO (FDC ID) | TODO | TODO | TODO |
+| TODO | Open Food Facts | TODO | TODO (barcode) | TODO | TODO | TODO |
+
+### Calories per labeled serving
+
+| Product (brand, size) | Label (kcal) | USDA (kcal) | OFF (kcal) | USDA − label (kcal) | OFF − label (kcal) | Verified explanation or unknown |
 | --- | --- | --- | --- | --- | --- | --- |
 | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
 | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
+
+OFF is Open Food Facts.
+
+### Macros per labeled serving
+
+| Product (brand, size) | Source | Protein (g) | Carbs (g) | Fat (g) |
+| --- | --- | --- | --- | --- |
+| TODO | Label | TODO | TODO | TODO |
+| TODO | USDA | TODO | TODO | TODO |
+| TODO | Open Food Facts | TODO | TODO | TODO |
 
 ### Limits
 
@@ -71,21 +92,15 @@ This is a small sample of products I chose, not a random sample. It shows how of
 This section is about my app, MACROS.
 
 - Label scans run on your iPhone with Apple's Vision text recognition. The photo is not sent to a server for reading.
-- Barcode lookups and text searches go to the MACROS food-search service, which queries Open Food Facts and USDA FoodData Central ([privacy policy](/privacy/)). Search results appear below your on-device matches.
+- Barcode lookups use Open Food Facts through the MACROS food-search service. Text search can return Open Food Facts and USDA Branded Foods results below your on-device matches ([privacy policy](/privacy/)).
 - In Edit details, a barcode result names Open Food Facts as its source, with a link to the product page.
 - If a label scan could not read calories, protein, carbs, or fat, MACROS asks you to enter them or confirm they are 0 before you log.
-- Every value is editable before you log. If you edit a saved food from a database, MACROS updates your local copy, so your corrected values are used the next time you log it.
+- Every value is editable before you log. When you edit a saved database food before logging and then log it, MACROS updates its reusable local copy. Selecting that saved copy again uses your corrections.
 
 ## How I checked
 
 - [FoodData Central data type documentation](https://fdc.nal.usda.gov/data-documentation): Branded Foods come from manufacturers' label information and update monthly.
 - [Open Food Facts, Discover](https://world.openfoodfacts.org/discover): volunteer, collaborative database built from barcode scans and label photos.
-- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (c) and (g)(5): label rounding and the 20% calorie compliance limit. I read the eCFR text as amended through November 5, 2026.
+- [21 CFR 101.9](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9), paragraphs (c), (g)(2), and (g)(5): label rounding, the 12-subsample composite, and the 20% calorie compliance limit with its analytical-variability qualification. I read the eCFR text as amended through November 5, 2026.
 
 I compared the MACROS section with the app's source code on November 7, 2026. I am the developer of MACROS, not a dietitian.
-
-## Related
-
-- [Serving size vs. the whole package](/blog/serving-size-vs-whole-package/)
-- [Why label calories don't add up to 4-4-9](/blog/label-calories-4-4-9/)
-- [How MACROS handles your food diary data](/privacy/)
