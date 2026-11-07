@@ -1,0 +1,95 @@
+---
+// The post's pound shortcut next to the common mistake, for the 180 lb row of the lookup above.
+const lb = 180;
+
+const kg = lb * 0.45359237;
+
+const rows = [
+	{ tag: 'Right', math: `${lb} lb × 0.73`, grams: Math.round(lb * 0.73) },
+	{ tag: 'Mistake', math: `${lb} lb × 1.6`, grams: Math.round(lb * 1.6), wrong: true },
+];
+
+const most = Math.max(...rows.map(row => row.grams));
+---
+<figure class="guide-diagram protein-units" data-diagram aria-labelledby="protein-units-caption">
+	<p class="title">Pounds take 0.73, not 1.6</p>
+	<div class="protein-units__body"><div class="protein-units__rows">
+		{rows.map(row => <p class:list={['protein-units__row', row.wrong && 'protein-units__row--wrong']}>
+			<span class="protein-units__label"><span class="protein-units__tag">{row.tag}</span><span>{row.math}</span></span>
+			<span class="diagram-bar" style={`--share: ${(row.grams / most) * 100}%`} aria-hidden="true"></span>
+			<strong>{row.grams}&nbsp;g</strong>
+		</p>)}
+	</div></div>
+	<figcaption id="protein-units-caption" class="caption">{lb} lb is {kg.toFixed(1)} kg, and {kg.toFixed(1)} × 1.6 also gives {Math.round(kg * 1.6)} g. The 1.6 is per kilogram, so using it with pounds gives {rows[1].grams} g, more than double.</figcaption>
+</figure>
+
+<style>
+	.protein-units__body {
+		container-type: inline-size;
+	}
+
+	.protein-units__rows {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: var(--space-4) var(--space-3);
+		font-size: var(--fs-small);
+	}
+
+	/* Rows share one subgrid, so both bars start at the same x at any text size. */
+	.protein-units__row {
+		display: grid;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		align-items: center;
+	}
+
+	.protein-units__label {
+		display: grid;
+		line-height: 1.35;
+	}
+
+	.protein-units__tag {
+		color: var(--ink-muted);
+		font-size: var(--fs-caption);
+		font-weight: 600;
+	}
+
+	.protein-units__row strong {
+		font-size: var(--fs-body);
+		text-align: end;
+	}
+
+	.protein-units__row .diagram-bar {
+		--bar-color: var(--protein);
+	}
+
+	/* The mistake is a hollow dashed bar and its tag says so, so it never relies on color alone. */
+	.protein-units__row--wrong .protein-units__tag {
+		color: var(--danger);
+	}
+
+	.protein-units__row--wrong .diagram-bar {
+		border: 1.5px dashed var(--danger);
+		background: color-mix(in srgb, var(--danger) 12%, transparent);
+	}
+
+	/* With large text on a narrow screen the bars go and each result sits under its math. */
+	@container (max-width: 14rem) {
+		.protein-units__rows {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.protein-units__row {
+			display: block;
+		}
+
+		.protein-units__row .diagram-bar {
+			display: none;
+		}
+
+		.protein-units__row strong {
+			display: block;
+			text-align: start;
+		}
+	}
+</style>

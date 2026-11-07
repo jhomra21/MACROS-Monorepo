@@ -1,0 +1,109 @@
+---
+// The post's example: 128 g of protein at 4 calories per gram in a 2,500-calorie day.
+const grams = 128;
+
+const calories = grams * 4;
+
+const day = 2500;
+
+const share = (calories / day) * 100;
+
+const range = { low: 10, high: 35 };
+---
+<figure class="guide-diagram protein-share" data-diagram aria-labelledby="protein-share-caption" style={`--share: ${share}%; --low: ${range.low}%; --high: ${range.high}%`}>
+	<p class="title">Protein in a {day.toLocaleString('en-US')}-calorie day</p>
+	<div class="protein-share__math">
+		<p><span>{grams}&nbsp;g × 4 calories per gram</span><strong>{calories} calories</strong></p>
+		<p><span>{calories} ÷ {day.toLocaleString('en-US')} calories</span><strong>about {Math.round(share)}%</strong></p>
+	</div>
+	<div class="protein-share__body">
+		<div class="protein-share__chart" aria-hidden="true">
+			<p class="protein-share__range caption">Adult range, {range.low}% to {range.high}%</p>
+			<div class="protein-share__track"><span class="protein-share__band"></span><span class="protein-share__fill"></span></div>
+			<p class="protein-share__axis caption"><span>0%</span><strong>{Math.round(share)}%</strong><span>100%</span></p>
+		</div>
+	</div>
+	<figcaption id="protein-share-caption" class="caption">The bar is the whole day. Protein's {calories} calories fill about {Math.round(share)}% of it and end inside the National Academies' adult range of {range.low}% to {range.high}% of calories. This is a math example, not a meal plan.</figcaption>
+</figure>
+
+<style>
+	.protein-share__math p {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0 var(--space-4);
+		padding-block: var(--space-2);
+		border-bottom: 1px solid var(--hairline);
+	}
+
+	.protein-share__body {
+		container-type: inline-size;
+	}
+
+	.protein-share__chart {
+		padding-top: var(--space-2);
+	}
+
+	.protein-share__range {
+		margin-left: var(--low);
+		/* Clears the band, which reaches 0.5rem above the bar. */
+		padding-bottom: calc(0.5rem + var(--space-1));
+		color: var(--ink);
+	}
+
+	.protein-share__track {
+		position: relative;
+		height: 1.25rem;
+		border-radius: var(--radius-pill);
+		background: color-mix(in srgb, var(--ink) 10%, transparent);
+	}
+
+	/* The band reaches above and below the bar, so the range still shows where protein covers it. */
+	.protein-share__band {
+		position: absolute;
+		inset-block: -0.5rem;
+		left: var(--low);
+		width: calc(var(--high) - var(--low));
+		border-inline: 1px dashed var(--protein);
+		background: color-mix(in srgb, var(--protein) 16%, transparent);
+	}
+
+	.protein-share__fill {
+		position: absolute;
+		inset-block: 0;
+		left: 0;
+		width: var(--share);
+		border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+		background: var(--protein);
+	}
+
+	.protein-share__axis {
+		position: relative;
+		height: 1.5em;
+		margin-top: var(--space-2);
+	}
+
+	.protein-share__axis > * {
+		position: absolute;
+	}
+
+	.protein-share__axis span:first-child {
+		left: 0;
+	}
+
+	.protein-share__axis strong {
+		left: var(--share);
+		translate: -50% 0;
+		color: var(--ink);
+	}
+
+	.protein-share__axis span:last-child {
+		right: 0;
+	}
+
+	@container (max-width: 15rem) {
+		.protein-share__chart {
+			display: none;
+		}
+	}
+</style>
