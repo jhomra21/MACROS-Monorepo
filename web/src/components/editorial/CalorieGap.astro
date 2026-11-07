@@ -15,17 +15,17 @@ const macros = [
 const share = (value: number, other: number) => `${(value / Math.max(value, other)) * 100}%`;
 ---
 <figure class="guide-diagram calorie-gap" data-diagram aria-labelledby="calorie-gap-caption">
-	<p class="title">Label calories next to 4-4-9</p>
-	<ul class="calorie-gap__list">
+	<p class="title">Label calories next to 4‑4‑9</p>
+	<ul class="calorie-gap__list" role="list">
 		{examples.map(example => <li>
 			<p class="calorie-gap__name"><strong>{example.name}</strong><span class="caption">{example.source}</span></p>
 			<p class="calorie-gap__grams caption">{macros.map(macro => <span><span class="macro-dot" style={`--macro-color: var(--${macro.key})`}></span>{example[macro.key]} g {macro.name}</span>)}</p>
 			<div class="calorie-gap__bars">
 				<p><span>Label</span><span class="diagram-bar" style={`--share: ${share(example.label, example.sum)}`} aria-hidden="true"></span><strong>{example.label}<span class="sr-only"> calories</span></strong></p>
-				<p class="calorie-gap__sum"><span>4-4-9</span><span class="diagram-bar" style={`--share: ${share(example.sum, example.label)}`} aria-hidden="true"></span><strong>{example.sum}<span class="sr-only"> calories</span></strong></p>
+				<p class="calorie-gap__sum"><span>4‑4‑9</span><span class="diagram-bar" style={`--share: ${share(example.sum, example.label)}`} aria-hidden="true"></span><strong>{example.sum}<span class="sr-only"> calories</span></strong></p>
 			</div>
 			<p class="caption">{example.protein} × 4 + {example.carbs} × 4 + {example.fat} × 9 = {example.sum}. The label is {Math.abs(example.label - example.sum)} {example.label > example.sum ? 'higher' : 'lower'}. {example.reason}</p>
 		</li>)}
 	</ul>
-	<figcaption id="calorie-gap-caption" class="caption">4-4-9 uses the grams as printed. Bars compare the two numbers within each food. The snack and the protein bar are made-up labels, not real products.</figcaption>
+	<figcaption id="calorie-gap-caption" class="caption">4‑4‑9 uses the grams as printed. Bars compare the two numbers within each food. The snack and the protein bar are made-up labels, not real products.</figcaption>
 </figure>

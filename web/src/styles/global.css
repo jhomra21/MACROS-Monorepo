@@ -1762,10 +1762,12 @@ summary {
 .nutrition-label__heading {
 	padding-bottom: var(--space-1);
 	border-bottom: 1px solid #000;
-	font-size: 1.75rem;
+	/* vw cap keeps the heading whole on a 320px screen with enlarged text. */
+	font-size: min(1.75rem, 9vw);
 	font-weight: 800;
 	letter-spacing: -0.02em;
 	line-height: 1.1;
+	overflow-wrap: normal;
 }
 
 .nutrition-label__mark,
@@ -1875,6 +1877,7 @@ summary {
 
 /* Rows share one subgrid, so both bars start at the same x at any text size. */
 .calorie-gap__bars {
+	container-type: inline-size;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr) auto;
 	gap: var(--space-2) var(--space-3);
@@ -1896,6 +1899,13 @@ summary {
 .calorie-gap__sum {
 	--bar-color: var(--ink-muted);
 	color: var(--ink-muted);
+}
+
+/* With large text on a narrow screen the numbers keep the room and the bars go. */
+@container (max-width: 14rem) {
+	.calorie-gap__bars .diagram-bar {
+		display: none;
+	}
 }
 
 .protein-lookup .table-scroll {
