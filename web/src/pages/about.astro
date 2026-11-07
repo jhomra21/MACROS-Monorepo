@@ -5,11 +5,11 @@ import WaitlistCta from '../components/WaitlistCta.astro';
 import PageHeading from '../components/PageHeading.astro';
 import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { pages, personStructuredData } from '../lib/seo';
+import { organizationStructuredData, pages } from '../lib/seo';
 
 ---
 
-<SiteLayout {...pages['/about/']} structuredData={[personStructuredData]}>
+<SiteLayout {...pages['/about/']} structuredData={[organizationStructuredData]}>
 	<section class="page-header">
 		<div class="container">
 			<PageHeading heading="A food diary you can just open.">
@@ -23,9 +23,8 @@ import { pages, personStructuredData } from '../lib/seo';
 
 	<section class="section" aria-label="The story">
 		<div class="container about-grid">
-			<article class="about-item" id={site.authorSlug}>
+			<article class="about-item">
 				<h2 class="title">Why it exists</h2>
-				<p>I am {site.author}, the developer of MACROS.</p>
 				<p>
 					Tracking should be fast and trustworthy. MACROS needs no sign-up and shows
 					every number.
@@ -55,9 +54,9 @@ import { pages, personStructuredData } from '../lib/seo';
 			<article class="about-item">
 				<h2 class="title">Not medical advice</h2>
 				<p>
-					MACROS and its guides give general information for healthy adults. I am not
-					a dietitian or a doctor. Ask a qualified professional about your own diet or
-					health.
+					MACROS and its guides share general information for healthy adults. They are not medical
+					advice, and no dietitian or doctor reviews them. Ask a qualified professional about your own
+					diet or health.
 				</p>
 			</article>
 
@@ -65,7 +64,7 @@ import { pages, personStructuredData } from '../lib/seo';
 				<h2 class="title">Corrections</h2>
 				<p>
 					Found a mistake? Email <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a> and
-					name the page. I fix errors and update the page date when I do.
+					name the page. Corrections go on the page, and its Updated date changes.
 				</p>
 			</article>
 		</div>

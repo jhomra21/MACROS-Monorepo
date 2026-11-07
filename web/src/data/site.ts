@@ -24,8 +24,6 @@ export const site = {
 	description:
 		'MACROS is a calorie counter and macro tracker for iPhone. Keep your food diary on your device, scan a label, and get on with your day. No account needed.',
 	appStore: { id: '6767565938', live: false },
-	author: 'Juan Ramon Martinez Bulnes',
-	authorSlug: 'juan',
 	instagramURL: 'https://www.instagram.com/macrosios/',
 	supportEmail: 'jhonra121@gmail.com',
 	navItems: [
@@ -163,7 +161,7 @@ export const site = {
 		},
 		{
 			question: 'Does anything leave my phone?',
-			answer: 'Search terms and barcodes go to our food-search service. Sharing starts off. Turn it on to send your display name, optional goals, and today\'s calories, protein, carbs, fat, and entry count. Choose Nothing, Macros, or Macros + Foods for each person. Shared foods include today\'s names, amounts, and nutrients, never logged times, notes, photos, or barcodes. Foods upload only while someone can see them and are deleted when food sharing stops. Older days are deleted. People see today only.',
+			answer: 'Search terms and barcodes go to the MACROS food-search service. Sharing starts off. Turn it on to send your display name, optional goals, and today\'s calories, protein, carbs, fat, and entry count. Choose Nothing, Macros, or Macros + Foods for each person. Shared foods include today\'s names, amounts, and nutrients, never logged times, notes, photos, or barcodes. Foods upload only while someone can see them and are deleted when food sharing stops. Older days are deleted. People see today only.',
 		},
 	],
 	heroShowcase: {
