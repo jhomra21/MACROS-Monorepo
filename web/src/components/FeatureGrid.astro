@@ -24,7 +24,7 @@ const imageSizes = {
 						data-reveal
 						style={`--reveal-index: ${index}`}
 					>
-						<div class="bento__image">
+						<div class="bento__image" style={`--image-background: ${feature.background}; --image-ratio: ${feature.image.width} / ${feature.image.height}`}>
 							<Picture
 								src={feature.image}
 								alt={feature.alt}

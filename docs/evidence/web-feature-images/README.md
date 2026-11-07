@@ -1,43 +1,36 @@
 # Feature card screenshots
 
-Verified locally on November 6, 2026. Nothing deployed; no simulators used.
+Verified locally November 6, 2026. No deployment or simulators.
 
-`sheet.png` is the sole tracked evidence image (under 300 KB). It shows the complete `#why` section at 390 × 844, 768 × 1024, and 1440 × 900, light beside dark. Raw PNGs and JSON measurements live in ignored `build/evidence/2026-11-06-feature-images/`. The sticky navigation and off-section skip link are hidden only during section capture.
+`sheet.png` (under 180 KB) shows element captures of `#why`: 1440 × 900 light and dark, 390 × 844 light, and 768 × 1024 light. All use device scale 2, reduced motion, decoded lazy images and completed reveals. JPEGs use quality 82 and maximum width 1440. Raw captures and browser measurements are in ignored `build/review/`; the four JPEGs are published on `tmp/feature-images-review`.
 
-## Design and crops
+## Crops
 
-Images sit above unchanged copy in rounded, hairline-bordered frames. Single-column phone, two-column tablet, original 7/5, 5/7, 6/6 desktop grid. The actual crops are fully visible, without further CSS cropping, tint, or image shadows. Existing accents and reveal behavior remain.
+Deterministic rectangles in `tools/media/feature-crops.mjs`, from original 1320 × 2868 screenshots. Coordinates: left, top, width, height.
 
-`tools/media/feature-crops.mjs` records deterministic Sharp crops from the original 1320 × 2868 screenshots. Coordinates are **left, top, width, height**:
+| Card | Source | Rectangle | Output ratio |
+| --- | --- | --- | --- |
+| Logging | app-home.png | 0, 350, 1320, 1140; extend 460 px each side | 2240:1140, 1.965:1 |
+| Scanning | app-scan-review.png | 48, 160, 1224, 834 | 1.468:1 |
+| Privacy | app-history.png | 20, 1110, 1280, 956 | 1.339:1 |
+| Your portion | app-scan-review.png | 96, 470, 1128, 574 | 1.965:1 |
+| Sharing | app-sharing.png | 58, 432, 1204, 730 | 1.649:1 |
+| Widgets | app-widgets.png | 0, 880, 1320, 690 | 1.913:1 |
 
-| Card | Source | Rectangle |
-| --- | --- | --- |
-| Logging | app-home.png | 130, 350, 1060, 1140 |
-| Scanning | app-scan-review.png | 48, 184, 1224, 810 |
-| Privacy | app-history.png | 48, 750, 1224, 1330 |
-| Your portion | app-scan-details.png | 48, 490, 1224, 1410 |
-| Sharing | app-sharing.png | 58, 448, 1204, 696 |
-| Widgets, small | app-widgets.png | 698, 284, 528, 528 |
-| Widgets, medium | app-widgets.png | 94, 936, 1132, 528 |
+Logging's extension uses the source edge colour, #f2f2f7. Other crops remain unaltered. Frame backgrounds use sampled source corner colours, not theme surfaces. All images use cover with centered positioning. Desktop frames remain 304 px high; smaller breakpoints retain the crop ratio so text and rings stay intact.
 
-The two personal widget crops are stacked on a transparent 1132 × 1088 canvas, with a 32px gap. Alex's shared widget is excluded.
+The expanded scan-details screenshot spreads the controls too far apart for readable wide framing. Portion therefore uses scan-review's Servings stepper, “1 cup (40 g) each”, “40 g total”, and footer buttons. This compact source does not show the Servings/Grams segmented control; alt text describes the visible controls only.
 
-## Weight and validation
+The source places Alex beside the small widget above the medium personal widget. Following the user's clarification, Widgets uses only the medium personal widget, with real wallpaper around its rounded corners. No repainting, compositing, or shared widget fragments.
 
-At 1440px, six selected AVIF images total **58,155 bytes at 1×**, **102,252 at 2×**, and **109,319 at 3×**. Equivalent WebP candidates total 84,096 / 160,692 / 175,746 bytes. All are below 350 KB. Phone and tablet select 31,427 bytes at 1×. Measurements sum the selected files, excluding HTTP headers.
+## Validation
 
-Passed frozen dependency installation, `bun run check` (48 files, zero diagnostics), `bun test src/worker.test.ts` (9 tests), `bun run build`, root Oxlint (135 files, zero findings), and `git diff --check`. The build emits a nonfatal Fontconfig default-config warning. Mechanical design scan found no issues.
+Frozen Bun installation, web check (48 files, zero diagnostics), nine Worker tests, production build, root Oxlint (135 files, zero findings), and `git diff --check` pass. The build has a nonfatal Fontconfig default-config warning. The design detector reports no findings.
 
-Opened and reviewed all six section captures and the final contact sheet. Browser checks confirm six decoded images, no horizontal overflow, lazy/async image attributes, and accurate card-width `sizes`. Reduced-motion checks pass at 1×/2×/3×; cards remain visible with JavaScript disabled. No added client JavaScript. Final diff reviewed for unnecessary code.
+At 1440 px and 2×, selected AVIF bytes are Logging 11,284; Scanning 10,925; Privacy 17,837; Portion 7,683; Sharing 15,769; Widgets 13,900. Total: **77,398 bytes**, identical in light and dark.
+
+All four JPEGs and the contact sheet were opened and visually inspected: no letterboxing, no isolated wallpaper slivers or Alex fragments, readable desktop portion stepper and serving summary, and food rows at Privacy's top edge. Browser assertions confirm six decoded cover images fill their frames and no horizontal overflow. Picture, AVIF/WebP, responsive sizes, lazy loading, reveal animation, and card text are preserved. The final diff was reviewed for redundant code.
 
 ## Repeat
 
-From the repository root, install website dependencies with `cd web && bun install --frozen-lockfile`. Then:
-
-```sh
-bun tools/media/feature-crops.mjs
-mkdir -p build/feature-tools
-cd build/feature-tools && bun add playwright@1.65.0 && bunx playwright install chromium
-```
-
-Return to the root. Start `cd web && bun run dev:worker --port 8798` in a separate terminal, then run `bun tools/media/capture-feature-images.mjs` from the root. Stop the local Worker afterward.
+Install `web/` dependencies with `bun install --frozen-lockfile`. Install `playwright@1.65.0` in ignored `build/feature-tools/`. From the root run `bun tools/media/feature-crops.mjs`, then build the website. Start `cd web && bunx wrangler dev --port 8790`, run `bun tools/media/capture-feature-images.mjs` from the root, and stop the server afterward.

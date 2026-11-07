@@ -8,11 +8,11 @@ const output = new URL('../../web/src/assets/feature-crops/', import.meta.url);
 
 // Original 1320 × 2868 screenshots. Rectangles are left, top, width, height.
 const crops = [
-	['logging', 'home', 130, 350, 1060, 1140],
-	['scanning', 'scan-review', 48, 184, 1224, 810],
-	['privacy', 'history', 48, 750, 1224, 1330],
-	['portion', 'scan-details', 48, 490, 1224, 1410],
-	['sharing', 'sharing', 58, 448, 1204, 696],
+	['scanning', 'scan-review', 48, 160, 1224, 834],
+	['privacy', 'history', 20, 1110, 1280, 956],
+	['portion', 'scan-review', 96, 470, 1128, 574],
+	['sharing', 'sharing', 58, 432, 1204, 730],
+	['widgets', 'widgets', 0, 880, 1320, 690],
 ];
 
 await mkdir(output, { recursive: true });
@@ -24,14 +24,10 @@ for (const [name, image, left, top, width, height] of crops) {
 		.toFile(new URL(`${name}.png`, output).pathname);
 }
 
-// Only the personal widgets: omit the shared Alex widget and Home Screen icons.
-const widgets = new URL('app-widgets.png', source).pathname;
-
-const small = await sharp(widgets).extract({ left: 698, top: 284, width: 528, height: 528 }).png().toBuffer();
-
-const medium = await sharp(widgets).extract({ left: 94, top: 936, width: 1132, height: 528 }).png().toBuffer();
-
-await sharp({ create: { width: 1132, height: 1088, channels: 4, background: '#00000000' } })
-	.composite([{ input: small, left: 302, top: 0 }, { input: medium, left: 0, top: 560 }])
+// Keep the complete rings and macro labels. Extend only the plain app background,
+// sampled at the screenshot's edge, to match the wide desktop frame.
+await sharp(new URL('app-home.png', source).pathname)
+	.extract({ left: 0, top: 350, width: 1320, height: 1140 })
+	.extend({ left: 460, right: 460, top: 0, bottom: 0, background: '#f2f2f7' })
 	.png()
-	.toFile(new URL('widgets.png', output).pathname);
+	.toFile(new URL('logging.png', output).pathname);

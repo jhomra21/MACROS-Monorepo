@@ -6,6 +6,8 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 ## 2026-11-06 Website feature screenshots
 
+Revised the crops to fill continuous cover frames without letterboxing. Logging extends its sampled app background; Privacy starts at food rows; Portion uses the compact scan-review controls; Widgets shows only the medium personal widget on real wallpaper. Four reduced-motion 2× captures, web checks, nine Worker tests, build and lint pass; desktop AVIFs total 77,398 bytes.
+
 Replaced the six home feature glyphs with deterministic app screenshot crops and responsive AVIF/WebP images, preserving copy and motion. Personal widget crops exclude shared data. Web checks, nine Worker tests, build, lint, and six viewport/theme captures pass; desktop images total 58 KB at 1×. See [crop rectangles and visual evidence](docs/evidence/web-feature-images/README.md).
 
 ## 2026-11-05 StoreKit test timing

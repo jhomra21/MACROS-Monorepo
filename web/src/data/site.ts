@@ -67,6 +67,7 @@ export const site = {
 		{
 			eyebrow: 'Logging',
 			image: loggingCrop,
+			background: '#f2f2f7',
 			alt: 'Daily rings showing 1,310 of 2,200 kcal, 95 g protein, 162 g carbs, and 34 g fat.',
 			accent: 'protein',
 			title: 'Open it and start.',
@@ -76,6 +77,7 @@ export const site = {
 		{
 			eyebrow: 'Scanning',
 			image: scanningCrop,
+			background: '#000000',
 			alt: 'Oat Crunch Cereal scan result: 190 kcal, one 40 g serving, and the Log button.',
 			accent: 'carbs',
 			title: 'Scan it instead of typing it.',
@@ -85,7 +87,8 @@ export const site = {
 		{
 			eyebrow: 'Privacy',
 			image: privacyCrop,
-			alt: 'Daily totals of 1,310 kcal above four logged foods: protein bar, chicken and rice bowl, Greek yogurt, and oatmeal with banana.',
+			background: '#f2f2f7',
+			alt: 'Four food diary entries: protein bar, chicken and rice bowl, plain Greek yogurt cup, and oatmeal with banana, with calories and macros.',
 			accent: 'fat',
 			title: 'Keep your diary on your phone.',
 			body: 'Your food log lives on your iPhone. Sharing is your choice.',
@@ -94,7 +97,8 @@ export const site = {
 		{
 			eyebrow: 'Your portion',
 			image: portionCrop,
-			alt: 'Portion editor showing one serving, Servings and Grams options, and a serving size of 1 cup (40 g).',
+			background: '#202020',
+			alt: 'Scan review showing the Servings stepper set to one, 1 cup (40 g) each, 40 g total, and Edit details and Log buttons.',
 			accent: 'protein',
 			title: 'Half the pack? Make it half.',
 			body: 'Check your portion before you log it.',
@@ -103,6 +107,7 @@ export const site = {
 		{
 			eyebrow: 'Sharing',
 			image: sharingCrop,
+			background: '#f2f2f7',
 			alt: 'Sharing list with Alex at 1,650 kcal and Sam at 1,420 kcal, with protein, carbs, and fat totals.',
 			accent: 'carbs',
 			title: 'Let someone check in.',
@@ -112,7 +117,8 @@ export const site = {
 		{
 			eyebrow: 'Widgets',
 			image: widgetsCrop,
-			alt: 'Small and medium personal MACROS widgets showing 1,310 kcal, 95 g protein, 162 g carbs, and 34 g fat.',
+			background: '#bc976d',
+			alt: 'Medium personal MACROS Home Screen widget showing 1,310 kcal, 95 g protein, 162 g carbs, and 34 g fat against the iPhone wallpaper.',
 			accent: 'fat',
 			title: 'A glance before dinner.',
 			body: 'See your daily totals without opening the app.',
