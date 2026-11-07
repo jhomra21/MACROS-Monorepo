@@ -27,20 +27,15 @@
     "binding": "ASSETS",
     "directory": "./dist",
     "html_handling": "force-trailing-slash",
-    "not_found_handling": "404-page",
-    // Pages, feeds, and forms run the Worker first so www and workers.dev redirect instead of serving
-    // duplicate pages. Static files skip it: they are served directly from the asset cache for free.
+    // Misses fall through to the Worker, which redirects www and workers.dev and serves 404.html itself.
+    // With "404-page", the asset router would answer misses without the Worker on every host.
+    "not_found_handling": "none",
+    // Existing pages and feeds run the Worker first so www and workers.dev redirect instead of serving
+    // duplicates. Existing static files match no pattern and are served from the asset cache for free.
+    // No "!" exclusions: a negative pattern also sends misses straight to the asset router.
     // Keep /media/* reaching the Worker too: static assets ignore Range, and src/lib/byte-range.ts is what
     // answers Safari's bytes=0-1 probe with a 206. A pattern list that skips /media/* would break iPhone playback.
-    "run_worker_first": [
-      "/*",
-      "!/_astro/*",
-      "!/social/*",
-      "!/favicon.svg",
-      "!/favicon.ico",
-      "!/apple-touch-icon.png",
-      "!/download-on-the-app-store.svg",
-    ],
+    "run_worker_first": ["/", "/*/", "/sitemap.xml", "/robots.txt", "/rss.xml", "/api/*", "/media/*"],
   },
   "observability": {
     "enabled": true,

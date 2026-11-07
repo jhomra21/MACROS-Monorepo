@@ -14,3 +14,10 @@
 
 /social/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Alias hosts redirect pages in the Worker but serve existing static files directly.
+https://www.macrosios.com/*
+  X-Robots-Tag: noindex
+
+https://:worker.jhonra121.workers.dev/*
+  X-Robots-Tag: noindex

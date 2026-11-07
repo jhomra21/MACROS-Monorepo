@@ -181,7 +181,8 @@ describe('website form retention', () => {
 // Custom-domain failure list: an old workers.dev or www link must not serve duplicate
 // content; the redirect must keep the path and query; form POSTs on an old host must not
 // be downgraded to GET or write anything; the canonical host and local dev hosts must
-// reach assets untouched.
+// reach assets untouched; a miss must get the 404 page without the missed path's cache
+// headers or the visitor's conditional and range headers.
 describe('canonical host redirects', () => {
 	function hostEnv() {
 		const db = fakeDatabase();
@@ -230,6 +231,36 @@ describe('canonical host redirects', () => {
 		expect(response.status).toBe(308);
 		expect(response.headers.get('location')).toBe('https://macrosios.com/api/waitlist');
 		expect(ctx.db.writes).toBe(0);
+	});
+
+	it('answers a missing file with the 404 page fetched by its own path', async () => {
+		const requested: Request[] = [];
+
+		const env = {
+			ASSETS: {
+				fetch: async (input: RequestInfo | URL) => {
+					const request = new Request(input);
+
+					requested.push(request);
+
+					return new URL(request.url).pathname === '/404/'
+						? new Response('not found page', { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } })
+						: new Response(null, { status: 404, headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } });
+				},
+			},
+			SUPPORT_DB: fakeDatabase(),
+		};
+
+		const response = await worker.fetch(new Request('https://macrosios.com/_astro/missing.abc123.js', {
+			headers: { 'If-None-Match': '"stale"', Range: 'bytes=0-10' },
+		}), env);
+
+		expect(response.status).toBe(404);
+		expect(await response.text()).toBe('not found page');
+		expect(response.headers.get('cache-control')).toBe('public, max-age=0, must-revalidate');
+		expect(requested.map((request) => new URL(request.url).pathname)).toEqual(['/_astro/missing.abc123.js', '/404/']);
+		expect(requested[1]?.headers.has('if-none-match')).toBe(false);
+		expect(requested[1]?.headers.has('range')).toBe(false);
 	});
 
 	it('serves the canonical host and local dev hosts from assets', async () => {
