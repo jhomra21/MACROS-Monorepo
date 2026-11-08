@@ -2,10 +2,11 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
+import { site } from '../data/site';
 import { xmlEscape } from './seo';
 
 // Bump when geometry, colors, type sizing, or compositing changes.
-export const templateVersion = 'macros-rings-2';
+export const templateVersion = 'macros-rings-3';
 
 export const fontFile = '/System/Library/Fonts/Helvetica.ttc';
 
@@ -61,10 +62,10 @@ export async function socialInput(path: string, title: string, description: stri
 	return { path, title, heading: title.split(' | ')[0]!, description, subtitle, screenshot, font };
 }
 
-async function textLayer(value: string, size: number, width: number, height: number, bold = false, color = '#1d1d1f') {
+async function textLayer(value: string, size: number, width: number, height: number, bold = false, color = '#1d1d1f', letterSpacing = 0) {
 	const render = (fontSize: number) => sharp({
 		text: {
-			text: `<span foreground="${color}">${xmlEscape(value)}</span>`,
+			text: `<span foreground="${color}" letter_spacing="${letterSpacing * 1024}">${xmlEscape(value)}</span>`,
 			font: `Helvetica ${bold ? 'Bold ' : ''}${fontSize}`, fontfile: fontFile,
 			width, wrap: 'word-char', rgba: true,
 		},
@@ -79,6 +80,34 @@ async function textLayer(value: string, size: number, width: number, height: num
 	}
 
 	return layer.data;
+}
+
+// Crops a transparent text layer to its visible glyphs. Pango places text by advance width, and side bearings differ per glyph.
+async function inkCrop(layer: Buffer) {
+	const { data, info } = await sharp(layer).raw().toBuffer({ resolveWithObject: true });
+	let left = info.width, top = info.height, right = -1, bottom = -1;
+
+	for (let y = 0; y < info.height; y++) {
+		for (let x = 0; x < info.width; x++) {
+			if (data[(y * info.width + x) * info.channels + 3]! === 0) continue;
+			left = Math.min(left, x); right = Math.max(right, x);
+			top = Math.min(top, y); bottom = Math.max(bottom, y);
+		}
+	}
+
+	return sharp(layer).extract({ left, top, width: right + 1 - left, height: bottom + 1 - top }).png().toBuffer({ resolveWithObject: true });
+}
+
+// The subtitle renders large, then scales down as a whole, so its ink is exactly as wide as the wordmark's.
+async function brandLockup() {
+	const [wordmark, subtitle] = await Promise.all([
+		textLayer(site.name, 34, 240, 42, true).then(inkCrop),
+		textLayer(site.lockupSubtitle, 68, 1200, 120, true, '#66666b', 2).then(inkCrop),
+	]);
+
+	const scaled = await sharp(subtitle.data).resize({ width: wordmark.info.width }).png().toBuffer({ resolveWithObject: true });
+
+	return { wordmark, subtitle: scaled };
 }
 
 export async function renderSocialImage(input: SocialInput) {
@@ -101,16 +130,21 @@ export async function renderSocialImage(input: SocialInput) {
 		</g>
 	</svg>`;
 
-	const [wordmark, subtitle, title, description, screenshot] = await Promise.all([
-		textLayer('MACROS', 34, 240, 42, true),
+	const [lockup, subtitle, title, description, screenshot] = await Promise.all([
+		brandLockup(),
 		textLayer(input.subtitle, 23, 710, 30, false, '#66666b'),
 		textLayer(input.heading, 58, 710, 225, true),
 		textLayer(input.description, 24, 710, 115, false, '#66666b'),
 		sharp(input.screenshot).resize({ height: 550 }).png().toBuffer({ resolveWithObject: true }),
 	]);
 
+	// The two-line lockup is centered on the rings (y 48 to 112).
+	const lockupGap = 7;
+	const lockupTop = Math.round(80 - (lockup.wordmark.info.height + lockupGap + lockup.subtitle.info.height) / 2);
+
 	const image = await sharp(Buffer.from(background)).composite([
-		{ input: wordmark, left: 140, top: 64 },
+		{ input: lockup.wordmark.data, left: 142, top: lockupTop },
+		{ input: lockup.subtitle.data, left: 142, top: lockupTop + lockup.wordmark.info.height + lockupGap },
 		{ input: subtitle, left: 64, top: 153 },
 		{ input: title, left: 60, top: 210 },
 		{ input: description, left: 64, top: 465 },

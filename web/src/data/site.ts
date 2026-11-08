@@ -19,6 +19,7 @@ import widgetsCrop from '../assets/feature-crops/widgets.png';
 export const site = {
 	name: 'MACROS',
 	fullName: 'MACROS: Nutrition Tracker',
+	lockupSubtitle: 'Nutrition Tracker',
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description:

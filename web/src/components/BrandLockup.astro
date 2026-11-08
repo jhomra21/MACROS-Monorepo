@@ -1,0 +1,13 @@
+---
+import { site } from '../data/site';
+---
+
+{/*
+	textLength fixes both lines to the same advance width at any size, zoom, or system font. The subtitle is
+	inset by the wordmark's extra side bearings (larger M and S at twice the size), averaged over common UI
+	sans fonts, so the visible ink of both lines matches within about half a percent of the width.
+*/}
+<svg class="brand-lockup" viewBox="0 0 86 27" aria-hidden="true">
+	<text x="0" y="15" font-size="20" textLength="86" lengthAdjust="spacing">{site.name}</text>
+	<text class="brand-lockup__subtitle" x="0.7" y="26" font-size="10" font-weight="600" textLength="84.75" lengthAdjust="spacing">{site.lockupSubtitle}</text>
+</svg>
