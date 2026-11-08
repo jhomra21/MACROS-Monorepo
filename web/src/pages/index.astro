@@ -27,9 +27,9 @@ const featured = await relatedEntries(['guides/how-to-set-macro-goals', 'blog/se
 		<div class="container home-learn">
 			<div class="section-heading">
 				<h2 id="learn-title" class="headline">Learn how the numbers work.</h2>
-				<p class="lead">Guides for using MACROS, and plain answers to nutrition questions.</p>
+				<p class="lead">Start with goals, then read what labels and protein targets mean.</p>
 			</div>
-			{featured.length > 0 && <EntryList entries={featured} headingLevel={3} />}
+			{featured.length > 0 && <EntryList entries={featured} headingLevel={3} keepOrder />}
 			<p class="learn-section__more"><a href="/learn/">Browse all guides and blog posts</a></p>
 		</div>
 	</section>

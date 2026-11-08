@@ -5,13 +5,15 @@ import { dateText } from '../lib/seo';
 interface Props {
 	entries: CollectionEntry<'guides' | 'blog'>[];
 	headingLevel?: 2 | 3;
+	// Keep the caller's order (a hand-picked list) instead of sorting newest first.
+	keepOrder?: boolean;
 }
 
-const { entries, headingLevel = 2 } = Astro.props;
+const { entries, headingLevel = 2, keepOrder = false } = Astro.props;
 
 const Heading = `h${headingLevel}` as const;
 
-const newestFirst = entries.toSorted((a, b) => b.data.published.getTime() - a.data.published.getTime());
+const newestFirst = keepOrder ? entries : entries.toSorted((a, b) => b.data.published.getTime() - a.data.published.getTime());
 ---
 <ul class="editorial__list">
 	{newestFirst.map(item => <li>
