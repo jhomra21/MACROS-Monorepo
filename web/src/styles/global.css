@@ -1567,6 +1567,11 @@ summary {
 	border-top: 1px solid var(--hairline);
 }
 
+.home-learn .editorial__list,
+.home-learn .learn-section__more {
+	max-width: 46rem;
+}
+
 .editorial__list li {
 	position: relative;
 	display: grid;
