@@ -23,7 +23,7 @@ const screensOnly = process.argv.includes('--screens');
 
 const origin = 'http://127.0.0.1:8798';
 
-const routes = [['home', '/'], ['about', '/about/'], ['support', '/support/'], ['privacy', '/privacy/'], ['terms', '/terms/'], ['guides', '/guides/'], ['guide', '/guides/how-to-set-macro-goals/'], ['404', '/missing-page/']];
+const routes = [['home', '/'], ['about', '/about/'], ['support', '/support/'], ['privacy', '/privacy/'], ['terms', '/terms/'], ['learn', '/learn/'], ['guides', '/guides/'], ['guide', '/guides/how-to-set-macro-goals/'], ['404', '/missing-page/']];
 
 async function command(args, cwd) {
 	const child = spawn('bun', args, { cwd, stdio: 'inherit' });
