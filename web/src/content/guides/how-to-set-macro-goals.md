@@ -21,7 +21,7 @@ These are population reference ranges, not a personalized prescription. The [Nat
 
 <!-- visual:amdr -->
 
-The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogram of body weight per day (about 0.36 grams per pound). The [National Academies' DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28) state this figure. It is a reference intended to meet the needs of nearly all healthy adults, not an upper limit or a sports-performance target. Individual needs can differ.
+The adult protein Recommended Dietary Allowance, or RDA, is 0.8 grams per kilogram of body weight per day (about 0.36 grams per pound). The [National Academies' DRI summary tables, protein footnote b](https://www.nationalacademies.org/read/25353/chapter/28) state this figure. It is a reference intended to meet the needs of nearly all healthy adults, not an upper limit or a [sports-performance target](/blog/protein-per-day-build-muscle/). Individual needs can differ.
 
 At 70 kg (154 lb), the calculation is 70 × 0.8 = 56 g of protein per day. In pounds, 154.3 lb ÷ 2.20462 ≈ 70 kg, so the same calculation gives about 56 g. Do not confuse grams per kilogram with grams per pound. Multiplying 154.3 lb by 0.8 gives about 123 g, more than twice the RDA.
 
@@ -35,7 +35,7 @@ For planning, protein and carbohydrate each provide 4 calories per gram. Fat pro
 - Carb grams = daily calories × carb percentage ÷ 100 ÷ 4.
 - Fat grams = daily calories × fat percentage ÷ 100 ÷ 9.
 
-For an illustrative 2,000-calorie day with a 20/50/30 split, that gives 100 g protein, 250 g carbs, and about 66.7 g fat. This is a math example, not a calorie recommendation. Food-label calories may not match 4/4/9 exactly because of rounding, fiber, sugar alcohols, and permitted calculation methods.
+For an illustrative 2,000-calorie day with a 20/50/30 split, that gives 100 g protein, 250 g carbs, and about 66.7 g fat. This is a math example, not a calorie recommendation. [Food-label calories may not match 4/4/9 exactly](/blog/label-calories-4-4-9/) because of rounding, fiber, sugar alcohols, and permitted calculation methods.
 
 <!-- visual:calorie-flow -->
 

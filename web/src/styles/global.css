@@ -1205,6 +1205,10 @@ summary {
 	color: var(--ink-muted);
 }
 
+.about-next {
+	margin-top: var(--space-6);
+}
+
 .principles li {
 	padding: var(--space-5) 0;
 	border-bottom: 1px solid var(--hairline);

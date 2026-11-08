@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import LinkedText from './LinkedText.astro';
 ---
 
 <section id="faq" class="section" aria-labelledby="faq-title">
@@ -16,7 +17,7 @@ import { site } from '../data/site';
 					<details class="faq-item">
 						<summary>{item.question}</summary>
 						<div class="faq-item__body">
-							<p>{item.answer}</p>
+							<p><LinkedText text={item.answer} link={'link' in item ? item.link : undefined} /></p>
 						</div>
 					</details>
 				))

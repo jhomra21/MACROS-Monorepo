@@ -88,6 +88,7 @@ export const site = {
 			alt: 'Four food diary entries: protein bar, chicken and rice bowl, plain Greek yogurt cup, and oatmeal with banana, with calories and macros.',
 			title: 'Keep your diary on your phone.',
 			body: 'Your food log lives on your iPhone. Sharing is your choice.',
+			link: { text: 'Your food log lives on your iPhone', href: '/privacy/' },
 			size: 'narrow',
 		},
 		{
@@ -148,6 +149,7 @@ export const site = {
 		{
 			question: 'Can I use it for free?',
 			answer: 'Yes. Logging, search, barcode and label scans, saved foods, history, personal widgets, and writing nutrition to Apple Health are free. Pro is optional.',
+			link: { text: 'Pro is optional', href: '/#plans' },
 		},
 		{
 			question: 'What do I get with Pro?',
@@ -164,6 +166,7 @@ export const site = {
 		{
 			question: 'Does anything leave my phone?',
 			answer: 'Search terms and barcodes go to the MACROS food-search service. Sharing starts off. Turn it on to send your display name, optional goals, and today\'s calories, protein, carbs, fat, and entry count. Choose Nothing, Macros, or Macros + Foods for each person. Shared foods include today\'s names, amounts, and nutrients, never logged times, notes, photos, or barcodes. Foods upload only while someone can see them and are deleted when food sharing stops. Older days are deleted. People see today only.',
+			link: { text: 'MACROS food-search service', href: '/privacy/#food-search-and-barcode-lookup' },
 		},
 	],
 	heroShowcase: {
