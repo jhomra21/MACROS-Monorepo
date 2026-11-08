@@ -2,6 +2,7 @@
 import { site } from '../data/site';
 import { publishedEntries } from '../lib/seo';
 import AppStoreBadge from './AppStoreBadge.astro';
+import BrandLockup from './BrandLockup.astro';
 
 const posts = await publishedEntries('blog');
 ---
@@ -10,7 +11,7 @@ const posts = await publishedEntries('blog');
 	<div class="container">
 		<div class="site-footer__top">
 			<div class="site-footer__brand">
-				<a class="brand" href="/">{site.name}</a>
+				<a class="brand" href="/" aria-label={`${site.name} ${site.lockupSubtitle} home`}><BrandLockup /></a>
 				<p>{site.tagline}</p>
 				<p>
 					Email us at <a href={`mailto:${site.supportEmail}`}>{site.supportEmail}</a>

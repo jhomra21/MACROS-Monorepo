@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import { publishedEntries } from '../lib/seo';
+import BrandLockup from './BrandLockup.astro';
 import MacroRings from './MacroRings.astro';
 
 const posts = await publishedEntries('blog');
@@ -13,10 +14,10 @@ const current = (href: string) => currentPath === href ? 'page' : !href.includes
 
 <header class="site-header">
 	<div class="container site-header__inner">
-		<a class="brand" href="/" aria-label={`${site.name} home`}>
+		<a class="brand" href="/" aria-label={`${site.name} ${site.lockupSubtitle} home`}>
 			<MacroRings class="brand-mark" />
 			<script is:inline>document.querySelectorAll('.brand-mark .ring-fill').forEach(ring => ring.style.setProperty('--fill', (25 + Math.random() * 70) | 0));</script>
-			{site.name}
+			<BrandLockup />
 		</a>
 		<nav class="site-nav" aria-label="Primary">
 			<ul class="nav-list">
