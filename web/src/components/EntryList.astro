@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { dateText } from '../lib/seo';
+
+interface Props {
+	entries: CollectionEntry<'guides' | 'blog'>[];
+	headingLevel?: 2 | 3;
+}
+
+const { entries, headingLevel = 2 } = Astro.props;
+
+const Heading = `h${headingLevel}` as const;
+
+const newestFirst = entries.toSorted((a, b) => b.data.published.getTime() - a.data.published.getTime());
+---
+<ul class="editorial__list">
+	{newestFirst.map(item => <li>
+		<Heading class="title"><a href={`/${item.collection}/${item.id}/`}>{item.data.title}</a></Heading>
+		<p>{item.data.description}</p>
+		<p class="caption">{dateText(item.data.updated) === dateText(item.data.published)
+			? <time datetime={item.data.published.toISOString()}>Published {dateText(item.data.published)}</time>
+			: <time datetime={item.data.updated.toISOString()}>Updated {dateText(item.data.updated)}</time>}</p>
+	</li>)}
+</ul>

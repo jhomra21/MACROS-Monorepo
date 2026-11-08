@@ -1,0 +1,32 @@
+---
+export const prerender = true;
+
+import EntryList from '../components/EntryList.astro';
+import PageHeading from '../components/PageHeading.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { pages, publishedEntries } from '../lib/seo';
+
+const [guides, posts] = await Promise.all([publishedEntries('guides'), publishedEntries('blog')]);
+
+// A section without published entries is left out, like its own index page.
+const groups = [
+	{ id: 'guides', heading: 'Guides', intro: 'How to do things in MACROS, kept current with the app.', entries: guides, href: '/guides/', more: 'All guides' },
+	{ id: 'blog', heading: 'Blog', intro: 'Everyday nutrition questions, answered simply.', entries: posts, href: '/blog/', more: 'All blog posts' },
+].filter(group => group.entries.length > 0);
+---
+<SiteLayout {...pages['/learn/']}>
+	<article class="container editorial">
+		<nav class="breadcrumbs caption" aria-label="Breadcrumb">
+			<a href="/">MACROS</a><span aria-hidden="true"> / </span><span aria-current="page">Learn</span>
+		</nav>
+		<div class="editorial__header">
+			<PageHeading heading="Learn" lede="Guides for using MACROS, and plain answers to nutrition questions." />
+		</div>
+		{groups.map(group => <section class="learn-section" aria-labelledby={`learn-${group.id}`}>
+			<h2 id={`learn-${group.id}`} class="headline">{group.heading}</h2>
+			<p class="learn-section__intro">{group.intro}</p>
+			<EntryList entries={group.entries} headingLevel={3} />
+			<p class="learn-section__more"><a href={group.href}>{group.more}</a></p>
+		</section>)}
+	</article>
+</SiteLayout>

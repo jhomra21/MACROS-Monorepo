@@ -30,7 +30,7 @@ export const site = {
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
 		{ href: '/#plans', label: 'Pro', secondary: true },
-		{ href: '/guides/', label: 'Guides', secondary: false },
+		{ href: '/learn/', label: 'Learn', secondary: false },
 		{ href: '/about/', label: 'About', secondary: false },
 		{ href: '/support/', label: 'Support', secondary: false },
 	],
@@ -47,6 +47,7 @@ export const site = {
 		{
 			heading: 'Company',
 			links: [
+				{ href: '/learn/', label: 'Learn' },
 				{ href: '/guides/', label: 'Macro guides' },
 				{ href: '/about/', label: 'About' },
 				{ href: '/support/', label: 'Support' },

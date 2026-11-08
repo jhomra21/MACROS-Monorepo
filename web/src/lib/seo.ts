@@ -9,6 +9,8 @@ export const appStoreURL = () => `https://apps.apple.com/app/id${site.appStore.i
 export const publishedEntries = (collection: 'guides' | 'blog') =>
 	getCollection(collection, ({ data }) => !data.draft);
 
+export const dateText = (date: Date) => date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+
 // Resolves frontmatter `related` references. A typo fails the build; a draft target is skipped, so a draft is never linked.
 export async function relatedEntries(related: readonly string[] = []) {
 	const all = (await Promise.all([getCollection('guides'), getCollection('blog')])).flat();
@@ -52,6 +54,10 @@ export const pages = {
 	'/blog/': {
 		title: 'MACROS blog | Serving sizes, label calories, and protein',
 		description: 'Everyday nutrition questions, answered simply.',
+	},
+	'/learn/': {
+		title: 'Macro tracking guides and nutrition answers | MACROS',
+		description: 'Learn how to use MACROS for iPhone with guides kept current with the app, and read blog posts that answer everyday nutrition questions simply.',
 	},
 } as const;
 
