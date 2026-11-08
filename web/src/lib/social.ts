@@ -18,6 +18,7 @@ const screens = {
 	'/terms/': ['app-settings.png', 'Terms of use'],
 	'/guides/': ['app-calculator-review.png', 'Macro tracking guides'],
 	'/blog/': ['app-home.png', 'The MACROS blog'],
+	'/learn/': ['app-calculator-review.png', 'Guides and the MACROS blog'],
 } as const;
 
 export interface SocialInput {

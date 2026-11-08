@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-08 Website Learn hub
+
+The header's Guides and Blog links are now one Learn link to a new `/learn/` page, which lists published guides and blog posts in two groups with links to each full index. Learn is marked current on `/learn/` and on every guides and blog page; their URLs are unchanged. The guides and blog indexes and every article's closing line now link to the other section, and the footer's Company group adds Learn. The page has its own title, description, sitemap entry, breadcrumb, and social image. Not deployed.
+
 ## 2026-11-08 Website brand lockup
 
 The header and footer logos now read "MACROS" with "Nutrition Tracker" beneath it, at the same visible width. A shared inline SVG gives both lines one `textLength`, so the width holds at every text size and zoom without client JavaScript; the subtitle is inset by the wordmark's larger side bearings. Measured ink widths matched to 0.13px or better at 320, 390, and 1280px, 200% text, and light and dark, and stayed within 0.5px across seven installed Windows fonts. The brand links are named "MACROS Nutrition Tracker home". Social images add the subtitle under the wordmark, scaled to the wordmark's ink width (`macros-rings-3`); their final Helvetica look still needs a macOS build. Not deployed.

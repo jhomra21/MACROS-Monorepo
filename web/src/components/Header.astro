@@ -1,15 +1,16 @@
 ---
 import { site } from '../data/site';
-import { publishedEntries } from '../lib/seo';
 import BrandLockup from './BrandLockup.astro';
 import MacroRings from './MacroRings.astro';
 
-const posts = await publishedEntries('blog');
-
 const currentPath = Astro.url.pathname;
 
+// Learn covers the guides and blog sections, which keep their own URLs.
+const sectionsUnder = new Map([['/learn/', ['/guides/', '/blog/']]]);
+
 // A section link stays marked on its articles too, as aria-current="true" rather than "page".
-const current = (href: string) => currentPath === href ? 'page' : !href.includes('#') && currentPath.startsWith(href) ? 'true' : undefined;
+const current = (href: string) => currentPath === href ? 'page'
+	: !href.includes('#') && [href, ...sectionsUnder.get(href) ?? []].some(prefix => currentPath.startsWith(prefix)) ? 'true' : undefined;
 ---
 
 <header class="site-header">
@@ -30,7 +31,6 @@ const current = (href: string) => currentPath === href ? 'page' : !href.includes
 						</li>
 					))
 				}
-				{posts.length > 0 && <li><a class="nav-link" href="/blog/" aria-current={current('/blog/')}>Blog</a></li>}
 			</ul>
 		</nav>
 	</div>
