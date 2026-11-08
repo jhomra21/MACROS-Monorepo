@@ -2163,7 +2163,7 @@ summary {
 
 .site-footer__groups {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr));
 	gap: var(--space-6);
 }
 

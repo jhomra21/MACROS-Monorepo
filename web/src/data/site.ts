@@ -45,10 +45,17 @@ export const site = {
 			],
 		},
 		{
+			heading: 'Learn',
+			links: [
+				{ href: '/learn/', label: 'All articles' },
+				{ href: '/guides/', label: 'Guides' },
+				{ href: '/blog/', label: 'Blog' },
+				{ href: '/rss.xml', label: 'RSS feed' },
+			],
+		},
+		{
 			heading: 'Company',
 			links: [
-				{ href: '/learn/', label: 'Learn' },
-				{ href: '/guides/', label: 'Macro guides' },
 				{ href: '/about/', label: 'About' },
 				{ href: '/support/', label: 'Support' },
 			],
