@@ -1,0 +1,14 @@
+---
+// Renders plain copy with one phrase linked. The copy stays a plain string so structured data can reuse it unchanged.
+interface Props {
+	text: string;
+	link?: { readonly text: string; readonly href: string };
+}
+
+const { text, link } = Astro.props;
+
+const at = link ? text.indexOf(link.text) : -1;
+
+if (link && at < 0) throw new Error(`Link text "${link.text}" is not in "${text}".`);
+---
+{link ? <>{text.slice(0, at)}<a href={link.href}>{link.text}</a>{text.slice(at + link.text.length)}</> : text}

@@ -5,6 +5,14 @@ import AppStoreBadge from './AppStoreBadge.astro';
 import BrandLockup from './BrandLockup.astro';
 
 const posts = await publishedEntries('blog');
+
+// The blog index and feed exist only once a post is published.
+const blogOnly = new Set(['/blog/', '/rss.xml']);
+
+const groups = site.footerLinks.map(group => ({
+	heading: group.heading,
+	links: group.links.filter(link => posts.length > 0 || !blogOnly.has(link.href)),
+}));
 ---
 
 <footer class="site-footer">
@@ -19,7 +27,7 @@ const posts = await publishedEntries('blog');
 			</div>
 			<div class="site-footer__groups">
 				{
-					site.footerLinks.map((group) => (
+					groups.map((group) => (
 						<nav aria-label={group.heading}>
 							<h2>{group.heading}</h2>
 							<ul>
@@ -35,7 +43,6 @@ const posts = await publishedEntries('blog');
 			</div>
 		</div>
 		{Astro.url.pathname !== '/' && <AppStoreBadge />}
-		{posts.length > 0 && <p><a href="/blog/">Read the MACROS blog</a> · <a href="/rss.xml">Subscribe via RSS</a></p>}
 		<p class="site-footer__bottom caption">© 2026 {site.fullName}. All rights reserved.</p>
 		{site.appStore.live && <p class="caption">Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc.</p>}
 	</div>

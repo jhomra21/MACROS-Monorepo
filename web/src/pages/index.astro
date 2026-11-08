@@ -2,6 +2,7 @@
 export const prerender = true;
 
 import DemoVideo from '../components/DemoVideo.astro';
+import EntryList from '../components/EntryList.astro';
 import FAQ from '../components/FAQ.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import Hero from '../components/Hero.astro';
@@ -9,7 +10,10 @@ import ProPlans from '../components/ProPlans.astro';
 import Showcase from '../components/Showcase.astro';
 import WaitlistCta from '../components/WaitlistCta.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { homeStructuredData, pages } from '../lib/seo';
+import { homeStructuredData, pages, relatedEntries } from '../lib/seo';
+
+// A misspelled reference fails the build; a draft is skipped.
+const featured = await relatedEntries(['guides/how-to-set-macro-goals', 'blog/serving-size-vs-whole-package', 'blog/protein-per-day-build-muscle']);
 ---
 
 <SiteLayout {...pages['/']} structuredData={homeStructuredData}>
@@ -19,13 +23,14 @@ import { homeStructuredData, pages } from '../lib/seo';
 	<Showcase />
 	<ProPlans />
 	<FAQ />
-	<section class="section section--soft">
-		<div class="container">
+	<section class="section section--soft" aria-labelledby="learn-title">
+		<div class="container home-learn">
 			<div class="section-heading">
-				<h2 class="headline">Not sure where to set your goals?</h2>
-				<p class="lead">Here's how the app works them out.</p>
-				<p><a href="/guides/how-to-set-macro-goals/">Read the macro goals guide</a></p>
+				<h2 id="learn-title" class="headline">Learn how the numbers work.</h2>
+				<p class="lead">Start with goals, then read what labels and protein targets mean.</p>
 			</div>
+			{featured.length > 0 && <EntryList entries={featured} headingLevel={3} keepOrder />}
+			<p class="learn-section__more"><a href="/learn/">Browse all guides and blog posts</a></p>
 		</div>
 	</section>
 	<div id="waitlist">

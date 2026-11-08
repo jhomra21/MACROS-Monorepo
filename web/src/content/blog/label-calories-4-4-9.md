@@ -63,7 +63,7 @@ MACROS keeps the label's number when you log.
 
 <!-- visual:scan-details -->
 
-Your calorie total adds up the calories you logged. Each macro adds up the grams you logged. If you set goals with Recalculate Targets, MACROS uses 4-4-9 to turn your macro goals into a calorie goal. So your calorie ring and your macro rings may not fill at exactly the same pace. That's expected.
+Your calorie total adds up the calories you logged. Each macro adds up the grams you logged. If you [set goals with Recalculate Targets](/guides/how-to-set-macro-goals/), MACROS uses 4-4-9 to turn your macro goals into a calorie goal. So your calorie ring and your macro rings may not fill at exactly the same pace. That's expected.
 
 ## Sources
 

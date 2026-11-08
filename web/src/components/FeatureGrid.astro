@@ -1,6 +1,7 @@
 ---
 import { site } from '../data/site';
 import { Picture } from 'astro:assets';
+import LinkedText from './LinkedText.astro';
 
 // Container max 1120px; 16px gaps; 24px card padding plus the frame's 1px border.
 const imageSizes = {
@@ -35,7 +36,7 @@ const imageSizes = {
 							/>
 						</div>
 						<h3 class="title">{feature.title}</h3>
-						<p>{feature.body}</p>
+						<p><LinkedText text={feature.body} link={'link' in feature ? feature.link : undefined} /></p>
 					</article>
 				))
 			}

@@ -104,7 +104,7 @@ const related = entry ? await relatedEntries(entry.data.related) : [];
 			</p>
 		</> : <>
 			<EntryList entries={entries} />
-			{hasOtherSection && <p class="editorial__related">{otherSection.prompt} <a href={otherSection.href}>{otherSection.label}</a>.</p>}
+			<p class="editorial__related">{hasOtherSection && <>{otherSection.prompt} <a href={otherSection.href}>{otherSection.label}</a>. </>}Still stuck? <a href="/support/">Contact MACROS support</a>.</p>
 		</>}
 	</article>
 </SiteLayout>
