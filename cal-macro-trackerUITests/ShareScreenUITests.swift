@@ -49,25 +49,26 @@ final class ShareScreenUITests: XCTestCase {
     }
 
     func testShareCopiesEditedCaptionAndPresentsShareSheet() throws {
+        try? FileManager.default.removeItem(at: exportDirectory.appending(path: "pasteboard.txt"))
         let app = launchHome()
         openShareSheet(app)
 
-        UIPasteboard.general.string = "stale"
         app.buttons["share-submit"].tap()
 
-        XCTAssertTrue(app.staticTexts["Caption copied. Paste it in your post."].waitForExistence(timeout: 10))
-        XCTAssertEqual(UIPasteboard.general.string, Self.defaultCaption)
         XCTAssertTrue(activitySheet(app).waitForExistence(timeout: 10), "System share sheet missing")
+        XCTAssertEqual(copiedCaption(), Self.defaultCaption)
         dismissActivitySheet(app)
+        XCTAssertTrue(app.staticTexts["Caption copied. Paste it in your post."].exists, "Copied note missing")
 
         let field = captionField(app)
         field.tap()
-        field.press(forDuration: 1.0)
-        app.menuItems["Select All"].tap()
-        field.typeText("Edited caption")
+        field.typeText("EDITED ")
+        XCTAssertFalse(app.staticTexts["Caption copied. Paste it in your post."].exists, "Note should clear on edit")
         app.buttons["share-submit"].tap()
         XCTAssertTrue(activitySheet(app).waitForExistence(timeout: 10))
-        XCTAssertEqual(UIPasteboard.general.string, "Edited caption")
+        let edited = try XCTUnwrap(copiedCaption())
+        XCTAssertTrue(edited.contains("EDITED "), "Copied caption ignored the edit: \(edited)")
+        XCTAssertNotEqual(edited, Self.defaultCaption)
     }
 
     func testExportsEverySizeAndDetailAtExactPixelsWithoutFoodNames() throws {
@@ -173,11 +174,21 @@ final class ShareScreenUITests: XCTestCase {
 
     private func openShareSheet(_ app: XCUIApplication) {
         app.buttons["Share daily summary"].tap()
-        XCTAssertTrue(app.navigationBars["Share"].waitForExistence(timeout: 5), "Share sheet did not open")
+        let navigationBar = app.navigationBars["Share"]
+        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5), "Share sheet did not open")
+        // The medium detent lazily builds only the visible rows; expand so every control exists.
+        navigationBar.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(
+            forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)))
+        XCTAssertEqual(app.buttons["Sheet Grabber"].value as? String, "Expanded", "Sheet did not expand")
+    }
+
+    /// The app reads its own pasteboard back after copying; the runner cannot read it without blocking on the paste prompt.
+    private func copiedCaption() -> String? {
+        try? String(contentsOf: exportDirectory.appending(path: "pasteboard.txt"), encoding: .utf8)
     }
 
     private func captionField(_ app: XCUIApplication) -> XCUIElement {
-        app.textFields["share-caption"]
+        app.descendants(matching: .any)["share-caption"]
     }
 
     private func activitySheet(_ app: XCUIApplication) -> XCUIElement {
@@ -187,13 +198,10 @@ final class ShareScreenUITests: XCTestCase {
     private func dismissActivitySheet(_ app: XCUIApplication) {
         let sheet = activitySheet(app)
         XCTAssertTrue(sheet.waitForExistence(timeout: 10), "System share sheet missing")
-        let close = app.buttons["Close"]
-        if close.exists {
-            close.tap()
-        } else {
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.05)).tap()
-        }
-        XCTAssertTrue(app.buttons["share-submit"].waitForExistence(timeout: 5))
+        let close = app.buttons["header.closeButton"]
+        XCTAssertTrue(close.waitForExistence(timeout: 10), "Share sheet close button missing")
+        close.tap()
+        XCTAssertTrue(sheet.waitForNonExistence(timeout: 10), "System share sheet did not close")
     }
 
     private func expectLabel(_ element: XCUIElement, contains text: String, timeout: TimeInterval = 10) {

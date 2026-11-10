@@ -24,6 +24,7 @@ struct DashboardScreen: View {
     let onOpenInsights: () -> Void
     let onOpenSettings: () -> Void
     let onOpenSharing: () -> Void
+    let onOpenSharingSetup: () -> Void
     let onShareUIStateChange: (Bool) -> Void
 
     @Query private var goals: [DailyGoals]
@@ -37,9 +38,7 @@ struct DashboardScreen: View {
     @State private var selectedMacro: MacroMetric?
     @State private var isMacroRingExpanded = false
     #if os(iOS)
-    @State var shareSheetItem: DashboardShareSheetItem?
-    @State var isPreparingShare = false
-    @State var shareFailureRequest: ShareFailureRequest?
+    @State var isShareSheetPresented = false
     #endif
 
     private static let ringRowID = "dashboard-ring-row"
@@ -48,7 +47,7 @@ struct DashboardScreen: View {
 
     private var isShareUIUp: Bool {
         #if os(iOS)
-        shareSheetItem != nil || shareFailureRequest != nil || isPreparingShare
+        isShareSheetPresented
         #else
         false
         #endif
@@ -118,7 +117,7 @@ struct DashboardScreen: View {
                     daySelection.selectedDay.topBarTitle,
                     compactTitle: daySelection.selectedDay.dayTitle
                 )
-                dashboardToolbarTrailing(snapshot: snapshot)
+                dashboardToolbarTrailing()
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 dashboardBottomBar
@@ -129,16 +128,13 @@ struct DashboardScreen: View {
             .sensoryFeedback(.selection, trigger: daySelection.selectedDay)
             .errorBanner(message: $errorMessage)
             #if os(iOS)
-            .sheet(item: $shareSheetItem) { item in
-                ActivityShareSheet(activityItems: [item.itemSource])
-            }
-            .alert(item: $shareFailureRequest) { request in
-                Alert(
-                    title: Text("Something went wrong sharing."),
-                    primaryButton: .default(Text("Retry")) {
-                        prepareShare(day: request.day, snapshot: request.snapshot)
-                    },
-                    secondaryButton: .cancel()
+            .sheet(isPresented: $isShareSheetPresented) {
+                ShareScreen(
+                    day: daySelection.selectedDay,
+                    snapshot: snapshot,
+                    goals: currentGoals,
+                    onOpenSharing: onOpenSharing,
+                    onOpenSharingSetup: onOpenSharingSetup
                 )
             }
             #endif

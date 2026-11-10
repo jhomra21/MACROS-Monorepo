@@ -74,6 +74,7 @@ struct AppRootView: View {
                 onOpenInsights: { open(.insights) },
                 onOpenSettings: { open(.settings) },
                 onOpenSharing: { open(.sharingDashboard) },
+                onOpenSharingSetup: { open(.sharing(inviteInput: nil, requestId: 0)) },
                 onShareUIStateChange: { isDashboardShareUIUp = $0 }
             )
             .navigationDestination(for: Route.self) { route in

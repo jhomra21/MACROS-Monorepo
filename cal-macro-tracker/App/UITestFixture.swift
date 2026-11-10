@@ -44,9 +44,18 @@ struct UITestFixture {
     #if os(iOS)
     /// Lets the UI test inspect exactly what the Share button rendered.
     func recordExport(_ image: UIImage, name: String) {
-        guard let exportDirectory, let data = image.pngData() else { return }
+        write(image.pngData(), named: "\(name).png")
+    }
+
+    /// The UI test runner blocks on the iOS paste permission when it reads the pasteboard, so the app reads it back instead.
+    func recordPasteboard() {
+        write(UIPasteboard.general.string?.data(using: .utf8), named: "pasteboard.txt")
+    }
+
+    private func write(_ data: Data?, named name: String) {
+        guard let exportDirectory, let data else { return }
         try? FileManager.default.createDirectory(at: exportDirectory, withIntermediateDirectories: true)
-        try? data.write(to: exportDirectory.appending(path: "\(name).png"))
+        try? data.write(to: exportDirectory.appending(path: name))
     }
     #endif
 }
