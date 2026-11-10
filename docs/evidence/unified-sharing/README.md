@@ -85,9 +85,18 @@ Owner feedback on TestFlight build 34: the sheet opened half height, and the "Sh
 10. Offline remote blocks the image path. "Post an image" must open the sheet and Share must work with the remote failing.
 11. Copy uses em dashes or jargon. Plain words only.
 
-Red and green results for this round are in the section below once recorded.
+### Red then green
+
+Same environment as above (iPhone 17e `F976E800` for UI runs, iPad runner `E91B597B` for the unit suite, both locked and released). Raw output is in ignored `build/evidence/2026-11-10-share-menu/`.
+
+- **Red** (commit `3d1f078`, tests only): the five new or rewritten tests failed on the old code (`red.log`). The menu tests failed with "Share menu did not open" or "Post an image missing", because the button opened the sheet directly. The full-height test also stopped at the missing menu, so on the old code it did not reach the height check itself.
+- **Green**: after the change, all five pass. The full UI scheme `cal-macro-trackerUITests` (iPhone 17e) ran 13 tests, 0 failures (`ui-full.log`). The serial unit suite `cal-macro-tracker`, excluding `PurchaseStoreStoreKitTests`, ran 263 tests, 0 failures (`unit.log`).
+- **Menu subtitle.** A `Label` with two `Text` views in its title drew no subtitle (rows were 42 pt tall). Plain `Text`, `Text`, `Image` inside the `Button` draws it on iOS 27.0: rows are 78 pt and the accessibility label reads "Post an image, Your rings and macros for social media". The 17e screenshot shows "With 2 people" under Live sharing for Pro with sharing on.
+- The first test version also failed on Free and Pro-off because the default subtitle contains "people"; the assertion now checks for "2 people".
 
 ## Screenshots (tracked)
 
-- [share-sheet-light.png](share-sheet-light.png), [share-sheet-dark.png](share-sheet-dark.png): the sheet at full height, Pro fixture with sharing on.
+- [share-menu-open.png](share-menu-open.png): the Home Share menu, Pro fixture with sharing on.
+- [share-sheet-full-height.png](share-sheet-full-height.png): the sheet right after "Post an image", with no drag.
 - [export-story-macros-1080x1920.png](export-story-macros-1080x1920.png): a 9:16 export of the demo day, default detail.
+
