@@ -1,11 +1,11 @@
 #if os(iOS)
 import SwiftUI
 
-struct URLShareSheet: UIViewControllerRepresentable {
-    let url: URL
+struct ActivityShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
 
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
     }
 
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}

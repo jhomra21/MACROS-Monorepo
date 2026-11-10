@@ -176,8 +176,8 @@ struct InsightsMacrosCard: View {
             selectedPoint.map { point in
                 InsightsSelectedValueLabel(
                     title: point.day.chartLabel,
-                    value:
-                        "P \(point.totals.protein.roundedForDisplay)g • C \(point.totals.carbs.roundedForDisplay)g • F \(point.totals.fat.roundedForDisplay)g"
+                    value: MacroSummaryText.line(
+                        protein: point.totals.protein, carbs: point.totals.carbs, fat: point.totals.fat, separator: " • ")
                 )
             }
 

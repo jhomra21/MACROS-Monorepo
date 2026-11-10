@@ -58,7 +58,7 @@ struct BackupSettingsSection: View {
                     errorMessage: $errorMessage
                 )
             case let .share(url):
-                URLShareSheet(url: url)
+                ActivityShareSheet(activityItems: [url])
             }
         }
         .errorBanner(message: $errorMessage, title: "Backup Failed")

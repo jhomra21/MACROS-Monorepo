@@ -57,12 +57,7 @@ struct SharingPersonScreen: View {
 
             if let snapshot = displayedSnapshot {
                 let sharedGoals = snapshot.macroGoalsSnapshot
-                let totals = NutritionSnapshot(
-                    calories: snapshot.calories,
-                    protein: snapshot.protein,
-                    fat: snapshot.fat,
-                    carbs: snapshot.carbs
-                )
+                let totals = snapshot.totals
                 Section("Today") {
                     // One row: separate rows would draw a separator between the rings and the legend.
                     VStack(spacing: 20) {
@@ -135,7 +130,8 @@ struct SharingPersonScreen: View {
                                     .contentTransition(.numericText())
                             }
                             Text(
-                                "\(food.quantityText) · P \(food.protein.roundedForDisplay)g · C \(food.carbs.roundedForDisplay)g · F \(food.fat.roundedForDisplay)g"
+                                "\(food.quantityText) · "
+                                    + MacroSummaryText.line(protein: food.protein, carbs: food.carbs, fat: food.fat)
                             )
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
