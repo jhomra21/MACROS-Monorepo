@@ -8,6 +8,10 @@ struct ShareScreen: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// Height of everything in the sheet except the preview (pickers, caption, Share button), so the preview takes the rest.
+    @ScaledMetric(relativeTo: .body) private var heightBesidePreview: CGFloat = 308
 
     let day: CalendarDay
     let snapshot: LogEntryDaySnapshot
@@ -17,6 +21,8 @@ struct ShareScreen: View {
     @State private var detail = ShareDetail.macros
     @State private var caption = Self.defaultCaption
     @State private var captionWasCopied = false
+    @State private var copyCount = 0
+    @State private var sheetHeight: CGFloat = 0
     @State private var isRendering = false
     @State private var showsRenderFailure = false
     @State private var activityPayload: ShareActivityPayload?
@@ -28,15 +34,26 @@ struct ShareScreen: View {
                 optionsSection
                 captionSection
             }
+            .scrollDismissesKeyboard(.interactively)
+            .listSectionSpacing(.compact)
+            .contentMargins(.top, 0, for: .scrollContent)
+            .background {
+                // Measured with the keyboard ignored, so opening it does not resize the preview.
+                Color.clear
+                    .ignoresSafeArea(.keyboard)
+                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { sheetHeight = $0 }
+            }
             .navigationTitle("Share")
             .inlineNavigationTitle()
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .close) { dismiss() }
+                        .accessibilityLabel("Close")
                 }
             }
             .safeAreaInset(edge: .bottom) { shareButton }
             .onChange(of: caption) { captionWasCopied = false }
+            .sensoryFeedback(.success, trigger: copyCount)
             .sheet(item: $activityPayload) { payload in
                 ActivityShareSheet(activityItems: payload.items)
             }
@@ -45,8 +62,14 @@ struct ShareScreen: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
-        .presentationDetents([.large])
     }
+
+    /// Falls back to the old fixed height until the sheet has been measured.
+    private var previewMaxHeight: CGFloat {
+        sheetHeight > 0 ? max(200, sheetHeight - heightBesidePreview) : 300
+    }
+
+    private var previewAspect: CGFloat { size.canvas.width / size.canvas.height }
 
     private var previewSection: some View {
         Section {
@@ -54,15 +77,17 @@ struct ShareScreen: View {
                 DailyShareCardView(day: day, snapshot: snapshot, goals: goals, size: size, detail: detail)
                     .scaleEffect(proxy.size.width / size.canvas.width, anchor: .topLeading)
             }
-            .aspectRatio(size.canvas.width / size.canvas.height, contentMode: .fit)
-            .frame(maxHeight: 300)
+            .aspectRatio(previewAspect, contentMode: .fit)
+            .frame(maxWidth: previewMaxHeight * previewAspect)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: size)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: detail)
             .clipShape(.rect(cornerRadius: 16))
             .overlay { RoundedRectangle(cornerRadius: 16).strokeBorder(.separator) }
-            .frame(maxWidth: .infinity)
             .accessibilityElement(children: .ignore)
             .accessibilityIdentifier("share-preview")
             .accessibilityLabel(previewLabel)
             .accessibilityValue("\(size.title), \(detail.title)")
+            .frame(maxWidth: .infinity)
             .listRowBackground(Color.clear)
             .listRowInsets(EdgeInsets())
         }
@@ -101,16 +126,20 @@ struct ShareScreen: View {
         } header: {
             Text("Caption")
         } footer: {
-            if captionWasCopied {
-                Text("Caption copied. Paste it in your post.")
-            }
+            Text("Caption copied. Paste it in your post.")
+                .opacity(captionWasCopied ? 1 : 0)
+                .accessibilityHidden(!captionWasCopied)
+                .animation(.easeOut(duration: 0.2), value: captionWasCopied)
         }
     }
 
     private var shareButton: some View {
         Button(action: share) {
-            Label(isRendering ? "Preparing…" : "Share", systemImage: "square.and.arrow.up")
-                .frame(maxWidth: .infinity)
+            HStack(spacing: 8) {
+                Label("Share", systemImage: "square.and.arrow.up")
+                if isRendering { ProgressView().controlSize(.small).accessibilityIdentifier("share-busy") }
+            }
+            .frame(maxWidth: .infinity)
         }
         .buttonStyle(.glassProminent)
         .controlSize(.large)
@@ -127,6 +156,7 @@ struct ShareScreen: View {
         UITestFixture.current?.recordPasteboard()
         #endif
         captionWasCopied = true
+        copyCount += 1
         AccessibilityNotification.Announcement("Caption copied. Paste it in your post.").post()
     }
 
@@ -135,6 +165,9 @@ struct ShareScreen: View {
         isRendering = true
         Task { @MainActor in
             defer { isRendering = false }
+            #if DEBUG
+            if UITestFixture.current?.holdsShareRender == true { try? await Task.sleep(for: .seconds(4)) }
+            #endif
             do {
                 let image = try DailyShareImageExporter.exportImage(
                     day: day, snapshot: snapshot, goals: goals, size: size, detail: detail, colorScheme: colorScheme

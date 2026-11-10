@@ -13,6 +13,8 @@ struct UITestFixture {
     let isSharingOn: Bool
     let isRemoteOffline: Bool
     let exportDirectory: URL?
+    /// Rendering a share image takes milliseconds, too fast for a test to see the busy state.
+    let holdsShareRender: Bool
 
     static let current: UITestFixture? = {
         let environment = ProcessInfo.processInfo.environment
@@ -21,7 +23,8 @@ struct UITestFixture {
             isPro: environment["MACROS_FIXTURE_PRO"] == "1",
             isSharingOn: environment["MACROS_FIXTURE_SHARING"] == "on",
             isRemoteOffline: environment["MACROS_FIXTURE_REMOTE"] == "offline",
-            exportDirectory: environment["MACROS_EXPORT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) }
+            exportDirectory: environment["MACROS_EXPORT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) },
+            holdsShareRender: environment["MACROS_FIXTURE_HOLD_RENDER"] == "1"
         )
     }()
 

@@ -51,6 +51,7 @@ extension DashboardScreen {
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .accessibilityLabel("Share daily summary")
     }
     #endif
