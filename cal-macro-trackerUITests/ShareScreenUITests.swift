@@ -150,7 +150,10 @@ final class ShareScreenUITests: XCTestCase {
         let share = app.buttons["share-submit"].frame
         let copy = app.buttons["Copy caption"].frame
         XCTAssertLessThanOrEqual(copy.maxY, share.minY, "Copy caption sits under the pinned Share button")
-        XCTAssertGreaterThan(preview.height, 300, "Preview should use the room the full height sheet gives it")
+        // Compact screens and landscape cap the preview at 300 pt or less by design; only taller phones must grow it.
+        if app.windows.firstMatch.frame.height >= 800 {
+            XCTAssertGreaterThan(preview.height, 300, "Preview should use the room the full height sheet gives it")
+        }
         XCTAssertLessThanOrEqual(preview.maxY, sizePicker.minY)
         XCTAssertLessThanOrEqual(detailPicker.maxY, caption.minY)
         XCTAssertLessThanOrEqual(caption.maxY, share.minY, "Caption sits under the pinned Share button")

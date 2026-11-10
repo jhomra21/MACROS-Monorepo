@@ -128,17 +128,17 @@ struct ShareScreen: View {
                 .disabled(caption.isEmpty)
         } header: {
             // The pinned Share button covers a footer at default size, so the note lives in the header.
+            // Its space is always reserved, so showing it only fades and never moves the caption controls.
             HStack(alignment: .firstTextBaseline) {
                 Text("Caption")
                 Spacer()
-                if captionWasCopied {
-                    Text("Caption copied. Paste it in your post.")
-                        .font(.footnote)
-                        .multilineTextAlignment(.trailing)
-                        .transition(.opacity)
-                }
+                Text("Caption copied. Paste it in your post.")
+                    .font(.footnote)
+                    .multilineTextAlignment(.trailing)
+                    .opacity(captionWasCopied ? 1 : 0)
+                    .accessibilityHidden(!captionWasCopied)
+                    .animation(.easeOut(duration: 0.2), value: captionWasCopied)
             }
-            .animation(.easeOut(duration: 0.2), value: captionWasCopied)
         }
     }
 
