@@ -257,7 +257,7 @@ struct BodyProfileFormScreen: View {
                     if profile.goalDirection != .maintain {
                         Picker("Weekly pace", selection: $profile.weeklyRate) {
                             ForEach(profile.goalDirection.weeklyRates, id: \.self) { rate in
-                                Text(rateLabel(rate)).tag(rate)
+                                Text(Self.rateLabel(rate, unit: profile.weightUnit)).tag(rate)
                             }
                         }
                         .pickerStyle(.segmented)
@@ -376,8 +376,8 @@ struct BodyProfileFormScreen: View {
         .accessibilityLabel(title)
     }
 
-    private func rateLabel(_ rate: Double) -> String {
-        let amount = profile.weightUnit.toDisplay(rate)
-        return "\(amount.formatted(.number.precision(.fractionLength(1)))) \(profile.weightUnit.symbol)/week"
+    static func rateLabel(_ rate: Double, unit: WeightUnit) -> String {
+        let amount = unit.toDisplay(rate)
+        return "\(amount.formatted(.number.precision(.fractionLength(0...2)))) \(unit.symbol)/week"
     }
 }

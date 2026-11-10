@@ -28,6 +28,18 @@ final class BodyProfileDraftTests: XCTestCase {
         }
     }
 
+    func testWeeklyPaceLabelsShowTrueValuesInKilogramsAndPounds() {
+        let paces = [0.25, 0.5, 0.75]
+        XCTAssertEqual(
+            paces.map { BodyProfileFormScreen.rateLabel($0, unit: .kilograms) },
+            ["0.25 kg/week", "0.5 kg/week", "0.75 kg/week"]
+        )
+        XCTAssertEqual(
+            paces.map { BodyProfileFormScreen.rateLabel($0, unit: .pounds) },
+            ["0.55 lb/week", "1.1 lb/week", "1.65 lb/week"]
+        )
+    }
+
     func testSavedLoseProfileRestoresDirectionPaceAndOffset() {
         var draft = BodyProfileDraft()
         draft.goalDirection = .lose
@@ -44,7 +56,7 @@ final class BodyProfileDraftTests: XCTestCase {
         var draft = BodyProfileDraft()
         let pacesByDirection: [(GoalDirection, [Double])] = [
             (.lose, [0.25, 0.5, 0.75]),
-            (.gain, [0.25, 0.5]),
+            (.gain, [0.25, 0.5])
         ]
         for (direction, paces) in pacesByDirection {
             draft.goalDirection = direction

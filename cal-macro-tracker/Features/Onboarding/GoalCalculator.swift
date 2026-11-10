@@ -45,7 +45,7 @@ extension GoalActivityLevel {
 /// Every preset stays within the adult AMDRs: protein 10–35%, carbohydrate 45–65%, fat 20–35% of energy
 /// (https://nap.nationalacademies.org/read/10490). High protein and Higher fat sit a few points inside the
 /// range limits rather than on them: `macroGrams` rounds to 5 g and adjusts carbs, which moves the saved
-/// shares by up to about 2 points. These are the most extreme splits whose rounded grams stay inside every
+/// shares by less than 3 points. These are the most extreme splits whose rounded grams stay inside every
 /// AMDR for all targets from 1,200 to 4,500 kcal.
 extension GoalMacroPreset {
     var title: String {
