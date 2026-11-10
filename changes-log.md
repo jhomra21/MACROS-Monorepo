@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 Share sheet and person row
+
+Home's share button now opens a Share sheet instead of sharing straight away: a live preview, Story (1080x1920), Post (1080x1350) or Square (1080x1080), detail Rings, Macros (default) or Full, and a caption ("My macros today, tracked with MACROS. macrosios.com") that is copied when Share is tapped. A "Share with a person" row opens the Sharing dashboard with the number of connected people (Pro with sharing on), or setup otherwise; offline never blocks the image. Food names never appear. Save Image saved nothing on the simulator until `NSPhotoLibraryAddUsageDescription` was added. Validated with a new XCUITest target on fixtures (7 red, then 11 green) and 262 unit tests; see [evidence](docs/evidence/unified-sharing/README.md).
+
 ## 2026-11-08 Website Learn hub
 
 The header's Guides and Blog links are now one Learn link to a new `/learn/` page, which lists published guides and blog posts in two groups with links to each full index. Learn is marked current on `/learn/` and on every guides and blog page; their URLs are unchanged. The guides and blog indexes and every article's closing line now link to the other section, and the footer's Company group adds Learn. The page has its own title, description, sitemap entry, breadcrumb, and social image. Not deployed.

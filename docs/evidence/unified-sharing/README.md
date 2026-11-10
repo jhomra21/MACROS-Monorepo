@@ -45,4 +45,29 @@ XCUITest target `cal-macro-trackerUITests` drives the app with fixtures:
 
 ## Red then green
 
-Recorded below as the work proceeds.
+Environment: Xcode 27.0 (`DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/Developer`), iOS 27.0 simulators iPhone 17e `F976E800` (UI runs) and the iPad runner `E91B597B` (serial suite), both locked under `/tmp/macros-sim-locks/` and released afterwards. Fixture: DEBUG-only launch environment (`MACROS_UI_FIXTURE=1`) with an in-memory store, the demo dataset, a scripted entitlement and a scripted sharing remote; nothing real is touched.
+
+- **Red** (commit `ac91f73`, tests and fixture only): 7 of 7 `ShareScreenUITests` failed. Home loaded from the fixture, then every test failed at "Share sheet did not open" because the toolbar button still rendered and presented the image directly. Raw: `build/evidence/2026-11-10-unified-sharing/red.log`.
+- **Green** (next commits): the same tests, split per size so each stays under the 45 s allowance, 11 of 11 pass. Raw: `green.log`, `full.log`.
+- **Serial suite** on the iPad runner, excluding `PurchaseStoreStoreKitTests`: 262 unit tests + 11 UI tests, 0 failures.
+- **Exports**: the nine size x detail PNGs are in ignored `build/evidence/2026-11-10-unified-sharing/share-exports/`. Each is exactly 1080x1920, 1080x1350 or 1080x1080, has opaque corners, and Vision OCR finds the weekday header, finds Protein for Macros/Full and Fiber for Full only, and finds none of the 16 demo food names. A temporary render at 12,345 kcal, 1,234 g protein and 18,200 mg sodium (light and dark, all nine combinations) showed no clipping.
+
+Findings that shaped the tests:
+
+- Reading `UIPasteboard` from the UI test runner blocks on the iOS paste prompt and hangs the test. The app reads its own pasteboard back after copying and the DEBUG fixture writes it to the export folder; the test reads that file.
+- The medium detent builds only visible rows, so tests drag the sheet to full height first. The Share button is pinned, so it stays reachable at both detents.
+
+## Save Image from the share sheet
+
+Checked on the iPhone 17e simulator with the fixture. Before the change, with only `NSPhotoLibraryUsageDescription`, tapping Save Image wrote no file into the simulator library (DCIM stayed at 7 files; I did not capture what the screen showed). So Save Image did not work on the simulator without the add key. With `NSPhotoLibraryAddUsageDescription` set to "MACROS saves share images you choose to your photo library.", Save Image shows the add-only prompt "Allow MACROS to add photos and videos to your photo library?" and, once allowed, writes `IMG_0008.JPG`. A real-device check of Save Image remains an owner step.
+
+## Not verified
+
+- A real post to Instagram, Snapchat, TikTok or X: only the system share sheet was presented. Whether each target keeps the caption text item is app-specific.
+- Offline is simulated by the scripted remote failing authentication; airplane mode on a device was not tried.
+- VoiceOver speech for the "Caption copied" announcement was not heard; the announcement and the visible note are in place.
+
+## Screenshots (tracked)
+
+- [share-sheet-light.png](share-sheet-light.png), [share-sheet-dark.png](share-sheet-dark.png): the sheet at full height, Pro fixture with sharing on.
+- [export-story-macros-1080x1920.png](export-story-macros-1080x1920.png): a 9:16 export of the demo day, default detail.

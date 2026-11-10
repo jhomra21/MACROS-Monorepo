@@ -2,6 +2,8 @@
 
 Status: active. Owner decisions recorded 2026-11-10; the research plan from that day follows.
 
+Progress: phase 1 merged. Phases 2 and 3 implemented on `app/share-screen` and awaiting owner review: Home share button opens a Share sheet (Story/Post/Square, Rings/Macros/Full, editable caption copied on Share, "Share with a person" row). `NSPhotoLibraryAddUsageDescription` added; Save Image saved nothing on the simulator without it. Evidence: [unified-sharing evidence](../../evidence/unified-sharing/README.md). Phase 4 (Instagram Stories) is not started.
+
 ## Owner decisions (2026-11-10)
 
 - Direction approved: one Share entry on Home with "Post an image" and "Share with a person". Shared presentation code. Person-sharing backend stays separate.
