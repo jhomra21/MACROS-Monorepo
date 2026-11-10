@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 TestFlight build 34 and weekly pace labels
+
+Weekly pace labels now show true values: 0.25 / 0.5 / 0.75 kg and 0.55 / 1.1 / 1.65 lb per week. They had been rounded half-to-even to one decimal place (0.2 / 0.5 / 0.8 kg); the pace math was unchanged. Version 1.0 build 34 was archived from `4d274ac` and uploaded to App Store Connect (delivery `cdee4f3d-2ba5-4195-a4a6-6a51e9657af4`). It includes the Share sheet, saved-food delete with Undo, the Pro legal links and the AMDR macro presets. The release build has the HealthKit and app group entitlements and the photo add-only usage string, and it contains no UI-test fixture code. Processing, tester groups and What to Test are still owner steps in App Store Connect.
+
 ## 2026-11-10 Share sheet and person row
 
 Home's share button now opens a Share sheet instead of sharing straight away: a live preview, Story (1080x1920), Post (1080x1350) or Square (1080x1080), detail Rings, Macros (default) or Full, and a caption ("My macros today, tracked with MACROS. macrosios.com") that is copied when Share is tapped. A "Share with a person" row opens the Sharing dashboard with the number of connected people (Pro with sharing on), or setup otherwise; offline never blocks the image. Food names never appear. Save Image saved nothing on the simulator until `NSPhotoLibraryAddUsageDescription` was added. Validated with a new XCUITest target on fixtures (7 red, then 11 green) and 262 unit tests; see [evidence](docs/evidence/unified-sharing/README.md).
