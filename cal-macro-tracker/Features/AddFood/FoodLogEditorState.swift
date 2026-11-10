@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-struct FoodLogEditorState {
+struct FoodLogEditorState: Equatable {
     private let openedDraft: FoodDraft
     private let openedQuantityMode: QuantityMode
     private let openedServings: Double
