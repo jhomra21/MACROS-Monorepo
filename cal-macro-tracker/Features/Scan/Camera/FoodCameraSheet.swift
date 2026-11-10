@@ -171,6 +171,9 @@ struct FoodCameraSheet: View {
             }
             .onAppear {
                 if flow.phase != .dismissed { send(.sceneActive) }
+                #if DEBUG
+                importFixtureImage()
+                #endif
             }
             .onDisappear { send(.navigationAway) }
             .sensoryFeedback(.success, trigger: feedbackToken)

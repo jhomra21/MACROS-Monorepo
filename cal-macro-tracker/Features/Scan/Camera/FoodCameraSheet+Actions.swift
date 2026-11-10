@@ -307,6 +307,15 @@ extension FoodCameraSheet {
         }
     }
 
+    #if DEBUG
+    func importFixtureImage() {
+        guard let path = UITestFixture.current?.cameraImagePath, let image = UIImage(contentsOfFile: path) else { return }
+        send(.libraryOpened)
+        pendingImage = image
+        send(.imagePicked)
+    }
+    #endif
+
     func openSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
