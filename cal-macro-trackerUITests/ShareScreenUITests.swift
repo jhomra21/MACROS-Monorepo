@@ -6,13 +6,13 @@ final class ShareScreenUITests: XCTestCase {
     private static let sizes: [(name: String, pixels: CGSize)] = [
         ("Story", CGSize(width: 1080, height: 1920)),
         ("Post", CGSize(width: 1080, height: 1350)),
-        ("Square", CGSize(width: 1080, height: 1080)),
+        ("Square", CGSize(width: 1080, height: 1080))
     ]
     private static let details = ["Rings", "Macros", "Full"]
     private static let defaultCaption = "My macros today, tracked with MACROS. macrosios.com"
     private static let demoFoodNames = [
         "oatmeal", "yogurt", "chicken", "protein bar", "rice bowl", "scrambled", "toast", "salmon", "almonds",
-        "sandwich", "cottage", "pasta", "black beans", "sweet potato", "peanut butter", "rice cakes",
+        "sandwich", "cottage", "pasta", "black beans", "sweet potato", "peanut butter", "rice cakes"
     ]
 
     private var exportDirectory: URL {
@@ -26,27 +26,9 @@ final class ShareScreenUITests: XCTestCase {
 
     // MARK: Share sheet
 
-    func testSheetOpensWithDefaultsAndPreviewTracksEverySizeAndDetail() throws {
-        let app = launchHome()
-        openShareSheet(app)
-
-        let preview = app.otherElements["share-preview"]
-        XCTAssertTrue(preview.waitForExistence(timeout: 5), "Preview missing")
-        XCTAssertEqual(preview.value as? String, "Story, Macros", "Defaults are Story and Macros")
-        XCTAssertEqual(captionField(app).value as? String, Self.defaultCaption)
-
-        var seen = Set<String>()
-        for size in Self.sizes {
-            for detail in Self.details {
-                app.segmentedControls["share-size-picker"].buttons[size.name].tap()
-                app.segmentedControls["share-detail-picker"].buttons[detail].tap()
-                let expected = "\(size.name), \(detail)"
-                XCTAssertEqual(preview.value as? String, expected)
-                seen.insert(expected)
-            }
-        }
-        XCTAssertEqual(seen.count, 9)
-    }
+    func testSheetOpensWithDefaultsAndPreviewTracksStory() { assertPreviewTracks(size: "Story", showsDefaults: true) }
+    func testPreviewTracksPost() { assertPreviewTracks(size: "Post") }
+    func testPreviewTracksSquare() { assertPreviewTracks(size: "Square") }
 
     func testShareCopiesEditedCaptionAndPresentsShareSheet() throws {
         try? FileManager.default.removeItem(at: exportDirectory.appending(path: "pasteboard.txt"))
@@ -71,42 +53,9 @@ final class ShareScreenUITests: XCTestCase {
         XCTAssertNotEqual(edited, Self.defaultCaption)
     }
 
-    func testExportsEverySizeAndDetailAtExactPixelsWithoutFoodNames() throws {
-        let app = launchHome()
-        openShareSheet(app)
-        try? FileManager.default.removeItem(at: exportDirectory)
-
-        for size in Self.sizes {
-            for detail in Self.details {
-                app.segmentedControls["share-size-picker"].buttons[size.name].tap()
-                app.segmentedControls["share-detail-picker"].buttons[detail].tap()
-                app.buttons["share-submit"].tap()
-
-                let file = exportDirectory.appending(path: "\(size.name)-\(detail).png")
-                waitForFile(file)
-                let image = try XCTUnwrap(UIImage(contentsOfFile: file.path), "\(file.lastPathComponent) unreadable")
-                let cgImage = try XCTUnwrap(image.cgImage)
-                XCTAssertEqual(CGSize(width: cgImage.width, height: cgImage.height), size.pixels, "\(size.name)-\(detail)")
-                XCTAssertTrue(cornersAreOpaque(cgImage), "\(size.name)-\(detail) has transparent corners")
-
-                let text = try recognizedText(in: cgImage).lowercased()
-                for food in Self.demoFoodNames {
-                    XCTAssertFalse(text.contains(food), "\(size.name)-\(detail) shows food name \(food)")
-                }
-                let weekday = Date.now.formatted(.dateTime.weekday(.wide)).lowercased()
-                XCTAssertTrue(text.contains(weekday), "OCR did not read the header in \(size.name)-\(detail): \(text)")
-                if detail != "Rings" {
-                    XCTAssertTrue(text.contains("protein"), "\(size.name)-\(detail) lacks macro columns: \(text)")
-                }
-                if detail == "Full" {
-                    XCTAssertTrue(text.contains("fiber"), "\(size.name)-\(detail) lacks secondary nutrition: \(text)")
-                } else {
-                    XCTAssertFalse(text.contains("fiber"), "\(size.name)-\(detail) shows secondary nutrition")
-                }
-                dismissActivitySheet(app)
-            }
-        }
-    }
+    func testExportsStoryAtExactPixelsWithoutFoodNames() throws { try assertExports(size: Self.sizes[0]) }
+    func testExportsPostAtExactPixelsWithoutFoodNames() throws { try assertExports(size: Self.sizes[1]) }
+    func testExportsSquareAtExactPixelsWithoutFoodNames() throws { try assertExports(size: Self.sizes[2]) }
 
     // MARK: Person row
 
@@ -159,6 +108,59 @@ final class ShareScreenUITests: XCTestCase {
     }
 
     // MARK: Helpers
+
+    private func assertPreviewTracks(size: String, showsDefaults: Bool = false) {
+        let app = launchHome()
+        openShareSheet(app)
+
+        let preview = app.otherElements["share-preview"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5), "Preview missing")
+        if showsDefaults {
+            XCTAssertEqual(preview.value as? String, "Story, Macros", "Defaults are Story and Macros")
+            XCTAssertEqual(captionField(app).value as? String, Self.defaultCaption)
+        }
+
+        app.segmentedControls["share-size-picker"].buttons[size].tap()
+        for detail in Self.details {
+            app.segmentedControls["share-detail-picker"].buttons[detail].tap()
+            XCTAssertEqual(preview.value as? String, "\(size), \(detail)")
+        }
+    }
+
+    private func assertExports(size: (name: String, pixels: CGSize)) throws {
+        let app = launchHome()
+        openShareSheet(app)
+        app.segmentedControls["share-size-picker"].buttons[size.name].tap()
+
+        for detail in Self.details {
+            let file = exportDirectory.appending(path: "\(size.name)-\(detail).png")
+            try? FileManager.default.removeItem(at: file)
+            app.segmentedControls["share-detail-picker"].buttons[detail].tap()
+            app.buttons["share-submit"].tap()
+
+            waitForFile(file)
+            let image = try XCTUnwrap(UIImage(contentsOfFile: file.path), "\(file.lastPathComponent) unreadable")
+            let cgImage = try XCTUnwrap(image.cgImage)
+            XCTAssertEqual(CGSize(width: cgImage.width, height: cgImage.height), size.pixels, "\(size.name)-\(detail)")
+            XCTAssertTrue(cornersAreOpaque(cgImage), "\(size.name)-\(detail) has transparent corners")
+
+            let text = try recognizedText(in: cgImage).lowercased()
+            for food in Self.demoFoodNames {
+                XCTAssertFalse(text.contains(food), "\(size.name)-\(detail) shows food name \(food)")
+            }
+            let weekday = Date.now.formatted(.dateTime.weekday(.wide)).lowercased()
+            XCTAssertTrue(text.contains(weekday), "OCR did not read the header in \(size.name)-\(detail): \(text)")
+            if detail != "Rings" {
+                XCTAssertTrue(text.contains("protein"), "\(size.name)-\(detail) lacks macro columns: \(text)")
+            }
+            if detail == "Full" {
+                XCTAssertTrue(text.contains("fiber"), "\(size.name)-\(detail) lacks secondary nutrition: \(text)")
+            } else {
+                XCTAssertFalse(text.contains("fiber"), "\(size.name)-\(detail) shows secondary nutrition")
+            }
+            dismissActivitySheet(app)
+        }
+    }
 
     private func launchHome(pro: Bool = false, sharing: Bool = false, remote: String = "online") -> XCUIApplication {
         let app = XCUIApplication()

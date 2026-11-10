@@ -67,6 +67,7 @@ struct ShareScreen: View {
             .aspectRatio(size.canvas.width / size.canvas.height, contentMode: .fit)
             .frame(maxHeight: 300)
             .clipShape(.rect(cornerRadius: 16))
+            .overlay { RoundedRectangle(cornerRadius: 16).strokeBorder(.separator) }
             .frame(maxWidth: .infinity)
             .accessibilityElement(children: .ignore)
             .accessibilityIdentifier("share-preview")
