@@ -6,7 +6,7 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 ## 2026-11-10 Share menu and full height sheet
 
-Owner feedback on build 34: Home's share button now opens a menu with "Post an image" and "Live sharing". "Post an image" opens the Share sheet, which now opens at full height; the "Share with a person" row is gone from it. "Live sharing" opens the Sharing dashboard (Pro with sharing on, subtitle "With N people") or setup. See [evidence](docs/evidence/unified-sharing/README.md#round-2-menu-and-full-height).
+Owner feedback on build 34: Home's share button now opens a menu with "Post an image" and "Live sharing". "Post an image" opens the Share sheet, which now opens at full height; the "Share with a person" row is gone from it. "Live sharing" opens the Sharing dashboard (Pro with sharing on, subtitle "With N people") or setup. See [evidence](docs/evidence/unified-sharing/README.md#round-2-menu-and-full-height). Shipped as version 1.0 build 35 from `9d476e7` (delivery `bc0cf2fb-44a4-44f4-b396-566ca7978db0`, uploaded 13:43 CST).
 
 ## 2026-11-10 TestFlight build 34 and weekly pace labels
 
