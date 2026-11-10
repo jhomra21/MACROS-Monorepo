@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 Share sheet polish
+
+The "Post an image" sheet now has a system close button instead of "Done", a larger preview (309 pt on iPhone 17e) with the pickers, caption field and Copy caption visible without scrolling, a smooth size and detail change, a success haptic on copy, a "Caption copied" note that fades in on the Caption header, and a Share button that keeps its label and shows a spinner while busy. The toolbar Share icon uses the plain style like its neighbors. Not added: a selection haptic (unverified on a simulator) and keyboard overlap is unverified. UI 17/17 and unit 263/263 on the 17e; see [evidence](docs/evidence/unified-sharing/README.md#round-3-polish).
+
 ## 2026-11-10 Share menu and full height sheet
 
 Owner feedback on build 34: Home's share button now opens a menu with "Post an image" and "Live sharing". "Post an image" opens the Share sheet, which now opens at full height; the "Share with a person" row is gone from it. "Live sharing" opens the Sharing dashboard (Pro with sharing on, subtitle "With N people") or setup. See [evidence](docs/evidence/unified-sharing/README.md#round-2-menu-and-full-height). Shipped as version 1.0 build 35 from `9d476e7` (delivery `bc0cf2fb-44a4-44f4-b396-566ca7978db0`, uploaded 13:43 CST).

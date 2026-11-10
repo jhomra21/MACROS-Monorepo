@@ -6,6 +6,8 @@ Progress: phase 1 merged. Phases 2 and 3 implemented on `app/share-screen` and a
 
 Round 2 (TestFlight build 34 feedback, branch `app/share-menu`): the Share sheet opens at full height, and the person row is gone from it. The Home share button opens a menu with "Post an image" and "Live sharing". Evidence: [Round 2](../../evidence/unified-sharing/README.md#round-2-menu-and-full-height).
 
+Round 3 (polish, branch `app/share-polish`): close button, larger preview, motion, copy haptic, busy spinner. Awaiting owner review; selection haptic and keyboard overlap need a device. Evidence: [Round 3](../../evidence/unified-sharing/README.md#round-3-polish).
+
 ## Owner decisions (2026-11-10)
 
 - Round 2 decision: the Home share button opens a menu with "Post an image" (opens the Share sheet) and "Live sharing" (Sharing dashboard for Pro with sharing on, setup otherwise). The sheet has only the large detent. This supersedes the "Share with a person" row below. The swipe past today still opens Sharing.

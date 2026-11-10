@@ -41,7 +41,11 @@ struct ShareScreen: View {
                 // Measured with the keyboard ignored, so opening it does not resize the preview.
                 Color.clear
                     .ignoresSafeArea(.keyboard)
-                    .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { sheetHeight = $0 }
+                    .onGeometryChange(for: CGFloat.self) {
+                        $0.size.height
+                    } action: {
+                        sheetHeight = $0
+                    }
             }
             .navigationTitle("Share")
             .inlineNavigationTitle()
