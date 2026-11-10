@@ -199,13 +199,14 @@ final class ShareScreenUITests: XCTestCase {
         openShareSheet(app)
         let share = app.buttons["share-submit"]
         XCTAssertEqual(share.label, "Share")
+        let shareWidth = share.frame.width
 
         share.tap()
         let disabled = NSPredicate(format: "isEnabled == false")
         let result = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: disabled, object: share)], timeout: 3)
         XCTAssertEqual(result, .completed, "Share stayed enabled while rendering")
-        XCTAssertEqual(share.label, "Share", "Busy state should keep the label and add a spinner")
-        XCTAssertTrue(app.descendants(matching: .any)["share-busy"].exists, "Busy spinner missing")
+        XCTAssertEqual(share.label, "Share", "Busy state should keep the label")
+        XCTAssertEqual(share.frame.width, shareWidth, "Share button width jumped while busy")
         XCTAssertTrue(activitySheet(app).waitForExistence(timeout: 15), "Share sheet never appeared")
     }
 

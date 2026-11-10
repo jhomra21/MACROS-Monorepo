@@ -6,7 +6,7 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 ## 2026-11-10 Share sheet polish
 
-The "Post an image" sheet now has a system close button instead of "Done", a larger preview (309 pt on iPhone 17e) with the pickers, caption field and Copy caption visible without scrolling, a smooth size and detail change, a success haptic on copy, a "Caption copied" note that fades in on the Caption header, and a Share button that keeps its label and shows a spinner while busy. The toolbar Share icon uses the plain style like its neighbors. Not added: a selection haptic (unverified on a simulator) and keyboard overlap is unverified. UI 17/17 and unit 263/263 on the 17e; see [evidence](docs/evidence/unified-sharing/README.md#round-3-polish).
+The "Post an image" sheet now has a system close button instead of "Done", a larger preview (309 pt on iPhone 17e) with the pickers, caption field and Copy caption visible without scrolling, a smooth size and detail change, a success haptic on copy, and a "Caption copied" note that fades in on the Caption header. Native first: no haptic on the pickers, no spinner in the Share button (it is only disabled while rendering) and no style on the toolbar Share Menu. Keyboard overlap is unverified on the simulator. UI 17/17 and unit 263/263 on the 17e; see [evidence](docs/evidence/unified-sharing/README.md#round-3-polish).
 
 ## 2026-11-10 Share menu and full height sheet
 

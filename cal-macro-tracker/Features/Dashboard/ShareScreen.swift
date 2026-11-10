@@ -52,7 +52,6 @@ struct ShareScreen: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .close) { dismiss() }
-                        .accessibilityLabel("Close")
                 }
             }
             .safeAreaInset(edge: .bottom) { shareButton }
@@ -145,11 +144,8 @@ struct ShareScreen: View {
 
     private var shareButton: some View {
         Button(action: share) {
-            HStack(spacing: 8) {
-                Label("Share", systemImage: "square.and.arrow.up")
-                if isRendering { ProgressView().controlSize(.small).accessibilityIdentifier("share-busy") }
-            }
-            .frame(maxWidth: .infinity)
+            Label("Share", systemImage: "square.and.arrow.up")
+                .frame(maxWidth: .infinity)
         }
         .buttonStyle(.glassProminent)
         .controlSize(.large)
