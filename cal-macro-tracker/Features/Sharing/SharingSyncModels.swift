@@ -172,6 +172,10 @@ struct SharedDailySnapshot: Decodable, Equatable {
         self.fatGoal = fatGoal
     }
 
+    var totals: NutritionSnapshot {
+        NutritionSnapshot(calories: calories, protein: protein, fat: fat, carbs: carbs)
+    }
+
     var macroGoalsSnapshot: MacroGoalsSnapshot? {
         guard let calorieGoal, let proteinGoal, let carbsGoal, let fatGoal else { return nil }
         return MacroGoalsSnapshot(

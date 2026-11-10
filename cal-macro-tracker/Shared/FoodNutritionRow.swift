@@ -56,7 +56,7 @@ struct FoodNutritionRow<Title: View>: View {
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.primary)
                 .monospacedDigit()
-            Text("P \(protein.roundedForDisplay) • C \(carbs.roundedForDisplay) • F \(fat.roundedForDisplay)")
+            Text(MacroSummaryText.line(protein: protein, carbs: carbs, fat: fat, separator: " • ", unit: ""))
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .monospacedDigit()

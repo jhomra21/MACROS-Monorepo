@@ -72,7 +72,7 @@ struct SharingDashboardScreen: View {
         }
         #if os(iOS)
         .sheet(item: $createdInvite) { invite in
-            URLShareSheet(url: invite.appURL)
+            ActivityShareSheet(activityItems: [invite.appURL])
         }
         #endif
     }
@@ -106,8 +106,7 @@ private struct SharingPersonRow: View {
     }
 
     private var totals: NutritionSnapshot {
-        guard let snapshot = person.snapshot else { return .zero }
-        return NutritionSnapshot(calories: snapshot.calories, protein: snapshot.protein, fat: snapshot.fat, carbs: snapshot.carbs)
+        person.snapshot?.totals ?? .zero
     }
 
     private var incomingStatus: String {
@@ -164,7 +163,8 @@ private struct SharingPersonRow: View {
     }
 
     private var totalsLine: String {
-        "\(totals.calories.roundedForDisplay) kcal · P \(totals.protein.roundedForDisplay)g · C \(totals.carbs.roundedForDisplay)g · F \(totals.fat.roundedForDisplay)g"
+        "\(totals.calories.roundedForDisplay) kcal · "
+            + MacroSummaryText.line(protein: totals.protein, carbs: totals.carbs, fat: totals.fat)
     }
 }
 

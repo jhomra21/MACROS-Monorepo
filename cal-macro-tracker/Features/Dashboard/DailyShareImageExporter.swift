@@ -80,16 +80,6 @@ enum DailyShareImageExportError: Error {
     case renderingFailed
 }
 
-struct ShareSheet: UIViewControllerRepresentable {
-    let itemSource: DashboardShareImageItemSource
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [itemSource], applicationActivities: nil)
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
-}
-
 final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
     private let image: UIImage
     private let title: String

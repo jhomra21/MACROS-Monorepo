@@ -130,7 +130,7 @@ struct DashboardScreen: View {
             .errorBanner(message: $errorMessage)
             #if os(iOS)
             .sheet(item: $shareSheetItem) { item in
-                ShareSheet(itemSource: item.itemSource)
+                ActivityShareSheet(activityItems: [item.itemSource])
             }
             .alert(item: $shareFailureRequest) { request in
                 Alert(
