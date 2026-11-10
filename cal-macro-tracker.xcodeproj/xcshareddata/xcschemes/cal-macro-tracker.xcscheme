@@ -41,17 +41,6 @@
                ReferencedContainer = "container:cal-macro-tracker.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3E0000000000000000000004"
-               BuildableName = "cal-macro-trackerUITests.xctest"
-               BlueprintName = "cal-macro-trackerUITests"
-               ReferencedContainer = "container:cal-macro-tracker.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

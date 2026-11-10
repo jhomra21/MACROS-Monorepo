@@ -49,7 +49,7 @@ Environment: Xcode 27.0 (`DEVELOPER_DIR=/Applications/Xcode-26.4.1.app/Contents/
 
 - **Red** (commit `ac91f73`, tests and fixture only): 7 of 7 `ShareScreenUITests` failed. Home loaded from the fixture, then every test failed at "Share sheet did not open" because the toolbar button still rendered and presented the image directly. Raw: `build/evidence/2026-11-10-unified-sharing/red.log`.
 - **Green** (next commits): the same tests, split per size so each stays under the 45 s allowance, 11 of 11 pass. Raw: `green.log`, `full.log`.
-- **Serial suite** on the iPad runner, excluding `PurchaseStoreStoreKitTests`: 262 unit tests + 11 UI tests, 0 failures.
+- **Counted separately.** UI scheme `cal-macro-trackerUITests` (iPhone 17e): 11 tests, 0 failures. Unit scheme `cal-macro-tracker`, serial, excluding `PurchaseStoreStoreKitTests`: 262 tests, 0 failures, and it no longer launches UI tests. Run commands are in [validation](../../development/validation.md).
 - **Exports**: the nine size x detail PNGs are in ignored `build/evidence/2026-11-10-unified-sharing/share-exports/`. Each is exactly 1080x1920, 1080x1350 or 1080x1080, has opaque corners, and Vision OCR finds the weekday header, finds Protein for Macros/Full and Fiber for Full only, and finds none of the 16 demo food names. A temporary render at 12,345 kcal, 1,234 g protein and 18,200 mg sodium (light and dark, all nine combinations) showed no clipping.
 
 Findings that shaped the tests:

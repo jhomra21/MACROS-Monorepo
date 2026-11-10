@@ -36,6 +36,24 @@ For one class, add `-only-testing:cal-macro-trackerTests/InsightsAnalyticsTests`
 
 After instruction/resource changes, inspect the built .app and embedded .appex for Markdown. New AGENTS or docs files must not enter either bundle.
 
+## UI tests
+
+`cal-macro-trackerUITests` has its own shared scheme, so the unit command above never launches the app. The tests start the app with a DEBUG-only fixture (`MACROS_UI_FIXTURE=1` in `cal-macro-tracker/App/UITestFixture.swift`): an in-memory store with the demo dataset, a scripted entitlement and a scripted sharing remote. They never touch real stores or production services. Run them on a locked iPhone, serially:
+
+```sh
+TEST_RUNNER_MACROS_EVIDENCE_DIR=<ignored build/evidence path> xcodebuild \
+  -project cal-macro-tracker.xcodeproj \
+  -scheme cal-macro-trackerUITests \
+  -destination 'platform=iOS Simulator,id=<IOS_SIMULATOR_UDID>' \
+  -parallel-testing-enabled NO \
+  -test-timeouts-enabled YES \
+  -default-test-execution-time-allowance 60 \
+  -maximum-test-execution-time-allowance 90 \
+  test
+```
+
+Report UI-test and unit-suite counts separately. The share tests write exported PNGs under `MACROS_EVIDENCE_DIR`; see [unified sharing evidence](../evidence/unified-sharing/README.md).
+
 ## JavaScript and TypeScript
 
 ```sh
