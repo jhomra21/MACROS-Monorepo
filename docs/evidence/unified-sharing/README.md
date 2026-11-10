@@ -99,4 +99,3 @@ Same environment as above (iPhone 17e `F976E800` for UI runs, iPad runner `E91B5
 - [share-menu-open.png](share-menu-open.png): the Home Share menu, Pro fixture with sharing on.
 - [share-sheet-full-height.png](share-sheet-full-height.png): the sheet right after "Post an image", with no drag.
 - [export-story-macros-1080x1920.png](export-story-macros-1080x1920.png): a 9:16 export of the demo day, default detail.
-
