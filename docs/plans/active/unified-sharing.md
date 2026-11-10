@@ -4,7 +4,11 @@ Status: active. Owner decisions recorded 2026-11-10; the research plan from that
 
 Progress: phase 1 merged. Phases 2 and 3 implemented on `app/share-screen` and awaiting owner review: Home share button opens a Share sheet (Story/Post/Square, Rings/Macros/Full, editable caption copied on Share, "Share with a person" row). `NSPhotoLibraryAddUsageDescription` added; Save Image saved nothing on the simulator without it. Evidence: [unified-sharing evidence](../../evidence/unified-sharing/README.md). Phase 4 (Instagram Stories) is not started.
 
+Round 2 (TestFlight build 34 feedback, branch `app/share-menu`): the Share sheet opens at full height, and the person row is gone from it. The Home share button opens a menu with "Post an image" and "Live sharing". Evidence: [Round 2](../../evidence/unified-sharing/README.md#round-2-menu-and-full-height).
+
 ## Owner decisions (2026-11-10)
+
+- Round 2 decision: the Home share button opens a menu with "Post an image" (opens the Share sheet) and "Live sharing" (Sharing dashboard for Pro with sharing on, setup otherwise). The sheet has only the large detent. This supersedes the "Share with a person" row below. The swipe past today still opens Sharing.
 
 - Direction approved: one Share entry on Home with "Post an image" and "Share with a person". Shared presentation code. Person-sharing backend stays separate.
 - Build now: phase 1 (code cleanup), phase 2 (share screen with Story/Post/Square sizes, detail choice, caption), phase 3 ("Share with a person" row).
@@ -74,7 +78,7 @@ Sources: [ShareLink](https://developer.apple.com/documentation/swiftui/sharelink
 
 ### C. UX sketch
 
-**Entry.** The existing Home toolbar share button opens a sheet with a medium detent.
+**Entry.** The Home toolbar share button opens a menu ("Post an image", "Live sharing"). "Post an image" opens a sheet at full height. (Round 2; the first version opened the sheet directly with a medium detent.)
 
 **Sheet layout.**
 
@@ -83,7 +87,7 @@ Sources: [ShareLink](https://developer.apple.com/documentation/swiftui/sharelink
 3. Segmented picker for detail: Rings, Macros, Full nutrition. Food names are never on the image in this phase.
 4. Caption field with a Copy button.
 5. Primary button "Share image" (system sheet). Optional "Instagram Story" button in step two.
-6. A "Share with a person" row that opens the Sharing dashboard. It shows the count of connected people, or a Pro lock.
+6. (Superseded in round 2.) The person row moved out of the sheet into the "Live sharing" menu item, which shows "With N people" for Pro with sharing on.
 
 **States.** Rendering (progress in the preview), render failed (retry, as the existing alert at `DashboardScreen.swift:135` does), empty day (allow, show zeros), Instagram not installed (button hidden), sharing off or not Pro (row leads to setup or the paywall).
 
@@ -130,6 +134,6 @@ Sources: [ShareLink](https://developer.apple.com/documentation/swiftui/sharelink
 1. Is registering a Meta developer app (and showing a Facebook App ID in the build) acceptable for the Instagram button?
 2. Should food names ever be allowed on a public image, as an explicit opt-in?
 3. Caption wording, and are hashtags wanted at all?
-4. Should Home keep the swipe to Sharing once the Share sheet has a person row?
+4. Should Home keep the swipe to Sharing once the menu has Live sharing? (Kept for now.)
 5. Is a weekly Insights card worth a later phase?
 6. Any appetite for the TikTok SDK, given the privacy position?

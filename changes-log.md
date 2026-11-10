@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 Share menu and full height sheet
+
+Owner feedback on build 34: Home's share button now opens a menu with "Post an image" and "Live sharing". "Post an image" opens the Share sheet, which now opens at full height; the "Share with a person" row is gone from it. "Live sharing" opens the Sharing dashboard (Pro with sharing on, subtitle "With N people") or setup. See [evidence](docs/evidence/unified-sharing/README.md#round-2-menu-and-full-height).
+
 ## 2026-11-10 TestFlight build 34 and weekly pace labels
 
 Weekly pace labels now show true values: 0.25 / 0.5 / 0.75 kg and 0.55 / 1.1 / 1.65 lb per week. They had been rounded half-to-even to one decimal place (0.2 / 0.5 / 0.8 kg); the pace math was unchanged. Version 1.0 build 34 was archived from `4d274ac` and uploaded to App Store Connect (delivery `cdee4f3d-2ba5-4195-a4a6-6a51e9657af4`). It includes the Share sheet, saved-food delete with Undo, the Pro legal links and the AMDR macro presets. The release build has the HealthKit and app group entitlements and the photo add-only usage string, and it contains no UI-test fixture code. Processing, tester groups and What to Test are still owner steps in App Store Connect.
