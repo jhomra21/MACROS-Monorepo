@@ -124,12 +124,18 @@ struct ShareScreen: View {
             Button("Copy caption", systemImage: "doc.on.doc", action: copyCaption)
                 .disabled(caption.isEmpty)
         } header: {
-            Text("Caption")
-        } footer: {
-            Text("Caption copied. Paste it in your post.")
-                .opacity(captionWasCopied ? 1 : 0)
-                .accessibilityHidden(!captionWasCopied)
-                .animation(.easeOut(duration: 0.2), value: captionWasCopied)
+            // The pinned Share button covers a footer at default size, so the note lives in the header.
+            HStack(alignment: .firstTextBaseline) {
+                Text("Caption")
+                Spacer()
+                if captionWasCopied {
+                    Text("Caption copied. Paste it in your post.")
+                        .font(.footnote)
+                        .multilineTextAlignment(.trailing)
+                        .transition(.opacity)
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: captionWasCopied)
         }
     }
 
