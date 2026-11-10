@@ -27,6 +27,13 @@
 			remoteGlobalIDString = 0D8B87CC2F7D86E700453C64;
 			remoteInfo = "cal-macro-tracker";
 		};
+		3E000000000000000000000C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0D8B87C52F7D86E700453C64 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0D8B87CC2F7D86E700453C64;
+			remoteInfo = "cal-macro-tracker";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,6 +55,7 @@
 		1A1111111111111111111111 /* CalMacroWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CalMacroWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B000000000000000000000C /* MACROSPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = config/apple/MACROSPro.storekit; sourceTree = "<group>"; };
 		3D0000000000000000000001 /* cal-macro-trackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "cal-macro-trackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E0000000000000000000001 /* cal-macro-trackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "cal-macro-trackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -126,6 +134,11 @@
 			path = "cal-macro-trackerTests";
 			sourceTree = "<group>";
 		};
+		3E0000000000000000000002 /* cal-macro-trackerUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "cal-macro-trackerUITests";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +164,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3E0000000000000000000003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -163,6 +183,7 @@
 				1A1111111111111111111116 /* cal-macro-tracker/CalMacroWidget */,
 				1A1111111111111111111117 /* cal-macro-tracker/Data/Models */,
 				3D0000000000000000000002 /* cal-macro-trackerTests */,
+				3E0000000000000000000002 /* cal-macro-trackerUITests */,
 				0D8B87CE2F7D86E700453C64 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -173,6 +194,7 @@
 				0D8B87CD2F7D86E700453C64 /* cal-macro-tracker.app */,
 				1A1111111111111111111111 /* CalMacroWidget.appex */,
 				3D0000000000000000000001 /* cal-macro-trackerTests.xctest */,
+				3E0000000000000000000001 /* cal-macro-trackerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -253,6 +275,29 @@
 			productReference = 3D0000000000000000000001 /* cal-macro-trackerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		3E0000000000000000000004 /* cal-macro-trackerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0000000000000000000009 /* Build configuration list for PBXNativeTarget "cal-macro-trackerUITests" */;
+			buildPhases = (
+				3E0000000000000000000005 /* Sources */,
+				3E0000000000000000000003 /* Frameworks */,
+				3E0000000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E000000000000000000000D /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3E0000000000000000000002 /* cal-macro-trackerUITests */,
+			);
+			name = "cal-macro-trackerUITests";
+			packageProductDependencies = (
+			);
+			productName = "cal-macro-trackerUITests";
+			productReference = 3E0000000000000000000001 /* cal-macro-trackerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -281,6 +326,10 @@
 						CreatedOnToolsVersion = 26.4;
 						TestTargetID = 0D8B87CC2F7D86E700453C64;
 					};
+					3E0000000000000000000004 = {
+						CreatedOnToolsVersion = 26.4;
+						TestTargetID = 0D8B87CC2F7D86E700453C64;
+					};
 				};
 			};
 			buildConfigurationList = 0D8B87C82F7D86E700453C64 /* Build configuration list for PBXProject "cal-macro-tracker" */;
@@ -303,6 +352,7 @@
 				0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */,
 				1A111111111111111111111B /* CalMacroWidget */,
 				3D0000000000000000000004 /* cal-macro-trackerTests */,
+				3E0000000000000000000004 /* cal-macro-trackerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -330,6 +380,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3E0000000000000000000006 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -354,6 +411,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3E0000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -366,6 +430,11 @@
 			isa = PBXTargetDependency;
 			target = 0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */;
 			targetProxy = 3D000000000000000000000C /* PBXContainerItemProxy */;
+		};
+		3E000000000000000000000D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */;
+			targetProxy = 3E000000000000000000000C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -722,6 +791,50 @@
 			};
 			name = Release;
 		};
+		3E0000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 33;
+				DEVELOPMENT_TEAM = NK3K87K955;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "juan-test.cal-macro-trackerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = "cal-macro-tracker";
+			};
+			name = Debug;
+		};
+		3E0000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 33;
+				DEVELOPMENT_TEAM = NK3K87K955;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "juan-test.cal-macro-trackerUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = "cal-macro-tracker";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -757,6 +870,15 @@
 			buildConfigurations = (
 				3D0000000000000000000007 /* Debug */,
 				3D0000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E0000000000000000000009 /* Build configuration list for PBXNativeTarget "cal-macro-trackerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0000000000000000000007 /* Debug */,
+				3E0000000000000000000008 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
