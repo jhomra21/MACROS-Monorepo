@@ -81,7 +81,7 @@ Apple Help: [Create consumable or non-consumable In-App Purchases](https://devel
 ## 7. Review information and first submission
 
 1. For each of the three products, scroll to **Review Information**.
-2. Upload the paywall screenshot from `docs/app-store/review-screenshots/` on branch `docs/asc-review-screenshots`. Ensure it clearly shows the product/offer in the app.
+2. Upload a paywall screenshot. The six paywall review screenshots (monthly, yearly and lifetime, light and dark) were archived off the repository on 2026-11-10 when the `docs/asc-review-screenshots` branch was deleted; the owner keeps them in a local `MACROS-archive/paywall-review-screenshots` folder. Ensure it clearly shows the product/offer in the app.
 3. Enter Review Notes with how to reach the paywall and select each plan; explain that the yearly plan presents the 1-week free trial only to eligible new subscribers. Include any review access instructions needed to reach the screen.
 4. Save each product's review information.
 5. For the first subscription submission, add the new app version, the `MACROS Pro` subscription group, and at least one subscription to the same draft submission before clicking **Submit for Review**. The group must be submitted with a subscription. Include the other products as appropriate in that submission.
