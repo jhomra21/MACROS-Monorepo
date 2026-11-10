@@ -99,3 +99,21 @@ Same environment as above (iPhone 17e `F976E800` for UI runs, iPad runner `E91B5
 - [share-menu-open.png](share-menu-open.png): the Home Share menu, Pro fixture with sharing on.
 - [share-sheet-full-height.png](share-sheet-full-height.png): the sheet right after "Post an image", with no drag.
 - [export-story-macros-1080x1920.png](export-story-macros-1080x1920.png): a 9:16 export of the demo day, default detail.
+
+## Round 3: polish
+
+Owner direction: keep the Share menu and the "Post an image" sheet as they are and finish them. Parent review found eight points.
+
+### Failure modes (written before any code)
+
+1. The sheet dismisses with a text "Done" in the confirmation slot, which reads as "confirm". Test: no "Done" button; a "Close" button in the Share bar dismisses the sheet.
+2. The preview stays capped at 300 pt, so on a 6.1" iPhone the caption sits under the pinned Share button. Test on iPhone 17e: preview taller than 300 pt, and preview, both pickers and the caption field all end above the Share button.
+3. The preview jumps when Size or Detail changes. Test: the preview takes each size's aspect ratio (9:16, 4:5, 1:1) after a switch and when switching back. The motion itself is checked on a screen recording, since XCUITest cannot see animation curves.
+4. Rings replay from zero on each switch because the ring view is rebuilt. Checked on the recording: ring values hold still while the card resizes.
+5. Reduce Motion still animates the size change. Checked on the simulator with Reduce Motion on.
+6. Segmented pickers already give a haptic, so a second selection haptic doubles it. Checked in docs before adding any. The caption-copied haptic must fire on Copy and Share, and not when the caption is empty.
+7. The "Caption copied" footer pops in and shifts the layout. It must fade in, keep its place, and keep the spoken announcement.
+8. The busy Share button swaps its text to "Preparing…" and changes width. Test: with rendering held, Share is disabled, its label is still "Share" and a spinner shows. A DEBUG fixture flag (`MACROS_FIXTURE_HOLD_RENDER`) holds rendering for 4 s, because the real render is too fast to observe.
+9. The keyboard covers the caption being typed, or the pinned Share button rides over it. Checked on the simulator with the keyboard up. The Form dismisses the keyboard on scroll.
+10. Removing `.presentationDetents([.large])` makes the sheet open short. Test: the existing full-height test still passes without it.
+11. The toolbar Share icon has no pressed state like its neighbors. Checked on the simulator, with the 44 pt size and label kept.
