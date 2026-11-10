@@ -1,32 +1,107 @@
 import SwiftUI
 
+/// Aspect ratios offered by the Share sheet. Cards lay out on a fixed 432 pt canvas and render at 2.5x,
+/// so the exported pixels are exact on every device.
+enum ShareImageSize: String, CaseIterable, Identifiable {
+    case story = "Story"
+    case post = "Post"
+    case square = "Square"
+
+    static let canvasWidth: CGFloat = 432
+    static let renderScale: CGFloat = 2.5
+
+    var id: Self { self }
+    var title: String { rawValue }
+
+    var canvasHeight: CGFloat {
+        switch self {
+        case .story: 768
+        case .post: 540
+        case .square: 432
+        }
+    }
+
+    var canvas: CGSize { CGSize(width: Self.canvasWidth, height: canvasHeight) }
+
+    func ringDiameter(for detail: ShareDetail) -> CGFloat {
+        switch (self, detail) {
+        case (.story, .rings): 360
+        case (.story, .macros): 320
+        case (.story, .full): 290
+        case (.post, .rings): 340
+        case (.post, .macros): 270
+        case (.post, .full): 200
+        case (.square, .rings): 300
+        case (.square, .macros): 190
+        case (.square, .full): 150
+        }
+    }
+}
+
+/// How much of the day a shared image shows. Food names are never an option.
+enum ShareDetail: String, CaseIterable, Identifiable {
+    case rings = "Rings"
+    case macros = "Macros"
+    case full = "Full"
+
+    var id: Self { self }
+    var title: String { rawValue }
+}
+
 struct DailyShareCardView: View {
+    private static let sectionSpacing: CGFloat = 12
+
     let day: CalendarDay
     let snapshot: LogEntryDaySnapshot
     let goals: MacroGoalsSnapshot
+    let size: ShareImageSize
+    let detail: ShareDetail
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(spacing: Self.sectionSpacing) {
             header
 
-            MacroRingView(totals: snapshot.totals, goals: goals, ringDiameter: 252)
-                .frame(maxWidth: .infinity)
+            Spacer(minLength: 0)
 
-            macroSummary
+            MacroRingSetView(
+                totals: snapshot.totals,
+                goals: goals,
+                ringDiameter: ringDiameter,
+                centerValueFontSize: ringDiameter * 0.17,
+                minimumLineWidth: 5,
+                showsGoalSubtitle: ringDiameter >= 190
+            )
 
-            SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
+            if detail != .rings {
+                macroSummary
+            }
+
+            if detail == .full {
+                SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                    .padding(.horizontal, 16)
+            }
+
+            Spacer(minLength: 0)
 
             footer
         }
-        .padding(8)
-        .frame(width: 390, alignment: .topLeading)
+        .padding(size == .square ? 20 : 24)
+        .frame(width: size.canvas.width, height: size.canvas.height)
+        .background(PlatformColors.groupedBackground)
+        .environment(\.dynamicTypeSize, .large)
     }
 
+    private var ringDiameter: CGFloat { size.ringDiameter(for: detail) }
+
     private var header: some View {
-        Text(day.startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
-            .font(.title2.weight(.semibold))
+        HStack {
+            Text(day.startDate.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().year()))
+                .font(.title2.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Spacer(minLength: 0)
+        }
     }
 
     private var macroSummary: some View {
@@ -55,14 +130,12 @@ struct DailyShareCardView: View {
     }
 }
 
-// Temporary preview: remove after share-card visual testing is complete.
-// It intentionally keeps representative sample data close to the temporary review surface.
-#Preview("Daily Share Card - temporary") {
+#Preview("Daily Share Card") {
     DailyShareCardView(
         day: CalendarDay(date: .now),
         snapshot: LogEntryDaySnapshot(
             entries: [],
-            totals: NutritionSnapshot(calories: 1840, protein: 132, fat: 58, carbs: 196),
+            totals: NutritionSnapshot(calories: 18_400, protein: 132, fat: 58, carbs: 196),
             secondaryTotals: SecondaryNutritionSnapshot(
                 saturatedFat: 18,
                 fiber: 24,
@@ -77,9 +150,9 @@ struct DailyShareCardView: View {
             proteinGoalGrams: 160,
             fatGoalGrams: 70,
             carbGoalGrams: 240
-        )
+        ),
+        size: .square,
+        detail: .full
     )
-    .padding()
-    .background(PlatformColors.groupedBackground)
     .preferredColorScheme(.dark)
 }

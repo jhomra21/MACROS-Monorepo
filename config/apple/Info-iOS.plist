@@ -50,6 +50,8 @@
 	<string>Import your body weight from Apple Health when you enable weight sync.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Save the nutrition you log to Apple Health when you enable nutrition sync.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>MACROS saves share images you choose to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Import nutrition label photos to extract calories and macros.</string>
 	<key>UIApplicationSceneManifest</key>

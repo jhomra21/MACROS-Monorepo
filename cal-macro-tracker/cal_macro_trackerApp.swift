@@ -50,10 +50,29 @@ struct cal_macro_trackerApp: App {
         MacroRingColorStorage.migrateLegacyStandardDefaultsToAppGroup()
         let entitlements = AppEntitlements()
         let sharingAuthService = SharingAuthService()
+        #if DEBUG
+        UITestFixture.current?.apply(to: entitlements)
+        #endif
         _entitlements = State(initialValue: entitlements)
         _purchaseStore = State(initialValue: PurchaseStore(entitlements: entitlements))
         _sharingAuthService = State(initialValue: sharingAuthService)
-        _sharingSyncService = State(initialValue: SharingSyncService(authService: sharingAuthService))
+        _sharingSyncService = State(initialValue: Self.makeSharingSyncService(authService: sharingAuthService))
+    }
+
+    private static func makeSharingSyncService(authService: SharingAuthService) -> SharingSyncService {
+        #if DEBUG
+        if let fixture = UITestFixture.current { return fixture.makeSharingSyncService() }
+        #endif
+        return SharingSyncService(authService: authService)
+    }
+
+    /// UI-test fixtures script entitlements, so StoreKit must not overwrite them.
+    private var usesLivePurchases: Bool {
+        #if DEBUG
+        UITestFixture.current == nil
+        #else
+        true
+        #endif
     }
 
     var body: some Scene {
@@ -102,12 +121,13 @@ struct cal_macro_trackerApp: App {
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
                 purchaseStore.onEntitlementsChanged = { await submitSharingEntitlementsIfEnabled() }
-                await purchaseStore.start()
+                if usesLivePurchases { await purchaseStore.start() }
                 requestServiceRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
+                guard usesLivePurchases else { return requestServiceRefresh() }
                 Task {
                     await purchaseStore.refreshEntitlements()
                     await purchaseStore.onEntitlementsChanged?()

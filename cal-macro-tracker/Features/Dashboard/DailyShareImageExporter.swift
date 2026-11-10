@@ -6,17 +6,26 @@ import UIKit
 
 @MainActor
 enum DailyShareImageExporter {
+    private static let maximumRenderAttempts = 3
+
+    /// `ImageRenderer` occasionally returns nil, so a failed render is retried before it is reported.
     static func exportImage(
         day: CalendarDay,
         snapshot: LogEntryDaySnapshot,
         goals: MacroGoalsSnapshot,
+        size: ShareImageSize,
+        detail: ShareDetail,
         colorScheme: ColorScheme
     ) throws -> UIImage {
-        guard let image = renderImage(day: day, snapshot: snapshot, goals: goals, colorScheme: colorScheme) else {
-            throw DailyShareImageExportError.renderingFailed
+        for _ in 0..<maximumRenderAttempts {
+            if let image = renderImage(
+                day: day, snapshot: snapshot, goals: goals, size: size, detail: detail, colorScheme: colorScheme
+            ) {
+                return image
+            }
         }
 
-        return image
+        throw DailyShareImageExportError.renderingFailed
     }
 
     static func warmUpRenderingPipeline(colorScheme: ColorScheme) {
@@ -24,6 +33,8 @@ enum DailyShareImageExporter {
             day: CalendarDay(date: .now),
             snapshot: .empty,
             goals: .default,
+            size: .story,
+            detail: .macros,
             colorScheme: colorScheme
         )
     }
@@ -32,15 +43,15 @@ enum DailyShareImageExporter {
         day: CalendarDay,
         snapshot: LogEntryDaySnapshot,
         goals: MacroGoalsSnapshot,
+        size: ShareImageSize,
+        detail: ShareDetail,
         colorScheme: ColorScheme
     ) -> UIImage? {
-        let content = DailyShareCardView(day: day, snapshot: snapshot, goals: goals)
-            .padding(8)
-            .background(PlatformColors.groupedBackground)
+        let content = DailyShareCardView(day: day, snapshot: snapshot, goals: goals, size: size, detail: detail)
             .environment(\.colorScheme, colorScheme)
 
         let renderer = ImageRenderer(content: content)
-        renderer.scale = UITraitCollection.current.displayScale
+        renderer.scale = ShareImageSize.renderScale
 
         guard let image = renderer.uiImage else { return nil }
 
@@ -149,6 +160,31 @@ final class DashboardShareImageItemSource: NSObject, UIActivityItemSource {
 
         savePhotoJPEGData = jpegData
         return jpegData
+    }
+}
+
+/// Offers the caption only to activities that post it, so saving, copying or AirDropping the image stays image-only.
+final class DashboardShareCaptionItemSource: NSObject, UIActivityItemSource {
+    private let caption: String
+
+    init(caption: String) {
+        self.caption = caption
+    }
+
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        caption
+    }
+
+    func activityViewController(
+        _ activityViewController: UIActivityViewController,
+        itemForActivityType activityType: UIActivity.ActivityType?
+    ) -> Any? {
+        switch activityType {
+        case .saveToCameraRoll, .airDrop, .copyToPasteboard, .print, .assignToContact:
+            nil
+        default:
+            caption
+        }
     }
 }
 
