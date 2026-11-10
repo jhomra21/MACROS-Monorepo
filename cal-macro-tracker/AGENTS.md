@@ -3,6 +3,7 @@
 Read [the Swift guide](../docs/development/swift.md) and [validation guide](../docs/development/validation.md).
 
 - Use native SwiftUI, small feature-focused views, and composition rather than UIKit-style layers or a view model per view.
+- Native iOS behavior comes first, design-skill advice second. Never remove or replace what iOS provides, and never add extra behavior (haptics, custom styling, spinners, press effects) on top of system menus, pickers, buttons, sheets, the keyboard, or the share sheet. Polish only the app's own views.
 - Keep state close to its use. Prefer `@State`, `@Binding`, `@Observable`, and `@Environment`; share state only when callers need it.
 - Organize new code by feature, not global Views/Models/ViewModels directories.
 - Use async/await and lifecycle-aware tasks. Keep loading, errors, and editable fallbacks explicit.
