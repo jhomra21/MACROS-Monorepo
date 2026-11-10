@@ -57,50 +57,68 @@ final class ShareScreenUITests: XCTestCase {
     func testExportsPostAtExactPixelsWithoutFoodNames() throws { try assertExports(size: Self.sizes[1]) }
     func testExportsSquareAtExactPixelsWithoutFoodNames() throws { try assertExports(size: Self.sizes[2]) }
 
-    // MARK: Person row
+    // MARK: Menu and full height
 
-    func testPersonRowForFreeUserLeadsToSetupWithoutCount() throws {
-        let app = launchHome(pro: false, sharing: true)
-        openShareSheet(app)
-
-        let row = app.buttons["share-person-row"]
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
-        XCTAssertTrue(row.label.contains("Share with a person"))
-        XCTAssertFalse(row.label.contains("2 people"))
-        row.tap()
-        XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Free users land on setup")
-    }
-
-    func testPersonRowForProWithSharingOffLeadsToSetup() throws {
-        let app = launchHome(pro: true, sharing: false)
-        openShareSheet(app)
-
-        let row = app.buttons["share-person-row"]
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
-        XCTAssertFalse(row.label.contains("2 people"))
-        row.tap()
-        XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Sharing off lands on setup")
-    }
-
-    func testPersonRowForProWithSharingOnShowsCountAndOpensDashboard() throws {
+    func testSheetOpensAtFullHeightWithoutPersonRow() {
         let app = launchHome(pro: true, sharing: true)
         openShareSheet(app)
 
-        let row = app.buttons["share-person-row"]
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
-        expectLabel(row, contains: "2 people")
-        row.tap()
+        XCTAssertTrue(captionField(app).isHittable, "Caption field should be reachable without dragging")
+        XCTAssertTrue(app.buttons["Copy caption"].isHittable, "Copy caption should be reachable without dragging")
+        XCTAssertFalse(app.buttons["share-person-row"].exists, "Person row belongs in the menu, not the sheet")
+    }
+
+    func testMenuListsBothChoicesBeforeAnySheet() {
+        let app = launchHome()
+        app.buttons["Share daily summary"].tap()
+
+        XCTAssertTrue(menuItem(app, "Post an image").waitForExistence(timeout: 5), "Post an image missing")
+        XCTAssertTrue(menuItem(app, "Live sharing").exists, "Live sharing missing")
+        expectLabel(menuItem(app, "Post an image"), contains: "Your rings and macros for social media")
+        expectLabel(menuItem(app, "Live sharing"), contains: "Your macros with people you choose")
+        XCTAssertFalse(app.navigationBars["Share"].exists, "The menu comes first, not the sheet")
+    }
+
+    func testLiveSharingForFreeUserLeadsToSetupWithoutCount() throws {
+        let app = launchHome(pro: false, sharing: true)
+        app.buttons["Share daily summary"].tap()
+
+        let item = menuItem(app, "Live sharing")
+        XCTAssertTrue(item.waitForExistence(timeout: 5))
+        XCTAssertFalse(item.label.contains("people"))
+        item.tap()
+        XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Free users land on setup")
+    }
+
+    func testLiveSharingForProWithSharingOffLeadsToSetup() throws {
+        let app = launchHome(pro: true, sharing: false)
+        app.buttons["Share daily summary"].tap()
+
+        let item = menuItem(app, "Live sharing")
+        XCTAssertTrue(item.waitForExistence(timeout: 5))
+        XCTAssertFalse(item.label.contains("people"))
+        item.tap()
+        XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Sharing off lands on setup")
+    }
+
+    func testLiveSharingForProWithSharingOnShowsCountAndOpensDashboard() throws {
+        let app = launchHome(pro: true, sharing: true)
+        // Let the scripted dashboard load before the menu is built.
+        Thread.sleep(forTimeInterval: 2)
+        app.buttons["Share daily summary"].tap()
+
+        let item = menuItem(app, "Live sharing")
+        XCTAssertTrue(item.waitForExistence(timeout: 5))
+        expectLabel(item, contains: "2 people")
+        item.tap()
         XCTAssertTrue(app.staticTexts["Alex"].waitForExistence(timeout: 10), "Dashboard lists connected people")
-        XCTAssertFalse(app.navigationBars["Share"].exists, "Share sheet should be dismissed")
+        XCTAssertFalse(app.navigationBars["Share"].exists, "No share sheet should be up")
     }
 
     func testOfflineRemoteNeverBlocksTheImagePath() throws {
         let app = launchHome(pro: true, sharing: true, remote: "offline")
         openShareSheet(app)
 
-        let row = app.buttons["share-person-row"]
-        XCTAssertTrue(row.waitForExistence(timeout: 5))
-        XCTAssertFalse(row.label.contains("2 people"))
         XCTAssertTrue(app.buttons["share-submit"].isEnabled)
 
         app.buttons["share-submit"].tap()
@@ -176,12 +194,15 @@ final class ShareScreenUITests: XCTestCase {
 
     private func openShareSheet(_ app: XCUIApplication) {
         app.buttons["Share daily summary"].tap()
-        let navigationBar = app.navigationBars["Share"]
-        XCTAssertTrue(navigationBar.waitForExistence(timeout: 5), "Share sheet did not open")
-        // The medium detent lazily builds only the visible rows; expand so every control exists.
-        navigationBar.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).press(
-            forDuration: 0.1, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)))
-        XCTAssertEqual(app.buttons["Sheet Grabber"].value as? String, "Expanded", "Sheet did not expand")
+        let item = menuItem(app, "Post an image")
+        XCTAssertTrue(item.waitForExistence(timeout: 5), "Share menu did not open")
+        item.tap()
+        XCTAssertTrue(app.navigationBars["Share"].waitForExistence(timeout: 5), "Share sheet did not open")
+    }
+
+    /// Menu rows carry their subtitle in the label, so match on the title prefix.
+    private func menuItem(_ app: XCUIApplication, _ title: String) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
     }
 
     /// The app reads its own pasteboard back after copying; the runner cannot read it without blocking on the paste prompt.

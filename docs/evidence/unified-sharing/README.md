@@ -67,6 +67,26 @@ Checked on the iPhone 17e simulator with the fixture. Before the change, with on
 - Offline is simulated by the scripted remote failing authentication; airplane mode on a device was not tried.
 - VoiceOver speech for the "Caption copied" announcement was not heard; the announcement and the visible note are in place.
 
+## Round 2: menu and full height
+
+Owner feedback on TestFlight build 34: the sheet opened half height, and the "Share with a person" row looked like part of the image. The Home Share button now opens a menu first.
+
+### Failure modes (written before any code)
+
+1. The sheet still opens at the medium detent, so the caption field and Copy caption sit below the fold until the user drags. Test: the caption field is hittable right after opening, with no drag.
+2. The person row or its footer stays in the sheet. Test: `share-person-row` does not exist in the sheet.
+3. The Share button still opens the sheet directly, so the menu never shows. Test: tapping Share shows both "Post an image" and "Live sharing", and the sheet is not up yet.
+4. "Post an image" opens nothing, or opens the sheet twice.
+5. "Live sharing" goes to the wrong place: free users or Pro with sharing off must reach setup (the Sharing switch), Pro with sharing on must reach the Sharing dashboard (Alex listed). Each of the three fixtures is tested.
+6. The menu subtitle does not render as a subtitle, or shows a stale count (people shown when sharing is off or the user is not Pro). The count appears only for Pro with sharing on, and only after the dashboard has loaded.
+7. The menu button loses its accessibility label, shrinks below 44 pt, or stays tappable while the dashboard tutorial runs.
+8. The review prompt fires while the menu or sheet is up, or the swipe past today stops opening Sharing, or warm-up breaks. These paths are untouched in code; the sheet flag that `isShareUIUp` reads is still the one set by "Post an image".
+9. Live sharing fires while the menu is still dismissing and the push is lost. The menu item runs its action after the menu closes, so it calls the existing open callbacks directly.
+10. Offline remote blocks the image path. "Post an image" must open the sheet and Share must work with the remote failing.
+11. Copy uses em dashes or jargon. Plain words only.
+
+Red and green results for this round are in the section below once recorded.
+
 ## Screenshots (tracked)
 
 - [share-sheet-light.png](share-sheet-light.png), [share-sheet-dark.png](share-sheet-dark.png): the sheet at full height, Pro fixture with sharing on.
