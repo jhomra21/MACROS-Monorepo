@@ -3,8 +3,8 @@ import SwiftUI
 
 struct DashboardScreen: View {
     @Environment(AppDayContext.self) var dayContext
-    @Environment(AppEntitlements.self) private var entitlements
-    @Environment(SharingSyncService.self) private var sharingSyncService
+    @Environment(AppEntitlements.self) var entitlements
+    @Environment(SharingSyncService.self) var sharingSyncService
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -132,9 +132,7 @@ struct DashboardScreen: View {
                 ShareScreen(
                     day: daySelection.selectedDay,
                     snapshot: snapshot,
-                    goals: currentGoals,
-                    onOpenSharing: onOpenSharing,
-                    onOpenSharingSetup: onOpenSharingSetup
+                    goals: currentGoals
                 )
             }
             #endif

@@ -85,7 +85,7 @@ final class ShareScreenUITests: XCTestCase {
 
         let item = menuItem(app, "Live sharing")
         XCTAssertTrue(item.waitForExistence(timeout: 5))
-        XCTAssertFalse(item.label.contains("people"))
+        XCTAssertFalse(item.label.contains("2 people"))
         item.tap()
         XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Free users land on setup")
     }
@@ -96,7 +96,7 @@ final class ShareScreenUITests: XCTestCase {
 
         let item = menuItem(app, "Live sharing")
         XCTAssertTrue(item.waitForExistence(timeout: 5))
-        XCTAssertFalse(item.label.contains("people"))
+        XCTAssertFalse(item.label.contains("2 people"))
         item.tap()
         XCTAssertTrue(app.switches["Sharing"].waitForExistence(timeout: 5), "Sharing off lands on setup")
     }

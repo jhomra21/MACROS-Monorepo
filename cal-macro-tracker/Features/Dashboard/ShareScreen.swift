@@ -2,20 +2,16 @@
 import SwiftUI
 import UIKit
 
-/// The Home share sheet: post an image of the day, or open person sharing. The two paths share only this screen.
+/// The "Post an image" sheet. Live sharing is a separate choice in the Home Share menu.
 struct ShareScreen: View {
     private static let defaultCaption = "My macros today, tracked with MACROS. macrosios.com"
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(AppEntitlements.self) private var entitlements
-    @Environment(SharingSyncService.self) private var sharingSyncService
 
     let day: CalendarDay
     let snapshot: LogEntryDaySnapshot
     let goals: MacroGoalsSnapshot
-    let onOpenSharing: () -> Void
-    let onOpenSharingSetup: () -> Void
 
     @State private var size = ShareImageSize.story
     @State private var detail = ShareDetail.macros
@@ -25,17 +21,12 @@ struct ShareScreen: View {
     @State private var showsRenderFailure = false
     @State private var activityPayload: ShareActivityPayload?
 
-    private var sharesWithPeople: Bool {
-        entitlements.hasPro && sharingSyncService.isDeviceSharingEnabled
-    }
-
     var body: some View {
         NavigationStack {
             Form {
                 previewSection
                 optionsSection
                 captionSection
-                personSection
             }
             .navigationTitle("Share")
             .inlineNavigationTitle()
@@ -54,8 +45,7 @@ struct ShareScreen: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        .presentationDetents([.large])
     }
 
     private var previewSection: some View {
@@ -117,28 +107,6 @@ struct ShareScreen: View {
         }
     }
 
-    private var personSection: some View {
-        Section {
-            Button(action: openPersonSharing) {
-                HStack {
-                    Label("Share with a person", systemImage: "person.2")
-                    Spacer()
-                    if let personRowDetail {
-                        Text(personRowDetail).foregroundStyle(.secondary)
-                    }
-                    Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.tertiary)
-                }
-                .contentShape(.rect)
-            }
-            .foregroundStyle(.primary)
-            .accessibilityIdentifier("share-person-row")
-        } footer: {
-            Text("Live macros with people you choose. Separate from posting an image.")
-        }
-    }
-
     private var shareButton: some View {
         Button(action: share) {
             Label(isRendering ? "Preparing…" : "Share", systemImage: "square.and.arrow.up")
@@ -150,24 +118,6 @@ struct ShareScreen: View {
         .padding(.horizontal, 20)
         .padding(.bottom, 8)
         .accessibilityIdentifier("share-submit")
-    }
-
-    /// Only a signed-in Pro device with sharing on knows a count; offline or still loading shows none.
-    private var personRowDetail: String? {
-        guard sharesWithPeople else { return sharingSyncService.isDeviceSharingEnabled ? "Needs Pro" : "Set up" }
-        guard sharingSyncService.hasReceivedDashboard else { return nil }
-        let count = sharingSyncService.dashboard.people.count
-        return switch count {
-        case 0: "No one yet"
-        case 1: "1 person"
-        default: "\(count) people"
-        }
-    }
-
-    private func openPersonSharing() {
-        let open = sharesWithPeople ? onOpenSharing : onOpenSharingSetup
-        dismiss()
-        open()
     }
 
     private func copyCaption() {
