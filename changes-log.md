@@ -4,6 +4,12 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-11 App Review IAP product loading
+
+PurchaseStore now prefetches App Store products after startup, retries empty, partial, timed-out, or failed requests up to three times with bounded backoff, preserves partial results, and coalesces overlapping loads. Missing products are retried when the app returns active; the paywall stays in its loading state during automatic retries and cancels work when dismissed. Each attempt logs requested/returned IDs, error, storefront country, and App Store environment without user data. Five retry tests, the StoreKit suite (20/20), serial unit suite (263/263 excluding that StoreKit suite), UI suite (18/18), build, StoreKit config validator, and formatting checks pass. The simulator sandbox diagnostic remained in the Xcode StoreKit environment; see [IAP loading evidence](docs/evidence/iap-load-hardening/README.md).
+
+Version 1.0/build 37 was archived with app and widget entitlements verified and uploaded successfully; App Store Connect reports it is processing. The review resubmission remains an owner step after processing.
+
 ## 2026-11-10 TestFlight build 36
 
 Version 1.0 build 36 was archived from `bfce0a0` and uploaded (delivery `3cda1fab-a6ef-41b7-a7ff-ac550ed27402`, 19:38 CST). It adds the Share sheet polish and the camera details typing fix to build 35. Archive checks matched build 35: version 36 in the app and widget, entitlements, the photo add string, and no UI-test fixture code. Processing and tester groups are owner steps in App Store Connect.

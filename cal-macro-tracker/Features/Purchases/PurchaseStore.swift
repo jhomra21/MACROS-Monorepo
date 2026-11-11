@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import os
 import StoreKit
 
 enum ProPlan: String, CaseIterable, Identifiable {
@@ -32,10 +33,15 @@ struct ProPurchaseSubmission {
     let signedRenewalInfo: String?
 }
 
+private struct ProductLoadTimeout: Error {}
+
 @MainActor
 @Observable
 final class PurchaseStore {
     static let legacyFullUnlockProductID = "fullunlock001"
+    private static let productLoadAttempts = 3
+    private static let productLoadTimeout: Duration = .seconds(15)
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "MACROS", category: "Purchases")
 
     enum Feedback {
         case error(String)
@@ -45,10 +51,14 @@ final class PurchaseStore {
     private let entitlements: AppEntitlements
     private let entitlementSource: @MainActor () async -> EntitlementSnapshot
     private let purchaseProduct: @MainActor (Product) async throws -> Product.PurchaseResult
+    private let productSource: @MainActor () async throws -> [Product]
+    private let productRetryDelay: @MainActor (Int) async -> Void
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var refreshTask: Task<EntitlementResolution, Never>?
     @ObservationIgnored private var needsAnotherRefresh = false
+    @ObservationIgnored private var productLoadTask: Task<Void, Never>?
+    @ObservationIgnored private var productLoadID: UUID?
 
     private(set) var products: [ProPlan: Product] = [:]
     private(set) var isEligibleForIntroOffer = false
@@ -70,17 +80,27 @@ final class PurchaseStore {
     init(
         entitlements: AppEntitlements,
         entitlementSource: @escaping @MainActor () async -> EntitlementSnapshot = PurchaseStore.readStoreKitEntitlements,
-        purchaseProduct: @escaping @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() }
+        purchaseProduct: @escaping @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() },
+        productSource: @escaping @MainActor () async throws -> [Product] = {
+            try await Product.products(for: ProPlan.allCases.map(\.productID))
+        },
+        productRetryDelay: @escaping @MainActor (Int) async -> Void = { retry in
+            // Brief backoff gives transient App Store catalog propagation and network failures time to recover.
+            try? await Task.sleep(for: .seconds(retry == 1 ? 1 : 3))
+        }
     ) {
         self.entitlements = entitlements
         self.entitlementSource = entitlementSource
         self.purchaseProduct = purchaseProduct
+        self.productSource = productSource
+        self.productRetryDelay = productRetryDelay
     }
 
     deinit {
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         refreshTask?.cancel()
+        productLoadTask?.cancel()
     }
 
     func start() async {
@@ -106,6 +126,7 @@ final class PurchaseStore {
         refreshTask?.cancel()
         refreshTask = nil
         needsAnotherRefresh = false
+        cancelProductLoad()
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         transactionUpdatesTask = nil
@@ -113,21 +134,90 @@ final class PurchaseStore {
     }
 
     func loadProducts() async {
-        guard !isLoadingProducts else { return }
+        guard products.count != ProPlan.allCases.count else { return }
+        if let productLoadTask {
+            await productLoadTask.value
+            return
+        }
+        let loadID = UUID()
+        productLoadID = loadID
         isLoadingProducts = true
-        defer { isLoadingProducts = false }
-        do {
-            let loaded = try await Product.products(for: ProPlan.allCases.map(\.productID))
-            products = Dictionary(
+        feedback = nil
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await self.requestProducts(loadID: loadID)
+        }
+        productLoadTask = task
+        await task.value
+        guard productLoadID == loadID else { return }
+        productLoadTask = nil
+        productLoadID = nil
+        isLoadingProducts = false
+    }
+
+    func cancelProductLoad() {
+        productLoadID = nil
+        productLoadTask?.cancel()
+        productLoadTask = nil
+        isLoadingProducts = false
+    }
+
+    private func requestProducts(loadID: UUID) async {
+        let requestedIDs = ProPlan.allCases.map(\.productID)
+        var lastError: (any Error)?
+        for attempt in 1...Self.productLoadAttempts {
+            guard !Task.isCancelled, productLoadID == loadID else { return }
+            let returned: [Product]
+            do {
+                returned = try await withThrowingTaskGroup(of: [Product].self) { group in
+                    group.addTask { try await self.productSource() }
+                    group.addTask {
+                        try await Task.sleep(for: Self.productLoadTimeout)
+                        throw ProductLoadTimeout()
+                    }
+                    defer { group.cancelAll() }
+                    guard let first = try await group.next() else { return [] }
+                    return first
+                }
+                lastError = nil
+            } catch {
+                guard !Task.isCancelled else { return }
+                returned = []
+                lastError = error
+            }
+            guard !Task.isCancelled, productLoadID == loadID else { return }
+
+            let loaded = Dictionary(
                 uniqueKeysWithValues: ProPlan.allCases.compactMap { plan in
-                    loaded.first(where: { $0.id == plan.productID }).map { (plan, $0) }
+                    returned.first(where: { $0.id == plan.productID }).map { (plan, $0) }
                 })
-            await refreshIntroEligibility()
-            feedback =
-                products.count == ProPlan.allCases.count
-                ? nil : .error("Some purchase options are unavailable. Please try again.")
-        } catch {
-            feedback = .error("Unable to load purchase options. Please try again.")
+            products.merge(loaded, uniquingKeysWith: { _, new in new })
+            let countryCode = await Storefront.current?.countryCode ?? "unknown"
+            let environment = await appStoreEnvironment
+            Self.logger.info(
+                "Product request attempt \(attempt, privacy: .public), requested \(requestedIDs, privacy: .public), returned \(returned.map(\.id), privacy: .public), error \(String(describing: lastError), privacy: .public), storefront \(countryCode, privacy: .public), environment \(environment, privacy: .public)"
+            )
+
+            if products.count == ProPlan.allCases.count {
+                await refreshIntroEligibility()
+                feedback = nil
+                return
+            }
+            if attempt < Self.productLoadAttempts {
+                await productRetryDelay(attempt)
+            }
+        }
+        await refreshIntroEligibility()
+        feedback =
+            lastError == nil
+            ? .error("Some purchase options are unavailable. Please try again.")
+            : .error("Unable to load purchase options. Please try again.")
+    }
+
+    private var appStoreEnvironment: String {
+        get async {
+            guard case let .verified(transaction) = try? await AppTransaction.shared else { return "unknown" }
+            return String(describing: transaction.environment)
         }
     }
 

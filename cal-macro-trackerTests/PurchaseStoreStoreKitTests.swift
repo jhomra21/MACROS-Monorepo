@@ -55,6 +55,110 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         XCTAssertTrue(store.isEligibleForIntroOffer)
     }
 
+    func testEmptyResponseRetriesAndLoadsProductsWithoutManualRetry() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        var responses = [[], catalog]
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                responses.removeFirst()
+            },
+            productRetryDelay: { _ in }
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertNil(store.feedback)
+    }
+
+    func testThrownRequestRetriesAndLoadsProducts() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        var attempts = 0
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                if attempts == 1 { throw URLError(.notConnectedToInternet) }
+                return catalog
+            },
+            productRetryDelay: { _ in }
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(attempts, 2)
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertNil(store.feedback)
+    }
+
+    func testPartialResponseIsMergedWithLaterResponse() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        var responses = [[catalog[0]], Array(catalog.dropFirst())]
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                responses.removeFirst()
+            },
+            productRetryDelay: { _ in }
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertNil(store.feedback)
+    }
+
+    func testAlwaysEmptyShowsErrorAfterBoundedAttemptsAndRetryCanRecover() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        var attempts = 0
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                return attempts <= 3 ? [] : catalog
+            },
+            productRetryDelay: { _ in }
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(attempts, 3)
+        guard case .error("Some purchase options are unavailable. Please try again.") = store.feedback else {
+            return XCTFail("Expected the existing unavailable-options error after automatic retries.")
+        }
+        await store.loadProducts()
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertNil(store.feedback)
+    }
+
+    func testOverlappingLoadsShareOneRequestSequence() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        var attempts = 0
+        let requestStarted = XCTestExpectation(description: "Product request started")
+        let allowRequestToFinish = XCTestExpectation(description: "Product request released")
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                requestStarted.fulfill()
+                await self.fulfillment(of: [allowRequestToFinish], timeout: 5)
+                return catalog
+            },
+            productRetryDelay: { _ in }
+        )
+
+        let firstLoad = Task { await store.loadProducts() }
+        await fulfillment(of: [requestStarted], timeout: 5)
+        let secondLoad = Task { await store.loadProducts() }
+        allowRequestToFinish.fulfill()
+        await firstLoad.value
+        await secondLoad.value
+
+        XCTAssertEqual(attempts, 1)
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+    }
+
     func testPurchaseFailureDoesNotGrantPro() async throws {
         await store.loadProducts()
         _ = try XCTUnwrap(store.products[.yearly])

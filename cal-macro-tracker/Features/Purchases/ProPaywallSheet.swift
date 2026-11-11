@@ -146,7 +146,10 @@ struct ProPaywallSheet: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear { isProPaywallPresented = true }
-        .onDisappear { isProPaywallPresented = false }
+        .onDisappear {
+            isProPaywallPresented = false
+            store.cancelProductLoad()
+        }
         .onChange(of: store.hasPro) { wasPro, isPro in
             guard !wasPro, isPro else { return }
             successAnimationToken += 1
