@@ -4,11 +4,14 @@ DESTINATION := generic/platform=iOS Simulator
 QUALITY_DIR := tools/quality
 OXLINT := tools/oxlint/node_modules/oxlint/bin/oxlint
 
-.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit lint-js
+.PHONY: quality quality-build quality-format-check format quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit quality-purchases lint-js
 
 quality: quality-build quality-format-check quality-dead quality-dup quality-debt quality-deps quality-n1 quality-secrets quality-storekit
 
-quality-build:
+quality-purchases:
+	sh "$(QUALITY_DIR)/storekit_product_loading.sh" "cal-macro-tracker"
+
+quality-build: quality-purchases
 	xcodebuild -project "$(PROJECT)" -scheme "$(SCHEME)" -configuration Debug -destination '$(DESTINATION)' build
 
 quality-format-check:

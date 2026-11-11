@@ -14,7 +14,7 @@ xcodebuild -list -project cal-macro-tracker.xcodeproj
 git diff --check
 ```
 
-`quality-format-check` runs official `swift-format lint --strict --parallel --recursive --configuration .swift-format cal-macro-tracker`. The wrapper warns and skips if the tool is absent; a skip is not a formatting pass. `make format` applies it. `make quality-build` compiles but does not execute XCTest.
+`quality-format-check` runs official `swift-format lint --strict --parallel --recursive --configuration .swift-format cal-macro-tracker`. The wrapper warns and skips if the tool is absent; a skip is not a formatting pass. `make format` applies it. `make quality-build` compiles but does not execute XCTest. It first runs `make quality-purchases` (`tools/quality/storekit_product_loading.sh`), which fails if anything other than `PurchaseStore` calls `Product.products(for:)`, or if a Purchases file shows "Unavailable" outside `ProPaywallSheet.planPriceLabel`. Both guard the 2026-11-11 App Review rejection, where a single empty StoreKit answer left every plan "Unavailable".
 
 Other existing targets: `quality-dead` (Periphery), `quality-dup`, `quality-debt`, `quality-deps`, `quality-n1`, and `quality-secrets`. `make quality` combines these with build, formatting, and StoreKit checks. Heuristics do not prove runtime correctness.
 
