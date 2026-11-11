@@ -99,3 +99,48 @@ Same environment as above (iPhone 17e `F976E800` for UI runs, iPad runner `E91B5
 - [share-menu-open.png](share-menu-open.png): the Home Share menu, Pro fixture with sharing on.
 - [share-sheet-full-height.png](share-sheet-full-height.png): the sheet right after "Post an image", with no drag.
 - [export-story-macros-1080x1920.png](export-story-macros-1080x1920.png): a 9:16 export of the demo day, default detail.
+
+## Round 3: polish
+
+Owner direction: keep the Share menu and the "Post an image" sheet as they are and finish them. Parent review found eight points.
+
+### Failure modes (written before any code)
+
+1. The sheet dismisses with a text "Done" in the confirmation slot, which reads as "confirm". Test: no "Done" button; a "Close" button in the Share bar dismisses the sheet.
+2. The preview stays capped at 300 pt, so on a 6.1" iPhone the caption sits under the pinned Share button. Test on iPhone 17e: preview taller than 300 pt, and preview, both pickers, the caption field and Copy caption all end above the Share button.
+3. The preview jumps when Size or Detail changes. Test: the card takes each size's shape (4:5, 1:1, 9:16) after a switch, measured from pixels of the preview. The motion itself is checked on a screen recording, since XCUITest cannot see animation curves.
+4. Rings replay from zero on each switch because the ring view is rebuilt. Checked on the recording: ring values hold still while the card resizes.
+5. Reduce Motion still animates the size change. Checked on the simulator with Reduce Motion on.
+6. Segmented pickers already give a haptic, so a second selection haptic doubles it. Checked in docs before adding any. The caption-copied haptic must fire on Copy and Share, and not when the caption is empty.
+7. The "Caption copied" note pops in and shifts the layout, or sits under the pinned Share button where nobody sees it. It must fade in, keep its place, and keep the spoken announcement.
+8. The busy Share button changes width or stays enabled. Test: with rendering held, Share is disabled, its label is still "Share" and its width does not change. A DEBUG fixture flag (`MACROS_FIXTURE_HOLD_RENDER`) holds rendering for 4 s, because the real render is too fast to observe.
+9. The keyboard covers the caption being typed, or the pinned Share button rides over it. Checked on the simulator with the keyboard up. The Form dismisses the keyboard on scroll.
+10. Removing `.presentationDetents([.large])` makes the sheet open short. Test: the existing full-height test still passes without it.
+11. The toolbar Share icon has no pressed state like its neighbors. Checked on the simulator, with the 44 pt size and label kept.
+
+### Red then green
+
+Environment: Xcode 27.0, iPhone 17e `F976E800` (UI and unit runs; the iPad runner was locked by another task, so I did not use it). Raw output in ignored `build/evidence/2026-11-10-share-polish/`.
+
+- **Red** (commit `6d6f7ae`, tests only): 4 of 4 new tests failed on the old code (`red.log`): "Done" present, preview 300 pt (not above 300), Share stayed enabled while rendering, the first version of the size-shape test failed too (rewritten to read pixels once the row frame proved to be full width).
+- **Green**: full UI scheme `cal-macro-trackerUITests` on the 17e: 17 tests, 0 failures (`ui-full.log`). Serial unit suite `cal-macro-tracker`, excluding `PurchaseStoreStoreKitTests`: 263 tests, 0 failures (`unit.log`).
+
+### Findings
+
+1. **Close button: done.** `Button(role: .close)` in a `.cancellationAction` toolbar item, per the [ButtonRole.close docs](https://developer.apple.com/documentation/swiftui/buttonrole/close) (iOS 26+, the deployment target). This is the native pattern, so I kept it and dropped my extra accessibility label; the system supplies "Close".
+2. **Preview size: changed.** The preview height is the sheet height minus a Dynamic Type scaled allowance for the rest, measured with the keyboard ignored so typing does not resize it. On the 17e it is 309 pt (was 300), and preview, both pickers, the caption field and Copy caption all end above Share. That is all the room a 6.1" screen gives. The list row also got compact section spacing and no top margin. Larger text sizes scroll; I did not test them.
+3. **Motion: done.** `.smooth(duration: 0.3)` keyed to size and detail on the preview; none when Reduce Motion is on (set from the environment, not toggled on the simulator, so that path is unseen). The ring view keeps its identity: on the recording the ring values hold still while the card resizes and the ring diameter eases. Recording (never tracked, 30 MB): `switching-sizes.mov` in the ignored `build/evidence/2026-11-10-share-polish/` (1170x2532, 55 s). Frames inspected: Story to Post, Post to Square and Macros to Rings to Full to Macros, each as a 0.1 s contact sheet.
+4. **Feedback: partly done, partly dropped.** Success haptic on copy: done (`.sensoryFeedback(.success, trigger:)`, fires on Copy caption and on Share; the system plays none for a copy). No `sensoryFeedback` on the segmented pickers: they handle their own feedback. The "Caption copied" note moved from the footer to the Caption header line, because the pinned Share button covers the footer at default size. It fades in with no layout change, and the announcement is kept.
+5. **Busy state: changed by the native-first rule.** No custom spinner inside the system `glassProminent` button. The button keeps its label and full width (the test checks the width does not change) and is disabled while rendering. The DEBUG fixture flag holds the render for 4 s in the test.
+6. **Keyboard: partly verified.** `.scrollDismissesKeyboard(.interactively)` is on the Form. On this simulator the software keyboard did not draw and the layout did not move (the runner reports a keyboard, but screenshots and frames show none), so keyboard overlap is not verified. With a long caption the field grows and scrolls above the pinned button. Owner step: type with the keyboard up on a device.
+7. **Detents: done.** `.presentationDetents([.large])` removed; the full-height test still passes (large is the default).
+8. **Menu icon: dropped by the native-first rule.** The system Menu owns its press behavior, so I removed the `.buttonStyle(.plain)` I had added. The toolbar Share Menu is back to its state before this round.
+
+### Native-first rule (owner, binding)
+
+Native iOS behavior comes first. Dropped or changed under this rule: finding 4 (no haptic added to the pickers), finding 5 (no custom spinner in the system button), finding 8 (no style added to the system Menu), and the extra "Close" label in finding 1. Kept: 1 (native `Button(role: .close)`), 2, 3, 6 (`scrollDismissesKeyboard` only), 7, and the success haptic on copy.
+
+## Round 3 screenshots (tracked)
+
+- [share-sheet-full-height.png](share-sheet-full-height.png): the sheet on the 17e, light, after Share, with the copied note (replaces the round 2 image).
+- [share-sheet-dark.png](share-sheet-dark.png): the same screen in dark.

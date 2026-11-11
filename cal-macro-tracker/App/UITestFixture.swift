@@ -15,6 +15,8 @@ struct UITestFixture {
     let exportDirectory: URL?
     /// A still the camera sheet imports on appear, standing in for the Photos picker, which the simulator cannot script.
     let cameraImagePath: String?
+    /// Rendering a share image takes milliseconds, too fast for a test to see the busy state.
+    let holdsShareRender: Bool
 
     static let current: UITestFixture? = {
         let environment = ProcessInfo.processInfo.environment
@@ -24,7 +26,8 @@ struct UITestFixture {
             isSharingOn: environment["MACROS_FIXTURE_SHARING"] == "on",
             isRemoteOffline: environment["MACROS_FIXTURE_REMOTE"] == "offline",
             exportDirectory: environment["MACROS_EXPORT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) },
-            cameraImagePath: environment["MACROS_FIXTURE_CAMERA_IMAGE"]
+            cameraImagePath: environment["MACROS_FIXTURE_CAMERA_IMAGE"],
+            holdsShareRender: environment["MACROS_FIXTURE_HOLD_RENDER"] == "1"
         )
     }()
 

@@ -4,6 +4,14 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 Camera details typing lag
+
+Typing in the camera result's inline Details editor re-ran the whole camera sheet, its result panel, the Form and all ten nutrient rows about four times per keystroke, because the editor binding wrote identical values and `FoodLogEditorState` was not `Equatable`. It is now `Equatable`, so identical writes are skipped: while typing five digits, editor and Form body evaluations dropped from about 5 each to 0 and nutrient row evaluations from 52 to 0, and main-thread time fell from about 350 ms to about 100 ms (iPad Air simulator, Debug). Keyboard appearance is still about 800 ms of main-thread work because the card height and Form re-lay out with the keyboard; left for an owner device check. A UI performance test records the flow without a threshold. See [evidence](docs/evidence/camera-details-perf/README.md).
+
+## 2026-11-10 Share sheet polish
+
+The "Post an image" sheet now has a system close button instead of "Done", a larger preview (309 pt on iPhone 17e) with the pickers, caption field and Copy caption visible without scrolling, a smooth size and detail change, a success haptic on copy, and a "Caption copied" note that fades in on the Caption header. Native first: no haptic on the pickers, no spinner in the Share button (it is only disabled while rendering) and no style on the toolbar Share Menu. Keyboard overlap is unverified on the simulator. UI 17/17 and unit 263/263 on the 17e; see [evidence](docs/evidence/unified-sharing/README.md#round-3-polish).
+
 ## 2026-11-10 Share menu and full height sheet
 
 Owner feedback on build 34: Home's share button now opens a menu with "Post an image" and "Live sharing". "Post an image" opens the Share sheet, which now opens at full height; the "Share with a person" row is gone from it. "Live sharing" opens the Sharing dashboard (Pro with sharing on, subtitle "With N people") or setup. See [evidence](docs/evidence/unified-sharing/README.md#round-2-menu-and-full-height). Shipped as version 1.0 build 35 from `9d476e7` (delivery `bc0cf2fb-44a4-44f4-b396-566ca7978db0`, uploaded 13:43 CST).

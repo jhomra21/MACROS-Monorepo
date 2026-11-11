@@ -125,6 +125,94 @@ final class ShareScreenUITests: XCTestCase {
         XCTAssertTrue(activitySheet(app).waitForExistence(timeout: 10), "Image share must work offline")
     }
 
+    // MARK: Round 3 polish
+
+    func testCloseButtonDismissesTheSheet() {
+        let app = launchHome()
+        openShareSheet(app)
+
+        XCTAssertFalse(app.buttons["Done"].exists, "Done reads as confirm; the sheet needs a close button")
+        let close = app.navigationBars["Share"].buttons["Close"]
+        XCTAssertTrue(close.exists, "Close button missing")
+        XCTAssertTrue(close.isHittable)
+        close.tap()
+        XCTAssertTrue(app.navigationBars["Share"].waitForNonExistence(timeout: 5), "Close did not dismiss")
+    }
+
+    func testPreviewPickersAndCaptionAreVisibleWithoutScrolling() {
+        let app = launchHome()
+        openShareSheet(app)
+
+        let preview = app.otherElements["share-preview"].frame
+        let sizePicker = app.segmentedControls["share-size-picker"].frame
+        let detailPicker = app.segmentedControls["share-detail-picker"].frame
+        let caption = captionField(app).frame
+        let share = app.buttons["share-submit"].frame
+        let copy = app.buttons["Copy caption"].frame
+        XCTAssertLessThanOrEqual(copy.maxY, share.minY, "Copy caption sits under the pinned Share button")
+        // Compact screens and landscape cap the preview at 300 pt or less by design; only taller phones must grow it.
+        if app.windows.firstMatch.frame.height >= 800 {
+            XCTAssertGreaterThan(preview.height, 300, "Preview should use the room the full height sheet gives it")
+        }
+        XCTAssertLessThanOrEqual(preview.maxY, sizePicker.minY)
+        XCTAssertLessThanOrEqual(detailPicker.maxY, caption.minY)
+        XCTAssertLessThanOrEqual(caption.maxY, share.minY, "Caption sits under the pinned Share button")
+    }
+
+    func testPreviewFrameFollowsTheChosenSize() {
+        let app = launchHome()
+        openShareSheet(app)
+        let preview = app.otherElements["share-preview"]
+
+        // The list row keeps one frame, so measure the card's border inside it. Each size takes the full row
+        // height until its width runs out.
+        let row = preview.frame
+        for (size, ratio) in [("Post", 432.0 / 540), ("Square", 1.0), ("Story", 432.0 / 768)] {
+            app.segmentedControls["share-size-picker"].buttons[size].tap()
+            let expected = min(row.width, row.height * ratio)
+            let settled = NSPredicate { _, _ in abs(self.cardWidth(in: preview) - expected) < 4 }
+            let result = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: settled, object: nil)], timeout: 5)
+            XCTAssertEqual(result, .completed, "\(size) card is \(cardWidth(in: preview)) pt wide, expected \(expected)")
+        }
+    }
+
+    /// Width in points between the first and last pixels on the middle line that differ from the row background.
+    private func cardWidth(in element: XCUIElement) -> CGFloat {
+        guard let image = element.screenshot().image.cgImage else { return 0 }
+        let width = image.width
+        let height = image.height
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        guard
+            let context = CGContext(
+                data: &pixels, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            )
+        else { return 0 }
+        context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+        let line = (height / 2) * width * 4
+        let differs = { (x: Int) in
+            (0..<3).contains { abs(Int(pixels[line + x * 4 + $0]) - Int(pixels[line + $0])) > 8 }
+        }
+        guard let first = (0..<width).first(where: differs), let last = (0..<width).last(where: differs) else { return 0 }
+        return CGFloat(last - first + 1) * element.frame.width / CGFloat(width)
+    }
+
+    func testShareButtonKeepsItsLabelAndIsDisabledWhileRendering() {
+        let app = launchHome(holdRender: true)
+        openShareSheet(app)
+        let share = app.buttons["share-submit"]
+        XCTAssertEqual(share.label, "Share")
+        let shareWidth = share.frame.width
+
+        share.tap()
+        let disabled = NSPredicate(format: "isEnabled == false")
+        let result = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: disabled, object: share)], timeout: 3)
+        XCTAssertEqual(result, .completed, "Share stayed enabled while rendering")
+        XCTAssertEqual(share.label, "Share", "Busy state should keep the label")
+        XCTAssertEqual(share.frame.width, shareWidth, "Share button width jumped while busy")
+        XCTAssertTrue(activitySheet(app).waitForExistence(timeout: 15), "Share sheet never appeared")
+    }
+
     // MARK: Helpers
 
     private func assertPreviewTracks(size: String, showsDefaults: Bool = false) {
@@ -180,8 +268,11 @@ final class ShareScreenUITests: XCTestCase {
         }
     }
 
-    private func launchHome(pro: Bool = false, sharing: Bool = false, remote: String = "online") -> XCUIApplication {
+    private func launchHome(
+        pro: Bool = false, sharing: Bool = false, remote: String = "online", holdRender: Bool = false
+    ) -> XCUIApplication {
         let app = XCUIApplication()
+        app.launchEnvironment["MACROS_FIXTURE_HOLD_RENDER"] = holdRender ? "1" : "0"
         app.launchEnvironment["MACROS_UI_FIXTURE"] = "1"
         app.launchEnvironment["MACROS_FIXTURE_PRO"] = pro ? "1" : "0"
         app.launchEnvironment["MACROS_FIXTURE_SHARING"] = sharing ? "on" : "off"
