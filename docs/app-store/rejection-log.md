@@ -149,7 +149,7 @@ Support
 | Attachment | `Screenshot-1111-130937.png` (downloaded; kept outside the repository). It shows the Pro paywall with Yearly, Monthly and Lifetime all "Unavailable", "Some purchase options are unavailable. Please try again.", Retry, and a disabled "Purchase Unavailable" button. StoreKit returned no products without an error. |
 | Checked in ASC and the developer portal (2026-11-11) | Product IDs `macros.pro.yearly`, `macros.pro.monthly`, `macros.pro.lifetime` match the code; each has a price, an en-US name and description, and all 175 regions; the group has an en-US display name; Paid Apps Agreement (Oct 25, 2026 to May 7, 2027), bank account and W-9 are active; App ID `juan-test.cal-macro-tracker` has In-App Purchase enabled. Every item in Apple's TN3186 checklist passes. The legacy `fullunlock001` sits separately in Waiting for Review. |
 | What we are changing | Products load at launch and again on foreground, with bounded automatic retries, merged partial results and StoreKit diagnostics in the log (branch `app/iap-load-hardening`), then build 37 |
-| Our reply / resubmission | Pending, owner approved resubmitting with build 37 |
+| Our reply / resubmission | Clarification request sent 2026-11-11 8:13 AM (ASC time), owner approved; text below. Resubmission with build 37 pending, owner approved |
 | Outcome | Pending |
 
 ### Exact Apple message
@@ -191,6 +191,27 @@ If the bug cannot be reproduced, try the following:
 - For app updates, install the new version as an update to the previous version, then follow the steps to reproduce.
 
 Note that users expect apps they download to function on all the devices where they are available. For example, apps that may be downloaded onto iPad devices should function as expected for iPad users.
+```
+
+### Our reply, 2026-11-11 8:13 AM
+
+```text
+Hello,
+
+Thank you for the review and the screenshot. We could not reproduce the problem, and we want to fix its real cause.
+
+We checked every item in TN3186. The product IDs macros.pro.yearly, macros.pro.monthly and macros.pro.lifetime match the app exactly. Each product has a price and an English (U.S.) name and description, and is available in all 175 regions. The three products and the MACROS Pro subscription group are attached to this submission. The Paid Apps Agreement, banking and tax information are active, and the App ID has In-App Purchase enabled.
+
+The screenshot shows that the App Store returned no products to the app and no error. Could you tell us:
+
+1. Which country or region was the sandbox account on the review device set to?
+2. Did you open the Pro screen right after the first launch, or later? Did Retry also show "Unavailable"?
+3. Does anything in our In-App Purchase or subscription setup stop these products from loading during review?
+
+We are preparing build 37. It loads products at launch, retries on its own when the App Store returns nothing, and keeps any products that do load. We will submit it for review once it is ready.
+
+Thank you,
+Juan Martinez
 ```
 
 ## Entry template
