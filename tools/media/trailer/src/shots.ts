@@ -34,7 +34,7 @@ export const SHOTS: Shot[] = [
     counters: [{ label: "kcal per banana", from: 0, to: 105, at: 2.2, duration: 0.8 }] },
   { kind: "device", start: 6, end: 12, color: COLORS.fat, clip: { file: "scan.mp4", rate: 1 },
     phases: [phase(0, "Scan", "it.")], support: "Barcodes and nutrition labels.",
-    counters: [{ label: "kcal logged", from: 0, to: 539, at: 3.6, duration: 0.8 }] },
+    counters: [{ label: "kcal logged", from: 0, to: 200, at: 3, duration: 0.8 }] },
   { kind: "device", start: 12, end: 16, color: COLORS.protein, clip: { file: "rings.mp4", rate: 1 },
     phases: [phase(0, "Rings", "fill", "as", "you", "go.")], support: "",
     counters: [{ label: "kcal today", from: 1310, to: 1415, at: -0.05, duration: 0.35 }] },

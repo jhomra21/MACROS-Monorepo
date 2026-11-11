@@ -30,7 +30,7 @@ None of these are tracked. Raw takes are native 1320 x 2868 simulator recordings
 | --- | --- | --- |
 | `flow-take1.mov` 2.0-4.0 s | `hook.mp4` | Hook: Today before logging |
 | `flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s | `search.mp4` | Search it. |
-| `scan-take2.mov` 2.6-3.9, 5.6-6.3, 7.6-8.6, 10.9-11.4, 13.6-14.8, 17.8-19.0 s | `scan.mp4` | Scan it. |
+| `web/public/media/macros-demo.d72c87d2.mp4` 6.3-10.2 s, cropped to x 112, y 222 (496 x 1028) under a status bar strip from 10.2 s, Logged card held 2.1 s | `scan.mp4` | Scan it. |
 | `flow-take1.mov` 14.0-17.5 s, last frame held 0.5 s | `rings.mp4` | Rings fill as you go. |
 | `insights.mov` 1.5-6.3 s | `insights.mp4` | Track it. (1.2x) |
 | `flow-take1.mov` 17.6-22.6 s | `home.mp4` | Glance at it. |
@@ -58,7 +58,7 @@ The grid is 120 BPM, so one beat is 0.5 s. Cuts land on it.
 | 0.0 | "Log your food." Today before logging, counter 0 to 1310 |
 | 1.0 | "Get on with your day." |
 | 2.0 | "Search it." Banana search, counter 105 kcal |
-| 6.0 | "Scan it." Camera, barcode, result, Logged, counter 539 kcal |
+| 6.0 | "Scan it." Camera, barcode, result, Logged, counter 200 kcal |
 | 12.0 | "Rings fill as you go." Today rolls 1310 to 1415 |
 | 16.0 | "Track it." Insights, counter 125.7 g protein |
 | 20.0 | "Glance at it." Clean Home Screen, widgets at 1415 |

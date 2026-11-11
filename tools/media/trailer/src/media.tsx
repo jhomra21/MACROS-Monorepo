@@ -12,7 +12,7 @@ export const Device: React.FC<{ clip: Clip }> = ({ clip }) => {
   const width = BEZEL.w * s;
   return <div style={{ position: "absolute", left: (1080 - width) / 2, top: STYLE.deviceTop, width, height: BEZEL.h * s }}>
     <OffthreadVideo src={staticFile(`sources/${clip.file}`)} playbackRate={clip.rate} muted
-      style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s }} />
+      style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s, objectFit: "cover" }} />
     <Img src={staticFile("bezel.png")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
   </div>;
 };

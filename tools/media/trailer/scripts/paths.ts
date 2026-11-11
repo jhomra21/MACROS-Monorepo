@@ -7,6 +7,7 @@ export const REPO_ROOT = fromRoot("");
 export const OUT_DIR = fromRoot("build/marketing/trailer");
 export const RAW_DIR = fromRoot("build/marketing/trailer/sources/v3");
 export const PUBLIC_SOURCES = fromRoot("tools/media/trailer/public/sources");
+export const DEMO_VIDEO = fromRoot("web/public/media/macros-demo.d72c87d2.mp4");
 
 export function run(cmd: string[]) {
   const result = spawnSync(cmd[0], cmd.slice(1), { stdio: "inherit" });

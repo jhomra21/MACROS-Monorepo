@@ -47,7 +47,7 @@ One bold style, tidied toward Apple's announcement look: centred, one idea at a 
 | --- | --- | --- |
 | 0-2 | Hook | Today before logging, 1310 kcal. "Log your food." then, on the 1.0 s beat, "Get on with your day." Counter 0 to 1310. |
 | 2-6 | Search | "Search it." Type it, tap it, done. Search "banana", Banana, the Log Food form (stops before the Log tap). Counter 105 kcal per banana. |
-| 6-12 | Scan | "Scan it." Barcodes and nutrition labels. Camera, photo picker, barcode, Nutella result card, Logged. Counter 539 kcal logged. |
+| 6-12 | Scan | "Scan it." Barcodes and nutrition labels. Camera, barcode, Chocolate Dough Protein Bar result card (200 kcal), Logged. Counter 200 kcal logged. |
 | 12-16 | Rings | "Rings fill as you go." Banana logged: the sheet dismisses and Today rolls 1310 to 1415 kcal. |
 | 16-20 | Track | "Track it." Insights scroll. Counter 125.7 g protein, 30-day avg. |
 | 20-25 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
