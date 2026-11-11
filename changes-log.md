@@ -11,6 +11,10 @@ Detailed implementation trackers live in `implementation-trackers/`:
 - [`implementation-trackers/architecture-refactor-implementation-tracker.md`](implementation-trackers/architecture-refactor-implementation-tracker.md)
 - [`implementation-trackers/launch-program-tracker.md`](implementation-trackers/launch-program-tracker.md) (links the per-workstream launch trackers)
 
+## 2026-11-11 1.0 hotfix build 39
+
+- Build 23 plus the IAP loading fix for the 2026-11-11 2.1(a) rejection.
+
 ## 2026-10-31 TestFlight Build 23
 
 - Onboarding targets show proposed macro grams as the primary values.

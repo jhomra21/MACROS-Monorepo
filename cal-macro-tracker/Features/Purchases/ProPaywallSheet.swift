@@ -44,6 +44,10 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
 }
 
 struct ProPaywallSheet: View {
+    static func planPriceLabel(isLoading: Bool, price: String?) -> String {
+        price ?? (isLoading ? "Loading…" : "Unavailable")
+    }
+
     let context: ProPaywallContext
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.isProPaywallPresented) private var isProPaywallPresented = false
@@ -143,7 +147,10 @@ struct ProPaywallSheet: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear { isProPaywallPresented = true }
-        .onDisappear { isProPaywallPresented = false }
+        .onDisappear {
+            isProPaywallPresented = false
+            store.cancelProductLoad()
+        }
         .onChange(of: store.hasPro) { wasPro, isPro in
             guard !wasPro, isPro else { return }
             successAnimationToken += 1
@@ -213,7 +220,7 @@ struct ProPaywallSheet: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(Color.accentColor)
                         }
-                        Text(store.products[plan].map { $0.proPrice } ?? "Unavailable")
+                        Text(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
                             .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.leading)
                     }
@@ -232,7 +239,7 @@ struct ProPaywallSheet: View {
                             }
                         }
                         Spacer()
-                        Text(store.products[plan].map { $0.proPrice } ?? "Unavailable")
+                        Text(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
                             .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.trailing)
                     }
@@ -250,7 +257,9 @@ struct ProPaywallSheet: View {
         }
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
-        .accessibilityLabel("\(plan.title), \(store.products[plan]?.proPrice ?? "Unavailable")")
+        .accessibilityLabel(
+            "\(plan.title), \(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))"
+        )
         .accessibilityValue(selectedPlan == plan ? "Selected" : "Not selected")
         .accessibilityIdentifier("pro.plan.\(plan.rawValue)")
     }

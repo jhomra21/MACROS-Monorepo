@@ -102,12 +102,18 @@ struct cal_macro_trackerApp: App {
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
                 await purchaseStore.start()
+                await purchaseStore.loadProducts()
                 requestServiceRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
                 guard newPhase == .active else { return }
                 refreshDayAndStartSharingDashboardSubscription()
-                Task { await purchaseStore.refreshEntitlements() }
+                Task {
+                    if purchaseStore.products.count != ProPlan.allCases.count {
+                        await purchaseStore.loadProducts()
+                    }
+                    await purchaseStore.refreshEntitlements()
+                }
                 requestServiceRefresh()
             }
             .onChange(of: proServiceEntitlements) { _, _ in
