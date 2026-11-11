@@ -9,13 +9,22 @@ final class CameraDetailsPerformanceUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    /// Phone layout scrolls the editor in each iteration, and five iterations exceed the 60-second default. Stay at the runbook's 90-second maximum.
+    override var executionTimeAllowance: TimeInterval {
+        get { 90 }
+        set { super.executionTimeAllowance = newValue }
+    }
+
     func testFocusTypeAndScrollInExpandedDetails() throws {
         let app = launchCameraWithLabelPhoto()
         let details = app.buttons["Edit details"]
         XCTAssertTrue(details.waitForExistence(timeout: 30), "Label result card never appeared")
         details.tap()
 
+        let editor = app.collectionViews["camera-result-card"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 10), "Inline editor missing")
         let protein = app.textFields["Protein"]
+        revealProtein(protein, in: editor)
         XCTAssertTrue(protein.waitForExistence(timeout: 10), "Protein field missing in the inline editor")
 
         var focusTimes: [TimeInterval] = []
@@ -33,6 +42,7 @@ final class CameraDetailsPerformanceUITests: XCTestCase {
                 XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 10), "Keyboard did not dismiss")
             }
             hasTypedText = true
+            revealProtein(protein, in: editor)
             mark("begin")
             startMeasuring()
             var clock = Date()
@@ -54,6 +64,14 @@ final class CameraDetailsPerformanceUITests: XCTestCase {
 
     private func mark(_ name: String) {
         markers.notice("phase \(name, privacy: .public)")
+    }
+
+    /// On phone the inline editor is a fixed-height list: nutrient rows below the fold are not
+    /// in the accessibility tree until scrolled into view. Scroll before the measured block.
+    private func revealProtein(_ protein: XCUIElement, in editor: XCUIElement) {
+        for _ in 0..<10 where !protein.exists {
+            editor.swipeUp(velocity: .slow)
+        }
     }
 
     private func launchCameraWithLabelPhoto() -> XCUIApplication {

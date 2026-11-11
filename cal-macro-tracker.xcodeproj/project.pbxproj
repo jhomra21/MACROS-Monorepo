@@ -83,12 +83,14 @@
 				Shared/MacroRingSetView.swift,
 				Shared/MacroSummaryColumnStyles.swift,
 				Shared/MacroSummaryColumnView.swift,
+				Shared/MacroSummaryText.swift,
 				Shared/NutritionSnapshot.swift,
 				Shared/SharedAppConfiguration.swift,
 				Shared/SharedModelContainerFactory.swift,
 				Shared/SharedPersonWidgetModels.swift,
 				Shared/SharedPersonWidgetStorage.swift,
 				Shared/SharingWidgetCredentials.swift,
+				Shared/WeightUnit.swift,
 				Shared/WidgetAppearanceStorage.swift,
 			);
 			target = 0D8B87CC2F7D86E700453C64 /* cal-macro-tracker */;

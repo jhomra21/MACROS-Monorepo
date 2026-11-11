@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 UI test phone layout and shared source membership
+
+`CameraDetailsPerformanceUITests` failed on iPhone 17e because the phone's inline editor is a fixed-height list: the nutrient rows, including Protein, sit below the fold and are not in the accessibility tree until scrolled. The test now scrolls the editor to reveal Protein before measuring and uses the runbook's 90-second allowance. App behavior is unchanged. The app target also compiled `Shared/MacroSummaryText.swift` and `Shared/WeightUnit.swift` twice; both are now excluded from the root group, so each compiles once per target and the widget keeps them through the Shared group. Validation: UI scheme 18/18 on iPhone 17e, unit suite 263/263 on iPad Air with the StoreKit class excluded.
+
 ## 2026-11-10 Camera details typing lag
 
 Typing in the camera result's inline Details editor re-ran the whole camera sheet, its result panel, the Form and all ten nutrient rows about four times per keystroke, because the editor binding wrote identical values and `FoodLogEditorState` was not `Equatable`. It is now `Equatable`, so identical writes are skipped: while typing five digits, editor and Form body evaluations dropped from about 5 each to 0 and nutrient row evaluations from 52 to 0, and main-thread time fell from about 350 ms to about 100 ms (iPad Air simulator, Debug). Keyboard appearance is still about 800 ms of main-thread work because the card height and Form re-lay out with the keyboard; left for an owner device check. A UI performance test records the flow without a threshold. See [evidence](docs/evidence/camera-details-perf/README.md).
