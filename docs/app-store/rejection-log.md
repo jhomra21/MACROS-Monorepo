@@ -137,6 +137,62 @@ Support
 - Consult with fellow developers and Apple engineers on the Apple Developer Forums.
 - Provide feedback on this message and your review experience by completing a short survey.
 ```
+## 2026-11-11: version 1.0, build 23, submission 01487b42
+
+| Field | Record |
+| --- | --- |
+| Date received | 2026-11-11 7:17 AM (ASC time), read in the owner's signed-in session the same day |
+| Version / build / device | 1.0 (23), iPhone 17 Pro Max, iOS 27.2, internet active |
+| Submission ID | `01487b42-af8f-4113-8091-012d7374080b`, submitted 2026-10-31 3:13 PM with the MACROS Pro group, Monthly, Yearly and Lifetime |
+| Message type | Rejection; the app version is Rejected and the four purchase items are back to Ready for Review |
+| Guideline cited | **2.1(a) Performance: App Completeness**, "In-App purchases are unavailable in the app." |
+| Attachment | `Screenshot-1111-130937.png` (downloaded; kept outside the repository). It shows the Pro paywall with Yearly, Monthly and Lifetime all "Unavailable", "Some purchase options are unavailable. Please try again.", Retry, and a disabled "Purchase Unavailable" button. StoreKit returned no products without an error. |
+| Checked in ASC and the developer portal (2026-11-11) | Product IDs `macros.pro.yearly`, `macros.pro.monthly`, `macros.pro.lifetime` match the code; each has a price, an en-US name and description, and all 175 regions; the group has an en-US display name; Paid Apps Agreement (Oct 25, 2026 to May 7, 2027), bank account and W-9 are active; App ID `juan-test.cal-macro-tracker` has In-App Purchase enabled. Every item in Apple's TN3186 checklist passes. The legacy `fullunlock001` sits separately in Waiting for Review. |
+| What we are changing | Products load at launch and again on foreground, with bounded automatic retries, merged partial results and StoreKit diagnostics in the log (branch `app/iap-load-hardening`), then build 37 |
+| Our reply / resubmission | Pending, owner approved resubmitting with build 37 |
+| Outcome | Pending |
+
+### Exact Apple message
+
+```text
+Hello,
+
+Thank you for your resubmission. Upon further review, we identified additional issues that need your attention. See below for more information.
+
+If you have any questions, we are here to help. Reply to this message in App Store Connect and let us know.
+
+Review Environment
+Submission ID: 01487b42-af8f-4113-8091-012d7374080b
+Review date: November 11, 2026
+Review Device: iPhone 17 Pro Max
+Version reviewed: 1.0 (23)
+
+App Version
+Guideline 2.1(a) - Performance - App Completeness
+Issue Description
+
+The app exhibited one or more bugs that would negatively impact users.
+
+In-App purchases are unavailable in the app.
+
+Review device details:
+
+- Device type: iPhone 17 Pro Max
+- OS version: iOS 27.2
+- Internet Connection: Active
+
+Next Steps
+
+Test the app on supported devices to identify and resolve bugs and stability issues before submitting for review.
+
+If the bug cannot be reproduced, try the following:
+
+- For new apps, uninstall all previous versions of the app from a device, then install and follow the steps to reproduce.
+- For app updates, install the new version as an update to the previous version, then follow the steps to reproduce.
+
+Note that users expect apps they download to function on all the devices where they are available. For example, apps that may be downloaded onto iPad devices should function as expected for iPad users.
+```
+
 ## Entry template
 
 Copy this section for each rejection or review-message thread. Preserve verbatim wording and original file names; redact credentials and personal contact details only in the Git copy. Keep the unredacted original in owner-controlled secure storage.
