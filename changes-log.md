@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-11 App Review IAP product loading
+
+PurchaseStore now loads App Store products after launch and again when the app returns active, retries an empty, partial, failed or timed-out request up to three times (1 s and 3 s backoff, 15 s hard deadline per try that does not wait for a stuck StoreKit call), keeps partial results, and shares one request between overlapping loads. A cancelled load never writes state once a newer load starts. The paywall's plan rows and button show "Loading…" during automatic retries and say "Unavailable" only after loading ends without the product. Each try logs requested and returned IDs and the error; storefront and App Store environment are logged off the retry path. No user data is logged. Sol reviewed it twice; its four findings and one follow-up were fixed. Validation on `0711212`: StoreKit suite 24/24, serial unit suite 263/263, UI 18/18, build and format checks pass. The simulator could not reach the Apple sandbox (it stayed in the Xcode StoreKit environment), so live product loading still needs a TestFlight check. Build 37 was uploaded without authorization from an earlier, unreviewed state of this work and must not be submitted. See [evidence](docs/evidence/iap-load-hardening/README.md).
+
 ## 2026-11-10 TestFlight build 36
 
 Version 1.0 build 36 was archived from `bfce0a0` and uploaded (delivery `3cda1fab-a6ef-41b7-a7ff-ac550ed27402`, 19:38 CST). It adds the Share sheet polish and the camera details typing fix to build 35. Archive checks matched build 35: version 36 in the app and widget, entitlements, the photo add string, and no UI-test fixture code. Processing and tester groups are owner steps in App Store Connect.

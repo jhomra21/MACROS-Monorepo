@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import os
 import StoreKit
 
 enum ProPlan: String, CaseIterable, Identifiable {
@@ -32,10 +33,41 @@ struct ProPurchaseSubmission {
     let signedRenewalInfo: String?
 }
 
+private struct ProductLoadTimeout: Error {}
+
+private actor ProductLoadRace<Value: Sendable> {
+    private var continuation: CheckedContinuation<Value?, Never>?
+
+    func wait(
+        request: Task<Value, Error>,
+        timeout: Duration
+    ) async -> Value? {
+        await withCheckedContinuation { continuation in
+            self.continuation = continuation
+            Task {
+                let value = try? await request.value
+                await resolve(value)
+            }
+            Task {
+                try? await Task.sleep(for: timeout)
+                await resolve(nil)
+            }
+        }
+    }
+
+    private func resolve(_ value: Value?) {
+        guard let continuation else { return }
+        self.continuation = nil
+        continuation.resume(returning: value)
+    }
+}
+
 @MainActor
 @Observable
 final class PurchaseStore {
     static let legacyFullUnlockProductID = "fullunlock001"
+    private static let productLoadAttempts = 3
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "MACROS", category: "Purchases")
 
     enum Feedback {
         case error(String)
@@ -45,10 +77,19 @@ final class PurchaseStore {
     private let entitlements: AppEntitlements
     private let entitlementSource: @MainActor () async -> EntitlementSnapshot
     private let purchaseProduct: @MainActor (Product) async throws -> Product.PurchaseResult
+    private let productSource: @MainActor () async throws -> [Product]
+    private let productRetryDelay: @MainActor (Int) async -> Void
+    private let productDiagnostics: @MainActor ([String], [String], String) async -> Void
+    private let productLoadTimeout: Duration
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var subscriptionStatusUpdatesTask: Task<Void, Never>?
     @ObservationIgnored private var refreshTask: Task<EntitlementResolution, Never>?
     @ObservationIgnored private var needsAnotherRefresh = false
+    @ObservationIgnored private var productLoadTask: Task<Void, Never>?
+    @ObservationIgnored private var productRequestTask: Task<[Product], Error>?
+    @ObservationIgnored private var productDiagnosticsTask: Task<Void, Never>?
+    @ObservationIgnored private var productDiagnosticsID: UUID?
+    @ObservationIgnored private var productLoadID: UUID?
 
     private(set) var products: [ProPlan: Product] = [:]
     private(set) var isEligibleForIntroOffer = false
@@ -70,17 +111,44 @@ final class PurchaseStore {
     init(
         entitlements: AppEntitlements,
         entitlementSource: @escaping @MainActor () async -> EntitlementSnapshot = PurchaseStore.readStoreKitEntitlements,
-        purchaseProduct: @escaping @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() }
+        purchaseProduct: @escaping @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() },
+        productSource: @escaping @MainActor () async throws -> [Product] = {
+            try await Product.products(for: ProPlan.allCases.map(\.productID))
+        },
+        productRetryDelay: @escaping @MainActor (Int) async -> Void = { retry in
+            // Brief backoff gives transient App Store catalog propagation and network failures time to recover.
+            try? await Task.sleep(for: .seconds(retry == 1 ? 1 : 3))
+        },
+        productLoadTimeout: Duration = .seconds(15),
+        productDiagnostics: @escaping @MainActor ([String], [String], String) async -> Void = { requested, returned, error in
+            let countryCode = await Storefront.current?.countryCode ?? "unknown"
+            let environment: String
+            if case let .verified(transaction) = try? await AppTransaction.shared {
+                environment = String(describing: transaction.environment)
+            } else {
+                environment = "unknown"
+            }
+            PurchaseStore.logger.info(
+                "Product request requested \(requested, privacy: .public), returned \(returned, privacy: .public), error \(error, privacy: .public), storefront \(countryCode, privacy: .public), environment \(environment, privacy: .public)"
+            )
+        }
     ) {
         self.entitlements = entitlements
         self.entitlementSource = entitlementSource
         self.purchaseProduct = purchaseProduct
+        self.productSource = productSource
+        self.productRetryDelay = productRetryDelay
+        self.productLoadTimeout = productLoadTimeout
+        self.productDiagnostics = productDiagnostics
     }
 
     deinit {
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         refreshTask?.cancel()
+        productLoadTask?.cancel()
+        productRequestTask?.cancel()
+        productDiagnosticsTask?.cancel()
     }
 
     func start() async {
@@ -106,6 +174,7 @@ final class PurchaseStore {
         refreshTask?.cancel()
         refreshTask = nil
         needsAnotherRefresh = false
+        cancelProductLoad()
         transactionUpdatesTask?.cancel()
         subscriptionStatusUpdatesTask?.cancel()
         transactionUpdatesTask = nil
@@ -113,22 +182,107 @@ final class PurchaseStore {
     }
 
     func loadProducts() async {
-        guard !isLoadingProducts else { return }
-        isLoadingProducts = true
-        defer { isLoadingProducts = false }
-        do {
-            let loaded = try await Product.products(for: ProPlan.allCases.map(\.productID))
-            products = Dictionary(
-                uniqueKeysWithValues: ProPlan.allCases.compactMap { plan in
-                    loaded.first(where: { $0.id == plan.productID }).map { (plan, $0) }
-                })
-            await refreshIntroEligibility()
-            feedback =
-                products.count == ProPlan.allCases.count
-                ? nil : .error("Some purchase options are unavailable. Please try again.")
-        } catch {
-            feedback = .error("Unable to load purchase options. Please try again.")
+        guard products.count != ProPlan.allCases.count else { return }
+        if let productLoadTask {
+            await productLoadTask.value
+            return
         }
+        let loadID = UUID()
+        productLoadID = loadID
+        isLoadingProducts = true
+        feedback = nil
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await self.requestProducts(loadID: loadID)
+        }
+        productLoadTask = task
+        await task.value
+        guard productLoadID == loadID else { return }
+        productLoadTask = nil
+        productLoadID = nil
+        isLoadingProducts = false
+    }
+
+    func cancelProductLoad() {
+        productLoadID = nil
+        productLoadTask?.cancel()
+        productLoadTask = nil
+        productRequestTask?.cancel()
+        productRequestTask = nil
+        productDiagnosticsTask?.cancel()
+        productDiagnosticsTask = nil
+        productDiagnosticsID = nil
+        isLoadingProducts = false
+    }
+
+    private func requestProducts(loadID: UUID) async {
+        let requestedIDs = ProPlan.allCases.map(\.productID)
+        var lastError: (any Error)?
+        for attempt in 1...Self.productLoadAttempts {
+            guard !Task.isCancelled, productLoadID == loadID else { return }
+            let returned: [Product]
+            do {
+                let request = Task { try await self.productSource() }
+                productRequestTask = request
+                guard
+                    let result = await ProductLoadRace<[Product]>().wait(
+                        request: request,
+                        timeout: productLoadTimeout
+                    )
+                else {
+                    request.cancel()
+                    if productRequestTask == request { productRequestTask = nil }
+                    throw ProductLoadTimeout()
+                }
+                if productRequestTask == request { productRequestTask = nil }
+                returned = result
+                lastError = nil
+            } catch {
+                guard !Task.isCancelled, productLoadID == loadID else { return }
+                returned = []
+                lastError = error
+            }
+            guard !Task.isCancelled, productLoadID == loadID else { return }
+
+            let loaded = Dictionary(
+                uniqueKeysWithValues: ProPlan.allCases.compactMap { plan in
+                    returned.first(where: { $0.id == plan.productID }).map { (plan, $0) }
+                })
+            products.merge(loaded, uniquingKeysWith: { _, new in new })
+            let returnedIDs = returned.map(\.id)
+            let errorDescription = String(describing: lastError)
+            Self.logger.info(
+                "Product request attempt \(attempt, privacy: .public), requested \(requestedIDs, privacy: .public), returned \(returnedIDs, privacy: .public), error \(errorDescription, privacy: .public)"
+            )
+            if productDiagnosticsTask == nil {
+                // A cancelled load's diagnostics may finish after a newer load started its own; only clear our handle.
+                let diagnosticsID = UUID()
+                productDiagnosticsID = diagnosticsID
+                productDiagnosticsTask = Task {
+                    await productDiagnostics(requestedIDs, returnedIDs, errorDescription)
+                    guard productDiagnosticsID == diagnosticsID else { return }
+                    productDiagnosticsTask = nil
+                    productDiagnosticsID = nil
+                }
+            }
+
+            if products.count == ProPlan.allCases.count {
+                await refreshIntroEligibility()
+                guard !Task.isCancelled, productLoadID == loadID else { return }
+                feedback = nil
+                return
+            }
+            if attempt < Self.productLoadAttempts {
+                await productRetryDelay(attempt)
+                guard !Task.isCancelled, productLoadID == loadID else { return }
+            }
+        }
+        await refreshIntroEligibility()
+        guard !Task.isCancelled, productLoadID == loadID else { return }
+        feedback =
+            lastError == nil
+            ? .error("Some purchase options are unavailable. Please try again.")
+            : .error("Unable to load purchase options. Please try again.")
     }
 
     func purchase(_ plan: ProPlan) async {

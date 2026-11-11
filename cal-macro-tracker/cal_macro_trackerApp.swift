@@ -121,7 +121,10 @@ struct cal_macro_trackerApp: App {
                 await launchState.start()
                 refreshDayAndStartSharingDashboardSubscription()
                 purchaseStore.onEntitlementsChanged = { await submitSharingEntitlementsIfEnabled() }
-                if usesLivePurchases { await purchaseStore.start() }
+                if usesLivePurchases {
+                    await purchaseStore.start()
+                    await purchaseStore.loadProducts()
+                }
                 requestServiceRefresh()
             }
             .onChange(of: scenePhase) { _, newPhase in
@@ -129,6 +132,9 @@ struct cal_macro_trackerApp: App {
                 refreshDayAndStartSharingDashboardSubscription()
                 guard usesLivePurchases else { return requestServiceRefresh() }
                 Task {
+                    if purchaseStore.products.count != ProPlan.allCases.count {
+                        await purchaseStore.loadProducts()
+                    }
                     await purchaseStore.refreshEntitlements()
                     await purchaseStore.onEntitlementsChanged?()
                 }
