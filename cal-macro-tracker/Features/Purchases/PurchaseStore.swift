@@ -88,6 +88,7 @@ final class PurchaseStore {
     @ObservationIgnored private var productLoadTask: Task<Void, Never>?
     @ObservationIgnored private var productRequestTask: Task<[Product], Error>?
     @ObservationIgnored private var productDiagnosticsTask: Task<Void, Never>?
+    @ObservationIgnored private var productDiagnosticsID: UUID?
     @ObservationIgnored private var productLoadID: UUID?
 
     private(set) var products: [ProPlan: Product] = [:]
@@ -210,6 +211,7 @@ final class PurchaseStore {
         productRequestTask = nil
         productDiagnosticsTask?.cancel()
         productDiagnosticsTask = nil
+        productDiagnosticsID = nil
         isLoadingProducts = false
     }
 
@@ -229,10 +231,10 @@ final class PurchaseStore {
                     )
                 else {
                     request.cancel()
-                    productRequestTask = nil
+                    if productRequestTask == request { productRequestTask = nil }
                     throw ProductLoadTimeout()
                 }
-                productRequestTask = nil
+                if productRequestTask == request { productRequestTask = nil }
                 returned = result
                 lastError = nil
             } catch {
@@ -253,9 +255,14 @@ final class PurchaseStore {
                 "Product request attempt \(attempt, privacy: .public), requested \(requestedIDs, privacy: .public), returned \(returnedIDs, privacy: .public), error \(errorDescription, privacy: .public)"
             )
             if productDiagnosticsTask == nil {
+                // A cancelled load's diagnostics may finish after a newer load started its own; only clear our handle.
+                let diagnosticsID = UUID()
+                productDiagnosticsID = diagnosticsID
                 productDiagnosticsTask = Task {
                     await productDiagnostics(requestedIDs, returnedIDs, errorDescription)
+                    guard productDiagnosticsID == diagnosticsID else { return }
                     productDiagnosticsTask = nil
+                    productDiagnosticsID = nil
                 }
             }
 
