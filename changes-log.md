@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-10 TestFlight build 36
+
+Version 1.0 build 36 was archived from `bfce0a0` and uploaded (delivery `3cda1fab-a6ef-41b7-a7ff-ac550ed27402`, 19:38 CST). It adds the Share sheet polish and the camera details typing fix to build 35. Archive checks matched build 35: version 36 in the app and widget, entitlements, the photo add string, and no UI-test fixture code. Processing and tester groups are owner steps in App Store Connect.
+
 ## 2026-11-10 UI test phone layout and shared source membership
 
 `CameraDetailsPerformanceUITests` failed on iPhone 17e because the phone's inline editor is a fixed-height list: the nutrient rows, including Protein, sit below the fold and are not in the accessibility tree until scrolled. The test now scrolls the editor to reveal Protein before measuring and uses the runbook's 90-second allowance. App behavior is unchanged. The app target also compiled `Shared/MacroSummaryText.swift` and `Shared/WeightUnit.swift` twice; both are now excluded from the root group, so each compiles once per target and the widget keeps them through the Shared group. Validation: UI scheme 18/18 on iPhone 17e, unit suite 263/263 on iPad Air with the StoreKit class excluded.
