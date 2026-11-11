@@ -1,3 +1,21 @@
 {
-  "checks": []
+  "checks": [
+    {
+      "build": 39,
+      "commit": "dc6b2bf0b374b0e273ba18acf3675fb2026ce104",
+      "date": "2026-11-11",
+      "device": "iPhone 17 Pro Max, iOS 27.2",
+      "account": "sandbox",
+      "installedFrom": "TestFlight, fresh install, signed out of Media & Purchases, new Sandbox Apple Account",
+      "prices": {
+        "yearly": "$19.99/year (7 days free)",
+        "monthly": "$2.99/month",
+        "lifetime": "$49.99 once"
+      },
+      "purchaseButtonEnabled": true,
+      "purchaseCompleted": "Lifetime, sandbox, unlocked Pro Lifetime",
+      "screenshotSha256": "8b66fee6edb8c9d64f2c169f06100b71530d72f7ee959c2a1a576ce45c9881fb",
+      "recordingSha256": "f0547120f866dd44bb78676e11a16e98fb17fc5587737cac3696f4411183632e"
+    }
+  ]
 }

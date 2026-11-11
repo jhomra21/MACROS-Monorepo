@@ -8,7 +8,7 @@ Added 2026-11-11 after the 1.0 (23) rejection for unavailable purchases. A submi
 
 - [ ] **Non-Pro price check.** On a physical iPhone, an account that has never bought Pro opens the exact build being submitted (TestFlight, or a development build of the same commit signed in to a fresh Sandbox Apple Account under Settings > Developer). Settings > MACROS Pro shows a real price for Yearly, Monthly and Lifetime, and the primary button is enabled. Record: date, build number, commit, device and iOS version, account type (TestFlight or Sandbox), and a screenshot kept outside the repository. "Unavailable" on any plan blocks the submission, whatever the simulator shows.
   - Why: build 23 went to review with every purchase device check still open. The only real-device purchase was the owner's lifetime test on build 7 (2026-10-26); after that the owner was Pro and never saw prices again. Simulator runs showed "Unavailable" on 2026-10-25 and 2026-10-26 and were recorded as a simulator limitation.
-  - Build 39: pending. It was resubmitted on 2026-11-11 before this check existed, so it has not passed it yet. Next: a sandbox tester plus a development build of `dc6b2bf` on the owner's iPhone, then record the entry.
+  - Build 39: **passed 2026-11-11** (after it had already been resubmitted that morning). iPhone 17 Pro Max, iOS 27.2, fresh TestFlight install, signed out of Media & Purchases, new Sandbox Apple Account. Yearly $19.99/year with 7 days free, Monthly $2.99/month, Lifetime $49.99 once; the Lifetime purchase completed and unlocked Pro. Screenshot and recording kept outside the repository; the recording is also the App Review Information attachment, and the review notes mention the check.
 
 ## Steps
 
