@@ -27,35 +27,34 @@ Apple's App Store marketing guidelines (Apple Product Images):
 - One App Store badge per video. Do not modify, angle or animate it; keep it subordinate to the main message.
 - Use fictional data, never a real person's.
 
-So the device never moves inside a shot. Motion comes from the app recording itself, the type, the background, and hard cuts between shots. Close-ups of the app UI without the bezel are allowed and carry the "zoom" moments.
+So the device never moves inside a shot, and there are no push-ins. Every app shot sits inside the bezel at one size and position. Motion comes from the app recording itself, the type, the counters and hard cuts between shots. There are no bezel-free close-ups.
 
 Platform safe zones on a 1080 × 1920 canvas (Instagram: top 250, bottom 320, sides 120; TikTok: top 160, bottom 480, sides 120; Shorts: top 380, bottom 380, left 60, right 120). Keep all text and the key part of every shot inside the shared safe area **x 120–960, y 380–1440**. The device may extend beyond it, but nothing that must be read may sit there.
 
 ## Visual system
 
-- Background: near-black `#0A0A0C`. Each section gets a soft, slow full-frame color wash from one ring color (protein `#007AFF`, carbs `#FF9F0A`, fat `#EF4F87`), kept dark enough that white text stays at least 7:1 contrast.
-- Type: Inter (OFL), weight 700 for headlines, letter-spacing −0.03em, white; supporting lines weight 500, `#A1A1A6`. Headlines 128–150 px, supporting 48–56 px. SF Pro is not used: its license covers interface mock-ups, not marketing films.
-- Text motion: enter with a 16 px rise and fade over 0.35 s, ease-out `cubic-bezier(0.2, 0.8, 0.2, 1)`. Leave on a hard cut. One idea on screen at a time.
-- Device: Apple's iPhone bezel matching the recording resolution, about 1000–1080 px tall, centered horizontally, below the headline. Static within each shot.
-- Close-ups: the recording cropped and scaled up to 1.6–2×, with 56 px rounded corners. No bezel.
-- Cuts land on a 0.5 s grid (120 BPM), so any 120 BPM track lines up; a beat sheet is in the tool README.
+One bold style, tidied toward Apple's announcement look: centred, one idea at a time.
+
+- Background: a full colour field per shot in the ring colours (protein `#007AFF`, carbs `#FF9F0A`, fat `#EF4F87`). Text is near-black `#0A0A0C` (4.92, 9.62 and 5.78:1; white on `#007AFF` is 4.02:1).
+- Type: Inter (OFL). Headlines 150 px / 700, letter-spacing -0.03em, revealed word by word (0.2 s apart), at most two lines, bottom-aligned at y 380-680. Support line 48 px / 500 at y 700. Counter 72 px with a 36 px label at y 780, smaller than the headline and always in the same place. SF Pro is not used: its license covers interface mock-ups, not marketing films.
+- Counters count from 0 (or the real start value) to the value the recording shows, start at the cut and land within 1 s. They stay hidden until counting starts, so none rests at 0.
+- Device: Apple's iPhone 18 Pro Max bezel at 0.34 scale, centred, top at y 890, identical in every app shot, static. The recording fills the screen opening at native 1320 x 2868.
+- Cuts are hard and land on a 0.5 s grid (120 BPM); a beat sheet is in the tool README.
 
 ## Shot list (seconds)
 
 | Time | Shot | On screen |
 | --- | --- | --- |
-| 0.0–2.0 | Hook, close-up | Today rings rolling up after a log (1310 to 1415 kcal). "Log your food." then, on the 1.0 s beat, "Get on with your day." |
-| 2.0–8.0 | Device | "Search it." Supporting: "Type it, tap it, done." The search-and-log flow for a banana, idle time cut. |
-| 8.0–13.0 | Close-up, no bezel | "Scan it." Supporting: "Barcodes and nutrition labels." The earlier edit's scan: camera on a protein bar, result card, Logged. Cropped below its status bar and pill. |
-| 13.0–17.0 | Close-up | Rings and totals animating to 1415 kcal after the log. "Rings fill as you go." |
-| 17.0–21.0 | Device | "Track it." Supporting: "Weight and calories, over time." Insights scroll. |
-| 21.0–25.0 | Close-up | "Glance at it." Supporting: "Home Screen widgets." Large MACROS widget crop of the Home Screen. |
+| 0-2 | Hook | Today before logging, 1310 kcal. "Log your food." then, on the 1.0 s beat, "Get on with your day." Counter 0 to 1310. |
+| 2-6 | Search | "Search it." Type it, tap it, done. Search "banana", Banana, the Log Food form (stops before the Log tap). Counter 105 kcal per banana. |
+| 6-12 | Scan | "Scan it." Barcodes and nutrition labels. Camera, photo picker, barcode, Nutella result card, Logged. Counter 539 kcal logged. |
+| 12-16 | Rings | "Rings fill as you go." Banana logged: the sheet dismisses and Today rolls 1310 to 1415 kcal. |
+| 16-20 | Track | "Track it." Insights scroll. Counter 125.7 g protein, 30-day avg. |
+| 20-25 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
+| 25-27 | Type | "Search." "Scan." "Track." "Done." on successive beats. |
+| 27-30 | End card | App icon, "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
 
-Styles (prop `style`): `restrained` uses near-black with a visible colour wash and 150 px type; `bold` uses solid ring-colour fields, 180–200 px type revealed word by word, counters taken from the recordings, and a 1.0 to 1.08 push-in on close-ups only. Bold text is near-black `#0A0A0C` (white on `#007AFF` is 4.02:1).
-| 25.0–27.0 | Type | "Search." "Scan." "Track." on successive beats, then "Done." |
-| 27.0–30.0 | End card | App icon, "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
-
-Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The v2 edit plays no clip faster than 1.2×.
+Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The v3 edit plays no clip faster than 1.2× (only Insights, at 1.2×).
 
 ## Sources
 

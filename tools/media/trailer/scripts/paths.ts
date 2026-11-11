@@ -5,8 +5,7 @@ const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, 
 
 export const REPO_ROOT = fromRoot("");
 export const OUT_DIR = fromRoot("build/marketing/trailer");
-export const RAW_DIR = fromRoot("build/marketing/trailer/sources/v2");
-export const DEMO_VIDEO = fromRoot("web/public/media/macros-demo.d72c87d2.mp4");
+export const RAW_DIR = fromRoot("build/marketing/trailer/sources/v3");
 export const PUBLIC_SOURCES = fromRoot("tools/media/trailer/public/sources");
 
 export function run(cmd: string[]) {

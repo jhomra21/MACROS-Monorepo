@@ -1,9 +1,7 @@
-// Renders trailer MP4s and covers: bun run render <all | style variant [--review] | cover style>
+// Renders the trailer MP4s and cover: bun run render <all | coming-soon | app-store | review | cover>
 import { OUT_DIR, run } from "./paths.ts";
 import type { Props } from "../src/trailer.tsx";
 
-const STYLES = ["restrained", "bold"] as const;
-const VARIANTS = ["coming-soon", "app-store"] as const;
 const COVER_FRAME = 30;
 
 const remotion = (args: string[]) => run(["bunx", "remotion", ...args]);
@@ -16,24 +14,21 @@ function renderVideo(props: Props, name: string) {
   run(["rm", raw]);
 }
 
-function renderCover(style: Props["style"]) {
-  const props: Props = { style, variant: "coming-soon", safeZones: false };
-  remotion(["still", "src/index.ts", "Trailer", `${OUT_DIR}/cover-${style}.png`, `--frame=${COVER_FRAME}`, "--image-format=png", `--props=${JSON.stringify(props)}`, "--overwrite"]);
+function renderCover() {
+  const props: Props = { variant: "coming-soon", safeZones: false };
+  remotion(["still", "src/index.ts", "Trailer", `${OUT_DIR}/cover.png`, `--frame=${COVER_FRAME}`, "--image-format=png", `--props=${JSON.stringify(props)}`, "--overwrite"]);
 }
 
-const [command, second, third, fourth] = process.argv.slice(2);
-if (command === "all") {
-  for (const style of STYLES) {
-    for (const variant of VARIANTS) renderVideo({ style, variant, safeZones: false }, `${style}-${variant}`);
-    renderVideo({ style, variant: "coming-soon", safeZones: true }, `review-${style}`);
-    renderCover(style);
-  }
-} else if (command === "cover" && STYLES.includes(second as never)) {
-  renderCover(second as Props["style"]);
-} else if (STYLES.includes(command as never) && VARIANTS.includes(second as never)) {
-  const review = third === "--review" || fourth === "--review";
-  renderVideo({ style: command as Props["style"], variant: second as Props["variant"], safeZones: review }, review ? `review-${command}` : `${command}-${second}`);
-} else {
-  console.error("usage: bun run render all | <restrained|bold> <coming-soon|app-store> [--review] | cover <restrained|bold>");
+const target = process.argv[2];
+const jobs: Record<string, () => void> = {
+  "coming-soon": () => renderVideo({ variant: "coming-soon", safeZones: false }, "coming-soon"),
+  "app-store": () => renderVideo({ variant: "app-store", safeZones: false }, "app-store"),
+  review: () => renderVideo({ variant: "coming-soon", safeZones: true }, "review"),
+  cover: renderCover,
+};
+if (target === "all") Object.values(jobs).forEach((job) => job());
+else if (target in jobs) jobs[target]();
+else {
+  console.error("usage: bun run render all | coming-soon | app-store | review | cover");
   process.exit(1);
 }
