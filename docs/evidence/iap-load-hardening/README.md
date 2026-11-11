@@ -46,3 +46,9 @@ Validation on the existing iPhone 17e, serially:
 The shared test run first encountered an Xcode diagnostics-collection timeout after one test exceeded its allowance; rerunning that case with `-collect-test-diagnostics never` passed. The final StoreKit, unit, and UI suite runs used that setting and passed.
 
 The release build number is set to 37 in all project targets. Archive/export/upload status is recorded in the release tracker when available.
+
+## Review fixes
+
+The follow-up review corrections keep StoreKit diagnostics off the product-loading critical path, race each request against an injectable hard deadline without structured-task-group waiting, guard state writes after awaited retry/eligibility work, and show “Loading…” for unavailable plan prices while products are loading. Product IDs and errors are logged synchronously; storefront and App Store environment diagnostics run asynchronously.
+
+Four regression tests were added first. The initial red run failed at compile time because the timeout/diagnostics injection seams and paywall label helper did not yet exist. After implementation, `PurchaseStoreStoreKitTests` passed 24/24, the serial unit suite excluding that class passed 263/263, and `cal-macro-trackerUITests` passed 18/18. `make quality-build`, `make quality-format-check`, strict `swift-format lint` on changed Swift files, and `git diff --check` passed.

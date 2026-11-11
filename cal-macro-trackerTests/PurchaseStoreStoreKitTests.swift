@@ -159,6 +159,96 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
         XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
     }
 
+    func testStalledDiagnosticsDoNotBlockProductRetries() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        let diagnosticsGate = SuspensionGate<Void>()
+        var attempts = 0
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                return attempts == 1 ? [] : catalog
+            },
+            productRetryDelay: { _ in },
+            productDiagnostics: { _, _, _ in await diagnosticsGate.suspend() }
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(attempts, 2)
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertFalse(store.isLoadingProducts)
+        await diagnosticsGate.release(())
+    }
+
+    func testStalledCancelledProductRequestTimesOutAndNextAttemptRuns() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        let requestGate = SuspensionGate<[Product]>()
+        var attempts = 0
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                if attempts == 1 {
+                    return await requestGate.suspend()
+                }
+                return catalog
+            },
+            productRetryDelay: { _ in },
+            productLoadTimeout: .milliseconds(20)
+        )
+
+        await store.loadProducts()
+
+        XCTAssertEqual(attempts, 2)
+        XCTAssertEqual(Set(store.products.keys), Set(ProPlan.allCases))
+        XCTAssertFalse(store.isLoadingProducts)
+        await requestGate.release([])
+    }
+
+    func testCancelledPreviousLoadCannotPublishFeedbackDuringNewLoad() async throws {
+        let catalog = try await Product.products(for: ProPlan.allCases.map(\.productID))
+        let oldRequestStarted = XCTestExpectation(description: "Old request started")
+        let releaseOldRequest = XCTestExpectation(description: "Old request released")
+        let newRequestStarted = XCTestExpectation(description: "New request started")
+        let releaseNewRequest = XCTestExpectation(description: "New request released")
+        var attempts = 0
+        store = PurchaseStore(
+            entitlements: entitlements,
+            productSource: {
+                attempts += 1
+                if attempts == 1 {
+                    oldRequestStarted.fulfill()
+                    await self.fulfillment(of: [releaseOldRequest], timeout: 5)
+                    return []
+                }
+                newRequestStarted.fulfill()
+                await self.fulfillment(of: [releaseNewRequest], timeout: 5)
+                return catalog
+            },
+            productRetryDelay: { _ in }
+        )
+        let oldLoad = Task { await store.loadProducts() }
+        await fulfillment(of: [oldRequestStarted], timeout: 5)
+        store.cancelProductLoad()
+        let newLoad = Task { await store.loadProducts() }
+        await fulfillment(of: [newRequestStarted], timeout: 5)
+
+        releaseOldRequest.fulfill()
+        await oldLoad.value
+        XCTAssertNil(store.feedback)
+        XCTAssertTrue(store.isLoadingProducts)
+
+        releaseNewRequest.fulfill()
+        await newLoad.value
+    }
+
+    func testPlanPriceLabelShowsLoadingUntilProductsFinishLoading() {
+        XCTAssertEqual(ProPaywallSheet.planPriceLabel(isLoading: true, price: nil), "Loading…")
+        XCTAssertEqual(ProPaywallSheet.planPriceLabel(isLoading: false, price: nil), "Unavailable")
+        XCTAssertEqual(ProPaywallSheet.planPriceLabel(isLoading: true, price: "Price"), "Price")
+    }
+
     func testPurchaseFailureDoesNotGrantPro() async throws {
         await store.loadProducts()
         _ = try XCTUnwrap(store.products[.yearly])
@@ -382,5 +472,30 @@ final class PurchaseStoreStoreKitTests: XCTestCase {
                 await transaction.finish()
             }
         }
+    }
+}
+
+private actor SuspensionGate<Value: Sendable> {
+    private var continuation: CheckedContinuation<Value, Never>?
+    private var releasedValue: Value?
+    private var hasReleasedValue = false
+
+    func suspend() async -> Value {
+        if hasReleasedValue, let releasedValue {
+            self.releasedValue = nil
+            hasReleasedValue = false
+            return releasedValue
+        }
+        return await withCheckedContinuation { continuation = $0 }
+    }
+
+    func release(_ value: Value) {
+        guard let continuation else {
+            releasedValue = value
+            hasReleasedValue = true
+            return
+        }
+        continuation.resume(returning: value)
+        self.continuation = nil
     }
 }
