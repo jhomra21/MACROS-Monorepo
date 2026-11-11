@@ -2,6 +2,14 @@
 
 Mac, on `main` after all Phase 1 and Phase 2 branches are merged and an interim review has passed.
 
+## Required before every App Review submission
+
+Added 2026-11-11 after the 1.0 (23) rejection for unavailable purchases. A submission may not go out until this line is filled in for the exact build being submitted.
+
+- [ ] **Non-Pro price check.** On a physical iPhone, an account that has never bought Pro opens the exact build being submitted (TestFlight, or a development build of the same commit signed in to a fresh Sandbox Apple Account under Settings > Developer). Settings > MACROS Pro shows a real price for Yearly, Monthly and Lifetime, and the primary button is enabled. Record: date, build number, commit, device and iOS version, account type (TestFlight or Sandbox), and a screenshot kept outside the repository. "Unavailable" on any plan blocks the submission, whatever the simulator shows.
+  - Why: build 23 went to review with every purchase device check still open. The only real-device purchase was the owner's lifetime test on build 7 (2026-10-26); after that the owner was Pro and never saw prices again. Simulator runs showed "Unavailable" on 2026-10-25 and 2026-10-26 and were recorded as a simulator limitation.
+  - Build 39: pending. Sandbox tester plus development build on the owner's iPhone.
+
 ## Steps
 
 1. [x] Version: owner decision keeps `MARKETING_VERSION` at 1.0. Xcode assigned TestFlight build 7; `CURRENT_PROJECT_VERSION` is now 7. `ITSAppUsesNonExemptEncryption` is false, icons have no alpha, and camera, photo library, and Health usage strings are present.
