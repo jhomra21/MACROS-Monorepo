@@ -10,6 +10,8 @@
 - Before using a simulator, acquire its atomic directory lock at `/tmp/macros-sim-locks/<UDID>`. Never take another task's lock; release only your own lock after use.
 - Follow [safe selection and the dated inventory](docs/development/simulator-runbook.md). A stale inventory is not permission to change devices or runtimes.
 - Do not deploy production Convex, publish releases, apply remote migrations, upload evidence, or deploy services without explicit authorization.
+- Never submit or resubmit to App Review unless `make submission-check BUILD=<n> COMMIT=<sha>` passes for that exact build. It requires a recorded check, from the last 14 days, in which an account without Pro saw real prices for every plan (`docs/app-store/submission-checks.json`). If it fails, stop and ask the owner; never edit the record to make it pass.
+- Subagents never archive, upload, sign in to App Store Connect, or request passwords or secrets unless their task explicitly says so.
 - Keep secrets and private user data out of source, logs, and evidence.
 
 ## Product invariants

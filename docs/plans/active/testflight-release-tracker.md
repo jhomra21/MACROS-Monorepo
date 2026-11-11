@@ -4,11 +4,11 @@ Mac, on `main` after all Phase 1 and Phase 2 branches are merged and an interim 
 
 ## Required before every App Review submission
 
-Added 2026-11-11 after the 1.0 (23) rejection for unavailable purchases. A submission may not go out until this line is filled in for the exact build being submitted.
+Added 2026-11-11 after the 1.0 (23) rejection for unavailable purchases. A submission may not go out until this line is filled in for the exact build being submitted, and `make submission-check BUILD=<n> COMMIT=<sha>` passes. That check (`tools/release/submission_check.py`) fails unless `docs/app-store/submission-checks.json` has an entry for that build and commit, dated within 14 days, from a sandbox or TestFlight account, with a real price for every plan, an enabled purchase button and the screenshot's SHA-256. Pass `SCREENSHOT=<path>` to verify the screenshot file too.
 
 - [ ] **Non-Pro price check.** On a physical iPhone, an account that has never bought Pro opens the exact build being submitted (TestFlight, or a development build of the same commit signed in to a fresh Sandbox Apple Account under Settings > Developer). Settings > MACROS Pro shows a real price for Yearly, Monthly and Lifetime, and the primary button is enabled. Record: date, build number, commit, device and iOS version, account type (TestFlight or Sandbox), and a screenshot kept outside the repository. "Unavailable" on any plan blocks the submission, whatever the simulator shows.
   - Why: build 23 went to review with every purchase device check still open. The only real-device purchase was the owner's lifetime test on build 7 (2026-10-26); after that the owner was Pro and never saw prices again. Simulator runs showed "Unavailable" on 2026-10-25 and 2026-10-26 and were recorded as a simulator limitation.
-  - Build 39: pending. Sandbox tester plus development build on the owner's iPhone.
+  - Build 39: pending. It was resubmitted on 2026-11-11 before this check existed, so it has not passed it yet. Next: a sandbox tester plus a development build of `dc6b2bf` on the owner's iPhone, then record the entry.
 
 ## Steps
 

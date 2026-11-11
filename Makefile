@@ -45,6 +45,11 @@ quality-storekit: config/apple/MACROSPro.storekit
 lint-js:
 	"$(OXLINT)" --config .oxlintrc.json
 
+.PHONY: submission-check
+# Required before any App Review submission; see docs/plans/active/testflight-release-tracker.md.
+submission-check:
+	python3 tools/release/submission_check.py --build "$(BUILD)" --commit "$(COMMIT)" $(if $(SCREENSHOT),--screenshot "$(SCREENSHOT)")
+
 .PHONY: qa-network
 qa-network:
 	cd tools/runtime-qa && bun run check && bun run test
