@@ -12,6 +12,11 @@ convex-backend/skills-lock.json
 DerivedData/
 build/
 .build/
+tools/media/trailer/public/sources/
+tools/media/trailer/public/silence.wav
+tools/media/trailer/public/app-icon.png
+tools/media/trailer/public/bezel.png
+tools/media/trailer/public/app-store-badge.svg
 /.astro/
 node_modules/
 worker/**/.wrangler/

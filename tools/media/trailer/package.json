@@ -1,0 +1,25 @@
+{
+  "name": "@macros/trailer",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:coming-soon": "remotion render src/index.ts Trailer ../../../build/marketing/trailer/coming-soon-raw.mp4 --overwrite --props='{\"variant\":\"coming-soon\",\"safeZones\":false}' --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac --enforce-audio-track && ffmpeg -hide_banner -loglevel error -i ../../../build/marketing/trailer/coming-soon-raw.mp4 -map 0 -c copy -t 29.99 -movflags +faststart ../../../build/marketing/trailer/coming-soon.mp4 -y",
+    "render:app-store": "remotion render src/index.ts Trailer ../../../build/marketing/trailer/app-store-raw.mp4 --overwrite --props='{\"variant\":\"app-store\",\"safeZones\":false}' --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac --enforce-audio-track && ffmpeg -hide_banner -loglevel error -i ../../../build/marketing/trailer/app-store-raw.mp4 -map 0 -c copy -t 29.99 -movflags +faststart ../../../build/marketing/trailer/app-store.mp4 -y",
+    "render:cover": "remotion still src/index.ts Trailer ../../../build/marketing/trailer/cover.png --frame=30 --image-format=png --props='{\"variant\":\"coming-soon\",\"safeZones\":false}'",
+    "render:review": "remotion render src/index.ts Trailer ../../../build/marketing/trailer/review-raw.mp4 --overwrite --props='{\"variant\":\"coming-soon\",\"safeZones\":true}' --codec=h264 --crf=18 --pixel-format=yuv420p --audio-codec=aac --enforce-audio-track && ffmpeg -hide_banner -loglevel error -i ../../../build/marketing/trailer/review-raw.mp4 -map 0 -c copy -t 29.99 -movflags +faststart ../../../build/marketing/trailer/review.mp4 -y"
+  },
+  "dependencies": {
+    "@remotion/cli": "latest",
+    "@remotion/google-fonts": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "remotion": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/node": "latest",
+    "typescript": "latest"
+  }
+}
