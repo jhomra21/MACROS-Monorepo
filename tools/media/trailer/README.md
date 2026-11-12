@@ -38,7 +38,6 @@ None of these are tracked. Raw takes are native 1320 x 2868 simulator recordings
 The other files are not tracked either. Copy them once:
 
 ```sh
-cp cal-macro-tracker/Assets.xcassets/AppIcon.appiconset/icon-ios.png tools/media/trailer/public/app-icon.png
 ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -t 30 -c:a pcm_s16le tools/media/trailer/public/silence.wav
 curl -L -o tools/media/trailer/public/app-store-badge.svg https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg
 ```
@@ -66,7 +65,7 @@ The grid is 120 BPM, so one beat is 0.5 s. Cuts land on it.
 | 24.5 | "Scan." |
 | 25.0 | "Track." |
 | 25.5 | "Done." |
-| 26.0 | End card, app icon |
+| 26.0 | End card: rings mark on a white tile (rings sweep in over 0.6 s) |
 | 26.5 | "MACROS" |
 | 27.0 | "Coming soon to iPhone" or the App Store badge |
 | 28.0 | `macrosios.com` |

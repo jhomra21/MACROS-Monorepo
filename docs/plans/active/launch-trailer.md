@@ -52,7 +52,7 @@ One bold style, tidied toward Apple's announcement look: centred, one idea at a 
 | 15-19 | Track | "Track it." Tap Insights on Today and rest on the top of Insights. Counter 125.7 g protein, 30-day avg. |
 | 19-24 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
 | 24-26 | Type | "Search." "Scan." "Track." "Done." on successive beats. |
-| 26-29 | End card | App icon, "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
+| 26-29 | End card | Rings mark on a white tile (the three rings sweep in over 0.6 s), "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
 
 Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The current edit plays every clip at 1.0×.
 

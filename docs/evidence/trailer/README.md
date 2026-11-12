@@ -54,7 +54,7 @@ All three MP4s: h264, yuv420p, 1080 x 1920, 30 fps, 870 frames (counted), 29.000
 - `review-1fps.jpg`: 10 x 3 with safe-zone outlines.
 - `rings-steps.jpg`: Rings shot at 11.5, 12.6, 13.7 and 14.8 s: 740, 1340, 1620, 2080 kcal.
 - `insights-17.5s.jpg`: Insights shot, top of the screen.
-- `end-cards-28.5s.jpg`: coming-soon and app-store at 28.5 s.
+- `end-cards-28.5s.jpg`: coming-soon and app-store at 28.5 s, with the rings mark on a white tile (replaces the app icon).
 
 ## Not verified
 

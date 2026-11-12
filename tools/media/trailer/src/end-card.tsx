@@ -1,13 +1,14 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
 import { fontFamily } from "./font";
+import { RingsMark } from "./rings-mark";
 import type { Variant } from "./shots";
 import { STYLE } from "./styles";
 import { Reveal } from "./text";
 
 export const EndCard: React.FC<{ variant: Variant }> = ({ variant }) =>
   <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", color: STYLE.text, fontFamily }}>
-    <Reveal at={0}><Img src={staticFile("app-icon.png")} style={{ width: 260, height: 260, borderRadius: 58, marginBottom: 55 }} /></Reveal>
+    <Reveal at={0}><RingsMark /></Reveal>
     <Reveal at={0.5} style={{ fontSize: STYLE.headSize, fontWeight: 700, letterSpacing: "-0.04em" }}>MACROS</Reveal>
     <Reveal at={1} style={{ marginTop: 38 }}>
       {variant === "coming-soon"
