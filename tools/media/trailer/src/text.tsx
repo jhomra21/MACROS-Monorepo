@@ -29,8 +29,12 @@ function activePhase(phases: Phase[], seconds: number): Phase | undefined {
 }
 
 const CounterView: React.FC<{ counter: Counter }> = ({ counter }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const progress = useReveal(counter.at, counter.duration);
-  const value = counter.from + (counter.to - counter.from) * progress;
+  const moves = [counter, ...(counter.steps ?? [])];
+  const value = moves.reduce((from, move) =>
+    interpolate(frame, [move.at * fps, (move.at + move.duration) * fps], [from, move.to], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ease }), counter.from);
   // Hidden until the count starts, so no counter ever rests on its starting value.
   return <div style={{ display: "flex", justifyContent: "center", alignItems: "baseline", gap: 16, opacity: progress > 0 ? 1 : 0 }}>
     <span style={{ fontSize: 72, fontWeight: 700, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums" }}>{value.toFixed(counter.decimals ?? 0)}</span>

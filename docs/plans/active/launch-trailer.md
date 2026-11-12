@@ -4,7 +4,7 @@ Status: active. Owner request 2026-11-11: replace the bland screen-recording dem
 
 ## Output
 
-- 1080 × 1920, 30 fps, H.264 MP4, 30.0 s (900 frames), with a silent stereo AAC track so editors accept it.
+- 1080 × 1920, 30 fps, H.264 MP4, 29.0 s (870 frames; any whole-frame length on the 0.5 s grid is supported), with a silent stereo AAC track so editors accept it.
 - Two end-card variants from one project: `coming-soon` ("Coming soon to iPhone") and `app-store` (Apple's black "Download on the App Store" badge, static).
 - A cover frame PNG (first strong frame) for Reels/TikTok covers.
 - Renders go to ignored `build/marketing/trailer/`. Only code, README and evidence are tracked.
@@ -47,14 +47,14 @@ One bold style, tidied toward Apple's announcement look: centred, one idea at a 
 | --- | --- | --- |
 | 0-2 | Hook | Today before logging, 1310 kcal. "Log your food." then, on the 1.0 s beat, "Get on with your day." Counter 0 to 1310. |
 | 2-6 | Search | "Search it." Type it, tap it, done. Search "banana", Banana, the Log Food form (stops before the Log tap). Counter 105 kcal per banana. |
-| 6-12 | Scan | "Scan it." Barcodes and nutrition labels. Camera, barcode, Chocolate Dough Protein Bar result card (200 kcal), Logged. Counter 200 kcal logged. |
-| 12-16 | Rings | "Rings fill as you go." Banana logged: the sheet dismisses and Today rolls 1310 to 1415 kcal. |
-| 16-20 | Track | "Track it." Insights scroll. Counter 125.7 g protein, 30-day avg. |
-| 20-25 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
-| 25-27 | Type | "Search." "Scan." "Track." "Done." on successive beats. |
-| 27-30 | End card | App icon, "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
+| 6-10 | Scan | "Scan it." Barcodes and nutrition labels. Camera, barcode, Chocolate Dough Protein Bar result card (200 kcal), Logged. Counter 200 kcal logged. Original footage ends at 10.2 s, no frozen hold beyond 0.1 s. |
+| 10-15 | Rings | "Rings fill as you go." Four real logs, only the moments on Today after each: 350, 740, 1340, 1620, 2080 kcal; ring, macro totals and Food list update each time. |
+| 15-19 | Track | "Track it." Tap Insights on Today and rest on the top of Insights. Counter 125.7 g protein, 30-day avg. |
+| 19-24 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
+| 24-26 | Type | "Search." "Scan." "Track." "Done." on successive beats. |
+| 26-29 | End card | App icon, "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
 
-Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The v3 edit plays no clip faster than 1.2× (only Insights, at 1.2×).
+Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The current edit plays every clip at 1.0×.
 
 ## Sources
 
@@ -62,7 +62,7 @@ Full-resolution simulator recordings on the Mac (1320 × 2868, 30 fps): App Stor
 
 ## Validation
 
-- Render both variants; check duration 30.0 s, 900 frames, 1080 × 1920, H.264, AAC silent track.
+- Render both variants; check duration 29.0 s, 870 frames, 1080 × 1920, H.264, AAC silent track.
 - Contact sheet at 2 fps, a safe-zone overlay sheet, and the end cards, tracked under `docs/evidence/trailer/` within the 5-image, 2 MiB policy.
 - Check every shot against the Apple rules above.
 
