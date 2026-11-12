@@ -22,10 +22,12 @@ Raw takes (`build/marketing/trailer/sources/v4/`, 1320 x 2868 native):
 | 0-3.5 s | Hook | `v3/flow-take1.mov` 0.5-3.5 s (Today only), then the last Today frame held 0.5 s | 1.0x |
 | 3.5-7.5 s | Search | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s (+0.1 s hold); ends on the Log Food form, before the Log tap | 1.0x |
 | 7.5-11.5 s | Scan | `web/public/media/macros-demo.d72c87d2.mp4` 6.6-10.2 s (+0.4 s hold of the last frame), same crop and status bar strip as v3; starts on the camera | 1.0x |
-| 11.5-16.5 s | Rings | `v4/rings-take1.mov` 2.4-3.0, 6.43-7.53, 12.23-13.33, 18.13-19.23, 24.13-25.23 s | 1.0x |
+| 11.5-16.5 s | Rings | `v4/rings-take1.mov` 2.4-3.0, 7.2-8.3, 13.4-14.5, 19.1-20.2, 25.267-25.44 s (last moment holds its final frame 0.933 s) | 1.0x |
 | 16.5-20.5 s | Track | `v4/insights-take1.mov` 4.2-8.2 s: Today, tap, push, rest on the top of Insights | 1.0x |
 | 20.5-24 s | Glance | `v3/flow-take1.mov` 17.6-21.1 s (clip is 5 s; first 3.5 s used) | 1.0x |
 | 24-29 s | Type, end card | none | |
+
+Rings moments start only after the Camera and Add Food buttons stop moving (raw frame diff; was 6.43, 12.23, 18.13, 24.13 s). The last moment has 0.17 s of footage because the take ends at 25.44 s.
 
 ## v5: transitions and timing
 
