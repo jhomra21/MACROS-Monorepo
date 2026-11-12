@@ -35,7 +35,8 @@ mkdirSync(PUBLIC_SOURCES, { recursive: true });
 const flow = `${RAW_DIR}/flow-take1.mov`;
 // flow-take1: Today at 1310, Add Food, search "banana", Banana, Log, Today at 1415, then the Home Screen with the MACROS widgets.
 // Each moment appears once: the hook is Today before logging, Search stops at the Log tap, Rings starts at the dismissal.
-cut(flow, "hook.mp4", [[2.0, 4.0]]);
+// The hook rests on Today for 1.6 s, then the Add Food tap and the sheet rising (2.0-4.0 s); 0.5-2.0 s is the same idle Today.
+cut(flow, "hook.mp4", [[0.5, 4.0]]);
 cut(flow, "search.mp4", [[4.4, 5.3], [6.3, 7.6], [11.8, 12.6], [13.0, 13.9]], 0.1);
 cut(flow, "home.mp4", [[17.6, 22.6]]);
 // Scan: camera, barcode, product card, Logged, from the original demo. It ends at 10.2 s, before the insights crossfade; the last frame rests 0.1 s to land the shot on the 0.5 s grid (4.0 s).

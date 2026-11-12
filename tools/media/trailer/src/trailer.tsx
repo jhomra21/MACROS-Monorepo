@@ -5,6 +5,7 @@ import { fontFamily } from "./font";
 import { Device } from "./media";
 import { SHOTS, type Shot, type Variant } from "./shots";
 import { TextBlock } from "./text";
+import { Backdrop, CoverDisc } from "./transitions";
 
 export type Props = { variant: Variant; safeZones: boolean };
 
@@ -15,14 +16,15 @@ const SafeOverlay: React.FC = () => <AbsoluteFill style={{ pointerEvents: "none"
 </AbsoluteFill>;
 
 const ShotView: React.FC<{ shot: Shot; variant: Variant }> = ({ shot, variant }) =>
-  <AbsoluteFill style={{ background: shot.color }}>
-    {shot.kind === "device" && <Device clip={shot.clip} />}
-    {shot.kind === "end" ? <EndCard variant={variant} /> : <TextBlock shot={shot} />}
-  </AbsoluteFill>;
+  shot.kind === "end" ? <EndCard variant={variant} /> : <TextBlock shot={shot} />;
 
+// Back to front: colour field, phone, the colour covering the phone when the next shot has none, then every shot's text.
 export const Trailer: React.FC<Props> = ({ variant, safeZones }) => {
   const { fps } = useVideoConfig();
   return <AbsoluteFill style={{ backgroundColor: "#0A0A0C", fontFamily, overflow: "hidden" }}>
+    <Backdrop />
+    <Device />
+    <CoverDisc />
     {SHOTS.map((shot) => <Sequence key={shot.start} from={shot.start * fps} durationInFrames={(shot.end - shot.start) * fps}>
       <ShotView shot={shot} variant={variant} />
     </Sequence>)}
