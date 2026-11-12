@@ -46,9 +46,10 @@ cut(flow, "home.mp4", [[17.6, 22.6]]);
 scan(DEMO_VIDEO, "scan.mp4", 6.6, 10.2, 10.2, 0.4);
 
 // v4 takes (demo data, Today trimmed to one entry first). rings-take1: Today at 350 kcal, then four foods from the Add Food recents
-// (Turkey sandwich, Chicken and rice bowl, Pasta with tomato sauce, Salmon fillet). Each segment starts as the Log Food sheet leaves and
-// runs 1.1 s, so the ring finishes climbing and the new row shows (740, 1340, 1620, 2080 kcal). Sheets and idle time are cut.
+// (Turkey sandwich, Chicken and rice bowl, Pasta with tomato sauce, Salmon fillet). Each moment starts once the bottom Camera and Add Food
+// buttons have settled after the Log Food sheet leaves; the ring and number have finished by then (740, 1340, 1620, 2080 kcal). Each is 1.1 s.
+// The take ends at 25.44 s, so the last moment has 0.17 s of footage and holds its settled last frame for the rest. Sheets and idle time are cut.
 const rings = `${RAW_DIR_V4}/rings-take1.mov`;
-cut(rings, "rings.mp4", [[2.4, 3.0], [6.43, 7.53], [12.23, 13.33], [18.13, 19.23], [24.13, 25.23]]);
+cut(rings, "rings.mp4", [[2.4, 3.0], [7.2, 8.3], [13.4, 14.5], [19.1, 20.2], [25.267, 25.44]], 0.933);
 // insights-take1: Today, tap the Insights button, the push, then rest on the top of Insights (4.0 s from the tap's lead-in).
 cut(`${RAW_DIR_V4}/insights-take1.mov`, "insights.mp4", [[4.2, 8.2]]);

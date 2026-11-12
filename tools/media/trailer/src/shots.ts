@@ -39,11 +39,12 @@ export const SHOTS: Shot[] = [
   { kind: "device", start: 7.5, end: 11.5, color: COLORS.fat, clip: { file: "scan.mp4", rate: 1 },
     phases: [phase(0, "Scan", "it.")], support: "Barcodes and nutrition labels.",
     counters: [{ label: "kcal logged", from: 0, to: 200, at: 3, duration: 0.8 }] },
-  // rings.mp4: 0.6 s of Today at 350 kcal, then four 1.1 s moments on Today right after each Log Food (740, 1340, 1620, 2080 kcal).
+  // rings.mp4: 0.6 s of Today at 350 kcal, then four 1.1 s moments on Today, each starting once the bottom buttons have settled (740, 1340, 1620, 2080 kcal).
+  // Each counter step ends on the cut where the phone first shows its value.
   { kind: "device", start: 11.5, end: 16.5, color: COLORS.protein, clip: { file: "rings.mp4", rate: 1 },
     phases: [phase(0, "Rings", "fill", "as", "you", "go.")], support: "",
-    counters: [{ label: "kcal today", from: 350, to: 740, at: 0.6, duration: 0.45,
-      steps: [{ to: 1340, at: 1.7, duration: 0.45 }, { to: 1620, at: 2.8, duration: 0.45 }, { to: 2080, at: 3.9, duration: 0.45 }] }] },
+    counters: [{ label: "kcal today", from: 350, to: 740, at: 0.15, duration: 0.45,
+      steps: [{ to: 1340, at: 1.25, duration: 0.45 }, { to: 1620, at: 2.35, duration: 0.45 }, { to: 2080, at: 3.45, duration: 0.45 }] }] },
   { kind: "device", start: 16.5, end: 20.5, color: COLORS.carbs, clip: { file: "insights.mp4", rate: 1 },
     phases: [phase(0, "Track", "it.")], support: "Weight and calories, over time.",
     counters: [{ label: "g protein, 30-day avg", from: 0, to: 125.7, at: 0.55, duration: 0.8, decimals: 1 }] },
