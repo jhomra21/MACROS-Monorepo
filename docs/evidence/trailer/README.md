@@ -19,9 +19,9 @@ Raw takes (`build/marketing/trailer/sources/v4/`, 1320 x 2868 native):
 
 | Time | Shot | Source and in/out | Rate |
 | --- | --- | --- | --- |
-| 0-3.5 s | Hook | `v3/flow-take1.mov` 0.5-4.0 s (idle Today, then the Add Food tap) | 1.0x |
-| 3.5-7.5 s | Search | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s (+0.1 s hold) | 1.0x |
-| 7.5-11.5 s | Scan | `web/public/media/macros-demo.d72c87d2.mp4` 6.3-10.2 s (+0.1 s hold of the last frame), same crop and status bar strip as v3 | 1.0x |
+| 0-3.5 s | Hook | `v3/flow-take1.mov` 0.5-3.5 s (Today only), then the last Today frame held 0.5 s | 1.0x |
+| 3.5-7.5 s | Search | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s (+0.1 s hold); ends on the Log Food form, before the Log tap | 1.0x |
+| 7.5-11.5 s | Scan | `web/public/media/macros-demo.d72c87d2.mp4` 6.6-10.2 s (+0.4 s hold of the last frame), same crop and status bar strip as v3; starts on the camera | 1.0x |
 | 11.5-16.5 s | Rings | `v4/rings-take1.mov` 2.4-3.0, 6.43-7.53, 12.23-13.33, 18.13-19.23, 24.13-25.23 s | 1.0x |
 | 16.5-20.5 s | Track | `v4/insights-take1.mov` 4.2-8.2 s: Today, tap, push, rest on the top of Insights | 1.0x |
 | 20.5-24 s | Glance | `v3/flow-take1.mov` 17.6-21.1 s (clip is 5 s; first 3.5 s used) | 1.0x |
@@ -29,11 +29,13 @@ Raw takes (`build/marketing/trailer/sources/v4/`, 1320 x 2868 native):
 
 ## v5: transitions and timing
 
-- Colour change, every cut (0.5 s, 15 frames, centred on the cut): the next ring colour grows as a disc from the centre of the phone, eased cubic-bezier(0.65, 0, 0.35, 1). The disc is behind the phone between app shots, so the phone stays put. Into the type recap it is drawn over the phone, which is covered and never animated.
+- Colour change, every cut (0.5 s, 15 frames, centred on the cut): the next ring colour grows as a disc from the centre of the phone, eased cubic-bezier(0.65, 0, 0.35, 1). The disc is always behind the phone. When the next shot has no phone (type recap, end card), the phone hard-cuts out at the cut frame and the disc keeps growing full-frame behind where it was. No colour shape is ever drawn over the product screen.
 - Hook to Search is app to app (both have the phone), so it keeps the phone and cross-fades the screen instead of covering it; a cover would hide the phone and bring it back.
 - Between app shots only the recording inside the bezel cross-fades (0.3 s); the bezel is solid, same size and place. Clips rest on first/last frame around the cut, so no footage moves.
 - Text, support and counter fade out and drift up 24 px over the 0.25 s before the cut. Word stagger is 0.06 s (was 0.2 s). Counters count after their headline lands (hook counter now starts at 0.45 s).
 - Timing: hook 3.5 s ("Log your food." 0-1.5 s, "Get on with your day." 1.5-3.5 s, fully readable 1.39 s), Glance cut from 5.0 s to 3.5 s, type recap words every 0.375 s so "Done." can be read before it leaves (0.5 s). Total unchanged at 29.0 s; every cut is on the 0.5 s grid. Other shots, footage, counters and the end card are unchanged.
+- Fixes in this revision: the hook clip stops at 3.5 s of the take, before the Add Food sheet rises, and holds its last Today frame, so the 3.5 s hook stays on Today; the Search clip already ended on the Log Food form, and the 1725 kcal Today seen in the Scan cross-fade was the demo's opening frames, so the Scan clip now starts on the camera at 6.6 s. The Search-to-Scan cross-fade runs form to camera only.
+- Known: the Hook-to-Search cross-fade is unchanged (0.3 s, centred on 3.5 s), so Search fades in from 3.33 s and a faint Search sheet shows over the Today frame at 3.4 s. The hook footage itself is Today the whole time.
 - Readable (all words at 90% opacity, before the exit starts): Search, Scan, Track 89% of the shot, Rings 88%, Glance 86%; hook line 1 is 1.01 s of its 1.5 s.
 
 ## Images (4, about 0.72 MiB)
@@ -45,7 +47,7 @@ Raw takes (`build/marketing/trailer/sources/v4/`, 1320 x 2868 native):
 
 ## Checks run
 
-All three MP4s: h264, yuv420p, 1080 x 1920, 30 fps, 870 frames (counted), 29.000 s, stereo AAC 48 kHz. `bunx tsc --noEmit` and `git diff --check` pass. Contrast is unchanged (4.92, 9.62, 5.78:1); text is near-black on both colours at every transition frame, and only fades toward transparent while leaving.
+All three MP4s: h264, yuv420p, 1080 x 1920, 30 fps, 870 frames (counted), 29.000 s, stereo AAC 48 kHz. Contrast is unchanged (4.92, 9.62, 5.78:1); text is near-black on both colours at every transition frame, and only fades toward transparent while leaving. Frames for the three fixes were checked by eye on `coming-soon.mp4`.
 
 ## Not verified
 

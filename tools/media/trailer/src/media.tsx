@@ -28,11 +28,12 @@ const Screen: React.FC<{ shot: DeviceShot; fadesIn: boolean }> = ({ shot, fadesI
 /**
  * Apple's unmodified bezel at a fixed size and place; it never moves, fades or gets effects. Each recording cross-fades over
  * the previous one inside the screen opening: the incoming screen fades in on top of the outgoing one, which stays opaque.
+ * The phone ends at the last device shot's cut; after it only the colour disc is on screen.
  */
 export const Device: React.FC = () => {
   const s = STYLE.deviceScale;
   const width = BEZEL.w * s;
-  return <Sequence from={0} durationInFrames={lastEnd + STYLE.colorFrames - before(STYLE.colorFrames)} layout="none">
+  return <Sequence from={0} durationInFrames={lastEnd} layout="none">
     <div style={{ position: "absolute", left: (1080 - width) / 2, top: STYLE.deviceTop, width, height: BEZEL.h * s }}>
       <div style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s, overflow: "hidden", background: "#000" }}>
         {deviceShots.map((shot, i) => <Screen key={shot.start} shot={shot} fadesIn={i > 0} />)}

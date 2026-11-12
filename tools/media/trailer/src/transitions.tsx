@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
-import { FPS, SHOTS, type Shot } from "./shots";
+import { FPS, SHOTS } from "./shots";
 import { STYLE } from "./styles";
 
 /** Frames a transition of `length` frames spends before its cut; it ends `length - before` frames after it. */
@@ -17,25 +17,16 @@ function colorChange(frame: number) {
   const active = cuts.find((cut) => frame >= start(cut.frame) && frame < start(cut.frame) + STYLE.colorFrames);
   if (!active) return { base: SHOTS.find((shot) => frame >= shot.start * FPS && frame < shot.end * FPS)?.color ?? SHOTS[0].color };
   const progress = ease((frame - start(active.frame)) / (STYLE.colorFrames - 1));
-  return { base: active.from.color, disc: { color: active.to.color, radius: progress * FULL_RADIUS, covers: coversPhone(active.from, active.to) } };
+  return { base: active.from.color, disc: { color: active.to.color, radius: progress * FULL_RADIUS } };
 }
-
-/** Only a move from a phone to a screen without one has to cover the phone; the phone itself never animates. */
-const coversPhone = (from: Shot, to: Shot) => from.kind === "device" && to.kind !== "device";
 
 const Disc: React.FC<{ color: string; radius: number }> = ({ color, radius }) =>
   <AbsoluteFill style={{ background: color, clipPath: `circle(${radius}px at ${x}px ${y}px)` }} />;
 
-/** The colour field. The next colour grows as a disc behind the phone, so the phone stays put. */
+/** The colour field, always behind the phone. The next colour grows as a disc from the phone's centre, so the phone stays put. */
 export const Backdrop: React.FC = () => {
   const { base, disc } = colorChange(useCurrentFrame());
-  return <AbsoluteFill style={{ background: base }}>{disc && !disc.covers && <Disc color={disc.color} radius={disc.radius} />}</AbsoluteFill>;
-};
-
-/** Drawn above the phone, only when the next shot has none: the new colour grows over it and the phone is gone behind it. */
-export const CoverDisc: React.FC = () => {
-  const { disc } = colorChange(useCurrentFrame());
-  return disc?.covers ? <Disc color={disc.color} radius={disc.radius} /> : null;
+  return <AbsoluteFill style={{ background: base }}>{disc && <Disc color={disc.color} radius={disc.radius} />}</AbsoluteFill>;
 };
 
 /** 0 to 1 over the `STYLE.screenFrames` around `cut` (a frame number). */
