@@ -28,7 +28,7 @@ None of these are tracked. Raw takes are native 1320 x 2868 simulator recordings
 
 | Raw take | Clip | Shot |
 | --- | --- | --- |
-| `v3/flow-take1.mov` 2.0-4.0 s | `hook.mp4` | Hook: Today before logging |
+| `v3/flow-take1.mov` 0.5-4.0 s | `hook.mp4` | Hook: Today before logging, then the Add Food tap (3.5 s) |
 | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s | `search.mp4` | Search it. |
 | `web/public/media/macros-demo.d72c87d2.mp4` 6.3-10.2 s, cropped to x 112, y 222 (496 x 1028) under a status bar strip from 10.2 s, last frame held 0.1 s | `scan.mp4` | Scan it. (4.0 s) |
 | `v4/rings-take1.mov` 2.4-3.0, 6.43-7.53, 12.23-13.33, 18.13-19.23, 24.13-25.23 s | `rings.mp4` | Rings fill as you go. (5.0 s) |
@@ -50,23 +50,31 @@ Follow `docs/app-store/creative-assets/README.md`: lock the media simulator, bui
 
 ## Beat sheet
 
-The grid is 120 BPM, so one beat is 0.5 s. Cuts land on it.
+The grid is 120 BPM, so one beat is 0.5 s. Cuts land on it; the type recap words use dotted-eighth beats (0.375 s).
 
 | Time | Beat |
 | --- | --- |
 | 0.0 | "Log your food." Today before logging, counter 0 to 1310 |
-| 1.0 | "Get on with your day." |
-| 2.0 | "Search it." Banana search, counter 105 kcal |
-| 6.0 | "Scan it." Camera, barcode, result, Logged, counter 200 kcal |
-| 10.0 | "Rings fill as you go." Four logs, each back on Today: counter 350, 740, 1340, 1620, 2080 kcal |
-| 15.0 | "Track it." Tap Insights, rest on its top, counter 125.7 g protein |
-| 19.0 | "Glance at it." Clean Home Screen, widgets at 1415 |
+| 1.5 | "Get on with your day." (2.0 s, fully readable 1.4 s) |
+| 3.5 | "Search it." Banana search, counter 105 kcal |
+| 7.5 | "Scan it." Camera, barcode, result, Logged, counter 200 kcal |
+| 11.5 | "Rings fill as you go." Four logs, each back on Today: counter 350, 740, 1340, 1620, 2080 kcal |
+| 16.5 | "Track it." Tap Insights, rest on its top, counter 125.7 g protein |
+| 20.5 | "Glance at it." Clean Home Screen, widgets at 1415 (first 3.5 s of the clip) |
 | 24.0 | "Search." |
-| 24.5 | "Scan." |
-| 25.0 | "Track." |
-| 25.5 | "Done." |
+| 24.375 | "Scan." |
+| 24.75 | "Track." |
+| 25.125 | "Done." |
 | 26.0 | End card: rings mark on a white tile (rings sweep in over 0.6 s) |
 | 26.5 | "MACROS" |
 | 27.0 | "Coming soon to iPhone" or the App Store badge |
 | 28.0 | `macrosios.com` |
 | 29.0 | End |
+
+## Transitions
+
+All frame-driven (`src/transitions.tsx`, `src/media.tsx`, `src/text.tsx`); timings live in `src/styles.ts`. Each is centred on its cut.
+
+- **Colour change (0.5 s, every cut):** the next ring colour grows as a disc from the centre of the phone, eased cubic-bezier(0.65, 0, 0.35, 1). Between two app shots the disc is behind the phone. Into a shot without a phone (type recap) it is drawn over the phone, which is covered and never animated.
+- **Text:** headline, support line and counter fade out and drift up 24 px over the 0.25 s before the cut. Counters stay hidden until their count starts, after the headline has landed. Words reveal 0.06 s apart.
+- **Screen:** between app shots (including hook to Search) only the recording inside the bezel cross-fades over 0.3 s; the bezel stays solid and identical. The outgoing clip rests on its last frame and the incoming one on its first, so footage is never moved or sped up.

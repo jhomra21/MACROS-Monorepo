@@ -19,9 +19,20 @@ export const Reveal: React.FC<{ at: number; rise?: number; style?: React.CSSProp
   return <div style={{ ...style, opacity: p, transform: `translateY(${rise * (1 - p)}px)` }}>{children}</div>;
 };
 
+const WORD_REVEAL_SECONDS = 0.3;
+const exitEase = Easing.bezier(0.4, 0, 0.2, 1);
+
 const Word: React.FC<{ at: number; children: string }> = ({ at, children }) => {
-  const p = useReveal(at);
+  const p = useReveal(at, WORD_REVEAL_SECONDS);
   return <span style={{ opacity: p, transform: `translateY(${16 * (1 - p)}px)` }}>{children}</span>;
+};
+
+/** Fades out and drifts up over the `exitSeconds` before `at` seconds into the shot; without `at` it stays put. */
+const Exit: React.FC<{ at?: number; style?: React.CSSProperties; children: React.ReactNode }> = ({ at, style, children }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = at === undefined ? 0 : interpolate(frame, [(at - STYLE.exitSeconds) * fps, at * fps], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: exitEase });
+  return <div style={{ ...style, opacity: 1 - p, transform: `translateY(${-STYLE.exitDrift * p}px)` }}>{children}</div>;
 };
 
 function activePhase(phases: Phase[], seconds: number): Phase | undefined {
@@ -42,10 +53,17 @@ const CounterView: React.FC<{ counter: Counter }> = ({ counter }) => {
   </div>;
 };
 
-const Headline: React.FC<{ phase: Phase }> = ({ phase }) =>
-  <div key={phase.at} style={{ display: "flex", flexWrap: "wrap", columnGap: "0.24em", justifyContent: "center", fontSize: STYLE.headSize, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 0.98 }}>
+const Headline: React.FC<{ phase: Phase; exitAt?: number }> = ({ phase, exitAt }) =>
+  <Exit at={exitAt} style={{ display: "flex", flexWrap: "wrap", columnGap: "0.24em", justifyContent: "center", fontSize: STYLE.headSize, fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 0.98 }}>
     {phase.words.map((word, i) => <Word key={word + i} at={phase.at + i * STYLE.wordStep}>{word}</Word>)}
-  </div>;
+  </Exit>;
+
+/** When a phase leaves: the shot's end for the last one, the next phase's start for a phase that holds at least a second. Quick swaps just replace. */
+function exitTime(phases: Phase[], phase: Phase, shotSeconds: number): number | undefined {
+  const next = phases[phases.indexOf(phase) + 1];
+  if (!next) return shotSeconds;
+  return next.at - phase.at >= 1 ? next.at : undefined;
+}
 
 const column: React.CSSProperties = { position: "absolute", left: STYLE.column.left, width: STYLE.column.width, textAlign: "center" };
 
@@ -54,13 +72,16 @@ export const TextBlock: React.FC<{ shot: Shot }> = ({ shot }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const phase = activePhase(shot.phases, frame / fps);
+  const shotSeconds = shot.end - shot.start;
   const isType = shot.kind === "type";
   const headBox: React.CSSProperties = isType
     ? { top: 380, height: 1060, alignItems: "center" }
     : { top: STYLE.headTop, height: STYLE.headHeight, alignItems: "flex-end" };
   return <div style={{ color: STYLE.text, fontFamily }}>
-    <div style={{ ...column, ...headBox, display: "flex", justifyContent: "center" }}>{phase && <Headline phase={phase} />}</div>
-    {shot.support && <Reveal at={0.5} style={{ ...column, top: STYLE.supportTop, fontSize: STYLE.supportSize, fontWeight: 500, lineHeight: 1.15 }}>{shot.support}</Reveal>}
-    {shot.counters.map((c) => <div key={c.label} style={{ ...column, top: STYLE.counterTop }}><CounterView counter={c} /></div>)}
+    <div style={{ ...column, ...headBox, display: "flex", justifyContent: "center" }}>{phase && <Headline key={phase.at} phase={phase} exitAt={exitTime(shot.phases, phase, shotSeconds)} />}</div>
+    {shot.support && <Exit at={shotSeconds} style={{ ...column, top: STYLE.supportTop }}>
+      <Reveal at={0.5} style={{ fontSize: STYLE.supportSize, fontWeight: 500, lineHeight: 1.15 }}>{shot.support}</Reveal>
+    </Exit>}
+    {shot.counters.map((c) => <Exit key={c.label} at={shotSeconds} style={{ ...column, top: STYLE.counterTop }}><CounterView counter={c} /></Exit>)}
   </div>;
 };

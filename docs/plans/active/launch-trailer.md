@@ -27,7 +27,7 @@ Apple's App Store marketing guidelines (Apple Product Images):
 - One App Store badge per video. Do not modify, angle or animate it; keep it subordinate to the main message.
 - Use fictional data, never a real person's.
 
-So the device never moves inside a shot, and there are no push-ins. Every app shot sits inside the bezel at one size and position. Motion comes from the app recording itself, the type, the counters and hard cuts between shots. There are no bezel-free close-ups.
+So the device never moves inside a shot, and there are no push-ins. Every app shot sits inside the bezel at one size and position. Motion comes from the app recording itself, the type, the counters and the transitions below. There are no bezel-free close-ups.
 
 Platform safe zones on a 1080 × 1920 canvas (Instagram: top 250, bottom 320, sides 120; TikTok: top 160, bottom 480, sides 120; Shorts: top 380, bottom 380, left 60, right 120). Keep all text and the key part of every shot inside the shared safe area **x 120–960, y 380–1440**. The device may extend beyond it, but nothing that must be read may sit there.
 
@@ -39,19 +39,19 @@ One bold style, tidied toward Apple's announcement look: centred, one idea at a 
 - Type: Inter (OFL). Headlines 150 px / 700, letter-spacing -0.03em, revealed word by word (0.2 s apart), at most two lines, bottom-aligned at y 380-680. Support line 48 px / 500 at y 700. Counter 72 px with a 36 px label at y 780, smaller than the headline and always in the same place. SF Pro is not used: its license covers interface mock-ups, not marketing films.
 - Counters count from 0 (or the real start value) to the value the recording shows, start at the cut and land within 1 s. They stay hidden until counting starts, so none rests at 0.
 - Device: Apple's iPhone 18 Pro Max bezel at 0.34 scale, centred, top at y 890, identical in every app shot, static. The recording fills the screen opening at native 1320 x 2868.
-- Cuts are hard and land on a 0.5 s grid (120 BPM); a beat sheet is in the tool README.
+- Cuts land on a 0.5 s grid (120 BPM); a beat sheet is in the tool README. Every colour change is a 0.5 s disc of the next ring colour growing from the centre of the phone (cubic-bezier(0.65, 0, 0.35, 1)). Text leaves over the 0.25 s before the cut (fade, 24 px up). Between app shots only the screen inside the bezel cross-fades (0.3 s); the bezel stays solid. Into the type recap the disc passes over the phone, which is not animated. Hook to Search is app to app, so the phone stays and the screen cross-fades; a cover would hide the phone and bring it back.
 
 ## Shot list (seconds)
 
 | Time | Shot | On screen |
 | --- | --- | --- |
-| 0-2 | Hook | Today before logging, 1310 kcal. "Log your food." then, on the 1.0 s beat, "Get on with your day." Counter 0 to 1310. |
-| 2-6 | Search | "Search it." Type it, tap it, done. Search "banana", Banana, the Log Food form (stops before the Log tap). Counter 105 kcal per banana. |
-| 6-10 | Scan | "Scan it." Barcodes and nutrition labels. Camera, barcode, Chocolate Dough Protein Bar result card (200 kcal), Logged. Counter 200 kcal logged. Original footage ends at 10.2 s, no frozen hold beyond 0.1 s. |
-| 10-15 | Rings | "Rings fill as you go." Four real logs, only the moments on Today after each: 350, 740, 1340, 1620, 2080 kcal; ring, macro totals and Food list update each time. |
-| 15-19 | Track | "Track it." Tap Insights on Today and rest on the top of Insights. Counter 125.7 g protein, 30-day avg. |
-| 19-24 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415. |
-| 24-26 | Type | "Search." "Scan." "Track." "Done." on successive beats. |
+| 0-3.5 | Hook | Today before logging, 1310 kcal, then the Add Food tap. "Log your food." then, at 1.5 s, "Get on with your day." (2.0 s) Counter 0 to 1310. |
+| 3.5-7.5 | Search | "Search it." Type it, tap it, done. Search "banana", Banana, the Log Food form (stops before the Log tap). Counter 105 kcal per banana. |
+| 7.5-11.5 | Scan | "Scan it." Barcodes and nutrition labels. Camera, barcode, Chocolate Dough Protein Bar result card (200 kcal), Logged. Counter 200 kcal logged. Original footage ends at 10.2 s, no frozen hold beyond 0.1 s. |
+| 11.5-16.5 | Rings | "Rings fill as you go." Four real logs, only the moments on Today after each: 350, 740, 1340, 1620, 2080 kcal; ring, macro totals and Food list update each time. |
+| 16.5-20.5 | Track | "Track it." Tap Insights on Today and rest on the top of Insights. Counter 125.7 g protein, 30-day avg. |
+| 20.5-24 | Glance | "Glance at it." The full Home Screen page with only the MACROS widgets and icon, showing 1415 (3.5 s; was 5 s). |
+| 24-26 | Type | "Search." "Scan." "Track." "Done." every 0.375 s. |
 | 26-29 | End card | Rings mark on a white tile (the three rings sweep in over 0.6 s), "MACROS", then "Coming soon to iPhone" or the App Store badge; `macrosios.com` small. |
 
 Every claim must match current app behaviour. Recordings may be trimmed (prefer cutting idle frames) and played at most 1.5×; no faked UI. The current edit plays every clip at 1.0×.

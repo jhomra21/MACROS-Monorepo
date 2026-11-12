@@ -1,8 +1,8 @@
-# Launch trailer v4 render evidence
+# Launch trailer v5 render evidence
 
 Plan: `docs/plans/active/launch-trailer.md`. Project: `tools/media/trailer/`. Renders, raw takes, the Apple bezel and the badge stay in ignored folders.
 
-v4 applies the owner's review to v3: Track it shows the act of opening Insights, Rings fills with real entries one after another, Scan loses its frozen hold, and the length is now 29.0 s. Everything else is unchanged: one bold style, Apple's iPhone 18 Pro Max bezel at one fixed size and position, no crops or push-ins.
+v5 adds transitions and retimes the hook (below). v4 applied the owner's review to v3: Track it shows the act of opening Insights, Rings fills with real entries one after another, Scan loses its frozen hold, and the length is now 29.0 s. Everything else is unchanged: one bold style, Apple's iPhone 18 Pro Max bezel at one fixed size and position, no crops or push-ins.
 
 Toolchain: Bun 1.4.2, Remotion 4.0.543, ffmpeg, macOS. Renders are in `build/marketing/trailer/`: `coming-soon.mp4`, `app-store.mp4`, `review.mp4` (safe-zone outlines), `cover.png`, from `bun run render all`.
 
@@ -19,45 +19,38 @@ Raw takes (`build/marketing/trailer/sources/v4/`, 1320 x 2868 native):
 
 | Time | Shot | Source and in/out | Rate |
 | --- | --- | --- | --- |
-| 0-2 s | Hook | `v3/flow-take1.mov` 2.0-4.0 s | 1.0x |
-| 2-6 s | Search | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s (+0.1 s hold) | 1.0x |
-| 6-10 s | Scan | `web/public/media/macros-demo.d72c87d2.mp4` 6.3-10.2 s (+0.1 s hold of the last frame), same crop and status bar strip as v3 | 1.0x |
-| 10-15 s | Rings | `v4/rings-take1.mov` 2.4-3.0, 6.43-7.53, 12.23-13.33, 18.13-19.23, 24.13-25.23 s | 1.0x |
-| 15-19 s | Track | `v4/insights-take1.mov` 4.2-8.2 s: Today, tap, push, rest on the top of Insights | 1.0x |
-| 19-24 s | Glance | `v3/flow-take1.mov` 17.6-22.6 s | 1.0x |
+| 0-3.5 s | Hook | `v3/flow-take1.mov` 0.5-3.5 s (Today only), then the last Today frame held 0.5 s | 1.0x |
+| 3.5-7.5 s | Search | `v3/flow-take1.mov` 4.4-5.3, 6.3-7.6, 11.8-12.6, 13.0-13.9 s (+0.1 s hold); ends on the Log Food form, before the Log tap | 1.0x |
+| 7.5-11.5 s | Scan | `web/public/media/macros-demo.d72c87d2.mp4` 6.6-10.2 s (+0.4 s hold of the last frame), same crop and status bar strip as v3; starts on the camera | 1.0x |
+| 11.5-16.5 s | Rings | `v4/rings-take1.mov` 2.4-3.0, 6.43-7.53, 12.23-13.33, 18.13-19.23, 24.13-25.23 s | 1.0x |
+| 16.5-20.5 s | Track | `v4/insights-take1.mov` 4.2-8.2 s: Today, tap, push, rest on the top of Insights | 1.0x |
+| 20.5-24 s | Glance | `v3/flow-take1.mov` 17.6-21.1 s (clip is 5 s; first 3.5 s used) | 1.0x |
 | 24-29 s | Type, end card | none | |
 
-## What was cut
+## v5: transitions and timing
 
-- Scan: the 2.1 s frozen hold is gone. The footage (3.9 s) now ends the shot at 4.0 s, the nearest 0.5 s grid point (0.1 s hold).
-- Rings: all sheets, the Add Food and Log Food screens and idle time. Each Today moment starts as the Log Food sheet leaves and lasts 1.1 s, long enough for the ring animation to finish. The first 0.6 s is Today at 350 kcal.
-- Track: no scrolling. The "Nutrients / No Fiber Data" section never appears; the shot ends on the top of Insights.
-- The total went from 30.0 s to 29.0 s. Later shots moved 1 s earlier to fit the 0.5 s grid.
+- Colour change, every cut (0.5 s, 15 frames, centred on the cut): the next ring colour grows as a disc from the centre of the phone, eased cubic-bezier(0.65, 0, 0.35, 1). The disc is always behind the phone. When the next shot has no phone (type recap, end card), the phone hard-cuts out at the cut frame and the disc keeps growing full-frame behind where it was. No colour shape is ever drawn over the product screen.
+- Hook to Search is app to app (both have the phone), so it keeps the phone and cross-fades the screen instead of covering it; a cover would hide the phone and bring it back.
+- Between app shots only the recording inside the bezel cross-fades (0.3 s); the bezel is solid, same size and place. Clips rest on first/last frame around the cut, so no footage moves.
+- Text, support and counter fade out and drift up 24 px over the 0.25 s before the cut. Word stagger is 0.06 s (was 0.2 s). Counters count after their headline lands (hook counter now starts at 0.45 s).
+- Timing: hook 3.5 s ("Log your food." 0-1.5 s, "Get on with your day." 1.5-3.5 s, fully readable 1.39 s), Glance cut from 5.0 s to 3.5 s, type recap words every 0.375 s so "Done." can be read before it leaves (0.5 s). Total unchanged at 29.0 s; every cut is on the 0.5 s grid. Other shots, footage, counters and the end card are unchanged.
+- Fixes in this revision: the hook clip stops at 3.5 s of the take, before the Add Food sheet rises, and holds its last Today frame, so the 3.5 s hook stays on Today; the Search clip already ended on the Log Food form, and the 1725 kcal Today seen in the Scan cross-fade was the demo's opening frames, so the Scan clip now starts on the camera at 6.6 s. The Search-to-Scan cross-fade runs form to camera only.
+- Known: the Hook-to-Search cross-fade is unchanged (0.3 s, centred on 3.5 s), so Search fades in from 3.33 s and a faint Search sheet shows over the Today frame at 3.4 s. The hook footage itself is Today the whole time.
+- Readable (all words at 90% opacity, before the exit starts): Search, Scan, Track 89% of the shot, Rings 88%, Glance 86%; hook line 1 is 1.01 s of its 1.5 s.
 
-## Rings kcal steps
-
-Counter above the phone follows the real value on Today: 350 (start) then 740 (Turkey sandwich, +390), 1340 (Chicken and rice bowl, +600), 1620 (Pasta with tomato sauce, +280), 2080 (Salmon fillet, +460). Macro totals on Today: protein 38, 86, 95, 145 g; carbs 104, 174, 226, 226 g; fat 19, 33, 37, 65 g. Food list grows from 2 to 5 items. Each step counts over 0.45 s. No invented numbers; Salmon fillet has no carbs value in the app, so carbs stays at 226.
-
-Other counters are as in v3: Hook 0 to 1310, Search 0 to 105, Scan 0 to 200, Track 0 to 125.7 g protein (30-day average, from the Insights screen).
-
-## Contrast (`bun run contrast`)
-
-Near-black `#0A0A0C` on protein `#007AFF` 4.92:1, carbs `#FF9F0A` 9.62:1, fat `#EF4F87` 5.78:1. Unchanged; all at least 4.5:1.
-
-## Checks run
-
-All three MP4s: h264, yuv420p, 1080 x 1920, 30 fps, 870 frames (counted), 29.000 s (frames / 30), stereo AAC 48 kHz. The `render.ts` remux now takes its length from `TOTAL_FRAMES` in `src/shots.ts`, so any whole-frame duration gives an exact frame count. `bunx tsc --noEmit` and `git diff --check` pass. Clips (`prepare:sources`): hook 60, search 120, scan 120, rings 150, insights 120, home 150 frames. Text stays inside x 120-960, y 380-1440 as in v3 (layout unchanged).
-
-## Images (5, about 0.85 MiB)
+## Images (4, about 0.72 MiB)
 
 - `contact-2fps.jpg`: 10 x 6 at 180 px.
 - `review-1fps.jpg`: 10 x 3 with safe-zone outlines.
-- `rings-steps.jpg`: Rings shot at 11.5, 12.6, 13.7 and 14.8 s: 740, 1340, 1620, 2080 kcal.
-- `insights-17.5s.jpg`: Insights shot, top of the screen.
-- `end-cards-28.5s.jpg`: coming-soon and app-store at 28.5 s, with the rings mark on a white tile (replaces the app icon).
+- `transitions.jpg`: frames cut-8, -4, 0, +4, +7 for hook to Search (3.5 s), Search to Scan (7.5 s) and Glance to type recap (24 s, cover).
+- `end-cards-28.5s.jpg`: coming-soon and app-store at 28.5 s.
+
+## Checks run
+
+All three MP4s: h264, yuv420p, 1080 x 1920, 30 fps, 870 frames (counted), 29.000 s, stereo AAC 48 kHz. Contrast is unchanged (4.92, 9.62, 5.78:1); text is near-black on both colours at every transition frame, and only fades toward transparent while leaving. Frames for the three fixes were checked by eye on `coming-soon.mp4`.
 
 ## Not verified
 
 - No audio beyond silence; the owner adds music.
-- The bezel rules and badge placement were checked by eye, not by Apple.
+- The bezel rules were checked by eye, not by Apple.
 - The Scan footage's own card cross-fade (ghosted text) is original and not edited.
