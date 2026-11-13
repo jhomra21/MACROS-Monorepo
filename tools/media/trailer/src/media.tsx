@@ -30,11 +30,10 @@ const Screen: React.FC<{ shot: DeviceShot; fadesIn: boolean }> = ({ shot, fadesI
  * the previous one inside the screen opening: the incoming screen fades in on top of the outgoing one, which stays opaque.
  * The phone ends at the last device shot's cut; after it only the colour disc is on screen.
  */
-export const Phone: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const s = STYLE.deviceScale;
-  const width = BEZEL.w * s;
-  return <div style={{ position: "absolute", left: (1080 - width) / 2, top: STYLE.deviceTop, width, height: BEZEL.h * s }}>
-    <div style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s, overflow: "hidden", background: "#000" }}>
+export const Phone: React.FC<{ children: React.ReactNode; top?: number; scale?: number }> = ({ children, top = STYLE.deviceTop, scale = STYLE.deviceScale }) => {
+  const width = BEZEL.w * scale;
+  return <div style={{ position: "absolute", left: (1080 - width) / 2, top, width, height: BEZEL.h * scale }}>
+    <div style={{ position: "absolute", left: BEZEL.screenX * scale, top: BEZEL.screenY * scale, width: BEZEL.screenW * scale, height: BEZEL.screenH * scale, borderRadius: BEZEL.screenRadius * scale, overflow: "hidden", background: "#000" }}>
       {children}
     </div>
     <Img src={staticFile("bezel.png")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
