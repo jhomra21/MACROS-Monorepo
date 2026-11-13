@@ -36,7 +36,7 @@ export const SETS: SlideSet[] = [
     ["Scan the label.", "app-scan-review"],
     ["Half the bag? Make it half.", "app-scan-details"],
     ["Protein's right there.", "app-home"],
-  ], "I got tired of adding up protein in my head, so I built an app that reads the label and keeps the total. Coming soon for iPhone.", ["#ProteinTracking", "#FoodDiary", "#GymTok", "#MACROSapp"]),
+  ], "Stop adding up protein in your head. Scan the label and MACROS keeps the total. Coming soon for iPhone.", ["#ProteinTracking", "#FoodDiary", "#GymTok", "#MACROSapp"]),
   set(2, "serving-on-the-box", "The serving on the box", [
     ["\"Serving size\" isn't how much you ate.", "app-scan-review", "\"Serving size\" isn't your portion."],
     ["Eight servings. In this one box.", "app-scan-review"],
@@ -48,7 +48,7 @@ export const SETS: SlideSet[] = [
     ["Mine doesn't. Open it and log.", "app-home"],
     ["Your diary stays on your phone.", "app-history"],
     ["Scanning is free.", "app-scan-review"],
-  ], "I built MACROS so you can log food without making an account. Your diary stays on your phone. Coming soon for iPhone.", ["#FoodDiary", "#IndieApp", "#iPhoneApps", "#MACROSapp"], "I'm Juan, I built MACROS."),
+  ], "Log food without making an account. Your diary stays on your phone. Coming soon for iPhone.", ["#FoodDiary", "#IndieApp", "#iPhoneApps", "#MACROSapp"], "I'm Juan, I built MACROS."),
   set(4, "breakfast-at-your-desk", "Breakfast at your desk", [
     ["Breakfast again. First meeting in five minutes.", "app-add-food", "Breakfast. Meeting in five."],
     ["Same yogurt as yesterday.", "app-add-food"],
@@ -60,5 +60,5 @@ export const SETS: SlideSet[] = [
     ["Dinner's nearly ready.", "app-home"],
     ["One glance at my phone.", "home-clean"],
     ["Right. Now I know.", "home-clean"],
-  ], "A widget on the Home Screen shows where I am on protein before I cook dinner. Coming soon for iPhone.", ["#ProteinTracking", "#iPhoneWidgets", "#FoodDiary", "#MACROSapp"]),
+  ], "Check your protein from the Home Screen before you start dinner. Coming soon for iPhone.", ["#ProteinTracking", "#iPhoneWidgets", "#FoodDiary", "#MACROSapp"]),
 ];
