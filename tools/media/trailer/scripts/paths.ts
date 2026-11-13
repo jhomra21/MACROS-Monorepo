@@ -5,6 +5,8 @@ export const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${p
 
 /** The TikTok slideshow renders (short headlines). */
 export const TIKTOK_DIR = fromRoot("build/marketing/tiktok");
+/** The Instagram 4:5 carousel renders (short headlines), unless render:slides:instagram gets --out. */
+export const INSTAGRAM_DIR = fromRoot("build/marketing/instagram");
 
 export const REPO_ROOT = fromRoot("");
 export const OUT_DIR = fromRoot("build/marketing/trailer");
