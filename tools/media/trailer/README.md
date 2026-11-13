@@ -20,11 +20,16 @@ Each MP4 is 1080 × 1920, 30 fps, 870 frames, h264 yuv420p, stereo AAC (silent).
 
 ## TikTok slideshows
 
-Five photo sets (25 stills, 1080 x 1920) and a 1080 x 1080 `Avatar` still, same style as the trailer. Copy, colours, screenshots and the "Demo data" flag are one table in `src/slides.ts`; the `Slide` composition takes `set`, `index` and `safeZones`. Screenshots come from `web/src/assets/app-images/` and are copied to the ignored `public/screens/` on render.
+Five photo sets (25 stills per variant, 1080 x 1920) and a 1080 x 1080 `Avatar` still, same style as the trailer. Copy, colours, screenshots and the "Demo data" flag are one table in `src/slides.ts`; the `Slide` composition takes `set`, `index`, `safeZones` and `copy`. Screenshots come from `web/src/assets/app-images/` and are copied to the ignored `public/screens/` on render.
+
+Two headline variants, one size each across all slides of that variant (`HEADLINE_SIZE` in `src/slide.tsx`):
+
+- `short` (default, `build/marketing/tiktok/`): `Slide.short` headlines where set, otherwise the headline. Max two lines.
+- `full` (`build/marketing/tiktok-full/`): the full headlines. Max three lines.
 
 ```sh
-bun run render:slides   # build/marketing/tiktok/set-<n>-<slug>/<i>.png, avatar.png, captions.md
-bun run sheets:slides   # docs/evidence/tiktok-slides/set-<n>-<slug>.jpg (renders the safe-zone copies too)
+bun run render:slides   # both variants: build/marketing/tiktok{,-full}/set-<n>-<slug>/<i>.png, avatar.png, captions.md
+bun run sheets:slides   # build/marketing/tiktok-compare/ (per set, per variant) and the tracked docs/evidence/tiktok-slides/ images
 ```
 
 Slide 5 of each set is the end card: rings mark, MACROS, the CTA and macrosios.com, with no App Store badge until the app is live. Text stays out of TikTok's top 150 px, bottom 380 px and right 140 px.

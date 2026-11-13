@@ -8,7 +8,7 @@ import { Trailer, type Props } from "./trailer";
 // The rings mark sweeps in over its first 0.6 s; stills are taken at frame 30, after it settles.
 const STILL_FRAMES = 31;
 const defaultProps: Props = { variant: "coming-soon", safeZones: false };
-const slideProps: SlideProps = { set: 1, index: 1, safeZones: false };
+const slideProps: SlideProps = { set: 1, index: 1, safeZones: false, copy: "short" };
 
 export const Root: React.FC = () => (
   <>
