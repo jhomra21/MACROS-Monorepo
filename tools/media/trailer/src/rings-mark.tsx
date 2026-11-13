@@ -22,11 +22,14 @@ const RINGS = [
   { progress: 0.65, color: COLORS.fat, track: "rgb(214,122,158)" },
 ] as const;
 
-/** A white rounded tile (iOS icon proportions) holding the rings; they sweep from 0 to their progress as the tile appears. */
-export const RingsMark: React.FC = () => {
+/** The rings drawn from the outer ring's outer edge: 2 x (radius + half the line width). */
+export const RINGS_VISIBLE_DIAMETER = OUTER_DIAMETER + LINE_WIDTH;
+
+/** A white rounded tile (iOS icon proportions) holding the rings; they sweep from 0 to their progress as the tile appears. Without a tile the rings sit on whatever is behind. `scale` resizes the whole mark. */
+export const RingsMark: React.FC<{ tile?: boolean; scale?: number }> = ({ tile = true, scale = 1 }) => {
   const sweep = useReveal(0, SWEEP_SECONDS);
   const centre = TILE / 2;
-  return <div style={{ width: TILE, height: TILE, borderRadius: TILE * 0.225, background: "#FFFFFF", marginBottom: 55 }}>
+  return <div style={{ width: TILE * scale, height: TILE * scale }}><div style={{ width: TILE, height: TILE, transform: `scale(${scale})`, transformOrigin: "0 0", borderRadius: TILE * 0.225, background: tile ? "#FFFFFF" : "transparent" }}>
     <svg width={TILE} height={TILE} viewBox={`0 0 ${TILE} ${TILE}`} style={{ display: "block" }}>
       {RINGS.map((ring, index) => {
         const circle = { cx: centre, cy: centre, r: radius(index), fill: "none", strokeWidth: LINE_WIDTH };
@@ -37,5 +40,5 @@ export const RingsMark: React.FC = () => {
         </g>;
       })}
     </svg>
-  </div>;
+  </div></div>;
 };

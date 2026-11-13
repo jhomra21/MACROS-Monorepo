@@ -36,3 +36,4 @@ worker/**/.wrangler/
 __pycache__/
 .pytest_cache/
 .mypy_cache/
+tools/media/trailer/public/screens/

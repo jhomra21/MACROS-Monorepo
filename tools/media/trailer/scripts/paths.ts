@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
+export const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
 
 export const REPO_ROOT = fromRoot("");
 export const OUT_DIR = fromRoot("build/marketing/trailer");

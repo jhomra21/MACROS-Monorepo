@@ -18,6 +18,17 @@ bun run contrast                  # contrast ratios on the three colour fields
 
 Each MP4 is 1080 × 1920, 30 fps, 870 frames, h264 yuv420p, stereo AAC (silent). The length comes from the last shot's end in `src/shots.ts` (`TOTAL_FRAMES`); any whole-frame duration works. `scripts/render.ts` renders, then remuxes to exactly that frame count and `frames / 30` seconds. Check with ffprobe.
 
+## TikTok slideshows
+
+Five photo sets (25 stills, 1080 x 1920) and a 1080 x 1080 `Avatar` still, same style as the trailer. Copy, colours, screenshots and the "Demo data" flag are one table in `src/slides.ts`; the `Slide` composition takes `set`, `index` and `safeZones`. Screenshots come from `web/src/assets/app-images/` and are copied to the ignored `public/screens/` on render.
+
+```sh
+bun run render:slides   # build/marketing/tiktok/set-<n>-<slug>/<i>.png, avatar.png, captions.md
+bun run sheets:slides   # docs/evidence/tiktok-slides/set-<n>-<slug>.jpg (renders the safe-zone copies too)
+```
+
+Slide 5 of each set is the end card: rings mark, MACROS, the CTA and macrosios.com, with no App Store badge until the app is live. Text stays out of TikTok's top 150 px, bottom 380 px and right 140 px.
+
 ## Shot table
 
 All shots live in `src/shots.ts` as data: time, colour, headline phases, support line, counters and clip. Layout values (sizes, text and bezel positions) live in `src/styles.ts`. Change timings or copy there, not in components.

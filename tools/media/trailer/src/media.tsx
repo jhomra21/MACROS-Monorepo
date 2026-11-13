@@ -30,15 +30,18 @@ const Screen: React.FC<{ shot: DeviceShot; fadesIn: boolean }> = ({ shot, fadesI
  * the previous one inside the screen opening: the incoming screen fades in on top of the outgoing one, which stays opaque.
  * The phone ends at the last device shot's cut; after it only the colour disc is on screen.
  */
-export const Device: React.FC = () => {
+export const Phone: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const s = STYLE.deviceScale;
   const width = BEZEL.w * s;
-  return <Sequence from={0} durationInFrames={lastEnd} layout="none">
-    <div style={{ position: "absolute", left: (1080 - width) / 2, top: STYLE.deviceTop, width, height: BEZEL.h * s }}>
-      <div style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s, overflow: "hidden", background: "#000" }}>
-        {deviceShots.map((shot, i) => <Screen key={shot.start} shot={shot} fadesIn={i > 0} />)}
-      </div>
-      <Img src={staticFile("bezel.png")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+  return <div style={{ position: "absolute", left: (1080 - width) / 2, top: STYLE.deviceTop, width, height: BEZEL.h * s }}>
+    <div style={{ position: "absolute", left: BEZEL.screenX * s, top: BEZEL.screenY * s, width: BEZEL.screenW * s, height: BEZEL.screenH * s, borderRadius: BEZEL.screenRadius * s, overflow: "hidden", background: "#000" }}>
+      {children}
     </div>
-  </Sequence>;
+    <Img src={staticFile("bezel.png")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+  </div>;
 };
+
+export const Device: React.FC = () =>
+  <Sequence from={0} durationInFrames={lastEnd} layout="none">
+    <Phone>{deviceShots.map((shot, i) => <Screen key={shot.start} shot={shot} fadesIn={i > 0} />)}</Phone>
+  </Sequence>;
