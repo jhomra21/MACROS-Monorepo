@@ -1,7 +1,7 @@
 import { COLORS } from "./shots";
 
-/** A screenshot in web/src/assets/app-images/ (without the extension). */
-export type Screenshot = "app-home" | "app-scan-review" | "app-scan-details" | "app-add-food" | "app-history" | "app-widgets";
+/** A screenshot in web/src/assets/app-images/ (without the extension), or "home-clean", the trailer's clean Home Screen still in public/sources/. */
+export type Screenshot = "app-home" | "app-scan-review" | "app-scan-details" | "app-add-food" | "app-history" | "home-clean";
 
 export type Slide = {
   headline: string; // empty on the last slide of a set, which is the CTA
@@ -56,7 +56,7 @@ export const SETS: SlideSet[] = [
   set(5, "before-dinner", "Before dinner", [
     ["Wait, where am I on protein?", "app-home", true],
     ["Dinner's nearly ready.", "app-home", true],
-    ["One glance at my phone.", "app-widgets", true],
-    ["Right. Now I know.", "app-widgets", true],
+    ["One glance at my phone.", "home-clean", true],
+    ["Right. Now I know.", "home-clean", true],
   ], "A widget on the Home Screen shows where I am on protein before I cook dinner. Coming soon for iPhone.", ["#ProteinTracking", "#iPhoneWidgets", "#FoodDiary", "#MACROSapp"]),
 ];

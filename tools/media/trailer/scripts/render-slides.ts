@@ -1,12 +1,14 @@
 // Renders the TikTok slideshows, avatar and captions: bun run render:slides [--safe-zones]
 // Output: build/marketing/tiktok/set-<n>-<slug>/<i>.png, avatar.png, captions.md (--safe-zones writes review/ instead, with the TikTok zones outlined).
 import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { fromRoot, run } from "./paths.ts";
+import { PUBLIC_SOURCES, fromRoot, run } from "./paths.ts";
 import { SETS, SITE } from "../src/slides.ts";
 
 const OUT = fromRoot("build/marketing/tiktok");
 const SCREENS_SRC = fromRoot("web/src/assets/app-images");
 const SCREENS_DEST = fromRoot("tools/media/trailer/public/screens");
+// home-clean is the trailer's Home Screen still (MACROS only), not an app screenshot; see docs/evidence/tiktok-slides/README.md.
+const screenFile = (name: string) => (name === "home-clean" ? `${PUBLIC_SOURCES}/home-clean.png` : `${SCREENS_SRC}/${name}.png`);
 // The rings mark sweeps in over 0.6 s, so stills are taken once it has settled.
 const FRAME = 30;
 const safeZones = process.argv.includes("--safe-zones");
@@ -16,7 +18,7 @@ const still = (id: string, out: string, props: object) =>
 
 mkdirSync(SCREENS_DEST, { recursive: true });
 for (const name of new Set(SETS.flatMap((s) => s.slides.map((slide) => slide.screenshot)))) {
-  if (name) copyFileSync(`${SCREENS_SRC}/${name}.png`, `${SCREENS_DEST}/${name}.png`);
+  if (name) copyFileSync(screenFile(name), `${SCREENS_DEST}/${name}.png`);
 }
 
 const dir = safeZones ? `${OUT}/review` : OUT;

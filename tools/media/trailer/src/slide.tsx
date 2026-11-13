@@ -10,7 +10,7 @@ export type SlideProps = { set: number; index: number; safeZones: boolean };
 
 // TikTok keeps its own UI over the top 150 px, bottom 380 px and right 140 px; text stays inside x 120-940.
 const SAFE = { top: 150, bottom: 380, right: 140, left: 120 };
-const HEADLINE_SIZE = 72;
+const HEADLINE_SIZE = 74;
 const column: React.CSSProperties = { position: "absolute", left: SAFE.left, width: 1080 - SAFE.right - SAFE.left, textAlign: "center" };
 
 const Zones: React.FC = () => {
@@ -25,10 +25,10 @@ const Zones: React.FC = () => {
 const EndSlide: React.FC<{ intro?: string }> = ({ intro }) =>
   <div style={{ ...column, top: SAFE.top, height: 1920 - SAFE.top - SAFE.bottom, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
     <div style={{ marginBottom: 55 }}><RingsMark /></div>
-    <div style={{ fontSize: 140, fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1 }}>MACROS</div>
-    {intro && <div style={{ marginTop: 60, fontSize: 44, fontWeight: 500 }}>{intro}</div>}
-    <div style={{ marginTop: intro ? 20 : 60, fontSize: 52, fontWeight: 500, lineHeight: 1.15, maxWidth: 700 }}>{CTA}</div>
-    <div style={{ marginTop: 60, fontSize: 40, fontWeight: 500 }}>{SITE}</div>
+    <div style={{ fontSize: 144, fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 1 }}>MACROS</div>
+    {intro && <div style={{ marginTop: 60, fontSize: 45, fontWeight: 500 }}>{intro}</div>}
+    <div style={{ marginTop: intro ? 20 : 60, fontSize: 53, fontWeight: 500, lineHeight: 1.15, maxWidth: 700 }}>{CTA}</div>
+    <div style={{ marginTop: 60, fontSize: 41, fontWeight: 500 }}>{SITE}</div>
   </div>;
 
 export const Slide: React.FC<SlideProps> = ({ set, index, safeZones }) => {
