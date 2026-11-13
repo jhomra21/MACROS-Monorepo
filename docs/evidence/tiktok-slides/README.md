@@ -1,39 +1,45 @@
 # TikTok photo slideshows
 
-Five sets of five 1080 x 1920 stills per headline variant, and a 1080 x 1080 avatar, rendered from `tools/media/trailer/` with `bun run render:slides`. The PNGs are not tracked: `build/marketing/tiktok/` holds the `short` variant (the default) and `build/marketing/tiktok-full/` holds `full`. Each JPG here is one sheet of five slides at 300 px wide. Regenerate with `bun run sheets:slides`.
+Five sets of five 1080 x 1920 stills with the short headlines, and a 1080 x 1080 avatar, rendered from `tools/media/trailer/` with `bun run render:slides`. The PNGs are not tracked: they are in `build/marketing/tiktok/`. Each JPG here is one sheet for one set: the five slides at 300 px wide, with the same five below under the TikTok zone outlines. Regenerate with `bun run sheets:slides`.
 
-Two headline variants:
+Headlines are the shorter `short` set in `src/slides.ts`, one size (100 px) across all slides, at most two lines.
 
-- `short`: the shorter headlines in `src/slides.ts`, one size (100 px) across all slides, at most two lines.
-- `full`: the original headlines, one size (105 px) across all slides, at most three lines.
-
-Tracked sheets (five images, about 1.5 MB, under the 2 MiB limit):
+Tracked sheets (five images, under the 2 MiB limit):
 
 | Sheet | Shows |
 | --- | --- |
-| `set-2-serving-on-the-box.jpg` | Serving on the box, short; top row normal, bottom row with TikTok zones outlined |
-| `set-3-why-my-email.jpg` | Why my email?, short; same layout |
-| `set-5-before-dinner.jpg` | Before dinner, short; same layout |
-| `compare-set1.jpg` | Protein math, short (rows 1-2) above full (rows 3-4); each variant normal, then with zones |
-| `compare-set4.jpg` | Breakfast at your desk, short (rows 1-2) above full (rows 3-4); same order |
+| `set-1-protein-math.jpg` | Protein math |
+| `set-2-serving-on-the-box.jpg` | The serving on the box |
+| `set-3-why-my-email.jpg` | Why my email? (slide 1 has no phone) |
+| `set-4-breakfast-at-your-desk.jpg` | Breakfast at your desk |
+| `set-5-before-dinner.jpg` | Before dinner |
 
 The zone outlines are red: top 150 px, bottom 380 px, right 140 px.
 
+## Phone layout
+
+- The icon and the `n/5` marker are unchanged. The marker's baseline is at y 233.
+- The headline block starts at y 290. The headline ink starts at y 303 to 307, 74 px below the marker baseline.
+- Each phone slide has the bezel at y 560, 52 px below the lowest headline ink of the tallest two-line headline (y 507). Text never overlaps the bezel.
+- The bezel is scaled to 0.4453 of Apple's PNG (654.6 x 1335.9 px), centred horizontally. Its box is x 212.7 to 867.3, y 560 to 1895.9, so it stays 24 px inside the bottom edge. The black frame ends at y 1886 because the PNG has a transparent strip under the frame.
+- The phone extends into TikTok's bottom 380 px zone. No text is there.
+- Set 3 slide 1 (no phone) and the five CTA slides keep their layout.
+
 ## Checks
 
-- Every slide of both variants viewed in the sheets, including the zone copies.
-- All 50 normal-render stills are 1080 x 1920 and both avatars are 1080 x 1080 (`file`).
-- Headline sizes are the largest found that keep each variant within its line limit, measured from the rendered PNGs (ink in y 280-880 for slides with a phone, so the phone is never counted):
-  - `short` 100 px: every headline two lines or fewer; widest headline ink 804 px (set 2 slide 1). 102 px puts set 2 slide 1 on three lines. 101 px was not rendered.
-  - `full` 105 px: every headline three lines or fewer; widest headline ink 799 px (set 3 slide 4). 110 px puts set 4 slide 1 on four lines, and 120 px puts set 1 slide 1 and set 3 slide 1 on four lines. 106 to 109 px were not rendered.
-  - All headline ink sits inside x 120-940 and below y 150. The lowest headline ink on a slide with a phone ends by y 692; the phone starts at y 890, so the phone did not move.
-- Copy changes are only the five approved short headlines. The CTA slide, the screenshots, the "Demo data" flags and the captions are unchanged.
-- Claims against the screenshots and site (unchanged by the variants):
+- All 25 short stills are 1080 x 1920 (`ffprobe`).
+- Pixel measurements on the rendered PNGs (ink is any channel at or below 60):
+  - Icon and marker rows (y 150 to 265) are byte-identical to the previous render on all 25 slides.
+  - Set 3 slide 1 and the five CTA slides are byte-identical to the previous render, and so is the avatar.
+  - Each headline is one or two lines. On every phone slide, the headline ink ends above y 508, so none of it touches the bezel box (y 560 to 1896, x 213 to 867).
+  - The bezel box lies inside the 1080 x 1920 canvas.
+- Headline size is unchanged (100 px), and so are the line limits. The width checks from the earlier render still hold, since the words and size are the same.
+- Copy: the five approved short headlines are used. The "Demo data" label is removed from every slide, and the flag and its field are gone from `src/slides.ts`. Screenshots, captions and the CTA are unchanged.
+- Claims against the screenshots and site (unchanged):
   - "Eight servings. In this one box." `app-scan-review.png` shows "8 servings per container" on the label (zoomed to confirm; it is small in the 1320 px capture).
   - "Scanning is free." `web/src/data/site.ts` FAQ: logging, search, barcode and label scans are free; Pro is optional.
   - "Half the bag? Make it half." `app-scan-details.png` shows the Servings/Grams review; the servings stepper there steps 0.25.
   - "Mine doesn't. Open it and log." and "Your diary stays on your phone." match the FAQ ("You can log food without an account") and the on-device storage rule.
   - "Same yogurt as yesterday." and "There it is." sit on `app-add-food.png`, which shows a "greek yogurt" search with Plain Greek yogurt cup under On Device.
-- Slides showing calculator targets or Insights-like totals (Today ring, widgets) carry a "Demo data" label beside the phone.
 - Home Screen slides (set 5, slides 3-4) use `tools/media/trailer/public/sources/home-clean.png` (ignored), a still of the trailer's Home Screen after logging. It is frame 20.0 s of `build/marketing/trailer/sources/v3/flow-take1.mov` (the same take `home.mp4` is cut from, 17.6-22.6 s), 1320 x 2868. Checked by eye: only the MACROS icon and the MACROS widgets are visible. No third-party app icon, label, widget or shared-person widget. `app-widgets.png` was dropped because it shows third-party apps (Fitness, Watch, Files) and a shared-person widget, which Apple's marketing rules do not allow on a Home Screen shot.
 - CTA: the site has a waitlist form (`WaitlistForm.astro` on the home and about pages), so slide 5 reads "Coming soon for iPhone. Join the waitlist."
