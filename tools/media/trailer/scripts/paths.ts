@@ -1,7 +1,11 @@
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import type { Copy } from "../src/slides.ts";
 
-const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
+export const fromRoot = (path: string) => fileURLToPath(new URL(`../../../../${path}`, import.meta.url));
+
+/** The TikTok slideshow renders, one folder per headline variant. */
+export const TIKTOK_DIRS: Record<Copy, string> = { short: fromRoot("build/marketing/tiktok"), full: fromRoot("build/marketing/tiktok-full") };
 
 export const REPO_ROOT = fromRoot("");
 export const OUT_DIR = fromRoot("build/marketing/trailer");

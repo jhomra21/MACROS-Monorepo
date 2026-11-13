@@ -8,7 +8,7 @@ import { Reveal } from "./text";
 
 export const EndCard: React.FC<{ variant: Variant }> = ({ variant }) =>
   <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", color: STYLE.text, fontFamily }}>
-    <Reveal at={0}><RingsMark /></Reveal>
+    <Reveal at={0} style={{ marginBottom: 55 }}><RingsMark /></Reveal>
     <Reveal at={0.5} style={{ fontSize: STYLE.headSize, fontWeight: 700, letterSpacing: "-0.04em" }}>MACROS</Reveal>
     <Reveal at={1} style={{ marginTop: 38 }}>
       {variant === "coming-soon"

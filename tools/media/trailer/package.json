@@ -7,6 +7,8 @@
     "studio": "remotion studio src/index.ts",
     "prepare:sources": "bun scripts/prepare-sources.ts",
     "render": "bun scripts/render.ts",
+    "render:slides": "bun scripts/render-slides.ts",
+    "sheets:slides": "bun scripts/slide-sheets.ts",
     "contrast": "bun scripts/contrast.ts"
   },
   "dependencies": {
