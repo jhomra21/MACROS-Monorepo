@@ -27,7 +27,10 @@ Only the `short` headlines are rendered: `Slide.short` where set, otherwise the 
 ```sh
 bun run render:slides   # build/marketing/tiktok/set-<n>-<slug>/<i>.png, avatar.png, captions.md
 bun run sheets:slides   # docs/evidence/tiktok-slides/set-<n>-<slug>.jpg (five tracked sheets)
+bun run render:slides:instagram --out=/absolute/dir   # 4:5, 1080 x 1350; default build/marketing/instagram/
 ```
+
+The Instagram carousel uses the same 25 slides at 1080 x 1350 (`format: 'instagram'` on the `Slide` composition). Its layout is `LAYOUT.instagram` in `src/slide.tsx`; see `docs/evidence/instagram-slides/README.md`.
 
 Slide 5 of each set is the end card: rings mark, MACROS, the CTA and macrosios.com, with no App Store badge until the app is live. Text stays out of TikTok's top 150 px, bottom 380 px and right 140 px.
 

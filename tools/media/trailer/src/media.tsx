@@ -5,7 +5,7 @@ import { STYLE } from "./styles";
 import { before, screenFade } from "./transitions";
 
 // Apple iPhone 18 Pro Max bezel PNG: 1470 x 3000 with a transparent 1320 x 2868 screen opening at (75, 66).
-const BEZEL = { w: 1470, h: 3000, screenX: 75, screenY: 66, screenW: 1320, screenH: 2868, screenRadius: 222 };
+export const BEZEL = { w: 1470, h: 3000, screenX: 75, screenY: 66, screenW: 1320, screenH: 2868, screenRadius: 222 };
 
 const deviceShots = SHOTS.filter((shot): shot is DeviceShot => shot.kind === "device");
 const lastEnd = deviceShots[deviceShots.length - 1].end * FPS;
