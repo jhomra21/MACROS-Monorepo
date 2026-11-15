@@ -1,5 +1,5 @@
 // Renders the slideshows with short headlines. TikTok (default): bun run render:slides [--safe-zones], which writes build/marketing/tiktok/
-// with set-<n>-<slug>/<i>.png, avatar.png and captions.md; --safe-zones writes review/ instead, with the TikTok zones outlined.
+// with set-<n>-<slug>/<i>.png, avatar.png and captions.md; --safe-zones writes review/ instead, with TikTok's photo-mode overlays outlined.
 // Instagram 4:5 (1080 x 1350): bun run render:slides:instagram [--out=<absolute dir>], which writes set-<n>-<slug>/<i>.png and captions.md
 // to --out, default build/marketing/instagram/.
 import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";

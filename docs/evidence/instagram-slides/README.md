@@ -19,7 +19,7 @@ ffmpeg -i <dir>/set-5-before-dinner/1.png -i <dir>/set-5-before-dinner/2.png -i 
 
 ## Layout
 
-- Marker row, y 60 to 130, x 90 to 990: the rings icon at top left (scale 0.27, 70 px) on set slide 1 only, as in TikTok, and `n/5` at top right.
+- Marker row, y 60 to 130, x 90 to 990: the rings icon at top left (scale 0.27, 70 px) on set slide 1 only, and `n/5` at top right. TikTok has neither: its own UI shows the counter.
 - Headline: one size for every slide, 110 px, weight 700, line height 1.08, `short` copy, at most two lines in a box x 90 to 990. The box starts at y 180, 50 px under the marker row.
 - Phone: Apple's unmodified bezel at scale 0.2881 (423.6 x 864.4 px), centred, top y 461.6, box y 461.6 to 1326.0. That is 24 px above the bottom edge. Every phone slide uses the same size and place. Set 3 slide 1 and the five CTA slides have no phone.
 - Type-only slide and CTA slides are centred in y 130 to 1290.

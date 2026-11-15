@@ -1,5 +1,5 @@
 // Contact sheets for the TikTok slideshows: bun run sheets:slides
-// One sheet per set in the short variant: the five slides at 300 px wide, with the same five below under the TikTok zone outlines.
+// One sheet per set in the short variant: the five slides at 300 px wide, with the same five below under the photo-mode overlay outlines.
 // Renders the safe-zone copies itself. The five sheets go to docs/evidence/tiktok-slides/ (tracked, five JPGs).
 import { mkdirSync } from "node:fs";
 import { TIKTOK_DIR, fromRoot, run } from "./paths.ts";

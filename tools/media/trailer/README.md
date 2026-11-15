@@ -22,7 +22,7 @@ Each MP4 is 1080 × 1920, 30 fps, 870 frames, h264 yuv420p, stereo AAC (silent).
 
 Five photo sets (25 stills, 1080 x 1920) and a 1080 x 1080 `Avatar` still, same style as the trailer. Copy, colours and screenshots are one table in `src/slides.ts`; the `Slide` composition takes `set`, `index`, `safeZones` and `copy`. Screenshots come from `web/src/assets/app-images/` and are copied to the ignored `public/screens/` on render.
 
-Only the `short` headlines are rendered: `Slide.short` where set, otherwise the headline, at one size (`HEADLINE_SIZE` in `src/slide.tsx`), max two lines. Slides with a screenshot put the headline block at y 290 and the phone at `top` 560 with `scale` 0.4453, so the bezel box ends 24 px above the bottom edge. Slide 1 of set 3 and the CTA slides have no phone.
+Only the `short` headlines are rendered: `Slide.short` where set, otherwise the headline, at one size (`HEADLINE_SIZE` in `src/slide.tsx`), max two lines. Slides with a screenshot put the headline block at y 210 and the phone at `top` 469 with `scale` 0.337, so the bezel box ends at y 1480, the bottom of TikTok's safe area. Slide 1 of set 3 and the CTA slides have no phone.
 
 ```sh
 bun run render:slides   # build/marketing/tiktok/set-<n>-<slug>/<i>.png, avatar.png, captions.md
@@ -32,7 +32,7 @@ bun run render:slides:instagram --out=/absolute/dir   # 4:5, 1080 x 1350; defaul
 
 The Instagram carousel uses the same 25 slides at 1080 x 1350 (`format: 'instagram'` on the `Slide` composition). Its layout is `LAYOUT.instagram` in `src/slide.tsx`; see `docs/evidence/instagram-slides/README.md`.
 
-Slide 5 of each set is the end card: rings mark, MACROS, the CTA and macrosios.com, with no App Store badge until the app is live. Text stays out of TikTok's top 150 px, bottom 380 px and right 140 px.
+Slide 5 of each set is the end card: rings mark, MACROS, the CTA and macrosios.com, with no App Store badge until the app is live. Text and the phone stay in x 120-940, y 200-1480, clear of TikTok's photo-mode overlays (see `docs/evidence/tiktok-slides/README.md`). TikTok slides have no rings icon or `n/5` marker, because TikTok draws its own counter.
 
 ## Shot table
 
