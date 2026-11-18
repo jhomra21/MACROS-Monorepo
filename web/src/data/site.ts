@@ -116,7 +116,7 @@ export const site = {
 	socialLinks,
 	hero: {
 		title: 'Log your food. Get on with your day.',
-		lead: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account}`,
+		lead: 'Your calories and macros, at a glance. No account needed.',
 	},
 	features: [
 		{

@@ -1,15 +1,12 @@
 # MACROS search measurement
 
-## Set up search tools
+## Search tools
 
-The site owner must verify ownership. Do not share Cloudflare access or verification tokens with a third party.
+Both are already set up. Check current state in the tool before changing anything.
 
-1. Add a **Domain** property for `macrosios.com` in Google Search Console.
-2. Copy the DNS TXT verification record from Search Console. In Cloudflare, open the `macrosios.com` zone, add a TXT record at the requested name, and paste the exact value. Keep proxying off for DNS TXT records.
-3. Return to Search Console and verify the property. Do not remove the TXT record after verification.
-4. Add `macrosios.com` to Bing Webmaster Tools and choose DNS verification. Add the TXT record Bing supplies in the same Cloudflare zone, then complete verification in Bing.
-5. In each tool, submit `https://macrosios.com/sitemap.xml`. Confirm that it was read successfully and review indexing and crawl errors. Submission does not guarantee indexing.
-
+- **Google Search Console:** domain property verified by the `google-site-verification` TXT record in Cloudflare. Search Console read the sitemap on Nov 6, 2026. Keep the TXT record.
+- **Bing Webmaster Tools:** site added and `https://macrosios.com/sitemap.xml` submitted and read on Nov 7, 2026 (7 URLs then).
+- **After each deploy that adds pages:** resubmit the sitemap in both tools so the new URLs are read, then use URL Inspection on the new pages. Submission does not guarantee indexing.
 ## Check AI answers every two weeks
 
 Ask the same prompts in ChatGPT, Perplexity, Google AI Mode, and Copilot. Use a private window where possible. Record whether the assistant names MACROS, cites `macrosios.com`, and which other domains it cites. Keep dated raw notes in ignored `build/evidence/<date>-ai-answers/`.
