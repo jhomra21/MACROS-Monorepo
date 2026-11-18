@@ -29,9 +29,12 @@ def prose(text):
 def anchors(text):
     counts = {}
     result = set(re.findall(r'\b(?:id|name)=["\']([^"\']+)["\']', text))
-    for heading in re.findall(r"(?m)^#{1,6}\s+(.+?)(?:\s+#+)?$", text):
+    headings = re.findall(r"(?m)^#{1,6}\s+(.+?)(?:\s+#+)?$", text)
+    headings += re.findall(r"<h[2-6]\b[^>]*>(.*?)</h[2-6]>", text, re.IGNORECASE)
+    for heading in headings:
         heading = re.sub(r"<[^>]+>", "", heading).lower()
         slug = "".join(c for c in heading if c.isalnum() or c in " _-").replace(" ", "-")
+        slug = re.sub(r"-+", "-", slug).strip("-")
         count = counts.get(slug, 0)
         counts[slug] = count + 1
         result.add(slug + (f"-{count}" if count else ""))
@@ -44,6 +47,25 @@ def links(text):
     targets += re.findall(r'\b(?:src|href)=["\']([^"\']+)["\']', text)
     targets += re.findall(r"(?m)^\s*\[[^\]]+\]:\s*(\S+)", text)
     return [target.strip("<>") for target in targets]
+
+
+def web_route_destination(source, path):
+    if "web" not in source.parts or "src" not in source.parts or "content" not in source.parts:
+        return None
+
+    route = unquote(path)
+    if route == "/":
+        return ROOT / "web/src/pages/index.astro"
+
+    match = re.fullmatch(r"/(guides|blog)/([a-z0-9-]+)/?", route)
+    if match:
+        section, slug = match.groups()
+        return ROOT / f"web/src/content/{section}/{slug}.md"
+
+    page = route.strip("/")
+    if re.fullmatch(r"[a-z0-9-]+", page):
+        return ROOT / f"web/src/pages/{page}.astro"
+    return None
 
 
 def main():
@@ -62,11 +84,16 @@ def main():
             if url.scheme or url.netloc:
                 continue
             checked += 1
-            destination = (source.parent / unquote(url.path)).resolve() if url.path else source
+            destination = web_route_destination(source, url.path) if url.path.startswith("/") else None
+            destination = destination or ((source.parent / unquote(url.path)).resolve() if url.path else source)
             if not destination.exists():
                 errors.append(f"{name}: missing {target}")
-            elif url.fragment and destination.suffix == ".md":
-                if unquote(url.fragment) not in anchors(destination.read_text()):
+            elif url.fragment and destination.suffix in {".md", ".astro"}:
+                candidates = [destination]
+                if destination.name == "index.astro":
+                    candidates.extend((ROOT / "web/src/components").glob("*.astro"))
+                available = set().union(*(anchors(candidate.read_text()) for candidate in candidates))
+                if unquote(url.fragment) not in available:
                     errors.append(f"{name}: missing fragment {target}")
     print(f"Checked {checked} local links in {len(paths)} changed Markdown files.")
     for error in errors:

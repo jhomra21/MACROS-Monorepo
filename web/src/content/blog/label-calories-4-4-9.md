@@ -7,6 +7,7 @@ draft: false
 related:
   - guides/how-to-set-macro-goals
   - blog/serving-size-vs-whole-package
+  - guides/how-label-scanning-works
 image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS scan details for a demo cereal label showing 190 kcal, P 5, C 36, F 3, a Servings and Grams switch, and editable food name and serving size"
 ---
@@ -56,6 +57,8 @@ Look closer only when the gap is large and no fiber or sugar alcohol explains it
 ## Log the label's number, not your own math
 
 MACROS keeps the label's number when you log.
+
+To see how MACROS reads and lets you edit the package values, read [the label-scanning walkthrough](/guides/how-label-scanning-works/). The iPhone app is coming soon. [Join the waitlist](/#waitlist) for its availability email.
 
 1. Scan the label and compare the calories on the card with the package.
 2. If a number doesn't match, tap Edit details and fix it.

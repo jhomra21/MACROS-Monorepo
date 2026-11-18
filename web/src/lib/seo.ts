@@ -35,6 +35,10 @@ export const pages = {
 		title: 'About MACROS | No-account calorie and macro tracker',
 		description: 'Meet MACROS, a calorie counter and macro tracker for iPhone. Keep a food diary on your device, scan barcodes and nutrition labels, and start with no account.',
 	},
+	'/what-is-macros/': {
+		title: 'What is MACROS? An iPhone calorie and macro tracker with no account',
+		description: 'MACROS: Nutrition Tracker is an iPhone calorie and macro tracker with no account. See what stays on your phone, what uses the network, what is free, and current Pro prices.',
+	},
 	'/support/': {
 		title: 'MACROS support | Food diary and macro tracker help',
 		description: 'Get help with the MACROS calorie counter and food diary for iPhone. Contact MACROS support about barcode scans, nutrition labels, daily goals, or purchases.',
@@ -121,7 +125,7 @@ export const organizationReference: JsonObject = {
 export const organizationStructuredData: JsonObject = {
 	...organizationReference,
 	logo: absoluteURL('/apple-touch-icon.png'),
-	sameAs: [site.instagramURL],
+	sameAs: [site.instagramURL, site.tiktokURL, site.threadsURL],
 };
 
 export const homeStructuredData: JsonObject[] = [

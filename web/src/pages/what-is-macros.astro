@@ -1,0 +1,59 @@
+---
+export const prerender = true;
+
+import { Image } from 'astro:assets';
+import PageHeading from '../components/PageHeading.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { site } from '../data/site';
+import { absoluteURL, organizationReference, pages } from '../lib/seo';
+
+const facts = site.facts;
+
+const planText = site.proPrices.map(({ name, price, cadence, note }) => `${name}: ${price} ${cadence} (${note.replace(/\.$/, '')})`).join('; ');
+
+const pageSchema = [{
+	'@type': 'AboutPage',
+	'@id': absoluteURL('/what-is-macros/'),
+	name: pages['/what-is-macros/'].title,
+	description: pages['/what-is-macros/'].description,
+	url: absoluteURL('/what-is-macros/'),
+	about: organizationReference,
+}];
+---
+
+<SiteLayout {...pages['/what-is-macros/']} structuredData={pageSchema}>
+	<article class="container prose">
+		<nav class="breadcrumbs caption" aria-label="Breadcrumb"><a href="/">MACROS</a><span aria-hidden="true"> / </span><span aria-current="page">What is MACROS?</span></nav>
+		<PageHeading heading="What is MACROS?">
+			<p class="lead">{site.fullName} is an iPhone calorie and macro tracker that needs no account. It keeps your food diary on your device, while online food searches and barcode lookups use external data services.</p>
+		</PageHeading>
+		<p><strong>Status:</strong> {facts.status} Checked November 18, 2026.</p>
+		<table>
+			<tbody>
+				<tr><th scope="row">Platform</th><td>{facts.platform}</td></tr>
+				<tr><th scope="row">Minimum version</th><td>{facts.minimumOS}</td></tr>
+				<tr><th scope="row">Account</th><td>{facts.account} {facts.optionalSharing}</td></tr>
+				<tr><th scope="row">Where your data lives</th><td>{facts.dataLocation}</td></tr>
+				<tr><th scope="row">What leaves the phone</th><td>{facts.lookups} {facts.optionalSharing} <a href="/privacy/#optional-sharing-circle">Read the sharing details</a>.</td></tr>
+				<tr><th scope="row">Label scanning</th><td>{facts.labelScanning}</td></tr>
+				<tr><th scope="row">Free features</th><td>{facts.free}</td></tr>
+				<tr><th scope="row">MACROS Pro prices</th><td>{planText}. {site.plansNote} <a href="/#plans">See all Pro features</a>.</td></tr>
+				<tr><th scope="row">Ads</th><td>{facts.ads}</td></tr>
+				<tr><th scope="row">Food sources</th><td>{facts.foodSources}</td></tr>
+				<tr><th scope="row">Availability</th><td>{facts.status}</td></tr>
+			</tbody>
+		</table>
+		<h2>Where to check the details</h2>
+		<p><a href="/privacy/">The privacy policy</a> explains device storage, network lookups, optional sharing, and deletion. The <a href="/support/">support FAQ</a> covers common app questions.</p>
+		<p>{facts.export} Read <a href="/guides/how-to-set-macro-goals/">how the goal calculator works</a>, <a href="/blog/serving-size-vs-whole-package/">how servings are scaled</a>, and <a href="/guides/how-macros-works-offline/">what works offline</a>.</p>
+		<div class="showcase__track" role="list" tabindex="0" aria-label="MACROS app screenshots">
+			{site.screenshots.slice(0, 3).map(screen => <div class="showcase__item" role="listitem">
+				<figure class="showcase__card">
+					<Image src={screen.src} alt={screen.alt} width={320} layout="constrained" widths={[320, 640, 960]} sizes="(max-width: 360px) calc(100vw - 40px), 320px" format="webp" loading="lazy" />
+					<figcaption>{screen.title}: a real MACROS app screen.</figcaption>
+				</figure>
+			</div>)}
+		</div>
+		<p><a href="/#waitlist">Join the waitlist</a> for an email when MACROS is available.</p>
+	</article>
+</SiteLayout>

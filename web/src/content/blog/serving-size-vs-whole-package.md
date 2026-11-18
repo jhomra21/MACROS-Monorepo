@@ -8,7 +8,9 @@ image: ../../assets/app-images/app-scan-review.png
 imageAlt: "MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons"
 related:
   - blog/label-calories-4-4-9
+  - guides/calorie-counter-no-account
   - guides/how-to-set-macro-goals
+  - guides/how-label-scanning-works
 ---
 
 You finished half a bag of chips, or the whole tub of yogurt. The label gives its numbers for one serving, and that is rarely what you ate. So you need to scale them.
@@ -79,3 +81,5 @@ If the label gives only a volume, Grams stays off until you enter the serving's 
 - [21 CFR 101.12](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.12) lists the reference amounts for each kind of food.
 
 Sources checked November 7, 2026, using the eCFR as amended through November 5, 2026. App steps checked the same day. This post is general information, not medical advice, and no dietitian reviewed it.
+
+See [how MACROS scans and scales label values](/guides/how-label-scanning-works/) for the review steps and quantity math. [Join the waitlist](/#waitlist) for an email when the iPhone app is available.

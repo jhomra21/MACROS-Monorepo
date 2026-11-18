@@ -16,16 +16,60 @@ import portionCrop from '../assets/feature-crops/portion.png';
 import sharingCrop from '../assets/feature-crops/sharing.png';
 import widgetsCrop from '../assets/feature-crops/widgets.png';
 
+const socialLinks = [
+	{ href: 'https://www.instagram.com/macrosios/', label: 'Instagram' },
+	{ href: 'https://www.tiktok.com/@macrosios', label: 'TikTok' },
+	{ href: 'https://www.threads.com/@macrosios', label: 'Threads' },
+] as const;
+
+const freeFeatures = [
+	'Food logging, search, barcode and label scans',
+	'Saved foods, meals, and history',
+	'Personal widgets: small, medium, and Lock Screen',
+	'Daily share card and accepting invites',
+	'Goal calculator and weight log',
+	'Nutrition writing to Apple Health',
+	'One daily reminder',
+] as const;
+
+const proPrices = [
+	{ name: 'Monthly', price: '$2.99', cadence: 'per month', note: 'No free trial' },
+	{ name: 'Yearly', price: '$19.99', cadence: 'per year', note: '7-day free trial' },
+	{ name: 'Lifetime', price: '$49.99', cadence: 'one time', note: 'No renewals. One purchase per Apple Account.' },
+] as const;
+
+const proPriceFAQ = `${proPrices[0].price} monthly, ${proPrices[1].price} yearly with a ${proPrices[1].note}, or ${proPrices[2].price} for lifetime. Prices vary by region. Apple confirms the price before you buy.`;
+
+const productFacts = {
+	platform: 'iPhone only',
+	minimumOS: 'iOS 26 or later',
+	account: 'No account is needed to track food.',
+	dataLocation: "Food logs, saved foods and meals, goals, body profile, and weight entries stay in the app's protected container on your device.",
+	lookups: 'When you search online, search terms go to the MACROS Cloudflare Worker, which queries USDA FoodData Central. Barcode numbers go to the same Worker, which queries Open Food Facts. Requests include your IP address. Your food log is not sent for these lookups.',
+	labelScanning: 'Nutrition label text recognition runs on the iPhone with Apple Vision. The label image is not sent for text recognition.',
+	optionalSharing: "Optional sharing is separate from tracking, off by default, and uses a device-generated profile rather than a tracking sign-in. It needs a network connection. Sending an invite requires Pro, and a connection stays active while either person has Pro. For each person, choose Nothing, Macros, or Macros + Foods. Macros sends your display name, optional goals, and today's calories, protein, carbs, fat, and entry count. Macros + Foods also sends today's food names, amounts, calories, protein, carbs, and fat.",
+	export: 'Backup export, CSV log export, and backup import require MACROS Pro. You choose where to save or share the exported file.',
+	offline: 'On-device logging, saved foods, bundled common foods, and label text recognition work without a network connection. Online food search and barcode lookup need a connection.',
+	foodSources: 'Open Food Facts for barcode lookups and USDA FoodData Central for online food searches. A bundled common-food list is also available on-device.',
+	free: freeFeatures.join('; '),
+	ads: 'The app has no advertising tracker or ads.',
+	status: 'Coming soon for iPhone. The waitlist is open.',
+} as const;
+
+const fullName = 'MACROS: Nutrition Tracker';
+
 export const site = {
 	name: 'MACROS',
-	fullName: 'MACROS: Nutrition Tracker',
+	fullName,
 	lockupSubtitle: 'Nutrition Tracker',
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
-	description:
-		'MACROS is a calorie counter and macro tracker for iPhone. Keep your food diary on your device, scan a label, and get on with your day. No account needed.',
+	description: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account} Keep your food diary on your device and scan a label.`,
 	appStore: { id: '6767565938', live: false },
-	instagramURL: 'https://www.instagram.com/macrosios/',
+	instagramURL: socialLinks[0].href,
+	tiktokURL: socialLinks[1].href,
+	threadsURL: socialLinks[2].href,
+	facts: productFacts,
 	supportEmail: 'jhonra121@gmail.com',
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
@@ -57,6 +101,7 @@ export const site = {
 			heading: 'Company',
 			links: [
 				{ href: '/about/', label: 'About' },
+				{ href: '/what-is-macros/', label: 'What is MACROS' },
 				{ href: '/support/', label: 'Support' },
 			],
 		},
@@ -68,6 +113,7 @@ export const site = {
 			],
 		},
 	],
+	socialLinks,
 	hero: {
 		title: 'Log your food. Get on with your day.',
 		lead: 'Your calories and macros, at a glance. No account needed.',
@@ -123,15 +169,7 @@ export const site = {
 			size: 'half',
 		},
 	],
-	freeFeatures: [
-		'Food logging, search, barcode and label scans',
-		'Saved foods, meals, and history',
-		'Personal widgets: small, medium, and Lock Screen',
-		'Daily share card and accepting invites',
-		'Goal calculator and weight log',
-		'Nutrition writing to Apple Health',
-		'One daily reminder',
-	],
+	freeFeatures,
 	proFeatures: [
 		'Insights beyond 7 days',
 		'Sending sharing invites',
@@ -142,11 +180,7 @@ export const site = {
 		'Widget colors and photo backgrounds',
 		'Multiple and smart reminders',
 	],
-	proPrices: [
-		{ name: 'Monthly', price: '$2.99', cadence: 'per month', note: 'No free trial' },
-		{ name: 'Yearly', price: '$19.99', cadence: 'per year', note: '7-day free trial' },
-		{ name: 'Lifetime', price: '$49.99', cadence: 'one time', note: 'No renewals. One purchase per Apple Account.' },
-	],
+	proPrices,
 	plansNote: 'Prices and offers vary by region. Apple confirms the price before you buy.',
 	faq: [
 		{
@@ -164,7 +198,7 @@ export const site = {
 		},
 		{
 			question: 'What does Pro cost?',
-			answer: '$2.99 monthly, $19.99 yearly with a 7-day free trial, or $49.99 for lifetime. Prices vary by region. Apple confirms the price before you buy.',
+			answer: proPriceFAQ,
 		},
 		{
 			question: 'Can I log food offline?',
