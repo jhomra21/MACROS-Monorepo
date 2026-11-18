@@ -24,12 +24,15 @@ const entry = article ? (await publishedEntries(Astro.url.pathname.startsWith('/
 	.find(entry => `/${entry.collection}/${entry.id}/` === Astro.url.pathname) : undefined;
 
 // The noindex 404 uses the existing home preview, without generating a public 404 image.
-const image = socialImage(await socialInput(
-	noindex ? '/' : Astro.url.pathname,
-	noindex ? pages['/'].title : title,
-	noindex ? pages['/'].description : description,
-	entry?.data.image,
-));
+// Local page rendering uses the app icon; production social cards keep the macOS Helvetica renderer.
+const image = import.meta.env.DEV
+	? { src: '/apple-touch-icon.png', width: 180, height: 180, alt: `${site.fullName} app icon` }
+	: socialImage(await socialInput(
+		noindex ? '/' : Astro.url.pathname,
+		noindex ? pages['/'].title : title,
+		noindex ? pages['/'].description : description,
+		entry?.data.image,
+	));
 
 const ogImageURL = absoluteURL(image.src);
 

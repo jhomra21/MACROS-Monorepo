@@ -43,6 +43,9 @@ const groups = site.footerLinks.map(group => ({
 			</div>
 		</div>
 		{Astro.url.pathname !== '/' && <AppStoreBadge />}
+		<nav aria-label="Social media">
+			<ul class="social-links">{site.socialLinks.map(link => <li><a href={link.href}>{link.label}</a></li>)}</ul>
+		</nav>
 		<p class="site-footer__bottom caption">© 2026 {site.fullName}. All rights reserved.</p>
 		{site.appStore.live && <p class="caption">Apple and the Apple logo are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc.</p>}
 	</div>

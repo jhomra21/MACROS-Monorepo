@@ -8,5 +8,6 @@
 - [Evidence policy](evidence/README.md) explains tracked reports and ignored raw output.
 - [App Store material](app-store/) includes release/listing checklists and deliberate creative assets.
 - [Cleanup plan](repo-cleanup-plan.md) records the approved scope and rule migration checklist.
+- [SEO measurement](marketing/seo-measurement.md) tracks Search Console, Bing, AI-answer prompts, and launch signals.
 
 Keep operational docs current. Preserve dated results in history and evidence, including their limitations. Do not treat an archived plan as a release sign-off.

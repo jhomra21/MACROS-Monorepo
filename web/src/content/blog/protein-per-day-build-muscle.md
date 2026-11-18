@@ -8,6 +8,7 @@ image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
 related:
   - guides/how-to-set-macro-goals
+  - guides/how-macros-works-offline
   - blog/label-calories-4-4-9
   - blog/serving-size-vs-whole-package
 ---
@@ -71,3 +72,5 @@ Once you have your number, put it straight into your goals. Recalculate Targets 
 - [21 CFR 101.9(c)(1)(i)(B)](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9) gives the general factor of 4 calories per gram of protein.
 
 Sources checked November 7, 2026, using the eCFR as amended through November 5, 2026. App steps checked the same day. This post is general information, not medical advice, and no dietitian or doctor reviewed it.
+
+MACROS is coming soon for iPhone. [Join the waitlist](/#waitlist) for an email when it is available, or read [what works offline](/guides/how-macros-works-offline/) before deciding whether it fits your routine.

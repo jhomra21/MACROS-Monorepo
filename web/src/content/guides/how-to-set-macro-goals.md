@@ -7,6 +7,11 @@ draft: false
 image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
 imageCaption: "Settings > Daily Goals in MACROS. These demo values illustrate the controls, not a recommended diet."
+related:
+  - guides/calorie-counter-no-account
+  - guides/how-macros-works-offline
+  - guides/how-label-scanning-works
+  - blog/label-calories-4-4-9
 ---
 
 Start with a calorie estimate and convert your chosen macro percentages to grams. This guide explains the math and shows how MACROS calculates and saves targets.
@@ -117,4 +122,4 @@ Check the macro balance and targets before applying them. These calculator scree
 
 Revisit your targets with a professional if they do not fit your needs. A macro total alone does not tell you whether your diet provides enough fiber, vitamins, or minerals.
 
-Read [how MACROS handles your food diary data](/privacy/) or [contact MACROS support for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features.
+Read [how MACROS handles your food diary data](/privacy/) or [contact MACROS support for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features. [Join the waitlist](/#waitlist) for an email when the iPhone app is available.

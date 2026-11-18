@@ -52,7 +52,13 @@ const readingMinutes = entry ? Math.max(1, Math.ceil((entry.body ?? '').split(/\
 
 const metadata = entry ? { title: entry.data.title, description: entry.data.description } : pages[`/${section}/`];
 
-const articleSchema = entry ? [{
+const articleImage = entry && import.meta.env.DEV
+	? absoluteURL('/apple-touch-icon.png')
+	: entry ? absoluteURL(socialImage(await socialInput(
+		`/${section}/${entry.id}/`, entry.data.title, entry.data.description, entry.data.image,
+	)).src) : undefined;
+
+const articleSchema = entry && articleImage ? [{
 	'@type': 'Article',
 	headline: entry.data.title,
 	description: entry.data.description,
@@ -60,9 +66,7 @@ const articleSchema = entry ? [{
 	dateModified: entry.data.updated.toISOString(),
 	author: organizationReference,
 	publisher: organizationReference,
-	image: absoluteURL(socialImage(await socialInput(
-		`/${section}/${entry.id}/`, entry.data.title, entry.data.description, entry.data.image,
-	)).src),
+	image: articleImage,
 	mainEntityOfPage: absoluteURL(`/${section}/${entry.id}/`),
 }] : [];
 

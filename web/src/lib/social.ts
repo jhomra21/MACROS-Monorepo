@@ -13,6 +13,7 @@ export const fontFile = '/System/Library/Fonts/Helvetica.ttc';
 const screens = {
 	'/': ['app-home.png', 'Calorie counter & food diary'],
 	'/about/': ['app-home.png', 'About MACROS'],
+	'/what-is-macros/': ['app-home.png', 'What is MACROS?'],
 	'/support/': ['app-scan-review.png', 'Help with MACROS'],
 	'/privacy/': ['app-sharing.png', 'Privacy & your data'],
 	'/terms/': ['app-settings.png', 'Terms of use'],
