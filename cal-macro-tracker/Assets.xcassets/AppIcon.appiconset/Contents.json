@@ -7,7 +7,7 @@
       "size" : "1024x1024"
     },
     {
-      "filename" : "icon-ios.png",
+      "filename" : "icon-ios-dark.png",
       "appearances" : [
         {
           "appearance" : "luminosity",
@@ -19,7 +19,7 @@
       "size" : "1024x1024"
     },
     {
-      "filename" : "icon-ios.png",
+      "filename" : "icon-ios-tinted.png",
       "appearances" : [
         {
           "appearance" : "luminosity",
