@@ -2,7 +2,7 @@
 title: "Does MACROS work offline?"
 description: "MACROS can log food, search saved and bundled foods, and read nutrition labels offline. Online food search and barcode lookup need a connection."
 published: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-add-food.png
 imageAlt: "MACROS food search showing on-device matches and online search results"
@@ -16,7 +16,7 @@ related:
 
 MACROS can log food without a network connection, search foods saved on the iPhone, and recognize text on a nutrition label. Online food search and barcode lookup need the network, so manual entry remains available when those requests cannot run.
 
-MACROS: Nutrition Tracker is an iPhone app for iOS 26 or later. The app is coming soon, and its waitlist is open.
+MACROS: Nutrition Tracker is an iPhone app for iOS 26 or later.
 
 ## What can I do without a connection?
 
@@ -36,6 +36,6 @@ No. Tracking does not require an account. Optional sharing is a separate feature
 
 ## Can I export food logs offline?
 
-Backup export, CSV log export, and backup import are MACROS Pro features. When you export, the app creates a file that you can save or share using iOS. See [what is free and what Pro adds](/#plans). The site is not a download page; [join the waitlist](/#waitlist) for an email when the app is available.
+Backup export, CSV log export, and backup import are MACROS Pro features. When you export, the app creates a file that you can save or share using iOS. See [what is free and what Pro adds](/#plans).
 
 Read [what is MACROS?](/what-is-macros/) for the full product facts, including data sources and availability.

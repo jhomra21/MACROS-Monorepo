@@ -1,7 +1,7 @@
 ---
 export const prerender = true;
 
-import WaitlistCta from '../components/WaitlistCta.astro';
+import DownloadCta from '../components/DownloadCta.astro';
 import PageHeading from '../components/PageHeading.astro';
 import { site } from '../data/site';
 import SiteLayout from '../layouts/SiteLayout.astro';
@@ -86,5 +86,5 @@ import { organizationStructuredData, pages } from '../lib/seo';
 		</div>
 	</section>
 
-	<WaitlistCta idPrefix="about" />
+	<DownloadCta />
 </SiteLayout>

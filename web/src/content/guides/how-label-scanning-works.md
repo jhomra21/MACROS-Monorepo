@@ -2,7 +2,7 @@
 title: "How label scanning works in MACROS"
 description: "MACROS reads nutrition-label text on your iPhone, then lets you review the values and serving amount before logging."
 published: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-scan-details.png
 imageAlt: "MACROS label-scan editor with nutrition values, serving size, and editable food details"
@@ -16,7 +16,7 @@ related:
 
 MACROS uses Apple Vision on the iPhone to recognize text on a nutrition label. It turns that text into a reviewable food entry, not an automatic log. Check the name, serving size, calories, and nutrients, edit any mistake, then choose how much you ate.
 
-MACROS: Nutrition Tracker is an iPhone calorie and macro tracker that needs no account. The app is coming soon, and the waitlist is open.
+MACROS: Nutrition Tracker is an iPhone calorie and macro tracker that needs no account.
 
 ## Does the label photo leave the iPhone?
 
@@ -46,4 +46,4 @@ The app does not invent a gram weight for a volume-only serving. Grams stays una
 
 Use a barcode when you want to look up a packaged product in Open Food Facts. That lookup needs a network connection. Label recognition does not need one, and can work when the product is missing from the online database. Read [what works offline](/guides/how-macros-works-offline/) for the limits of offline use.
 
-The [privacy policy](/privacy/#food-search-and-barcode-lookup) explains what gets sent for online search and barcode requests. [Join the waitlist](/#waitlist) for an email when MACROS is available.
+The [privacy policy](/privacy/#food-search-and-barcode-lookup) explains what gets sent for online search and barcode requests.

@@ -27,7 +27,7 @@ const pageSchema = [{
 		<PageHeading heading="What is MACROS?">
 			<p class="lead">{site.fullName} is an iPhone calorie and macro tracker that needs no account. It keeps your food diary on your device, while online food searches and barcode lookups use external data services.</p>
 		</PageHeading>
-		<p><strong>Status:</strong> {facts.status} Checked November 18, 2026.</p>
+		<p><strong>Status:</strong> {facts.status} Checked November 23, 2026.</p>
 		<table>
 			<tbody>
 				<tr><th scope="row">Platform</th><td>{facts.platform}</td></tr>
@@ -54,6 +54,7 @@ const pageSchema = [{
 				</figure>
 			</div>)}
 		</div>
-		<p><a href="/#waitlist">Join the waitlist</a> for an email when MACROS is available.</p>
+		<p>MACROS is available now. Download it from the App Store:</p>
+		<p><a class="button button--lg" href={site.appStore.url}>Download on the App Store</a></p>
 	</article>
 </SiteLayout>

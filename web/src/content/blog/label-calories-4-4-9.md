@@ -2,7 +2,7 @@
 title: "Why label calories don't add up to 4-4-9"
 description: "Did the 4-4-9 math on a label and got a different number? Learn why food makers' calorie methods and rounding cause the gap, and which number to log."
 published: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-23
 draft: false
 related:
   - guides/how-to-set-macro-goals
@@ -58,7 +58,7 @@ Look closer only when the gap is large and no fiber or sugar alcohol explains it
 
 MACROS keeps the label's number when you log.
 
-To see how MACROS reads and lets you edit the package values, read [the label-scanning walkthrough](/guides/how-label-scanning-works/). The iPhone app is coming soon. [Join the waitlist](/#waitlist) for its availability email.
+To see how MACROS reads and lets you edit the package values, read [the label-scanning walkthrough](/guides/how-label-scanning-works/).
 
 1. Scan the label and compare the calories on the card with the package.
 2. If a number doesn't match, tap Edit details and fix it.

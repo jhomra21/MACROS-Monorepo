@@ -1,13 +1,13 @@
-import appAddFoodImage from '../assets/app-images/app-add-food.png';
-import appHistoryImage from '../assets/app-images/app-history.png';
-import appHomeImage from '../assets/app-images/app-home.png';
-import appInsightsImage from '../assets/app-images/app-insights.png';
-import appScanDetailsImage from '../assets/app-images/app-scan-details.png';
-import appScanReviewImage from '../assets/app-images/app-scan-review.png';
-import appSettingsImage from '../assets/app-images/app-settings.png';
-import appSharingImage from '../assets/app-images/app-sharing.png';
-import appSharingPersonImage from '../assets/app-images/app-sharing-person.png';
-import appWidgetsImage from '../assets/app-images/app-widgets.png';
+import appAddFoodImage from '../assets/app-images/framed/app-add-food.png';
+import appHistoryImage from '../assets/app-images/framed/app-history.png';
+import appHomeImage from '../assets/app-images/framed/app-home.png';
+import appInsightsImage from '../assets/app-images/framed/app-insights.png';
+import appScanDetailsImage from '../assets/app-images/framed/app-scan-details.png';
+import appScanReviewImage from '../assets/app-images/framed/app-scan-review.png';
+import appSettingsImage from '../assets/app-images/framed/app-settings.png';
+import appSharingImage from '../assets/app-images/framed/app-sharing.png';
+import appSharingPersonImage from '../assets/app-images/framed/app-sharing-person.png';
+import appWidgetsImage from '../assets/app-images/framed/app-widgets.png';
 import { siteOrigin } from './origin';
 import loggingCrop from '../assets/feature-crops/logging.png';
 import scanningCrop from '../assets/feature-crops/scanning.png';
@@ -53,10 +53,15 @@ const productFacts = {
 	foodSources: 'Open Food Facts for barcode lookups and USDA FoodData Central for online food searches. A bundled common-food list is also available on-device.',
 	free: freeFeatures.join('; '),
 	ads: 'The app has no advertising tracker or ads.',
-	status: 'Coming soon for iPhone. The waitlist is open.',
+	status: 'Available on the App Store for iPhone.',
 } as const;
 
 const fullName = 'MACROS: Nutrition Tracker';
+// Official US-English black App Store badge downloaded from Apple on November 23, 2026:
+// https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg
+// Use only after the listing is available and the account owner has accepted Apple's artwork license.
+
+const appStoreURL = 'https://apps.apple.com/app/id6767565938';
 
 export const site = {
 	name: 'MACROS',
@@ -65,7 +70,7 @@ export const site = {
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account} Keep your food diary on your device and scan a label.`,
-	appStore: { id: '6767565938', live: false },
+	appStore: { id: '6767565938', url: appStoreURL, live: true },
 	instagramURL: socialLinks[0].href,
 	tiktokURL: socialLinks[1].href,
 	threadsURL: socialLinks[2].href,

@@ -597,17 +597,14 @@ summary {
 	}
 }
 
-/* App screen: a plain rounded screenshot, no simulated device hardware */
+/* Apple-approved mock-up screenshots are precomposited with the official product bezel. */
 .app-screen {
 	--screen-w: 17.5rem;
 	position: relative;
 	width: min(var(--screen-w), 100%);
 	margin-inline: auto;
-	aspect-ratio: 1320 / 2868;
-	/* Elliptical radii keep the corner circular at about 9% of the width on this tall aspect ratio. */
-	border-radius: 9% / calc(9% * 1320 / 2868);
+	aspect-ratio: 1470 / 3000;
 	overflow: hidden;
-	background: var(--bg-soft);
 }
 
 .app-screen--sm {
@@ -617,17 +614,7 @@ summary {
 .app-screen img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
-}
-
-/* Hairline drawn above the image so white or black screens stay separated from either page background. */
-.app-screen::after {
-	content: '';
-	position: absolute;
-	inset: 0;
-	border: 1px solid var(--hairline);
-	border-radius: inherit;
-	pointer-events: none;
+	object-fit: contain;
 }
 /* Feature bento */
 .bento {
@@ -1038,22 +1025,6 @@ summary {
 	}
 }
 
-/* Waitlist */
-.waitlist {
-	display: grid;
-	gap: var(--space-2);
-	width: 100%;
-	max-width: 32rem;
-}
-
-.waitlist-form {
-	width: 100%;
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--space-2);
-}
-
-.waitlist-input,
 .field input,
 .field textarea {
 	min-width: 0;
@@ -1064,39 +1035,19 @@ summary {
 	transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
 }
 
-.waitlist-input {
-	width: 0;
-	flex: 1 1 14rem;
-	min-height: 3rem;
-	padding: 0 var(--space-5);
-}
-
-.waitlist-input::placeholder,
 .field input::placeholder {
 	color: var(--ink-muted);
 }
 
-.waitlist-input:focus-visible,
 .field input:focus-visible,
 .field textarea:focus-visible {
 	outline-offset: 2px;
 	border-color: var(--link);
 }
 
-.waitlist-input:user-invalid,
 .field input:user-invalid,
 .field textarea:user-invalid {
 	border-color: var(--danger);
-}
-
-.waitlist-submit {
-	flex: 0 0 auto;
-}
-
-@media (max-width: 30rem) {
-	.waitlist-submit {
-		flex: 1 1 100%;
-	}
 }
 
 .hp {
@@ -1107,7 +1058,7 @@ summary {
 	overflow: hidden;
 }
 
-.waitlist-cta {
+.download-cta {
 	display: grid;
 	gap: var(--space-5);
 }
@@ -1132,16 +1083,6 @@ summary {
 
 .status-banner--visible {
 	display: block;
-}
-
-.waitlist-status {
-	display: block;
-	min-height: 1.5rem;
-	visibility: hidden;
-}
-
-.waitlist-status.status-banner--visible {
-	visibility: visible;
 }
 
 @keyframes status-in {
