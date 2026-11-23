@@ -597,62 +597,24 @@ summary {
 	}
 }
 
-/* App screen: a plain rounded screenshot, no simulated device hardware */
+/* Apple-approved mock-up screenshots are precomposited with the official product bezel. */
 .app-screen {
 	--screen-w: 17.5rem;
 	position: relative;
 	width: min(var(--screen-w), 100%);
 	margin-inline: auto;
-	aspect-ratio: 1320 / 2868;
-	/* Elliptical radii keep the corner circular at about 9% of the width on this tall aspect ratio. */
-	border-radius: 9% / calc(9% * 1320 / 2868);
+	aspect-ratio: 1470 / 3000;
 	overflow: hidden;
-	background: var(--bg-soft);
 }
 
 .app-screen--sm {
 	--screen-w: 15rem;
 }
 
-.app-screen--device {
-	aspect-ratio: 1290 / 2796;
-	overflow: visible;
-	padding: 4.2% 5%;
-	background: transparent;
-	border-radius: 0;
-}
-
-.app-screen--device::after {
-	content: none;
-}
-
-.app-screen--device img:not(.app-screen__bezel) {
-	border-radius: 11%;
-}
-
-.app-screen__bezel {
-	position: absolute;
-	inset: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-	pointer-events: none;
-}
-
 .app-screen img {
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
-}
-
-/* Hairline drawn above the image so white or black screens stay separated from either page background. */
-.app-screen::after {
-	content: '';
-	position: absolute;
-	inset: 0;
-	border: 1px solid var(--hairline);
-	border-radius: inherit;
-	pointer-events: none;
+	object-fit: contain;
 }
 /* Feature bento */
 .bento {
