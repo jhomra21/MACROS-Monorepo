@@ -37,6 +37,8 @@ final class CameraDetailsPerformanceUITests: XCTestCase {
             options: options
         ) {
             if hasTypedText {
+                revealProtein(protein, in: editor)
+                protein.tap()
                 protein.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 5))
                 app.buttons["Done"].tap()
                 XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 10), "Keyboard did not dismiss")
@@ -54,8 +56,8 @@ final class CameraDetailsPerformanceUITests: XCTestCase {
             protein.typeText("12345")
             typeTimes.append(Date().timeIntervalSince(clock))
             mark("typed")
-            app.swipeUp()
-            app.swipeDown()
+            editor.swipeUp(velocity: .slow)
+            editor.swipeDown(velocity: .slow)
             mark("end")
         }
         print("PERF_FOCUS \(focusTimes.map { String(format: "%.3f", $0) })")

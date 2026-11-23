@@ -39,7 +39,7 @@ Confirm the legal owner details before submission. Apple's limits: name 30 chara
   MACROS is a tracking tool, not medical advice. Nutrition information may be incomplete; review entries and consult a qualified health professional for health decisions.
 
 - **Keywords (under 100 characters, no words from the name or subtitle):** food diary,meal log,barcode,food journal,protein,carbs,fat,diet,weight,label scan,kcal,goal
-- **What's New:** First release of MACROS: Nutrition Tracker. Log calories and macros with one camera view for barcodes and nutrition labels, Home Screen and Lock Screen widgets, daily rings, and optional sharing.
+- **What's New (1.1):** Save meals built from favorite foods and find foods with unified search. Edit scan details as you review results, and restore deleted saved foods with Undo. Track weight in kilograms or pounds. Create Story, Post, or Square share cards with a caption to copy, or choose whether to share macros or foods with each person. Shared-person widgets bring invited people's updates to your Home Screen.
 - **Support URL:** `https://<your-domain>/support` (replace with production domain)
 - **Marketing URL:** `https://<your-domain>/` (replace with production domain)
 - **Privacy policy URL:** `https://<your-domain>/privacy` (replace with production domain)

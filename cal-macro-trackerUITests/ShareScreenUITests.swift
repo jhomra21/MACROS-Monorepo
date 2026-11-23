@@ -24,6 +24,12 @@ final class ShareScreenUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    /// Export verification renders and OCRs three full-resolution images; allow the runbook's 90-second maximum.
+    override var executionTimeAllowance: TimeInterval {
+        get { 90 }
+        set { super.executionTimeAllowance = newValue }
+    }
+
     // MARK: Share sheet
 
     func testSheetOpensWithDefaultsAndPreviewTracksStory() { assertPreviewTracks(size: "Story", showsDefaults: true) }
@@ -257,7 +263,12 @@ final class ShareScreenUITests: XCTestCase {
             let weekday = Date.now.formatted(.dateTime.weekday(.wide)).lowercased()
             XCTAssertTrue(text.contains(weekday), "OCR did not read the header in \(size.name)-\(detail): \(text)")
             if detail != "Rings" {
-                XCTAssertTrue(text.contains("protein"), "\(size.name)-\(detail) lacks macro columns: \(text)")
+                let macroSummaryImage =
+                    size.name == "Story"
+                    ? try XCTUnwrap(cgImage.cropping(to: CGRect(x: 0, y: 1250, width: cgImage.width, height: 350)))
+                    : cgImage
+                let macroText = try recognizedText(in: macroSummaryImage).lowercased()
+                XCTAssertTrue(macroText.contains("protein"), "\(size.name)-\(detail) lacks macro columns: \(macroText)")
             }
             if detail == "Full" {
                 XCTAssertTrue(text.contains("fiber"), "\(size.name)-\(detail) lacks secondary nutrition: \(text)")
