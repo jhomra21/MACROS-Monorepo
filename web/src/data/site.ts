@@ -70,7 +70,7 @@ export const site = {
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account} Keep your food diary on your device and scan a label.`,
-	appStore: { id: '6767565938', url: appStoreURL, live: false },
+	appStore: { id: '6767565938', url: appStoreURL, live: true },
 	instagramURL: socialLinks[0].href,
 	tiktokURL: socialLinks[1].href,
 	threadsURL: socialLinks[2].href,
