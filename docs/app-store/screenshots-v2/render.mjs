@@ -37,8 +37,8 @@ const common = `
 * { box-sizing: border-box; }
 html, body { margin: 0; overflow: hidden; background: #f5f5f7; }
 body { position: relative; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
-.headline { position: absolute; inset: 2.7% 4% auto; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; white-space: nowrap; }
-.screen { position: absolute; left: 50%; top: 10.7%; width: 88.2%; transform: translateX(-50%); overflow: hidden; border-radius: 4.5%; box-shadow: 0 32px 84px -30px #0005; }
+.headline { position: absolute; top: 2.6%; left: 4%; width: 92%; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; }
+.screen { position: absolute; left: 50%; top: 13.2%; width: 95.2%; transform: translateX(-50%); overflow: hidden; border-radius: 4.5%; box-shadow: 0 32px 84px -30px #0005; }
 .screen img { display: block; width: 100%; height: auto; }
 `;
 
@@ -60,11 +60,20 @@ const renderPage = async (name, markup, width, height) => {
       image: { width: document.images[0].naturalWidth, height: document.images[0].naturalHeight },
       screen: screen.getBoundingClientRect().toJSON(),
       headline: headline?.getBoundingClientRect().toJSON() ?? null,
-      overflow: document.body.scrollWidth > innerWidth || document.body.scrollHeight > innerHeight,
+      headlineClipped: headline ? headline.scrollWidth > headline.clientWidth : false,
+      headlineOverlapsScreen: headline ? headline.getBoundingClientRect().bottom >= screen.getBoundingClientRect().top : false,
+      screenBleedsBottom: screen.getBoundingClientRect().bottom > innerHeight,
     };
   });
 
-  if (errors.length || report.overflow) throw new Error(JSON.stringify({ name, errors, report }));
+  const isScreenshot = /^\d{2}-/.test(name);
+  if (
+    errors.length ||
+    (isScreenshot &&
+      (report.headlineClipped || report.headlineOverlapsScreen || !report.screenBleedsBottom))
+  ) {
+    throw new Error(JSON.stringify({ name, errors, report }));
+  }
   const path = resolve(output, `${name}.png`);
   await page.screenshot({ path, type: 'png' });
   await page.close();
@@ -81,7 +90,7 @@ try {
 
   for (const size of dimensions) {
     const titleSize = Math.round(size.width * 0.062);
-    const screenSize = Math.round(size.width * 0.882);
+    const screenSize = Math.round(size.width * 0.952);
 
     const markupFor = (item, src) => `<!doctype html><html lang="en"><meta charset="utf-8"><title>${item.caption}</title><style>${common}
       body { width:${size.width}px; height:${size.height}px; }

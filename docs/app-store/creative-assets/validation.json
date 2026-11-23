@@ -288,8 +288,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 613003,
-      "sha256": "9d6f00170ea1071fe736e37e9549dd9c131b086846d04a418542367e2d20e533"
+      "bytes": 571388,
+      "sha256": "0111b5a04e7da3f9172fde1f509c93f89ef7ee1eebb5455fcc83ac564104e8db"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/01-scan-any-label-medium.png",
@@ -300,8 +300,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 513395,
-      "sha256": "5901d54567992c2d0b23c48ab40f62452884f02595a909992da3bb43db7df191"
+      "bytes": 479587,
+      "sha256": "6e1464b7094ab5ff137a249ccb6fd6e2d4ca42bbd940ea9a9f1312ffcc6166f5"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/02-your-day-at-a-glance-6.9-inch.png",
@@ -312,8 +312,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 758881,
-      "sha256": "97fbcfff3b3976ce1647ec8c12a907d686bd011129e8ec6dc972efbc9e83a268"
+      "bytes": 696780,
+      "sha256": "984d0d134e8c520c1e015dcb06ce21951969d3c291c0de1f126ac82fa100672b"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/02-your-day-at-a-glance-medium.png",
@@ -324,8 +324,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 636556,
-      "sha256": "6f507400803e17746c547d25c1f6b61858d2abdd19bda6b22f6137b53fed0c96"
+      "bytes": 580441,
+      "sha256": "1598884f4748f32069a84aecc1d96731341f8dff6b254e4ba4236877fca9ffe2"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/03-no-account-needed-6.9-inch.png",
@@ -336,8 +336,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 417045,
-      "sha256": "964c5a116636c9111ebc856d0c006e4f01a8fa70b57d7818a74ccd6982adda73"
+      "bytes": 339135,
+      "sha256": "51eec3747e3811624607631e0616b6b46a9042a9270d857a938f871c00ac9849"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/03-no-account-needed-medium.png",
@@ -348,8 +348,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 354543,
-      "sha256": "aa87ee6bd60ccd80ee85856d215bd444ba0c3d4c059cbb580720afd0737fdc4a"
+      "bytes": 283911,
+      "sha256": "10fb24cca4c18d295437b51d946c3ee47cda1c64d707d32980fc81e2a8ce7c86"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/04-log-the-amount-you-ate-6.9-inch.png",
@@ -360,8 +360,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 457205,
-      "sha256": "cf96b9c69f1a4e3a97033b5e1f8e832bd7ee478ebe1b1941a93f94d7aeebdcd4"
+      "bytes": 354726,
+      "sha256": "2e3bbd66f3442841bb21662363aad4647426e611836e29757d1e0d9a45044c46"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/04-log-the-amount-you-ate-medium.png",
@@ -372,8 +372,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 387813,
-      "sha256": "5650013ba59a905488b0215b744990b3e55401c631d84e3293fd679bcc012f93"
+      "bytes": 292606,
+      "sha256": "20bba526c0e6151809250e031ee706b83367cb62bc6646bf909a900eddf7d1be"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/05-see-your-food-history-6.9-inch.png",
@@ -384,8 +384,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 400575,
-      "sha256": "ba4088a1205c58a8972b05e3b574f18bbb2221c4bc0e761202bf0a7d4fcaf3fd"
+      "bytes": 424303,
+      "sha256": "24256c64dc3d615fd3890657fbc0245da236876a3287bd58e3b499cb445bb4ef"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/05-see-your-food-history-medium.png",
@@ -396,8 +396,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 335648,
-      "sha256": "2ee9676e12fea000afdbd0f27600aa8c985615bb666e130c194a135fed0bf839"
+      "bytes": 358239,
+      "sha256": "a74f913857736ef948e4f9b0c553e33bf8b209bb3bb9a08c0753dd47cf9621f9"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/06-goals-built-around-you-6.9-inch.png",
@@ -408,8 +408,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 375455,
-      "sha256": "af9fd04412850dc7b56271086d08c696de8859e121eaedb34447eb55afc9d153"
+      "bytes": 277136,
+      "sha256": "c48bd84bc0ff9146f82cf7741c36d22ea4fbbb05c11ee348cca0b1ac9d5e3d26"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/06-goals-built-around-you-medium.png",
@@ -420,8 +420,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 315702,
-      "sha256": "206360227dd5c7c35f89e507b6c349ebff511c58721c641af6b5829625d944c8"
+      "bytes": 229503,
+      "sha256": "aa290149c8693dc1d5f82c512e271bfad86c6f457b0ebd37491dfde8160e923d"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/contact-sheet.png",
@@ -432,8 +432,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 484917,
-      "sha256": "11ba5fdf76033ea5526aff442b0f85ece89db9bf52c321899a0ad7fed87e248c"
+      "bytes": 470591,
+      "sha256": "41d270b5273a49009abcde5e3e08bfbc21e8414c501ea2465ab526f0eb4dfdc1"
     },
     {
       "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/search-result-preview.png",
@@ -444,8 +444,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 295557,
-      "sha256": "06246a93c086a8a515871bddf901567c5cb4d40e930b042a01955143cd1c2201"
+      "bytes": 283530,
+      "sha256": "804f68e332e66b81e05882ddcfebb2b29919c0d64b735a7b5503b87935ada1f5"
     }
   ],
   "trackedPreviews": [
@@ -482,8 +482,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 379763,
-      "sha256": "62ea20edc96cc1424d360263f6c1f5c465cc80d7327657215f21e555284a652e"
+      "bytes": 365268,
+      "sha256": "3a21480a9ac654c8d51a4f54b32e23217c85e52c6fa4d306a4cfeef8529ba05e"
     },
     {
       "file": "docs/app-store/screenshots-v2/search-result-preview.jpg",
@@ -494,8 +494,8 @@
       "hasAlpha": false,
       "colorSpace": "RGB",
       "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 225261,
-      "sha256": "83e2aa7533c9fd7d8e3312530e51e5aace08b452938c79a5f85290075d669421"
+      "bytes": 215028,
+      "sha256": "a9d647c44c5dc68271c0c70bd3261617effaff086354a55027491808ee0c8bfc"
     }
   ]
 }

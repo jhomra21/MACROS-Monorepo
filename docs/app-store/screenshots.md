@@ -7,7 +7,7 @@ Apple's current [screenshot specifications](https://developer.apple.com/help/app
 - iPhone with Dynamic Island, medium display: **1179 × 2556** or **1206 × 2622**
 - iPhone with Dynamic Island, large display: **1320 × 2868** (also 1260 × 2736 or 1290 × 2796)
 
-The generated set uses 1179 × 2556 for medium and 1320 × 2868 for large. Each image has a short benefit-led caption and a real app screen, scaled inside the canvas with rounded screen corners. No device bezel artwork is used. Both sizes come from real 9:41 captures of Debug build 1.0 (39), commit `dc6b2bf0b374b0e273ba18acf3675fb2026ce104`; small-device outputs are scaled from the same native media-simulator captures.
+The generated set uses 1179 × 2556 for medium and 1320 × 2868 for large. All six share a pale background, large bold dark benefit caption, and one real app screen scaled nearly to the full canvas width. The screen bleeds off the bottom edge so its UI stays large and readable. No device bezel artwork is used. Both sizes come from real 9:41 captures of Debug build 1.0 (39), commit `dc6b2bf0b374b0e273ba18acf3675fb2026ce104`; medium outputs are scaled from the same native media-simulator captures.
 
 ## Screenshot order
 

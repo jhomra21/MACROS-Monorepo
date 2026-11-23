@@ -6,7 +6,7 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 ## 2026-11-23 App Store creative assets
 
-Prepared fresh build-39 creative assets and a six-image screenshot set for later App Store use. Apple-safe header/search formats and screenshot sizes were checked with sips; full-size exports and captures are in ignored `build/evidence/2026-11-23-appstore-creative/`. Captures use synthetic data. The 1.0 listing was not changed or uploaded; the share-choice screen was omitted because no synthetic connected participant was available without remote writes.
+Prepared fresh build-39 creative assets and a six-image screenshot set for later App Store use. The screenshot set uses a consistent pale background, large benefit caption, and enlarged phone screen bleeding off the bottom. Apple-safe header/search formats and screenshot sizes were checked with sips; full-size exports and captures are in ignored `build/evidence/2026-11-23-appstore-creative/`. Captures use synthetic data. The 1.0 listing was not changed or uploaded; the share-choice screen was omitted because no synthetic connected participant was available without remote writes.
 
 ## 2026-11-11 App Review IAP product loading
 

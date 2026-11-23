@@ -1,6 +1,8 @@
 # Screenshot set v2
 
-This renderer creates six later-use App Store screenshots from fresh build-39 captures. It writes opaque, embedded-sRGB PNGs at 1320 × 2868 (6.9-inch) and 1179 × 2556 (Dynamic Island medium) to the ignored `build/evidence/2026-11-23-appstore-creative/screenshots-v2/` directory. It also writes `contact-sheet.png` and `search-result-preview.png`; the latter places the first three captioned screenshots side by side at phone width for legibility review.
+This renderer creates six later-use App Store screenshots from fresh build-39 captures. All six share the same layout: a pale solid background, a large bold dark benefit caption at the top, and one nearly full-width app screen below it. The screen bleeds past the bottom edge to keep the UI large and legible. The renderer checks that captions do not clip or overlap the screen and that each screen extends below the canvas.
+
+It writes opaque, embedded-sRGB PNGs at 1320 × 2868 (6.9-inch) and 1179 × 2556 (Dynamic Island medium) to the ignored `build/evidence/2026-11-23-appstore-creative/screenshots-v2/` directory. It also writes `contact-sheet.png` and `search-result-preview.png`; the latter places the first three screenshots side by side for legibility review.
 
 ## Captions and source screens
 
