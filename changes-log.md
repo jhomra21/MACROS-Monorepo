@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-23 App Store creative assets
+
+Prepared fresh build-39 creative assets and a six-image screenshot set for later App Store use. Apple-safe header/search formats and screenshot sizes were checked with sips; full-size exports and captures are in ignored `build/evidence/2026-11-23-appstore-creative/`. Captures use synthetic data. The 1.0 listing was not changed or uploaded; the share-choice screen was omitted because no synthetic connected participant was available without remote writes.
+
 ## 2026-11-11 App Review IAP product loading
 
 PurchaseStore now loads App Store products after launch and again when the app returns active, retries an empty, partial, failed or timed-out request up to three times (1 s and 3 s backoff, 15 s hard deadline per try that does not wait for a stuck StoreKit call), keeps partial results, and shares one request between overlapping loads. A cancelled load never writes state once a newer load starts. The paywall's plan rows and button show "Loading…" during automatic retries and say "Unavailable" only after loading ends without the product. Each try logs requested and returned IDs and the error; storefront and App Store environment are logged off the retry path. No user data is logged. Sol reviewed it twice; its four findings and one follow-up were fixed. Validation on `0711212`: StoreKit suite 24/24, serial unit suite 263/263, UI 18/18, build and format checks pass. The simulator could not reach the Apple sandbox (it stayed in the Xcode StoreKit environment), so live product loading still needs a TestFlight check. Build 37 was uploaded without authorization from an earlier, unreviewed state of this work and must not be submitted. See [evidence](docs/evidence/iap-load-hardening/README.md).

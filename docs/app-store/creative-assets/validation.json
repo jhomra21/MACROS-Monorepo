@@ -1,33 +1,58 @@
 {
-  "sourceMain": "eb77c15",
-  "build": 33,
-  "assets": [
-    {
-      "file": "header-3840x1646.jpg",
+  "date": "2026-11-23",
+  "appVersion": "1.0",
+  "build": 39,
+  "sourceCommit": "dc6b2bf0b374b0e273ba18acf3675fb2026ce104",
+  "simulator": {
+    "model": "iPhone 18 Pro Max",
+    "udid": "D16C3D35-889F-404F-BDD4-C640A6DBC4EF",
+    "runtime": "iOS 27.0",
+    "captureResolution": [
+      1320,
+      2868
+    ],
+    "statusBar": "9:41",
+    "lock": "acquired and released at /tmp/macros-sim-locks/D16C3D35-889F-404F-BDD4-C640A6DBC4EF"
+  },
+  "creativeSpecs": {
+    "header": {
       "dimensions": [
         3840,
         1646
       ],
-      "hasAlpha": false,
-      "mode": "RGB",
-      "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 339885,
-      "sha256": "583e3fbc6087fc80dcf80a3225133bae094e14470aa833e4cbfaea33d030cf1e"
+      "format": "PNG",
+      "safeArea": [
+        1097,
+        493,
+        2743,
+        1154
+      ]
     },
-    {
-      "file": "search-results-3840x2560.jpg",
+    "searchResults": {
       "dimensions": [
         3840,
         2560
       ],
-      "hasAlpha": false,
-      "mode": "RGB",
-      "iccProfile": "sRGB IEC61966-2.1",
-      "bytes": 603445,
-      "sha256": "50316b072f2c53e50b9e6cb93b4ce6451c72302f6cfff7901f4dff9dbccd3b0b"
+      "format": "JPEG",
+      "safeArea": [
+        836,
+        765,
+        3004,
+        1795
+      ]
     }
-  ],
-  "templates": [
+  },
+  "screenshotSizes": {
+    "large": [
+      1320,
+      2868
+    ],
+    "medium": [
+      1179,
+      2556
+    ]
+  },
+  "templateRecords": [
     {
       "file": "product-page-header.psd",
       "dimensions": [
@@ -71,18 +96,406 @@
       "sha256": "7bb57a3c33cc4402d1c82e85a0211cf0f2f2b1c05cf7f36e4710092226dea056"
     }
   ],
-  "inputs": [
+  "captures": [
     {
-      "file": "web/src/assets/app-images/app-home.png",
-      "sha256": "dea171c2c9741b4c24f018b2610296a6b5b98c969773be3b0e22fcf95d594353"
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/home.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 881403,
+      "sha256": "388760a1680c28bca5e4e5b470cee7d4ab06ceb6e1c711f966f346132c061058"
     },
     {
-      "file": "docs/app-store/creative-assets/app-add-food-unbranded.png",
-      "sha256": "daa99f096388bbfa0cf2bb4ad3c13bb135858b38869a9e56a06a8a31394c0726"
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/scan-review.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 743834,
+      "sha256": "d995e4349ed93fac5a2bd7e66777a11d70c5f25e55838f74e6e6a438185aa78e"
     },
     {
-      "file": "web/src/assets/app-images/app-scan-review.png",
-      "sha256": "f5636e891b67b5be4fcabff236d9eac56a6a2cbd78ccd6355f06a25a7792a8e4"
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/add-food.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 353708,
+      "sha256": "e80f71cefb3e7d433fee1046eea9b820c1ebafbf381f083211dcf2e2660b07fd"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/grams-editor.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 378607,
+      "sha256": "fdd5316d40ed96f3f80c66c15fdd20390ff2c134f6377498aca2809c46f34ebb"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/history.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 383760,
+      "sha256": "8ffae866ee3b842d1cef648111abb4fa53f197330a84b596b6e3a5e94b98c386"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/goal-review.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 267025,
+      "sha256": "ac61275eb6460725cd612f3d35ca5648a8389e1bf3e0e276ce747a7ef7facfb4"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/captures/home-screen-widgets.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": true,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 3652793,
+      "sha256": "e333abaaa38e7cc7eb3b1e50d2316c28643419c002766342de373b1e367898b0"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/header-3840x1646.png",
+      "dimensions": [
+        3840,
+        1646
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 442239,
+      "sha256": "9736eea62fd882671381cc6775f5793ed08d2300d1cc21e0ea513a7bf78b23e3"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/header-safe-area.jpg",
+      "dimensions": [
+        960,
+        412
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 62760,
+      "sha256": "9297dca80006c608d899c668a7e5a6c12e022511aaa3e4100d2491822c2a09bb"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/header-safe-crop.jpg",
+      "dimensions": [
+        780,
+        313
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 45255,
+      "sha256": "ab1acd04817f672d8227bf5479fea115c66d49ad42f651717e094ce7b59775ad"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/header-small.jpg",
+      "dimensions": [
+        600,
+        257
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 28566,
+      "sha256": "11963cb56e13d3d55d495b96561555602ba436e48c89f891cb5b8a9970dade8a"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/search-results-3840x2560.jpg",
+      "dimensions": [
+        3840,
+        2560
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 613828,
+      "sha256": "e4e0feb3d9b947733f66801981c0385b30167e6adacd0c5d6cd2186a6ca07fb2"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/search-results-safe-area.jpg",
+      "dimensions": [
+        960,
+        640
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 79907,
+      "sha256": "449a61748e71b9897c0418212b84c34615f40f9f14005ea0db05c4bb167679ab"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/search-results-safe-crop.jpg",
+      "dimensions": [
+        780,
+        370
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 81766,
+      "sha256": "145365a26f8bdf2951756052fa16e2b41e5ee6e283d015169fc174e183b27df2"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/assets/search-results-small.jpg",
+      "dimensions": [
+        600,
+        400
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 34777,
+      "sha256": "b638508288d49a4de6980487a5b60e2dedcd2ec821a07d4e7ebcf61326e12761"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/01-scan-any-label-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 613003,
+      "sha256": "9d6f00170ea1071fe736e37e9549dd9c131b086846d04a418542367e2d20e533"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/01-scan-any-label-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 513395,
+      "sha256": "5901d54567992c2d0b23c48ab40f62452884f02595a909992da3bb43db7df191"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/02-your-day-at-a-glance-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 758881,
+      "sha256": "97fbcfff3b3976ce1647ec8c12a907d686bd011129e8ec6dc972efbc9e83a268"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/02-your-day-at-a-glance-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 636556,
+      "sha256": "6f507400803e17746c547d25c1f6b61858d2abdd19bda6b22f6137b53fed0c96"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/03-no-account-needed-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 417045,
+      "sha256": "964c5a116636c9111ebc856d0c006e4f01a8fa70b57d7818a74ccd6982adda73"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/03-no-account-needed-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 354543,
+      "sha256": "aa87ee6bd60ccd80ee85856d215bd444ba0c3d4c059cbb580720afd0737fdc4a"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/04-log-the-amount-you-ate-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 457205,
+      "sha256": "cf96b9c69f1a4e3a97033b5e1f8e832bd7ee478ebe1b1941a93f94d7aeebdcd4"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/04-log-the-amount-you-ate-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 387813,
+      "sha256": "5650013ba59a905488b0215b744990b3e55401c631d84e3293fd679bcc012f93"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/05-see-your-food-history-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 400575,
+      "sha256": "ba4088a1205c58a8972b05e3b574f18bbb2221c4bc0e761202bf0a7d4fcaf3fd"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/05-see-your-food-history-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 335648,
+      "sha256": "2ee9676e12fea000afdbd0f27600aa8c985615bb666e130c194a135fed0bf839"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/06-goals-built-around-you-6.9-inch.png",
+      "dimensions": [
+        1320,
+        2868
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 375455,
+      "sha256": "af9fd04412850dc7b56271086d08c696de8859e121eaedb34447eb55afc9d153"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/06-goals-built-around-you-medium.png",
+      "dimensions": [
+        1179,
+        2556
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 315702,
+      "sha256": "206360227dd5c7c35f89e507b6c349ebff511c58721c641af6b5829625d944c8"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/contact-sheet.png",
+      "dimensions": [
+        1276,
+        1754
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 484917,
+      "sha256": "11ba5fdf76033ea5526aff442b0f85ece89db9bf52c321899a0ad7fed87e248c"
+    },
+    {
+      "file": "build/evidence/2026-11-23-appstore-creative/screenshots-v2/search-result-preview.png",
+      "dimensions": [
+        1276,
+        894
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 295557,
+      "sha256": "06246a93c086a8a515871bddf901567c5cb4d40e930b042a01955143cd1c2201"
+    }
+  ],
+  "trackedPreviews": [
+    {
+      "file": "docs/app-store/creative-assets/header-small.jpg",
+      "dimensions": [
+        600,
+        257
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 27987,
+      "sha256": "acb2c78ac78c05cbb2cdc42bd36b8a0ac16db46e78628d2997e91dd38b8b6a51"
+    },
+    {
+      "file": "docs/app-store/creative-assets/search-results-small.jpg",
+      "dimensions": [
+        600,
+        400
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 34648,
+      "sha256": "5bf560b6b38a8a749435b56b3d837c2293b4165a046832c49c09d7a9990fdb4c"
+    },
+    {
+      "file": "docs/app-store/screenshots-v2/contact-sheet.jpg",
+      "dimensions": [
+        1276,
+        1754
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 379763,
+      "sha256": "62ea20edc96cc1424d360263f6c1f5c465cc80d7327657215f21e555284a652e"
+    },
+    {
+      "file": "docs/app-store/screenshots-v2/search-result-preview.jpg",
+      "dimensions": [
+        1276,
+        894
+      ],
+      "hasAlpha": false,
+      "colorSpace": "RGB",
+      "iccProfile": "sRGB IEC61966-2.1",
+      "bytes": 225261,
+      "sha256": "83e2aa7533c9fd7d8e3312530e51e5aace08b452938c79a5f85290075d669421"
     }
   ]
 }
