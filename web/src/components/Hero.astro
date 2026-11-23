@@ -1,7 +1,6 @@
 ---
 import { site } from '../data/site';
 import AppScreen from './AppScreen.astro';
-import WaitlistForm from './WaitlistForm.astro';
 import AppStoreBadge from './AppStoreBadge.astro';
 ---
 
@@ -20,14 +19,8 @@ import AppStoreBadge from './AppStoreBadge.astro';
 				eager
 			/>
 		</div>
-		<div class="hero__signup">
+		<div class="hero__signup" id="download">
 			<p class="caption">{site.facts.status}</p>
-			<div class="hero__form">
-				<WaitlistForm idPrefix="hero" />
-			</div>
-			<p class="caption hero__note">
-				Your email is only for the waitlist. <a href="/privacy/">Privacy policy</a>.
-			</p>
 			<AppStoreBadge />
 		</div>
 	</div>

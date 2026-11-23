@@ -2,7 +2,7 @@
 title: "How much protein per day to build muscle"
 description: "Lifting and want more muscle? Research on adults who train points to about 1.6 g of protein per kg (0.73 g per lb) of body weight a day. Find your daily grams."
 published: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
@@ -73,4 +73,4 @@ Once you have your number, put it straight into your goals. Recalculate Targets 
 
 Sources checked November 7, 2026, using the eCFR as amended through November 5, 2026. App steps checked the same day. This post is general information, not medical advice, and no dietitian or doctor reviewed it.
 
-MACROS is coming soon for iPhone. [Join the waitlist](/#waitlist) for an email when it is available, or read [what works offline](/guides/how-macros-works-offline/) before deciding whether it fits your routine.
+Read [what works offline](/guides/how-macros-works-offline/) before deciding whether it fits your routine.

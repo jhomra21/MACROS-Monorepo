@@ -2,7 +2,7 @@
 title: How to set protein, carb, and fat goals
 description: "Set daily macro goals with calorie-to-gram math, adult reference ranges, and a worked example. Learn how the MACROS goal calculator estimates your targets."
 published: 2026-11-04
-updated: 2026-11-07
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-settings.png
 imageAlt: "MACROS Settings showing editable Daily Goals for calories, protein, carbs, and fat, plus Recalculate Targets"
@@ -122,4 +122,4 @@ Check the macro balance and targets before applying them. These calculator scree
 
 Revisit your targets with a professional if they do not fit your needs. A macro total alone does not tell you whether your diet provides enough fiber, vitamins, or minerals.
 
-Read [how MACROS handles your food diary data](/privacy/) or [contact MACROS support for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features. [Join the waitlist](/#waitlist) for an email when the iPhone app is available.
+Read [how MACROS handles your food diary data](/privacy/) or [contact MACROS support for app help](/support/). The [MACROS calorie counter and food diary homepage](/) lists the app's features.

@@ -4,7 +4,7 @@ import type { JsonObject } from './json';
 
 export const absoluteURL = (path: string) => new URL(path, site.url).href;
 
-export const appStoreURL = () => `https://apps.apple.com/app/id${site.appStore.id}`;
+export const appStoreURL = () => site.appStore.url;
 
 export const publishedEntries = (collection: 'guides' | 'blog') =>
 	getCollection(collection, ({ data }) => !data.draft);
@@ -125,16 +125,29 @@ export const organizationReference: JsonObject = {
 export const organizationStructuredData: JsonObject = {
 	...organizationReference,
 	logo: absoluteURL('/apple-touch-icon.png'),
-	sameAs: [site.instagramURL, site.tiktokURL, site.threadsURL],
+	sameAs: [
+		site.instagramURL,
+		site.tiktokURL,
+		site.threadsURL,
+		...(site.appStore.live ? [site.appStore.url] : []),
+	],
 };
 
-export const homeStructuredData: JsonObject[] = [
-	{
-		'@type': 'MobileApplication', name: site.fullName, url: absoluteURL('/'),
+const appStructuredData: JsonObject = {
+		'@type': 'SoftwareApplication', name: site.fullName, url: site.appStore.url,
+		installUrl: site.appStore.url,
 		operatingSystem: 'iOS 26+', applicationCategory: 'HealthApplication',
 		description: `${site.description} Optional MACROS Pro in-app purchases are available.`,
-		offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-	},
+		offers: [
+			{ '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'USD' },
+			{ '@type': 'Offer', name: 'MACROS Pro monthly', price: '2.99', priceCurrency: 'USD' },
+			{ '@type': 'Offer', name: 'MACROS Pro yearly', price: '19.99', priceCurrency: 'USD', description: 'Includes a 7-day free trial' },
+			{ '@type': 'Offer', name: 'MACROS Pro lifetime', price: '49.99', priceCurrency: 'USD' },
+		],
+	};
+
+export const homeStructuredData: JsonObject[] = [
+	...(site.appStore.live ? [appStructuredData] : []),
 	organizationStructuredData,
 	{ '@type': 'WebSite', name: site.fullName, url: absoluteURL('/'), publisher: { '@id': organizationId } },
 	{ '@type': 'FAQPage', mainEntity: site.faq.map(faq => ({

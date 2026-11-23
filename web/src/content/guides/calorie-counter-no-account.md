@@ -2,7 +2,7 @@
 title: "Calorie counter with no account: what that means in MACROS"
 description: "MACROS needs no account to track food. See what stays on your iPhone, what the app sends for food lookups, and how optional export works."
 published: 2026-11-18
-updated: 2026-11-18
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-home.png
 imageAlt: "MACROS food diary with daily calorie and macro totals above the logged foods"
@@ -32,4 +32,4 @@ The app also searches saved foods and a bundled common-food list on the device. 
 
 Backup export, CSV log export, and backup import require MACROS Pro. The app creates a file that you choose to save or share through iOS. Export is not an automatic upload to a MACROS account.
 
-The iPhone app is coming soon. [Join the waitlist](/#waitlist) for an email when it is available, and see [the full MACROS product facts](/what-is-macros/).
+See [the full MACROS product facts](/what-is-macros/).

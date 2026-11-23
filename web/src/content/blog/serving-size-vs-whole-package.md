@@ -2,7 +2,7 @@
 title: "Serving size vs. the whole package: log what you ate"
 description: "Ate half the bag or the whole tub? Learn how to read the serving line on a Nutrition Facts label and scale calories and macros to what you ate."
 published: 2026-11-07
-updated: 2026-11-07
+updated: 2026-11-23
 draft: false
 image: ../../assets/app-images/app-scan-review.png
 imageAlt: "MACROS label scan result for a demo cereal label: 190 kcal, Servings stepper set to 1, 1 cup (40g) each, 40 g total, with Edit details and Log buttons"
@@ -82,4 +82,4 @@ If the label gives only a volume, Grams stays off until you enter the serving's 
 
 Sources checked November 7, 2026, using the eCFR as amended through November 5, 2026. App steps checked the same day. This post is general information, not medical advice, and no dietitian reviewed it.
 
-See [how MACROS scans and scales label values](/guides/how-label-scanning-works/) for the review steps and quantity math. [Join the waitlist](/#waitlist) for an email when the iPhone app is available.
+See [how MACROS scans and scales label values](/guides/how-label-scanning-works/) for the review steps and quantity math.

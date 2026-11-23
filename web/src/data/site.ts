@@ -53,10 +53,15 @@ const productFacts = {
 	foodSources: 'Open Food Facts for barcode lookups and USDA FoodData Central for online food searches. A bundled common-food list is also available on-device.',
 	free: freeFeatures.join('; '),
 	ads: 'The app has no advertising tracker or ads.',
-	status: 'Coming soon for iPhone. The waitlist is open.',
+	status: 'Available on the App Store for iPhone.',
 } as const;
 
 const fullName = 'MACROS: Nutrition Tracker';
+// Official US-English black App Store badge downloaded from Apple on November 23, 2026:
+// https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg
+// Use only after the listing is available and the account owner has accepted Apple's artwork license.
+
+const appStoreURL = 'https://apps.apple.com/app/id6767565938';
 
 export const site = {
 	name: 'MACROS',
@@ -65,7 +70,7 @@ export const site = {
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account} Keep your food diary on your device and scan a label.`,
-	appStore: { id: '6767565938', live: false },
+	appStore: { id: '6767565938', url: appStoreURL, live: false },
 	instagramURL: socialLinks[0].href,
 	tiktokURL: socialLinks[1].href,
 	threadsURL: socialLinks[2].href,

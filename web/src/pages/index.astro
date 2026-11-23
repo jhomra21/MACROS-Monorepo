@@ -8,7 +8,7 @@ import FeatureGrid from '../components/FeatureGrid.astro';
 import Hero from '../components/Hero.astro';
 import ProPlans from '../components/ProPlans.astro';
 import Showcase from '../components/Showcase.astro';
-import WaitlistCta from '../components/WaitlistCta.astro';
+import DownloadCta from '../components/DownloadCta.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { homeStructuredData, pages, relatedEntries } from '../lib/seo';
 
@@ -34,7 +34,5 @@ const featured = await relatedEntries(['guides/how-to-set-macro-goals', 'blog/se
 			<p class="learn-section__more"><a href="/learn/">Browse all guides and blog posts</a></p>
 		</div>
 	</section>
-	<div id="waitlist">
-		<WaitlistCta idPrefix="home" />
-	</div>
+	<DownloadCta />
 </SiteLayout>

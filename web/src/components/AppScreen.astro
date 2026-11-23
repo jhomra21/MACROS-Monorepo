@@ -1,5 +1,7 @@
 ---
 import { Image } from 'astro:assets';
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 interface Props {
 	src: ImageMetadata;
@@ -11,10 +13,17 @@ interface Props {
 }
 
 const { src, alt, widths = [280, 560], sizes = '280px', eager = false, small = false } = Astro.props;
+
+const bezelPath = '/apple/iphone-17-light.png';
+
+const bezelFile = fileURLToPath(new URL(`../../public${bezelPath}`, import.meta.url));
+
+const hasOfficialBezel = existsSync(bezelFile);
 ---
 
-{/* A plain screenshot: the site must not draw simulated Apple hardware (see web/SEO.md). */}
-<div class:list={['app-screen', small && 'app-screen--sm']}>
+{/* Use only an unmodified, owner-provided Apple bezel asset. Until then, show a plain screenshot. */}
+<div class:list={['app-screen', small && 'app-screen--sm', hasOfficialBezel && 'app-screen--device']}>
 	{/* `priority` sets loading="eager", decoding="sync", and fetchpriority="high" together. */}
 	<Image src={src} alt={alt} format="webp" widths={widths} sizes={sizes} priority={eager || undefined} />
+	{hasOfficialBezel && <img class="app-screen__bezel" src={bezelPath} alt="" aria-hidden="true" />}
 </div>

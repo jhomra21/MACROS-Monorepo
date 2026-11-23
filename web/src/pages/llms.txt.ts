@@ -22,7 +22,7 @@ export const GET: APIRoute = async () => {
 	const content = [
 		`# ${site.fullName}`,
 		'',
-		`${site.fullName} is a calorie and macro tracker for iPhone that needs no account. Food logs stay on the device; online searches and barcode lookups go through the MACROS Cloudflare Worker to public food databases. The app is coming soon, and the waitlist is open.`,
+		`${site.fullName} is a calorie and macro tracker for iPhone that needs no account. Food logs stay on the device; online searches and barcode lookups go through the MACROS Cloudflare Worker to public food databases. The app is available on the App Store: ${site.appStore.url}`,
 		'',
 		'## Key facts',
 		`- Platform: ${site.facts.platform}; requires ${site.facts.minimumOS}.`,
