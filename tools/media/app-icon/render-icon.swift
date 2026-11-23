@@ -5,9 +5,9 @@ import ImageIO
 import UniformTypeIdentifiers
 
 private let colors: [(red: CGFloat, green: CGFloat, blue: CGFloat)] = [
-    (0, 122.0 / 255, 1),
-    (1, 159.0 / 255, 10.0 / 255),
-    (239.0 / 255, 79.0 / 255, 135.0 / 255),
+    (36.0 / 255, 102.0 / 255, 230.0 / 255),
+    (235.0 / 255, 128.0 / 255, 5.0 / 255),
+    (230.0 / 255, 46.0 / 255, 112.0 / 255),
 ]
 private let progress: [CGFloat] = [0.78, 0.64, 0.50]
 private let outerDiameter: CGFloat = 1024 * 0.62
