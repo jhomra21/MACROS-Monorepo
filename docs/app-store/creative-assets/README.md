@@ -54,6 +54,6 @@ bun screenshots-v2/render.mjs
 
 `render.mjs` embeds the captures in offline HTML and exports exact-size artwork. `previews.mjs` generates `-small`, `-safe-area`, and `-safe-crop` inspection images. Final output metadata and checksums are recorded in `validation.json`; the full deliverables stay ignored to keep tracked evidence under the repository's five-image / 2 MiB limit.
 
-The screenshot set uses **History** and **Goal Calculator** rather than a sharing-choice screen. The media device had no connected synthetic sharing participant; creating one would require remote sharing writes, so no remote state was created. Existing Home Screen widgets were available and captured separately in `captures/home-screen-widgets.png`.
+The separate 1.1 screenshot set uses **History** and **Daily Goals in Settings** rather than a sharing-choice screen. Its current-main build-40 captures are documented in [the screenshot plan](../screenshots.md). The media device had no connected synthetic sharing participant; creating one would require remote sharing writes, so no remote state was created. Existing Home Screen widgets from build 39 remain in the 1.0 capture evidence.
 
 No prices or pricing terms, third-party marks, other-platform imagery, or App Store claims are included. Inspect Apple's actual upload preview before any future release or product-page change; final crops are Apple's decision.

@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const repository = resolve(fileURLToPath(new URL('../../../', import.meta.url)));
 
-const evidence = resolve(repository, 'build/evidence/2026-11-23-appstore-creative');
+const evidence = resolve(repository, 'build/evidence/2026-11-23-appstore-screenshots-1.1');
 
 const captures = resolve(evidence, 'captures');
 
@@ -15,7 +15,7 @@ const output = resolve(evidence, 'screenshots-v2');
 const profile = '/System/Library/ColorSync/Profiles/sRGB Profile.icc';
 
 const dimensions = [
-  { width: 1320, height: 2868, suffix: '6.9-inch' },
+  { width: 1260, height: 2736, suffix: 'large' },
   { width: 1179, height: 2556, suffix: 'medium' },
 ];
 
@@ -25,7 +25,7 @@ const screenshots = [
   { file: 'add-food.png', caption: 'No account needed', slug: '03-no-account-needed' },
   { file: 'grams-editor.png', caption: 'Log the amount you ate', slug: '04-log-the-amount-you-ate' },
   { file: 'history.png', caption: 'See your food history', slug: '05-see-your-food-history' },
-  { file: 'goal-review.png', caption: 'Goals built around you', slug: '06-goals-built-around-you' },
+  { file: 'goal-settings.png', caption: 'Goals built around you', slug: '06-goals-built-around-you' },
 ];
 
 await mkdir(output, { recursive: true });
@@ -139,7 +139,7 @@ try {
       </style><body>${cells.join('')}</body></html>`;
   };
 
-  const sheetItems = rendered.filter(item => item.size.suffix === '6.9-inch');
+  const sheetItems = rendered.filter(item => item.size.suffix === 'large');
   const previewWidth = 3 * cellWidth + 4 * gap;
   await renderPage(
     'search-result-preview',
