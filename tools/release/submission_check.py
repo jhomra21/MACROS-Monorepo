@@ -30,7 +30,9 @@ EXAMPLE = """{
   "prices": {"yearly": "$19.99/year", "monthly": "$2.99/month", "lifetime": "$49.99"},
   "purchaseButtonEnabled": true,
   "screenshotSha256": "<sha256 of the Settings > MACROS Pro screenshot>"
-}"""
+}
+Instead of screenshotSha256, the owner may add "ownerConfirmed": "<name, date and what they saw>"
+for a check they ran themselves."""
 
 
 def fail(message: str) -> None:
@@ -90,8 +92,12 @@ def main() -> None:
         fail(f"build {args.build}: the purchase button must have been enabled")
 
     digest = str(entry.get("screenshotSha256", "")).lower()
-    if not re.fullmatch(r"[0-9a-f]{64}", digest):
-        fail(f"build {args.build}: screenshotSha256 must be a SHA-256 hex digest")
+    # The owner may confirm a check they ran themselves in place of a screenshot.
+    owner_confirmed = str(entry.get("ownerConfirmed", "")).strip()
+    if not owner_confirmed and not re.fullmatch(r"[0-9a-f]{64}", digest):
+        fail(f"build {args.build}: screenshotSha256 must be a SHA-256 hex digest, or ownerConfirmed must name the owner")
+    if args.screenshot and not digest:
+        fail(f"build {args.build}: no screenshot recorded; this check was owner-confirmed")
     if args.screenshot:
         path = Path(args.screenshot)
         if not path.is_file():

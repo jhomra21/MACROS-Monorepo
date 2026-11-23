@@ -16,6 +16,22 @@
       "purchaseCompleted": "Lifetime, sandbox, unlocked Pro Lifetime",
       "screenshotSha256": "8b66fee6edb8c9d64f2c169f06100b71530d72f7ee959c2a1a576ce45c9881fb",
       "recordingSha256": "f0547120f866dd44bb78676e11a16e98fb17fc5587737cac3696f4411183632e"
+    },
+    {
+      "build": 40,
+      "commit": "e1a8ca769b852887dea4c83d5adb1f53a82a7eb1",
+      "date": "2026-11-23",
+      "device": "Owner's physical iPhone",
+      "account": "sandbox",
+      "installedFrom": "TestFlight 1.1 (40), signed out of Media & Purchases, Sandbox Apple Account with purchase history cleared",
+      "prices": {
+        "yearly": "$19.99",
+        "monthly": "$2.99",
+        "lifetime": "$49.99"
+      },
+      "purchaseButtonEnabled": true,
+      "purchaseCompleted": "Lifetime, sandbox, unlocked Pro",
+      "ownerConfirmed": "Juan Martinez, 2026-11-23: saw all three prices on build 40 and completed the Lifetime purchase; chose not to keep a screenshot"
     }
   ]
 }
