@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-24 Dashboard tutorial redesign, round 3
+
+The first-run tutorial now focuses its accessibility-size macro step on one macro at a time, hides food and secondary-nutrition content while the tutorial is active, and keeps the recap card clear of the fixed action bar. The spotlight tracks each macro target directly; dark-mode contrast, caption sizing, and the recap card were refined. Final light, skip-step, dark-mode, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).
+
 ## 2026-11-23 Version 1.1, build 40 preparation
 
 - Prepared the 1.1 release from current `main`, with version 1.1/build 40 on the app and widget and build 40 on test targets.

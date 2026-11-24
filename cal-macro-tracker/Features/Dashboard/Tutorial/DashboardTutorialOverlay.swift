@@ -76,13 +76,23 @@ struct DashboardTutorialOverlay: View {
     @State private var isDismissing = false
     @State private var captionTop: CGFloat?
 
-    private var captionHeight: CGFloat { size.height * 0.22 }
+    private var captionHeight: CGFloat {
+        if dynamicTypeSize.isAccessibilitySize {
+            return size.height * (step == .done ? 0.32 : 0.18)
+        }
+        return size.height * (step == .done ? 0.22 : 0.18)
+    }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
     }
 
-    private var targetRect: CGRect? { step.target.flatMap(localFrame) }
+    private var targetRect: CGRect? {
+        if step == .macros, let nextMacro = tutorial.nextMacro {
+            return localFrame(.macro(nextMacro))
+        }
+        return step.target.flatMap(localFrame)
+    }
 
     /// Collapsed until the current step's own target has a rect, so a previous target's rect is never reused.
     private var spotlight: Spotlight {
@@ -95,7 +105,7 @@ struct DashboardTutorialOverlay: View {
     private var scrimOpacity: Double {
         let isDark = colorScheme == .dark
         if step == .done { return isDark ? 0.6 : 0.4 }
-        return isDark ? 0.78 : 0.62
+        return 0.8
     }
 
     private var morph: Animation? { reduceMotion ? nil : .smooth(duration: 0.4) }
@@ -122,42 +132,52 @@ struct DashboardTutorialOverlay: View {
                 }
             }
             // Only a step change morphs; geometry updates within a step must track moving targets without lag.
-            .animation(morph, value: step)
+            .animation(nil, value: step)
             .accessibilityHidden(true)
 
             if step != .done, !spotlight.rect.isEmpty {
-                TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
-                    .id(step)
-                    .position(handPosition(in: spotlight.rect))
-                    .allowsHitTesting(false)
-                    // Both are intentional: the representation mask alone left the hand focusable (device-verified in 7053578).
-                    .accessibilityRepresentation { EmptyView() }
-                    .accessibilityHidden(true)
+                TutorialHand(
+                    swipeDirection: step.swipeDirection,
+                    reduceMotion: reduceMotion || dynamicTypeSize.isAccessibilitySize || step.swipeDirection == nil
+                )
+                .id(step)
+                .position(handPosition(in: spotlight.rect))
+                .allowsHitTesting(false)
+                // Both are intentional: the representation mask alone left the hand focusable (device-verified in 7053578).
+                .accessibilityRepresentation { EmptyView() }
+                .accessibilityHidden(true)
             }
 
             fixedTutorialLayout
         }
         .opacity(isDismissing || !isVisible ? 0 : 1)
         .onAppear {
-            let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
-            let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
-            captionTop = min(
-                max(legendBottom + 40, size.height * 0.56),
-                bottomBarTop - captionHeight - 12
-            )
+            updateCaptionPosition()
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
+        }
+        .onChange(of: step) { _, _ in updateCaptionPosition() }
+    }
+
+    private func updateCaptionPosition() {
+        let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
+        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+        if dynamicTypeSize.isAccessibilitySize {
+            captionTop =
+                step == .done
+                ? min(size.height * 0.45, bottomBarTop - captionHeight - 16)
+                : size.height * 0.6
+        } else {
+            captionTop = min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 20)
         }
     }
 
     private func handPosition(in cutout: CGRect) -> CGPoint {
-        guard step == .macros, let next = tutorial.nextMacro, let index = MacroMetric.allCases.firstIndex(of: next)
-        else { return CGPoint(x: cutout.midX, y: cutout.midY) }
+        guard step == .macros, tutorial.nextMacro != nil else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
-        let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
         if dynamicTypeSize.isAccessibilitySize {
-            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * fraction)
+            return CGPoint(x: targetRect.midX, y: targetRect.maxY - min(140, targetRect.height * 0.24))
         }
-        return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
+        return CGPoint(x: targetRect.midX, y: targetRect.midY)
     }
 
     private var fixedTutorialLayout: some View {
@@ -180,11 +200,11 @@ struct DashboardTutorialOverlay: View {
             ScrollView {
                 TutorialCaptionCard(step: step)
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
                     .frame(maxWidth: .infinity)
             }
             .scrollIndicators(.hidden)
             .frame(height: captionHeight)
+            .clipShape(Rectangle())
             .position(x: size.width / 2, y: (captionTop ?? size.height * 0.56) + captionHeight / 2)
         }
         .frame(width: size.width, height: size.height, alignment: .bottom)

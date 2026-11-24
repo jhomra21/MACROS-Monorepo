@@ -89,6 +89,7 @@ struct MacroDashboardRingPanel: View {
     let onToggleExpansion: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(DashboardTutorial.self) private var tutorial
 
     var body: some View {
         Button(action: onToggleExpansion) {
@@ -101,6 +102,7 @@ struct MacroDashboardRingPanel: View {
                 ringDiameter: ringDiameter,
                 colorStyle: colorStyle
             )
+            .tutorialTarget(.ringPanel, in: tutorial)
             .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: totals)
             .padding(outerStrokeWidth / 2)
             .contentShape(Circle())
@@ -222,16 +224,19 @@ struct MacroLegendView: View {
     let canCustomizeColors: Bool
     let onChangeColor: (MacroMetric) -> Void
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(DashboardTutorial.self) private var tutorial
 
     var body: some View {
-        let isStacked = dynamicTypeSize.isAccessibilitySize
+        let focusesNextMacro = dynamicTypeSize.isAccessibilitySize && tutorial.step == .macros
+        let visibleMetrics = focusesNextMacro ? tutorial.nextMacro.map { [$0] } ?? [] : Array(MacroMetric.allCases)
+        let isStacked = dynamicTypeSize.isAccessibilitySize && !focusesNextMacro
         let layout =
             isStacked
             ? AnyLayout(VStackLayout(spacing: 0))
             : AnyLayout(HStackLayout(spacing: 12))
 
         layout {
-            ForEach(MacroMetric.allCases) { metric in
+            ForEach(visibleMetrics) { metric in
                 MacroLegendColumn(
                     metric: metric,
                     totals: totals,
@@ -242,6 +247,8 @@ struct MacroLegendView: View {
                     verticalPadding: isStacked ? 8 : 12,
                     onChangeColor: onChangeColor
                 )
+                .tutorialTarget(.macro(metric), in: tutorial)
+                .id(metric)
             }
         }
     }

@@ -4,6 +4,7 @@ import SwiftUI
 enum TutorialTarget: Hashable {
     case ringPanel
     case legend
+    case macro(MacroMetric)
     case todayPill
     /// Layout regions the caption is placed between.
     case contentArea
@@ -18,9 +19,16 @@ extension View {
         onGeometryChange(for: CGRect.self) {
             $0.frame(in: .global)
         } action: {
-            guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel else { return }
+            guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel || target.isMacro else { return }
             tutorial.report($0, for: target)
         }
+    }
+}
+
+private extension TutorialTarget {
+    var isMacro: Bool {
+        if case .macro = self { return true }
+        return false
     }
 }
 
@@ -54,7 +62,7 @@ final class DashboardTutorial {
 
         var spotlightShape: SpotlightShapeKind {
             switch target {
-            case .legend: .roundedRect(32)
+            case .legend, .macro: .roundedRect(32)
             case .todayPill: .capsule
             default: .circle
             }
@@ -85,7 +93,7 @@ final class DashboardTutorial {
             switch self {
             case .openSharing: "Swipe left on your rings to open Sharing."
             case .returnFromSharing:
-                "People who share with you show their rings here. Swipe right from the edge or tap Back to return."
+                "People sharing with you appear here. Swipe right or tap Back."
             case .previousDay: "Swipe right on your rings to see yesterday."
             case .backToToday: "Tap Today to come back."
             case .expandRing: "Tap the rings to make them bigger and see more nutrition details."
@@ -115,7 +123,9 @@ final class DashboardTutorial {
     /// Set by DashboardScreen while it is on screen: runs the current step's action.
     @ObservationIgnored var performAction: (() -> Void)?
 
-    private static let readinessTargets: [TutorialTarget] = [.ringPanel, .legend, .contentArea, .bottomBar]
+    private static let readinessTargets: [TutorialTarget] = [
+        .ringPanel, .legend, .macro(.protein), .macro(.carbs), .macro(.fat), .contentArea, .bottomBar
+    ]
 
     func report(_ rect: CGRect, for target: TutorialTarget) {
         guard frames[target] != rect else { return }

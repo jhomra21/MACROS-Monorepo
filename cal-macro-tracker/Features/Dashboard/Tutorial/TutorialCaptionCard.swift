@@ -32,12 +32,11 @@ struct TutorialCaptionCard: View {
             }
         }
         .frame(maxWidth: 420, alignment: .leading)
-        .padding(step == .done ? 12 : 22)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .padding(step == .done ? 8 : 22)
+        .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
         .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isStaticText)
-        .dynamicTypeSize(dynamicTypeSize.isAccessibilitySize ? ...DynamicTypeSize.xxxLarge : ...DynamicTypeSize.accessibility5)
         .onChange(of: message, initial: true) {
             guard step != .done else { return }
             AccessibilityNotification.Announcement("\(step.title). \(message)").post()
@@ -45,38 +44,37 @@ struct TutorialCaptionCard: View {
     }
 
     private var doneContent: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 2) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 36, weight: .regular))
+                .font(.system(size: 28, weight: .regular))
                 .symbolRenderingMode(.palette)
                 .foregroundStyle(.white, .green)
                 .symbolEffect(.drawOn, isActive: !didAppear)
                 .accessibilityHidden(true)
             Text(step.title)
-                .font(.title3.weight(.bold))
+                .font(.subheadline.weight(.bold))
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
                 Label("Swipe left for Sharing", systemImage: "hand.point.left")
                 Label("Swipe right for past days", systemImage: "hand.point.right")
                 Label("Tap the rings for details", systemImage: "hand.tap")
             }
-            .font(.caption)
+            .font(.subheadline)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 2)
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .onAppear { didAppear = true }
     }
 }
 
 struct TutorialActionBar: View {
     @Environment(DashboardTutorial.self) private var tutorial
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AccessibilityFocusState private var isDoneFocused: Bool
     @State private var didShowDone = false
 
@@ -91,6 +89,8 @@ struct TutorialActionBar: View {
             Button(actionTitle, action: onAction)
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .lineLimit(1)
+                .minimumScaleFactor(0.55)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 48)
                 .opacity(hasAction ? 1 : 0)
@@ -98,25 +98,17 @@ struct TutorialActionBar: View {
                 .accessibilityHidden(!hasAction)
                 .accessibilityFocused($isDoneFocused)
 
-            HStack(spacing: 12) {
-                Button("Skip step", action: onSkipStep)
-                    .buttonStyle(.bordered)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 44)
-                Button("Skip tutorial", action: onSkipTutorial)
-                    .buttonStyle(.bordered)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 44)
+            if step != .done {
+                HStack(spacing: 12) {
+                    skipStepButton
+                    skipTutorialButton
+                }
             }
-            .opacity(step == .done ? 0 : 1)
-            .disabled(step == .done)
-            .accessibilityHidden(step == .done)
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
         .padding(.bottom, 36)
         .background(.regularMaterial)
-        .dynamicTypeSize(dynamicTypeSize.isAccessibilitySize ? ...DynamicTypeSize.xxxLarge : ...DynamicTypeSize.accessibility5)
         .sensoryFeedback(.success, trigger: step == .done) { _, newValue in newValue }
         .onChange(of: step, initial: true) {
             guard step == .done, !didShowDone else { return }
@@ -127,5 +119,23 @@ struct TutorialActionBar: View {
 
     private var actionTitle: String {
         step.actionTitle(nextMacro: tutorial.nextMacro) ?? " "
+    }
+
+    private var skipStepButton: some View {
+        Button("Skip step", action: onSkipStep)
+            .buttonStyle(.bordered)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
+    }
+
+    private var skipTutorialButton: some View {
+        Button("Skip tutorial", action: onSkipTutorial)
+            .buttonStyle(.bordered)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 44)
     }
 }
