@@ -137,6 +137,11 @@ struct ProPaywallContent: View {
                     ) {
                         Task { await store.purchase(selectedPlan) }
                     }
+                    if let onContinue {
+                        Button("Continue with Free", action: onContinue)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                    }
                     Button("Restore Purchases") { Task { await store.restorePurchases() } }
                         .frame(minHeight: 44)
                         .disabled(isBusy)
@@ -144,11 +149,6 @@ struct ProPaywallContent: View {
                         .frame(minHeight: 44)
                         .disabled(isBusy)
                     legalFooter
-                    if let onContinue {
-                        Button("Continue with Free", action: onContinue)
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: 48)
-                    }
                 }
             }
             .padding(24)
@@ -451,14 +451,19 @@ private struct ProFeatureCard: View {
             HStack(alignment: .top) {
                 Image(systemName: feature.symbol)
                     .font(.title3.weight(.semibold))
+                    .foregroundStyle(iconForeground)
                     .accessibilityHidden(true)
                 Spacer(minLength: 0)
                 visual
             }
-            Text(feature.title).font(.headline)
-            Text(feature.subtitle).font(.subheadline).foregroundStyle(.secondary)
+            Text(feature.title)
+                .font(.headline)
+                .foregroundStyle(cardForeground)
+            Text(feature.subtitle)
+                .font(.subheadline)
+                .foregroundStyle(usesColoredBackground ? Color.white : Color.secondary)
         }
-        .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 124, alignment: .leading)
         .padding(16)
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous).fill(cardBackground)
@@ -478,7 +483,31 @@ private struct ProFeatureCard: View {
         case "insights":
             AnyShapeStyle(
                 LinearGradient(
-                    colors: [Color.accentColor.opacity(0.2), Color.accentColor.opacity(0.08)],
+                    colors: [Color(hex: "#0054B8") ?? .blue, Color(hex: "#003F91") ?? .blue],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        case "sharing":
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [Color(hex: "#B00055") ?? .pink, Color(hex: "#79003B") ?? .pink],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        case "weight":
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [Color(hex: "#A04400") ?? .orange, Color(hex: "#713000") ?? .orange],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        case "reminders":
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [Color(hex: "#454B55") ?? .gray, Color(hex: "#282B32") ?? .gray],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -487,9 +516,9 @@ private struct ProFeatureCard: View {
             AnyShapeStyle(
                 LinearGradient(
                     colors: [
-                        MacroRingPalette.standard.protein.opacity(0.14),
-                        MacroRingPalette.standard.carbs.opacity(0.12),
-                        MacroRingPalette.standard.fat.opacity(0.1)
+                        Color(hex: "#315CA8") ?? .blue,
+                        Color(hex: "#6A438F") ?? .purple,
+                        Color(hex: "#8B4664") ?? .pink
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -500,6 +529,18 @@ private struct ProFeatureCard: View {
         }
     }
 
+    private var usesColoredBackground: Bool {
+        feature.id != "widgets"
+    }
+
+    private var cardForeground: Color {
+        usesColoredBackground ? .white : .primary
+    }
+
+    private var iconForeground: Color {
+        feature.id == "widgets" ? MacroRingPalette.standard.protein : cardForeground
+    }
+
     @ViewBuilder
     private var visual: some View {
         switch feature.visual {
@@ -508,27 +549,24 @@ private struct ProFeatureCard: View {
         case .chart:
             HStack(alignment: .bottom, spacing: 4) {
                 let heights: [CGFloat] = [0.35, 0.58, 0.43, 0.76, 0.92]
-                let colors = [
-                    MacroRingPalette.standard.protein,
-                    MacroRingPalette.standard.carbs,
-                    MacroRingPalette.standard.fat,
-                    MacroRingPalette.standard.protein,
-                    MacroRingPalette.standard.carbs
-                ]
                 ForEach(heights.indices, id: \.self) { index in
-                    Capsule().fill(colors[index])
-                        .frame(width: 7, height: 30 * heights[index])
+                    Capsule()
+                        .fill(cardForeground)
+                        .frame(width: 8, height: 42 * heights[index])
                 }
             }
-            .frame(height: 30)
+            .frame(height: 42)
             .accessibilityHidden(true)
         case .rings:
             HStack(spacing: -8) {
                 ForEach([MacroMetric.protein, .carbs, .fat], id: \.self) { metric in
                     Circle().trim(from: 0, to: 0.72)
-                        .stroke(MacroRingPalette.standard.color(for: metric), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .stroke(
+                            MacroRingPalette.standard.color(for: metric),
+                            style: StrokeStyle(lineWidth: 5, lineCap: .round)
+                        )
                         .rotationEffect(.degrees(-90))
-                        .frame(width: 25, height: 25)
+                        .frame(width: 32, height: 32)
                 }
             }
             .accessibilityHidden(true)

@@ -55,6 +55,14 @@ private struct OnboardingProScreen: View {
             .background(PlatformColors.groupedBackground)
             .navigationTitle("")
             .inlineNavigationTitle()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Not now", action: onContinue)
+                }
+            }
+            .toolbarBackground(PlatformColors.groupedBackground, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .scrollEdgeEffectStyle(.soft, for: .top)
     }
 }
 
