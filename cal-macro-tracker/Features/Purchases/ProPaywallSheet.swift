@@ -357,7 +357,6 @@ private struct ProFeatureCards: View {
 
     private func featureCard(_ feature: ProFeature) -> some View {
         ProFeatureCard(feature: feature, isHighlighted: feature.contexts.contains(context))
-            .frame(maxWidth: .infinity)
     }
 
     private var featureRows: [[ProFeature]] {
@@ -462,7 +461,7 @@ private struct ProFeatureCard: View {
                 .font(.subheadline)
                 .foregroundStyle(usesColoredBackground ? Color.white : Color.secondary)
         }
-        .frame(maxWidth: .infinity, minHeight: 124, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 124, maxHeight: .infinity, alignment: .topLeading)
         .padding(16)
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous).fill(cardBackground)
