@@ -8,7 +8,7 @@ This is the complete screenshot matrix requested for round 3. The ordinary evide
 - Devices: iPhone Air (`844B72D7-D128-4607-AB2E-6C14B024618F`) and iPhone 17e (`F976E800-DA1F-4F20-B755-DFD964E33975`)
 - Runtime/toolchain: Xcode 26.4.1, iOS Simulator, status bar fixed to 9:41
 - Fixture: fresh app install and first-run tutorial, driven by a temporary capture-only UI-test helper; the helper was removed and is not part of either commit
-- Raw `.xcresult` bundles and exported original-resolution screenshots remain in the local-only directory `build/evidence/2026-11-24-tutorial-r3/`; they are not archived by this transfer commit
+- Raw `.xcresult` bundles and original-resolution exports were used for validation, then removed during cleanup. This transfer commit contains the 1300-pixel screenshot exports only.
 
 ## Matrix
 
