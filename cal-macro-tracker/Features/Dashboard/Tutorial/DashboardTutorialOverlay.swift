@@ -63,6 +63,7 @@ struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
     /// Global position of this overlay's top-left corner; tutorial frames are global.
@@ -73,6 +74,9 @@ struct DashboardTutorialOverlay: View {
 
     @State private var isVisible = false
     @State private var isDismissing = false
+    @State private var captionTop: CGFloat?
+
+    private var captionHeight: CGFloat { size.height * 0.22 }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
@@ -135,6 +139,12 @@ struct DashboardTutorialOverlay: View {
         }
         .opacity(isDismissing || !isVisible ? 0 : 1)
         .onAppear {
+            let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
+            let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+            captionTop = min(
+                max(legendBottom + 40, size.height * 0.56),
+                bottomBarTop - captionHeight - 12
+            )
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
     }
@@ -144,20 +154,14 @@ struct DashboardTutorialOverlay: View {
         else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
+        if dynamicTypeSize.isAccessibilitySize {
+            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * fraction)
+        }
         return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
     }
 
     private var fixedTutorialLayout: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 0)
-            ScrollView {
-                TutorialCaptionCard(step: step)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .frame(maxWidth: .infinity)
-            }
-            .scrollIndicators(.hidden)
-            .frame(height: size.height * 0.22)
+        ZStack(alignment: .bottom) {
             TutorialActionBar(
                 step: step,
                 onAction: {
@@ -172,8 +176,18 @@ struct DashboardTutorialOverlay: View {
                 onSkipStep: skipStep,
                 onSkipTutorial: dismiss
             )
+
+            ScrollView {
+                TutorialCaptionCard(step: step)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity)
+            }
+            .scrollIndicators(.hidden)
+            .frame(height: captionHeight)
+            .position(x: size.width / 2, y: (captionTop ?? size.height * 0.56) + captionHeight / 2)
         }
-        .frame(width: size.width, height: size.height)
+        .frame(width: size.width, height: size.height, alignment: .bottom)
         .ignoresSafeArea()
     }
 
