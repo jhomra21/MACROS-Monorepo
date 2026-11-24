@@ -11,6 +11,7 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 - Verified the 1.0 hotfix's IAP-loading changes are already present in `main`; no port was needed. The reviewed `PurchaseStore` retry behavior is retained, with later main changes limited to server-verified purchase submission and UI-test fixture integration.
 - Validation: Swift format, StoreKit catalog, Debug and Release builds, Markdown links, and 287/287 unit tests passed. The full UI suite had 17/18 pass; the camera test passed once in isolation on iPhone 17, but a later full run lost the app during a measured swipe, and an isolated iPhone 17e run failed before measurement because the inline editor did not appear. UI coverage remains unresolved. Story export passed after scoping OCR to the macro row, avoiding a full-height Vision false negative.
 - Archived version 1.1/build 40 from the release worktree on 2026-11-23 and uploaded it to App Store Connect for TestFlight; Xcode reported “Upload succeeded” and “Uploaded package is processing.” Archive: `~/Library/Developer/Xcode/Archives/2026-11-23/MACROS-build40.xcarchive`. No App Review submission was made. The exact-build submission check remains pending.
+- Build 41 replaces build 40 with the updated rings app icon; archived at `/Users/juan/Library/Developer/Xcode/Archives/2026-11-23/MACROS-build41.xcarchive` and uploaded successfully to App Store Connect for TestFlight (“Uploaded package is processing”). No App Review submission was made.
 
 ## 2026-11-11 App Review IAP product loading
 
