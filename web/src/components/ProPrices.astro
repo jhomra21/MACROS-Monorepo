@@ -1,0 +1,21 @@
+---
+import { site } from '../data/site';
+---
+
+<div class="pro-offer">
+	<h3 class="title">MACROS Pro</h3>
+	<ul class="pro-prices" role="list">
+		{
+			site.proPrices.map((option) => (
+				<li>
+					<span class="pro-prices__name">{option.name}</span>
+					<span class="pro-prices__price">
+						<strong>{option.price}</strong> {option.cadence}
+					</span>
+					<span class="pro-prices__note">{option.note}</span>
+				</li>
+			))
+		}
+	</ul>
+	<p class="caption">{site.plansNote}</p>
+</div>
