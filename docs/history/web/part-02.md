@@ -2,7 +2,7 @@
 
 ### Delivered
 
-- Support contact: `supportEmail` in `src/data/site.ts` is `jhonra121@gmail.com`. `/support` shows "Email us at ..." above the form, and the footer shows the same mailto link.
+- Support contact: `supportEmail` in `src/data/site.ts` is `support@macrosios.com`. `/support` shows "Email us at ..." above the form, and the footer shows the same mailto link.
 - Insights wording: the Pro list, the Pro plan highlight, and the Pro FAQ answer now say "Insights ranges beyond 7 days". Free users keep 7-day Insights.
 - Privacy page: effective date is October 30, 2026. The food-search section discloses sampled operational logs (about 10% of requests) that can include the request URL, IP address, and coarse location, kept up to 7 days for reliability and abuse prevention. These logs are not linked to any sharing profile. The sharing section says shared totals are linked to the sharing profile (display name and device-generated key), which makes them pseudonymous.
 - Waitlist primary button: validation is unchanged. The disabled state keeps the primary fill at 65% on the background only, so the label stays at full contrast. Label contrast is about 5.1:1 in light mode and 7.2:1 in dark mode.

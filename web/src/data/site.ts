@@ -74,7 +74,7 @@ export const site = {
 	tiktokURL: socialLinks[1].href,
 	threadsURL: socialLinks[2].href,
 	facts: productFacts,
-	supportEmail: 'jhonra121@gmail.com',
+	supportEmail: 'support@macrosios.com',
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
 		{ href: '/#plans', label: 'Pro', secondary: true },
