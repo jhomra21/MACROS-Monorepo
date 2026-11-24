@@ -39,7 +39,7 @@ MACROS requires iOS 26 or later. Anyone using iOS 25 or earlier, or looking for 
 
 ## How can an app correct this comparison?
 
-Contact MACROS support at [jhonra121@gmail.com](mailto:jhonra121@gmail.com) with the source URL and correction. We will review reported errors and update this page within a week. The page's check date will change only after we recheck every row.
+Contact MACROS support at [support@macrosios.com](mailto:support@macrosios.com) with the source URL and correction. We will review reported errors and update this page within a week. The page's check date will change only after we recheck every row.
 
 ## Sources checked on November 18, 2026
 
