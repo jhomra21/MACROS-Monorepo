@@ -1,0 +1,185 @@
+---
+export const prerender = true;
+
+import PageHeading from '../components/PageHeading.astro';
+import ProLimits from '../components/ProLimits.astro';
+import ProPrices from '../components/ProPrices.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { site } from '../data/site';
+import { pages } from '../lib/seo';
+---
+
+<SiteLayout {...pages['/pro/']}>
+	<section class="page-header">
+		<div class="container">
+			<PageHeading heading="MACROS Free vs Pro">
+				<p class="lead">Start with a free food diary. Pro adds more ways to look back, share, and customize your tracking.</p>
+			</PageHeading>
+		</div>
+	</section>
+
+	<section class="section" aria-labelledby="pro-prices-title">
+		<div class="container pro-page">
+			<div class="pro-page__plans">
+				<h2 id="pro-prices-title" class="headline">Three ways to get Pro.</h2>
+				<ProPrices />
+			</div>
+
+			<section class="pro-page__features" aria-labelledby="pro-features-title">
+				<h2 id="pro-features-title" class="headline">What’s free, and what Pro adds.</h2>
+				<ul class="pro-page__list">
+					<li>
+						<h3 class="title">Free</h3>
+						<ul>{site.freeFeatures.map(feature => <li>{feature}</li>)}</ul>
+					</li>
+					<li>
+						<h3 class="title">Pro</h3>
+						<ul>{site.proFeatures.map(feature => <li>{feature}</li>)}</ul>
+					</li>
+				</ul>
+			</section>
+
+			<ProLimits />
+
+			<div class="pro-page__comparison">
+				<h2 class="headline">Compare the plans.</h2>
+				<div class="table-wrap">
+					<table class="compare-table">
+						<caption class="sr-only">Features included in Free and in MACROS Pro</caption>
+						<thead>
+							<tr>
+								<th scope="col">Feature</th>
+								<th scope="col">Free</th>
+								<th scope="col">Pro</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th class="compare-table__group" colspan="3" scope="colgroup">Everyday tracking</th>
+							</tr>
+							{site.freeFeatures.map(feature => (
+								<tr>
+									<th scope="row">{feature}</th>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+								</tr>
+							))}
+							<tr>
+								<th class="compare-table__group" colspan="3" scope="colgroup">Pro extras</th>
+							</tr>
+							{site.proFeatures.map(feature => (
+								<tr>
+									<th scope="row">{feature}</th>
+									<td class="no"><span aria-hidden="true">–</span><span class="sr-only">Not included</span></td>
+									<td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Included</span></td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+</SiteLayout>
+
+<style>
+	.pro-page {
+		display: grid;
+		gap: var(--space-8);
+	}
+
+	.pro-page__plans,
+	.pro-page__features,
+	.pro-page__comparison {
+		display: grid;
+		gap: var(--space-5);
+	}
+
+	.pro-page__plans {
+		max-width: 42rem;
+	}
+
+	.pro-page__features {
+		max-width: 50rem;
+	}
+
+	.pro-page__list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+		gap: var(--space-6);
+	}
+
+	.pro-page__list > li {
+		display: grid;
+		align-content: start;
+		gap: var(--space-3);
+		padding: var(--space-5);
+		border-radius: var(--radius-lg);
+		background: var(--bg-soft);
+	}
+
+	.pro-page__list ul {
+		display: grid;
+		gap: var(--space-2);
+	}
+
+	.pro-page__list ul li {
+		padding-left: 1.25rem;
+		position: relative;
+	}
+
+	.pro-page__list ul li::before {
+		content: '•';
+		position: absolute;
+		left: 0;
+		color: var(--ink-muted);
+	}
+
+	.pro-page__comparison {
+		max-width: 48rem;
+	}
+
+	.table-wrap {
+		position: relative;
+		overflow-x: auto;
+	}
+
+	.compare-table {
+		width: 100%;
+		min-width: 18rem;
+		border-collapse: collapse;
+		font-size: var(--fs-small);
+	}
+
+	.compare-table th,
+	.compare-table td {
+		padding: var(--space-3) var(--space-2);
+		border-bottom: 1px solid var(--hairline);
+		text-align: left;
+		vertical-align: top;
+	}
+
+	.compare-table thead th,
+	.compare-table .compare-table__group {
+		color: var(--ink-muted);
+		font-weight: 600;
+	}
+
+	.compare-table tbody th[scope='row'] {
+		font-weight: 400;
+	}
+
+	.compare-table .compare-table__group {
+		padding-top: var(--space-5);
+	}
+
+	.compare-table td,
+	.compare-table th:not(:first-child) {
+		width: 4rem;
+		text-align: center;
+	}
+
+	.compare-table .no {
+		color: var(--ink-muted);
+	}
+</style>

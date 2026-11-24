@@ -489,8 +489,7 @@ summary {
 	grid-area: copy;
 }
 
-.hero__copy,
-.hero__signup {
+.hero__copy {
 	display: grid;
 	gap: var(--space-5);
 	justify-items: start;
@@ -498,7 +497,10 @@ summary {
 
 .hero__signup {
 	grid-area: signup;
+	display: grid;
 	gap: var(--space-4);
+	justify-items: center;
+	text-align: center;
 }
 
 .hero__copy .lead {
@@ -569,6 +571,7 @@ summary {
 
 	.hero__signup {
 		align-self: start;
+		justify-self: center;
 	}
 
 	.hero__visual {
@@ -862,10 +865,28 @@ summary {
 	font-variant-numeric: tabular-nums;
 }
 
-.compare {
+.pro-summary {
 	display: grid;
 	gap: var(--space-4);
-	max-width: 44rem;
+	max-width: 48rem;
+}
+
+.pro-summary__features {
+	display: grid;
+	gap: var(--space-2) var(--space-5);
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.pro-summary__features li {
+	padding-left: 1.25rem;
+	position: relative;
+}
+
+.pro-summary__features li::before {
+	content: '•';
+	position: absolute;
+	left: 0;
+	color: var(--ink-muted);
 }
 
 @media (min-width: 56.25rem) {
@@ -875,56 +896,12 @@ summary {
 		align-items: start;
 	}
 
-	.compare {
+	.pro-summary {
 		grid-column: 1 / -1;
 		justify-self: center;
 		width: 100%;
 		margin-top: var(--space-6);
 	}
-}
-
-.table-wrap {
-	position: relative;
-	overflow-x: auto;
-}
-
-.compare-table {
-	width: 100%;
-	min-width: 18rem;
-	border-collapse: collapse;
-	font-size: var(--fs-small);
-}
-
-.compare-table th,
-.compare-table td {
-	padding: var(--space-3) var(--space-2);
-	border-bottom: 1px solid var(--hairline);
-	text-align: left;
-	vertical-align: top;
-}
-
-.compare-table thead th,
-.compare-table .compare-table__group {
-	color: var(--ink-muted);
-	font-weight: 600;
-}
-
-.compare-table tbody th[scope='row'] {
-	font-weight: 400;
-}
-
-.compare-table .compare-table__group {
-	padding-top: var(--space-5);
-}
-
-.compare-table td,
-.compare-table th:not(:first-child) {
-	width: 4rem;
-	text-align: center;
-}
-
-.compare-table .no {
-	color: var(--ink-muted);
 }
 
 /* FAQ */

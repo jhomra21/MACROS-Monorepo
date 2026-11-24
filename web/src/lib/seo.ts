@@ -39,6 +39,10 @@ export const pages = {
 		title: 'What is MACROS? An iPhone calorie and macro tracker with no account',
 		description: 'MACROS: Nutrition Tracker is an iPhone calorie and macro tracker with no account. See what stays on your phone, what uses the network, what is free, and current Pro prices.',
 	},
+	'/pro/': {
+		title: 'MACROS Free vs Pro | Features and prices',
+		description: 'Compare what is included free in MACROS with Pro features, and see the monthly, yearly, and lifetime prices.',
+	},
 	'/support/': {
 		title: 'MACROS support | Food diary and macro tracker help',
 		description: 'Get help with the MACROS calorie counter and food diary for iPhone. Contact MACROS support about barcode scans, nutrition labels, daily goals, or purchases.',
