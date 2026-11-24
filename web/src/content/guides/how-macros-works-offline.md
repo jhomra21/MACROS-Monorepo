@@ -36,6 +36,6 @@ No. Tracking does not require an account. Optional sharing is a separate feature
 
 ## Can I export food logs offline?
 
-Backup export, CSV log export, and backup import are MACROS Pro features. When you export, the app creates a file that you can save or share using iOS. See [what is free and what Pro adds](/#plans).
+Backup export, CSV log export, and backup import are MACROS Pro features. When you export, the app creates a file that you can save or share using iOS. See [what is free and what Pro adds](/pro/).
 
 Read [what is MACROS?](/what-is-macros/) for the full product facts, including data sources and availability.

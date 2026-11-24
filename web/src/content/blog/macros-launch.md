@@ -18,6 +18,6 @@ Search for food, scan a barcode or nutrition label, or enter a meal yourself. Re
 
 Read [how to set protein, carb, and fat goals](/guides/how-to-set-macro-goals/) for the calculator's math and how its presets fit adult nutrition reference ranges.
 
-Core logging and scanning are free. MACROS Pro adds longer Insights ranges, sharing invites, and other optional tools. See [the feature and pricing details](/#plans) and the [privacy policy](/privacy/). For app help, [contact support](/support/).
+Core logging and scanning are free. MACROS Pro adds longer Insights ranges, sharing invites, and other optional tools. See [the feature and pricing details](/pro/) and the [privacy policy](/privacy/). For app help, [contact support](/support/).
 
 <!-- Publish only after 1.0 is approved. Set actual published/updated dates and draft: false, then rebuild. -->

@@ -77,7 +77,7 @@ export const site = {
 	supportEmail: 'support@macrosios.com',
 	navItems: [
 		{ href: '/#why', label: 'Why MACROS', secondary: true },
-		{ href: '/#plans', label: 'Pro', secondary: true },
+		{ href: '/pro/', label: 'Pro', secondary: true },
 		{ href: '/learn/', label: 'Learn', secondary: false },
 		{ href: '/about/', label: 'About', secondary: false },
 		{ href: '/support/', label: 'Support', secondary: false },
@@ -88,7 +88,7 @@ export const site = {
 			links: [
 				{ href: '/#why', label: 'Why MACROS' },
 				{ href: '/#showcase', label: 'Screenshots' },
-				{ href: '/#plans', label: 'MACROS Pro' },
+				{ href: '/pro/', label: 'MACROS Pro' },
 				{ href: '/#faq', label: 'FAQ' },
 			],
 		},
