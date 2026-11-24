@@ -18,6 +18,7 @@ const screenshotNames = [
 	'app-sharing-person.png',
 	'app-widgets.png',
 	'app-settings.png',
+	'app-calculator-review.png',
 ];
 
 const bezel = sharp(bezelPath).ensureAlpha();
