@@ -109,9 +109,6 @@ struct AppRootView: View {
                         onSkipStep: {
                             tutorial.skipStep()
                             if path.last == .sharingDashboard { path.removeLast() }
-                        },
-                        onAction: {
-                            if path.last == .sharingDashboard { path.removeLast() }
                         }
                     )
                 }

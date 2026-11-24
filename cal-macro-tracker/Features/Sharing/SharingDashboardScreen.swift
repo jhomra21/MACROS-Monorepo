@@ -4,6 +4,8 @@ struct SharingDashboardScreen: View {
     @Environment(AppDayContext.self) private var dayContext
     @Environment(SharingSyncService.self) private var sharingSyncService
     @Environment(AppEntitlements.self) private var entitlements
+    @Environment(DashboardTutorial.self) private var tutorial
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dashboardErrorMessage: String?
     @State private var inviteErrorMessage: String?
@@ -37,9 +39,23 @@ struct SharingDashboardScreen: View {
                 .animation(reduceMotion ? nil : .smooth(duration: 0.45), value: sharingSyncService.dashboard)
             }
         }
+        .disabled(tutorial.step == .returnFromSharing)
         .navigationTitle("Sharing")
         .inlineNavigationTitle()
+        .navigationBarBackButtonHidden(tutorial.step == .returnFromSharing)
         .toolbar {
+            if tutorial.step == .returnFromSharing {
+                ToolbarItem(placement: .appTopBarLeading) {
+                    Button(action: dismiss.callAsFunction) {
+                        Image(systemName: "chevron.left")
+                            .appTopBarIconStyle()
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("Back")
+                    .tutorialTarget(.sharingBack, in: tutorial)
+                }
+            }
             ToolbarItemGroup(placement: .appTopBarTrailing) {
                 Menu {
                     Button("Create Invite", systemImage: "link.badge.plus", action: createInvite)
@@ -50,11 +66,13 @@ struct SharingDashboardScreen: View {
                         .appTopBarIconStyle()
                 }
                 .accessibilityLabel("Invite someone")
+                .disabled(tutorial.step == .returnFromSharing)
                 Button(action: onOpenSharingSettings) {
                     Image(systemName: "gearshape")
                         .appTopBarIconStyle()
                 }
                 .accessibilityLabel("Open sharing settings")
+                .disabled(tutorial.step == .returnFromSharing)
             }
         }
         .onChange(of: sharingSyncService.dashboardErrorMessage) { _, error in

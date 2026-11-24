@@ -3,9 +3,12 @@ import SwiftUI
 struct TutorialCaptionCard: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AccessibilityFocusState private var isDoneFocused: Bool
     @State private var didAppear = false
 
     let step: DashboardTutorial.Step
+    let onDone: () -> Void
 
     private var message: String { step.message(nextMacro: tutorial.nextMacro) }
 
@@ -13,6 +16,7 @@ struct TutorialCaptionCard: View {
         Group {
             if step == .done {
                 doneContent
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.92).combined(with: .opacity))
             } else {
                 VStack(alignment: .leading, spacing: 12) {
                     if !dynamicTypeSize.isAccessibilitySize {
@@ -33,10 +37,11 @@ struct TutorialCaptionCard: View {
         }
         .frame(maxWidth: 420, alignment: .leading)
         .padding(step == .done ? 8 : 22)
-        .background(PlatformColors.cardBackground, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isStaticText)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: step == .done ? .contain : .combine)
+        .onChange(of: step, initial: true) {
+            if step == .done { isDoneFocused = true }
+        }
         .onChange(of: message, initial: true) {
             guard step != .done else { return }
             AccessibilityNotification.Announcement("\(step.title). \(message)").post()
@@ -65,77 +70,20 @@ struct TutorialCaptionCard: View {
             .font(.subheadline)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
+
+            AppAccentActionButton(
+                title: "Done",
+                systemImage: "checkmark",
+                isCompact: false,
+                action: onDone
+            )
+            .accessibilityLabel("Done")
+            .accessibilityFocused($isDoneFocused)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 60)
         }
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
-        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .onAppear { didAppear = true }
-    }
-}
-
-struct TutorialActionBar: View {
-    @Environment(DashboardTutorial.self) private var tutorial
-    @AccessibilityFocusState private var isDoneFocused: Bool
-    @State private var didShowDone = false
-
-    let step: DashboardTutorial.Step
-    let onAction: () -> Void
-    let onSkipStep: () -> Void
-    let onSkipTutorial: () -> Void
-
-    var body: some View {
-        let hasAction = step.actionTitle(nextMacro: tutorial.nextMacro) != nil
-        VStack(spacing: 10) {
-            Button(actionTitle, action: onAction)
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .lineLimit(1)
-                .minimumScaleFactor(0.55)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 48)
-                .opacity(hasAction ? 1 : 0)
-                .disabled(!hasAction)
-                .accessibilityHidden(!hasAction)
-                .accessibilityFocused($isDoneFocused)
-
-            if step != .done {
-                HStack(spacing: 12) {
-                    skipStepButton
-                    skipTutorialButton
-                }
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 16)
-        .padding(.bottom, 36)
-        .background(.regularMaterial)
-        .sensoryFeedback(.success, trigger: step == .done) { _, newValue in newValue }
-        .onChange(of: step, initial: true) {
-            guard step == .done, !didShowDone else { return }
-            didShowDone = true
-            isDoneFocused = true
-        }
-    }
-
-    private var actionTitle: String {
-        step.actionTitle(nextMacro: tutorial.nextMacro) ?? " "
-    }
-
-    private var skipStepButton: some View {
-        Button("Skip step", action: onSkipStep)
-            .buttonStyle(.bordered)
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 44)
-    }
-
-    private var skipTutorialButton: some View {
-        Button("Skip tutorial", action: onSkipTutorial)
-            .buttonStyle(.bordered)
-            .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 44)
     }
 }

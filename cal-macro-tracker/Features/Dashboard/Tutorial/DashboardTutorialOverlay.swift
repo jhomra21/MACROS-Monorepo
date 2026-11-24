@@ -70,7 +70,6 @@ struct DashboardTutorialOverlay: View {
     let origin: CGPoint
     let size: CGSize
     var onSkipStep: () -> Void = {}
-    var onAction: () -> Void = {}
 
     @State private var isVisible = false
     @State private var isDismissing = false
@@ -78,13 +77,17 @@ struct DashboardTutorialOverlay: View {
 
     private var captionHeight: CGFloat {
         if dynamicTypeSize.isAccessibilitySize {
-            return size.height * (step == .done ? 0.32 : 0.18)
+            return size.height * (step == .done ? 0.42 : 0.18)
         }
-        return size.height * (step == .done ? 0.22 : 0.18)
+        return size.height * (step == .done ? 0.28 : 0.18)
     }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
+    }
+
+    private var bottomBarFrame: CGRect {
+        localFrame(.bottomBar) ?? CGRect(x: 0, y: size.height - 68, width: size.width, height: 68)
     }
 
     private var targetRect: CGRect? {
@@ -156,6 +159,11 @@ struct DashboardTutorialOverlay: View {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
         .onChange(of: step) { _, _ in updateCaptionPosition() }
+        .sensoryFeedback(.success, trigger: step == .done)
+        .animation(
+            reduceMotion ? .easeOut(duration: 0.16) : .spring(response: 0.42, dampingFraction: 0.84),
+            value: step == .done
+        )
     }
 
     private func updateCaptionPosition() {
@@ -164,10 +172,10 @@ struct DashboardTutorialOverlay: View {
         if dynamicTypeSize.isAccessibilitySize {
             captionTop =
                 step == .done
-                ? min(size.height * 0.45, bottomBarTop - captionHeight - 16)
+                ? min(size.height * 0.38, bottomBarTop - captionHeight - 24)
                 : size.height * 0.6
         } else {
-            captionTop = min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 20)
+            captionTop = min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
         }
     }
 
@@ -182,23 +190,32 @@ struct DashboardTutorialOverlay: View {
 
     private var fixedTutorialLayout: some View {
         ZStack(alignment: .bottom) {
-            TutorialActionBar(
-                step: step,
-                onAction: {
-                    if step == .done {
-                        dismiss()
-                    } else if step == .returnFromSharing {
-                        onAction()
-                    } else {
-                        tutorial.performAction?()
-                    }
-                },
-                onSkipStep: skipStep,
-                onSkipTutorial: dismiss
-            )
+            if step != .done {
+                BottomPinnedDualActionBar(
+                    leadingAction: BottomPinnedDualAction(
+                        title: "Skip Tutorial",
+                        systemImage: "xmark",
+                        action: dismiss,
+                        tint: .gray
+                    ),
+                    trailingAction: BottomPinnedDualAction(
+                        title: "Skip Step",
+                        systemImage: "forward.end",
+                        action: skipStep
+                    ),
+                    displayMode: .expanded,
+                    compactActionsAreHorizontal: true,
+                    topPadding: 0,
+                    bottomOffset: 6,
+                    edgeFadeColor: .clear
+                )
+                .frame(maxWidth: .infinity)
+                .position(x: bottomBarFrame.midX, y: bottomBarFrame.midY)
+                .transition(.opacity)
+            }
 
             ScrollView {
-                TutorialCaptionCard(step: step)
+                TutorialCaptionCard(step: step, onDone: dismiss)
                     .padding(.horizontal, 20)
                     .frame(maxWidth: .infinity)
             }
@@ -220,7 +237,7 @@ struct DashboardTutorialOverlay: View {
     }
 
     private func dismiss() {
-        withAnimation(.easeOut(duration: 0.25)) {
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
             isDismissing = true
         } completion: {
             tutorial.finish()

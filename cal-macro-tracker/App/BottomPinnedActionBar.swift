@@ -174,6 +174,7 @@ struct AppAccentActionButton: View {
     var isDisabled = false
     var isLoading = false
     var labelWidth: CGFloat?
+    var tint: Color? = nil
     let action: () -> Void
 
     private let buttonHeight: CGFloat = 60
@@ -183,7 +184,7 @@ struct AppAccentActionButton: View {
         if #available(iOS 26, macOS 26, *) {
             Button(role: role, action: action) {
                 label
-                    .glassEffect(.regular.tint(role == .destructive ? .red : .accentColor).interactive(), in: .capsule)
+                    .glassEffect(.regular.tint(role == .destructive ? .red : (tint ?? .accentColor)).interactive(), in: .capsule)
                     .contentShape(Capsule())
             }
             .buttonStyle(.plain)
@@ -192,7 +193,7 @@ struct AppAccentActionButton: View {
         } else {
             Button(role: role, action: action) {
                 label
-                    .background(isDisabled ? Color.secondary.opacity(0.5) : Color.black)
+                    .background(isDisabled ? Color.secondary.opacity(0.5) : (tint ?? .black))
                     .clipShape(Capsule())
                     .contentShape(Capsule())
             }

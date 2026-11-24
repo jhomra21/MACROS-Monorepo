@@ -8,6 +8,7 @@ struct BottomPinnedDualAction {
     let systemImage: String
     let action: () -> Void
     var role: ButtonRole? = nil
+    var tint: Color? = nil
     var transitionSourceID: String? = nil
 }
 
@@ -25,6 +26,7 @@ struct BottomPinnedDualActionBar: View {
     var compactActionsAreHorizontal = false
     var topPadding: CGFloat = 10
     var bottomOffset: CGFloat = 0
+    var edgeFadeColor: Color = PlatformColors.systemBackground
 
     @State private var isKeyboardVisible = false
 
@@ -37,7 +39,7 @@ struct BottomPinnedDualActionBar: View {
     }
 
     var body: some View {
-        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
+        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset, fadeColor: edgeFadeColor) {
             buttonContent
         }
         .bottomPinnedKeyboardVisibility($isKeyboardVisible)
@@ -93,6 +95,7 @@ struct BottomPinnedDualActionBar: View {
             systemImage: action.systemImage,
             isCompact: isCompact,
             labelWidth: isCompact ? compactButtonSize : nil,
+            tint: action.tint,
             action: action.action,
             role: action.role
         )

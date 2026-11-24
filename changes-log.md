@@ -6,7 +6,7 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 
 ## 2026-11-24 Dashboard tutorial redesign, round 3
 
-The first-run tutorial now focuses its accessibility-size macro step on one macro at a time, hides food and secondary-nutrition content while the tutorial is active, and keeps the recap card clear of the fixed action bar. The spotlight tracks each macro target directly; dark-mode contrast, caption sizing, and the recap card were refined. Final light, skip-step, dark-mode, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).
+The first-run tutorial now uses only two dashboard-matched floating controls, Skip Tutorial and Skip Step. Spotlighted gestures and taps advance the walkthrough directly; the Sharing return step spotlights Back. The recap animates in with its own full-width Done button and VoiceOver focus. AX XXXL macro steps focus Protein, Carbs, and Fat individually. Final light/gesture, skip-step, dark, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).
 
 ## 2026-11-23 Version 1.1, build 40 preparation
 

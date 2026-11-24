@@ -85,11 +85,7 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
-            .accessibilityHidden(tutorial.isRunning)
-            .tutorialAccessibilityMask(tutorial.isRunning)
             .tutorialTarget(.contentArea, in: tutorial)
-            .onAppear { tutorial.performAction = performTutorialAction }
-            .onDisappear { tutorial.performAction = nil }
             .onChange(of: daySelection.selectedDay) { _, day in
                 tutorial.didChangeDay(isToday: day == dayContext.today)
             }
@@ -234,11 +230,14 @@ struct DashboardScreen: View {
                 macroRingPanel(snapshot: snapshot, customRingPalette: customRingPalette)
             } else {
                 macroRingPanel(snapshot: snapshot, customRingPalette: customRingPalette)
-                macroLegend(snapshot: snapshot, customRingPalette: customRingPalette)
+                if tutorial.step != .done {
+                    macroLegend(snapshot: snapshot, customRingPalette: customRingPalette)
+                }
             }
 
             if tutorial.step != .macros && tutorial.step != .done {
                 LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
+                    .disabled(tutorial.isRunning)
 
                 RevealLayout(progress: isMacroRingExpanded ? 1 : 0) {
                     SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
@@ -376,9 +375,9 @@ struct DashboardScreen: View {
             bottomOffset: 6
         )
         .frame(maxWidth: .infinity)
+        .opacity(tutorial.isRunning ? 0 : 1)
         .disabled(tutorial.isRunning)
         .accessibilityHidden(tutorial.isRunning)
-        .tutorialAccessibilityMask(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -460,18 +459,6 @@ struct DashboardScreen: View {
         }
     }
 
-    private func performTutorialAction() {
-        switch tutorial.step {
-        case .openSharing?: onOpenSharing()
-        case .previousDay?: moveSelection(by: -1)
-        case .backToToday?: returnToToday()
-        case .expandRing?: toggleMacroRingExpansion()
-        case .macros?:
-            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { selectedMacro = tutorial.nextMacro }
-        default: break
-        }
-    }
-
     private func presentColorPicker(for metric: MacroMetric) {
         #if os(iOS)
         MacroRingColorPickerPresenter.present(for: metric, hex: hex(for: metric))
@@ -507,24 +494,5 @@ private struct RevealLayout: Layout {
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
-    }
-}
-
-private struct TutorialAccessibilityMask: ViewModifier {
-    let isRunning: Bool
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if isRunning {
-            content.accessibilityRepresentation { EmptyView() }
-        } else {
-            content
-        }
-    }
-}
-
-private extension View {
-    func tutorialAccessibilityMask(_ isRunning: Bool) -> some View {
-        modifier(TutorialAccessibilityMask(isRunning: isRunning))
     }
 }

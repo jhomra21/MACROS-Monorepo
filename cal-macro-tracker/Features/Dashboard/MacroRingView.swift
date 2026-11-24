@@ -110,6 +110,7 @@ struct MacroDashboardRingPanel: View {
         }
         .buttonStyle(UndimmedButtonStyle())
         .accessibilityLabel(isExpanded ? "Collapse nutrition details" : "Expand nutrition details")
+        .accessibilityHidden(tutorial.isRunning && !tutorial.isAccessibilityTarget(.ringPanel))
     }
 }
 
