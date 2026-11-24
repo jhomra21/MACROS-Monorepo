@@ -54,7 +54,7 @@ final class DashboardTutorial {
 
         var spotlightShape: SpotlightShapeKind {
             switch target {
-            case .legend: .roundedRect(22)
+            case .legend: .roundedRect(32)
             case .todayPill: .capsule
             default: .circle
             }
@@ -102,7 +102,7 @@ final class DashboardTutorial {
             case .expandRing: "Expand Rings"
             case .macros: nextMacro.map { "Select \($0.title)" }
             case .returnFromSharing: "Back to Dashboard"
-            case .done: nil
+            case .done: "Done"
             }
         }
     }
@@ -138,6 +138,16 @@ final class DashboardTutorial {
 
     func finish() {
         step = nil
+    }
+
+    func skipStep() {
+        switch step {
+        case .openSharing?, .returnFromSharing?: step = .previousDay
+        case .previousDay?, .backToToday?: step = .expandRing
+        case .expandRing?: step = .macros
+        case .macros?, .done?: finish()
+        case nil: break
+        }
     }
 
     func didOpenSharing() {

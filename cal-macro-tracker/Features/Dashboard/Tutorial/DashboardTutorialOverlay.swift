@@ -7,14 +7,14 @@ enum SpotlightShapeKind {
     func spotlight(around rect: CGRect) -> Spotlight {
         switch self {
         case .circle:
-            let diameter = min(rect.width, rect.height) + 24
+            let diameter = min(rect.width, rect.height) + 48
             return Spotlight(
                 rect: CGRect(x: rect.midX - diameter / 2, y: rect.midY - diameter / 2, width: diameter, height: diameter),
                 radius: diameter / 2)
         case let .roundedRect(radius):
-            return Spotlight(rect: rect.insetBy(dx: -10, dy: -10), radius: radius)
+            return Spotlight(rect: rect.insetBy(dx: -20, dy: -20), radius: radius)
         case .capsule:
-            let padded = rect.insetBy(dx: -8, dy: -8)
+            let padded = rect.insetBy(dx: -14, dy: -14)
             return Spotlight(rect: padded, radius: min(padded.width, padded.height) / 2)
         }
     }
@@ -63,19 +63,16 @@ struct DashboardTutorialOverlay: View {
     @Environment(DashboardTutorial.self) private var tutorial
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let step: DashboardTutorial.Step
     /// Global position of this overlay's top-left corner; tutorial frames are global.
     let origin: CGPoint
     let size: CGSize
+    var onSkipStep: () -> Void = {}
+    var onAction: () -> Void = {}
 
     @State private var isVisible = false
     @State private var isDismissing = false
-
-    private let captionGap: CGFloat = 16
-    /// Below this the caption no longer fits beside the cutout and takes the full content height instead.
-    private let minimumCaptionRegionHeight: CGFloat = 180
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
@@ -134,7 +131,7 @@ struct DashboardTutorialOverlay: View {
                     .accessibilityHidden(true)
             }
 
-            caption(cutout: spotlight.rect)
+            fixedTutorialLayout
         }
         .opacity(isDismissing || !isVisible ? 0 : 1)
         .onAppear {
@@ -142,57 +139,50 @@ struct DashboardTutorialOverlay: View {
         }
     }
 
-    /// The legend columns share its width equally, or stack vertically at accessibility sizes.
     private func handPosition(in cutout: CGRect) -> CGPoint {
         guard step == .macros, let next = tutorial.nextMacro, let index = MacroMetric.allCases.firstIndex(of: next)
         else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
-        if dynamicTypeSize.isAccessibilitySize {
-            let stackedFraction = (CGFloat(index) + 0.8) / CGFloat(MacroMetric.allCases.count)
-            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * stackedFraction)
-        }
         return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
     }
 
-    @ViewBuilder
-    private func caption(cutout: CGRect) -> some View {
-        let top = localFrame(.contentArea)?.minY ?? 0
-        let bottom = localFrame(.bottomBar)?.minY ?? size.height
-        let above = max(0, cutout.minY - top - captionGap)
-        let below = max(0, bottom - cutout.maxY - captionGap)
-        let isFullHeight = step == .done || cutout.isEmpty || max(above, below) < minimumCaptionRegionHeight
-        let placeBelow = below >= above
-        let regionHeight =
-            if isFullHeight {
-                max(0, bottom - top)
-            } else {
-                placeBelow ? below : above
+    private var fixedTutorialLayout: some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+            ScrollView {
+                TutorialCaptionCard(step: step)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity)
             }
-        let regionCenterY =
-            if isFullHeight {
-                (top + bottom) / 2
-            } else {
-                placeBelow ? cutout.maxY + captionGap + below / 2 : top + above / 2
-            }
-        ScrollView {
-            ZStack {
-                if step == .done {
-                    TutorialDoneCard(onDone: dismiss)
-                        .transition(reduceMotion ? .opacity : .scale(scale: 0.94).combined(with: .opacity))
-                } else {
-                    TutorialCaptionCard(step: step, onAction: { tutorial.performAction?() })
-                }
-            }
-            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step == .done)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
+            .scrollIndicators(.hidden)
+            .frame(height: size.height * 0.22)
+            TutorialActionBar(
+                step: step,
+                onAction: {
+                    if step == .done {
+                        dismiss()
+                    } else if step == .returnFromSharing {
+                        onAction()
+                    } else {
+                        tutorial.performAction?()
+                    }
+                },
+                onSkipStep: skipStep,
+                onSkipTutorial: dismiss
+            )
         }
-        .scrollIndicators(.hidden)
-        .defaultScrollAnchor(isFullHeight ? .center : nil)
-        .frame(height: regionHeight)
-        .position(x: size.width / 2, y: regionCenterY)
+        .frame(width: size.width, height: size.height)
+        .ignoresSafeArea()
+    }
+
+    private func skipStep() {
+        if step == .returnFromSharing {
+            onSkipStep()
+        } else {
+            withAnimation(morph) { tutorial.skipStep() }
+        }
     }
 
     private func dismiss() {
