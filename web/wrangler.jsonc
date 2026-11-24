@@ -35,7 +35,7 @@
     // No "!" exclusions: a negative pattern also sends misses straight to the asset router.
     // Keep /media/* reaching the Worker too: static assets ignore Range, and src/lib/byte-range.ts is what
     // answers Safari's bytes=0-1 probe with a 206. A pattern list that skips /media/* would break iPhone playback.
-    "run_worker_first": ["/", "/*/", "/sitemap.xml", "/robots.txt", "/llms.txt", "/rss.xml", "/api/*", "/media/*"],
+    "run_worker_first": ["/", "/app", "/*/", "/sitemap.xml", "/robots.txt", "/llms.txt", "/rss.xml", "/api/*", "/media/*"],
   },
   "observability": {
     "enabled": true,
