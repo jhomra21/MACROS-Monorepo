@@ -5,6 +5,7 @@ import {
 	validateSupportRequest,
 } from './lib/support';
 import { redirectHosts, siteOrigin } from './data/origin';
+import { appStoreLink } from './data/app-store';
 import { withByteRange } from './lib/byte-range';
 import { isJsonRequest, jsonResponse, parseRequest } from './lib/request';
 import {
@@ -232,6 +233,77 @@ function canonicalRedirect(request: Request): Response | null {
 	});
 }
 
+function appLinkResponse(userAgent: string): Response {
+	const lowerCaseAgent = userAgent.toLowerCase();
+	const inAppBrowser = /tiktok|musical_ly|bytedancewebview|instagram|fban|fbav/.test(lowerCaseAgent);
+	const isTikTok = /tiktok|musical_ly|bytedancewebview/.test(lowerCaseAgent);
+
+	const isIOSBrowser = /iphone|ipad|ipod/.test(lowerCaseAgent)
+		&& lowerCaseAgent.includes('safari')
+		&& !/crios|fxios|edgios|opios/.test(lowerCaseAgent)
+		&& !inAppBrowser;
+
+	const source = isTikTok
+		? 'tiktok'
+		: lowerCaseAgent.includes('instagram')
+			? 'instagram'
+			: isIOSBrowser
+				? 'ios'
+				: 'other';
+
+	console.log(`app_link source=${source}`);
+
+	if (source === 'ios') {
+		return new Response(null, {
+			status: 302,
+			headers: { Location: appStoreLink, 'Cache-Control': 'no-store' },
+		});
+	}
+
+	const instructions = inAppBrowser
+		? '<p class="instructions">Open in Safari to download MACROS<br><strong>Tap •••, then Open in browser</strong></p>'
+		: '<p>MACROS is an iPhone food diary. <a href="/">Learn about MACROS</a>.</p>';
+
+	const page = `<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Download MACROS</title>
+	<style>
+		:root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1d1d1f; background: #f5f5f7; }
+		* { box-sizing: border-box; }
+		body { min-height: 100svh; margin: 0; display: grid; place-items: center; padding: 24px; }
+		main { width: min(100%, 380px); padding: 36px 24px; text-align: center; background: #fff; border: 1px solid #e5e5e7; border-radius: 28px; box-shadow: 0 12px 40px #1d1d1f12; }
+		img.icon { width: 76px; height: 76px; border-radius: 17px; }
+		h1 { margin: 18px 0 8px; font-size: 30px; letter-spacing: -1px; }
+		p { margin: 0 0 22px; color: #66666b; line-height: 1.5; }
+		.instructions { margin: 24px 0; padding: 16px; border-radius: 14px; background: #f2f2f7; color: #1d1d1f; font-size: 18px; }
+		a { color: inherit; }
+		a.badge { display: inline-block; margin: 0 0 20px; }
+		a.badge img { display: block; width: 180px; height: 60px; }
+	</style>
+</head>
+<body>
+	<main>
+		<img class="icon" src="/apple-touch-icon.png" width="76" height="76" alt="">
+		<h1>MACROS</h1>
+		${instructions}
+		<a class="badge" href="${appStoreLink}"><img src="/download-on-the-app-store.svg" width="180" height="60" alt="Download on the App Store"></a>
+	</main>
+</body>
+</html>`;
+
+	return new Response(page, {
+		headers: {
+			'Cache-Control': 'no-store',
+			'Content-Type': 'text/html; charset=utf-8',
+			'X-Robots-Tag': 'noindex, nofollow',
+		},
+	});
+}
+
 // not_found_handling is "none", so every miss reaches the Worker. The 404 page is fetched by its own
 // path: _headers rules match the request path, so a miss under /_astro/* would otherwise get immutable.
 async function serveAsset(request: Request, env: WorkerEnv): Promise<Response> {
@@ -251,6 +323,10 @@ export default {
 		if (redirect != null) return redirect;
 
 		const url = new URL(request.url);
+
+		if ((url.pathname === '/app' || url.pathname === '/app/') && (request.method === 'GET' || request.method === 'HEAD')) {
+			return appLinkResponse(request.headers.get('user-agent') ?? '');
+		}
 
 		if (request.method === 'POST' && url.pathname === '/api/support') {
 			const limited = await enforceFormLimit(request, env.SUPPORT_LIMITER);

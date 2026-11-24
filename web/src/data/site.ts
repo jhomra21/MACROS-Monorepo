@@ -9,6 +9,7 @@ import appSharingImage from '../assets/app-images/framed/app-sharing.png';
 import appSharingPersonImage from '../assets/app-images/framed/app-sharing-person.png';
 import appWidgetsImage from '../assets/app-images/framed/app-widgets.png';
 import { siteOrigin } from './origin';
+import { appStoreLink } from './app-store';
 import loggingCrop from '../assets/feature-crops/logging.png';
 import scanningCrop from '../assets/feature-crops/scanning.png';
 import privacyCrop from '../assets/feature-crops/privacy.png';
@@ -61,8 +62,6 @@ const fullName = 'MACROS: Nutrition Tracker';
 // https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg
 // Use only after the listing is available and the account owner has accepted Apple's artwork license.
 
-const appStoreURL = 'https://apps.apple.com/app/id6767565938';
-
 export const site = {
 	name: 'MACROS',
 	fullName,
@@ -70,7 +69,7 @@ export const site = {
 	url: siteOrigin,
 	tagline: 'An iPhone food diary. No account needed.',
 	description: `${fullName} is an iPhone calorie and macro tracker. ${productFacts.account} Keep your food diary on your device and scan a label.`,
-	appStore: { id: '6767565938', url: appStoreURL, live: true },
+	appStore: { id: '6767565938', url: appStoreLink, live: true },
 	instagramURL: socialLinks[0].href,
 	tiktokURL: socialLinks[1].href,
 	threadsURL: socialLinks[2].href,

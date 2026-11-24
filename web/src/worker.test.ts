@@ -294,6 +294,45 @@ describe('canonical host redirects', () => {
 	});
 });
 
+describe('app smart link', () => {
+	function appRequest(path: string, userAgent: string) {
+		return worker.fetch(new Request(`https://macrosios.com${path}`, {
+			headers: { 'user-agent': userAgent },
+		}), {
+			ASSETS: { fetch: async () => new Response('asset') },
+			SUPPORT_DB: fakeDatabase(),
+		});
+	}
+
+	it('redirects iPhone Safari directly to the App Store', async () => {
+		const response = await appRequest('/app', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1');
+
+		expect(response.status).toBe(302);
+		expect(response.headers.get('location')).toBe('https://apps.apple.com/app/id6767565938');
+	});
+
+	it('shows Open in browser instructions in TikTok in-app browser', async () => {
+		const response = await appRequest('/app/', 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 TikTok 38.0.0');
+		const page = await response.text();
+
+		expect(response.status).toBe(200);
+		expect(page).toContain('Open in Safari to download MACROS');
+		expect(page).toContain('Tap •••, then Open in browser');
+		expect(page).toContain('Download on the App Store');
+		expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+	});
+
+	it('shows the general download page on desktop', async () => {
+		const response = await appRequest('/app', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36');
+		const page = await response.text();
+
+		expect(response.status).toBe(200);
+		expect(page).toContain('MACROS is an iPhone food diary.');
+		expect(page).not.toContain('Open in browser');
+		expect(page).toContain('Download on the App Store');
+	});
+});
+
 // Byte-range failure list for /media/ (Safari plays MP4 only after a 206 to its bytes=0-1 probe):
 // - Window: first-bytes, middle, open-ended, suffix, clamped, and single-byte ranges return exactly
 //   those bytes with Content-Range, whatever the upstream chunk size (one byte, mid-window, larger than the file).
