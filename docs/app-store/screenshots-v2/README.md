@@ -1,6 +1,6 @@
 # Screenshot set v2
 
-This renderer creates six later-use App Store screenshots from fresh Debug build **1.1 (40)** captures. The app was built from `origin/main` commit `2da0f08c7991460e27a9880893d30b8b7e00d086` and captured on the iPhone Air simulator, iOS 27.0, at 9:41. Its six captures are kept separate from the build-39 inputs for the 1.0 header and search creative.
+This renderer creates six later-use App Store screenshots from fresh Debug build **1.1 (40)** captures. The app was built from `origin/main` commit `2da0f08c7991460e27a9880893d30b8b7e00d086` and captured on the iPhone Air simulator, iOS 27.0, at 9:41. Home, Add Food, and History come from `build40-exact-capture.xcresult`; the corrected Scan, Grams editor, and Goals captures come from `build40-exact-final-retakes.xcresult`. The app bundle's version and build were verified as 1.1 (40) before the retake run. These captures are kept separate from the build-39 inputs for the 1.0 header and search creative.
 
 All six share the same layout: a pale solid background, a large bold dark benefit caption at the top, and one nearly full-width app screen below it. The screen bleeds past the bottom edge to keep the UI large and legible. The renderer checks that captions do not clip or overlap the screen and that each screen extends below the canvas.
 
@@ -8,12 +8,12 @@ It writes opaque, embedded-sRGB PNGs at 1260 × 2736 (iPhone with Dynamic Island
 
 ## Captions and source screens
 
-1. **Scan any label** — generic Oat Crunch scan review.
+1. **Scan any label** — Oat Crunch Cereal review after correcting the OCR name; 190 kcal, 5 g protein, 36 g carbs, and 3 g fat.
 2. **Your day at a glance** — Home with 1,310 kcal and four synthetic food logs.
 3. **No account needed** — on-device Add Food list.
-4. **Log the amount you ate** — saved-food editor with grams selected.
+4. **Log the amount you ate** — chicken-and-rice editor with Grams selected and 400 g visible.
 5. **See your food history** — real History screen.
-6. **Goals built around you** — editable Daily Goals in Settings and the recalculation entry point.
+6. **Goals built around you** — editable calorie and macro targets with the recalculation entry point; the capture is scrolled past the purchase section.
 
 The share-choice screen is intentionally omitted. The simulator had no linked synthetic participant, and setting one up would make remote sharing writes. The alternative screenshots show existing, verified functionality rather than mock UI.
 

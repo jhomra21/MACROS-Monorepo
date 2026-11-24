@@ -13,7 +13,7 @@ Full-size output is kept in ignored `build/evidence/2026-11-23-appstore-creative
 
 Apple's current [creative asset specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications) require PNG for the 21:9 product-page header; search results accept JPEG, JPG, or PNG. Both designs keep key artwork inside the template Art Safe Area. The green bounds in the previews are inspection guides only and are not part of either upload asset.
 
-Header copy: **Scan it. Log it. Hit your macros.** It uses the real build-39 Home screen with a realistic synthetic day. Search results show the real label-scan review, Home, and unbranded on-device Add Food screens, without extra headlines. The search screen is staged as a wide composition, not a claim about Apple's precise device crop.
+Header copy: **Scan it. Log it. Hit your macros.** It uses the real build-39 Home screen with a realistic synthetic day. Search results show the real label-scan review, Home, and unbranded on-device Add Food screens, without extra headlines. The scan name was corrected in Edit details to **Oat Crunch Cereal**; the captured result shows 190 kcal, 5 g protein, 36 g carbs, and 3 g fat with the OCR warning gone. The search screen is staged as a wide composition, not a claim about Apple's precise device crop.
 
 Palette and type match the site: `#f5f5f7`, `#1d1d1f`, `#007aff`, `#ff9f0a`, `#ef4f87`, with the system display font and tight tracking.
 
