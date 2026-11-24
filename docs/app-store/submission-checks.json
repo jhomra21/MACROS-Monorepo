@@ -32,6 +32,23 @@
       "purchaseButtonEnabled": true,
       "purchaseCompleted": "Lifetime, sandbox, unlocked Pro",
       "ownerConfirmed": "Juan Martinez, 2026-11-23: saw all three prices on build 40 and completed the Lifetime purchase; chose not to keep a screenshot"
+    },
+    {
+      "build": 41,
+      "commit": "3917105053d4024152280409edda8bdcebcffea3",
+      "date": "2026-11-23",
+      "device": "Owner's physical iPhone",
+      "account": "sandbox",
+      "installedFrom": "TestFlight 1.1 (41) per owner, Sandbox Apple Account with purchase history cleared",
+      "prices": {
+        "yearly": "$19.99/year (7 days free)",
+        "monthly": "$2.99/month",
+        "lifetime": "$49.99 once"
+      },
+      "purchaseButtonEnabled": true,
+      "purchaseCompleted": "Lifetime, sandbox, unlocked Pro Lifetime",
+      "screenshotSha256": "c0b5ec0f47f1c35717ce38be12b8f70aedb822962447e7f17a913cb4390d0a0d",
+      "recordingSha256": "bd95f63579f3a634bb4f85135cffba3f7d17b3221501e844f8301081c0fece4b"
     }
   ]
 }
