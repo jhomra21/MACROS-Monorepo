@@ -1,12 +1,12 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { basename, resolve } from 'node:path';
 import sharp from 'sharp';
 import { site } from '../data/site';
 import { xmlEscape } from './seo';
 
 // Bump when geometry, colors, type sizing, or compositing changes.
-export const templateVersion = 'macros-rings-3';
+export const templateVersion = 'macros-rings-4';
 
 export const fontFile = '/System/Library/Fonts/Helvetica.ttc';
 
@@ -56,8 +56,9 @@ export async function socialInput(path: string, title: string, description: stri
 
 	// SAFETY: Astro 7 createImageAsset adds non-enumerable fsPath to local collection images
 	// (dist/assets/utils/image-asset.js); the public ImageMetadata type omits it.
-	const screenshotFile = image ? (image as ImageMetadata & { fsPath: string }).fsPath
-		: resolve('src/assets/app-images', screen?.[0] ?? 'app-home.png');
+	const name = image ? basename((image as ImageMetadata & { fsPath: string }).fsPath) : screen?.[0] ?? 'app-home.png';
+	// The same screen inside the iPhone bezel (scripts/frame-screenshots.ts); the raw bezel is not in the repo.
+	const screenshotFile = resolve('src/assets/app-images/framed', name);
 
 	const [screenshot, font] = await Promise.all([readFile(screenshotFile), readFile(fontFile)]);
 
@@ -137,7 +138,7 @@ export async function renderSocialImage(input: SocialInput) {
 		textLayer(input.subtitle, 23, 710, 30, false, '#66666b'),
 		textLayer(input.heading, 58, 710, 225, true),
 		textLayer(input.description, 24, 710, 115, false, '#66666b'),
-		sharp(input.screenshot).resize({ height: 550 }).png().toBuffer({ resolveWithObject: true }),
+		sharp(input.screenshot).resize({ height: 570 }).png().toBuffer({ resolveWithObject: true }),
 	]);
 
 	// The two-line lockup is centered on the rings (y 48 to 112).
@@ -150,7 +151,7 @@ export async function renderSocialImage(input: SocialInput) {
 		{ input: subtitle, left: 64, top: 153 },
 		{ input: title, left: 60, top: 210 },
 		{ input: description, left: 64, top: 465 },
-		{ input: screenshot.data, left: 838 + Math.floor((362 - screenshot.info.width) / 2), top: 40 },
+		{ input: screenshot.data, left: 838 + Math.floor((362 - screenshot.info.width) / 2), top: 30 },
 	]).png({ compressionLevel: 9 }).toBuffer();
 
 	return image;
