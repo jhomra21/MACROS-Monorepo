@@ -8,7 +8,7 @@ This is the complete screenshot matrix requested for round 3. The ordinary evide
 - Devices: iPhone Air (`844B72D7-D128-4607-AB2E-6C14B024618F`) and iPhone 17e (`F976E800-DA1F-4F20-B755-DFD964E33975`)
 - Runtime/toolchain: Xcode 26.4.1, iOS Simulator, status bar fixed to 9:41
 - Fixture: first-run tutorial, driven by a temporary capture-only UI-test helper; the helper was removed and is not part of either commit
-- Raw `.xcresult` bundles and original-resolution exports remain in the local worktree under `build/evidence/2026-11-24-tutorial-redesign-revision/` and are not tracked in this branch. This transfer commit contains only PNG exports resized to 1300 pixels tall.
+- Raw `.xcresult` bundles and original-resolution exports were stored under `build/evidence/2026-11-24-tutorial-redesign-revision/` in the implementation worktree for validation and are not included here. This transfer contains only PNG exports resized to 1300 pixels tall.
 
 ## Matrix
 
