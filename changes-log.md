@@ -4,6 +4,11 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-24 MACROS Pro feature cards
+
+- Replaced the Pro benefits list with contextual feature cards and small SwiftUI chart/ring visuals. Added the same purchase experience as an optional onboarding step after goals and before reminders; existing Pro users skip it and free users can continue without purchasing.
+- Validation: build and Swift formatting passed; 263 unit tests passed with StoreKit tests excluded. PurchaseStoreStoreKitTests had a timing-sensitive timeout and an intro-eligibility failure. UI screenshots verified the onboarding, StoreKit prices, general and contextual sheets, dark mode, and AX XXXL layout.
+
 ## 2026-11-23 Version 1.1, build 40 preparation
 
 - Prepared the 1.1 release from current `main`, with version 1.1/build 40 on the app and widget and build 40 on test targets.

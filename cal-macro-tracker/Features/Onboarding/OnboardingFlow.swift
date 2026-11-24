@@ -4,6 +4,7 @@ import UserNotifications
 
 struct OnboardingFlow: View {
     let onComplete: () -> Void
+    @Environment(AppEntitlements.self) private var entitlements
     @State private var profile = BodyProfileDraft()
     @State private var path: [OnboardingStep] = []
 
@@ -22,6 +23,10 @@ struct OnboardingFlow: View {
                     }
                 case .targets:
                     TargetReviewScreen(profile: $profile, onComplete: completeGoalSetup)
+                case .pro:
+                    OnboardingProScreen {
+                        path.append(.reminders)
+                    }
                 case .reminders:
                     OnboardingRemindersScreen(onComplete: onComplete)
                 }
@@ -30,7 +35,7 @@ struct OnboardingFlow: View {
     }
 
     private func completeGoalSetup() {
-        path.append(.reminders)
+        path.append(entitlements.hasPro ? .reminders : .pro)
     }
 }
 
@@ -38,7 +43,19 @@ enum OnboardingStep: Hashable {
     case choice
     case aboutYou
     case targets
+    case pro
     case reminders
+}
+
+private struct OnboardingProScreen: View {
+    let onContinue: () -> Void
+
+    var body: some View {
+        ProPaywallContent(context: .general, onContinue: onContinue, onSuccessDone: onContinue)
+            .background(PlatformColors.groupedBackground)
+            .navigationTitle("")
+            .inlineNavigationTitle()
+    }
 }
 
 private struct OnboardingWelcomeScreen: View {

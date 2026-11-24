@@ -55,97 +55,16 @@ struct ProPaywallSheet: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.isProPaywallPresented) private var isProPaywallPresented = false
     @Environment(PurchaseStore.self) private var store
-    @Environment(AppEntitlements.self) private var entitlements
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var selectedPlan = ProPlan.yearly
-    @State private var isRedeeming = false
     @State private var successFeedbackToken = 0
-    @State private var successAnimationToken = 0
-    @ScaledMetric(relativeTo: .largeTitle) private var heroIconSize: CGFloat = 44
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    if store.hasPro {
-                        ProPurchaseSuccessView(
-                            context: context,
-                            activation: activationDescription,
-                            animationToken: successAnimationToken,
-                            reduceMotion: reduceMotion,
-                            dismiss: { dismiss() }
-                        )
-                        .transition(successTransition)
-                    } else {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: heroIconSize, weight: .semibold))
-                            .foregroundStyle(Color.accentColor)
-                            .accessibilityHidden(true)
-                        Text(ProLegalLinks.name)
-                            .font(.title.bold())
-                        Text("See your progress. Make it yours.")
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                        VStack(alignment: .leading, spacing: 10) {
-                            ForEach(context.benefits) { benefit in
-                                Label(benefit.title, systemImage: benefit.symbol)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-
-                    if !store.hasPro {
-                        GlassEffectContainer(spacing: 12) {
-                            VStack(spacing: 12) {
-                                ForEach(ProPlan.allCases) { plan in
-                                    planRow(plan)
-                                }
-                            }
-                            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
-                        }
-                    }
-                    if !store.hasPro || store.feedback.isError {
-                        PurchaseFeedbackText(feedback: store.feedback)
-                    }
-                    if !store.hasPro {
-                        if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
-                            Button("Retry") {
-                                Task { await store.loadProducts() }
-                            }
-                            .frame(minHeight: 44)
-                        }
-                        AppAccentActionButton(
-                            title: purchaseTitle,
-                            systemImage: "lock.open.fill",
-                            isCompact: false,
-                            isDisabled: isBusy || store.products[selectedPlan] == nil
-                        ) {
-                            Task { await store.purchase(selectedPlan) }
-                        }
-                        Button("Restore Purchases") {
-                            Task { await store.restorePurchases() }
-                        }
-                        .frame(minHeight: 44)
-                        .disabled(isBusy)
-                        Button("Redeem Code") { isRedeeming = true }
-                            .frame(minHeight: 44)
-                            .disabled(isBusy)
-                        legalFooter
+            ProPaywallContent(context: context, onContinue: nil, onSuccessDone: { dismiss() })
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close", role: .close) { dismiss() }
                     }
                 }
-                .padding(24)
-                .frame(maxWidth: 560)
-                .frame(maxWidth: .infinity)
-                .animation(reduceMotion ? nil : .smooth, value: store.hasPro)
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", role: .close) { dismiss() }
-                }
-            }
-            .task { await store.loadProducts() }
-            .offerCodeRedemption(isPresented: $isRedeeming)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
@@ -156,17 +75,95 @@ struct ProPaywallSheet: View {
         }
         .onChange(of: store.hasPro) { wasPro, isPro in
             guard !wasPro, isPro else { return }
-            successAnimationToken += 1
             successFeedbackToken += 1
         }
         .sensoryFeedback(.success, trigger: successFeedbackToken)
-        .sensoryFeedback(.selection, trigger: selectedPlan)
     }
+}
+
+struct ProPaywallContent: View {
+    let context: ProPaywallContext
+    let onContinue: (() -> Void)?
+    let onSuccessDone: (() -> Void)?
+    @Environment(PurchaseStore.self) private var store
+    @Environment(AppEntitlements.self) private var entitlements
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var selectedPlan = ProPlan.yearly
+    @State private var isRedeeming = false
+    @State private var successAnimationToken = 0
 
     private var isBusy: Bool { store.isPurchasing || store.isRestoring }
 
-    private var successTransition: AnyTransition {
-        reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98))
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                if store.hasPro {
+                    ProPurchaseSuccessView(
+                        context: context,
+                        activation: activationDescription,
+                        animationToken: successAnimationToken,
+                        reduceMotion: reduceMotion,
+                        title: onContinue == nil ? "Done" : "Continue",
+                        dismiss: onContinue ?? onSuccessDone ?? {}
+                    )
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98)))
+                } else {
+                    Text("MACROS Pro").font(.largeTitle.bold())
+                    Text("Your food diary stays free. Pro adds more.")
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    ProFeatureCards(context: context)
+                }
+                if !store.hasPro {
+                    GlassEffectContainer(spacing: 12) {
+                        VStack(spacing: 12) {
+                            ForEach(ProPlan.allCases) { plan in planRow(plan) }
+                        }
+                        .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
+                    }
+                }
+                if !store.hasPro || store.feedback.isError {
+                    PurchaseFeedbackText(feedback: store.feedback)
+                }
+                if !store.hasPro {
+                    if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
+                        Button("Retry") { Task { await store.loadProducts() } }
+                            .frame(minHeight: 44)
+                    }
+                    AppAccentActionButton(
+                        title: purchaseTitle, systemImage: "lock.open.fill", isCompact: false,
+                        isDisabled: isBusy || store.products[selectedPlan] == nil
+                    ) {
+                        Task { await store.purchase(selectedPlan) }
+                    }
+                    Button("Restore Purchases") { Task { await store.restorePurchases() } }
+                        .frame(minHeight: 44)
+                        .disabled(isBusy)
+                    Button("Redeem Code") { isRedeeming = true }
+                        .frame(minHeight: 44)
+                        .disabled(isBusy)
+                    legalFooter
+                    if let onContinue {
+                        Button("Continue with Free", action: onContinue)
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                }
+            }
+            .padding(24)
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
+            .animation(reduceMotion ? nil : .smooth, value: store.hasPro)
+        }
+        .background(PlatformColors.groupedBackground)
+        .task { await store.loadProducts() }
+        .offerCodeRedemption(isPresented: $isRedeeming)
+        .onChange(of: store.hasPro) { wasPro, isPro in
+            guard !wasPro, isPro else { return }
+            successAnimationToken += 1
+        }
+        .sensoryFeedback(.selection, trigger: selectedPlan)
     }
 
     private var activationDescription: String {
@@ -193,7 +190,6 @@ struct ProPaywallSheet: View {
             && store.products[.yearly]?.subscription?.introductoryOffer?.paymentMode == .freeTrial
     }
 
-    /// Free-trial length from the StoreKit intro offer, e.g. "7 days". Nil when no trial applies.
     private var yearlyTrialLength: String? {
         guard hasYearlyTrial, let period = store.products[.yearly]?.subscription?.introductoryOffer?.period,
             let unit = period.unitName
@@ -223,7 +219,7 @@ struct ProPaywallSheet: View {
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(Color.accentColor)
                         }
-                        Text(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
+                        Text(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
                             .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.leading)
                     }
@@ -242,7 +238,7 @@ struct ProPaywallSheet: View {
                             }
                         }
                         Spacer()
-                        Text(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
+                        Text(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
                             .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.trailing)
                     }
@@ -261,7 +257,7 @@ struct ProPaywallSheet: View {
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
         .accessibilityLabel(
-            "\(plan.title), \(Self.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))"
+            "\(plan.title), \(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))"
         )
         .accessibilityValue(selectedPlan == plan ? "Selected" : "Not selected")
         .accessibilityIdentifier("pro.plan.\(plan.rawValue)")
@@ -299,50 +295,253 @@ private struct ProPurchaseSuccessView: View {
     let activation: String
     let animationToken: Int
     let reduceMotion: Bool
+    let title: String
     let dismiss: () -> Void
 
     var body: some View {
-        Group {
+        VStack(spacing: 20) {
             if reduceMotion {
                 successMark
             } else {
-                successMark
-                    .symbolEffect(.bounce, value: animationToken)
+                successMark.symbolEffect(.bounce, value: animationToken)
             }
-        }
-        .accessibilityHidden(true)
-        Text("You’re all set")
-            .font(.title.bold())
-        Text("Welcome to \(ProLegalLinks.name)")
-            .foregroundStyle(.secondary)
-            .multilineTextAlignment(.center)
-        Text(activation)
-            .font(.subheadline.weight(.semibold))
-            .multilineTextAlignment(.center)
-        VStack(alignment: .leading, spacing: 10) {
-            ForEach(context.benefits) { benefit in
-                HStack(spacing: 10) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Color.accentColor)
-                    Text(benefit.title)
-                        .foregroundStyle(.primary)
+            Text("You’re all set").font(.title.bold())
+            Text("Welcome to \(ProLegalLinks.name)")
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Text(activation)
+                .font(.subheadline.weight(.semibold))
+                .multilineTextAlignment(.center)
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(context.benefits) { benefit in
+                    Label(benefit.title, systemImage: "checkmark.circle.fill")
+                        .labelStyle(ProSuccessLabelStyle())
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            AppAccentActionButton(
+                title: title, systemImage: "arrow.right", isCompact: false, isDisabled: false, action: dismiss
+            )
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        AppAccentActionButton(
-            title: "Done",
-            systemImage: "arrow.right",
-            isCompact: false,
-            isDisabled: false,
-            action: dismiss
-        )
+        .accessibilityElement(children: .contain)
     }
 
     private var successMark: some View {
         Image(systemName: "checkmark.seal.fill")
             .font(.system(size: 52, weight: .semibold))
             .foregroundStyle(Color.accentColor)
+            .accessibilityHidden(true)
+    }
+}
+
+private struct ProFeatureCards: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    let context: ProPaywallContext
+
+    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+
+    var body: some View {
+        VStack(spacing: 12) {
+            ForEach(Array(featureRows.enumerated()), id: \.offset) { _, row in
+                if row.count == 1 {
+                    featureCard(row[0])
+                } else {
+                    HStack(alignment: .top, spacing: 12) {
+                        ForEach(row) { feature in
+                            featureCard(feature)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func featureCard(_ feature: ProFeature) -> some View {
+        ProFeatureCard(feature: feature, isHighlighted: feature.contexts.contains(context))
+            .frame(maxWidth: .infinity)
+    }
+
+    private var featureRows: [[ProFeature]] {
+        guard !dynamicTypeSize.isAccessibilitySize else { return orderedFeatures.map { [$0] } }
+        var rows: [[ProFeature]] = []
+        var pair: [ProFeature] = []
+        for feature in orderedFeatures {
+            if feature.isWide {
+                if !pair.isEmpty {
+                    rows.append(pair)
+                    pair = []
+                }
+                rows.append([feature])
+            } else {
+                pair.append(feature)
+                if pair.count == columns.count {
+                    rows.append(pair)
+                    pair = []
+                }
+            }
+        }
+        if !pair.isEmpty { rows.append(pair) }
+        return rows
+    }
+
+    private var orderedFeatures: [ProFeature] {
+        guard context != .general,
+            let matchingIndex = ProFeature.all.firstIndex(where: { $0.contexts.contains(context) })
+        else { return ProFeature.all }
+        return [ProFeature.all[matchingIndex]]
+            + ProFeature.all.enumerated()
+            .filter { $0.offset != matchingIndex }
+            .map(\.element)
+    }
+}
+
+private struct ProFeature: Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String
+    let symbol: String
+    let contexts: [ProPaywallContext]
+    var isWide = false
+    var visual: Visual = .none
+
+    enum Visual {
+        case none, chart, rings
+    }
+
+    static let all = [
+        ProFeature(
+            id: "insights", title: "Insights beyond 7 days", subtitle: "14, 30, 90 days, 1 year, all time",
+            symbol: ProPaywallContext.insights.symbol, contexts: [.insights], isWide: true, visual: .chart
+        ),
+        ProFeature(
+            id: "sharing", title: "Sharing circle", subtitle: "Invite people, see their rings",
+            symbol: ProPaywallContext.sharingInvites.symbol,
+            contexts: [.sharingInvites]
+        ),
+        ProFeature(
+            id: "widgets", title: "Shared widgets", subtitle: "A friend’s rings on your Home Screen",
+            symbol: ProPaywallContext.sharedPersonWidget.symbol,
+            contexts: [.sharedPersonWidget], visual: .rings
+        ),
+        ProFeature(
+            id: "weight", title: "Weight trends", subtitle: "Plus import from Apple Health",
+            symbol: ProPaywallContext.weightTrends.symbol,
+            contexts: [.weightTrends, .healthWeightImport]
+        ),
+        ProFeature(
+            id: "reminders", title: "More reminders", subtitle: "Up to three reminders total, including your daily reminder.",
+            symbol: ProPaywallContext.reminders.symbol,
+            contexts: [.reminders]
+        ),
+        ProFeature(
+            id: "customize", title: "Make it yours",
+            subtitle: "Ring colors · widget backgrounds · backup export and import",
+            symbol: ProPaywallContext.ringColors.symbol,
+            contexts: [.ringColors, .widgetBackground, .backup], isWide: true
+        )
+    ]
+}
+
+private struct ProFeatureCard: View {
+    let feature: ProFeature
+    let isHighlighted: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                Image(systemName: feature.symbol)
+                    .font(.title3.weight(.semibold))
+                    .accessibilityHidden(true)
+                Spacer(minLength: 0)
+                visual
+            }
+            Text(feature.title).font(.headline)
+            Text(feature.subtitle).font(.subheadline).foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
+        .padding(16)
+        .background {
+            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(cardBackground)
+        }
+        .overlay {
+            if isHighlighted {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(Color.accentColor, lineWidth: 2)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(feature.title), \(feature.subtitle)")
+    }
+
+    private var cardBackground: AnyShapeStyle {
+        switch feature.id {
+        case "insights":
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [Color.accentColor.opacity(0.2), Color.accentColor.opacity(0.08)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        case "customize":
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [
+                        MacroRingPalette.standard.protein.opacity(0.14),
+                        MacroRingPalette.standard.carbs.opacity(0.12),
+                        MacroRingPalette.standard.fat.opacity(0.1)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+        default:
+            AnyShapeStyle(PlatformColors.cardBackground)
+        }
+    }
+
+    @ViewBuilder
+    private var visual: some View {
+        switch feature.visual {
+        case .none:
+            EmptyView()
+        case .chart:
+            HStack(alignment: .bottom, spacing: 4) {
+                let heights: [CGFloat] = [0.35, 0.58, 0.43, 0.76, 0.92]
+                let colors = [
+                    MacroRingPalette.standard.protein,
+                    MacroRingPalette.standard.carbs,
+                    MacroRingPalette.standard.fat,
+                    MacroRingPalette.standard.protein,
+                    MacroRingPalette.standard.carbs
+                ]
+                ForEach(heights.indices, id: \.self) { index in
+                    Capsule().fill(colors[index])
+                        .frame(width: 7, height: 30 * heights[index])
+                }
+            }
+            .frame(height: 30)
+            .accessibilityHidden(true)
+        case .rings:
+            HStack(spacing: -8) {
+                ForEach([MacroMetric.protein, .carbs, .fat], id: \.self) { metric in
+                    Circle().trim(from: 0, to: 0.72)
+                        .stroke(MacroRingPalette.standard.color(for: metric), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                        .frame(width: 25, height: 25)
+                }
+            }
+            .accessibilityHidden(true)
+        }
+    }
+}
+
+private struct ProSuccessLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 10) {
+            configuration.icon.foregroundStyle(Color.accentColor)
+            configuration.title.foregroundStyle(.primary)
+        }
     }
 }
 
