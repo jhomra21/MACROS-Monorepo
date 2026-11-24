@@ -5,6 +5,7 @@ Current history. Older records retain their original wording and dated limitatio
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
 ## 2026-11-24 MACROS Pro feature cards
+- Paired feature cards now share the tallest card’s row height, including context-reordered rows.
 
 - Replaced the Pro benefits list with contextual feature cards and small SwiftUI chart/ring visuals. Added the same purchase experience as an optional onboarding step after goals and before reminders; existing Pro users skip it and free users can continue without purchasing.
 - Validation: quality build and formatting passed, 263 non-StoreKit unit tests passed, and PurchaseStoreStoreKitTests passed 24/24 on both release and feature branches; real-price UI captures verified onboarding, contextual/general paywalls, dark mode, and AX XXXL.

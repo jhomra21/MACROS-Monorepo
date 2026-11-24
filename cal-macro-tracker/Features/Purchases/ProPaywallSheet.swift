@@ -338,15 +338,14 @@ private struct ProFeatureCards: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let context: ProPaywallContext
 
-    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-
     var body: some View {
-        VStack(spacing: 12) {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
             ForEach(Array(featureRows.enumerated()), id: \.offset) { _, row in
-                if row.count == 1 {
-                    featureCard(row[0])
-                } else {
-                    HStack(alignment: .top, spacing: 12) {
+                GridRow {
+                    if row.count == 1 {
+                        featureCard(row[0])
+                            .gridCellColumns(2)
+                    } else {
                         ForEach(row) { feature in
                             featureCard(feature)
                         }
@@ -374,7 +373,7 @@ private struct ProFeatureCards: View {
                 rows.append([feature])
             } else {
                 pair.append(feature)
-                if pair.count == columns.count {
+                if pair.count == 2 {
                     rows.append(pair)
                     pair = []
                 }
