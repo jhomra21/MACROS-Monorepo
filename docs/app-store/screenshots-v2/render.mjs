@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const repository = resolve(fileURLToPath(new URL('../../../', import.meta.url)));
 
-const evidence = resolve(repository, 'build/evidence/2026-11-23-appstore-screenshots-1.1');
+const evidence = resolve(repository, 'build/evidence/2026-11-25-appstore-screenshots-1.2');
 
 const captures = resolve(evidence, 'captures');
 
@@ -38,8 +38,10 @@ const common = `
 html, body { margin: 0; overflow: hidden; background: #f5f5f7; }
 body { position: relative; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
 .headline { position: absolute; top: 2.6%; left: 4%; width: 92%; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; }
-.screen { position: absolute; left: 50%; top: 13.2%; width: 95.2%; transform: translateX(-50%); overflow: hidden; border-radius: 4.5%; box-shadow: 0 32px 84px -30px #0005; }
-.screen img { display: block; width: 100%; height: auto; }
+.device { position: absolute; left: 50%; top: 11%; width: 85%; aspect-ratio: .462; margin: 0; padding: .8%; transform: translateX(-50%); border: 1px solid #aeb2b8; border-radius: 9%; background: linear-gradient(112deg, #d6d9dd, #f7f8fa 18%, #aeb2b8 50%, #f7f8fa 82%, #c5c8cd); box-shadow: 0 32px 84px -30px #0005; }
+.display { position: relative; width: 100%; height: 100%; overflow: hidden; border: 1px solid #151619; border-radius: 8.3%; background: #f5f5f7; }
+.display::before { position: absolute; z-index: 1; top: 2.1%; left: 50%; width: 28%; height: 1.55%; transform: translateX(-50%); border-radius: 999px; background: #090a0c; content: ""; }
+.display img { display: block; width: 100%; height: 100%; object-fit: contain; }
 `;
 
 const browser = await chromium.launch({ headless: true, args: ['--force-color-profile=srgb'] });
@@ -53,16 +55,23 @@ const renderPage = async (name, markup, width, height) => {
   const report = await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all([...document.images].map(image => image.decode()));
-    const screen = document.querySelector('.screen, .cell') ?? document.body;
+    const device = document.querySelector('.device');
+    const screen = document.querySelector('.display, .cell') ?? document.body;
     const headline = document.querySelector('.headline');
 
     return {
       image: { width: document.images[0].naturalWidth, height: document.images[0].naturalHeight },
+      device: device?.getBoundingClientRect().toJSON() ?? null,
       screen: screen.getBoundingClientRect().toJSON(),
+      canvas: { width: document.body.clientWidth, height: document.body.clientHeight },
       headline: headline?.getBoundingClientRect().toJSON() ?? null,
       headlineClipped: headline ? headline.scrollWidth > headline.clientWidth : false,
       headlineOverlapsScreen: headline ? headline.getBoundingClientRect().bottom >= screen.getBoundingClientRect().top : false,
-      screenBleedsBottom: screen.getBoundingClientRect().bottom > innerHeight,
+      deviceFitsCanvas: device
+        ? device.getBoundingClientRect().left >= innerWidth * 0.06 &&
+          device.getBoundingClientRect().right <= innerWidth * 0.94 &&
+          device.getBoundingClientRect().bottom <= innerHeight * 0.96
+        : true,
     };
   });
 
@@ -70,7 +79,7 @@ const renderPage = async (name, markup, width, height) => {
   if (
     errors.length ||
     (isScreenshot &&
-      (report.headlineClipped || report.headlineOverlapsScreen || !report.screenBleedsBottom))
+      (report.headlineClipped || report.headlineOverlapsScreen || !report.deviceFitsCanvas))
   ) {
     throw new Error(JSON.stringify({ name, errors, report }));
   }
@@ -90,13 +99,13 @@ try {
 
   for (const size of dimensions) {
     const titleSize = Math.round(size.width * 0.062);
-    const screenSize = Math.round(size.width * 0.952);
+    const deviceSize = Math.round(size.width * 0.85);
 
     const markupFor = (item, src) => `<!doctype html><html lang="en"><meta charset="utf-8"><title>${item.caption}</title><style>${common}
       body { width:${size.width}px; height:${size.height}px; }
       .headline { font-size:${titleSize}px; }
-      .screen { width:${screenSize}px; }
-      </style><body><h1 class="headline">${item.caption}</h1><figure class="screen"><img src="${src}" alt="MACROS app screen"></figure></body></html>`;
+      .device { width:${deviceSize}px; }
+      </style><body><h1 class="headline">${item.caption}</h1><figure class="device"><div class="display"><img src="${src}" alt="MACROS app screen"></div></figure></body></html>`;
 
     for (const item of screenshots) {
       const name = `${item.slug}-${size.suffix}`;

@@ -7,11 +7,11 @@ Apple's current [screenshot specifications](https://developer.apple.com/help/app
 - iPhone with Dynamic Island, medium display: **1179 × 2556** or **1206 × 2622**
 - iPhone with Dynamic Island, large display: **1260 × 2736**, **1290 × 2796**, or **1320 × 2868**
 
-The refreshed 1.1 set uses 1179 × 2556 for medium and 1260 × 2736 for large. All six share a pale background, large bold dark benefit caption, and one real app screen scaled nearly to the full canvas width. The screen bleeds off the bottom edge so its UI stays large and readable. No device bezel artwork is used. Captures come from Debug build 1.1 (40), built from `origin/main` commit `2da0f08c7991460e27a9880893d30b8b7e00d086` and taken on the iPhone Air (iOS 27.0, 9:41). The medium outputs are scaled from the same native captures. The separate 1.0 header and search creatives remain based on build 39.
+The refreshed 1.1 set uses 1179 × 2556 for medium and 1260 × 2736 for large. All six share a pale background, large bold dark benefit caption, and a complete, centered iPhone with all four rounded corners visible. The phone frame sits below the caption with comfortable side and bottom margins. The 2026-11-25 refresh uses the same captions, type, background colors, and order; Goals was recaptured from the top of Settings → Daily Goals to remove the prior scroll artifact behind the status bar. See [the renderer README](screenshots-v2/README.md) for capture provenance. The separate 1.0 header and search creatives remain based on build 39.
 
 ## Screenshot order
 
-Full-size PNGs and a contact sheet are in ignored `build/evidence/2026-11-23-appstore-screenshots-1.1/screenshots-v2/`. Renderer source is [screenshots-v2/render.mjs](screenshots-v2/render.mjs).
+Full-size PNGs and a contact sheet are in ignored `build/evidence/2026-11-25-appstore-screenshots-1.2/screenshots-v2/`. Renderer source is [screenshots-v2/render.mjs](screenshots-v2/render.mjs).
 
 | # | Caption | Screen | Reason |
 | --- | --- | --- | --- |
