@@ -261,24 +261,11 @@ struct DashboardTutorialOverlay: View {
         Group {
             if #available(iOS 26, *) {
                 GlassEffectContainer(spacing: 12) {
-                    HStack(spacing: 12) {
-                        Button(action: dismiss) {
-                            Label("Skip Tutorial", systemImage: "xmark")
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                        }
-                        .buttonStyle(.glass)
-                        .accessibilityIdentifier("tutorial.skip.button")
-
-                        Button(action: skipStep) {
-                            Label("Skip Step", systemImage: "forward.end")
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                        }
-                        .buttonStyle(.glassProminent)
-                        .accessibilityIdentifier("tutorial.skip-step.button")
+                    if reduceMotion {
+                        stepGlassButtons
+                    } else {
+                        stepGlassButtons.glassEffectID("tutorial-actions", in: actionNamespace)
                     }
-                    .glassEffectID("tutorial-actions", in: actionNamespace)
                 }
             } else {
                 HStack(spacing: 12) {
@@ -300,6 +287,26 @@ struct DashboardTutorialOverlay: View {
         }
         .font(.body.weight(.semibold))
         .frame(maxWidth: .infinity)
+    }
+
+    private var stepGlassButtons: some View {
+        HStack(spacing: 12) {
+            Button(action: dismiss) {
+                Label("Skip Tutorial", systemImage: "xmark")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+            }
+            .buttonStyle(.glass)
+            .accessibilityIdentifier("tutorial.skip.button")
+
+            Button(action: skipStep) {
+                Label("Skip Step", systemImage: "forward.end")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+            }
+            .buttonStyle(.glassProminent)
+            .accessibilityIdentifier("tutorial.skip-step.button")
+        }
     }
 
     private var finishContent: some View {
@@ -356,17 +363,11 @@ struct DashboardTutorialOverlay: View {
         Group {
             if #available(iOS 26, *) {
                 GlassEffectContainer(spacing: 10) {
-                    Button(action: dismiss) {
-                        Label("Done", systemImage: "checkmark")
-                            .font(.body.weight(.semibold))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 54)
+                    if reduceMotion {
+                        doneGlassButton
+                    } else {
+                        doneGlassButton.glassEffectID("tutorial-actions", in: actionNamespace)
                     }
-                    .buttonStyle(.glassProminent)
-                    .glassEffectID("tutorial-actions", in: actionNamespace)
-                    .accessibilityFocused($isDoneFocused)
-                    .accessibilityLabel("Done")
-                    .accessibilityIdentifier("tutorial.done.button")
                 }
             } else {
                 AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
@@ -377,6 +378,19 @@ struct DashboardTutorialOverlay: View {
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var doneGlassButton: some View {
+        Button(action: dismiss) {
+            Label("Done", systemImage: "checkmark")
+                .font(.body.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
+        }
+        .buttonStyle(.glassProminent)
+        .accessibilityFocused($isDoneFocused)
+        .accessibilityLabel("Done")
+        .accessibilityIdentifier("tutorial.done.button")
     }
 
     private func skipStep() {
