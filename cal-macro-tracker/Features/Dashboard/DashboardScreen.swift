@@ -330,7 +330,7 @@ struct DashboardScreen: View {
             switch tutorial.step {
             case .openSharing?:
                 guard translation.width < 0 else { return }
-                openSharingFromRing()
+                onOpenSharing()
             case .previousDay?:
                 guard translation.width > 0 else { return }
                 showYesterdayFromRing()
@@ -456,10 +456,6 @@ struct DashboardScreen: View {
         case .returnFromSharing?, .backToToday?, .done?, nil:
             break
         }
-    }
-
-    private func openSharingFromRing() {
-        onOpenSharing()
     }
 
     private func showYesterdayFromRing() {
