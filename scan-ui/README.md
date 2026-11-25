@@ -31,3 +31,31 @@ The reusable UI-test fixture seeded the synthetic day and fed the bundled
 nutrition-label image to the real camera result flow. The temporary UI test was
 removed after capture. No App Store Connect actions, uploads, or app-branch
 commits were made.
+
+## Owner bar scan recording
+
+Raw screen recording of the owner scanning a Chocolate Dough Protein Bar
+(Barebells, 55 g, 200 kcal) with MACROS. It is the source for the App Store
+preview "Scan it." segment.
+
+| Item | Value |
+| --- | --- |
+| Source | `/Users/juan/.t3/worktrees/cal-macro-tracker/launch-trailer/tools/media/trailer/public/sources/scan.mp4` (git-ignored in that worktree) |
+| Duration | 4.0 s |
+| Resolution | 496 × 1078, 30 fps, H.264 (smaller than the 1320 × 2868 device takes, but the only clip of this scan) |
+| Size | 1.3 MB, not trimmed or re-encoded; SHA-256 matches the source |
+| Files | `owner-bar-scan.mp4`, `owner-bar-scan-sheet.jpg` (1 fps contact sheet, frames at 0, 1, 2, 3 s) |
+
+Timestamps in the source clip:
+
+| Event | Time |
+| --- | --- |
+| Camera opens | 0.1 s (live viewfinder by 0.2 s) |
+| Barcode detected (yellow corners appear) | 1.3 s (solid by 1.4 s) |
+| Result card appears | 1.8 s (fully shown by 1.9 s) |
+| Log tapped (button pressed state) | 2.8 s |
+| Logged confirmation | 3.0 s |
+
+Times come from 10 fps frame review, so they are accurate to about 0.1 s. The
+Log time is taken from the button's pressed state; the clip has no touch
+indicator.
