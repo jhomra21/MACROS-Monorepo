@@ -183,6 +183,7 @@ private struct InsightsScrollableContent: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
+                StreakMilestonesCard(today: today)
                 InsightsWeightCard(
                     range: range,
                     today: today,
