@@ -81,48 +81,17 @@ struct DashboardTutorialOverlay: View {
     @State private var finishRowsVisible = false
     @State private var finishIconDrawn = false
     @Namespace private var actionNamespace
-    private var captionHeight: CGFloat {
-        if dynamicTypeSize.isAccessibilitySize {
-            if step == .done {
-                return size.height - safeAreaInsets.top - safeAreaInsets.bottom - 24
-            }
-            return size.height * 0.4
+    private var panelMaximumHeight: CGFloat {
+        guard dynamicTypeSize.isAccessibilitySize, step != .done else {
+            return size.height * (step == .done ? 0.44 : 0.26)
         }
-        return size.height * 0.18
-    }
-
-    private var positionedCaptionHeight: CGFloat {
-        guard dynamicTypeSize.isAccessibilitySize else { return captionHeight }
-        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
-        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
-        let top = captionTop
-        let availableBelow = visibleBottom - top
-        let availableBeforeTarget = spotlight.rect.minY - top - 16
-        let available = top < spotlight.rect.minY ? min(availableBelow, availableBeforeTarget) : availableBelow
-        return max(80, min(captionHeight, available))
-    }
-
-    private var captionTop: CGFloat {
-        let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
-        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
-        guard dynamicTypeSize.isAccessibilitySize else {
-            return min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
-        }
-        if step == .done { return safeAreaInsets.top + 12 }
-
-        let safeTop = safeAreaInsets.top + 12
-        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
-        let belowTarget = spotlight.rect.isEmpty ? safeTop : spotlight.rect.maxY + 16
-        let aboveTarget = spotlight.rect.minY - captionHeight - 16
-        return visibleBottom - belowTarget >= 80 ? belowTarget : max(safeTop, aboveTarget)
+        let panelBottom = size.height - safeAreaInsets.bottom - 12
+        let panelTop = max(safeAreaInsets.top + 12, spotlight.rect.maxY + 16)
+        return max(120, min(size.height * 0.66, panelBottom - panelTop))
     }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
-    }
-
-    private var bottomBarFrame: CGRect {
-        localFrame(.bottomBar) ?? CGRect(x: 0, y: size.height - 68, width: size.width, height: 68)
     }
 
     private var targetRect: CGRect? {
@@ -148,6 +117,7 @@ struct DashboardTutorialOverlay: View {
 
     private var morph: Animation? { reduceMotion ? nil : .smooth(duration: 0.4) }
     private var finishMorph: Animation? { reduceMotion ? .easeOut(duration: 0.16) : .bouncy(duration: 0.55) }
+    private var panelAnimation: Animation? { step == .done ? finishMorph : morph }
 
     var body: some View {
         let spotlight = spotlight
@@ -203,7 +173,6 @@ struct DashboardTutorialOverlay: View {
             }
         }
         .sensoryFeedback(.success, trigger: step == .done)
-        .animation(finishMorph, value: step == .done)
         .onChange(of: step, initial: true) {
             if step == .done { isDoneFocused = true }
         }
@@ -216,58 +185,121 @@ struct DashboardTutorialOverlay: View {
     }
 
     private var fixedTutorialLayout: some View {
-        ZStack(alignment: .bottom) {
-            if step != .done {
-                BottomPinnedDualActionBar(
-                    leadingAction: BottomPinnedDualAction(
-                        title: "Skip Tutorial",
-                        systemImage: "xmark",
-                        action: dismiss,
-                        tint: .gray
-                    ),
-                    trailingAction: BottomPinnedDualAction(
-                        title: "Skip Step",
-                        systemImage: "forward.end",
-                        action: skipStep
-                    ),
-                    morphNamespace: reduceMotion ? nil : actionNamespace,
-                    morphID: reduceMotion ? nil : "tutorial-finish-action",
-                    displayMode: .expanded,
-                    compactActionsAreHorizontal: true,
-                    topPadding: 0,
-                    bottomOffset: 6,
-                    edgeFadeColor: .clear
-                )
-                .frame(maxWidth: .infinity)
-                .position(x: bottomBarFrame.midX, y: bottomBarFrame.midY)
-                .transition(.opacity)
+        VStack(spacing: 0) {
+            if step == .done {
+                finishContent
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
+            } else {
+                captionContent
+                    .transition(.opacity)
             }
 
             if step == .done {
-                finishContent
-                    .padding(.horizontal, 20)
-                    .padding(.top, safeAreaInsets.top + 12)
-                    .padding(.bottom, 84 + safeAreaInsets.bottom)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                 doneAction
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, safeAreaInsets.bottom + 14)
-                    .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
+                    .padding(.top, 16)
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
             } else {
-                ScrollView {
-                    TutorialCaptionCard(step: step)
-                        .padding(.horizontal, 20)
-                        .frame(maxWidth: .infinity)
-                }
-                .scrollIndicators(.hidden)
-                .frame(height: positionedCaptionHeight)
-                .clipShape(Rectangle())
-                .position(x: size.width / 2, y: captionTop + positionedCaptionHeight / 2)
+                stepActions
+                    .padding(.top, 18)
+                    .transition(.opacity)
             }
         }
+        .padding(20)
+        .frame(maxWidth: 520)
+        .frame(maxHeight: panelMaximumHeight, alignment: .bottom)
+        .clipShape(RoundedRectangle(cornerRadius: 34, style: .continuous))
+        .background {
+            tutorialPanelBackground
+        }
+        .padding(.horizontal, 18)
+        .padding(.bottom, safeAreaInsets.bottom + 12)
         .frame(width: size.width, height: size.height, alignment: .bottom)
-        .ignoresSafeArea()
+        .animation(panelAnimation, value: step)
+        .accessibilityIdentifier(step == .done ? "tutorial.finish.panel" : "tutorial.caption")
+    }
+
+    private var captionContent: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Step \(step.displayIndex) of \(DashboardTutorial.Step.count)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .accessibilityLabel("Step \(step.displayIndex) of \(DashboardTutorial.Step.count)")
+                Text(step.title)
+                    .font(.title3.bold())
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(step.message(nextMacro: tutorial.nextMacro))
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .scrollIndicators(.hidden)
+        .id("\(step.title)-\(step.message(nextMacro: tutorial.nextMacro))")
+        .transition(.opacity)
+        .accessibilityElement(children: .combine)
+        .onChange(of: step.message(nextMacro: tutorial.nextMacro), initial: true) {
+            AccessibilityNotification.Announcement("\(step.title). \(step.message(nextMacro: tutorial.nextMacro))").post()
+        }
+    }
+
+    @ViewBuilder
+    private var tutorialPanelBackground: some View {
+        if #available(iOS 26, *) {
+            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                .fill(.clear)
+                .glassEffect(.regular, in: .rect(cornerRadius: 34))
+                .glassEffectID("tutorial-panel", in: actionNamespace)
+        } else {
+            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                .fill(.regularMaterial)
+        }
+    }
+
+    private var stepActions: some View {
+        Group {
+            if #available(iOS 26, *) {
+                GlassEffectContainer(spacing: 12) {
+                    HStack(spacing: 12) {
+                        Button(action: dismiss) {
+                            Label("Skip Tutorial", systemImage: "xmark")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                        }
+                        .buttonStyle(.glass)
+                        .accessibilityIdentifier("tutorial.skip.button")
+
+                        Button(action: skipStep) {
+                            Label("Skip Step", systemImage: "forward.end")
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 52)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .accessibilityIdentifier("tutorial.skip-step.button")
+                    }
+                    .glassEffectID("tutorial-actions", in: actionNamespace)
+                }
+            } else {
+                HStack(spacing: 12) {
+                    Button(action: dismiss) {
+                        Label("Skip Tutorial", systemImage: "xmark")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button(action: skipStep) {
+                        Label("Skip Step", systemImage: "forward.end")
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+            }
+        }
+        .font(.body.weight(.semibold))
+        .frame(maxWidth: .infinity)
     }
 
     private var finishContent: some View {
@@ -285,18 +317,16 @@ struct DashboardTutorialOverlay: View {
                 .onAppear { finishIconDrawn = true }
                 Text("You're all set")
                     .font(.title2.bold())
-                    .foregroundStyle(.white)
                 Text("Log your first food with Camera or Add Food.")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.96))
+                    .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                 VStack(alignment: .leading, spacing: 10) {
                     finishRecapRow("Swipe left for Sharing", systemImage: "hand.point.left", index: 0)
                     finishRecapRow("Swipe right for past days", systemImage: "hand.point.right", index: 1)
                     finishRecapRow("Tap the rings for details", systemImage: "hand.tap", index: 2)
                 }
-                .font(.callout)
-                .foregroundStyle(.white)
+                .font(.body)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(maxWidth: 420)
@@ -305,8 +335,8 @@ struct DashboardTutorialOverlay: View {
         }
         .scrollIndicators(.hidden)
         .accessibilityIdentifier("tutorial.done.message")
-        .opacity(finishMessageVisible ? 1 : 0)
-        .offset(y: finishMessageVisible || reduceMotion ? 0 : 12)
+        .opacity(finishMessageVisible || reduceMotion ? 1 : 0)
+        .offset(y: finishMessageVisible || reduceMotion ? 0 : 8)
     }
 
     private func finishRecapRow(_ title: String, systemImage: String, index: Int) -> some View {
@@ -324,21 +354,21 @@ struct DashboardTutorialOverlay: View {
 
     private var doneAction: some View {
         Group {
-            if !reduceMotion, #available(iOS 26, *) {
+            if #available(iOS 26, *) {
                 GlassEffectContainer(spacing: 10) {
-                    AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
-                        .glassEffectID("tutorial-finish-action", in: actionNamespace)
-                        .frame(height: 60)
-                        .accessibilityFocused($isDoneFocused)
-                }
-            } else if !reduceMotion {
-                AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
-                    .matchedGeometryEffect(id: "tutorial-finish-action", in: actionNamespace)
-                    .frame(height: 60)
+                    Button(action: dismiss) {
+                        Label("Done", systemImage: "checkmark")
+                            .font(.body.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 54)
+                    }
+                    .buttonStyle(.glassProminent)
+                    .glassEffectID("tutorial-actions", in: actionNamespace)
                     .accessibilityFocused($isDoneFocused)
+                }
             } else {
                 AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
-                    .frame(height: 60)
+                    .frame(height: 54)
                     .accessibilityFocused($isDoneFocused)
             }
         }

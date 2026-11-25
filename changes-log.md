@@ -18,6 +18,10 @@ The completion card now fits its standard-size content and stays above the safe 
 
 The completion recap now sits directly on the dimmed scrim above a pinned Done action, which morphs from the two tutorial controls. The finish message scrolls independently at accessibility sizes; Done retains VoiceOver focus and success feedback. Build and format checks pass; unit tests pass 263/263 with StoreKit excluded.
 
+## 2026-11-25 Dashboard tutorial redesign, round 7
+
+Step captions and both actions now share one inset Liquid Glass panel. Completion grows that same panel into the recap card, with the actions merging into its Done button. Accessibility-size content scrolls inside the panel while actions stay pinned; spotlight positioning, gestures, skips, success feedback, and Done focus remain intact.
+
 ## 2026-11-24 Dashboard tutorial redesign, round 3
 
 The first-run tutorial now uses only two dashboard-matched floating controls, Skip Tutorial and Skip Step. Spotlighted gestures and taps advance the walkthrough directly; the Sharing return step spotlights Back. The recap animates in with its own full-width Done button and VoiceOver focus. AX XXXL macro steps focus Protein, Carbs, and Fat individually. Final light/gesture, skip-step, dark, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).
