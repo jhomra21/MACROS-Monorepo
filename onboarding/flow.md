@@ -1,6 +1,6 @@
 # MACROS onboarding and Dashboard tutorial
 
-Source references below describe the integrated onboarding and tutorial flow. Screenshots were captured on the disposable iPhone 17e simulator at 9:41. The main onboarding and tutorial sequence is light mode; the final tutorial screenshot is dark mode.
+Source references below describe the integrated onboarding and tutorial flow. Screenshots were captured on the iPhone 17 simulator at 9:41. The main onboarding and tutorial sequence is light mode; the final tutorial screenshot is dark mode.
 
 ## Onboarding navigation
 
@@ -62,6 +62,6 @@ Macro prompts appear in the `MacroMetric.allCases` order: Protein, Carbs, Fat. T
 ## Capture notes
 
 - 20 numbered PNGs cover the welcome screen, goal choice, profile form (top and scrolled), calculated targets, Pro paywall (top and purchase options), reminders, every Dashboard tutorial step through completion, the known-targets route, and a dark-mode completion screen. All exports are reduced to a maximum dimension of 1300 px.
-- The iOS notification authorization alert was **not captured**. The capture test disables the default daily reminder before continuing, so it avoids invoking a system permission prompt.
-- The captured Sharing view uses the in-memory sharing fixture with the “Your sharing circle” tutorial caption. It does not represent linked production accounts.
+- The iOS notification authorization alert was **not captured**. The onboarding capture stops at the reminders screen before Continue, avoiding a system permission prompt.
+- The captured Sharing view is the empty-state Sharing dashboard with the “Your sharing circle” tutorial caption; the in-memory fixture does not include linked people.
 - Fresh completion screenshots show the green checkmark in both light and dark appearances. See the companion [README](README.md) for simulator, test, and build provenance.
