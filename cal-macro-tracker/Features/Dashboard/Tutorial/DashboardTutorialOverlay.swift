@@ -247,10 +247,14 @@ struct DashboardTutorialOverlay: View {
     @ViewBuilder
     private var tutorialPanelBackground: some View {
         if #available(iOS 26, *) {
-            RoundedRectangle(cornerRadius: 34, style: .continuous)
+            let background = RoundedRectangle(cornerRadius: 34, style: .continuous)
                 .fill(.clear)
                 .glassEffect(.regular, in: .rect(cornerRadius: 34))
-                .glassEffectID("tutorial-panel", in: actionNamespace)
+            if reduceMotion {
+                background
+            } else {
+                background.glassEffectID("tutorial-panel", in: actionNamespace)
+            }
         } else {
             RoundedRectangle(cornerRadius: 34, style: .continuous)
                 .fill(.regularMaterial)
