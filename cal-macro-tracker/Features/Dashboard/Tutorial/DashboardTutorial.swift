@@ -23,14 +23,35 @@ extension View {
             guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel || target.isMacro else { return }
             tutorial.report($0, for: target)
         }
-        .accessibilityHidden(tutorial.isRunning && !tutorial.isAccessibilityTarget(target))
+        .modifier(TutorialTargetAccessibility(target: target, tutorial: tutorial))
     }
 }
 
 private extension TutorialTarget {
+    var isActionable: Bool {
+        switch self {
+        case .contentArea, .bottomBar: false
+        default: true
+        }
+    }
+
     var isMacro: Bool {
         if case .macro = self { return true }
         return false
+    }
+}
+
+private struct TutorialTargetAccessibility: ViewModifier {
+    let target: TutorialTarget
+    let tutorial: DashboardTutorial
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if target.isActionable {
+            content.accessibilityHidden(tutorial.isRunning && !tutorial.isAccessibilityTarget(target))
+        } else {
+            content
+        }
     }
 }
 
