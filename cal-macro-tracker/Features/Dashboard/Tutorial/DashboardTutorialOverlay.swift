@@ -215,7 +215,6 @@ struct DashboardTutorialOverlay: View {
         .padding(.bottom, safeAreaInsets.bottom + 12)
         .frame(width: size.width, height: size.height, alignment: .bottom)
         .animation(panelAnimation, value: step)
-        .accessibilityIdentifier(step == .done ? "tutorial.finish.panel" : "tutorial.caption")
     }
 
     private var captionContent: some View {
@@ -239,6 +238,7 @@ struct DashboardTutorialOverlay: View {
         .id("\(step.title)-\(step.message(nextMacro: tutorial.nextMacro))")
         .transition(.opacity)
         .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("tutorial.caption")
         .onChange(of: step.message(nextMacro: tutorial.nextMacro), initial: true) {
             AccessibilityNotification.Announcement("\(step.title). \(step.message(nextMacro: tutorial.nextMacro))").post()
         }
@@ -365,16 +365,18 @@ struct DashboardTutorialOverlay: View {
                     .buttonStyle(.glassProminent)
                     .glassEffectID("tutorial-actions", in: actionNamespace)
                     .accessibilityFocused($isDoneFocused)
+                    .accessibilityLabel("Done")
+                    .accessibilityIdentifier("tutorial.done.button")
                 }
             } else {
                 AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
                     .frame(height: 54)
                     .accessibilityFocused($isDoneFocused)
+                    .accessibilityLabel("Done")
+                    .accessibilityIdentifier("tutorial.done.button")
             }
         }
         .frame(maxWidth: .infinity)
-        .accessibilityLabel("Done")
-        .accessibilityIdentifier("tutorial.done.button")
     }
 
     private func skipStep() {
