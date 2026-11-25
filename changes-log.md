@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-24 Dashboard tutorial redesign, round 5
+
+The completion card now fits its standard-size content and stays above the safe area. At AX XXXL, completion details scroll inside the card while Done stays pinned; step captions sit clear of their active spotlight. Verified on iPhone Air and 17e with six UI capture flows, frame assertions, build, format, and 263/263 unit tests (StoreKit excluded). Screenshots are on `transfer/tutorial-redesign-2026-11-24` under `tutorial-redesign-r5/`.
+
 ## 2026-11-24 Dashboard tutorial redesign, round 3
 
 The first-run tutorial now uses only two dashboard-matched floating controls, Skip Tutorial and Skip Step. Spotlighted gestures and taps advance the walkthrough directly; the Sharing return step spotlights Back. The recap animates in with its own full-width Done button and VoiceOver focus. AX XXXL macro steps focus Protein, Carbs, and Fat individually. Final light/gesture, skip-step, dark, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).

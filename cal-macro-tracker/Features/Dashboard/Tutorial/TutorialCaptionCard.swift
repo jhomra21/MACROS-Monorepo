@@ -36,9 +36,10 @@ struct TutorialCaptionCard: View {
             }
         }
         .frame(maxWidth: 420, alignment: .leading)
-        .padding(step == .done ? 18 : 22)
+        .padding(22)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .accessibilityElement(children: step == .done ? .contain : .combine)
+        .accessibilityIdentifier(step == .done ? "tutorial.done.card" : "tutorial.caption")
         .onChange(of: step, initial: true) {
             if step == .done { isDoneFocused = true }
         }
@@ -49,7 +50,34 @@ struct TutorialCaptionCard: View {
     }
 
     private var doneContent: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
+            if dynamicTypeSize.isAccessibilitySize {
+                ScrollView {
+                    doneDetails
+                }
+                .scrollIndicators(.hidden)
+            } else {
+                doneDetails
+            }
+
+            AppAccentActionButton(
+                title: "Done",
+                systemImage: "checkmark",
+                isCompact: false,
+                action: onDone
+            )
+            .accessibilityLabel("Done")
+            .accessibilityIdentifier("tutorial.done.button")
+            .accessibilityFocused($isDoneFocused)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 60)
+        }
+        .frame(maxWidth: .infinity)
+        .onAppear { didAppear = true }
+    }
+
+    private var doneDetails: some View {
+        VStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 28, weight: .regular))
                 .symbolRenderingMode(.palette)
@@ -59,7 +87,7 @@ struct TutorialCaptionCard: View {
             Text(step.title)
                 .font(.title3.bold())
             Text(message)
-                .font(.subheadline)
+                .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             VStack(alignment: .leading, spacing: 10) {
@@ -67,30 +95,18 @@ struct TutorialCaptionCard: View {
                 recapRow("Swipe right for past days", systemImage: "hand.point.right")
                 recapRow("Tap the rings for details", systemImage: "hand.tap")
             }
-            .font(.subheadline)
+            .font(.body)
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
-
-            AppAccentActionButton(
-                title: "Done",
-                systemImage: "checkmark",
-                isCompact: false,
-                action: onDone
-            )
-            .accessibilityLabel("Done")
-            .accessibilityFocused($isDoneFocused)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 60)
         }
         .multilineTextAlignment(.center)
-        .frame(maxWidth: .infinity)
-        .onAppear { didAppear = true }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func recapRow(_ title: String, systemImage: String) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Image(systemName: systemImage)
-                .frame(width: 20)
+                .frame(width: 24, alignment: .center)
             Text(title)
                 .fixedSize(horizontal: false, vertical: true)
         }

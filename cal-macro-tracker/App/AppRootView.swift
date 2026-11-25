@@ -101,18 +101,21 @@ struct AppRootView: View {
                 (path.isEmpty && step != .returnFromSharing || path.last == .sharingDashboard && step == .returnFromSharing),
                 sheetDestination == nil
             {
-                GeometryReader { proxy in
-                    DashboardTutorialOverlay(
-                        step: step,
-                        origin: proxy.frame(in: .global).origin,
-                        size: proxy.size,
-                        onSkipStep: {
-                            tutorial.skipStep()
-                            if path.last == .sharingDashboard { path.removeLast() }
-                        }
-                    )
+                GeometryReader { safeAreaProxy in
+                    GeometryReader { proxy in
+                        DashboardTutorialOverlay(
+                            step: step,
+                            origin: proxy.frame(in: .global).origin,
+                            size: proxy.size,
+                            safeAreaInsets: safeAreaProxy.safeAreaInsets,
+                            onSkipStep: {
+                                tutorial.skipStep()
+                                if path.last == .sharingDashboard { path.removeLast() }
+                            }
+                        )
+                    }
+                    .ignoresSafeArea()
                 }
-                .ignoresSafeArea()
             }
         }
         .environment(tutorial)

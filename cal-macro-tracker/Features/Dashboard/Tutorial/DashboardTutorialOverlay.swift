@@ -71,17 +71,45 @@ struct DashboardTutorialOverlay: View {
     /// Global position of this overlay's top-left corner; tutorial frames are global.
     let origin: CGPoint
     let size: CGSize
+    let safeAreaInsets: EdgeInsets
     var onSkipStep: () -> Void = {}
 
     @State private var isVisible = false
     @State private var isDismissing = false
-    @State private var captionTop: CGFloat?
-
     private var captionHeight: CGFloat {
         if dynamicTypeSize.isAccessibilitySize {
-            return size.height * (step == .done ? 0.96 : 0.4)
+            if step == .done {
+                return size.height - safeAreaInsets.top - safeAreaInsets.bottom - 24
+            }
+            return size.height * 0.4
         }
-        return size.height * (step == .done ? 0.28 : 0.18)
+        return size.height * 0.18
+    }
+
+    private var positionedCaptionHeight: CGFloat {
+        guard dynamicTypeSize.isAccessibilitySize else { return captionHeight }
+        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
+        let top = captionTop
+        let availableBelow = visibleBottom - top
+        let availableBeforeTarget = spotlight.rect.minY - top - 16
+        let available = top < spotlight.rect.minY ? min(availableBelow, availableBeforeTarget) : availableBelow
+        return max(80, min(captionHeight, available))
+    }
+
+    private var captionTop: CGFloat {
+        let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
+        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+        guard dynamicTypeSize.isAccessibilitySize else {
+            return min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
+        }
+        if step == .done { return safeAreaInsets.top + 12 }
+
+        let safeTop = safeAreaInsets.top + 12
+        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
+        let belowTarget = spotlight.rect.isEmpty ? safeTop : spotlight.rect.maxY + 16
+        let aboveTarget = spotlight.rect.minY - captionHeight - 16
+        return visibleBottom - belowTarget >= 80 ? belowTarget : max(safeTop, aboveTarget)
     }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
@@ -157,28 +185,13 @@ struct DashboardTutorialOverlay: View {
         }
         .opacity(isDismissing || !isVisible ? 0 : 1)
         .onAppear {
-            updateCaptionPosition()
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
-        .onChange(of: step) { _, _ in updateCaptionPosition() }
         .sensoryFeedback(.success, trigger: step == .done)
         .animation(
             reduceMotion ? .easeOut(duration: 0.16) : .spring(response: 0.42, dampingFraction: 0.84),
             value: step == .done
         )
-    }
-
-    private func updateCaptionPosition() {
-        let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
-        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
-        if dynamicTypeSize.isAccessibilitySize {
-            captionTop =
-                step == .done
-                ? size.height * 0.02
-                : min(size.height * 0.4, bottomBarTop - captionHeight - 24)
-        } else {
-            captionTop = min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
-        }
     }
 
     private func handPosition(in cutout: CGRect) -> CGPoint {
@@ -213,15 +226,23 @@ struct DashboardTutorialOverlay: View {
                 .transition(.opacity)
             }
 
-            ScrollView {
+            if step == .done {
                 TutorialCaptionCard(step: step, onDone: dismiss)
                     .padding(.horizontal, 20)
                     .frame(maxWidth: .infinity)
+                    .frame(height: dynamicTypeSize.isAccessibilitySize ? captionHeight : nil)
+                    .padding(.bottom, safeAreaInsets.bottom + 12)
+            } else {
+                ScrollView {
+                    TutorialCaptionCard(step: step, onDone: dismiss)
+                        .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity)
+                }
+                .scrollIndicators(.hidden)
+                .frame(height: positionedCaptionHeight)
+                .clipShape(Rectangle())
+                .position(x: size.width / 2, y: captionTop + positionedCaptionHeight / 2)
             }
-            .scrollIndicators(.hidden)
-            .frame(height: captionHeight)
-            .clipShape(Rectangle())
-            .position(x: size.width / 2, y: (captionTop ?? size.height * 0.56) + captionHeight / 2)
         }
         .frame(width: size.width, height: size.height, alignment: .bottom)
         .ignoresSafeArea()
