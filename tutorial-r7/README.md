@@ -37,8 +37,9 @@ result bundles remain in ignored local evidence and are not tracked here.
 - UI test: `TutorialRound7CaptureTests.testCaptureTutorialStatesAndFinishTransition`,
   1 passed, 0 failed, 119.357 seconds.
 - App build and Swift formatting checks passed.
-- Raw final result: `build/evidence/2026-11-25-tutorial-r7/TutorialRound7CaptureTests-final.xcresult`
-  in the integration worktree (ignored).
+- Raw test logs, result bundles, exported attachments, and the 101 MB simulator
+  recording are preserved under the ignored local
+  `build/evidence/2026-11-25-tutorial-r7/` directory in the main checkout.
 - The transition strip was sampled from the same simulator and source during
   an earlier run. That run completed the light and dark captures, then stopped
   during accessibility setup because its Settings scroll limit was too short.
