@@ -23,6 +23,10 @@ struct OnboardingFlow: View {
                     }
                 case .targets:
                     TargetReviewScreen(profile: $profile, onComplete: completeGoalSetup)
+                case .streaks:
+                    OnboardingStreaksScreen {
+                        path.append(entitlements.hasPro ? .reminders : .pro)
+                    }
                 case .pro:
                     OnboardingProScreen {
                         path.append(.reminders)
@@ -35,7 +39,7 @@ struct OnboardingFlow: View {
     }
 
     private func completeGoalSetup() {
-        path.append(entitlements.hasPro ? .reminders : .pro)
+        path.append(.streaks)
     }
 }
 
@@ -43,6 +47,7 @@ enum OnboardingStep: Hashable {
     case choice
     case aboutYou
     case targets
+    case streaks
     case pro
     case reminders
 }
