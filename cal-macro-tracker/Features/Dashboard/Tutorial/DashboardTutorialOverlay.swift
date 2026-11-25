@@ -82,8 +82,12 @@ struct DashboardTutorialOverlay: View {
     @State private var finishIconDrawn = false
     @Namespace private var actionNamespace
     private var panelMaximumHeight: CGFloat {
-        guard dynamicTypeSize.isAccessibilitySize, step != .done else {
-            return size.height * (step == .done ? 0.44 : 0.26)
+        if step == .done {
+            guard dynamicTypeSize.isAccessibilitySize else { return size.height * 0.44 }
+            return max(0, size.height - safeAreaInsets.top - safeAreaInsets.bottom - 24)
+        }
+        guard dynamicTypeSize.isAccessibilitySize else {
+            return size.height * 0.26
         }
         let panelBottom = size.height - safeAreaInsets.bottom - 12
         let panelTop = max(safeAreaInsets.top + 12, spotlight.rect.maxY + 16)
@@ -187,18 +191,10 @@ struct DashboardTutorialOverlay: View {
     private var fixedTutorialLayout: some View {
         VStack(spacing: 0) {
             if step == .done {
-                finishContent
-                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
+                finishPanelContent
             } else {
                 captionContent
                     .transition(.opacity)
-            }
-
-            if step == .done {
-                doneAction
-                    .padding(.top, 16)
-                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
-            } else {
                 stepActions
                     .padding(.top, 18)
                     .transition(.opacity)
@@ -215,6 +211,29 @@ struct DashboardTutorialOverlay: View {
         .padding(.bottom, safeAreaInsets.bottom + 12)
         .frame(width: size.width, height: size.height, alignment: .bottom)
         .animation(panelAnimation, value: step)
+    }
+
+    @ViewBuilder
+    private var finishPanelContent: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(spacing: 0) {
+                finishContent
+                    .frame(height: max(0, panelMaximumHeight - 110))
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
+                doneAction
+                    .padding(.top, 16)
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
+            }
+            .frame(height: max(0, panelMaximumHeight - 40))
+        } else {
+            VStack(spacing: 0) {
+                finishContent
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
+                doneAction
+                    .padding(.top, 16)
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96)))
+            }
+        }
     }
 
     private var captionContent: some View {
@@ -313,38 +332,43 @@ struct DashboardTutorialOverlay: View {
         }
     }
 
+    private var finishMessage: some View {
+        VStack(spacing: 12) {
+            Group {
+                let icon = Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 28, weight: .regular))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .green)
+                    .accessibilityHidden(true)
+                icon.symbolEffect(.drawOn, isActive: !reduceMotion && !finishIconDrawn)
+            }
+            .padding(.bottom, 2)
+            .onAppear { finishIconDrawn = true }
+            Text("You're all set")
+                .font(.title2.bold())
+            Text("Log your first food with Camera or Add Food.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            VStack(alignment: .leading, spacing: 10) {
+                finishRecapRow("Swipe left for Sharing", systemImage: "hand.point.left", index: 0)
+                finishRecapRow("Swipe right for past days", systemImage: "hand.point.right", index: 1)
+                finishRecapRow("Tap the rings for details", systemImage: "hand.tap", index: 2)
+            }
+            .font(.body)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(maxWidth: 420)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+    }
+
     private var finishContent: some View {
         ScrollView {
-            VStack(spacing: 12) {
-                Group {
-                    let icon = Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 28, weight: .regular))
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(.white, .green)
-                        .accessibilityHidden(true)
-                    icon.symbolEffect(.drawOn, isActive: !reduceMotion && !finishIconDrawn)
-                }
-                .padding(.bottom, 2)
-                .onAppear { finishIconDrawn = true }
-                Text("You're all set")
-                    .font(.title2.bold())
-                Text("Log your first food with Camera or Add Food.")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                VStack(alignment: .leading, spacing: 10) {
-                    finishRecapRow("Swipe left for Sharing", systemImage: "hand.point.left", index: 0)
-                    finishRecapRow("Swipe right for past days", systemImage: "hand.point.right", index: 1)
-                    finishRecapRow("Tap the rings for details", systemImage: "hand.tap", index: 2)
-                }
-                .font(.body)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxWidth: 420)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
+            finishMessage
         }
         .scrollIndicators(.hidden)
+        .frame(maxHeight: .infinity)
         .accessibilityIdentifier("tutorial.done.message")
         .opacity(finishMessageVisible || reduceMotion ? 1 : 0)
         .offset(y: finishMessageVisible || reduceMotion ? 0 : 8)
