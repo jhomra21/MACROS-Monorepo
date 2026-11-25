@@ -66,6 +66,7 @@ struct DashboardTutorialOverlay: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @AccessibilityFocusState private var isDoneFocused: Bool
 
     let step: DashboardTutorial.Step
     /// Global position of this overlay's top-left corner; tutorial frames are global.
@@ -76,6 +77,9 @@ struct DashboardTutorialOverlay: View {
 
     @State private var isVisible = false
     @State private var isDismissing = false
+    @State private var finishMessageVisible = false
+    @State private var finishRowsVisible = false
+    @Namespace private var actionNamespace
     private var captionHeight: CGFloat {
         if dynamicTypeSize.isAccessibilitySize {
             if step == .done {
@@ -137,11 +141,12 @@ struct DashboardTutorialOverlay: View {
 
     private var scrimOpacity: Double {
         let isDark = colorScheme == .dark
-        if step == .done { return isDark ? 0.6 : 0.4 }
+        if step == .done { return isDark ? 0.78 : 0.84 }
         return 0.8
     }
 
     private var morph: Animation? { reduceMotion ? nil : .smooth(duration: 0.4) }
+    private var finishMorph: Animation? { reduceMotion ? .easeOut(duration: 0.16) : .bouncy(duration: 0.55) }
 
     var body: some View {
         let spotlight = spotlight
@@ -187,11 +192,20 @@ struct DashboardTutorialOverlay: View {
         .onAppear {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
+        .onChange(of: step, initial: true) {
+            guard step == .done else { return }
+            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.35).delay(0.12)) {
+                finishMessageVisible = true
+            }
+            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.3).delay(0.3)) {
+                finishRowsVisible = true
+            }
+        }
         .sensoryFeedback(.success, trigger: step == .done)
-        .animation(
-            reduceMotion ? .easeOut(duration: 0.16) : .spring(response: 0.42, dampingFraction: 0.84),
-            value: step == .done
-        )
+        .animation(finishMorph, value: step == .done)
+        .onChange(of: step, initial: true) {
+            if step == .done { isDoneFocused = true }
+        }
     }
 
     private func handPosition(in cutout: CGRect) -> CGPoint {
@@ -215,6 +229,8 @@ struct DashboardTutorialOverlay: View {
                         systemImage: "forward.end",
                         action: skipStep
                     ),
+                    morphNamespace: reduceMotion ? nil : actionNamespace,
+                    morphID: reduceMotion ? nil : "tutorial-finish-action",
                     displayMode: .expanded,
                     compactActionsAreHorizontal: true,
                     topPadding: 0,
@@ -227,14 +243,19 @@ struct DashboardTutorialOverlay: View {
             }
 
             if step == .done {
-                TutorialCaptionCard(step: step, onDone: dismiss)
+                finishContent
                     .padding(.horizontal, 20)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: dynamicTypeSize.isAccessibilitySize ? captionHeight : nil)
-                    .padding(.bottom, safeAreaInsets.bottom + 12)
+                    .padding(.top, safeAreaInsets.top + 12)
+                    .padding(.bottom, 84 + safeAreaInsets.bottom)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+                doneAction
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, safeAreaInsets.bottom + 14)
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
             } else {
                 ScrollView {
-                    TutorialCaptionCard(step: step, onDone: dismiss)
+                    TutorialCaptionCard(step: step)
                         .padding(.horizontal, 20)
                         .frame(maxWidth: .infinity)
                 }
@@ -246,6 +267,80 @@ struct DashboardTutorialOverlay: View {
         }
         .frame(width: size.width, height: size.height, alignment: .bottom)
         .ignoresSafeArea()
+    }
+
+    private var finishContent: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 28, weight: .regular))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .green)
+                    .symbolEffect(.drawOn, isActive: step == .done)
+                    .accessibilityHidden(true)
+                    .padding(.bottom, 2)
+                Text("You're all set")
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+                Text("Log your first food with Camera or Add Food.")
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.96))
+                    .multilineTextAlignment(.center)
+                VStack(alignment: .leading, spacing: 10) {
+                    finishRecapRow("Swipe left for Sharing", systemImage: "hand.point.left", index: 0)
+                    finishRecapRow("Swipe right for past days", systemImage: "hand.point.right", index: 1)
+                    finishRecapRow("Tap the rings for details", systemImage: "hand.tap", index: 2)
+                }
+                .font(.callout)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: 420)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+        }
+        .scrollIndicators(.hidden)
+        .accessibilityIdentifier("tutorial.done.message")
+        .opacity(finishMessageVisible ? 1 : 0)
+        .offset(y: finishMessageVisible || reduceMotion ? 0 : 12)
+    }
+
+    private func finishRecapRow(_ title: String, systemImage: String, index: Int) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: systemImage)
+                .frame(width: 24, alignment: .center)
+            Text(title)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .opacity(finishRowsVisible ? 1 : 0)
+        .offset(y: finishRowsVisible || reduceMotion ? 0 : 8)
+        .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.25).delay(Double(index) * 0.08), value: finishRowsVisible)
+    }
+
+    private var doneAction: some View {
+        Group {
+            if !reduceMotion, #available(iOS 26, *) {
+                GlassEffectContainer(spacing: 10) {
+                    AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                        .glassEffectID("tutorial-finish-action", in: actionNamespace)
+                        .frame(height: 60)
+                        .accessibilityFocused($isDoneFocused)
+                }
+            } else if !reduceMotion {
+                AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                    .matchedGeometryEffect(id: "tutorial-finish-action", in: actionNamespace)
+                    .frame(height: 60)
+                    .accessibilityFocused($isDoneFocused)
+            } else {
+                AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                    .frame(height: 60)
+                    .accessibilityFocused($isDoneFocused)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityLabel("Done")
+        .accessibilityIdentifier("tutorial.done.button")
     }
 
     private func skipStep() {

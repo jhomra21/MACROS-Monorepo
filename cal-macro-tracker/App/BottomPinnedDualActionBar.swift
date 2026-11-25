@@ -22,6 +22,8 @@ struct BottomPinnedDualActionBar: View {
     let leadingAction: BottomPinnedDualAction
     let trailingAction: BottomPinnedDualAction
     var transitionNamespace: Namespace.ID? = nil
+    var morphNamespace: Namespace.ID? = nil
+    var morphID: String? = nil
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var compactActionsAreHorizontal = false
     var topPadding: CGFloat = 10
@@ -49,11 +51,24 @@ struct BottomPinnedDualActionBar: View {
     private var buttonContent: some View {
         if #available(iOS 26, macOS 26, *) {
             GlassEffectContainer(spacing: buttonSpacing) {
-                buttons
+                morphButtons
+            }
+        } else {
+            morphButtons
+                .background(.ultraThinMaterial)
+        }
+    }
+
+    @ViewBuilder
+    private var morphButtons: some View {
+        if let morphID, let morphNamespace {
+            if #available(iOS 26, *) {
+                buttons.glassEffectID(morphID, in: morphNamespace)
+            } else {
+                buttons.matchedGeometryEffect(id: morphID, in: morphNamespace)
             }
         } else {
             buttons
-                .background(.ultraThinMaterial)
         }
     }
 
