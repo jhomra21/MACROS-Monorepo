@@ -8,6 +8,7 @@ struct DashboardScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(DashboardTutorial.self) var tutorial
     @AppStorage(AppStorageKeys.customProteinRingColor, store: .macroRingColors) private var customProteinRingColor =
         MacroRingColorStorage.defaultProteinHex
@@ -84,11 +85,7 @@ struct DashboardScreen: View {
             }
             .navigationTitle("")
             .inlineNavigationTitle()
-            .accessibilityHidden(tutorial.isRunning)
-            .tutorialAccessibilityMask(tutorial.isRunning)
             .tutorialTarget(.contentArea, in: tutorial)
-            .onAppear { tutorial.performAction = performTutorialAction }
-            .onDisappear { tutorial.performAction = nil }
             .onChange(of: daySelection.selectedDay) { _, day in
                 tutorial.didChangeDay(isToday: day == dayContext.today)
             }
@@ -183,13 +180,15 @@ struct DashboardScreen: View {
                 dashboardContent(snapshot: snapshot, customRingPalette: customRingPalette)
             }
             .onChange(of: tutorial.step) { _, step in
-                if step == .openSharing { proxy.scrollTo(Self.ringRowID, anchor: .top) }
+                if step == .openSharing {
+                    proxy.scrollTo(Self.ringRowID, anchor: .top)
+                }
             }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .scrollBounceBehavior(.basedOnSize)
-        .scrollDisabled(tutorial.isRunning)
+        .scrollDisabled(tutorial.isRunning && !dynamicTypeSize.isAccessibilitySize)
         .contentMargins(.top, 0, for: .scrollContent)
         .background(PlatformColors.groupedBackground)
         .onScrollGeometryChange(for: CGFloat.self) { scrollGeometry in
@@ -204,60 +203,81 @@ struct DashboardScreen: View {
     private func dashboardContent(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
         macroRows(snapshot: snapshot, customRingPalette: customRingPalette)
 
-        LogEntryListSection(
-            title: "Food",
-            emptyTitle: "No food logged yet",
-            emptySystemImage: "fork.knife.circle",
-            emptyDescription: emptyLogDescription,
-            entries: snapshot.entries,
-            emptyVerticalPadding: 12,
-            emptyStyle: .plain,
-            layout: .list,
-            onHeaderSwipeTranslation: handleDaySwipe,
-            onHeaderDayStep: handleHeaderDayStep,
-            onDeleteEntry: deleteEntry,
-            onEditEntry: onEditEntry,
-            onLogAgain: logEntryAgain
-        )
+        if !tutorial.isRunning {
+            LogEntryListSection(
+                title: "Food",
+                emptyTitle: "No food logged yet",
+                emptySystemImage: "fork.knife.circle",
+                emptyDescription: emptyLogDescription,
+                entries: snapshot.entries,
+                emptyVerticalPadding: 12,
+                emptyStyle: .plain,
+                layout: .list,
+                onHeaderSwipeTranslation: handleDaySwipe,
+                onHeaderDayStep: handleHeaderDayStep,
+                onDeleteEntry: deleteEntry,
+                onEditEntry: onEditEntry,
+                onLogAgain: logEntryAgain
+            )
+        }
     }
 
     @ViewBuilder
     private func macroRows(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
         VStack(spacing: 0) {
-            MacroDashboardRingPanel(
-                totals: snapshot.totals,
-                goals: currentGoals,
-                selectedMacro: selectedMacro,
-                isExpanded: isMacroRingExpanded,
-                colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
-                onToggleExpansion: toggleMacroRingExpansion
-            )
-            .tutorialTarget(.ringPanel, in: tutorial)
-
-            MacroLegendView(
-                totals: snapshot.totals,
-                goals: currentGoals,
-                selectedMacro: $selectedMacro,
-                palette: customRingPalette,
-                canCustomizeColors: entitlements.canUse(.customMacroRingColors),
-                onChangeColor: presentColorPicker
-            )
-            .tutorialTarget(.legend, in: tutorial)
-
-            LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
-
-            RevealLayout(progress: isMacroRingExpanded ? 1 : 0) {
-                SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
-                    .padding(.top, 12)
-                    .opacity(isMacroRingExpanded ? 1 : 0)
-                    .accessibilityHidden(!isMacroRingExpanded)
+            if tutorial.step == .macros, dynamicTypeSize.isAccessibilitySize {
+                macroLegend(snapshot: snapshot, customRingPalette: customRingPalette)
+                macroRingPanel(snapshot: snapshot, customRingPalette: customRingPalette)
+            } else {
+                macroRingPanel(snapshot: snapshot, customRingPalette: customRingPalette)
+                if tutorial.step != .done {
+                    macroLegend(snapshot: snapshot, customRingPalette: customRingPalette)
+                }
             }
-            .clipped()
+
+            if tutorial.step != .macros && tutorial.step != .done {
+                LoggingStreakLine(today: dayContext.today, onOpenInsights: onOpenInsights)
+                    .disabled(tutorial.isRunning)
+
+                RevealLayout(progress: isMacroRingExpanded ? 1 : 0) {
+                    SecondaryNutritionDetailsView(snapshot: snapshot.secondaryTotals)
+                        .padding(.top, 12)
+                        .opacity(isMacroRingExpanded ? 1 : 0)
+                        .accessibilityHidden(!isMacroRingExpanded)
+                }
+                .clipped()
+            }
         }
         .id(Self.ringRowID)
         .padding(.top, 8)
         .dashboardListRow(bottom: 12)
         .dashboardDaySwipe(dayNavigationGesture)
+    }
+
+    private func macroRingPanel(
+        snapshot: LogEntryDaySnapshot,
+        customRingPalette: MacroRingPalette?
+    ) -> some View {
+        MacroDashboardRingPanel(
+            totals: snapshot.totals,
+            goals: currentGoals,
+            selectedMacro: selectedMacro,
+            isExpanded: isMacroRingExpanded,
+            colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
+            onToggleExpansion: toggleMacroRingExpansion
+        )
+    }
+
+    private func macroLegend(snapshot: LogEntryDaySnapshot, customRingPalette: MacroRingPalette?) -> some View {
+        MacroLegendView(
+            totals: snapshot.totals,
+            goals: currentGoals,
+            selectedMacro: $selectedMacro,
+            palette: customRingPalette,
+            canCustomizeColors: entitlements.canUse(.customMacroRingColors),
+            onChangeColor: presentColorPicker
+        )
+        .tutorialTarget(.legend, in: tutorial)
     }
 
     private var pinnedCompactSummaryDayNavigationGesture: some Gesture {
@@ -355,9 +375,9 @@ struct DashboardScreen: View {
             bottomOffset: 6
         )
         .frame(maxWidth: .infinity)
+        .opacity(tutorial.isRunning ? 0 : 1)
         .disabled(tutorial.isRunning)
         .accessibilityHidden(tutorial.isRunning)
-        .tutorialAccessibilityMask(tutorial.isRunning)
     }
 
     private func pinnedCompactSummaryView(totals: NutritionSnapshot, customRingPalette: MacroRingPalette?) -> some View {
@@ -439,18 +459,6 @@ struct DashboardScreen: View {
         }
     }
 
-    private func performTutorialAction() {
-        switch tutorial.step {
-        case .openSharing?: onOpenSharing()
-        case .previousDay?: moveSelection(by: -1)
-        case .backToToday?: returnToToday()
-        case .expandRing?: toggleMacroRingExpansion()
-        case .macros?:
-            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { selectedMacro = tutorial.nextMacro }
-        default: break
-        }
-    }
-
     private func presentColorPicker(for metric: MacroMetric) {
         #if os(iOS)
         MacroRingColorPickerPresenter.present(for: metric, hex: hex(for: metric))
@@ -486,24 +494,5 @@ private struct RevealLayout: Layout {
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(width: bounds.width, height: nil))
-    }
-}
-
-private struct TutorialAccessibilityMask: ViewModifier {
-    let isRunning: Bool
-
-    @ViewBuilder
-    func body(content: Content) -> some View {
-        if isRunning {
-            content.accessibilityRepresentation { EmptyView() }
-        } else {
-            content
-        }
-    }
-}
-
-private extension View {
-    func tutorialAccessibilityMask(_ isRunning: Bool) -> some View {
-        modifier(TutorialAccessibilityMask(isRunning: isRunning))
     }
 }

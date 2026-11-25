@@ -89,16 +89,6 @@ struct AppRootView: View {
                     SharingDashboardScreen {
                         open(.sharing(inviteInput: nil, requestId: 0))
                     }
-                    .overlay(alignment: .bottom) {
-                        if tutorial.step == .returnFromSharing {
-                            TutorialCaptionCard(step: .returnFromSharing) {
-                                guard path.last == .sharingDashboard else { return }
-                                path.removeLast()
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.bottom, 16)
-                        }
-                    }
                 case let .sharing(inviteInput, _):
                     SharingScreen(initialInviteInput: inviteInput)
                 case let .sharingPerson(profileId):
@@ -107,11 +97,25 @@ struct AppRootView: View {
             }
         }
         .overlay {
-            if let step = tutorial.step, step != .returnFromSharing, path.isEmpty, sheetDestination == nil {
-                GeometryReader { proxy in
-                    DashboardTutorialOverlay(step: step, origin: proxy.frame(in: .global).origin, size: proxy.size)
+            if let step = tutorial.step,
+                (path.isEmpty && step != .returnFromSharing || path.last == .sharingDashboard && step == .returnFromSharing),
+                sheetDestination == nil
+            {
+                GeometryReader { safeAreaProxy in
+                    GeometryReader { proxy in
+                        DashboardTutorialOverlay(
+                            step: step,
+                            origin: proxy.frame(in: .global).origin,
+                            size: proxy.size,
+                            safeAreaInsets: safeAreaProxy.safeAreaInsets,
+                            onSkipStep: {
+                                tutorial.skipStep()
+                                if path.last == .sharingDashboard { path.removeLast() }
+                            }
+                        )
+                    }
+                    .ignoresSafeArea()
                 }
-                .ignoresSafeArea()
             }
         }
         .environment(tutorial)

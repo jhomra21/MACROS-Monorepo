@@ -7,14 +7,16 @@ enum SpotlightShapeKind {
     func spotlight(around rect: CGRect) -> Spotlight {
         switch self {
         case .circle:
-            let diameter = min(rect.width, rect.height) + 24
+            let diameter = min(rect.width, rect.height) + 48
             return Spotlight(
                 rect: CGRect(x: rect.midX - diameter / 2, y: rect.midY - diameter / 2, width: diameter, height: diameter),
                 radius: diameter / 2)
         case let .roundedRect(radius):
-            return Spotlight(rect: rect.insetBy(dx: -10, dy: -10), radius: radius)
+            return Spotlight(
+                rect: CGRect(x: rect.minX - 20, y: rect.minY, width: rect.width + 40, height: rect.height),
+                radius: radius)
         case .capsule:
-            let padded = rect.insetBy(dx: -8, dy: -8)
+            let padded = rect.insetBy(dx: -14, dy: -14)
             return Spotlight(rect: padded, radius: min(padded.width, padded.height) / 2)
         }
     }
@@ -64,24 +66,70 @@ struct DashboardTutorialOverlay: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @AccessibilityFocusState private var isDoneFocused: Bool
 
     let step: DashboardTutorial.Step
     /// Global position of this overlay's top-left corner; tutorial frames are global.
     let origin: CGPoint
     let size: CGSize
+    let safeAreaInsets: EdgeInsets
+    var onSkipStep: () -> Void = {}
 
     @State private var isVisible = false
     @State private var isDismissing = false
+    @State private var finishMessageVisible = false
+    @State private var finishRowsVisible = false
+    @Namespace private var actionNamespace
+    private var captionHeight: CGFloat {
+        if dynamicTypeSize.isAccessibilitySize {
+            if step == .done {
+                return size.height - safeAreaInsets.top - safeAreaInsets.bottom - 24
+            }
+            return size.height * 0.4
+        }
+        return size.height * 0.18
+    }
 
-    private let captionGap: CGFloat = 16
-    /// Below this the caption no longer fits beside the cutout and takes the full content height instead.
-    private let minimumCaptionRegionHeight: CGFloat = 180
+    private var positionedCaptionHeight: CGFloat {
+        guard dynamicTypeSize.isAccessibilitySize else { return captionHeight }
+        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
+        let top = captionTop
+        let availableBelow = visibleBottom - top
+        let availableBeforeTarget = spotlight.rect.minY - top - 16
+        let available = top < spotlight.rect.minY ? min(availableBelow, availableBeforeTarget) : availableBelow
+        return max(80, min(captionHeight, available))
+    }
+
+    private var captionTop: CGFloat {
+        let legendBottom = localFrame(.legend)?.maxY ?? size.height * 0.45
+        let bottomBarTop = localFrame(.bottomBar)?.minY ?? size.height - 168
+        guard dynamicTypeSize.isAccessibilitySize else {
+            return min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
+        }
+        if step == .done { return safeAreaInsets.top + 12 }
+
+        let safeTop = safeAreaInsets.top + 12
+        let visibleBottom = min(bottomBarTop - 12, size.height - safeAreaInsets.bottom - 12)
+        let belowTarget = spotlight.rect.isEmpty ? safeTop : spotlight.rect.maxY + 16
+        let aboveTarget = spotlight.rect.minY - captionHeight - 16
+        return visibleBottom - belowTarget >= 80 ? belowTarget : max(safeTop, aboveTarget)
+    }
 
     private func localFrame(_ target: TutorialTarget) -> CGRect? {
         tutorial.frames[target]?.offsetBy(dx: -origin.x, dy: -origin.y)
     }
 
-    private var targetRect: CGRect? { step.target.flatMap(localFrame) }
+    private var bottomBarFrame: CGRect {
+        localFrame(.bottomBar) ?? CGRect(x: 0, y: size.height - 68, width: size.width, height: 68)
+    }
+
+    private var targetRect: CGRect? {
+        if step == .macros, let nextMacro = tutorial.nextMacro {
+            return localFrame(.macro(nextMacro))
+        }
+        return step.target.flatMap(localFrame)
+    }
 
     /// Collapsed until the current step's own target has a rect, so a previous target's rect is never reused.
     private var spotlight: Spotlight {
@@ -93,11 +141,12 @@ struct DashboardTutorialOverlay: View {
 
     private var scrimOpacity: Double {
         let isDark = colorScheme == .dark
-        if step == .done { return isDark ? 0.6 : 0.4 }
-        return isDark ? 0.78 : 0.62
+        if step == .done { return isDark ? 0.78 : 0.84 }
+        return 0.8
     }
 
     private var morph: Animation? { reduceMotion ? nil : .smooth(duration: 0.4) }
+    private var finishMorph: Animation? { reduceMotion ? .easeOut(duration: 0.16) : .bouncy(duration: 0.55) }
 
     var body: some View {
         let spotlight = spotlight
@@ -121,82 +170,189 @@ struct DashboardTutorialOverlay: View {
                 }
             }
             // Only a step change morphs; geometry updates within a step must track moving targets without lag.
-            .animation(morph, value: step)
+            .animation(nil, value: step)
             .accessibilityHidden(true)
 
             if step != .done, !spotlight.rect.isEmpty {
-                TutorialHand(swipeDirection: step.swipeDirection, reduceMotion: reduceMotion)
-                    .id(step)
-                    .position(handPosition(in: spotlight.rect))
-                    .allowsHitTesting(false)
-                    // Both are intentional: the representation mask alone left the hand focusable (device-verified in 7053578).
-                    .accessibilityRepresentation { EmptyView() }
-                    .accessibilityHidden(true)
+                TutorialHand(
+                    swipeDirection: step.swipeDirection,
+                    reduceMotion: reduceMotion || dynamicTypeSize.isAccessibilitySize || step.swipeDirection == nil
+                )
+                .id(step)
+                .position(handPosition(in: spotlight.rect))
+                .allowsHitTesting(false)
+                // Both are intentional: the representation mask alone left the hand focusable (device-verified in 7053578).
+                .accessibilityRepresentation { EmptyView() }
+                .accessibilityHidden(true)
             }
 
-            caption(cutout: spotlight.rect)
+            fixedTutorialLayout
         }
         .opacity(isDismissing || !isVisible ? 0 : 1)
         .onAppear {
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.15)) { isVisible = true }
         }
-    }
-
-    /// The legend columns share its width equally, or stack vertically at accessibility sizes.
-    private func handPosition(in cutout: CGRect) -> CGPoint {
-        guard step == .macros, let next = tutorial.nextMacro, let index = MacroMetric.allCases.firstIndex(of: next)
-        else { return CGPoint(x: cutout.midX, y: cutout.midY) }
-        guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
-        let fraction = (CGFloat(index) + 0.5) / CGFloat(MacroMetric.allCases.count)
-        if dynamicTypeSize.isAccessibilitySize {
-            let stackedFraction = (CGFloat(index) + 0.8) / CGFloat(MacroMetric.allCases.count)
-            return CGPoint(x: targetRect.midX, y: targetRect.minY + targetRect.height * stackedFraction)
+        .onChange(of: step, initial: true) {
+            guard step == .done else { return }
+            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.35).delay(0.12)) {
+                finishMessageVisible = true
+            }
+            withAnimation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.3).delay(0.3)) {
+                finishRowsVisible = true
+            }
         }
-        return CGPoint(x: targetRect.minX + targetRect.width * fraction, y: targetRect.midY)
+        .sensoryFeedback(.success, trigger: step == .done)
+        .animation(finishMorph, value: step == .done)
+        .onChange(of: step, initial: true) {
+            if step == .done { isDoneFocused = true }
+        }
     }
 
-    @ViewBuilder
-    private func caption(cutout: CGRect) -> some View {
-        let top = localFrame(.contentArea)?.minY ?? 0
-        let bottom = localFrame(.bottomBar)?.minY ?? size.height
-        let above = max(0, cutout.minY - top - captionGap)
-        let below = max(0, bottom - cutout.maxY - captionGap)
-        let isFullHeight = step == .done || cutout.isEmpty || max(above, below) < minimumCaptionRegionHeight
-        let placeBelow = below >= above
-        let regionHeight =
-            if isFullHeight {
-                max(0, bottom - top)
-            } else {
-                placeBelow ? below : above
+    private func handPosition(in cutout: CGRect) -> CGPoint {
+        guard step == .macros, tutorial.nextMacro != nil else { return CGPoint(x: cutout.midX, y: cutout.midY) }
+        guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
+        return CGPoint(x: targetRect.maxX - 18, y: targetRect.maxY - 12)
+    }
+
+    private var fixedTutorialLayout: some View {
+        ZStack(alignment: .bottom) {
+            if step != .done {
+                BottomPinnedDualActionBar(
+                    leadingAction: BottomPinnedDualAction(
+                        title: "Skip Tutorial",
+                        systemImage: "xmark",
+                        action: dismiss,
+                        tint: .gray
+                    ),
+                    trailingAction: BottomPinnedDualAction(
+                        title: "Skip Step",
+                        systemImage: "forward.end",
+                        action: skipStep
+                    ),
+                    morphNamespace: reduceMotion ? nil : actionNamespace,
+                    morphID: reduceMotion ? nil : "tutorial-finish-action",
+                    displayMode: .expanded,
+                    compactActionsAreHorizontal: true,
+                    topPadding: 0,
+                    bottomOffset: 6,
+                    edgeFadeColor: .clear
+                )
+                .frame(maxWidth: .infinity)
+                .position(x: bottomBarFrame.midX, y: bottomBarFrame.midY)
+                .transition(.opacity)
             }
-        let regionCenterY =
-            if isFullHeight {
-                (top + bottom) / 2
+
+            if step == .done {
+                finishContent
+                    .padding(.horizontal, 20)
+                    .padding(.top, safeAreaInsets.top + 12)
+                    .padding(.bottom, 84 + safeAreaInsets.bottom)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+                doneAction
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, safeAreaInsets.bottom + 14)
+                    .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
             } else {
-                placeBelow ? cutout.maxY + captionGap + below / 2 : top + above / 2
-            }
-        ScrollView {
-            ZStack {
-                if step == .done {
-                    TutorialDoneCard(onDone: dismiss)
-                        .transition(reduceMotion ? .opacity : .scale(scale: 0.94).combined(with: .opacity))
-                } else {
-                    TutorialCaptionCard(step: step, onAction: { tutorial.performAction?() })
+                ScrollView {
+                    TutorialCaptionCard(step: step)
+                        .padding(.horizontal, 20)
+                        .frame(maxWidth: .infinity)
                 }
+                .scrollIndicators(.hidden)
+                .frame(height: positionedCaptionHeight)
+                .clipShape(Rectangle())
+                .position(x: size.width / 2, y: captionTop + positionedCaptionHeight / 2)
             }
-            .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step == .done)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 8)
+        }
+        .frame(width: size.width, height: size.height, alignment: .bottom)
+        .ignoresSafeArea()
+    }
+
+    private var finishContent: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 28, weight: .regular))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .green)
+                    .symbolEffect(.drawOn, isActive: step == .done)
+                    .accessibilityHidden(true)
+                    .padding(.bottom, 2)
+                Text("You're all set")
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+                Text("Log your first food with Camera or Add Food.")
+                    .font(.body)
+                    .foregroundStyle(.white.opacity(0.96))
+                    .multilineTextAlignment(.center)
+                VStack(alignment: .leading, spacing: 10) {
+                    finishRecapRow("Swipe left for Sharing", systemImage: "hand.point.left", index: 0)
+                    finishRecapRow("Swipe right for past days", systemImage: "hand.point.right", index: 1)
+                    finishRecapRow("Tap the rings for details", systemImage: "hand.tap", index: 2)
+                }
+                .font(.callout)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(maxWidth: 420)
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)
-        .defaultScrollAnchor(isFullHeight ? .center : nil)
-        .frame(height: regionHeight)
-        .position(x: size.width / 2, y: regionCenterY)
+        .accessibilityIdentifier("tutorial.done.message")
+        .opacity(finishMessageVisible ? 1 : 0)
+        .offset(y: finishMessageVisible || reduceMotion ? 0 : 12)
+    }
+
+    private func finishRecapRow(_ title: String, systemImage: String, index: Int) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 10) {
+            Image(systemName: systemImage)
+                .frame(width: 24, alignment: .center)
+            Text(title)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .opacity(finishRowsVisible ? 1 : 0)
+        .offset(y: finishRowsVisible || reduceMotion ? 0 : 8)
+        .animation(reduceMotion ? .easeOut(duration: 0.16) : .smooth(duration: 0.25).delay(Double(index) * 0.08), value: finishRowsVisible)
+    }
+
+    private var doneAction: some View {
+        Group {
+            if !reduceMotion, #available(iOS 26, *) {
+                GlassEffectContainer(spacing: 10) {
+                    AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                        .glassEffectID("tutorial-finish-action", in: actionNamespace)
+                        .frame(height: 60)
+                        .accessibilityFocused($isDoneFocused)
+                }
+            } else if !reduceMotion {
+                AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                    .matchedGeometryEffect(id: "tutorial-finish-action", in: actionNamespace)
+                    .frame(height: 60)
+                    .accessibilityFocused($isDoneFocused)
+            } else {
+                AppAccentActionButton(title: "Done", systemImage: "checkmark", isCompact: false, action: dismiss)
+                    .frame(height: 60)
+                    .accessibilityFocused($isDoneFocused)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityLabel("Done")
+        .accessibilityIdentifier("tutorial.done.button")
+    }
+
+    private func skipStep() {
+        if step == .returnFromSharing {
+            onSkipStep()
+        } else {
+            withAnimation(morph) { tutorial.skipStep() }
+        }
     }
 
     private func dismiss() {
-        withAnimation(.easeOut(duration: 0.25)) {
+        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
             isDismissing = true
         } completion: {
             tutorial.finish()

@@ -4,7 +4,9 @@ import SwiftUI
 enum TutorialTarget: Hashable {
     case ringPanel
     case legend
+    case macro(MacroMetric)
     case todayPill
+    case sharingBack
     /// Layout regions the caption is placed between.
     case contentArea
     case bottomBar
@@ -18,9 +20,17 @@ extension View {
         onGeometryChange(for: CGRect.self) {
             $0.frame(in: .global)
         } action: {
-            guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel else { return }
+            guard tutorial.isRunning || !tutorial.isDashboardReady || target == .ringPanel || target.isMacro else { return }
             tutorial.report($0, for: target)
         }
+        .accessibilityHidden(tutorial.isRunning && !tutorial.isAccessibilityTarget(target))
+    }
+}
+
+private extension TutorialTarget {
+    var isMacro: Bool {
+        if case .macro = self { return true }
+        return false
     }
 }
 
@@ -47,15 +57,16 @@ final class DashboardTutorial {
             switch self {
             case .openSharing, .previousDay, .expandRing: .ringPanel
             case .backToToday: .todayPill
+            case .returnFromSharing: .sharingBack
             case .macros: .legend
-            case .returnFromSharing, .done: nil
+            case .done: nil
             }
         }
 
         var spotlightShape: SpotlightShapeKind {
             switch target {
-            case .legend: .roundedRect(22)
-            case .todayPill: .capsule
+            case .legend, .macro: .roundedRect(32)
+            case .todayPill, .sharingBack: .capsule
             default: .circle
             }
         }
@@ -85,7 +96,7 @@ final class DashboardTutorial {
             switch self {
             case .openSharing: "Swipe left on your rings to open Sharing."
             case .returnFromSharing:
-                "People who share with you show their rings here. Swipe right from the edge or tap Back to return."
+                "People sharing with you appear here. Swipe right or tap Back."
             case .previousDay: "Swipe right on your rings to see yesterday."
             case .backToToday: "Tap Today to come back."
             case .expandRing: "Tap the rings to make them bigger and see more nutrition details."
@@ -94,17 +105,6 @@ final class DashboardTutorial {
             }
         }
 
-        func actionTitle(nextMacro: MacroMetric?) -> String? {
-            switch self {
-            case .openSharing: "Open Sharing"
-            case .previousDay: "Show Yesterday"
-            case .backToToday: "Go to Today"
-            case .expandRing: "Expand Rings"
-            case .macros: nextMacro.map { "Select \($0.title)" }
-            case .returnFromSharing: "Back to Dashboard"
-            case .done: nil
-            }
-        }
     }
 
     private(set) var step: Step?
@@ -112,10 +112,9 @@ final class DashboardTutorial {
     private(set) var frames: [TutorialTarget: CGRect] = [:]
     /// Stored, so views that only need readiness are not invalidated by every frame write.
     private(set) var isDashboardReady = false
-    /// Set by DashboardScreen while it is on screen: runs the current step's action.
-    @ObservationIgnored var performAction: (() -> Void)?
-
-    private static let readinessTargets: [TutorialTarget] = [.ringPanel, .legend, .contentArea, .bottomBar]
+    private static let readinessTargets: [TutorialTarget] = [
+        .ringPanel, .legend, .macro(.protein), .macro(.carbs), .macro(.fat), .contentArea, .bottomBar
+    ]
 
     func report(_ rect: CGRect, for target: TutorialTarget) {
         guard frames[target] != rect else { return }
@@ -130,6 +129,23 @@ final class DashboardTutorial {
         MacroMetric.allCases.first { !macrosTapped.contains($0) }
     }
 
+    func isAccessibilityTarget(_ target: TutorialTarget) -> Bool {
+        switch target {
+        case .ringPanel:
+            step == .openSharing || step == .previousDay || step == .expandRing
+        case .legend:
+            step == .macros
+        case let .macro(metric):
+            step == .macros && nextMacro == metric
+        case .todayPill:
+            step == .backToToday
+        case .sharingBack:
+            step == .returnFromSharing
+        case .contentArea, .bottomBar:
+            false
+        }
+    }
+
     func start() {
         guard step == nil else { return }
         macrosTapped = []
@@ -138,6 +154,17 @@ final class DashboardTutorial {
 
     func finish() {
         step = nil
+    }
+
+    func skipStep() {
+        switch step {
+        case .openSharing?, .returnFromSharing?: step = .previousDay
+        case .previousDay?, .backToToday?: step = .expandRing
+        case .expandRing?: step = .macros
+        case .macros?: step = .done
+        case .done?: finish()
+        case nil: break
+        }
     }
 
     func didOpenSharing() {

@@ -10,6 +10,18 @@ See the [app archive index](docs/history/app/README.md) for every archived headi
 - Replaced the Pro benefits list with contextual feature cards and small SwiftUI chart/ring visuals. Added the same purchase experience as an optional onboarding step after goals and before reminders; existing Pro users skip it and free users can continue without purchasing.
 - Validation: quality build and formatting passed, 263 non-StoreKit unit tests passed, and PurchaseStoreStoreKitTests passed 24/24 on both release and feature branches; real-price UI captures verified onboarding, contextual/general paywalls, dark mode, and AX XXXL.
 
+## 2026-11-24 Dashboard tutorial redesign, round 5
+
+The completion card now fits its standard-size content and stays above the safe area. At AX XXXL, completion details scroll inside the card while Done stays pinned; step captions sit clear of their active spotlight. Verified on iPhone Air and 17e with six UI capture flows, frame assertions, build, format, and 263/263 unit tests (StoreKit excluded). Screenshots are on `transfer/tutorial-redesign-2026-11-24` under `tutorial-redesign-r5/`.
+
+## 2026-11-25 Dashboard tutorial finish redesign
+
+The completion recap now sits directly on the dimmed scrim above a pinned Done action, which morphs from the two tutorial controls. The finish message scrolls independently at accessibility sizes; Done retains VoiceOver focus and success feedback. Build and format checks pass; unit tests pass 263/263 with StoreKit excluded.
+
+## 2026-11-24 Dashboard tutorial redesign, round 3
+
+The first-run tutorial now uses only two dashboard-matched floating controls, Skip Tutorial and Skip Step. Spotlighted gestures and taps advance the walkthrough directly; the Sharing return step spotlights Back. The recap animates in with its own full-width Done button and VoiceOver focus. AX XXXL macro steps focus Protein, Carbs, and Fat individually. Final light/gesture, skip-step, dark, and AX XXXL capture flows passed on iPhone Air and iPhone 17e. Build and format checks pass, with 263/263 unit tests passing (StoreKit tests excluded).
+
 ## 2026-11-23 Version 1.1, build 40 preparation
 
 - Prepared the 1.1 release from current `main`, with version 1.1/build 40 on the app and widget and build 40 on test targets.
