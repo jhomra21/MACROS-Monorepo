@@ -79,6 +79,7 @@ struct DashboardTutorialOverlay: View {
     @State private var isDismissing = false
     @State private var finishMessageVisible = false
     @State private var finishRowsVisible = false
+    @State private var finishIconDrawn = false
     @Namespace private var actionNamespace
     private var captionHeight: CGFloat {
         if dynamicTypeSize.isAccessibilitySize {
@@ -272,13 +273,16 @@ struct DashboardTutorialOverlay: View {
     private var finishContent: some View {
         ScrollView {
             VStack(spacing: 12) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 28, weight: .regular))
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(.white, .green)
-                    .symbolEffect(.drawOn, isActive: step == .done)
-                    .accessibilityHidden(true)
-                    .padding(.bottom, 2)
+                Group {
+                    let icon = Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 28, weight: .regular))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.white, .green)
+                        .accessibilityHidden(true)
+                    icon.symbolEffect(.drawOn, isActive: !reduceMotion && !finishIconDrawn)
+                }
+                .padding(.bottom, 2)
+                .onAppear { finishIconDrawn = true }
                 Text("You're all set")
                     .font(.title2.bold())
                     .foregroundStyle(.white)
