@@ -401,7 +401,7 @@ private struct ProFeature: Identifiable {
     let contexts: [ProPaywallContext]
     var isWide = false
     var visual: Visual = .none
-    var appearance: Appearance = .blue
+    let appearance: Appearance
 
     enum Visual {
         case none, chart, rings
