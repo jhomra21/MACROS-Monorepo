@@ -401,41 +401,75 @@ private struct ProFeature: Identifiable {
     let contexts: [ProPaywallContext]
     var isWide = false
     var visual: Visual = .none
+    var appearance: Appearance = .blue
 
     enum Visual {
         case none, chart, rings
     }
 
+    enum Appearance: Equatable {
+        case blue, pink, orange, charcoal, colorful, rings
+
+        var background: AnyShapeStyle {
+            let colors: [Color]
+            switch self {
+            case .blue: colors = [Color(hex: "#0054B8") ?? .blue, Color(hex: "#003F91") ?? .blue]
+            case .pink: colors = [Color(hex: "#B00055") ?? .pink, Color(hex: "#79003B") ?? .pink]
+            case .orange: colors = [Color(hex: "#A04400") ?? .orange, Color(hex: "#713000") ?? .orange]
+            case .charcoal: colors = [Color(hex: "#454B55") ?? .gray, Color(hex: "#282B32") ?? .gray]
+            case .colorful:
+                return AnyShapeStyle(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: "#315CA8") ?? .blue,
+                            Color(hex: "#6A438F") ?? .purple,
+                            Color(hex: "#8B4664") ?? .pink
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            case .rings:
+                return AnyShapeStyle(PlatformColors.cardBackground)
+            }
+            return AnyShapeStyle(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
+        }
+
+        var foreground: Color { self == .rings ? .primary : .white }
+        var iconForeground: Color { self == .rings ? MacroRingPalette.standard.protein : foreground }
+        var usesLightForeground: Bool { self != .rings }
+    }
     static let all = [
         ProFeature(
             id: "insights", title: "Insights beyond 7 days", subtitle: "14, 30, 90 days, 1 year, all time",
-            symbol: ProPaywallContext.insights.symbol, contexts: [.insights], isWide: true, visual: .chart
+            symbol: ProPaywallContext.insights.symbol, contexts: [.insights], isWide: true, visual: .chart,
+            appearance: .blue
         ),
         ProFeature(
             id: "sharing", title: "Sharing circle", subtitle: "Invite people, see their rings",
             symbol: ProPaywallContext.sharingInvites.symbol,
-            contexts: [.sharingInvites]
+            contexts: [.sharingInvites], appearance: .pink
         ),
         ProFeature(
             id: "widgets", title: "Shared widgets", subtitle: "A friend’s rings on your Home Screen",
             symbol: ProPaywallContext.sharedPersonWidget.symbol,
-            contexts: [.sharedPersonWidget], visual: .rings
+            contexts: [.sharedPersonWidget], visual: .rings, appearance: .rings
         ),
         ProFeature(
             id: "weight", title: "Weight trends", subtitle: "Plus import from Apple Health",
             symbol: ProPaywallContext.weightTrends.symbol,
-            contexts: [.weightTrends, .healthWeightImport]
+            contexts: [.weightTrends, .healthWeightImport], appearance: .orange
         ),
         ProFeature(
             id: "reminders", title: "More reminders", subtitle: "Up to three reminders total, including your daily reminder.",
             symbol: ProPaywallContext.reminders.symbol,
-            contexts: [.reminders]
+            contexts: [.reminders], appearance: .charcoal
         ),
         ProFeature(
             id: "customize", title: "Make it yours",
             subtitle: "Ring colors · widget backgrounds · backup export and import",
             symbol: ProPaywallContext.ringColors.symbol,
-            contexts: [.ringColors, .widgetBackground, .backup], isWide: true
+            contexts: [.ringColors, .widgetBackground, .backup], isWide: true, appearance: .colorful
         )
     ]
 }
@@ -449,22 +483,22 @@ private struct ProFeatureCard: View {
             HStack(alignment: .top) {
                 Image(systemName: feature.symbol)
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(iconForeground)
+                    .foregroundStyle(feature.appearance.iconForeground)
                     .accessibilityHidden(true)
                 Spacer(minLength: 0)
                 visual
             }
             Text(feature.title)
                 .font(.headline)
-                .foregroundStyle(cardForeground)
+                .foregroundStyle(feature.appearance.foreground)
             Text(feature.subtitle)
                 .font(.subheadline)
-                .foregroundStyle(usesColoredBackground ? Color.white : Color.secondary)
+                .foregroundStyle(feature.appearance.usesLightForeground ? Color.white : Color.secondary)
         }
         .frame(maxWidth: .infinity, minHeight: 124, maxHeight: .infinity, alignment: .topLeading)
         .padding(16)
         .background {
-            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(cardBackground)
+            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(feature.appearance.background)
         }
         .overlay {
             if isHighlighted {
@@ -474,69 +508,6 @@ private struct ProFeatureCard: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(feature.title), \(feature.subtitle)")
-    }
-
-    private var cardBackground: AnyShapeStyle {
-        switch feature.id {
-        case "insights":
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#0054B8") ?? .blue, Color(hex: "#003F91") ?? .blue],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        case "sharing":
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#B00055") ?? .pink, Color(hex: "#79003B") ?? .pink],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        case "weight":
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#A04400") ?? .orange, Color(hex: "#713000") ?? .orange],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        case "reminders":
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [Color(hex: "#454B55") ?? .gray, Color(hex: "#282B32") ?? .gray],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        case "customize":
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [
-                        Color(hex: "#315CA8") ?? .blue,
-                        Color(hex: "#6A438F") ?? .purple,
-                        Color(hex: "#8B4664") ?? .pink
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-        default:
-            AnyShapeStyle(PlatformColors.cardBackground)
-        }
-    }
-
-    private var usesColoredBackground: Bool {
-        feature.id != "widgets"
-    }
-
-    private var cardForeground: Color {
-        usesColoredBackground ? .white : .primary
-    }
-
-    private var iconForeground: Color {
-        feature.id == "widgets" ? MacroRingPalette.standard.protein : cardForeground
     }
 
     @ViewBuilder
@@ -549,7 +520,7 @@ private struct ProFeatureCard: View {
                 let heights: [CGFloat] = [0.35, 0.58, 0.43, 0.76, 0.92]
                 ForEach(heights.indices, id: \.self) { index in
                     Capsule()
-                        .fill(cardForeground)
+                        .fill(feature.appearance.foreground)
                         .frame(width: 8, height: 42 * heights[index])
                 }
             }
