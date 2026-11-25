@@ -36,7 +36,7 @@ struct TutorialCaptionCard: View {
             }
         }
         .frame(maxWidth: 420, alignment: .leading)
-        .padding(step == .done ? 8 : 22)
+        .padding(step == .done ? 18 : 22)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
         .accessibilityElement(children: step == .done ? .contain : .combine)
         .onChange(of: step, initial: true) {
@@ -49,7 +49,7 @@ struct TutorialCaptionCard: View {
     }
 
     private var doneContent: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 28, weight: .regular))
                 .symbolRenderingMode(.palette)
@@ -57,15 +57,15 @@ struct TutorialCaptionCard: View {
                 .symbolEffect(.drawOn, isActive: !didAppear)
                 .accessibilityHidden(true)
             Text(step.title)
-                .font(.subheadline.weight(.bold))
+                .font(.title3.bold())
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            VStack(alignment: .leading, spacing: 4) {
-                Label("Swipe left for Sharing", systemImage: "hand.point.left")
-                Label("Swipe right for past days", systemImage: "hand.point.right")
-                Label("Tap the rings for details", systemImage: "hand.tap")
+            VStack(alignment: .leading, spacing: 10) {
+                recapRow("Swipe left for Sharing", systemImage: "hand.point.left")
+                recapRow("Swipe right for past days", systemImage: "hand.point.right")
+                recapRow("Tap the rings for details", systemImage: "hand.tap")
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
@@ -85,5 +85,15 @@ struct TutorialCaptionCard: View {
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .onAppear { didAppear = true }
+    }
+
+    private func recapRow(_ title: String, systemImage: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: systemImage)
+                .frame(width: 20)
+            Text(title)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

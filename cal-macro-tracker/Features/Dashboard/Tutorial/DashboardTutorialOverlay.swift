@@ -12,7 +12,9 @@ enum SpotlightShapeKind {
                 rect: CGRect(x: rect.midX - diameter / 2, y: rect.midY - diameter / 2, width: diameter, height: diameter),
                 radius: diameter / 2)
         case let .roundedRect(radius):
-            return Spotlight(rect: rect.insetBy(dx: -20, dy: -20), radius: radius)
+            return Spotlight(
+                rect: CGRect(x: rect.minX - 20, y: rect.minY, width: rect.width + 40, height: rect.height),
+                radius: radius)
         case .capsule:
             let padded = rect.insetBy(dx: -14, dy: -14)
             return Spotlight(rect: padded, radius: min(padded.width, padded.height) / 2)
@@ -77,7 +79,7 @@ struct DashboardTutorialOverlay: View {
 
     private var captionHeight: CGFloat {
         if dynamicTypeSize.isAccessibilitySize {
-            return size.height * (step == .done ? 0.42 : 0.18)
+            return size.height * (step == .done ? 0.96 : 0.4)
         }
         return size.height * (step == .done ? 0.28 : 0.18)
     }
@@ -172,8 +174,8 @@ struct DashboardTutorialOverlay: View {
         if dynamicTypeSize.isAccessibilitySize {
             captionTop =
                 step == .done
-                ? min(size.height * 0.38, bottomBarTop - captionHeight - 24)
-                : size.height * 0.6
+                ? size.height * 0.02
+                : min(size.height * 0.4, bottomBarTop - captionHeight - 24)
         } else {
             captionTop = min(max(legendBottom + 80, size.height * 0.56), bottomBarTop - captionHeight - 24)
         }
@@ -182,10 +184,7 @@ struct DashboardTutorialOverlay: View {
     private func handPosition(in cutout: CGRect) -> CGPoint {
         guard step == .macros, tutorial.nextMacro != nil else { return CGPoint(x: cutout.midX, y: cutout.midY) }
         guard let targetRect else { return CGPoint(x: cutout.midX, y: cutout.midY) }
-        if dynamicTypeSize.isAccessibilitySize {
-            return CGPoint(x: targetRect.midX, y: targetRect.maxY - min(140, targetRect.height * 0.24))
-        }
-        return CGPoint(x: targetRect.midX, y: targetRect.midY)
+        return CGPoint(x: targetRect.maxX - 18, y: targetRect.maxY - 12)
     }
 
     private var fixedTutorialLayout: some View {
