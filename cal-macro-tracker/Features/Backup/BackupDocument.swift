@@ -490,6 +490,8 @@ nonisolated struct BackupSettings: Codable, Equatable, Sendable {
     var ringColors: MacroRingColorStorage
     var isFoodSuggestionsEnabled: Bool
     var reminders: BackupReminderConfiguration
+    /// Absent in backups made before streak badges; restoring one leaves local streak state alone.
+    var streaks: BackupStreakProgress? = nil
 
     static let `default` = BackupSettings(
         ringColors: MacroRingColorStorage(
@@ -516,7 +518,12 @@ nonisolated struct BackupSettings: Codable, Equatable, Sendable {
                     ?? MacroRingColorStorage.defaultFatHex
             ),
             isFoodSuggestionsEnabled: standardDefaults.object(forKey: AppStorageKeys.isFoodSuggestionsEnabled) as? Bool ?? true,
-            reminders: reminders
+            reminders: reminders,
+            streaks: BackupStreakProgress(
+                flexDays: standardDefaults.string(forKey: AppStorageKeys.streakFlexDays) ?? "",
+                highestBadgeDays: standardDefaults.integer(forKey: AppStorageKeys.streakHighestBadgeDays),
+                celebratedBadgeDays: standardDefaults.integer(forKey: AppStorageKeys.streakCelebratedBadgeDays)
+            )
         )
     }
 
@@ -528,6 +535,25 @@ nonisolated struct BackupSettings: Codable, Equatable, Sendable {
         standardDefaults.set(isFoodSuggestionsEnabled, forKey: AppStorageKeys.isFoodSuggestionsEnabled)
         standardDefaults.set(weightUnit?.rawValue, forKey: AppStorageKeys.weightUnit)
         reminders.apply(to: standardDefaults)
+        streaks?.apply(to: standardDefaults)
+    }
+}
+
+/// Flex day marks and earned badges. Streaks themselves are recomputed from restored entries.
+nonisolated struct BackupStreakProgress: Codable, Equatable, Sendable {
+    var flexDays: String
+    var highestBadgeDays: Int
+    var celebratedBadgeDays: Int
+
+    /// Badges are permanent, so a restore never lowers what this device already earned or celebrated.
+    @MainActor func apply(to defaults: UserDefaults) {
+        defaults.set(flexDays, forKey: AppStorageKeys.streakFlexDays)
+        defaults.set(
+            max(highestBadgeDays, defaults.integer(forKey: AppStorageKeys.streakHighestBadgeDays)),
+            forKey: AppStorageKeys.streakHighestBadgeDays)
+        defaults.set(
+            max(celebratedBadgeDays, defaults.integer(forKey: AppStorageKeys.streakCelebratedBadgeDays)),
+            forKey: AppStorageKeys.streakCelebratedBadgeDays)
     }
 }
 
