@@ -51,6 +51,7 @@ struct AppRootView: View {
     @State private var path: [Route] = []
     @State private var sheetDestination: AppRootSheetDestination?
     @State private var isDashboardShareUIUp = false
+    @State private var streakCelebration: StreakBadge?
     @State private var openRequestToken = 0
 
     init(pendingOpenRequest: Binding<AppOpenRequest?> = .constant(nil)) {
@@ -145,11 +146,9 @@ struct AppRootView: View {
             applyPendingOpenRequest(pendingOpenRequest)
             await AppWarmupCoordinator.warmUpAfterFirstRender()
         }
-        .modifier(
-            ReviewPromptModifier(
-                isTodayIdle: path.isEmpty && sheetDestination == nil && tutorial.step == nil && !isDashboardShareUIUp
-            )
-        )
+        .modifier(StreakCelebrationModifier(isTodayIdle: isTodayIdle, celebration: $streakCelebration))
+        // The review prompt waits while the milestone sheet is up, so the two never stack.
+        .modifier(ReviewPromptModifier(isTodayIdle: isTodayIdle && streakCelebration == nil))
     }
 
     @ViewBuilder
@@ -176,6 +175,10 @@ struct AppRootView: View {
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
+    }
+
+    private var isTodayIdle: Bool {
+        path.isEmpty && sheetDestination == nil && tutorial.step == nil && !isDashboardShareUIUp
     }
 
     private var canStartTutorial: Bool {
