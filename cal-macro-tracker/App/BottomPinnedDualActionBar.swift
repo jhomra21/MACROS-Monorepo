@@ -8,7 +8,6 @@ struct BottomPinnedDualAction {
     let systemImage: String
     let action: () -> Void
     var role: ButtonRole? = nil
-    var tint: Color? = nil
     var transitionSourceID: String? = nil
 }
 
@@ -22,13 +21,10 @@ struct BottomPinnedDualActionBar: View {
     let leadingAction: BottomPinnedDualAction
     let trailingAction: BottomPinnedDualAction
     var transitionNamespace: Namespace.ID? = nil
-    var morphNamespace: Namespace.ID? = nil
-    var morphID: String? = nil
     var displayMode: BottomPinnedActionBarDisplayMode = .expanded
     var compactActionsAreHorizontal = false
     var topPadding: CGFloat = 10
     var bottomOffset: CGFloat = 0
-    var edgeFadeColor: Color = PlatformColors.systemBackground
 
     @State private var isKeyboardVisible = false
 
@@ -41,7 +37,7 @@ struct BottomPinnedDualActionBar: View {
     }
 
     var body: some View {
-        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset, fadeColor: edgeFadeColor) {
+        BottomPinnedActionContainer(height: bottomBarHeight, bottomOffset: bottomOffset) {
             buttonContent
         }
         .bottomPinnedKeyboardVisibility($isKeyboardVisible)
@@ -51,24 +47,11 @@ struct BottomPinnedDualActionBar: View {
     private var buttonContent: some View {
         if #available(iOS 26, macOS 26, *) {
             GlassEffectContainer(spacing: buttonSpacing) {
-                morphButtons
-            }
-        } else {
-            morphButtons
-                .background(.ultraThinMaterial)
-        }
-    }
-
-    @ViewBuilder
-    private var morphButtons: some View {
-        if let morphID, let morphNamespace {
-            if #available(iOS 26, *) {
-                buttons.glassEffectID(morphID, in: morphNamespace)
-            } else {
-                buttons.matchedGeometryEffect(id: morphID, in: morphNamespace)
+                buttons
             }
         } else {
             buttons
+                .background(.ultraThinMaterial)
         }
     }
 
@@ -110,7 +93,6 @@ struct BottomPinnedDualActionBar: View {
             systemImage: action.systemImage,
             isCompact: isCompact,
             labelWidth: isCompact ? compactButtonSize : nil,
-            tint: action.tint,
             action: action.action,
             role: action.role
         )

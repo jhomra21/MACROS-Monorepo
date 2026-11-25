@@ -264,7 +264,9 @@ struct DashboardScreen: View {
             selectedMacro: selectedMacro,
             isExpanded: isMacroRingExpanded,
             colorStyle: customRingPalette.map(MacroRingColorStyle.custom) ?? .standard,
-            onToggleExpansion: toggleMacroRingExpansion
+            onToggleExpansion: toggleMacroRingExpansion,
+            onOpenSharing: onOpenSharing,
+            onShowYesterday: { moveSelection(by: -1) }
         )
     }
 
@@ -328,10 +330,10 @@ struct DashboardScreen: View {
             switch tutorial.step {
             case .openSharing?:
                 guard translation.width < 0 else { return }
-                onOpenSharing()
+                openSharingFromRing()
             case .previousDay?:
                 guard translation.width > 0 else { return }
-                moveSelection(by: -1)
+                showYesterdayFromRing()
             default:
                 break
             }
@@ -439,18 +441,29 @@ struct DashboardScreen: View {
 
     /// Brings private dashboard state to what the step expects, whatever the user did while it was not current.
     private func normalizeState(for step: DashboardTutorial.Step?) {
+        if step != .backToToday {
+            daySelection.resetToToday(dayContext.today)
+        }
+
         switch step {
         case .openSharing?, .previousDay?, .expandRing?:
-            if step == .openSharing || step == .previousDay { daySelection.resetToToday(dayContext.today) }
             withTransaction(expansionTransaction) {
                 isMacroRingExpanded = false
                 selectedMacro = nil
             }
         case .macros?:
             withAnimation(reduceMotion ? nil : .easeOut(duration: 0.18)) { selectedMacro = nil }
-        default:
+        case .returnFromSharing?, .backToToday?, .done?, nil:
             break
         }
+    }
+
+    private func openSharingFromRing() {
+        onOpenSharing()
+    }
+
+    private func showYesterdayFromRing() {
+        moveSelection(by: -1)
     }
 
     private func returnToToday() {

@@ -87,6 +87,8 @@ struct MacroDashboardRingPanel: View {
     let isExpanded: Bool
     let colorStyle: MacroRingColorStyle
     let onToggleExpansion: () -> Void
+    let onOpenSharing: () -> Void
+    let onShowYesterday: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(DashboardTutorial.self) private var tutorial
@@ -111,6 +113,8 @@ struct MacroDashboardRingPanel: View {
         .buttonStyle(UndimmedButtonStyle())
         .accessibilityLabel(isExpanded ? "Collapse nutrition details" : "Expand nutrition details")
         .accessibilityHidden(tutorial.isRunning && !tutorial.isAccessibilityTarget(.ringPanel))
+        .accessibilityAction(named: Text("Open Sharing"), onOpenSharing)
+        .accessibilityAction(named: Text("Show yesterday"), onShowYesterday)
     }
 }
 
