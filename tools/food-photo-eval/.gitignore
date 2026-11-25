@@ -1,0 +1,5 @@
+dataset/photos/
+dataset/truth/
+results/
+!fixtures/results/
+!fixtures/results/**

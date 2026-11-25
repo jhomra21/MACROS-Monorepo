@@ -1,0 +1,14 @@
+{
+  "photoId": "fake-banana",
+  "portionSize": "large",
+  "items": [
+    {
+      "name": "Banana",
+      "grams": 118,
+      "volumeMl": null,
+      "preparation": "raw",
+      "notes": "FAKE FIXTURE: not a real photo or measurement.",
+      "foodKey": "legacy:banana"
+    }
+  ]
+}

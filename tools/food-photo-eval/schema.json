@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Meal photo estimate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "foods"],
+  "properties": {
+    "status": { "type": "string", "enum": ["ok", "not_food", "unclear", "packaged"] },
+    "foods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "grams", "lowGrams", "highGrams", "preparation", "hiddenFatLikely", "volumeMl", "foodKey"],
+        "properties": {
+          "name": { "type": "string" },
+          "grams": { "type": ["number", "null"] },
+          "lowGrams": { "type": ["number", "null"] },
+          "highGrams": { "type": ["number", "null"] },
+          "preparation": { "type": ["string", "null"] },
+          "hiddenFatLikely": { "type": "boolean" },
+          "volumeMl": { "type": ["number", "null"] },
+          "foodKey": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

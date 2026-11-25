@@ -1,0 +1,22 @@
+{
+  "photoId": "home-001-small-45",
+  "portionSize": "small",
+  "items": [
+    {
+      "name": "Banana",
+      "grams": 72,
+      "volumeMl": null,
+      "preparation": "raw, peeled",
+      "notes": "Example only; no corresponding photo is included.",
+      "foodKey": "legacy:banana"
+    },
+    {
+      "name": "Water",
+      "grams": null,
+      "volumeMl": 240,
+      "preparation": "still, unflavoured",
+      "notes": "Volume-only item; no mass conversion is assumed.",
+      "foodKey": null
+    }
+  ]
+}

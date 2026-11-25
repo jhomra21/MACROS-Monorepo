@@ -1,0 +1,14 @@
+{
+  "photoId": "fake-banana",
+  "arm": "fake-arm",
+  "model": "fake-model",
+  "latencyMs": 250,
+  "tokenUsage": {
+    "inputTokens": 100,
+    "outputTokens": 20
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"Bananas\",\"grams\":130,\"lowGrams\":115,\"highGrams\":145,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"legacy:banana\"}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-25T00:00:00.000Z",
+  "_fixture": "FAKE ONLY: not a model response or real food photo."
+}

@@ -1,0 +1,13 @@
+{
+  "name": "macros-food-photo-eval",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "score": "bun run score.ts",
+    "cloud": "bun run cloud/run.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.18",
+    "typescript": "^5.8.3"
+  }
+}

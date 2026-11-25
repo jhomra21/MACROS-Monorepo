@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Food photo ground truth",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["photoId", "portionSize", "items"],
+  "properties": {
+    "photoId": { "type": "string" },
+    "portionSize": { "type": "string", "enum": ["small", "medium", "large", "not_applicable"] },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "grams", "volumeMl", "preparation", "notes", "foodKey"],
+        "properties": {
+          "name": { "type": "string" },
+          "grams": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+          "volumeMl": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+          "preparation": { "type": "string" },
+          "notes": { "type": "string" },
+          "foodKey": { "type": ["string", "null"] }
+        },
+        "oneOf": [
+          { "properties": { "grams": { "type": "number" }, "volumeMl": { "type": "null" } } },
+          { "properties": { "grams": { "type": "null" }, "volumeMl": { "type": "number" } } }
+        ]
+      }
+    }
+  }
+}
