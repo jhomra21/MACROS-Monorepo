@@ -7,6 +7,8 @@ struct StreakMedallionView: View {
     let palette: MacroRingPalette
     var isEarned = true
     var progress: Double = 1
+    var lockedProgress: Double = 0
+    var accessibilityLabel: String? = nil
     var diameter: CGFloat = 72
 
     private var lineWidth: CGFloat { max(3, diameter * 0.08) }
@@ -43,7 +45,7 @@ struct StreakMedallionView: View {
         }
         .frame(width: diameter + (hasLaurels ? diameter * 0.24 : 0), height: diameter)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(badge.title), \(badge.days) days")
+        .accessibilityLabel(accessibilityLabel ?? "\(badge.title), \(badge.days) days")
         .accessibilityValue(isEarned ? "Earned" : "Locked")
     }
 
@@ -60,12 +62,13 @@ struct StreakMedallionView: View {
     @ViewBuilder
     private func ring(at index: Int) -> some View {
         let size = ringDiameter(at: index)
-        if isEarned {
+        if isEarned || lockedProgress > 0 {
             let color = palette.color(for: MacroMetric.allCases[index])
+            let ringProgress = isEarned ? progress : min(max(lockedProgress, 0), 1)
             ZStack {
-                Circle().stroke(color.opacity(0.22), lineWidth: lineWidth)
+                Circle().stroke(color.opacity(isEarned ? 0.22 : 0.08), lineWidth: lineWidth)
                 Circle()
-                    .trim(from: 0, to: progress)
+                    .trim(from: 0, to: ringProgress)
                     .stroke(
                         AngularGradient(colors: [color, color.mixed(with: .white, amount: 0.28), color], center: .center),
                         style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)

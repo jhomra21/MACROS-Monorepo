@@ -11,8 +11,8 @@ struct StreakMilestonesCard: View {
         LoggingStreakReader(today: today) { summary, earnedBadges in
             StreakPaletteReader { palette in
                 VStack(alignment: .leading, spacing: 14) {
-                    header(summary: summary, earned: earnedBadges)
-                    badgeRow(earned: earnedBadges, palette: palette)
+                    header(summary: summary)
+                    badgeRow(earned: earnedBadges, summary: summary, palette: palette)
                     if let extras = extraStats(summary) {
                         Text(extras)
                             .font(.footnote)
@@ -28,44 +28,59 @@ struct StreakMilestonesCard: View {
         }
     }
 
-    private func header(summary: LoggingStreakSummary, earned: [StreakBadge]) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+    private func header(summary: LoggingStreakSummary) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text("Milestones").font(.headline)
+                    Text("Logging streak")
+                        .font(.headline)
                     Spacer()
                     currentStreak(summary.current)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Milestones").font(.headline)
+                    Text("Logging streak")
+                        .font(.headline)
                     currentStreak(summary.current)
                 }
             }
-            Text(nextBadgeText(summary: summary, earned: earned))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Logging streak, \(summary.current) \(summary.current == 1 ? "day" : "days")")
         }
     }
 
     private func currentStreak(_ days: Int) -> some View {
         Text("\(days) \(days == 1 ? "day" : "days")")
             .font(.title3.bold().monospacedDigit())
-            .accessibilityLabel("Current streak, \(days) \(days == 1 ? "day" : "days")")
     }
 
-    private func nextBadgeText(summary: LoggingStreakSummary, earned: [StreakBadge]) -> String {
-        guard let next = StreakBadge.allCases.first(where: { !earned.contains($0) }) else {
-            return "Every badge earned. They are yours to keep."
-        }
-        let remaining = next.days - summary.current
-        return "Next: \(next.title) at \(next.days) days" + (summary.current > 0 ? ", \(remaining) to go." : ".")
-    }
-
-    private func badgeRow(earned: [StreakBadge], palette: MacroRingPalette) -> some View {
-        HStack(spacing: 0) {
+    private func badgeRow(
+        earned: [StreakBadge],
+        summary: LoggingStreakSummary,
+        palette: MacroRingPalette
+    ) -> some View {
+        let next = StreakBadge.allCases.first { !earned.contains($0) }
+        return HStack(spacing: 0) {
             ForEach(StreakBadge.allCases) { badge in
-                StreakMedallionView(badge: badge, palette: palette, isEarned: earned.contains(badge), diameter: 52)
-                    .frame(maxWidth: .infinity)
+                VStack(spacing: 2) {
+                    StreakMedallionView(
+                        badge: badge,
+                        palette: palette,
+                        isEarned: earned.contains(badge),
+                        lockedProgress: badge == next ? Double(summary.current) / Double(badge.days) : 0,
+                        accessibilityLabel: badge == next
+                            ? "\(badge.title) badge, \(badge.days - summary.current) \(badge.days - summary.current == 1 ? "day" : "days") to go"
+                            : nil,
+                        diameter: 52
+                    )
+                    if badge == next {
+                        let remaining = badge.days - summary.current
+                        Text(remaining == 1 ? "1 to go" : "\(remaining) to go")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .accessibilityHidden(true)
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
         }
     }
