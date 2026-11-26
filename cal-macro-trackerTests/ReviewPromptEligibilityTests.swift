@@ -15,7 +15,7 @@ final class ReviewPromptEligibilityTests: XCTestCase {
 
     func testRequiresVersionSpacingAndRecentUseGates() {
         let today = CalendarDay(date: date(2026, 11, 25))
-        XCTAssertFalse(eligible([0, 1, 2], today: today, promptedVersion: "1.0"))
+        XCTAssertFalse(eligible([0, 1, 2], today: today, promptedVersion: "1.1"))
         XCTAssertFalse(eligible([0, 1, 2], today: today, lastRequestedAt: date(2026, 11, 12)))
         XCTAssertTrue(eligible([0, 1, 2], today: today, lastRequestedAt: date(2026, 11, 11)))
         XCTAssertFalse(eligible([2, 3, 100], today: today))
