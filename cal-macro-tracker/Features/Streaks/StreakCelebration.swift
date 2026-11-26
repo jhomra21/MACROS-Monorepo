@@ -90,7 +90,9 @@ struct StreakMilestoneSheet: View {
                     .multilineTextAlignment(.center)
                     actions
                 }
-                .padding(24)
+                .padding(.horizontal, 24)
+                .padding(.top, 36)
+                .padding(.bottom, 24)
                 .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize)
@@ -111,18 +113,23 @@ struct StreakMilestoneSheet: View {
     }
 
     private var actions: some View {
-        VStack(spacing: 12) {
-            Button("Done") { dismiss() }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .frame(maxWidth: .infinity)
-            if let shareImage {
-                ShareLink(item: shareImage, preview: SharePreview(badge.title, image: shareImage)) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                        .frame(maxWidth: .infinity)
+        GlassEffectContainer(spacing: 12) {
+            VStack(spacing: 12) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Done").frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(.glassProminent)
                 .controlSize(.large)
+                if let shareImage {
+                    ShareLink(item: shareImage, preview: SharePreview(badge.title, image: shareImage)) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.glass)
+                    .controlSize(.large)
+                }
             }
         }
     }

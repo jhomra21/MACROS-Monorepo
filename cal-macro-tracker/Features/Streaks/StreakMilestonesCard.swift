@@ -10,15 +10,47 @@ struct StreakMilestonesCard: View {
     var body: some View {
         LoggingStreakReader(today: today) { summary, earnedBadges in
             StreakPaletteReader { palette in
-                InsightsCard(title: "Milestones", subtitle: nextBadgeText(summary: summary, earned: earnedBadges)) {
+                VStack(alignment: .leading, spacing: 14) {
+                    header(summary: summary, earned: earnedBadges)
                     badgeRow(earned: earnedBadges, palette: palette)
-                    statRow(summary: summary)
-                    Divider()
+                    if let extras = extraStats(summary) {
+                        Text(extras)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
                     weekSection(summary: summary, palette: palette)
                 }
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .appCardBackground(cornerRadius: 24)
                 .accessibilityIdentifier("milestones-card")
             }
         }
+    }
+
+    private func header(summary: LoggingStreakSummary, earned: [StreakBadge]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Milestones").font(.headline)
+                    Spacer()
+                    currentStreak(summary.current)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Milestones").font(.headline)
+                    currentStreak(summary.current)
+                }
+            }
+            Text(nextBadgeText(summary: summary, earned: earned))
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func currentStreak(_ days: Int) -> some View {
+        Text("\(days) \(days == 1 ? "day" : "days")")
+            .font(.title3.bold().monospacedDigit())
+            .accessibilityLabel("Current streak, \(days) \(days == 1 ? "day" : "days")")
     }
 
     private func nextBadgeText(summary: LoggingStreakSummary, earned: [StreakBadge]) -> String {
@@ -32,37 +64,18 @@ struct StreakMilestonesCard: View {
     private func badgeRow(earned: [StreakBadge], palette: MacroRingPalette) -> some View {
         HStack(spacing: 0) {
             ForEach(StreakBadge.allCases) { badge in
-                StreakMedallionView(badge: badge, palette: palette, isEarned: earned.contains(badge), diameter: 56)
+                StreakMedallionView(badge: badge, palette: palette, isEarned: earned.contains(badge), diameter: 52)
                     .frame(maxWidth: .infinity)
             }
         }
     }
 
-    private func statRow(summary: LoggingStreakSummary) -> some View {
-        let stats = [
-            ("Current streak", summary.current), ("Best streak", summary.best), ("Days logged", summary.totalLoggedDays)
-        ]
-        return ViewThatFits(in: .horizontal) {
-            HStack(alignment: .top) {
-                ForEach(stats, id: \.0) { stat($0.0, $0.1) }
-            }
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(stats, id: \.0) { stat($0.0, $0.1) }
-            }
-        }
-        .accessibilityElement(children: .contain)
-    }
-
-    private func stat(_ title: String, _ value: Int) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("\(value)")
-                .font(.title2.weight(.bold).monospacedDigit())
-            Text(title)
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityElement(children: .combine)
+    /// Best streak and total days only show when they add something to the current streak.
+    private func extraStats(_ summary: LoggingStreakSummary) -> String? {
+        var parts: [String] = []
+        if summary.best > summary.current { parts.append("Best streak \(summary.best)") }
+        if summary.totalLoggedDays > max(summary.best, summary.current) { parts.append("\(summary.totalLoggedDays) days logged") }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 
     private func weekSection(summary: LoggingStreakSummary, palette: MacroRingPalette) -> some View {
@@ -71,16 +84,26 @@ struct StreakMilestonesCard: View {
         let markedDay = week.first { marks.contains($0.day) }?.day
 
         return VStack(alignment: .leading, spacing: 12) {
-            Text("This week")
-                .font(.subheadline.weight(.semibold))
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    Text("This week").font(.subheadline.weight(.semibold))
+                    Spacer()
+                    flexMenu(week: week.map(\.day), markedDay: markedDay)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("This week").font(.subheadline.weight(.semibold))
+                    flexMenu(week: week.map(\.day), markedDay: markedDay)
+                }
+            }
             HStack(spacing: 0) {
                 ForEach(week, id: \.day) { entry in
                     dayDot(entry, palette: palette)
                         .frame(maxWidth: .infinity)
                 }
             }
-            flexMenu(week: week.map(\.day), markedDay: markedDay)
-            Text("One flex day a week keeps your streak going. If you miss a day, the first one is used for you.")
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+            // Seven columns cannot fit larger sizes; the weekday labels stay readable at this cap.
+            Text("One flex day a week keeps your streak going.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -104,6 +127,11 @@ struct StreakMilestonesCard: View {
         switch state {
         case .logged:
             Circle().fill(palette.protein)
+                .overlay {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: dotSize * 0.42, weight: .bold))
+                        .foregroundStyle(.white)
+                }
         case .flex:
             ZStack {
                 Circle().stroke(palette.carbs, lineWidth: 2)
@@ -112,7 +140,7 @@ struct StreakMilestonesCard: View {
                     .foregroundStyle(palette.carbs)
             }
         case .missed:
-            Circle().stroke(.tertiary, lineWidth: 2)
+            Circle().stroke(.tertiary, lineWidth: 1.5)
         case .future:
             Circle().fill(Color.secondary.opacity(0.14))
         }
@@ -139,10 +167,10 @@ struct StreakMilestonesCard: View {
             }
         } label: {
             Label(markedDay.map { "Flex day: \($0.weekdayName)" } ?? "Plan a flex day", systemImage: "leaf")
-                .frame(minHeight: 32)
+                .font(.subheadline)
         }
-        .menuStyle(.button)
-        .buttonStyle(.bordered)
+        .buttonStyle(.glass)
+        .controlSize(.small)
         .accessibilityIdentifier("flex-day-menu")
         .accessibilityHint("Choose a day this week that will not break your streak")
     }

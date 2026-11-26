@@ -17,23 +17,23 @@ struct OnboardingStreaksScreen: View {
                         StreakPaletteReader { palette in
                             HStack(spacing: -8) {
                                 ForEach([StreakBadge.oneWeek, .oneMonth, .threeMonths]) { badge in
-                                    StreakMedallionView(badge: badge, palette: palette, diameter: 76)
+                                    StreakMedallionView(badge: badge, palette: palette, diameter: 64)
                                 }
                             }
                         }
                     }
                     VStack(spacing: OnboardingLayout.cardSpacing) {
                         row(
-                            "calendar", .blue, "Log to keep it going",
+                            "calendar", "Log to keep it going",
                             "A day counts when you log at least one food by the end of the next day.")
                         row(
-                            "rosette", .orange, "Earn badges",
+                            "rosette", "Earn badges",
                             "At 7, 30, 90, 180 and 365 days. Once you earn one, it is yours to keep.")
                         row(
-                            "leaf.fill", .green, "One flex day a week",
+                            "leaf", "One flex day a week",
                             "Plan a day off ahead of time, or your first missed day each week is covered for you.")
                         row(
-                            "person.2.fill", .pink, "Compare weeks",
+                            "person.2", "Compare weeks",
                             "If you use live sharing, you can compare your week with the people you share with.")
                     }
                 }
@@ -51,32 +51,26 @@ struct OnboardingStreaksScreen: View {
         .inlineNavigationTitle()
     }
 
-    @ViewBuilder
-    private func row(_ symbol: String, _ tint: Color, _ title: String, _ detail: String) -> some View {
-        let tile = Image(systemName: symbol)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(.white)
-            .frame(width: 30, height: 30)
-            .background(tint, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+    private func row(_ symbol: String, _ title: String, _ detail: String) -> some View {
+        let icon = Image(systemName: symbol)
+            .font(.title2)
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(.tint)
+            .frame(width: 30)
             .accessibilityHidden(true)
-        let texts = VStack(alignment: .leading, spacing: 2) {
+        let texts = VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.headline)
             Text(detail).font(.subheadline).foregroundStyle(.secondary)
         }
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: 16))
 
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: 8) {
-                    tile
-                    texts
-                }
-            } else {
-                HStack(alignment: .top, spacing: 12) {
-                    tile
-                    texts
-                    Spacer(minLength: 0)
-                }
-            }
+        return layout {
+            icon
+            texts
+            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)

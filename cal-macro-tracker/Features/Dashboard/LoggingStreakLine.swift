@@ -11,6 +11,7 @@ struct LoggingStreakLine: View {
                     HStack(spacing: 4) {
                         if !earnedBadges.isEmpty {
                             Image(systemName: "rosette")
+                                .symbolRenderingMode(.hierarchical)
                                 .accessibilityHidden(true)
                         }
                         Text("\(summary.current)-day logging streak")
@@ -21,8 +22,7 @@ struct LoggingStreakLine: View {
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .padding(.vertical, 4)
-                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)

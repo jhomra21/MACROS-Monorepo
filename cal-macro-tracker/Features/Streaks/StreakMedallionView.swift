@@ -9,7 +9,7 @@ struct StreakMedallionView: View {
     var progress: Double = 1
     var diameter: CGFloat = 72
 
-    private var lineWidth: CGFloat { max(3, diameter * 0.085) }
+    private var lineWidth: CGFloat { max(3, diameter * 0.08) }
     private var ringStep: CGFloat { lineWidth * 2 - max(0.3, diameter * 0.004) }
     private var innerDiameter: CGFloat { ringDiameter(at: badge.ringCount - 1) - lineWidth }
     private var fillsCenter: Bool { badge.days >= StreakBadge.sixMonths.days }
@@ -18,14 +18,12 @@ struct StreakMedallionView: View {
     var body: some View {
         HStack(spacing: 0) {
             if hasLaurels {
-                Image(systemName: "laurel.leading")
-                    .font(.system(size: diameter * 0.21, weight: .medium))
-                    .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+                laurel("laurel.leading")
             }
             ZStack {
-                if fillsCenter {
+                if fillsCenter && isEarned {
                     Circle()
-                        .fill(Color.primary.opacity(0.18))
+                        .fill(Color.primary.opacity(0.1))
                         .frame(width: innerDiameter, height: innerDiameter)
                 }
                 ForEach(0..<badge.ringCount, id: \.self) { index in
@@ -40,15 +38,19 @@ struct StreakMedallionView: View {
             }
             .frame(width: diameter, height: diameter)
             if hasLaurels {
-                Image(systemName: "laurel.trailing")
-                    .font(.system(size: diameter * 0.21, weight: .medium))
-                    .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+                laurel("laurel.trailing")
             }
         }
         .frame(width: diameter + (hasLaurels ? diameter * 0.24 : 0), height: diameter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(badge.title), \(badge.days) days")
         .accessibilityValue(isEarned ? "Earned" : "Locked")
+    }
+
+    private func laurel(_ name: String) -> some View {
+        Image(systemName: name)
+            .font(.system(size: diameter * 0.21, weight: .medium))
+            .foregroundStyle(isEarned ? AnyShapeStyle(.secondary) : AnyShapeStyle(.quaternary))
     }
 
     private func ringDiameter(at index: Int) -> CGFloat {
@@ -73,7 +75,7 @@ struct StreakMedallionView: View {
             .frame(width: size, height: size)
         } else {
             Circle()
-                .stroke(.tertiary, lineWidth: lineWidth)
+                .stroke(Color.primary.opacity(0.08), lineWidth: lineWidth)
                 .frame(width: size, height: size)
         }
     }
