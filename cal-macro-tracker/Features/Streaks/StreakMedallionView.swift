@@ -13,25 +13,39 @@ struct StreakMedallionView: View {
     private var ringStep: CGFloat { lineWidth * 2 - max(0.3, diameter * 0.004) }
     private var innerDiameter: CGFloat { ringDiameter(at: badge.ringCount - 1) - lineWidth }
     private var fillsCenter: Bool { badge.days >= StreakBadge.sixMonths.days }
+    private var hasLaurels: Bool { badge.days >= StreakBadge.oneYear.days }
 
     var body: some View {
-        ZStack {
-            if fillsCenter && isEarned {
-                Circle()
-                    .fill(Color.primary.opacity(0.07))
-                    .frame(width: innerDiameter, height: innerDiameter)
+        HStack(spacing: 0) {
+            if hasLaurels {
+                Image(systemName: "laurel.leading")
+                    .font(.system(size: diameter * 0.21, weight: .medium))
+                    .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
             }
-            ForEach(0..<badge.ringCount, id: \.self) { index in
-                ring(at: index)
+            ZStack {
+                if fillsCenter {
+                    Circle()
+                        .fill(Color.primary.opacity(0.18))
+                        .frame(width: innerDiameter, height: innerDiameter)
+                }
+                ForEach(0..<badge.ringCount, id: \.self) { index in
+                    ring(at: index)
+                }
+                Text("\(badge.days)")
+                    .font(.system(size: innerDiameter * 0.5, weight: .bold, design: .rounded))
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+                    .frame(width: innerDiameter)
             }
-            Text("\(badge.days)")
-                .font(.system(size: innerDiameter * 0.5, weight: .bold, design: .rounded))
-                .minimumScaleFactor(0.5)
-                .lineLimit(1)
-                .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
-                .frame(width: innerDiameter)
+            .frame(width: diameter, height: diameter)
+            if hasLaurels {
+                Image(systemName: "laurel.trailing")
+                    .font(.system(size: diameter * 0.21, weight: .medium))
+                    .foregroundStyle(isEarned ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+            }
         }
-        .frame(width: diameter, height: diameter)
+        .frame(width: diameter + (hasLaurels ? diameter * 0.24 : 0), height: diameter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(badge.title), \(badge.days) days")
         .accessibilityValue(isEarned ? "Earned" : "Locked")
