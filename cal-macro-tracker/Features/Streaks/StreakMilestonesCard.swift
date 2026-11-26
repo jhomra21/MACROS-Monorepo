@@ -66,27 +66,30 @@ struct StreakMilestonesCard: View {
         palette: MacroRingPalette
     ) -> some View {
         let next = StreakBadge.allCases.first { !earned.contains($0) }
+        let remaining = next.map { $0.days - summary.current }
+        let nextCaption = remaining.map { $0 == 1 ? "1 to go" : "\($0) to go" } ?? ""
         return HStack(spacing: 0) {
-            ForEach(StreakBadge.allCases) { badge in
+            ForEach(StreakBadge.allCases, id: \.self) { badge in
+                let isNextBadge = badge == next
+                let daysRemaining = isNextBadge ? badge.days - summary.current : nil
+                let accessibilityLabel = daysRemaining.map {
+                    "\(badge.title) badge, \($0) \($0 == 1 ? "day" : "days") to go"
+                }
                 VStack(spacing: 2) {
                     StreakMedallionView(
                         badge: badge,
                         palette: palette,
                         isEarned: earned.contains(badge),
-                        lockedProgress: badge == next ? Double(summary.current) / Double(badge.days) : 0,
-                        accessibilityLabel: badge == next
-                            ? "\(badge.title) badge, \(badge.days - summary.current) \(badge.days - summary.current == 1 ? "day" : "days") to go"
-                            : nil,
+                        lockedProgress: isNextBadge ? Double(summary.current) / Double(badge.days) : 0,
+                        accessibilityLabel: accessibilityLabel,
                         diameter: 52
                     )
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-                    if badge == next {
-                        let remaining = badge.days - summary.current
-                        Text(remaining == 1 ? "1 to go" : "\(remaining) to go")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .accessibilityHidden(true)
-                    }
+                    Text(nextCaption)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .opacity(isNextBadge ? 1 : 0)
+                        .accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity)
             }
