@@ -9,6 +9,8 @@ Branch: `feature/streak-milestones` (from `integration/onboarding-preview` 343aa
 - Flex marks, highest earned and celebrated badge are UserDefaults keys, included in backups (a restore never lowers badges).
 
 ## Validation
-- Build and swift-format pass.
-- 20 streak-rule checks (63 assertions) pass in a macOS harness compiling the same `LoggingStreakSummary.swift` and test source. The XCTest run and the E2E screenshots did **not** happen: iPhone Air ("Data Migration Failed") and iPhone 17e stayed on the Apple logo with SpringBoard frozen, and iPhone 17 was held by another task. Both devices I booted were shut down and their locks released.
-- The two images are SwiftUI `ImageRenderer` renders of `StreakMedallionView` on macOS (light and dark), **not** simulator screenshots.
+- `make quality-build` and `make quality-format-check` pass on `feature/streak-milestones`.
+- The current image is a SwiftUI `ImageRenderer` render on macOS showing all five earned tiers in light and dark appearance. It is **not** a simulator screenshot. The 180-day center disc and 365-day laurel branches make the upper tiers distinct.
+- The requested simulator XCTest and UI validation did **not** complete. The iPhone 17 remained locked by `feature/support-and-ratings UI validation`; the disposable iPhone Air was erased and repaired under its runbook allowance, but Xcode test attempts stopped at `BUILD INTERRUPTED` without executing tests. No simulator screenshots are available yet.
+
+![Streak medallions in earned and locked states, light and dark appearances](streaks/medallions-macos-render.png)
