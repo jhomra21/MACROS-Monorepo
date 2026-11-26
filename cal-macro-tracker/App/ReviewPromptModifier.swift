@@ -63,19 +63,18 @@ struct ReviewPromptModifier: ViewModifier {
     }
 
     private var isEligible: Bool {
-        guard !appVersion.isEmpty, promptedVersion != appVersion else { return false }
-        // Space requests across releases too, as Apple's HIG recommends.
-        // https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews
-        guard lastRequestedAt == 0 || Date.now.timeIntervalSince1970 - lastRequestedAt >= 14 * 24 * 60 * 60 else {
-            return false
-        }
-
         let calendar = dayContext.today.resolvedCalendar
         guard let start = calendar.date(byAdding: .day, value: -90, to: dayContext.today.startDate) else { return false }
         let descriptor = LogEntryQuery.descriptor(start: start, end: dayContext.today.dayInterval.end)
         guard let entries = try? modelContext.fetch(descriptor) else { return false }
 
-        let distinctDays = Set(entries.map { CalendarDay(date: $0.dateLogged, calendar: calendar) })
-        return entries.count >= 5 && distinctDays.count >= 3
+        return ReviewPromptEligibility.isEligible(
+            entryDays: entries.map { CalendarDay(date: $0.dateLogged, calendar: calendar) },
+            today: dayContext.today,
+            promptedVersion: promptedVersion,
+            lastRequestedAt: lastRequestedAt == 0 ? nil : Date(timeIntervalSince1970: lastRequestedAt),
+            appVersion: appVersion,
+            now: .now
+        )
     }
 }
