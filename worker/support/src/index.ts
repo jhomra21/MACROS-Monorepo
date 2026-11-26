@@ -11,6 +11,7 @@ interface SupportRequest {
 }
 
 export interface SupportWorkerEnv {
+  SUPPORT_DESTINATION: string;
   EMAIL: {
     send(message: SupportEmail): Promise<SupportEmailSendResult>;
   };
@@ -100,7 +101,7 @@ export default {
       const subjectSnippet = supportRequest.message.slice(0, 60).replace(/[\r\n\p{Cc}]/gu, " ");
 
       const email: SupportEmail = {
-        to: "support@macrosios.com",
+        to: env.SUPPORT_DESTINATION,
         from: "no-reply@macrosios.com",
         subject: `[MACROS ${supportRequest.category}] ${subjectSnippet}`,
         text: formatEmail(supportRequest),
