@@ -124,6 +124,12 @@ struct SupportRequestScreen: View {
     }
 
     private static var deviceModel: String {
+        #if targetEnvironment(simulator)
+        if let model = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] {
+            return model
+        }
+        #endif
+
         var systemInfo = utsname()
         uname(&systemInfo)
         return withUnsafeBytes(of: systemInfo.machine) { bytes in
