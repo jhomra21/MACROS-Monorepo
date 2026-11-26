@@ -1,16 +1,25 @@
-# Streak milestones, phase 1 (2026-11-25)
+# Streak milestones QA (2026-11-26)
 
-Branch: `feature/streak-milestones` (from `integration/onboarding-preview` 343aaf16). Not merged.
+Source: `feature/streak-milestones` at `7e5e75a3` (commit under validation). Xcode 27.0, iOS 27.0, iPhone 17 simulator. QA used isolated fixtures; no production data or service was used.
 
-## Choices
-- **Flex day:** bridges the streak without adding to it. If the user logged on the flex day anyway, that day counts like any logged day (+1). One per Monday-Sunday week (fixed Monday, local zone). A marked day wins; otherwise the first settled miss is used. Yesterday and today are never missed (48 hours).
-- **Old `createdAt`:** `LogEntry.createdAt` is non-optional, set at creation and preserved by backup export/import, so restored history keeps its real timing and nothing is guessed. Entries edited to an earlier date keep their old `createdAt`, so they do not count (no backfill by editing).
-- **Existing long streaks:** the first log after update shows one celebration for the highest badge already earned.
-- Flex marks, highest earned and celebrated badge are UserDefaults keys, included in backups (a restore never lowers badges).
+## Reproduction
 
-## Validation
-- `make quality-build` and `make quality-format-check` pass on `feature/streak-milestones`.
-- The current image is a SwiftUI `ImageRenderer` render on macOS showing all five earned tiers in light and dark appearance. It is **not** a simulator screenshot. The 180-day center disc and 365-day laurel branches make the upper tiers distinct.
-- The requested simulator XCTest and UI validation did **not** complete. The iPhone 17 remained locked by `feature/support-and-ratings UI validation`; the disposable iPhone Air was erased and repaired under its runbook allowance, but Xcode test attempts stopped at `BUILD INTERRUPTED` without executing tests. No simulator screenshots are available yet.
+From the streak feature worktree, run `xcodebuild -project cal-macro-tracker.xcodeproj -scheme cal-macro-tracker -destination 'platform=iOS Simulator,id=918D29B9-97D3-42C0-9C47-00605E01E8DB' -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 30 -maximum-test-execution-time-allowance 45 -only-testing:cal-macro-trackerTests/LoggingStreakSummaryTests -only-testing:cal-macro-trackerTests/BackupRoundTripTests test`. The UI scenarios used temporary fixture-backed tests and the same simulator; the test harness was removed after capture. Expected: the scenarios below pass and the listed screens render in light/dark and Accessibility 3.
 
-![Streak medallions in earned and locked states, light and dark appearances](streaks/medallions-macos-render.png)
+## Results
+
+- `LoggingStreakSummaryTests`: 22/22 passed.
+- `BackupRoundTripTests`: 17/17 passed.
+- Three UI scenarios passed: 32-day Today streak badge, Insights milestone/flex-day state, and seven-day celebration after saving a log.
+- Onboarding rendered at Accessibility 3 text size. Five captures were visually inspected.
+- No blocking cases remained in this validation.
+
+## Captures
+
+- Today streak, light: ![Today streak, light](streaks/today-streak-light.png)
+- Today streak, dark: ![Today streak, dark](streaks/today-streak-dark.png)
+- Insights flex day, dark: ![Insights flex day, dark](streaks/insights-flex-day-dark.png)
+- Insights milestones, dark: ![Insights milestones, dark](streaks/insights-milestones-dark.png)
+- Onboarding at Accessibility 3: ![Onboarding at Accessibility 3](streaks/onboarding-accessibility3.png)
+
+All five selected images are simulator captures and total less than 2 MiB. Raw test results and attachments remain in ignored `build/evidence/2026-11-26-streaks/` in the validation worktree.
