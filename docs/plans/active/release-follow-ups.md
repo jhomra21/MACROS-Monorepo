@@ -19,4 +19,6 @@ Owner: release owner unless a row names the native/service maintainer. Status: o
 | State machines | F1/F4 widget dependency and 11 live suspects are separate work; F2/F3 evidence review/push wording is historical | Maintainer reconciles current widget fixes and live suspects against evidence before closing |
 | Tooling | Historical unconfigured Convex codegen and beta Miniflare/cf migration caveats are not authority to deploy | Local/offline codegen where applicable; explicit approval for live checks, no cleanup-driven upgrade/deploy |
 
+Large-text comparison (2026-11-26, iPhone 17e, AX5): Today’s lower macro labels/values run into the fixed bottom controls in both 1.1 and 1.2; this is pre-existing, not a 1.2 regression. Onboarding, tutorial finish, and Contact Support content scroll to the obscured lower rows. Keep the Today overlap in the existing accessibility/layout follow-up; no 1.2 layout change made.
+
 The original widget acceptance plan/review also requires authorization, revocation, midnight/DST, selection/default, cold/warm navigation and all five families. Existing passing rows stay dated. Read the reports for partial coverage; preview/mock/build passes never replace blocked live rows. The evidence README remains even when old media is removed.
