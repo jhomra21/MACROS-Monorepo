@@ -11,7 +11,7 @@ struct ShareScreen: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// Height of everything in the sheet except the preview (pickers, caption, Share button), so the preview takes the rest.
-    @ScaledMetric(relativeTo: .body) private var heightBesidePreview: CGFloat = 308
+    @ScaledMetric(relativeTo: .body) private var heightBesidePreview: CGFloat = 310
 
     let day: CalendarDay
     let snapshot: LogEntryDaySnapshot
