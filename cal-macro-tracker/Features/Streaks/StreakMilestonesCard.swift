@@ -5,7 +5,12 @@ struct StreakMilestonesCard: View {
     let today: CalendarDay
 
     @AppStorage(AppStorageKeys.streakFlexDays) private var flexDays = ""
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @ScaledMetric(relativeTo: .body) private var dotSize: CGFloat = 26
+
+    private var fittingDotSize: CGFloat {
+        dynamicTypeSize.isAccessibilitySize ? min(dotSize, 26) : dotSize
+    }
 
     var body: some View {
         LoggingStreakReader(today: today) { summary, earnedBadges in
@@ -34,12 +39,14 @@ struct StreakMilestonesCard: View {
                 HStack(alignment: .firstTextBaseline) {
                     Text("Logging streak")
                         .font(.headline)
+                        .fixedSize(horizontal: false, vertical: true)
                     Spacer()
                     currentStreak(summary.current)
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Logging streak")
                         .font(.headline)
+                        .fixedSize(horizontal: false, vertical: true)
                     currentStreak(summary.current)
                 }
             }
@@ -72,6 +79,7 @@ struct StreakMilestonesCard: View {
                             : nil,
                         diameter: 52
                     )
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     if badge == next {
                         let remaining = badge.days - summary.current
                         Text(remaining == 1 ? "1 to go" : "\(remaining) to go")
@@ -116,8 +124,6 @@ struct StreakMilestonesCard: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
-            // Seven columns cannot fit larger sizes; the weekday labels stay readable at this cap.
             Text("One flex day a week keeps your streak going.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
@@ -127,10 +133,11 @@ struct StreakMilestonesCard: View {
     private func dayDot(_ entry: LoggingStreakSummary.Day, palette: MacroRingPalette) -> some View {
         VStack(spacing: 6) {
             dot(for: entry.state, palette: palette)
-                .frame(width: dotSize, height: dotSize)
+                .frame(width: fittingDotSize, height: fittingDotSize)
             Text(entry.day.weekdayNarrowTitle)
                 .font(.caption2)
                 .foregroundStyle(entry.day == today ? .primary : .secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(entry.day.weekdayAccessibilityTitle)
@@ -144,14 +151,16 @@ struct StreakMilestonesCard: View {
             Circle().fill(palette.protein)
                 .overlay {
                     Image(systemName: "checkmark")
-                        .font(.system(size: dotSize * 0.42, weight: .bold))
+                        .font(.system(size: fittingDotSize * 0.42, weight: .bold))
+                        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                         .foregroundStyle(.white)
                 }
         case .flex:
             ZStack {
                 Circle().stroke(palette.carbs, lineWidth: 2)
                 Image(systemName: "leaf.fill")
-                    .font(.system(size: dotSize * 0.45))
+                    .font(.system(size: fittingDotSize * 0.45))
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                     .foregroundStyle(palette.carbs)
             }
         case .missed:

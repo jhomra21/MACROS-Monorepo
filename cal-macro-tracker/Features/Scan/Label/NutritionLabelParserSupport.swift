@@ -214,7 +214,8 @@ extension NutritionLabelParser {
     }
 
     static func parsedNumber(from text: String) -> Double? {
-        Double(text.replacingOccurrences(of: ",", with: ""))
+        guard let value = Double(text.replacingOccurrences(of: ",", with: "")), value.isFinite else { return nil }
+        return value
     }
 
     static func amountPattern(labelPattern: String, unit: NutrientAmountUnit) -> String {
