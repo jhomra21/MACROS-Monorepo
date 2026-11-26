@@ -63,7 +63,9 @@ extension Double {
     }
 
     var roundedForDisplay: String {
-        if abs(self.rounded() - self) < 0.01 {
+        guard isFinite else { return "N/A" }
+
+        if abs(self.rounded() - self) < 0.01, abs(self) < Double(Int.max) {
             return String(Int(self.rounded()))
         }
 
