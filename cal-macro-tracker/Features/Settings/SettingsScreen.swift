@@ -88,7 +88,11 @@ struct SettingsScreen: View {
                 }
                 Link("Privacy Policy", destination: ProLegalLinks.privacy)
                 Link("Terms of Use", destination: ProLegalLinks.terms)
-                Link("Support", destination: ProLegalLinks.support)
+                NavigationLink {
+                    SupportRequestScreen()
+                } label: {
+                    Text("Contact Support")
+                }
                 Link(
                     "Rate MACROS on the App Store",
                     destination: URL(string: "https://apps.apple.com/app/id6767565938?action=write-review")!
