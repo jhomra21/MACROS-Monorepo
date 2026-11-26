@@ -22,16 +22,40 @@ struct SupportRequestScreen: View {
         )
     }
 
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var isMessageFocused: Bool
+
+    private var messageLength: Int { message.trimmingCharacters(in: .whitespacesAndNewlines).count }
+
     var body: some View {
         Group {
             if didSend {
-                ContentUnavailableView("Thanks — we got it", systemImage: "checkmark.circle")
+                sentConfirmation
             } else {
                 form
             }
         }
         .navigationTitle("Contact Support")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var sentConfirmation: some View {
+        ContentUnavailableView {
+            Label {
+                Text("Message Sent")
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .green)
+            }
+        } description: {
+            Text(request.email == nil ? "Thanks for writing. We read every message." : "Thanks for writing. We’ll reply by email.")
+        } actions: {
+            Button("Done") { dismiss() }
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
+        }
+        .sensoryFeedback(.success, trigger: didSend)
     }
 
     private var form: some View {
@@ -43,20 +67,32 @@ struct SupportRequestScreen: View {
                     }
                 }
                 TextEditor(text: $message)
+                    .focused($isMessageFocused)
                     .frame(minHeight: 150)
+                    .overlay(alignment: .topLeading) {
+                        if message.isEmpty {
+                            Text("How can we help?")
+                                .foregroundStyle(.tertiary)
+                                .padding(.top, 8)
+                                .padding(.leading, 5)
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
+                        }
+                    }
                     .accessibilityLabel("Message")
-                HStack {
-                    Spacer()
-                    Text("\(message.count) / 4000")
-                        .foregroundStyle(message.count < 10 || message.count > 4_000 ? .secondary : .primary)
-                }
-                TextField("Email (optional, so we can reply)", text: $email)
+            } footer: {
+                messageFooter
+            }
+
+            Section {
+                TextField("Email (optional)", text: $email)
                     .keyboardType(.emailAddress)
                     .textContentType(.emailAddress)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
             } footer: {
-                Text("Please include at least 10 characters.")
+                Text(emailIsInvalid ? "That email address doesn’t look right." : "Add your email if you’d like a reply.")
+                    .foregroundStyle(emailIsInvalid ? Color.red : Color.secondary)
             }
 
             Section("Included with your message") {
@@ -68,39 +104,45 @@ struct SupportRequestScreen: View {
             Section {
                 Link("Help on the web", destination: ProLegalLinks.support)
             }
-
-            if let errorMessage {
-                Section {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                if isSending {
+                    ProgressView()
+                } else {
+                    Button("Send") { Task { await send() } }
+                        .disabled(!request.isValid)
                 }
             }
-
-            Section {
-                Button {
-                    Task { await send() }
-                } label: {
-                    if isSending {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text(errorMessage == nil ? "Send" : "Retry")
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                .disabled(!request.isValid || isSending)
-            }
+        }
+        .errorBanner(message: $errorMessage, title: "Couldn’t Send", retryTitle: "Retry") {
+            Task { await send() }
         }
         .onChange(of: message) { _, newValue in
             if newValue.count > 4_000 { message = String(newValue.prefix(4_000)) }
         }
         .onChange(of: email) { _, newValue in
-            errorMessage = nil
             if newValue.count > 254 { email = String(newValue.prefix(254)) }
         }
     }
 
+    @ViewBuilder
+    private var messageFooter: some View {
+        if messageLength > 0 && messageLength < 10 {
+            Text("Add a little more detail. Messages need at least 10 characters.")
+        } else if message.count >= 3_500 {
+            Text("\(message.count) / 4000")
+                .monospacedDigit()
+        }
+    }
+
+    private var emailIsInvalid: Bool {
+        !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && messageLength >= 10 && !request.isValid
+    }
+
     private func send() async {
+        guard request.isValid, !isSending else { return }
         isSending = true
         errorMessage = nil
         defer { isSending = false }
@@ -108,7 +150,7 @@ struct SupportRequestScreen: View {
             try await SupportRequestClient.send(request, endpoint: Self.endpoint)
             didSend = true
         } catch {
-            errorMessage = "Couldn’t send your request. Check your connection and try again."
+            errorMessage = "Your message wasn’t sent. Check your connection and try again. Nothing was lost."
         }
     }
 
