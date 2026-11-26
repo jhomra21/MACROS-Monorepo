@@ -43,6 +43,10 @@ bun install
 
 The report is written to `results/report.md`. Inspect raw model responses and verify all ground-truth weights before drawing conclusions. Each photo is an independent scan, and paired angles should be evaluated as separate examples.
 
+## Public-dataset run (Nutrition5k)
+
+[`dataset/nutrition5k.ts`](dataset/nutrition5k.ts) builds a deterministic 60-dish subset of Google's Nutrition5k (CC BY 4.0) with per-ingredient kcal/g, so calories are grams times reference kcal/g. `score.ts` switches to a dedicated scorer ([`nutrition5k-score.ts`](nutrition5k-score.ts)) when truth files carry `source.dataset: "Nutrition5k"`. The Apple runner's `--known-identity` flag gives the model the true ingredient names to isolate portion error. The first run is in [`reports/2026-11-26-nutrition5k-apple.md`](reports/2026-11-26-nutrition5k-apple.md).
+
 ## Model arms
 
 The cloud runner pins Gemini 3.5 Flash-Lite and Gemini 3.8 Flash, OpenAI GPT-5.4 mini, and an optional Cloudflare Workers AI Clairic pilot. Model identifiers are at the top of `cloud/run.ts`; prices and their sources are in `pricing.json`. Update those when the vendors change their catalogs or rates. Clairic does not expose the same strict JSON Schema response mode, so it uses typed fields to request JSON food entries and the result is checked against the shared output schema after the call.

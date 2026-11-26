@@ -7,6 +7,28 @@
   "properties": {
     "photoId": { "type": "string" },
     "portionSize": { "type": "string", "enum": ["small", "medium", "large", "not_applicable"] },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataset", "license", "stratum", "dishTotals"],
+      "properties": {
+        "dataset": { "type": "string" },
+        "license": { "type": "string" },
+        "stratum": { "type": "string" },
+        "dishTotals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["calories", "massGrams", "fatGrams", "carbGrams", "proteinGrams"],
+          "properties": {
+            "calories": { "type": "number" },
+            "massGrams": { "type": "number" },
+            "fatGrams": { "type": "number" },
+            "carbGrams": { "type": "number" },
+            "proteinGrams": { "type": "number" }
+          }
+        }
+      }
+    },
     "items": {
       "type": "array",
       "items": {
@@ -19,7 +41,8 @@
           "volumeMl": { "type": ["number", "null"], "exclusiveMinimum": 0 },
           "preparation": { "type": "string" },
           "notes": { "type": "string" },
-          "foodKey": { "type": ["string", "null"] }
+          "foodKey": { "type": ["string", "null"] },
+          "kcalPerGram": { "type": "number", "minimum": 0, "description": "Optional reference energy density; the scorer prices the item as grams x kcalPerGram instead of looking up CommonFoods." }
         },
         "oneOf": [
           { "properties": { "grams": { "type": "number" }, "volumeMl": { "type": "null" } } },

@@ -1,5 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
+import { renderReport, scoreDish, summarizeArm, type N5kResult, type N5kTruth, type ReferenceIngredient } from "./nutrition5k-score";
 
 type TruthItem = { name: string; grams: number | null; volumeMl: number | null; foodKey: string | null };
 type Truth = { photoId: string; portionSize: string; items: TruthItem[] };
@@ -97,6 +98,22 @@ for (const entry of await readdir(resultsRoot, { withFileTypes: true }).catch(()
     armResults.push(result);
     arms.set(result.arm, armResults);
   }
+}
+
+if ([...truths.values()].some((truth) => (truth as N5kTruth).source?.dataset === "Nutrition5k")) {
+  // Nutrition5k truth carries per-ingredient kcal/g, so it uses its own deterministic scorer and report.
+  const reference = JSON.parse(await readFile(join(dataset, "ingredients.json"), "utf8")) as ReferenceIngredient[];
+  const n5kTruths = [...truths.values()] as unknown as N5kTruth[];
+  const summaries = [...arms].sort(([left], [right]) => left.localeCompare(right)).map(([arm, records]) => {
+    const byPhoto = new Map((records as unknown as N5kResult[]).map((record) => [record.photoId, record]));
+    const dishes = n5kTruths.map((truth) => scoreDish(truth, byPhoto.get(truth.photoId), reference));
+    return { summary: summarizeArm(arm, dishes), dishes };
+  });
+  await mkdir(resultsRoot, { recursive: true });
+  await writeFile(join(resultsRoot, "report.md"), renderReport(summaries.map((entry) => entry.summary)));
+  await writeFile(join(resultsRoot, "scores.json"), JSON.stringify(summaries.map(({ summary, dishes }) => ({ ...summary, perDish: dishes })), null, 1));
+  console.log(await readFile(join(resultsRoot, "report.md"), "utf8"));
+  process.exit(0);
 }
 
 const rows = [...arms].sort(([left], [right]) => left.localeCompare(right)).map(([arm, records]) => {

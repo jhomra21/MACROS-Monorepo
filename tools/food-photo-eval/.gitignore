@@ -3,3 +3,4 @@ dataset/truth/
 results/
 !fixtures/results/
 !fixtures/results/**
+dataset/nutrition5k/

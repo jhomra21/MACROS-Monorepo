@@ -55,6 +55,9 @@ func run() async throws {
     let dataset = datasetIndex.flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil } ?? "../dataset"
     let resultsIndex = arguments.firstIndex(of: "--results")
     let resultsPath = resultsIndex.flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil } ?? "../results"
+    let knownIdentity = arguments.contains("--known-identity")
+    let armFilter = arguments.firstIndex(of: "--arms").flatMap { arguments.indices.contains($0 + 1) ? arguments[$0 + 1] : nil }
+        .map { Set($0.split(separator: ",").map(String.init)) }
     let photoDirectory = URL(fileURLWithPath: dataset).appending(path: "photos")
     let outputDirectory = URL(fileURLWithPath: resultsPath)
     let promptURL = URL(fileURLWithPath: #filePath)
@@ -72,10 +75,12 @@ func run() async throws {
 
     let localModel = SystemLanguageModel.default
     let privateModel = PrivateCloudComputeLanguageModel()
+    // Known-identity arms tell the model the true ingredient names so only portion estimation is measured.
+    let suffix = knownIdentity ? "-known" : ""
     let arms: [(String, any LanguageModel, Bool)] = [
-        ("apple-on-device", localModel, localModel.availability == .available),
-        ("apple-private-cloud", privateModel, privateModel.availability == .available)
-    ]
+        ("apple-on-device\(suffix)", localModel, localModel.availability == .available),
+        ("apple-private-cloud\(suffix)", privateModel, privateModel.availability == .available)
+    ].filter { arm in armFilter.map { $0.contains(arm.0.replacingOccurrences(of: "apple-", with: "").replacingOccurrences(of: suffix, with: "")) } ?? true }
 
     for (arm, model, available) in arms {
         for photo in photos {
@@ -94,10 +99,17 @@ func run() async throws {
                       let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
                     throw CocoaError(.fileReadCorruptFile)
                 }
+                var photoPrompt = prompt
+                if knownIdentity {
+                    let truthURL = URL(fileURLWithPath: dataset).appending(path: "truth/\(photoId).json")
+                    let truth = try JSONSerialization.jsonObject(with: Data(contentsOf: truthURL)) as? [String: Any]
+                    let names = (truth?["items"] as? [[String: Any]] ?? []).compactMap { $0["name"] as? String }
+                    photoPrompt += "\n\nThe meal contains exactly these foods: \(names.joined(separator: ", ")). Return one entry per listed food, using exactly these names, and estimate the grams of each. Do not add or omit foods."
+                }
                 let session = LanguageModelSession(model: model)
                 let started = ContinuousClock.now
                 let response = try await session.respond(generating: MealEstimate.self) {
-                    prompt
+                    photoPrompt
                     Attachment(image)
                 }
                 let elapsed = started.duration(to: .now)

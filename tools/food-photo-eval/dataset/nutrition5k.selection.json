@@ -1,0 +1,374 @@
+{
+  "dataset": "Nutrition5k",
+  "license": "CC BY 4.0",
+  "source": "https://github.com/google-research-datasets/Nutrition5k",
+  "seed": 5002026,
+  "perStratum": 20,
+  "massRangeGrams": [
+    100,
+    800
+  ],
+  "eligibleDishes": 2315,
+  "dishes": [
+    {
+      "dishId": "dish_1559845745",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 322
+    },
+    {
+      "dishId": "dish_1562168365",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 140
+    },
+    {
+      "dishId": "dish_1558724853",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 118
+    },
+    {
+      "dishId": "dish_1558545738",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 142
+    },
+    {
+      "dishId": "dish_1565721800",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 171
+    },
+    {
+      "dishId": "dish_1558638844",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 154
+    },
+    {
+      "dishId": "dish_1563475826",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 176
+    },
+    {
+      "dishId": "dish_1558377105",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 113
+    },
+    {
+      "dishId": "dish_1559850314",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 100
+    },
+    {
+      "dishId": "dish_1560976044",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 137
+    },
+    {
+      "dishId": "dish_1559932674",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 124
+    },
+    {
+      "dishId": "dish_1560442450",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 149
+    },
+    {
+      "dishId": "dish_1565641885",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 139
+    },
+    {
+      "dishId": "dish_1565972591",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 122
+    },
+    {
+      "dishId": "dish_1558637896",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 123
+    },
+    {
+      "dishId": "dish_1562602627",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 171
+    },
+    {
+      "dishId": "dish_1559233715",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 110
+    },
+    {
+      "dishId": "dish_1566415520",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 143
+    },
+    {
+      "dishId": "dish_1563294441",
+      "stratum": "1-2",
+      "ingredients": 2,
+      "massGrams": 162
+    },
+    {
+      "dishId": "dish_1562950018",
+      "stratum": "1-2",
+      "ingredients": 1,
+      "massGrams": 142
+    },
+    {
+      "dishId": "dish_1562947503",
+      "stratum": "3-5",
+      "ingredients": 5,
+      "massGrams": 408
+    },
+    {
+      "dishId": "dish_1563207301",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 173
+    },
+    {
+      "dishId": "dish_1568401064",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 572
+    },
+    {
+      "dishId": "dish_1563984242",
+      "stratum": "3-5",
+      "ingredients": 5,
+      "massGrams": 753
+    },
+    {
+      "dishId": "dish_1563393341",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 119
+    },
+    {
+      "dishId": "dish_1565021104",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 197
+    },
+    {
+      "dishId": "dish_1558638292",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 356
+    },
+    {
+      "dishId": "dish_1558724658",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 364
+    },
+    {
+      "dishId": "dish_1562613045",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 207
+    },
+    {
+      "dishId": "dish_1568313640",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 145
+    },
+    {
+      "dishId": "dish_1560367085",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 183
+    },
+    {
+      "dishId": "dish_1560444815",
+      "stratum": "3-5",
+      "ingredients": 5,
+      "massGrams": 571
+    },
+    {
+      "dishId": "dish_1559844506",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 180
+    },
+    {
+      "dishId": "dish_1568060697",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 161
+    },
+    {
+      "dishId": "dish_1558637932",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 393
+    },
+    {
+      "dishId": "dish_1562617446",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 232
+    },
+    {
+      "dishId": "dish_1564086658",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 230
+    },
+    {
+      "dishId": "dish_1559843222",
+      "stratum": "3-5",
+      "ingredients": 4,
+      "massGrams": 229
+    },
+    {
+      "dishId": "dish_1565035774",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 185
+    },
+    {
+      "dishId": "dish_1560360112",
+      "stratum": "3-5",
+      "ingredients": 3,
+      "massGrams": 248
+    },
+    {
+      "dishId": "dish_1563820806",
+      "stratum": "6+",
+      "ingredients": 14,
+      "massGrams": 273
+    },
+    {
+      "dishId": "dish_1562789328",
+      "stratum": "6+",
+      "ingredients": 18,
+      "massGrams": 503
+    },
+    {
+      "dishId": "dish_1563304925",
+      "stratum": "6+",
+      "ingredients": 20,
+      "massGrams": 508
+    },
+    {
+      "dishId": "dish_1563909951",
+      "stratum": "6+",
+      "ingredients": 9,
+      "massGrams": 188
+    },
+    {
+      "dishId": "dish_1561747075",
+      "stratum": "6+",
+      "ingredients": 10,
+      "massGrams": 301
+    },
+    {
+      "dishId": "dish_1563207389",
+      "stratum": "6+",
+      "ingredients": 7,
+      "massGrams": 327
+    },
+    {
+      "dishId": "dish_1560453356",
+      "stratum": "6+",
+      "ingredients": 19,
+      "massGrams": 408
+    },
+    {
+      "dishId": "dish_1563824155",
+      "stratum": "6+",
+      "ingredients": 13,
+      "massGrams": 361
+    },
+    {
+      "dishId": "dish_1565382833",
+      "stratum": "6+",
+      "ingredients": 7,
+      "massGrams": 228
+    },
+    {
+      "dishId": "dish_1567801520",
+      "stratum": "6+",
+      "ingredients": 9,
+      "massGrams": 600
+    },
+    {
+      "dishId": "dish_1562875870",
+      "stratum": "6+",
+      "ingredients": 15,
+      "massGrams": 233
+    },
+    {
+      "dishId": "dish_1563813436",
+      "stratum": "6+",
+      "ingredients": 8,
+      "massGrams": 242
+    },
+    {
+      "dishId": "dish_1561662926",
+      "stratum": "6+",
+      "ingredients": 18,
+      "massGrams": 213
+    },
+    {
+      "dishId": "dish_1561575506",
+      "stratum": "6+",
+      "ingredients": 12,
+      "massGrams": 393
+    },
+    {
+      "dishId": "dish_1561577219",
+      "stratum": "6+",
+      "ingredients": 26,
+      "massGrams": 216
+    },
+    {
+      "dishId": "dish_1560975601",
+      "stratum": "6+",
+      "ingredients": 16,
+      "massGrams": 253
+    },
+    {
+      "dishId": "dish_1565638365",
+      "stratum": "6+",
+      "ingredients": 17,
+      "massGrams": 389
+    },
+    {
+      "dishId": "dish_1562774180",
+      "stratum": "6+",
+      "ingredients": 8,
+      "massGrams": 181
+    },
+    {
+      "dishId": "dish_1561751958",
+      "stratum": "6+",
+      "ingredients": 8,
+      "massGrams": 293
+    },
+    {
+      "dishId": "dish_1565036821",
+      "stratum": "6+",
+      "ingredients": 14,
+      "massGrams": 134
+    }
+  ]
+}
