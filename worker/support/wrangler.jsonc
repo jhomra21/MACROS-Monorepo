@@ -10,15 +10,17 @@
     { "name": "BURST_LIMITER", "namespace_id": "1202", "simple": { "limit": 5, "period": 60 } }
   ],
   "kv_namespaces": [
-    { "binding": "REQUEST_LIMITS", "id": "00000000000000000000000000000000" }
+    { "binding": "REQUEST_LIMITS", "id": "d2cb5774946f4f088637094590cc27a6" }
   ],
   "send_email": [
     {
       "name": "EMAIL",
-      "destination_address": "support@macrosios.com",
       "allowed_sender_addresses": ["no-reply@macrosios.com"]
     }
   ],
+  "secrets": {
+    "required": ["SUPPORT_DESTINATION"]
+  },
   "observability": {
     "enabled": true,
     "logs": { "enabled": true, "head_sampling_rate": 0.1 }

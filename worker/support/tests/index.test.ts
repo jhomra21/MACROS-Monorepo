@@ -1,11 +1,12 @@
 import { describe, expect, it } from "bun:test";
 import worker, { type SupportEmail, type SupportWorkerEnv } from "../src/index";
 
-function harness(limit = true) {
+function harness(limit = true, supportDestination = "verified-destination@example.test") {
   const sent: SupportEmail[] = [];
   const counts = new Map<string, { timestamps: number[] }>();
 
   const env: SupportWorkerEnv = {
+    SUPPORT_DESTINATION: supportDestination,
     BURST_LIMITER: { limit: async () => ({ success: limit }) },
     REQUEST_LIMITS: {
       get: async (key: string) => counts.get(key) ?? null,
@@ -45,7 +46,7 @@ describe("support request endpoint", () => {
 
     expect(response.status).toBe(200);
     expect(sent[0]).toMatchObject({
-      to: "support@macrosios.com",
+      to: "verified-destination@example.test",
       from: "no-reply@macrosios.com",
       subject: "[MACROS Bug] The saved item does not appear.",
       replyTo: "person@example.com",
