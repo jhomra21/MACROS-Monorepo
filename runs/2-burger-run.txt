@@ -1,0 +1,5 @@
+image=/tmp/meal-photo-live/2-burger.jpg
+scan_tap_to_review_s=2.74
+review_to_log_enabled_s=1.11
+review_shown=true log_enabled=true
+grams_fields=Cheeseburger with bacon grams=320 | French fries grams=150 | Ketchup grams=30

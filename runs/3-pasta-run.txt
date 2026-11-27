@@ -1,0 +1,5 @@
+image=/tmp/meal-photo-live/3-pasta.jpg
+scan_tap_to_review_s=2.69
+review_to_log_enabled_s=1.06
+review_shown=true log_enabled=true
+grams_fields=Spaghetti with meat sauce and mixed vegetables grams=350
