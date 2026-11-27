@@ -63,12 +63,17 @@ describe('service hardening failure cases', () => {
       PACKAGED_SEARCH_LIMITER: { limit: async () => ({ success: true }) },
       BARCODE_LIMITER: { limit: async () => ({ success: true }) },
       USDA_SEARCH_LIMITER: { limit: async () => ({ success: true }) },
+      MEAL_PHOTO_LIMITER: { limit: async () => ({ success: true }) },
+      MEAL_PHOTO_FEEDBACK: { writeDataPoint: () => undefined },
       USDA_BUDGET_PER_MINUTE: '14',
       USDA_BUDGET_TIMEOUT_MS: '500',
       REQUEST_DEADLINE_MS: '8000',
       USDA_API_KEY: 'test',
       OPEN_FOOD_FACTS_USER_AGENT: 'test',
+      GEMINI_API_KEY: 'test',
+      GEMINI_BASE_URL: 'https://generativelanguage.googleapis.com',
       USDA_BUDGET: budgetBinding,
+      MEAL_PHOTO_DAILY: {} as never,
     }
 
     // SAFETY: Exercise the runtime-configurable deadline despite Wrangler's generated literal type.

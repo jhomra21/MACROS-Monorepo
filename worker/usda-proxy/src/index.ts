@@ -24,6 +24,7 @@ import { withTimeout } from './http'
 import { clientKey, enforceRateLimit } from './rateLimit'
 import { createFoodSearchApp } from './foodSearchRoute'
 import { foodSearchDependencies } from './foodSourceRegistry'
+import { registerMealPhotoRoutes } from './mealPhoto'
 
 import {
   packagedFoodSearchLogContext,
@@ -32,6 +33,7 @@ import {
 import type { PackagedFoodSearchLogContext, PackagedFoodSearchLogMetadata } from './packagedFoodSearchLogging'
 
 export { UsdaBudget } from './usdaBudget'
+export { MealPhotoDaily } from './mealPhoto/dailyCounter'
 
 const app = new Hono<{ Bindings: Env }>()
 
@@ -39,6 +41,8 @@ app.route('/v2/foods', createFoodSearchApp(
   foodSearchDependencies,
   (c) => enforceRateLimit(c.env.PACKAGED_SEARCH_LIMITER, clientKey(c.req.raw)),
 ))
+
+registerMealPhotoRoutes(app)
 
 const CACHE_TTL_SECONDS = 86_400
 
