@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559844506",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 25021.34519999998,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 270
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"mandarin orange\",\n      \"grams\": 75,\n      \"lowGrams\": 60,\n      \"highGrams\": 95,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"tangerine\"\n    },\n    {\n      \"name\": \"red grapes\",\n      \"grams\": 85,\n      \"lowGrams\": 70,\n      \"highGrams\": 110,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"grapes\"\n    },\n    {\n      \"name\": \"strawberries\",\n      \"grams\": 60,\n      \"lowGrams\": 45,\n      \"highGrams\": 80,\n      \"preparation\": \"raw, sliced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"strawberries\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:02:46.943Z"
+}

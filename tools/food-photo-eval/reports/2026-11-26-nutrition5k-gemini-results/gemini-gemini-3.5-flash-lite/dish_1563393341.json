@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563393341",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 3066.312899999997,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 265
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Broccoli\",\n      \"grams\": 55,\n      \"lowGrams\": 40,\n      \"highGrams\": 70,\n      \"preparation\": \"steamed or roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Bell pepper\",\n      \"grams\": 20,\n      \"lowGrams\": 15,\n      \"highGrams\": 25,\n      \"preparation\": \"steamed or roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Zucchini\",\n      \"grams\": 10,\n      \"lowGrams\": 5,\n      \"highGrams\": 15,\n      \"preparation\": \"steamed or roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:58:04.811Z"
+}

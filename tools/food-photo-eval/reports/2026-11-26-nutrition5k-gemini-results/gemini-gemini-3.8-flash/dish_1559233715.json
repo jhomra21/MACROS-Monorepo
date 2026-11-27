@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559233715",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 5702.716799999995,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 58
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"roasted potatoes\",\"grams\":100,\"lowGrams\":75,\"highGrams\":130,\"preparation\":\"roasted\",\"hiddenFatLikely\":true,\"volumeMl\":null,\"foodKey\":\"roasted_potatoes\"}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:01:58.546Z"
+}

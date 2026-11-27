@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1568401064",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1917.1983000000037,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 505
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"chicken breast, cooked\",\n      \"grams\": 150,\n      \"lowGrams\": 130,\n      \"highGrams\": 170,\n      \"preparation\": \"diced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"avocado\",\n      \"grams\": 80,\n      \"lowGrams\": 70,\n      \"highGrams\": 95,\n      \"preparation\": \"sliced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"mixed salad greens\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"broccoli\",\n      \"grams\": 50,\n      \"lowGrams\": 40,\n      \"highGrams\": 60,\n      \"preparation\": \"steamed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"carrots\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"shredded\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"canned tuna\",\n      \"grams\": 80,\n      \"lowGrams\": 65,\n      \"highGrams\": 95,\n      \"preparation\": \"drained\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:13:11.930Z"
+}

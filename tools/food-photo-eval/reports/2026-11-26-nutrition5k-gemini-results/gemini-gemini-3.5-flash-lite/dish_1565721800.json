@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1565721800",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1242.6984000000084,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 178
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"yellow squash\",\n      \"grams\": 55,\n      \"lowGrams\": 40,\n      \"highGrams\": 70,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"zucchini\",\n      \"grams\": 25,\n      \"lowGrams\": 15,\n      \"highGrams\": 35,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:13:01.489Z"
+}

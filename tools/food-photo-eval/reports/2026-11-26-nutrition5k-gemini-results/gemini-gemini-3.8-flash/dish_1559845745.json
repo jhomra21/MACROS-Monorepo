@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559845745",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 7526.678200000024,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 183
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"roasted potatoes\",\n      \"grams\": 140,\n      \"lowGrams\": 100,\n      \"highGrams\": 180,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"pear\",\n      \"grams\": 160,\n      \"lowGrams\": 130,\n      \"highGrams\": 200,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:02:54.517Z"
+}

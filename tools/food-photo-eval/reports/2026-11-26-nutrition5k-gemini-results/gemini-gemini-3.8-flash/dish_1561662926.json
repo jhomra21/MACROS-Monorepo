@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561662926",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 85291.10380000004,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 551
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"crusted chicken breast\",\n      \"grams\": 110.0,\n      \"lowGrams\": 85.0,\n      \"highGrams\": 140.0,\n      \"preparation\": \"breaded and baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"sauteed kale\",\n      \"grams\": 35.0,\n      \"lowGrams\": 20.0,\n      \"highGrams\": 50.0,\n      \"preparation\": \"sauteed\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"roasted baby carrot\",\n      \"grams\": 15.0,\n      \"lowGrams\": 10.0,\n      \"highGrams\": 25.0,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"corn on the cob slice\",\n      \"grams\": 20.0,\n      \"lowGrams\": 15.0,\n      \"highGrams\": 30.0,\n      \"preparation\": \"boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"mixed green salad with red bell pepper\",\n      \"grams\": 30.0,\n      \"lowGrams\": 20.0,\n      \"highGrams\": 45.0,\n      \"preparation\": \"raw with dressing\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"quinoa\",\n      \"grams\": 10.0,\n      \"lowGrams\": 5.0,\n      \"highGrams\": 15.0,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:07:47.180Z"
+}

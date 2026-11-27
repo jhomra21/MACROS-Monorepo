@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558724658",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 41776.3824,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 278
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Broccoli florets\",\n      \"grams\": 90,\n      \"lowGrams\": 70,\n      \"highGrams\": 120,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"broccoli_raw\"\n    },\n    {\n      \"name\": \"Brussels sprouts\",\n      \"grams\": 95,\n      \"lowGrams\": 75,\n      \"highGrams\": 120,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Honeydew melon cubes\",\n      \"grams\": 90,\n      \"lowGrams\": 70,\n      \"highGrams\": 120,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"honeydew_melon_raw\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:01:26.476Z"
+}

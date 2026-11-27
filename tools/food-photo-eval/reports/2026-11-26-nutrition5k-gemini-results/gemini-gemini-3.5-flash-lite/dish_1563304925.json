@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563304925",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1567.8594000000012,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 190
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"cooked chicken\",\n      \"grams\": 220,\n      \"lowGrams\": 180,\n      \"highGrams\": 260,\n      \"preparation\": \"roasted or baked with herbs\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"cooked beef\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"stewed or braised\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:58:01.689Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558724658",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1579.5094000000008,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 268
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"brussels sprouts\",\n      \"grams\": 80,\n      \"lowGrams\": 65,\n      \"highGrams\": 95,\n      \"preparation\": \"steamed or boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"broccoli\",\n      \"grams\": 110,\n      \"lowGrams\": 90,\n      \"highGrams\": 130,\n      \"preparation\": \"steamed or boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"honeydew melon\",\n      \"grams\": 95,\n      \"lowGrams\": 75,\n      \"highGrams\": 115,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:23.495Z"
+}

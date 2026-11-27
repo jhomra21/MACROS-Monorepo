@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562875870",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1838.4815999999992,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 265
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"cooked salmon\",\n      \"grams\": 130,\n      \"lowGrams\": 110,\n      \"highGrams\": 150,\n      \"preparation\": \"pan-fried or baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"couscous\",\n      \"grams\": 90,\n      \"lowGrams\": 70,\n      \"highGrams\": 110,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"cherry tomato\",\n      \"grams\": 15,\n      \"lowGrams\": 10,\n      \"highGrams\": 20,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:50.966Z"
+}

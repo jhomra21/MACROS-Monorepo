@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558377105",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 44944.84830000001,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 62
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"sliced smoked sausage\",\"grams\":160.0,\"lowGrams\":120.0,\"highGrams\":200.0,\"preparation\":\"cooked\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":null}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:59:05.478Z"
+}

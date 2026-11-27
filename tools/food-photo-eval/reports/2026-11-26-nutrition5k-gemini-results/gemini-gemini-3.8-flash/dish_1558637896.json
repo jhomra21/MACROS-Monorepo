@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558637896",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 41532.164699999994,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 109
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"grapes\",\n      \"grams\": 115.0,\n      \"lowGrams\": 90.0,\n      \"highGrams\": 140.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"grape\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:59:57.719Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558545738",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 10613.979399999997,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 61
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"apple\",\"grams\":180.0,\"lowGrams\":150.0,\"highGrams\":220.0,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"apple\"}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:59:16.139Z"
+}

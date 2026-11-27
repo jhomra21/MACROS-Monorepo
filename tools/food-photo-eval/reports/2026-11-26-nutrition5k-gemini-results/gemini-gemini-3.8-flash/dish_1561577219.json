@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561577219",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 84593.66519999993,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 551
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"roasted potatoes\",\n      \"grams\": 80.0,\n      \"lowGrams\": 60.0,\n      \"highGrams\": 110.0,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": \"roasted_potatoes\"\n    },\n    {\n      \"name\": \"cheese pizza slice\",\n      \"grams\": 65.0,\n      \"lowGrams\": 50.0,\n      \"highGrams\": 85.0,\n      \"preparation\": \"baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"roasted eggplant\",\n      \"grams\": 35.0,\n      \"lowGrams\": 20.0,\n      \"highGrams\": 50.0,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"tofu cubes\",\n      \"grams\": 50.0,\n      \"lowGrams\": 35.0,\n      \"highGrams\": 70.0,\n      \"preparation\": \"boiled or steamed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"tofu_firm\"\n    },\n    {\n      \"name\": \"mixed green salad\",\n      \"grams\": 25.0,\n      \"lowGrams\": 15.0,\n      \"highGrams\": 40.0,\n      \"preparation\": \"dressed\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"chicken breast with lentils and greens\",\n      \"grams\": 75.0,\n      \"lowGrams\": 50.0,\n      \"highGrams\": 100.0,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:06:21.842Z"
+}

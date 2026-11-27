@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1568313640",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1766.1849999999977,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 262
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"mixed salad greens\",\n      \"grams\": 50,\n      \"lowGrams\": 40,\n      \"highGrams\": 60,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"red onion\",\n      \"grams\": 15,\n      \"lowGrams\": 10,\n      \"highGrams\": 20,\n      \"preparation\": \"raw, sliced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"avocado\",\n      \"grams\": 20,\n      \"lowGrams\": 15,\n      \"highGrams\": 25,\n      \"preparation\": \"raw, sliced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:13:09.961Z"
+}

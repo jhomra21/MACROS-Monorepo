@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563984242",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1958.2268000000004,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 357
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Mozzarella cheese\",\n      \"grams\": 200,\n      \"lowGrams\": 150,\n      \"highGrams\": 250,\n      \"preparation\": \"cubed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Cantaloupe melon\",\n      \"grams\": 80,\n      \"lowGrams\": 60,\n      \"highGrams\": 100,\n      \"preparation\": \"cubed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Pineapple\",\n      \"grams\": 60,\n      \"lowGrams\": 40,\n      \"highGrams\": 80,\n      \"preparation\": \"cubed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Cooked banana or plantain\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"fried or pan-cooked, diced\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:22.690Z"
+}

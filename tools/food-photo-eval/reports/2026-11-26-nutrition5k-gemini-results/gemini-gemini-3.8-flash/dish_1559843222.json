@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559843222",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 23281.11420000001,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 349
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"mandarin orange\",\n      \"grams\": 75,\n      \"lowGrams\": 60,\n      \"highGrams\": 95,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"tangerine\"\n    },\n    {\n      \"name\": \"red grapes\",\n      \"grams\": 70,\n      \"lowGrams\": 55,\n      \"highGrams\": 90,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"grape\"\n    },\n    {\n      \"name\": \"sliced strawberries\",\n      \"grams\": 65,\n      \"lowGrams\": 50,\n      \"highGrams\": 85,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"strawberry\"\n    },\n    {\n      \"name\": \"broccoli florets\",\n      \"grams\": 55,\n      \"lowGrams\": 40,\n      \"highGrams\": 75,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"broccoli\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:02:21.874Z"
+}

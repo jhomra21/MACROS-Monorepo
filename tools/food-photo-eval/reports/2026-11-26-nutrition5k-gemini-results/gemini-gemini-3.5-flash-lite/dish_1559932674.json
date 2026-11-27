@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559932674",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1359.0241999999998,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 103
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"orange\",\n      \"grams\": 130,\n      \"lowGrams\": 110,\n      \"highGrams\": 150,\n      \"preparation\": \"whole\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"orange\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:36.152Z"
+}

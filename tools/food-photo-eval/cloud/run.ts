@@ -43,7 +43,13 @@ async function imagesIn(folder: string): Promise<Image[]> {
 async function jpeg1024(source: string): Promise<{ path: string; cleanup: () => Promise<void> }> {
   const directory = await mkdtemp(join(tmpdir(), "food-photo-eval-"));
   const output = join(directory, "image.jpg");
-  await Bun.$`sips -s format jpeg -Z 1024 ${source} --out ${output}`.quiet();
+  if (process.platform === "darwin") {
+    await Bun.$`sips -s format jpeg -Z 1024 ${source} --out ${output}`.quiet();
+  } else {
+    // Same result as sips -Z 1024: longest side scaled to 1024 px, JPEG output.
+    const scale = "scale='if(gte(iw,ih),1024,-2)':'if(gte(iw,ih),-2,1024)'";
+    await Bun.$`ffmpeg -y -loglevel error -i ${source} -vf ${scale} -q:v 2 ${output}`.quiet();
+  }
   return { path: output, cleanup: () => rm(directory, { recursive: true, force: true }) };
 }
 
@@ -99,7 +105,7 @@ async function requestGemini(image: Image, model: string, key: string): Promise<
           { inlineData: { mimeType: "image/jpeg", data: bytes.toString("base64") } },
           { text: PROMPT }
         ] }],
-        generationConfig: { responseMimeType: "application/json", responseSchema: SCHEMA }
+        generationConfig: { responseMimeType: "application/json", responseJsonSchema: SCHEMA }
       })
     });
     const body = await response.json() as {
@@ -214,6 +220,32 @@ async function requestCloudflare(image: Image, accountId: string, token: string)
   }
 }
 
+// Rate limits and overload responses are retried with linear backoff; anything else is recorded as-is.
+const TRANSIENT = /quota|rate|high demand|overloaded|unavailable|HTTP (429|500|503)/i;
+const MAX_ATTEMPTS = 6;
+const resume = Bun.argv.includes("--resume");
+
+function resultFile(arm: string, image: Image): string {
+  return join(resultsRoot, arm, `${image.id}.json`);
+}
+
+async function readSaved(arm: string, image: Image): Promise<{ schemaValid?: boolean; error?: string } | null> {
+  try { return JSON.parse(await readFile(resultFile(arm, image), "utf8")); } catch { return null; }
+}
+
+async function savedValid(name: string, image: Image): Promise<boolean> {
+  return (await readSaved(armFolder(name), image))?.schemaValid === true;
+}
+
+async function savedError(name: string, image: Image): Promise<string | undefined> {
+  return (await readSaved(armFolder(name), image))?.error;
+}
+
+// Gemini arms save under "gemini-<model>"; other arms save under their own name.
+function armFolder(name: string): string {
+  return GEMINI_MODELS.includes(name) ? `gemini-${name}` : name;
+}
+
 const photos = await imagesIn(join(dataset, "photos")).catch(() => []);
 if (photos.length === 0) console.log(`No photos found in ${join(dataset, "photos")}.`);
 const arms = [
@@ -241,8 +273,15 @@ for (const arm of arms) {
     continue;
   }
   for (const photo of photos) {
+    if (resume && await savedValid(arm.name, photo)) continue;
     try {
-      await arm.run(photo);
+      for (let attempt = 1; ; attempt++) {
+        await arm.run(photo);
+        const error = await savedError(arm.name, photo);
+        if (!error || !TRANSIENT.test(error) || attempt === MAX_ATTEMPTS) break;
+        console.log(`Retrying ${arm.name}/${photo.id} (attempt ${attempt + 1}): ${error.slice(0, 80)}`);
+        await Bun.sleep(15_000 * attempt);
+      }
       console.log(`Saved ${arm.name}/${photo.id}.json`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

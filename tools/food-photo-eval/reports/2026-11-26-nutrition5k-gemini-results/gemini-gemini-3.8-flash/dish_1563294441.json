@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563294441",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 105956.76379999996,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 187
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"fresh pineapple\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"pineapple_fresh\"\n    },\n    {\n      \"name\": \"fresh watermelon\",\n      \"grams\": 75,\n      \"lowGrams\": 55,\n      \"highGrams\": 100,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"watermelon_raw\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:11:19.663Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561747075",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1317.6002000000008,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 107
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Chicken with tomato sauce\",\n      \"grams\": 220,\n      \"lowGrams\": 180,\n      \"highGrams\": 260,\n      \"preparation\": \"cooked in tomato sauce\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:13.749Z"
+}

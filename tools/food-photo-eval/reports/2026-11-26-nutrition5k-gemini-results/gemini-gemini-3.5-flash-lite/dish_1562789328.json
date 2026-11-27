@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562789328",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1670.1389000000017,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 314
+  },
+  "rawOutput": "{\"status\": \"ok\", \"foods\": [{\"name\": \"Corn on the cob\", \"grams\": 100, \"lowGrams\": 80, \"highGrams\": 120, \"preparation\": \"boiled\", \"hiddenFatLikely\": false, \"volumeMl\": null, \"foodKey\": null}, {\"name\": \"Pizza\", \"grams\": 60, \"lowGrams\": 50, \"highGrams\": 70, \"preparation\": \"baked\", \"hiddenFatLikely\": true, \"volumeMl\": null, \"foodKey\": null}, {\"name\": \"Roasted pork\", \"grams\": 120, \"lowGrams\": 100, \"highGrams\": 140, \"preparation\": \"roasted\", \"hiddenFatLikely\": true, \"volumeMl\": null, \"foodKey\": null}, {\"name\": \"Tofu with vegetables\", \"grams\": 100, \"lowGrams\": 80, \"highGrams\": 120, \"preparation\": \"pan-fried\", \"hiddenFatLikely\": true, \"volumeMl\": null, \"foodKey\": null}, {\"name\": \"Green salad with dressing\", \"grams\": 80, \"lowGrams\": 60, \"highGrams\": 100, \"preparation\": \"raw\", \"hiddenFatLikely\": true, \"volumeMl\": null, \"foodKey\": null}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:18.388Z"
+}

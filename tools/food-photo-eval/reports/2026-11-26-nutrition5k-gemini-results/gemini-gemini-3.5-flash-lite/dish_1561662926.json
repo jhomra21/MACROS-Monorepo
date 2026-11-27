@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561662926",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2631.6865,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 358
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Breaded chicken breast\",\n      \"grams\": 100,\n      \"lowGrams\": 80,\n      \"highGrams\": 120,\n      \"preparation\": \"breaded and baked or fried\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Mixed green salad with red bell pepper\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"dressed\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Quinoa with cooked greens and carrot\",\n      \"grams\": 60,\n      \"lowGrams\": 45,\n      \"highGrams\": 75,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Corn cob slice\",\n      \"grams\": 15,\n      \"lowGrams\": 10,\n      \"highGrams\": 20,\n      \"preparation\": \"boiled or steamed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:12.378Z"
+}

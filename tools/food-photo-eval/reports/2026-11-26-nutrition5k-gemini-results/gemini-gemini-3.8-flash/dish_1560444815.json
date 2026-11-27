@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1560444815",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 39483.47769999999,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 456
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Scrambled eggs\",\n      \"grams\": 110.0,\n      \"lowGrams\": 80.0,\n      \"highGrams\": 140.0,\n      \"preparation\": \"scrambled\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Bacon\",\n      \"grams\": 30.0,\n      \"lowGrams\": 20.0,\n      \"highGrams\": 40.0,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Honeydew melon\",\n      \"grams\": 90.0,\n      \"lowGrams\": 65.0,\n      \"highGrams\": 120.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Watermelon\",\n      \"grams\": 80.0,\n      \"lowGrams\": 60.0,\n      \"highGrams\": 110.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Pineapple\",\n      \"grams\": 50.0,\n      \"lowGrams\": 35.0,\n      \"highGrams\": 75.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:04:56.735Z"
+}

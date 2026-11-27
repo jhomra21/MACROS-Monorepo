@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1560367085",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 23471.439200000023,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 346
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"cherry tomatoes\",\n      \"grams\": 35,\n      \"lowGrams\": 25,\n      \"highGrams\": 45,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"cantaloupe melon\",\n      \"grams\": 25,\n      \"lowGrams\": 18,\n      \"highGrams\": 35,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"honeydew melon\",\n      \"grams\": 55,\n      \"lowGrams\": 40,\n      \"highGrams\": 75,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"stir-fried vegetables and tofu\",\n      \"grams\": 55,\n      \"lowGrams\": 40,\n      \"highGrams\": 75,\n      \"preparation\": \"stir-fried\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:03:50.432Z"
+}

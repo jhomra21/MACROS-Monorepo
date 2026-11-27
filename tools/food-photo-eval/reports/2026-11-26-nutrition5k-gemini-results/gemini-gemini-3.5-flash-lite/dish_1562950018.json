@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562950018",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1392.8150999999998,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 102
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Boiled potato pieces\",\n      \"grams\": 75,\n      \"lowGrams\": 60,\n      \"highGrams\": 90,\n      \"preparation\": \"boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:54.903Z"
+}

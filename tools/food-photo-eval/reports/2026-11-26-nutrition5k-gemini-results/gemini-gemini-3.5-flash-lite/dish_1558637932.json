@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558637932",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2070.0028,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 340
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"apple\",\n      \"grams\": 160,\n      \"lowGrams\": 140,\n      \"highGrams\": 180,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"corn on the cob\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"grapes\",\n      \"grams\": 80,\n      \"lowGrams\": 65,\n      \"highGrams\": 95,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"cauliflower\",\n      \"grams\": 60,\n      \"lowGrams\": 50,\n      \"highGrams\": 75,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:18.299Z"
+}

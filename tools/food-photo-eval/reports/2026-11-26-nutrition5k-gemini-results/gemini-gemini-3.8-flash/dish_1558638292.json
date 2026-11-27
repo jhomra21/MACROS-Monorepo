@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558638292",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 7504.641799999983,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 391
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"cooked white rice\",\n      \"grams\": 100.0,\n      \"lowGrams\": 80.0,\n      \"highGrams\": 130.0,\n      \"preparation\": \"boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"rice_white_cooked\"\n    },\n    {\n      \"name\": \"cooked carrots\",\n      \"grams\": 110.0,\n      \"lowGrams\": 85.0,\n      \"highGrams\": 140.0,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": \"carrots_cooked\"\n    },\n    {\n      \"name\": \"cantaloupe\",\n      \"grams\": 110.0,\n      \"lowGrams\": 80.0,\n      \"highGrams\": 140.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"cantaloupe_raw\"\n    },\n    {\n      \"name\": \"apple\",\n      \"grams\": 130.0,\n      \"lowGrams\": 100.0,\n      \"highGrams\": 160.0,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"apple_raw\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:00:18.830Z"
+}

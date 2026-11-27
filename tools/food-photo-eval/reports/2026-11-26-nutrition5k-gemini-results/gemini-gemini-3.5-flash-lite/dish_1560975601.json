@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1560975601",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2003.9555,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 346
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"caesar salad\",\n      \"grams\": 130,\n      \"lowGrams\": 100,\n      \"highGrams\": 160,\n      \"preparation\": \"dressed\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"broccoli\",\n      \"grams\": 40,\n      \"lowGrams\": 25,\n      \"highGrams\": 55,\n      \"preparation\": \"steamed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"chicken in tomato sauce\",\n      \"grams\": 110,\n      \"lowGrams\": 85,\n      \"highGrams\": 135,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"brown rice with vegetables\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:01.249Z"
+}

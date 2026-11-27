@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559850314",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 10512.651799999992,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 186
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"mandarin orange\",\n      \"grams\": 65,\n      \"lowGrams\": 50,\n      \"highGrams\": 85,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"tangerine\"\n    },\n    {\n      \"name\": \"almonds\",\n      \"grams\": 28,\n      \"lowGrams\": 22,\n      \"highGrams\": 35,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": \"almonds\"\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:03:05.077Z"
+}

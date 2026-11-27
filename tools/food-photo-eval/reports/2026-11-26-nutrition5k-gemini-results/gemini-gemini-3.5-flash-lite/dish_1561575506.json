@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561575506",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 6639.939900000001,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 347
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Steak\",\n      \"grams\": 160,\n      \"lowGrams\": 130,\n      \"highGrams\": 190,\n      \"preparation\": \"grilled, sliced\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roast potatoes\",\n      \"grams\": 90,\n      \"lowGrams\": 70,\n      \"highGrams\": 110,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Cauliflower\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"steamed or boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Eggplant\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:07.942Z"
+}

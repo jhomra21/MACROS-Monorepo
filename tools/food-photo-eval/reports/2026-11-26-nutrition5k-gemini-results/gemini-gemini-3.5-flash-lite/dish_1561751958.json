@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561751958",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1522.663700000001,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 268
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"cooked salmon\",\n      \"grams\": 130,\n      \"lowGrams\": 110,\n      \"highGrams\": 150,\n      \"preparation\": \"pan-cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"brown rice\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"boiled\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"mixed vegetables and greens\",\n      \"grams\": 70,\n      \"lowGrams\": 55,\n      \"highGrams\": 85,\n      \"preparation\": \"sautéed or fresh\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:15.324Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563824155",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2236.0815000000002,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 427
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Roasted potatoes\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Beef steak\",\n      \"grams\": 90,\n      \"lowGrams\": 70,\n      \"highGrams\": 110,\n      \"preparation\": \"pan-seared\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Couscous\",\n      \"grams\": 100,\n      \"lowGrams\": 80,\n      \"highGrams\": 120,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Yellow squash and zucchini\",\n      \"grams\": 50,\n      \"lowGrams\": 35,\n      \"highGrams\": 65,\n      \"preparation\": \"sauteed\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Greens\",\n      \"grams\": 15,\n      \"lowGrams\": 10,\n      \"highGrams\": 20,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:20.679Z"
+}

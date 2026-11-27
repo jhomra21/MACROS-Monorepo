@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1565036821",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2482.8507000000027,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 193
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Cheese pizza\",\n      \"grams\": 80.0,\n      \"lowGrams\": 65.0,\n      \"highGrams\": 95.0,\n      \"preparation\": \"baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roast beef with vegetables\",\n      \"grams\": 60.0,\n      \"lowGrams\": 45.0,\n      \"highGrams\": 75.0,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:58:17.184Z"
+}

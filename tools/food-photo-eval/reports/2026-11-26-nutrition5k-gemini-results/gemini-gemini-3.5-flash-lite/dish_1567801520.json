@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1567801520",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1393.869399999996,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 191
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"stir-fried pork with vegetables\",\n      \"grams\": 220,\n      \"lowGrams\": 180,\n      \"highGrams\": 260,\n      \"preparation\": \"stir-fried\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"cabbage salad\",\n      \"grams\": 160,\n      \"lowGrams\": 130,\n      \"highGrams\": 190,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:13:06.377Z"
+}

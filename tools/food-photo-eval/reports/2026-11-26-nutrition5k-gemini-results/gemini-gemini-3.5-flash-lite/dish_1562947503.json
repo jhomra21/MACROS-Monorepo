@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562947503",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2451.214,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 494
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"sausage\",\n      \"grams\": 45,\n      \"lowGrams\": 35,\n      \"highGrams\": 55,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"potatoes\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"mozzarella cheese\",\n      \"grams\": 50,\n      \"lowGrams\": 40,\n      \"highGrams\": 60,\n      \"preparation\": \"fresh\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"strawberries\",\n      \"grams\": 60,\n      \"lowGrams\": 45,\n      \"highGrams\": 75,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"blueberries\",\n      \"grams\": 10,\n      \"lowGrams\": 5,\n      \"highGrams\": 15,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"pineapple\",\n      \"grams\": 65,\n      \"lowGrams\": 50,\n      \"highGrams\": 80,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:53.465Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559932674",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 6375.479700000025,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 54
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"mandarin orange\",\"grams\":80,\"lowGrams\":65,\"highGrams\":105,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":null}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:03:11.500Z"
+}

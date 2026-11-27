@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562168365",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1287.5930999999982,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 99
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Pineapple\",\n      \"grams\": 45,\n      \"lowGrams\": 35,\n      \"highGrams\": 55,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:16.664Z"
+}

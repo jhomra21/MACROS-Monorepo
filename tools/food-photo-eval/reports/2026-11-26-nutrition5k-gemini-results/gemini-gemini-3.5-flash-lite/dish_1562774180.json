@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1562774180",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2056.727500000001,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 420
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Mixed salad greens\",\n      \"grams\": 35,\n      \"lowGrams\": 25,\n      \"highGrams\": 45,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Cantaloupe melon\",\n      \"grams\": 50,\n      \"lowGrams\": 35,\n      \"highGrams\": 65,\n      \"preparation\": \"fresh, diced\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Strawberries\",\n      \"grams\": 30,\n      \"lowGrams\": 20,\n      \"highGrams\": 40,\n      \"preparation\": \"fresh\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Blueberries\",\n      \"grams\": 10,\n      \"lowGrams\": 5,\n      \"highGrams\": 15,\n      \"preparation\": \"fresh\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roast potatoes\",\n      \"grams\": 60,\n      \"lowGrams\": 45,\n      \"highGrams\": 75,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:48.986Z"
+}

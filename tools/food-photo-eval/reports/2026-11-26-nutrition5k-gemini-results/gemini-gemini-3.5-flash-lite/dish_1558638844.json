@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558638844",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1441.1589000000004,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 103
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Apple\",\n      \"grams\": 182,\n      \"lowGrams\": 155,\n      \"highGrams\": 210,\n      \"preparation\": \"whole, raw\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:21.865Z"
+}

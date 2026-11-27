@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1563813436",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2038.7987999999968,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 424
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Bacon\",\n      \"grams\": 50,\n      \"lowGrams\": 40,\n      \"highGrams\": 60,\n      \"preparation\": \"pan-fried\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Sausage slices\",\n      \"grams\": 25,\n      \"lowGrams\": 20,\n      \"highGrams\": 30,\n      \"preparation\": \"pan-fried\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Pineapple chunks\",\n      \"grams\": 60,\n      \"lowGrams\": 50,\n      \"highGrams\": 70,\n      \"preparation\": \"fresh\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Brussels sprouts\",\n      \"grams\": 30,\n      \"lowGrams\": 25,\n      \"highGrams\": 35,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roasted potato cubes\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:58:08.547Z"
+}

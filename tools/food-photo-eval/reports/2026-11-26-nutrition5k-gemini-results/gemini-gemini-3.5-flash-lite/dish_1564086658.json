@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1564086658",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 2253.4505000000063,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 268
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Caesar salad\",\n      \"grams\": 80,\n      \"lowGrams\": 60,\n      \"highGrams\": 100,\n      \"preparation\": \"dressed with caesar dressing and parmesan cheese\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Pizza slice\",\n      \"grams\": 65,\n      \"lowGrams\": 50,\n      \"highGrams\": 80,\n      \"preparation\": \"baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Corn cob slices\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"boiled or steamed\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:40.106Z"
+}

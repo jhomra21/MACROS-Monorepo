@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1560442450",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 26723.284000000043,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 56
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"Yogurt\",\"grams\":170,\"lowGrams\":120,\"highGrams\":220,\"preparation\":null,\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":null}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:04:17.202Z"
+}

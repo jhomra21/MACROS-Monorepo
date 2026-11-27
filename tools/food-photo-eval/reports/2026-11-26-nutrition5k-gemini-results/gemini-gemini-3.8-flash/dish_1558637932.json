@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1558637932",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 13506.707400000014,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 207
+  },
+  "rawOutput": "{\"status\":\"ok\",\"foods\":[{\"name\":\"apple\",\"grams\":160,\"lowGrams\":130,\"highGrams\":190,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"apple\"},{\"name\":\"corn on the cob\",\"grams\":65,\"lowGrams\":50,\"highGrams\":85,\"preparation\":\"boiled\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"corn_on_the_cob\"},{\"name\":\"cauliflower florets\",\"grams\":110,\"lowGrams\":80,\"highGrams\":140,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"cauliflower\"},{\"name\":\"grapes\",\"grams\":100,\"lowGrams\":80,\"highGrams\":130,\"preparation\":\"raw\",\"hiddenFatLikely\":false,\"volumeMl\":null,\"foodKey\":\"grape\"}]}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:00:11.276Z"
+}

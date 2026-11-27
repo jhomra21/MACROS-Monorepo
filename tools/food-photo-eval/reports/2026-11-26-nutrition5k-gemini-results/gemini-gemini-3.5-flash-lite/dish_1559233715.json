@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1559233715",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1818.2898999999998,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 99
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"roasted potatoes\",\n      \"grams\": 54,\n      \"lowGrams\": 40,\n      \"highGrams\": 70,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:57:26.637Z"
+}

@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1565021104",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1820.1672000000035,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 263
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"waffles\",\n      \"grams\": 70,\n      \"lowGrams\": 55,\n      \"highGrams\": 85,\n      \"preparation\": \"toasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"scrambled eggs or tofu scramble\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"feta cheese\",\n      \"grams\": 20,\n      \"lowGrams\": 15,\n      \"highGrams\": 25,\n      \"preparation\": null,\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T00:58:14.550Z"
+}

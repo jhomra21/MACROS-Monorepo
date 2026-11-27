@@ -1,0 +1,13 @@
+{
+  "photoId": "dish_1561577219",
+  "arm": "gemini-gemini-3.5-flash-lite",
+  "model": "gemini-3.5-flash-lite",
+  "latencyMs": 1689.9256999999998,
+  "tokenUsage": {
+    "inputTokens": 1284,
+    "outputTokens": 502
+  },
+  "rawOutput": "{\n  \"status\": \"ok\",\n  \"foods\": [\n    {\n      \"name\": \"Tofu cubes\",\n      \"grams\": 40,\n      \"lowGrams\": 30,\n      \"highGrams\": 50,\n      \"preparation\": \"plain\",\n      \"hiddenFatLikely\": false,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Mixed green salad\",\n      \"grams\": 20,\n      \"lowGrams\": 15,\n      \"highGrams\": 25,\n      \"preparation\": \"raw\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roasted potatoes\",\n      \"grams\": 70,\n      \"lowGrams\": 50,\n      \"highGrams\": 90,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Baked lasagna slice\",\n      \"grams\": 80,\n      \"lowGrams\": 60,\n      \"highGrams\": 100,\n      \"preparation\": \"baked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Roasted eggplant pieces\",\n      \"grams\": 25,\n      \"lowGrams\": 15,\n      \"highGrams\": 35,\n      \"preparation\": \"roasted\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    },\n    {\n      \"name\": \"Chicken breast with grain sauce\",\n      \"grams\": 60,\n      \"lowGrams\": 40,\n      \"highGrams\": 80,\n      \"preparation\": \"cooked\",\n      \"hiddenFatLikely\": true,\n      \"volumeMl\": null,\n      \"foodKey\": null\n    }\n  ]\n}",
+  "schemaValid": true,
+  "recordedAt": "2026-11-27T01:12:09.694Z"
+}

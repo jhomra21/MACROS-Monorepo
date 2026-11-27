@@ -1,0 +1,14 @@
+{
+  "photoId": "dish_1563475826",
+  "arm": "gemini-gemini-3.8-flash",
+  "model": "gemini-3.8-flash",
+  "latencyMs": 3225.553100000019,
+  "tokenUsage": {
+    "inputTokens": null,
+    "outputTokens": null
+  },
+  "rawOutput": "",
+  "schemaValid": false,
+  "error": "This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.",
+  "recordedAt": "2026-11-27T01:11:23.158Z"
+}
