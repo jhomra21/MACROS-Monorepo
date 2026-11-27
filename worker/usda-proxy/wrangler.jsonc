@@ -7,12 +7,19 @@
   "ratelimits": [
     { "name": "PACKAGED_SEARCH_LIMITER", "namespace_id": "1101", "simple": { "limit": 30, "period": 60 } },
     { "name": "BARCODE_LIMITER", "namespace_id": "1102", "simple": { "limit": 60, "period": 60 } },
-    { "name": "USDA_SEARCH_LIMITER", "namespace_id": "1103", "simple": { "limit": 10, "period": 60 } }
+    { "name": "USDA_SEARCH_LIMITER", "namespace_id": "1103", "simple": { "limit": 10, "period": 60 } },
+    { "name": "MEAL_PHOTO_LIMITER", "namespace_id": "1104", "simple": { "limit": 20, "period": 60 } }
   ],
   "durable_objects": {
-    "bindings": [{ "name": "USDA_BUDGET", "class_name": "UsdaBudget" }]
+    "bindings": [
+      { "name": "USDA_BUDGET", "class_name": "UsdaBudget" },
+      { "name": "MEAL_PHOTO_DAILY", "class_name": "MealPhotoDaily" }
+    ]
   },
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["UsdaBudget"] }],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["UsdaBudget"] },
+    { "tag": "v2", "new_sqlite_classes": ["MealPhotoDaily"] }
+  ],
   "observability": {
     "enabled": true,
     "logs": {
@@ -25,11 +32,13 @@
     }
   },
   "secrets": {
-    "required": ["USDA_API_KEY", "OPEN_FOOD_FACTS_USER_AGENT"]
+    "required": ["USDA_API_KEY", "OPEN_FOOD_FACTS_USER_AGENT", "GEMINI_API_KEY"]
   },
+  "analytics_engine_datasets": [{ "binding": "MEAL_PHOTO_FEEDBACK", "dataset": "meal_photo_feedback" }],
   "vars": {
     "USDA_BUDGET_PER_MINUTE": "14",
     "USDA_BUDGET_TIMEOUT_MS": "500",
-    "REQUEST_DEADLINE_MS": "8000"
+    "REQUEST_DEADLINE_MS": "8000",
+    "GEMINI_BASE_URL": "https://generativelanguage.googleapis.com"
   }
 }
