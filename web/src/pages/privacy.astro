@@ -10,7 +10,7 @@ import { pages } from '../lib/seo';
 	{...pages['/privacy/']}
 	heading="Your food log stays yours."
 	lede="This policy explains what stays on your device, what is sent to services you choose to use, and how to make a privacy request."
-	effective="November 7, 2026"
+	effective="November 26, 2026"
 >
 	<RetentionTimeline />
 
@@ -24,6 +24,13 @@ import { pages } from '../lib/seo';
 		<p>As you type a food search, the app sends search text to our Cloudflare Worker to fetch results alongside your on-device matches. Barcode lookup sends the barcode. These requests include standard metadata, including your IP address. The Worker queries Open Food Facts and USDA FoodData Central. No account is required, and the app sends no account identifier with these requests.</p>
 		<p>The Worker caches search results by normalized query, source, and page: USDA results for up to 24 hours, Open Food Facts results for up to one hour, and empty results for up to five minutes. Barcode responses may be cached for up to 24 hours. The service’s search summary logs record result counts, source contributions, and skipped sources, not the search text.</p>
 		<p>The food-search service also keeps sampled operational logs for about 10% of requests. These logs can include the request URL (the search text or barcode), the IP address, and a coarse location derived from that IP address. We keep them for up to 7 days, for reliability and abuse prevention. These logs are not linked to any sharing profile.</p>
+	</section>
+
+	<section>
+		<h2>Meal photo scanning (Pro)</h2>
+		<p>Meal photo scanning is an optional MACROS Pro feature. When you choose to scan a meal, the app sends a downscaled JPEG image of about 1024 pixels and a fixed prompt to a MACROS server. The server relays them to Google's paid Gemini API as a processor and returns suggested food names and estimated amounts in grams. The model does not calculate nutrition or calories. You review and can edit the suggestions, and MACROS calculates nutrition using its food data.</p>
+		<p>MACROS relays the request and does not store the photo or result. It may retain a per-device daily request count, without the photo, prompt, or result. Google says that under its paid-service terms and data processing addendum, it does not use prompts or outputs to train or improve its products, but retains them for 55 days for abuse monitoring and legal requirements.</p>
+		<p>You can skip photo scanning and continue to log food manually or use barcode and nutrition-label scanning. These options, including offline logging, remain available without photo scanning, and food logs stay on your device. Avoid including people or personal information in meal photos.</p>
 	</section>
 
 	<section>
