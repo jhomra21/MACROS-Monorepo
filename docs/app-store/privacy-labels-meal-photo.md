@@ -15,6 +15,7 @@ MACROS relays the request and does not store the photo or model result. It may r
 | Meal photo | User Content → Photos or Videos | App Functionality | Confirm against the final request and linkage details before selecting | No |
 | Fixed prompt | Not user-added text; no separate Other User Content entry expected | App Functionality | Not applicable | No |
 | Suggested food names and gram estimates returned by Gemini | Not sent by the app to the service as new user content; the result is transient and MACROS does not store it | App Functionality | Not applicable | No |
+| Scan accuracy counts (items kept, removed, added, median gram change) sent after logging, with no identifier | Likely Usage Data → Product Interaction, or not collected if unlinked and aggregated; confirm against Apple guidance | App Functionality / Analytics | No | No |
 | Per-device daily request count retained by MACROS without content | Confirm the exact identifier and retention behavior before deciding whether this is reportable data | App Functionality | Confirm before selecting | No |
 
 Do not add **User Content → Other User Content** for the fixed prompt alone. Reassess if the app begins sending user-entered text, such as a user-written description or note. Do not claim the image is not linked to identity without checking whether the final request or service logs retain an IP address, device identifier, or other linkable metadata. The planned feature is not used for tracking.
