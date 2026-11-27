@@ -1,21 +1,12 @@
 import Foundation
 import SwiftData
 
-/// Maps a suggested food name to a food in MACROS: the on-device catalog first, then the existing remote search.
-/// A remote food that needs nutrient review is left unmatched so the user picks and reviews it explicitly.
+/// Maps a suggested food to the server's generic match, then the on-device catalog.
 struct MealPhotoMatcher {
-    typealias RemoteSearch = @Sendable (String) async throws -> RemoteSearchResult?
-
     let modelContext: ModelContext
-    let remoteSearch: RemoteSearch
 
-    init(modelContext: ModelContext, remoteSearch: @escaping RemoteSearch = Self.searchRemote) {
+    init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        self.remoteSearch = remoteSearch
-    }
-
-    static let searchRemote: RemoteSearch = { name in
-        try await FoodSearchClient().searchFoods(query: name).results.first
     }
 
     /// Search phrases from most to least specific: "grilled chicken breast", then "chicken breast".
@@ -37,13 +28,31 @@ struct MealPhotoMatcher {
         return nil
     }
 
-    func remoteMatch(for name: String) async -> FoodDraft? {
-        guard let result = try? await remoteSearch(name), result.requiredReviewNutrients.isEmpty else { return nil }
+    func serverMatch(_ match: MealPhotoFoodMatch) -> FoodDraft? {
+        guard match.source == "usdaFNDDS", match.fdcId > 0, !match.description.isEmpty else { return nil }
+        let externalProductID = "usda-fndds:\(match.fdcId)"
         let repository = FoodItemRepository(modelContext: modelContext)
-        if let cached = try? result.cachedFood(using: repository) {
+        if let cached = try? repository.fetchReusableFood(source: .searchLookup, externalProductID: externalProductID) {
             return FoodDraft(foodItem: cached, saveAsCustomFood: true)
         }
-        var draft = result.makeDraft()
+        let nutrients = match.per100g
+        var draft = FoodDraft()
+        draft.name = match.description
+        draft.source = .searchLookup
+        draft.externalProductID = externalProductID
+        draft.sourceName = "USDA FoodData Central (FNDDS)"
+        draft.sourceURL = "https://fdc.nal.usda.gov/food-details/\(match.fdcId)/nutrients"
+        draft.servingDescription = "100 g"
+        draft.gramsPerServing = 100
+        draft.caloriesPerServing = nutrients.calories ?? 0
+        draft.proteinPerServing = nutrients.protein ?? 0
+        draft.carbsPerServing = nutrients.carbs ?? 0
+        draft.fatPerServing = nutrients.fat ?? 0
+        draft.saturatedFatPerServing = nutrients.saturatedFat
+        draft.fiberPerServing = nutrients.fiber
+        draft.sugarsPerServing = nutrients.sugars
+        draft.sodiumPerServing = nutrients.sodium
+        draft.cholesterolPerServing = nutrients.cholesterol
         draft.saveAsCustomFood = true
         return draft
     }

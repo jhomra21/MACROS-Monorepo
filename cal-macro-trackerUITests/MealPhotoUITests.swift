@@ -39,13 +39,18 @@ final class MealPhotoUITests: XCTestCase {
         app.buttons["Log Meal"].tap()
         XCTAssertTrue(app.navigationBars["Scan a Meal"].waitForNonExistence(timeout: 20), "Add Food did not close after logging")
         XCTAssertTrue(scrollTo(oilLabel(app), in: app), "Logged oil is missing from Today")
-        XCTAssertTrue(scrollTo(app.staticTexts["Brown rice"], in: app), "Logged rice is missing from Today")
+        XCTAssertTrue(
+            scrollTo(app.staticTexts["Rice, brown, long-grain, cooked"], in: app),
+            "Logged matched rice is missing from Today"
+        )
     }
 
     func testReviewAtLargestAccessibilityTextSize() {
-        let app = launch(mock: "typical-plate", pro: true, extraArguments: [
-            "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"
-        ])
+        let app = launch(
+            mock: "typical-plate", pro: true,
+            extraArguments: [
+                "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"
+            ])
         openScanner(app)
         XCTAssertTrue(app.staticTexts["Grilled salmon"].waitForExistence(timeout: 20))
         let logButton = app.buttons["Log Meal"]

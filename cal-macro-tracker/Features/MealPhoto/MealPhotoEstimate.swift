@@ -15,6 +15,25 @@ nonisolated struct MealPhotoEstimate: Equatable, Sendable {
     let foods: [MealPhotoSuggestedFood]
 }
 
+nonisolated struct MealPhotoFoodMatch: Decodable, Equatable, Sendable {
+    let source: String
+    let fdcId: Int
+    let description: String
+    let per100g: Nutrients
+
+    struct Nutrients: Decodable, Equatable, Sendable {
+        let calories: Double?
+        let protein: Double?
+        let carbs: Double?
+        let fat: Double?
+        let saturatedFat: Double?
+        let fiber: Double?
+        let sugars: Double?
+        let sodium: Double?
+        let cholesterol: Double?
+    }
+}
+
 nonisolated struct MealPhotoSuggestedFood: Equatable, Identifiable, Sendable {
     let id: UUID
     let name: String
@@ -22,10 +41,11 @@ nonisolated struct MealPhotoSuggestedFood: Equatable, Identifiable, Sendable {
     let preparation: String?
     let hiddenFatLikely: Bool
     let volumeMl: Double?
+    let match: MealPhotoFoodMatch?
 
     init(
         id: UUID = UUID(), name: String, grams: Double?, preparation: String? = nil,
-        hiddenFatLikely: Bool = false, volumeMl: Double? = nil
+        hiddenFatLikely: Bool = false, volumeMl: Double? = nil, match: MealPhotoFoodMatch? = nil
     ) {
         self.id = id
         self.name = name
@@ -33,6 +53,7 @@ nonisolated struct MealPhotoSuggestedFood: Equatable, Identifiable, Sendable {
         self.preparation = preparation
         self.hiddenFatLikely = hiddenFatLikely
         self.volumeMl = volumeMl
+        self.match = match
     }
 }
 
@@ -57,6 +78,7 @@ nonisolated enum MealPhotoResponseParser {
         let preparation: String?
         let hiddenFatLikely: Bool?
         let volumeMl: Double?
+        let match: MealPhotoFoodMatch?
 
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: Key.self)
@@ -65,9 +87,10 @@ nonisolated enum MealPhotoResponseParser {
             preparation = try? container.decode(String.self, forKey: .preparation)
             hiddenFatLikely = try? container.decode(Bool.self, forKey: .hiddenFatLikely)
             volumeMl = try? container.decode(Double.self, forKey: .volumeMl)
+            match = try? container.decodeIfPresent(MealPhotoFoodMatch.self, forKey: .match)
         }
 
-        private enum Key: String, CodingKey { case name, grams, preparation, hiddenFatLikely, volumeMl }
+        private enum Key: String, CodingKey { case name, grams, preparation, hiddenFatLikely, volumeMl, match }
     }
 
     static func parse(_ data: Data) throws -> MealPhotoEstimate {
@@ -92,7 +115,8 @@ nonisolated enum MealPhotoResponseParser {
             grams: grams,
             preparation: raw.preparation.flatMap(TextNormalization.trimmedNonEmpty),
             hiddenFatLikely: raw.hiddenFatLikely ?? false,
-            volumeMl: volumeMl
+            volumeMl: volumeMl,
+            match: raw.match
         )
     }
 }

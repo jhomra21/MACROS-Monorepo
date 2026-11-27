@@ -101,7 +101,6 @@ struct MealPhotoScanScreen: View {
                     let id = item.id
                     MealPhotoItemRow(
                         item: $item,
-                        isMatching: session.matchingIDs.contains(id),
                         amountFocus: $focusedItemID,
                         onChangeFood: { pickerTarget = .replace(id) }
                     )
@@ -115,7 +114,7 @@ struct MealPhotoScanScreen: View {
                 Text(footer)
             }
             Section {
-                LabeledContent("Total", value: "\(totalCalories.roundedForDisplay) kcal")
+                LabeledContent("Total", value: "\(totalCalories.formatted(.number.precision(.fractionLength(0)))) kcal")
                     .font(.headline)
                     .monospacedDigit()
             }
@@ -167,7 +166,6 @@ struct MealPhotoScanScreen: View {
     }
 
     private var footer: String {
-        if !session.matchingIDs.isEmpty { return "Matching foods…" }
         if !session.canLog { return "Choose a food and an amount for each item to continue. Remove anything that isn't on your plate." }
         return "Check each food and amount. Calories come from the matched food, not from the photo."
     }

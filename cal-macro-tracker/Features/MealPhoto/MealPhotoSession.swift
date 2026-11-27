@@ -44,7 +44,6 @@ final class MealPhotoSession {
     }
 
     private(set) var phase: Phase = .estimating
-    private(set) var matchingIDs: Set<UUID> = []
     var items: [MealPhotoItem] = []
     var hiddenFatAnswer: MealPhotoHiddenFatAnswer?
 
@@ -57,7 +56,7 @@ final class MealPhotoSession {
     }
 
     var canLog: Bool {
-        phase == .review && matchingIDs.isEmpty && !items.isEmpty && items.allSatisfy(\.isReadyToLog)
+        phase == .review && !items.isEmpty && items.allSatisfy(\.isReadyToLog)
     }
 
     func scan(_ image: UIImage, matcher: MealPhotoMatcher, onScanned: () -> Void) async {
@@ -84,7 +83,6 @@ final class MealPhotoSession {
             }
             onScanned()
             present(estimate, matcher: matcher)
-            await matchRemotely(matcher)
         } catch {
             guard !Task.isCancelled else { return }
             phase = .message(.scanFailed(error as? MealPhotoError ?? .unavailable))
@@ -99,7 +97,6 @@ final class MealPhotoSession {
     func replaceFood(of id: UUID, with food: FoodDraft) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         items[index].replaceFood(with: food)
-        matchingIDs.remove(id)
     }
 
     func log(using repository: LogEntryRepository, at date: Date) throws {
@@ -119,23 +116,10 @@ final class MealPhotoSession {
 
     private func present(_ estimate: MealPhotoEstimate, matcher: MealPhotoMatcher) {
         self.estimate = estimate
-        items = estimate.foods.map { .suggested($0, food: matcher.localMatch(for: $0.name)) }
-        matchingIDs = Set(items.filter { $0.food == nil }.map(\.id))
-        phase = .review
-    }
-
-    private func matchRemotely(_ matcher: MealPhotoMatcher) async {
-        let pending = items.filter { $0.food == nil }.compactMap(\.suggestion)
-        await withTaskGroup(of: (UUID, FoodDraft?).self) { group in
-            for suggestion in pending {
-                group.addTask { @MainActor in (suggestion.id, await matcher.remoteMatch(for: suggestion.name)) }
-            }
-            for await (id, draft) in group {
-                // The user may have picked a food while the search was running.
-                if let draft, items.first(where: { $0.id == id })?.food == nil { replaceFood(of: id, with: draft) }
-                matchingIDs.remove(id)
-            }
+        items = estimate.foods.map { suggestion in
+            .suggested(suggestion, food: suggestion.match.flatMap(matcher.serverMatch) ?? matcher.localMatch(for: suggestion.name))
         }
+        phase = .review
     }
 
     private func sendFeedback(final: [MealPhotoItem]) {

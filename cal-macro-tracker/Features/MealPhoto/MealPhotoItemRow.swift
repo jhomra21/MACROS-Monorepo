@@ -5,7 +5,6 @@ struct MealPhotoItemRow: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @Binding var item: MealPhotoItem
-    let isMatching: Bool
     var amountFocus: FocusState<UUID?>.Binding
     let onChangeFood: () -> Void
 
@@ -24,8 +23,7 @@ struct MealPhotoItemRow: View {
             }
             Button(action: onChangeFood) {
                 HStack(spacing: 6) {
-                    if isMatching { ProgressView() }
-                    Text(item.food?.name ?? (isMatching ? "Matching…" : "Choose a food"))
+                    Text(item.food?.name ?? "Choose a food")
                         .multilineTextAlignment(.leading)
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.caption)
@@ -83,7 +81,7 @@ struct MealPhotoItemRow: View {
     private var nutritionText: String {
         guard item.isReadyToLog else { return "Enter an amount to log this food." }
         let nutrients = item.nutrients
-        return "\(nutrients.calories.roundedForDisplay) kcal • "
+        return "\(nutrients.calories.formatted(.number.precision(.fractionLength(0)))) kcal • "
             + MacroSummaryText.line(protein: nutrients.protein, carbs: nutrients.carbs, fat: nutrients.fat, separator: " • ", unit: "")
     }
 }

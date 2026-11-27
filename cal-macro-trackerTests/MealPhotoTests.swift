@@ -1,4 +1,5 @@
 import XCTest
+import SwiftData
 @testable import cal_macro_tracker
 
 @MainActor
@@ -23,6 +24,22 @@ final class MealPhotoTests: XCTestCase {
         XCTAssertTrue(estimate.foods[0].hiddenFatLikely)
         XCTAssertNil(estimate.foods[1].grams)
         XCTAssertEqual(estimate.foods[1].volumeMl, 200)
+    }
+
+    func testParsesServerMatchAndToleratesMissingOrNullMatch() throws {
+        let match =
+            #"{"source":"usdaFNDDS","fdcId":2709719,"description":"Tomatoes, raw","per100g":{"calories":20,"protein":0.9,"carbs":3.9,"fat":0.2,"sodium":5}}"#
+        let estimate = try MealPhotoResponseParser.parse(
+            response(
+                foods: """
+                    [{"name":"Cherry tomatoes","grams":50,"match":\(match)},
+                     {"name":"Lemon wedge","grams":20,"match":null},
+                     {"name":"Legacy food","grams":30}]
+                    """))
+        XCTAssertEqual(estimate.foods[0].match?.fdcId, 2_709_719)
+        XCTAssertEqual(estimate.foods[0].match?.per100g.sodium, 5)
+        XCTAssertNil(estimate.foods[1].match)
+        XCTAssertNil(estimate.foods[2].match)
     }
 
     func testDropsInvalidFoodsAndClampsGrams() throws {
@@ -115,6 +132,34 @@ final class MealPhotoTests: XCTestCase {
         XCTAssertEqual(item.nutrients.calories, 100, accuracy: 0.0001)
         XCTAssertEqual(item.nutrients.carbs, 20, accuracy: 0.0001)
         XCTAssertEqual(item.loggingAction?.quantityMultiplier ?? 0, 0.5, accuracy: 0.0001)
+    }
+
+    func testServerMatchBuildsPer100GramDraft() throws {
+        let match = MealPhotoFoodMatch(
+            source: "usdaFNDDS",
+            fdcId: 2_709_719,
+            description: "Tomatoes, raw",
+            per100g: .init(
+                calories: 20, protein: 0.9, carbs: 3.9, fat: 0.2, saturatedFat: nil, fiber: 1.2,
+                sugars: 2.6, sodium: 5, cholesterol: 0
+            )
+        )
+        let container = try ModelContainer(
+            for: FoodItem.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        )
+        let draft = MealPhotoMatcher(modelContext: container.mainContext).serverMatch(match)
+        XCTAssertEqual(draft?.name, "Tomatoes, raw")
+        XCTAssertEqual(draft?.servingDescription, "100 g")
+        XCTAssertEqual(draft?.gramsPerServing, 100)
+        XCTAssertEqual(draft?.caloriesPerServing, 20)
+        XCTAssertEqual(draft?.externalProductID, "usda-fndds:2709719")
+        XCTAssertEqual(draft?.sourceURL, "https://fdc.nal.usda.gov/food-details/2709719/nutrients")
+        XCTAssertEqual(
+            MealPhotoItem.suggested(MealPhotoSuggestedFood(name: "Cherry tomatoes", grams: 50), food: draft)
+                .nutrients.calories,
+            10
+        )
     }
 
     func testServingsOnlyFoodNeedsUserQuantity() {
