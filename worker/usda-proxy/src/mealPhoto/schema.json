@@ -11,7 +11,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "grams", "lowGrams", "highGrams", "preparation", "hiddenFatLikely", "volumeMl", "foodKey"],
+        "required": ["name", "grams", "lowGrams", "highGrams", "preparation", "hiddenFatLikely", "volumeMl", "foodKey", "genericName"],
         "properties": {
           "name": { "type": "string" },
           "grams": { "type": ["number", "null"] },
@@ -20,7 +20,8 @@
           "preparation": { "type": ["string", "null"] },
           "hiddenFatLikely": { "type": "boolean" },
           "volumeMl": { "type": ["number", "null"] },
-          "foodKey": { "type": ["string", "null"] }
+          "foodKey": { "type": ["string", "null"] },
+          "genericName": { "type": ["string", "null"] }
         }
       }
     }

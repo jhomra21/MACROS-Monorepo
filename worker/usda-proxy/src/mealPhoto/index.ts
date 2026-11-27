@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prompt } from './prompt'
 import responseSchema from './schema.json'
 import { clientKey } from '../rateLimit'
+import { matchGenericFood } from './genericMatch'
 
 const MODEL = 'gemini-3.5-flash-lite'
 const MAX_IMAGE_BYTES = 1_572_864
@@ -54,7 +55,8 @@ export function registerMealPhotoRoutes(app: MealPhotoApp): void {
       await counter.recordSuccess(installID, day)
       const duration = Date.now() - started
       console.info(JSON.stringify({ status: 200, durationMs: duration, model: MODEL }))
-      return Response.json({ requestId: crypto.randomUUID(), model: MODEL, ...result }, { headers: noStore })
+      const foods = result.foods.map(({ genericName, ...food }) => ({ ...food, match: matchGenericFood({ genericName, name: food.name, preparation: food.preparation }) }))
+      return Response.json({ requestId: crypto.randomUUID(), model: MODEL, status: result.status, foods }, { headers: noStore })
     } catch (error) {
       const duration = Date.now() - started
       const code = error instanceof GeminiTimeoutError ? 'upstream_timeout' : 'upstream_failed'
@@ -128,7 +130,7 @@ async function callGemini(env: Env, image: ArrayBuffer): Promise<Estimate> {
 }
 
 type Estimate = { status: 'ok' | 'not_food' | 'unclear' | 'packaged'; foods: Food[] }
-type Food = { name: string; grams: number | null; lowGrams: number | null; highGrams: number | null; preparation: string | null; hiddenFatLikely: boolean; volumeMl: number | null }
+type Food = { name: string; genericName: string | null; grams: number | null; lowGrams: number | null; highGrams: number | null; preparation: string | null; hiddenFatLikely: boolean; volumeMl: number | null }
 
 function sanitize(value: unknown): Estimate {
   if (typeof value !== 'object' || value == null) throw new Error('Malformed Gemini output')
@@ -142,10 +144,12 @@ function sanitize(value: unknown): Estimate {
     const lowGrams = finiteOrNull(food.lowGrams)
     const highGrams = finiteOrNull(food.highGrams)
     const volumeMl = finiteOrNull(food.volumeMl)
+    const genericName = typeof food.genericName === 'string' && food.genericName.trim().length > 0 ? food.genericName.trim().slice(0, 120) : null
     const preparation = food.preparation == null ? null : typeof food.preparation === 'string' ? food.preparation.slice(0, 120) : undefined
     if (preparation === undefined) return []
     return [{
       name: food.name.trim().slice(0, 120),
+      genericName,
       grams: grams == null ? null : clamp(grams, 0, 3000),
       lowGrams: lowGrams == null ? null : clamp(lowGrams, 0, 3000),
       highGrams: highGrams == null ? null : clamp(highGrams, 0, 3000),

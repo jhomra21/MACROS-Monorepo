@@ -352,6 +352,101 @@ try {
   assert.equal("foodKey" in mealPhotoBody.foods[0], false);
   pass("meal photo rejects missing/unsupported input and sanitizes a mocked Gemini estimate");
 
+  // Ways generic matching can fail, written before the matcher: wrong food family (lemon -> lemon cookie),
+  // sweet vs savory (cherry tomato -> cherry pie), plural/singular (tomatoes/tomato, fries/fry),
+  // preparation mismatch (grilled vs fried, raw vs cooked produce), qualifier-only match (spaghetti sauce for spaghetti),
+  // empty/unknown/very long names, and punctuation or markup in model text.
+  type MealMatch = { source: string; fdcId: number; description: string; per100g: Record<string, number> } | null;
+  type MealFood = { name: string; grams: number | null; preparation: string | null; match: MealMatch };
+  const geminiFoods = (foods: Record<string, unknown>[]) => ({
+    statusCode: 200,
+    data: JSON.stringify({ candidates: [{ content: { parts: [{ text: JSON.stringify({ status: "ok", foods }) }] } }] }),
+    responseOptions: { headers: { "content-type": "application/json" } },
+  });
+  const plate = (name: string, genericName: string | null, preparation: string | null, grams = 100) => (
+    { name, genericName, grams, lowGrams: null, highGrams: null, preparation, hiddenFatLikely: false, volumeMl: null, foodKey: null }
+  );
+  // [name, genericName, preparation, expected family, min kcal/100 g, max kcal/100 g]
+  const plateExpectations: [string, string, string | null, RegExp, number, number][] = [
+    ["Lemon wedge", "Lemon, raw", null, /^Lemon, raw/, 20, 40],
+    ["Cherry tomatoes", "Tomatoes, raw", null, /^Tomatoes, raw/, 10, 30],
+    ["Avocado", "Avocado, raw", null, /^Avocado, raw/, 140, 180],
+    ["Mixed greens", "Lettuce, raw", null, /^Lettuce, raw/, 10, 25],
+    ["Grilled salmon", "Fish, salmon, grilled", "grilled", /salmon/i, 150, 280],
+    ["Brown rice", "Rice, brown, cooked", "cooked", /^Rice, brown, cooked/, 100, 130],
+    ["White rice", "Rice, white, cooked", "cooked", /^Rice, white, cooked/, 100, 140],
+    ["French fries", "Potato, french fries, restaurant", "fried", /french fries/i, 250, 350],
+    ["Cheeseburger", "Cheeseburger, plain, on bun", null, /^Cheeseburger/, 200, 320],
+    ["Spaghetti with meat sauce", "Spaghetti with meat sauce", "cooked", /^Spaghetti with meat sauce/, 90, 160],
+    ["Olive oil", "Olive oil", null, /^Olive oil/, 850, 900],
+    ["Scrambled eggs", "Eggs, scrambled", "scrambled", /scrambled egg/i, 130, 220],
+    ["Grilled chicken breast", "Chicken breast, grilled", "grilled", /^Chicken breast/, 150, 230],
+    ["Steamed broccoli", "Broccoli, steamed", "steamed", /^Broccoli, (?:NS as to form, )?cooked/, 20, 80],
+  ];
+  const plateEdgeCases = [
+    plate("Lemon wedge", null, null),
+    plate("Zzyzx blorp", "Zzyzx blorp", null),
+    plate("Lemon, raw!!! (fresh) <b>100%</b>", null, null),
+    plate("Cherry tomatoes", null, null, 50),
+    plate("Grilled seasoned golden crispy ".repeat(4).slice(0, 120), null, null),
+    plate("Cookie", "Lemon, raw", null),
+  ];
+  let geminiCalls = 0;
+  const matchMock = createFetchMock(); matchMock.disableNetConnect(); mocks.push(matchMock);
+  matchMock.get("https://gemini.qa.invalid").intercept({ path: /.*/, method: "POST" }).reply(() => {
+    geminiCalls += 1;
+    return geminiFoods(geminiCalls === 1 ? plateExpectations.map(([name, genericName, preparation]) => plate(name, genericName, preparation)) : plateEdgeCases);
+  }).times(2);
+  const matchRuntime = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: matchMock,
+    bindings: { USDA_API_KEY: "qa-only", OPEN_FOOD_FACTS_USER_AGENT: "QA-local", GEMINI_API_KEY: "qa-only", GEMINI_BASE_URL: "https://gemini.qa.invalid" },
+    ratelimits: {
+      PACKAGED_SEARCH_LIMITER: { namespace_id: "9921", simple: { limit: 30, period: 60 } },
+      BARCODE_LIMITER: { namespace_id: "9922", simple: { limit: 60, period: 60 } },
+      USDA_SEARCH_LIMITER: { namespace_id: "9923", simple: { limit: 10, period: 60 } },
+      MEAL_PHOTO_LIMITER: { namespace_id: "9924", simple: { limit: 20, period: 60 } },
+    },
+    durableObjects: {
+      USDA_BUDGET: { className: "UsdaBudget", useSQLite: true },
+      MEAL_PHOTO_DAILY: { className: "MealPhotoDaily", useSQLite: true },
+    },
+  });
+  const estimatePhoto = () => request(matchRuntime.url, mealPhotoPath, {
+    method: "POST",
+    headers: { "content-type": "image/jpeg", "x-macros-install-id": "00000000-0000-4000-8000-000000000002" },
+    body: new Uint8Array([0xff, 0xd8, 0xff]),
+  });
+  const plateResponse = await estimatePhoto();
+  assert.equal(plateResponse.status, 200);
+  const plateFoods = (responseBody(plateResponse) as { foods: MealFood[] }).foods;
+  assert.equal(plateFoods.length, plateExpectations.length);
+  plateExpectations.forEach(([name, , preparation, family, minKcal, maxKcal], index) => {
+    const food = plateFoods[index]!;
+    assert.equal(food.name, name);
+    assert.equal(food.preparation, preparation);
+    assert.equal(food.grams, 100);
+    assert.notEqual(food.match, null, `${name} has no match`);
+    const match = food.match!;
+    assert.equal(match.source, "usdaFNDDS");
+    assert.equal(Number.isInteger(match.fdcId), true);
+    assert.match(match.description, family, `${name} matched ${match.description}`);
+    const kcal = match.per100g.calories;
+    assert.equal(kcal >= minKcal && kcal <= maxKcal, true, `${name} (${match.description}) ${kcal} kcal/100 g outside ${minKcal}-${maxKcal}`);
+    for (const key of ["protein", "carbs", "fat"]) assert.equal(Number.isFinite(match.per100g[key]), true, `${name} ${key}`);
+  });
+  pass("meal photo attaches a USDA FNDDS generic match in the expected food family and calorie range for 14 plate foods");
+
+  const edgeFoods = (responseBody(await estimatePhoto()) as { foods: MealFood[] }).foods;
+  assert.match(edgeFoods[0]!.match?.description ?? "", /^Lemon, raw/, "null genericName falls back to the plain name");
+  assert.equal(edgeFoods[1]!.match, null, "unknown food has no match");
+  assert.match(edgeFoods[2]!.match?.description ?? "", /^Lemon, raw/, "punctuation and markup do not break matching");
+  assert.match(edgeFoods[3]!.match?.description ?? "", /^Tomatoes, raw/);
+  assert.equal(edgeFoods[3]!.match!.per100g.calories < 30, true, "50 g cherry tomatoes stay low calorie");
+  assert.equal(edgeFoods[4]!.match, null, "a long name with no food noun has no match");
+  assert.match(edgeFoods[5]!.match?.description ?? "", /^Lemon, raw/, "genericName wins over the plain name");
+  assert.equal(edgeFoods.every((food) => "grams" in food && "preparation" in food && "volumeMl" in food && !("genericName" in food)), true);
+  pass("meal photo generic match falls back to the name, rejects unknown foods and keeps the existing response fields");
+
   const exhaustedBudget = await runtime("worker/usda-proxy/src/index.ts", {
     fetchMock: providers,
     bindings: {
