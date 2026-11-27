@@ -12,6 +12,7 @@ enum PaidFeature: CaseIterable {
     case customWidgetBackground
     case sharingInvites
     case sharedPersonWidget
+    case mealPhotoScan
 
     var requiredEntitlement: PaidEntitlement {
         .pro
