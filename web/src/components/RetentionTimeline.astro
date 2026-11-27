@@ -1,6 +1,6 @@
 ---
 // Periods as this policy states them. They match the food-search Worker's cache times (300, 3,600, and 86,400 seconds)
-// and 0.1 log sampling rate, the 7-day invite expiry, and the 365-day form purge.
+// and 0.1 log sampling rate, the 7-day invite expiry, Google's 55-day Gemini abuse-monitoring retention, and the 365-day form purge.
 const minutes = { minute: 1, hour: 60, day: 60 * 24, week: 60 * 24 * 7, year: 60 * 24 * 365 };
 
 // A log scale, so 5 minutes and 12 months both stay readable on one line.
@@ -13,6 +13,7 @@ const rows = [
 	{ name: 'Barcode responses', detail: 'Food-search cache', length: minutes.day, label: 'Up to 24 hours' },
 	{ name: 'Food-search operational logs', detail: 'Sampled, about 1 in 10 requests', length: minutes.week, label: 'Up to 7 days', sampled: true },
 	{ name: 'Sharing invite link', detail: 'The invite record stays until you delete your sharing profile', length: minutes.week, label: 'Stops working after 7 days' },
+	{ name: 'Meal photo scans at Google', detail: 'Abuse monitoring only, not used for training', length: minutes.day * 55, label: '55 days' },
 	{ name: 'Waitlist and support forms', detail: 'Then deleted', length: minutes.year, label: '12 months' },
 ];
 
