@@ -93,7 +93,7 @@ export function registerMealPhotoRoutes(app: MealPhotoApp): void {
 async function callGemini(env: Env, image: ArrayBuffer): Promise<Estimate> {
   if (env.GEMINI_API_KEY == null || env.GEMINI_API_KEY.length === 0) throw new Error('Missing Gemini configuration')
   const baseURL = env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com'
-  const endpoint = `${baseURL.replace(/\/$/, '')}/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(env.GEMINI_API_KEY)}`
+  const endpoint = `${baseURL.replace(/\/$/, '')}/v1beta/models/${MODEL}:generateContent`
   const deadline = Date.now() + GEMINI_TIMEOUT_MS
   const payload = {
     contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: 'image/jpeg', data: toBase64(new Uint8Array(image)) } }] }],
@@ -107,7 +107,8 @@ async function callGemini(env: Env, image: ArrayBuffer): Promise<Estimate> {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // Header, not a ?key= query, so the key never appears in request URLs or logs.
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
         body: JSON.stringify(payload),
         signal: controller.signal,
       })
@@ -178,7 +179,9 @@ function extractText(value: unknown): string {
 
 function toBase64(bytes: Uint8Array): string {
   let binary = ''
-  for (const byte of bytes) binary += String.fromCharCode(byte)
+  for (let index = 0; index < bytes.length; index += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000))
+  }
   return btoa(binary)
 }
 
@@ -196,7 +199,7 @@ function errorResponse(code: string, status: number, extraHeaders: Record<string
 
 async function readBoundedBody(request: Request): Promise<ArrayBuffer | Response> {
   const reader = request.body?.getReader()
-  if (reader == null) return errorResponse('upstream_failed', 502)
+  if (reader == null) return errorResponse('empty_body', 400)
   const chunks: Uint8Array[] = []
   let size = 0
   try {
@@ -213,7 +216,7 @@ async function readBoundedBody(request: Request): Promise<ArrayBuffer | Response
   } catch {
     return errorResponse('upstream_failed', 502)
   }
-  if (size === 0) return errorResponse('upstream_failed', 502)
+  if (size === 0) return errorResponse('empty_body', 400)
   const bytes = new Uint8Array(size)
   let offset = 0
   for (const chunk of chunks) {
