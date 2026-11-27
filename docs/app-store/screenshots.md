@@ -7,11 +7,11 @@ Apple's current [screenshot specifications](https://developer.apple.com/help/app
 - iPhone with Dynamic Island, medium display: **1179 × 2556** or **1206 × 2622**
 - iPhone with Dynamic Island, large display: **1260 × 2736**, **1290 × 2796**, or **1320 × 2868**
 
-The refreshed 1.1 set uses 1179 × 2556 for medium and 1260 × 2736 for large. All six share a pale background, large bold dark benefit caption, and a complete, centered iPhone with all four rounded corners visible. The phone frame sits below the caption with comfortable side and bottom margins. The 2026-11-25 refresh uses the same captions, type, background colors, and order; Goals was recaptured from the top of Settings → Daily Goals to remove the prior scroll artifact behind the status bar. See [the renderer README](screenshots-v2/README.md) for capture provenance. The separate 1.0 header and search creatives remain based on build 39.
+The refreshed set uses 1179 × 2556 for medium and 1260 × 2736 for large. All six share a pale background, large bold dark benefit caption, and a complete, centered iPhone with all four rounded corners visible. The phone uses Apple's official black iPhone 17 portrait bezel and sits below the caption with comfortable side and bottom margins. On 2026-11-27, all six screens were recaptured from `release/1.2` commit `b0b099e77ea1c259c50349320cc21d587c106ab4` using the DEBUG synthetic-data fixture on an iPhone 17e simulator (iOS 27.0, light mode, 9:41). See [the renderer README](screenshots-v2/README.md) for the bezel source, measured opening, and capture details. The separate 1.0 header and search creatives remain based on build 39.
 
 ## Screenshot order
 
-Full-size PNGs and a contact sheet are in ignored `build/evidence/2026-11-25-appstore-screenshots-1.2/screenshots-v2/`. Renderer source is [screenshots-v2/render.mjs](screenshots-v2/render.mjs).
+Full-size PNGs, `contact-sheet.png`, and `search-result-preview.png` are in ignored `build/evidence/2026-11-27-appstore-frames/out/`. Renderer source is [screenshots-v2/render.mjs](screenshots-v2/render.mjs).
 
 | # | Caption | Screen | Reason |
 | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ Full-size PNGs and a contact sheet are in ignored `build/evidence/2026-11-25-app
 | 2 | **Your day at a glance** | Home | Shows 1,310 kcal, macro rings, logged foods, and goals from synthetic demo data. |
 | 3 | **No account needed** | Add Food | Logging works without an account; the screen shows generic on-device foods and no branded remote results. |
 | 4 | **Log the amount you ate** | Grams quantity editor | Shows the editable food details and grams quantity mode. |
-| 5 | **See your food history** | History | Replaces the old Insights beat with a screen freshly captured from build 40. |
+| 5 | **See your food history** | History | Replaces the old Insights beat with a freshly captured synthetic log history. |
 | 6 | **Goals built around you** | Daily Goals in Settings | Shows editable daily targets and the recalculation entry point. |
 
 The former seven-beat plan is retired. It included a priced paywall; Apple guideline 2.3.7 prohibits prices and pricing terms in screenshots and previews. These six images contain no paywall or pricing.

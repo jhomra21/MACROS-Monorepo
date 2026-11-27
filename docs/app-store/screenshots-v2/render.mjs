@@ -6,11 +6,13 @@ import { chromium } from 'playwright';
 
 const repository = resolve(fileURLToPath(new URL('../../../', import.meta.url)));
 
-const evidence = resolve(repository, 'build/evidence/2026-11-25-appstore-screenshots-1.2');
+const evidence = resolve(repository, 'build/evidence/2026-11-27-appstore-frames');
 
 const captures = resolve(evidence, 'captures');
 
-const output = resolve(evidence, 'screenshots-v2');
+const output = resolve(evidence, 'out');
+
+const bezelPath = resolve(evidence, 'official-bezel/iphone-17-black-portrait.png');
 
 const profile = '/System/Library/ColorSync/Profiles/sRGB Profile.icc';
 
@@ -30,7 +32,7 @@ const screenshots = [
 
 await mkdir(output, { recursive: true });
 
-const dataUrl = async filename =>
+const captureDataUrl = async filename =>
   `data:image/png;base64,${(await readFile(resolve(captures, filename))).toString('base64')}`;
 
 const common = `
@@ -38,13 +40,130 @@ const common = `
 html, body { margin: 0; overflow: hidden; background: #f5f5f7; }
 body { position: relative; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
 .headline { position: absolute; top: 2.6%; left: 4%; width: 92%; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; }
-.device { position: absolute; left: 50%; top: 11%; width: 85%; aspect-ratio: .462; margin: 0; padding: .8%; transform: translateX(-50%); border: 1px solid #aeb2b8; border-radius: 9%; background: linear-gradient(112deg, #d6d9dd, #f7f8fa 18%, #aeb2b8 50%, #f7f8fa 82%, #c5c8cd); box-shadow: 0 32px 84px -30px #0005; }
-.display { position: relative; width: 100%; height: 100%; overflow: hidden; border: 1px solid #151619; border-radius: 8.3%; background: #f5f5f7; }
-.display::before { position: absolute; z-index: 1; top: 2.1%; left: 50%; width: 28%; height: 1.55%; transform: translateX(-50%); border-radius: 999px; background: #090a0c; content: ""; }
-.display img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.device { position: absolute; left: 50%; top: 13.8%; width: 84%; aspect-ratio: 1350 / 2760; margin: 0; transform: translateX(-50%); filter: drop-shadow(0 24px 36px #0003); }
+.screen { position: absolute; overflow: hidden; background: #f5f5f7; }
+.screen img, .bezel { position: absolute; display: block; width: 100%; height: 100%; }
+.screen img { inset: 0; object-fit: fill; }
+.bezel { inset: 0; }
 `;
 
 const browser = await chromium.launch({ headless: true, args: ['--force-color-profile=srgb'] });
+
+const dataUrl = async filename =>
+  `data:image/png;base64,${(await readFile(filename)).toString('base64')}`;
+
+const measureScreenOpening = async src => {
+  const page = await browser.newPage();
+  const opening = await page.evaluate(async source => {
+    const image = new Image();
+    image.src = source;
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    const width = canvas.width;
+    const height = canvas.height;
+    const visited = new Uint8Array(width * height);
+    const queue = new Int32Array(width * height);
+    const seed = Math.floor(height / 2) * width + Math.floor(width / 2);
+    let head = 0;
+    let tail = 0;
+    queue[tail++] = seed;
+    visited[seed] = 1;
+    let minX = width;
+    let minY = height;
+    let maxX = 0;
+    let maxY = 0;
+    let frameMinX = width;
+    let frameMinY = height;
+    let frameMaxX = 0;
+    let frameMaxY = 0;
+
+    while (head < tail) {
+      const index = queue[head++];
+      const x = index % width;
+      const y = (index - x) / width;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+      const neighbors = [
+        x > 0 ? index - 1 : -1,
+        x + 1 < width ? index + 1 : -1,
+        y > 0 ? index - width : -1,
+        y + 1 < height ? index + width : -1,
+      ];
+      for (const neighbor of neighbors) {
+        if (neighbor >= 0 && !visited[neighbor] && pixels[neighbor * 4 + 3] === 0) {
+          visited[neighbor] = 1;
+          queue[tail++] = neighbor;
+        }
+      }
+    }
+
+    for (let index = 0; index < width * height; index++) {
+      if (pixels[index * 4 + 3] > 0) {
+        const x = index % width;
+        const y = (index - x) / width;
+        frameMinX = Math.min(frameMinX, x);
+        frameMaxX = Math.max(frameMaxX, x);
+        frameMinY = Math.min(frameMinY, y);
+        frameMaxY = Math.max(frameMaxY, y);
+      }
+    }
+
+    const contour = [];
+    for (let y = minY; y < minY + 220; y++) {
+      for (let x = minX; x < minX + 500; x++) {
+        if (visited[y * width + x]) {
+          contour.push([y - minY, x - minX]);
+          break;
+        }
+      }
+    }
+    let radius = 0;
+    let minimumError = Infinity;
+    for (let candidate = 80; candidate <= 500; candidate += 0.1) {
+      const error = contour.reduce((sum, [y, x]) => {
+        const curveX = candidate - Math.sqrt(Math.max(0, candidate ** 2 - (candidate - y) ** 2));
+        return sum + (x - curveX) ** 2;
+      }, 0) / contour.length;
+      if (error < minimumError) {
+        minimumError = error;
+        radius = candidate;
+      }
+    }
+    const apertureSamples = [
+      [0.18, 0.02],
+      [0.82, 0.02],
+      [0.002, 0.5],
+      [0.998, 0.5],
+      [0.18, 0.98],
+      [0.82, 0.98],
+    ].map(([relativeX, relativeY]) => {
+      const x = Math.round(minX + (maxX - minX) * relativeX);
+      const y = Math.round(minY + (maxY - minY) * relativeY);
+      return { x, y, alpha: pixels[(y * width + x) * 4 + 3] };
+    });
+    return {
+      width,
+      height,
+      x: minX,
+      y: minY,
+      right: maxX + 1,
+      bottom: maxY + 1,
+      radius,
+      transparentPixels: tail,
+      apertureSamples,
+      frame: { left: frameMinX, top: frameMinY, right: frameMaxX + 1, bottom: frameMaxY + 1 },
+    };
+  }, src);
+  await page.close();
+  return opening;
+};
 
 const renderPage = async (name, markup, width, height) => {
   const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1, colorScheme: 'light' });
@@ -56,14 +175,25 @@ const renderPage = async (name, markup, width, height) => {
     await document.fonts.ready;
     await Promise.all([...document.images].map(image => image.decode()));
     const device = document.querySelector('.device');
-    const screen = document.querySelector('.display, .cell') ?? document.body;
+    const screen = document.querySelector('.screen, .cell') ?? document.body;
     const headline = document.querySelector('.headline');
+    const bezel = document.querySelector('.bezel');
+    const deviceRect = device?.getBoundingClientRect();
+    const frame = device ? device.dataset.frame.split(',').map(Number) : null;
+    const phone = deviceRect && frame
+      ? {
+          left: deviceRect.left + deviceRect.width * frame[0] / bezel.naturalWidth,
+          right: deviceRect.left + deviceRect.width * frame[2] / bezel.naturalWidth,
+        }
+      : null;
 
     return {
       image: { width: document.images[0].naturalWidth, height: document.images[0].naturalHeight },
+      bezel: bezel ? { width: bezel.naturalWidth, height: bezel.naturalHeight } : null,
       device: device?.getBoundingClientRect().toJSON() ?? null,
       screen: screen.getBoundingClientRect().toJSON(),
       canvas: { width: document.body.clientWidth, height: document.body.clientHeight },
+      phoneCenterOffset: phone ? (phone.left + phone.right) / 2 - innerWidth / 2 : null,
       headline: headline?.getBoundingClientRect().toJSON() ?? null,
       headlineClipped: headline ? headline.scrollWidth > headline.clientWidth : false,
       headlineOverlapsScreen: headline ? headline.getBoundingClientRect().bottom >= screen.getBoundingClientRect().top : false,
@@ -79,33 +209,119 @@ const renderPage = async (name, markup, width, height) => {
   if (
     errors.length ||
     (isScreenshot &&
-      (report.headlineClipped || report.headlineOverlapsScreen || !report.deviceFitsCanvas))
+      (report.headlineClipped || report.headlineOverlapsScreen || !report.deviceFitsCanvas ||
+        Math.abs(report.phoneCenterOffset) > 2))
   ) {
     throw new Error(JSON.stringify({ name, errors, report }));
   }
   const path = resolve(output, `${name}.png`);
-  await page.screenshot({ path, type: 'png' });
+  const screenshot = await page.screenshot({ type: 'png' });
+  const raster = await page.evaluate(async ({ png, screen }) => {
+    const image = new Image();
+    image.src = `data:image/png;base64,${png}`;
+    await image.decode();
+    const source = document.querySelector('.screen img');
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    const sourceCanvas = source ? document.createElement('canvas') : null;
+    const sourcePixels = sourceCanvas
+      ? (() => {
+          sourceCanvas.width = source.naturalWidth;
+          sourceCanvas.height = source.naturalHeight;
+          const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+          sourceContext.drawImage(source, 0, 0);
+          return sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data;
+        })()
+      : null;
+    let nonOpaquePixels = 0;
+    for (let index = 3; index < pixels.length; index += 4) {
+      if (pixels[index] !== 255) nonOpaquePixels++;
+    }
+    const samples = source
+      ? [
+          [0.18, 0.02],
+          [0.82, 0.02],
+          [0.002, 0.5],
+          [0.998, 0.5],
+          [0.18, 0.88],
+          [0.82, 0.88],
+        ].map(([x, y]) => {
+          const px = Math.round(screen.x + screen.width * x);
+          const py = Math.round(screen.y + screen.height * y);
+          const offset = (py * canvas.width + px) * 4;
+          const sx = Math.min(sourceCanvas.width - 1, Math.round(sourceCanvas.width * x));
+          const sy = Math.min(sourceCanvas.height - 1, Math.round(sourceCanvas.height * y));
+          const sourceOffset = (sy * sourceCanvas.width + sx) * 4;
+          const rgba = [...pixels.slice(offset, offset + 4)];
+          const sourceRGBA = [...sourcePixels.slice(sourceOffset, sourceOffset + 4)];
+          const difference = Math.max(
+            ...rgba.slice(0, 3).map((value, channel) => Math.abs(value - sourceRGBA[channel])),
+          );
+          return { x: px, y: py, rgba, sourceRGBA, difference };
+        })
+      : [];
+    return { width: canvas.width, height: canvas.height, nonOpaquePixels, samples };
+  }, { png: screenshot.toString('base64'), screen: report.screen });
+  if (
+    raster.nonOpaquePixels ||
+    raster.samples.some(sample => sample.rgba[3] !== 255) ||
+    raster.samples.some(sample => sample.difference > 12) ||
+    raster.width !== width ||
+    raster.height !== height
+  ) {
+    throw new Error(JSON.stringify({ name, raster }));
+  }
+  await writeFile(path, screenshot);
   await page.close();
   const profiledPath = `${path}.srgb.png`;
   await rm(profiledPath, { force: true });
   execFileSync('sips', ['-m', profile, path, '--out', profiledPath]);
   await rename(profiledPath, path);
-  console.log(JSON.stringify({ name, errors, report }));
+  console.log(JSON.stringify({ name, errors, report, raster }));
 };
 
 try {
-  const data = new Map(await Promise.all(screenshots.map(async item => [item.file, await dataUrl(item.file)])));
+  const data = new Map(await Promise.all(screenshots.map(async item => [item.file, await captureDataUrl(item.file)])));
+  const bezelData = await dataUrl(bezelPath);
+  const screenOpening = await measureScreenOpening(bezelData);
+  const bezelWidth = screenOpening.width;
+  const bezelHeight = screenOpening.height;
+  if (
+    !screenOpening.transparentPixels ||
+    !screenOpening.radius ||
+    screenOpening.apertureSamples.some(sample => sample.alpha !== 0)
+  ) {
+    throw new Error(`Could not measure bezel screen opening: ${JSON.stringify(screenOpening)}`);
+  }
+  console.log(JSON.stringify({ screenOpening }));
   const rendered = [];
 
   for (const size of dimensions) {
     const titleSize = Math.round(size.width * 0.062);
-    const deviceSize = Math.round(size.width * 0.85);
+    const deviceSize = Math.round(size.width * 0.845);
+    const holeLeft = screenOpening.x / bezelWidth * 100;
+    const holeTop = screenOpening.y / bezelHeight * 100;
+    const holeWidth = (screenOpening.right - screenOpening.x) / bezelWidth * 100;
+    const holeHeight = (screenOpening.bottom - screenOpening.y) / bezelHeight * 100;
+    const radiusX = screenOpening.radius / bezelWidth * 100;
+    const radiusY = screenOpening.radius / bezelHeight * 100;
+    const frame = screenOpening.frame;
+    const frameCenterOffset = (frame.left + frame.right) / 2 - bezelWidth / 2;
+    const frameCenterOffsetAtSize = frameCenterOffset * deviceSize / bezelWidth;
 
     const markupFor = (item, src) => `<!doctype html><html lang="en"><meta charset="utf-8"><title>${item.caption}</title><style>${common}
       body { width:${size.width}px; height:${size.height}px; }
       .headline { font-size:${titleSize}px; }
-      .device { width:${deviceSize}px; }
-      </style><body><h1 class="headline">${item.caption}</h1><figure class="device"><div class="display"><img src="${src}" alt="MACROS app screen"></div></figure></body></html>`;
+      .device { width:${deviceSize}px; transform:translateX(calc(-50% - ${frameCenterOffsetAtSize}px)); }
+      .screen { left:${holeLeft}%; top:${holeTop}%; width:${holeWidth}%; height:${holeHeight}%; border-radius:${radiusX}% / ${radiusY}%; }
+      </style><body><h1 class="headline">${item.caption}</h1><figure class="device" data-frame="${frame.left},${frame.top},${frame.right},${frame.bottom}">
+        <div class="screen"><img src="${src}" alt="MACROS app screen"></div>
+        <img class="bezel" src="${bezelData}" alt="Apple iPhone 17 Black portrait bezel">
+      </figure></body></html>`;
 
     for (const item of screenshots) {
       const name = `${item.slug}-${size.suffix}`;
@@ -164,7 +380,7 @@ try {
   );
   await writeFile(
     resolve(output, 'screenshots.json'),
-    `${JSON.stringify({ captures: screenshots, sizes: dimensions, rendered: rendered.map(({ caption, slug, size, name }) => ({ caption, slug, size, file: `${name}.png` })) }, null, 2)}\n`,
+    `${JSON.stringify({ captures: screenshots, sizes: dimensions, bezel: { source: 'https://developer.apple.com/design/resources/', model: 'iPhone 17', color: 'Black', screenOpening }, rendered: rendered.map(({ caption, slug, size, name }) => ({ caption, slug, size, file: `${name}.png` })) }, null, 2)}\n`,
   );
 } finally {
   await browser.close();
