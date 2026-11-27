@@ -1,6 +1,6 @@
 # App Store privacy labels: meal photo scanning
 
-This is a planned mapping for the optional MACROS Pro meal photo scanning flow. Confirm it against the final app binary, request implementation, vendor terms, and current App Store Connect questionnaire before saving the privacy answers. **Owner confirmation in App Store Connect is pending when this feature ships.**
+This is a planned mapping for optional meal photo scanning, available to MACROS Pro subscribers and with a 5-scan trial for non-Pro users. Confirm it against the final app binary, request implementation, vendor terms, and current App Store Connect questionnaire before saving the privacy answers. **Owner confirmation in App Store Connect is pending when this feature ships.**
 
 ## Planned flow
 
@@ -20,5 +20,7 @@ MACROS relays the request and does not store the photo or model result. It may r
 Do not add **User Content → Other User Content** for the fixed prompt alone. Reassess if the app begins sending user-entered text, such as a user-written description or note. Do not claim the image is not linked to identity without checking whether the final request or service logs retain an IP address, device identifier, or other linkable metadata. The planned feature is not used for tracking.
 
 Apple's guidance says data transmitted off device and retained in a form accessible to the developer or third-party partner beyond servicing the request is collected. The photo is sent to a third party and Google retains prompts and outputs for 55 days, so assess the photo under the corresponding data type even though the feature does not store it in MACROS. Select **App Functionality**, not analytics or advertising.
+
+Google reference: [Gemini API usage policies](https://ai.google.dev/gemini-api/docs/usage-policies).
 
 Apple reference: [App Privacy Details](https://developer.apple.com/app-store/app-privacy-details/).
