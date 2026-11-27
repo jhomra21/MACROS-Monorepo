@@ -300,6 +300,58 @@ try {
   assert.equal(cachedAgain.headers.get("Cache-Control")?.startsWith("public"), true);
   pass("route limiter returns 429 while cache hits bypass the limiter");
 
+  providers.get("https://gemini.qa.invalid").intercept({ path: /.*/, method: "POST" }).reply(() => ({
+    statusCode: 200,
+    data: JSON.stringify({
+      candidates: [{ content: { parts: [{ text: JSON.stringify({
+        status: "ok",
+        foods: [{ name: "QA rice", grams: 3201, lowGrams: 100, highGrams: 200, preparation: null, hiddenFatLikely: false, volumeMl: null, foodKey: null }],
+      }) }] } }],
+    }),
+    responseOptions: { headers: { "content-type": "application/json" } },
+  })).persist();
+
+  const mealPhoto = await runtime("worker/usda-proxy/src/index.ts", {
+    fetchMock: providers,
+    bindings: {
+      USDA_API_KEY: "qa-only",
+      OPEN_FOOD_FACTS_USER_AGENT: "QA-local",
+      GEMINI_API_KEY: "qa-only",
+      GEMINI_BASE_URL: "https://gemini.qa.invalid",
+    },
+    ratelimits: {
+      PACKAGED_SEARCH_LIMITER: { namespace_id: "9911", simple: { limit: 30, period: 60 } },
+      BARCODE_LIMITER: { namespace_id: "9912", simple: { limit: 60, period: 60 } },
+      USDA_SEARCH_LIMITER: { namespace_id: "9913", simple: { limit: 10, period: 60 } },
+      MEAL_PHOTO_LIMITER: { namespace_id: "9914", simple: { limit: 20, period: 60 } },
+    },
+    durableObjects: {
+      USDA_BUDGET: { className: "UsdaBudget", useSQLite: true },
+      MEAL_PHOTO_DAILY: { className: "MealPhotoDaily", useSQLite: true },
+    },
+  });
+  const mealPhotoPath = "/v1/meal-photo/estimate";
+  const missingInstall = await request(mealPhoto.url, mealPhotoPath, {
+    method: "POST", headers: { "content-type": "image/jpeg" }, body: new Uint8Array([1]),
+  });
+  assert.equal(missingInstall.status, 400);
+  assert.deepEqual(responseBody(missingInstall), { error: "missing_install_id" });
+  const unsupportedImage = await request(mealPhoto.url, mealPhotoPath, {
+    method: "POST", headers: { "content-type": "image/png", "x-macros-install-id": "00000000-0000-4000-8000-000000000001" }, body: new Uint8Array([1]),
+  });
+  assert.equal(unsupportedImage.status, 415);
+  const estimate = await request(mealPhoto.url, mealPhotoPath, {
+    method: "POST",
+    headers: { "content-type": "image/jpeg", "x-macros-install-id": "00000000-0000-4000-8000-000000000001" },
+    body: new Uint8Array([0xff, 0xd8, 0xff]),
+  });
+  assert.equal(estimate.status, 200);
+  assert.equal(estimate.headers.get("Cache-Control"), "no-store");
+  const mealPhotoBody = responseBody(estimate) as { foods: { grams: number; foodKey?: string }[] };
+  assert.equal(mealPhotoBody.foods[0].grams, 3000);
+  assert.equal("foodKey" in mealPhotoBody.foods[0], false);
+  pass("meal photo rejects missing/unsupported input and sanitizes a mocked Gemini estimate");
+
   const exhaustedBudget = await runtime("worker/usda-proxy/src/index.ts", {
     fetchMock: providers,
     bindings: {
