@@ -4,6 +4,10 @@ Current history. Older records retain their original wording and dated limitatio
 
 See the [app archive index](docs/history/app/README.md) for every archived heading. See [plans](docs/plans/README.md) for current obligations.
 
+## 2026-11-27 Meal photo scanning (app side)
+
+Add Food has a "Scan a meal" entry (camera or photo library; Pro badge and free scans left for people without Pro). The photo is shrunk to a 1024 px JPEG and sent to the planned `/v1/meal-photo/estimate` route with a random per-install ID. A pure parser validates the reply, a matcher maps each suggested food to the on-device catalog first and then the existing remote search, and a review screen lets the user change the match, edit grams (volume-only items must be confirmed), remove or add foods, answer the oil prompt, and log through the normal path. Nutrition is always matched food data times grams. Non-Pro people get 5 lifetime scans counted on the device, then the Pro paywall. After logging (or leaving the review screen) one counts-only accuracy report goes to `/v1/meal-photo/feedback`. A DEBUG launch argument (`-MealPhotoMockResponse typical-plate|not-food|volume-only-drink|error`) stands in for the Worker, which is not deployed yet. Validation: unit suite 330/330 and UI suite 25 tests (24 passed, then the one camera performance failure passed alone) on iPhone 17e.
+
 ## 2026-11-26 Version 1.2, build 42
 
 Includes the dashboard tutorial redesign, contextual Pro cards and optional onboarding Pro step, permanent streak badges with the 48-hour rule and weekly flex day, in-app support requests, and updated App Store rating prompt timing.

@@ -16,6 +16,7 @@ struct AddFoodScreen: View {
     @State private var isScanActionBarCompact = false
     @State private var searchScrollTracking = AddFoodSearchScrollTracking()
     @State private var isFoodCameraPresented = false
+    @State private var mealPhoto: MealPhotoCapture?
     @Namespace private var cameraTransition
     private let cameraTransitionSourceID = "search-camera"
 
@@ -33,21 +34,24 @@ struct AddFoodScreen: View {
                 Group {
                     switch selectedMode {
                     case .search:
-                        SearchFoodListView(
-                            loggingDay: loggingDay,
-                            suggestions: foodSuggestions,
-                            remoteSearch: remoteSearch,
-                            searchText: searchText,
-                            onFoodLogged: closeSheet,
-                            onScrollOffsetChange: updateScanActionBarDisplay
-                        )
-                        .searchable(
-                            text: $searchText,
-                            placement: .appNavigationDrawer,
-                            prompt: "Search foods"
-                        )
-                        .onSubmit(of: .search) {
-                            remoteSearch.submit(query: trimmedSearchText)
+                        VStack(spacing: 0) {
+                            MealPhotoEntry { mealPhoto = MealPhotoCapture(image: $0) }
+                            SearchFoodListView(
+                                loggingDay: loggingDay,
+                                suggestions: foodSuggestions,
+                                remoteSearch: remoteSearch,
+                                searchText: searchText,
+                                onFoodLogged: closeSheet,
+                                onScrollOffsetChange: updateScanActionBarDisplay
+                            )
+                            .searchable(
+                                text: $searchText,
+                                placement: .appNavigationDrawer,
+                                prompt: "Search foods"
+                            )
+                            .onSubmit(of: .search) {
+                                remoteSearch.submit(query: trimmedSearchText)
+                            }
                         }
                     case .manual:
                         ManualFoodEntryScreen(loggingDay: loggingDay, onFoodLogged: closeSheet)
@@ -68,6 +72,9 @@ struct AddFoodScreen: View {
             ToolbarItem(placement: .principal) {
                 modePicker
             }
+        }
+        .navigationDestination(item: $mealPhoto) { capture in
+            MealPhotoScanScreen(capture: capture, loggingDay: loggingDay, onFoodLogged: closeSheet)
         }
         .fullScreenCover(isPresented: $isFoodCameraPresented) {
             FoodCameraSheet(loggingDay: loggingDay, onFoodLogged: closeSheet)

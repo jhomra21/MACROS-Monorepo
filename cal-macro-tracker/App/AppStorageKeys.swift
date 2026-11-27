@@ -18,6 +18,8 @@ enum AppStorageKeys {
     static let sharingLastUploadedSnapshotHash = "sharingLastUploadedSnapshotHash"
     static let reviewPromptedAppVersion = "reviewPromptedAppVersion"
     static let reviewLastRequestedAt = "reviewLastRequestedAt"
+    static let mealPhotoTrialScansUsed = "mealPhotoTrialScansUsed"
+    static let mealPhotoInstallID = "mealPhotoInstallID"
     static let isProPaywallPresented = "isProPaywallPresented"
     static let streakFlexDays = "streakFlexDays"
     static let streakHighestBadgeDays = "streakHighestBadgeDays"

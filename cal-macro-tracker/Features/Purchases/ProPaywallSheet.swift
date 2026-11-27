@@ -3,7 +3,7 @@ import SwiftUI
 
 enum ProPaywallContext: String, CaseIterable, Identifiable {
     case insights, sharingInvites, sharedPersonWidget, ringColors, weightTrends, healthWeightImport, backup, reminders, widgetBackground,
-        general
+        mealPhoto, general
 
     var id: Self { self }
 
@@ -18,6 +18,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .backup: "Backup export and import"
         case .reminders: "Multiple reminders"
         case .widgetBackground: "Widget backgrounds"
+        case .mealPhoto: "Meal photo scanning"
         case .general: ProLegalLinks.name
         }
     }
@@ -33,6 +34,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         case .backup: "arrow.down.doc"
         case .reminders: "bell.badge"
         case .widgetBackground: "photo"
+        case .mealPhoto: "fork.knife"
         case .general: "sparkles"
         }
     }
@@ -40,7 +42,7 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
     var benefits: [Self] {
         let all: [Self] = [
             .insights, .sharingInvites, .sharedPersonWidget, .weightTrends, .healthWeightImport, .backup, .ringColors, .widgetBackground,
-            .reminders
+            .reminders, .mealPhoto
         ]
         return self == .general ? all : [self] + all.filter { $0 != self }
     }
@@ -454,6 +456,11 @@ private struct ProFeature: Identifiable {
             id: "widgets", title: "Shared widgets", subtitle: "A friend’s rings on your Home Screen",
             symbol: ProPaywallContext.sharedPersonWidget.symbol,
             contexts: [.sharedPersonWidget], visual: .rings, appearance: .rings
+        ),
+        ProFeature(
+            id: "mealPhoto", title: "Meal photo scanning", subtitle: "Snap a plate, review the foods, log in seconds",
+            symbol: ProPaywallContext.mealPhoto.symbol,
+            contexts: [.mealPhoto], appearance: .blue
         ),
         ProFeature(
             id: "weight", title: "Weight trends", subtitle: "Plus import from Apple Health",

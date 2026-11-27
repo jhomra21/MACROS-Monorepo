@@ -17,6 +17,8 @@ struct UITestFixture {
     let cameraImagePath: String?
     /// Rendering a share image takes milliseconds, too fast for a test to see the busy state.
     let holdsShareRender: Bool
+    /// Meal photo trial scans already used, so a test can reach the paywall without five scans.
+    let mealPhotoTrialScansUsed: Int
 
     static let current: UITestFixture? = {
         let environment = ProcessInfo.processInfo.environment
@@ -27,12 +29,14 @@ struct UITestFixture {
             isRemoteOffline: environment["MACROS_FIXTURE_REMOTE"] == "offline",
             exportDirectory: environment["MACROS_EXPORT_DIR"].map { URL(fileURLWithPath: $0, isDirectory: true) },
             cameraImagePath: environment["MACROS_FIXTURE_CAMERA_IMAGE"],
-            holdsShareRender: environment["MACROS_FIXTURE_HOLD_RENDER"] == "1"
+            holdsShareRender: environment["MACROS_FIXTURE_HOLD_RENDER"] == "1",
+            mealPhotoTrialScansUsed: environment["MACROS_FIXTURE_MEAL_TRIAL_USED"].flatMap(Int.init) ?? 0
         )
     }()
 
     func apply(to entitlements: AppEntitlements) {
         UserDefaults.standard.set(isSharingOn, forKey: AppStorageKeys.isSharingDeviceEnabled)
+        UserDefaults.standard.set(mealPhotoTrialScansUsed, forKey: AppStorageKeys.mealPhotoTrialScansUsed)
         entitlements.update(
             EntitlementResolution(
                 source: isPro ? .lifetime : nil, expiration: nil, hasActiveSubscription: false
