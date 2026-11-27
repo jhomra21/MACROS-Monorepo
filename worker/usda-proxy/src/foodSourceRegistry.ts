@@ -1,6 +1,7 @@
 import type { Context } from 'hono'
 import type { FoodSearchDependencies, SourcePage } from './foodSearchTypes'
 import { createOpenFoodFactsSource } from './foodSources/openFoodFacts'
+import { createRestaurantMenusSource } from './foodSources/restaurantMenus'
 import { createUSDASource } from './foodSources/usda'
 import { awaitWithAbort } from './http'
 import type { HTTPFetcher } from './types'
@@ -38,6 +39,7 @@ export async function foodSearchDependencies(
     deadline,
     // This is the only registry: add/remove adapters here, never in the app.
     sources: [
+      createRestaurantMenusSource(),
       createOpenFoodFactsSource({
         userAgent: c.env.OPEN_FOOD_FACTS_USER_AGENT,
         fetcher: sourceFetcher('openFoodFacts'),

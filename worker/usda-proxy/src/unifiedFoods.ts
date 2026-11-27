@@ -87,8 +87,9 @@ async function loadSource(
   dependencies: FoodSearchDependencies,
 ): Promise<SourcePage> {
   // USDA pages use version 4 since its nutrient basis changed; other sources keep their warm entries.
+  const cache = source.cacheable === false ? undefined : dependencies.cache
   const key = JSON.stringify([source.id === 'usda' ? 4 : 3, source.id, query, cursor ?? '1'])
-  const cached = await dependencies.cache?.read(key)
+  const cached = await cache?.read(key)
 
   if (cached != null) return cached
 
@@ -97,7 +98,7 @@ async function loadSource(
 
   if (dependencies.deadline.signal.aborted) throw dependencies.deadline.signal.reason
   const ttl = page.items.length === 0 ? 300 : source.id === 'usda' ? 86400 : 3600
-  await dependencies.cache?.write(key, page, ttl)
+  await cache?.write(key, page, ttl)
 
   return page
 }

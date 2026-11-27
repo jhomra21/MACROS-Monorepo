@@ -13,6 +13,7 @@ export interface NormalizedFood {
   externalProductID: string
   sourceName?: string
   sourceURL?: string
+  retrievedAt?: string
   name: string
   brand?: string
   barcode?: string
@@ -34,6 +35,8 @@ export interface SourcePage {
 
 export interface FoodSource {
   id: string
+  /** False for sources answered from bundled data: a cached page could only serve stale results. */
+  cacheable?: boolean
   search(query: string, cursor: string | null, deadline: SearchDeadline): Promise<SourcePage>
 }
 
