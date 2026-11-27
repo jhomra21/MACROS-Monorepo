@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const repository = resolve(fileURLToPath(new URL('../../../', import.meta.url)));
 
-const evidence = resolve(repository, 'build/evidence/2026-11-27-appstore-frames');
+const evidence = resolve(repository, 'build/evidence/2026-11-27-appstore-frames2');
 
 const captures = resolve(evidence, 'captures');
 
@@ -23,11 +23,12 @@ const dimensions = [
 
 const screenshots = [
   { file: 'scan-review.png', caption: 'Scan any label', slug: '01-scan-any-label' },
-  { file: 'home.png', caption: 'Your day at a glance', slug: '02-your-day-at-a-glance' },
-  { file: 'add-food.png', caption: 'No account needed', slug: '03-no-account-needed' },
-  { file: 'grams-editor.png', caption: 'Log the amount you ate', slug: '04-log-the-amount-you-ate' },
-  { file: 'history.png', caption: 'See your food history', slug: '05-see-your-food-history' },
-  { file: 'goal-settings.png', caption: 'Goals built around you', slug: '06-goals-built-around-you' },
+  { file: 'meal-photo.png', caption: 'Snap a photo of your meal', slug: '02-snap-a-photo-of-your-meal' },
+  { file: 'home.png', caption: 'Your day at a glance', slug: '03-your-day-at-a-glance' },
+  { file: 'add-food.png', caption: 'No account needed', slug: '04-no-account-needed' },
+  { file: 'grams-editor.png', caption: 'Log the amount you ate', slug: '05-log-the-amount-you-ate' },
+  { file: 'history.png', caption: 'See your food history', slug: '06-see-your-food-history' },
+  { file: 'goal-settings.png', caption: 'Goals built around you', slug: '07-goals-built-around-you' },
 ];
 
 await mkdir(output, { recursive: true });
@@ -39,8 +40,9 @@ const common = `
 * { box-sizing: border-box; }
 html, body { margin: 0; overflow: hidden; background: #f5f5f7; }
 body { position: relative; color: #1d1d1f; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
-.headline { position: absolute; top: 2.6%; left: 4%; width: 92%; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; }
-.device { position: absolute; left: 50%; top: 13.8%; width: 84%; aspect-ratio: 1350 / 2760; margin: 0; transform: translateX(-50%); filter: drop-shadow(0 24px 36px #0003); }
+.headline { position: absolute; left: 4%; width: 92%; margin: 0; text-align: center; font-weight: 750; letter-spacing: -.045em; line-height: 1.02; }
+
+.device { position: absolute; aspect-ratio: 1350 / 2760; margin: 0; filter: drop-shadow(0 24px 36px #0003); }
 .screen { position: absolute; overflow: hidden; background: #f5f5f7; }
 .screen img, .bezel { position: absolute; display: block; width: 100%; height: 100%; }
 .screen img { inset: 0; object-fit: fill; }
@@ -184,6 +186,8 @@ const renderPage = async (name, markup, width, height) => {
       ? {
           left: deviceRect.left + deviceRect.width * frame[0] / bezel.naturalWidth,
           right: deviceRect.left + deviceRect.width * frame[2] / bezel.naturalWidth,
+          top: deviceRect.top + deviceRect.width * frame[1] / bezel.naturalWidth,
+          bottom: deviceRect.top + deviceRect.width * frame[3] / bezel.naturalWidth,
         }
       : null;
 
@@ -196,11 +200,13 @@ const renderPage = async (name, markup, width, height) => {
       phoneCenterOffset: phone ? (phone.left + phone.right) / 2 - innerWidth / 2 : null,
       headline: headline?.getBoundingClientRect().toJSON() ?? null,
       headlineClipped: headline ? headline.scrollWidth > headline.clientWidth : false,
-      headlineOverlapsScreen: headline ? headline.getBoundingClientRect().bottom >= screen.getBoundingClientRect().top : false,
-      deviceFitsCanvas: device
-        ? device.getBoundingClientRect().left >= innerWidth * 0.06 &&
-          device.getBoundingClientRect().right <= innerWidth * 0.94 &&
-          device.getBoundingClientRect().bottom <= innerHeight * 0.96
+      headlineOverlapsScreen: headline && phone ? headline.getBoundingClientRect().bottom >= phone.top : false,
+      phone,
+      deviceFitsCanvas: phone
+        ? phone.left >= innerWidth * 0.05 - 1 &&
+          innerWidth - phone.right >= innerWidth * 0.05 - 1 &&
+          innerHeight - phone.bottom >= innerHeight * 0.02 &&
+          phone.top >= 0
         : true,
     };
   });
@@ -210,7 +216,7 @@ const renderPage = async (name, markup, width, height) => {
     errors.length ||
     (isScreenshot &&
       (report.headlineClipped || report.headlineOverlapsScreen || !report.deviceFitsCanvas ||
-        Math.abs(report.phoneCenterOffset) > 2))
+        Math.abs(report.phoneCenterOffset) > 1))
   ) {
     throw new Error(JSON.stringify({ name, errors, report }));
   }
@@ -247,8 +253,8 @@ const renderPage = async (name, markup, width, height) => {
           [0.82, 0.02],
           [0.002, 0.5],
           [0.998, 0.5],
-          [0.18, 0.88],
-          [0.82, 0.88],
+          [0.18, 0.97],
+          [0.82, 0.97],
         ].map(([x, y]) => {
           const px = Math.round(screen.x + screen.width * x);
           const py = Math.round(screen.y + screen.height * y);
@@ -302,7 +308,6 @@ try {
 
   for (const size of dimensions) {
     const titleSize = Math.round(size.width * 0.062);
-    const deviceSize = Math.round(size.width * 0.845);
     const holeLeft = screenOpening.x / bezelWidth * 100;
     const holeTop = screenOpening.y / bezelHeight * 100;
     const holeWidth = (screenOpening.right - screenOpening.x) / bezelWidth * 100;
@@ -310,13 +315,24 @@ try {
     const radiusX = screenOpening.radius / bezelWidth * 100;
     const radiusY = screenOpening.radius / bezelHeight * 100;
     const frame = screenOpening.frame;
-    const frameCenterOffset = (frame.left + frame.right) / 2 - bezelWidth / 2;
-    const frameCenterOffsetAtSize = frameCenterOffset * deviceSize / bezelWidth;
+    const frameWidth = frame.right - frame.left;
+    const frameHeight = frame.bottom - frame.top;
+    const captionTop = size.height * 0.026;
+    const captionBottom = captionTop + titleSize * 1.02;
+    const phoneTop = captionBottom + size.height * 0.035;
+    const phoneWidth = Math.min(
+      size.width * 0.9,
+      (size.height * 0.98 - phoneTop) * frameWidth / frameHeight,
+    );
+    const scale = phoneWidth / frameWidth;
+    const deviceSize = bezelWidth * scale;
+    const deviceLeft = size.width / 2 - (frame.left + frame.right) / 2 * scale;
+    const deviceTop = phoneTop - frame.top * scale;
 
     const markupFor = (item, src) => `<!doctype html><html lang="en"><meta charset="utf-8"><title>${item.caption}</title><style>${common}
       body { width:${size.width}px; height:${size.height}px; }
-      .headline { font-size:${titleSize}px; }
-      .device { width:${deviceSize}px; transform:translateX(calc(-50% - ${frameCenterOffsetAtSize}px)); }
+      .headline { top:${captionTop}px; font-size:${titleSize}px; }
+      .device { width:${deviceSize}px; left:${deviceLeft}px; top:${deviceTop}px; }
       .screen { left:${holeLeft}%; top:${holeTop}%; width:${holeWidth}%; height:${holeHeight}%; border-radius:${radiusX}% / ${radiusY}%; }
       </style><body><h1 class="headline">${item.caption}</h1><figure class="device" data-frame="${frame.left},${frame.top},${frame.right},${frame.bottom}">
         <div class="screen"><img src="${src}" alt="MACROS app screen"></div>
@@ -374,8 +390,8 @@ try {
   );
   await renderPage(
     'contact-sheet',
-    previewMarkup(sheetItems, 3, 'Screenshot contact sheet'),
-    previewWidth,
+    previewMarkup(sheetItems, 4, 'Screenshot contact sheet'),
+    4 * cellWidth + 5 * gap,
     2 * cellHeight + 3 * gap,
   );
   await writeFile(
