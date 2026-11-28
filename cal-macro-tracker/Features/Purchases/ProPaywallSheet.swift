@@ -215,7 +215,7 @@ struct ProPaywallContent: View {
                 .font(.headline)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
-            Text(plan.periodLine).font(.caption).foregroundStyle(.secondary)
+            Text(plan.periodLine).font(.caption).foregroundStyle(Color.primary.opacity(0.7))
             if let badge { ProPlanBadge(text: badge) }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -250,11 +250,11 @@ struct ProPaywallContent: View {
         switch selectedPlan {
         case .yearly:
             if let trial = yearlyTrialLength, let product = store.products[.yearly] {
-                return "\(trial) free, then \(product.proPrice). Renews automatically until canceled."
+                return "\(trial) free, then \(product.proPrice). Auto-renews until canceled."
             }
-            return "Renews automatically until canceled. Cancel anytime in Settings."
+            return "Auto-renews yearly until canceled."
         case .monthly:
-            return "Renews automatically until canceled. Cancel anytime in Settings."
+            return "Auto-renews monthly until canceled."
         case .lifetime:
             return "One-time purchase."
         }
@@ -282,6 +282,8 @@ struct ProPaywallContent: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
     }
 
@@ -290,12 +292,14 @@ struct ProPaywallContent: View {
             HStack(spacing: 14) {
                 legalLinks; accountActions
             }
-            VStack(spacing: 0) {
+            VStack(spacing: 6) {
                 HStack(spacing: 14) { legalLinks }
+                    .frame(maxWidth: .infinity)
                 HStack(spacing: 14) { accountActions }
+                    .frame(maxWidth: .infinity)
             }
         }
-        .font(.caption)
+        .font(.footnote)
         .frame(minHeight: 44)
     }
 

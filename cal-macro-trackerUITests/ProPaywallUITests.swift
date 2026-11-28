@@ -26,6 +26,26 @@ final class ProPaywallUITests: XCTestCase {
         save(app, "paywall")
     }
 
+    func testSettingsPaywallScreenshot() {
+        let app = XCUIApplication()
+        app.launchEnvironment["MACROS_UI_FIXTURE"] = "1"
+        app.launchEnvironment["MACROS_FIXTURE_PRO"] = "0"
+        app.launch()
+        XCTAssertTrue(app.buttons["Open settings"].waitForExistence(timeout: 30))
+        app.buttons["Open settings"].tap()
+        let proRow = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'MACROS Pro'")).firstMatch
+        XCTAssertTrue(proRow.waitForExistence(timeout: 10))
+        proRow.tap()
+        XCTAssertTrue(app.staticTexts["MACROS Pro"].waitForExistence(timeout: 10))
+        for plan in ["yearly", "monthly", "lifetime"] {
+            XCTAssertTrue(app.buttons["pro.plan.\(plan)"].isHittable)
+        }
+        XCTAssertTrue(ctaIsHittable(app))
+        XCTAssertTrue(app.links["Terms of Use"].isHittable)
+        XCTAssertTrue(app.links["Privacy Policy"].isHittable)
+        save(app, "settings-paywall")
+    }
+
     func testPaywallAtLargestAccessibilityTextSizeStillScrollsToLegalLinks() {
         let app = launchPaywall(arguments: ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"])
         XCTAssertTrue(app.buttons["pro.plan.yearly"].exists)
