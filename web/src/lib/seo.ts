@@ -49,7 +49,7 @@ export const pages = {
 	},
 	'/privacy/': {
 		title: 'MACROS privacy | Your iPhone food diary and data',
-		description: 'Learn how MACROS stores your food diary on iPhone and handles food search, barcode scans, optional sharing, Apple Health, purchases, and website form data.',
+		description: 'Learn how MACROS stores your food diary on iPhone and handles food search, barcode scans, optional meal photo scanning, sharing, Apple Health, purchases, and website form data.',
 	},
 	'/terms/': {
 		title: 'MACROS terms | Calorie counter and food diary',
