@@ -1,6 +1,6 @@
 # App Store privacy labels: meal photo scanning
 
-This is a planned mapping for optional meal photo scanning, available to MACROS Pro subscribers and with a 5-scan trial for non-Pro users. Confirm it against the final app binary, request implementation, vendor terms, and current App Store Connect questionnaire before saving the privacy answers. **Owner confirmation in App Store Connect is pending when this feature ships.**
+This is a planned mapping for optional meal photo scanning, available to MACROS Pro subscribers and with a 5-scan trial for non-Pro users. Confirm it against the final app binary, request implementation, vendor terms, and current App Store Connect questionnaire before saving the privacy answers. Published in App Store Connect on 2026-11-27: Photos or Videos (App Functionality), Device ID (App Functionality), Product Interaction (Analytics), all not linked and not used for tracking.
 
 ## Planned flow
 
