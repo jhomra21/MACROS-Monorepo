@@ -26,6 +26,10 @@ Meal photo scanning is a Pro feature with 5 free trial scans. Open Add Food > Sc
 
 One-screen MACROS Pro paywall with a short feature list, three side-by-side plans, and a one-line renewal note. Everything else is as in build 44.
 
+## 2026-11-27 Version 1.2, build 46
+
+The MACROS Pro plan picker now presents three compact stacked rows. Build number increased to 46.
+
 ## 2026-11-25 Streak milestones, phase 1 (on device)
 
 Free for everyone, no backend. A pure `LoggingStreakSummary` gives current and best streak, total logged days and four weeks of day states. A day counts only if an entry was created by the end of the following day (late food is saved but does not count). Each Monday-to-Sunday week has one flex day, marked ahead or used automatically on the first settled miss; it bridges the streak without adding to it. Badges at 7, 30, 90, 180 and 365 days are permanent (a persisted highest threshold survives deletions). New: ring-style medallions, a rosette on the Today streak line, a Milestones card in Insights with a flex day menu, a celebration sheet after a log save, and an onboarding screen before the Pro step. Flex marks and badge state use UserDefaults and ride in backups; `createdAt` is non-optional and preserved by backup, so restored history is not wiped. Validation: `make quality-build` and `make quality-format-check` pass; the macOS ImageRenderer confirms distinct 180- and 365-day medallions. Simulator XCTest attempts ended at `BUILD INTERRUPTED` before tests ran; the iPhone 17 remained locked by another task and repaired iPhone Air also could not execute tests, so the XCTest and E2E screenshot checks remain open. Convex sharing, leaderboard and privacy copy are phase 2.
