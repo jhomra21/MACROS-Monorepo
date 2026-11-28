@@ -6,6 +6,7 @@ import { TIKTOK_DIR, fromRoot, run } from "./paths.ts";
 import { SETS } from "../src/slides.ts";
 
 const EVIDENCE = fromRoot("docs/evidence/tiktok-slides");
+
 const WIDTH = 300;
 
 run(["bun", "scripts/render-slides.ts", "--safe-zones"]);
@@ -13,6 +14,7 @@ run(["bun", "scripts/render-slides.ts", "--safe-zones"]);
 /** Slide paths of one set in the short variant, from the normal render or the zone review copies. */
 const slidePaths = (n: number, review: boolean) => {
   const root = review ? `${TIKTOK_DIR}/review` : TIKTOK_DIR;
+
   return SETS[n - 1].slides.map((_, i) => `${root}/set-${n}-${SETS[n - 1].slug}/${i + 1}.png`);
 };
 
@@ -28,6 +30,7 @@ const sheet = (rows: string[][], out: string) => {
 };
 
 mkdirSync(EVIDENCE, { recursive: true });
+
 SETS.forEach((set, s) => {
   const n = s + 1;
   sheet([slidePaths(n, false), slidePaths(n, true)], `${EVIDENCE}/set-${n}-${set.slug}.jpg`);

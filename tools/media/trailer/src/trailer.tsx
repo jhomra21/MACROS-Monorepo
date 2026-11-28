@@ -21,6 +21,7 @@ const ShotView: React.FC<{ shot: Shot; variant: Variant }> = ({ shot, variant })
 // Back to front: colour field (its disc always grows behind the phone), phone, then every shot's text.
 export const Trailer: React.FC<Props> = ({ variant, safeZones }) => {
   const { fps } = useVideoConfig();
+
   return <AbsoluteFill style={{ backgroundColor: "#0A0A0C", fontFamily, overflow: "hidden" }}>
     <Backdrop />
     <Device />

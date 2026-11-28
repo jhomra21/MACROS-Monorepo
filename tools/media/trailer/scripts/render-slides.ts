@@ -9,25 +9,44 @@ import { SETS, SITE } from "../src/slides.ts";
 import type { Format, SlideProps } from "../src/slide.tsx";
 
 const SCREENS_SRC = fromRoot("web/src/assets/app-images");
+
 const SCREENS_DEST = fromRoot("tools/media/trailer/public/screens");
+
 // home-clean is the trailer's Home Screen still (MACROS only), not an app screenshot; see docs/evidence/tiktok-slides/README.md.
 const screenFile = (name: string) => (name === "home-clean" ? `${PUBLIC_SOURCES}/home-clean.png` : `${SCREENS_SRC}/${name}.png`);
+
 // The rings mark sweeps in over 0.6 s, so stills are taken once it has settled.
 const FRAME = 30;
 
 const option = (name: string) => process.argv.find((arg) => arg.startsWith(`--${name}=`))?.slice(name.length + 3);
-const format = (option("format") ?? "tiktok") as Format;
-if (format !== "tiktok" && format !== "instagram") throw new Error(`Unknown --format=${format}`);
+
+const isFormat = (value: string): value is Format => value === "tiktok" || value === "instagram";
+
+const requestedFormat = option("format") ?? "tiktok";
+
+if (!isFormat(requestedFormat)) throw new Error(`Unknown --format=${requestedFormat}`);
+
+const format = requestedFormat;
+
 const safeZones = process.argv.includes("--safe-zones");
+
 if (safeZones && format === "instagram") throw new Error("--safe-zones outlines the TikTok zones only");
+
 const outOption = option("out");
+
 const root = outOption ? resolve(outOption) : format === "instagram" ? INSTAGRAM_DIR : TIKTOK_DIR;
+
 const dir = safeZones ? `${root}/review` : root;
 
-const still = (id: string, out: string, props: object) =>
+type AvatarProps = Record<string, never>;
+
+type StillProps = SlideProps | AvatarProps;
+
+const still = (id: string, out: string, props: StillProps) =>
   run(["bunx", "remotion", "still", "src/index.ts", id, out, `--frame=${FRAME}`, "--image-format=png", `--props=${JSON.stringify(props)}`, "--overwrite"]);
 
 mkdirSync(SCREENS_DEST, { recursive: true });
+
 for (const name of new Set(SETS.flatMap((s) => s.slides.map((slide) => slide.screenshot)))) {
   if (name) copyFileSync(screenFile(name), `${SCREENS_DEST}/${name}.png`);
 }

@@ -8,10 +8,15 @@ import { useReveal } from "./text";
  * colour at 45% opacity. Protein is outermost, then carbs, then fat. The app's Today ring is 269 pt; this is scaled to 176 px.
  */
 const TILE = 260;
+
 const OUTER_DIAMETER = 176;
+
 const LINE_WIDTH = OUTER_DIAMETER * 0.08;
+
 const OVERLAP = OUTER_DIAMETER * 0.004;
+
 const TRACK_OPACITY = 0.45;
+
 const SWEEP_SECONDS = 0.6;
 
 const radius = (index: number) => (OUTER_DIAMETER - index * (LINE_WIDTH * 2 - OVERLAP)) / 2;
@@ -29,10 +34,12 @@ export const RINGS_VISIBLE_DIAMETER = OUTER_DIAMETER + LINE_WIDTH;
 export const RingsMark: React.FC<{ tile?: boolean; scale?: number }> = ({ tile = true, scale = 1 }) => {
   const sweep = useReveal(0, SWEEP_SECONDS);
   const centre = TILE / 2;
+
   return <div style={{ width: TILE * scale, height: TILE * scale }}><div style={{ width: TILE, height: TILE, transform: `scale(${scale})`, transformOrigin: "0 0", borderRadius: TILE * 0.225, background: tile ? "#FFFFFF" : "transparent" }}>
     <svg width={TILE} height={TILE} viewBox={`0 0 ${TILE} ${TILE}`} style={{ display: "block" }}>
       {RINGS.map((ring, index) => {
         const circle = { cx: centre, cy: centre, r: radius(index), fill: "none", strokeWidth: LINE_WIDTH };
+
         return <g key={ring.color} transform={`rotate(-90 ${centre} ${centre})`}>
           <circle {...circle} stroke={ring.track} strokeOpacity={TRACK_OPACITY} />
           {sweep > 0 && <circle {...circle} pathLength={100} stroke={ring.color} strokeLinecap="round"

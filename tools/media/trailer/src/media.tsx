@@ -8,6 +8,7 @@ import { before, screenFade } from "./transitions";
 export const BEZEL = { w: 1470, h: 3000, screenX: 75, screenY: 66, screenW: 1320, screenH: 2868, screenRadius: 222 };
 
 const deviceShots = SHOTS.filter((shot): shot is DeviceShot => shot.kind === "device");
+
 const lastEnd = deviceShots[deviceShots.length - 1].end * FPS;
 
 /** One recording. Around a cut it rests on its first frame before and its last frame after, so the footage itself is never moved or stretched. */
@@ -16,8 +17,10 @@ const Screen: React.FC<{ shot: DeviceShot; fadesIn: boolean }> = ({ shot, fadesI
   const start = shot.start * FPS;
   const end = shot.end * FPS;
   const lead = before(STYLE.screenFrames);
+
   const video = <OffthreadVideo src={staticFile(`sources/${shot.clip.file}`)} playbackRate={shot.clip.rate} muted
     style={{ width: "100%", height: "100%", objectFit: "cover" }} />;
+
   return <AbsoluteFill style={{ opacity: fadesIn ? screenFade(frame, start) : 1 }}>
     {fadesIn && <Sequence from={start - lead} durationInFrames={lead}><Freeze frame={0}>{video}</Freeze></Sequence>}
     <Sequence from={start} durationInFrames={end - start}>{video}</Sequence>
@@ -32,6 +35,7 @@ const Screen: React.FC<{ shot: DeviceShot; fadesIn: boolean }> = ({ shot, fadesI
  */
 export const Phone: React.FC<{ children: React.ReactNode; top?: number; scale?: number }> = ({ children, top = STYLE.deviceTop, scale = STYLE.deviceScale }) => {
   const width = BEZEL.w * scale;
+
   return <div style={{ position: "absolute", left: (1080 - width) / 2, top, width, height: BEZEL.h * scale }}>
     <div style={{ position: "absolute", left: BEZEL.screenX * scale, top: BEZEL.screenY * scale, width: BEZEL.screenW * scale, height: BEZEL.screenH * scale, borderRadius: BEZEL.screenRadius * scale, overflow: "hidden", background: "#000" }}>
       {children}

@@ -19,6 +19,7 @@ export type SlideSet = { slug: string; title: string; slides: Slide[]; caption: 
 
 /** The site has a waitlist form (web/src/components/WaitlistForm.astro on the home and about pages), so the CTA points to it. */
 export const CTA = "Coming soon for iPhone. Join the waitlist.";
+
 export const SITE = "macrosios.com";
 
 const ring = [COLORS.protein, COLORS.carbs, COLORS.fat];
@@ -27,6 +28,7 @@ const ring = [COLORS.protein, COLORS.carbs, COLORS.fat];
 function set(n: number, slug: string, title: string, rows: [string, Screenshot?, string?][], caption: string, hashtags: string[], intro?: string): SlideSet {
   const slides = rows.map(([headline, screenshot, short], i): Slide => ({ headline, short, screenshot, color: ring[(n - 1 + i) % 3] }));
   slides.push({ headline: "", color: ring[(n - 1 + rows.length) % 3], intro });
+
   return { slug, title, slides, caption, hashtags };
 }
 

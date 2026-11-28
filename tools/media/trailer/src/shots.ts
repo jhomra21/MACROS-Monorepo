@@ -19,13 +19,16 @@ export type CounterStep = { to: number; at: number; duration: number };
 export type Clip = { file: string; rate: number };
 
 type Common = { start: number; end: number; color: string; phases: Phase[]; support: string; counters: Counter[] };
+
 export type DeviceShot = Common & { kind: "device"; clip: Clip };
+
 export type Shot =
   | DeviceShot
   | (Common & { kind: "type" })
   | (Common & { kind: "end" });
 
 const none: Counter[] = [];
+
 const phase = (at: number, ...words: string[]): Phase => ({ at, words });
 
 // Cuts land on the 0.5 s grid. No clip is sped up.
@@ -58,4 +61,5 @@ export const SHOTS: Shot[] = [
 ];
 
 export const FPS = 30;
+
 export const TOTAL_FRAMES = SHOTS[SHOTS.length - 1].end * FPS;

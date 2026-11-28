@@ -33,13 +33,17 @@ function scan(input: string, output: string, from: number, to: number, stripAt: 
 mkdirSync(PUBLIC_SOURCES, { recursive: true });
 
 const flow = `${RAW_DIR}/flow-take1.mov`;
+
 // flow-take1: Today at 1310, Add Food, search "banana", Banana, Log, Today at 1415, then the Home Screen with the MACROS widgets.
 // Each moment appears once: the hook is Today before logging, Search stops on the Log Food form before the Log tap, Rings starts at the dismissal.
 // The hook is Today through 3.5 s of the take; the Add Food sheet rises after that. The clip stops at 3.5 s and holds its last
 // Today frame, so the 3.5 s shot stays on Today (3.0 s of footage plus the 0.5 s hold).
 cut(flow, "hook.mp4", [[0.5, 3.5]], 0.5);
+
 cut(flow, "search.mp4", [[4.4, 5.3], [6.3, 7.6], [11.8, 12.6], [13.0, 13.9]], 0.1);
+
 cut(flow, "home.mp4", [[17.6, 22.6]]);
+
 // Scan: camera, barcode, product card, Logged, from the original demo. The demo still shows Today (1725 kcal) until about 6.5 s, so the
 // clip starts on the camera at 6.6 s and the Search cross-fade lands on the camera only. It ends at 10.2 s, before the insights
 // crossfade; the last frame rests 0.4 s so the shot still lasts 4.0 s on the 0.5 s grid.
@@ -50,6 +54,8 @@ scan(DEMO_VIDEO, "scan.mp4", 6.6, 10.2, 10.2, 0.4);
 // buttons have settled after the Log Food sheet leaves; the ring and number have finished by then (740, 1340, 1620, 2080 kcal). Each is 1.1 s.
 // The take ends at 25.44 s, so the last moment has 0.17 s of footage and holds its settled last frame for the rest. Sheets and idle time are cut.
 const rings = `${RAW_DIR_V4}/rings-take1.mov`;
+
 cut(rings, "rings.mp4", [[2.4, 3.0], [7.2, 8.3], [13.4, 14.5], [19.1, 20.2], [25.267, 25.44]], 0.933);
+
 // insights-take1: Today, tap the Insights button, the push, then rest on the top of Insights (4.0 s from the tap's lead-in).
 cut(`${RAW_DIR_V4}/insights-take1.mov`, "insights.mp4", [[4.2, 8.2]]);

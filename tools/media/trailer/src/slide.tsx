@@ -7,28 +7,37 @@ import { CTA, SETS, SITE, type Copy } from "./slides";
 import { STYLE } from "./styles";
 
 export type Format = "tiktok" | "instagram";
+
 export type SlideProps = { format: Format; set: number; index: number; safeZones: boolean; copy: Copy };
 
 const LINE_HEIGHT = 1.08;
+
 const columnAt = (left: number, width: number): React.CSSProperties => ({ position: "absolute", left, width, textAlign: "center" });
 
 // TikTok photo mode draws its own UI over PHOTO_MODE_OVERLAYS. Text and the phone stay inside this box (see docs/evidence/tiktok-slides/README.md).
 const SAFE = { top: 200, bottom: 1480, left: 120, right: 940 };
+
 // One size per variant, the largest that keeps every headline within its line limit (see docs/evidence/tiktok-slides/README.md).
 const HEADLINE_SIZE: Record<Copy, number> = { short: 100, full: 105 };
+
 // Phone slides: the headline block starts at y 210 and the tallest two-line headline's last ink row is 428. The bezel starts 40 px
 // under that ink, at y 469, and its scale fills the rest of the safe area: (1480 - 469) / 3000 = 0.337.
 const PHONE_HEADLINE_TOP = 210;
+
 const PHONE_TOP = 469;
+
 const PHONE_SCALE = (SAFE.bottom - PHONE_TOP) / BEZEL.h;
 
 // Instagram 4:5. The marker row is y 60-130 and the headline starts 50 px under it. One size fits every short headline in two lines
 // within x 90-990 (see docs/evidence/instagram-slides/README.md). The bezel starts 40 px under the tallest two-line headline and ends
 // 24 px above the bottom edge, so it is as large as the canvas allows under the headline.
 const IG_HEADLINE_SIZE = 110;
+
 const IG_HEADLINE_TOP = 180;
+
 // The ink of a two-line headline ends about 2 px under its line box, so 44 px under the box leaves 40 px of clear space above the bezel.
 const IG_PHONE_TOP = IG_HEADLINE_TOP + 2 * IG_HEADLINE_SIZE * LINE_HEIGHT + 44;
+
 const IG_PHONE_SCALE = (1350 - 24 - IG_PHONE_TOP) / BEZEL.h;
 
 type Layout = {
@@ -88,6 +97,7 @@ export const Slide: React.FC<SlideProps> = ({ format, set, index, safeZones, cop
   const slide = slides[index - 1];
   const isEnd = index === slides.length;
   const headline = copy === "short" ? slide.short ?? slide.headline : slide.headline;
+
   return <AbsoluteFill style={{ background: slide.color, color: STYLE.text, fontFamily }}>
     {layout.marker && <div style={{ ...layout.box, top: layout.marker.top, height: layout.marker.height, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <div>{index === 1 && <RingsMark scale={layout.marker.icon} />}</div>

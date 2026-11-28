@@ -22,14 +22,20 @@ function renderCover() {
 }
 
 const target = process.argv[2];
-const jobs: Record<string, () => void> = {
+
+const jobs = {
   "coming-soon": () => renderVideo({ variant: "coming-soon", safeZones: false }, "coming-soon"),
   "app-store": () => renderVideo({ variant: "app-store", safeZones: false }, "app-store"),
   review: () => renderVideo({ variant: "coming-soon", safeZones: true }, "review"),
   cover: renderCover,
-};
+} satisfies Record<string, () => void>;
+
+type Target = keyof typeof jobs;
+
+const isTarget = (value: string): value is Target => value in jobs;
+
 if (target === "all") Object.values(jobs).forEach((job) => job());
-else if (target in jobs) jobs[target]();
+else if (isTarget(target)) jobs[target]();
 else {
   console.error("usage: bun run render all | coming-soon | app-store | review | cover");
   process.exit(1);
