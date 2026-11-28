@@ -18,7 +18,7 @@ final class ProPaywallUITests: XCTestCase {
     func testPaywallFitsWithoutScrolling() {
         let app = launchPaywall()
         for plan in ["yearly", "monthly", "lifetime"] {
-            XCTAssertTrue(app.buttons["pro.plan.\(plan)"].isHittable, "\(plan) tile not hittable")
+            XCTAssertTrue(app.buttons["pro.plan.\(plan)"].isHittable, "\(plan) row not hittable")
         }
         XCTAssertTrue(ctaIsHittable(app), "CTA not hittable")
         XCTAssertTrue(app.links["Terms of Use"].isHittable, "Terms not hittable")

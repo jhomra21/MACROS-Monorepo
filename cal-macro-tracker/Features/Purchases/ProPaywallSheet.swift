@@ -83,7 +83,7 @@ struct ProPaywallContent: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 16) {
                 if store.hasPro {
                     ProPurchaseSuccessView(
                         context: context,
@@ -151,7 +151,7 @@ struct ProPaywallContent: View {
         return period.unit == .week ? "\(period.value * 7) days" : "\(period.value) \(unit)"
     }
 
-    private func badge(for plan: ProPlan) -> String? {
+    private func note(for plan: ProPlan) -> String? {
         guard plan == .yearly else { return nil }
         return yearlyTrialLength.map { "\($0) free" } ?? "Best value"
     }
@@ -160,39 +160,45 @@ struct ProPaywallContent: View {
         ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.displayPrice)
     }
 
-    @ViewBuilder
     private var planPicker: some View {
-        GlassEffectContainer(spacing: 8) {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(spacing: 12) { ForEach(ProPlan.allCases) { planOption($0) } }
-            } else {
-                HStack(spacing: 8) { ForEach(ProPlan.allCases) { planOption($0) } }
-            }
-        }
-        .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
+        VStack(spacing: 8) { ForEach(ProPlan.allCases) { planOption($0) } }
+            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
     }
 
     private func planOption(_ plan: ProPlan) -> some View {
         let isSelected = selectedPlan == plan
-        let badge = badge(for: plan)
+        let layout =
+            dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6)) : AnyLayout(HStackLayout(spacing: 12))
         return Button {
             selectedPlan = plan
         } label: {
-            Group {
-                if dynamicTypeSize.isAccessibilitySize {
-                    planRowLabel(plan, isSelected: isSelected, badge: badge)
-                } else {
-                    planTileLabel(plan, isSelected: isSelected, badge: badge)
+            layout {
+                HStack(spacing: 12) {
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.title3)
+                        .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+                        .contentTransition(.symbolEffect(.replace))
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(plan.title).font(.headline)
+                        if let note = note(for: plan) {
+                            Text(note).font(.footnote.weight(.medium)).foregroundStyle(Color.accentColor)
+                        }
+                    }
+                }
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+                VStack(alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing, spacing: 1) {
+                    Text(price(for: plan)).font(.headline).lineLimit(1).minimumScaleFactor(0.7)
+                    Text(plan.periodLine).font(.footnote).foregroundStyle(.secondary)
                 }
             }
-            .contentShape(RoundedRectangle(cornerRadius: 20))
-            .appGlassRoundedRect(cornerRadius: 20)
-            .overlay {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 20)
-                        .strokeBorder(Color.accentColor, lineWidth: 2)
-                }
-            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(isSelected ? Color.accentColor.opacity(0.08) : .clear, in: planShape)
+            .appCardBackground(cornerRadius: 20)
+            .overlay { planShape.strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 2) }
+            .contentShape(planShape)
         }
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
@@ -201,42 +207,7 @@ struct ProPaywallContent: View {
         .accessibilityIdentifier("pro.plan.\(plan.rawValue)")
     }
 
-    private func selectionMark(_ isSelected: Bool) -> some View {
-        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-            .foregroundStyle(isSelected ? Color.accentColor : .secondary)
-            .contentTransition(.symbolEffect(.replace))
-    }
-
-    private func planTileLabel(_ plan: ProPlan, isSelected: Bool, badge: String?) -> some View {
-        VStack(spacing: 4) {
-            selectionMark(isSelected)
-            Text(plan.title).font(.subheadline.weight(.semibold))
-            Text(price(for: plan))
-                .font(.headline)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            Text(plan.periodLine).font(.caption).foregroundStyle(Color.primary.opacity(0.7))
-            if let badge { ProPlanBadge(text: badge) }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 4)
-    }
-
-    private func planRowLabel(_ plan: ProPlan, isSelected: Bool, badge: String?) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 12) {
-                selectionMark(isSelected)
-                Text(plan.title).font(.headline)
-            }
-            if let badge { ProPlanBadge(text: badge) }
-            Text("\(price(for: plan)) \(plan.periodLine)")
-                .font(.subheadline.weight(.semibold))
-                .multilineTextAlignment(.leading)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-    }
+    private var planShape: RoundedRectangle { RoundedRectangle(cornerRadius: 20, style: .continuous) }
 
     private var purchaseTitle: String {
         if store.isPurchasing { return "Purchasing…" }
@@ -328,19 +299,6 @@ private extension ProPlan {
     }
 }
 
-private struct ProPlanBadge: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(.caption2.weight(.bold))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(Color.accentColor, in: Capsule())
-    }
-}
-
 private struct ProPaywallHeader: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -386,29 +344,28 @@ private struct ProFeature: Identifiable {
     let id: String
     let title: String
     let symbol: String
-    let color: Color
+    let metric: MacroMetric
     let contexts: [ProPaywallContext]
 
     static let all = [
-        ProFeature(id: "mealPhoto", title: "Meal photo scanning", symbol: "fork.knife", color: .orange, contexts: [.mealPhoto]),
+        ProFeature(id: "mealPhoto", title: "Meal photo scanning", symbol: "fork.knife", metric: .carbs, contexts: [.mealPhoto]),
+        ProFeature(id: "insights", title: "Insights beyond 7 days", symbol: "chart.xyaxis.line", metric: .protein, contexts: [.insights]),
         ProFeature(
-            id: "insights", title: "Insights beyond 7 days", symbol: "chart.xyaxis.line", color: .blue, contexts: [.insights]),
-        ProFeature(
-            id: "sharing", title: "Sharing circle and friend widgets", symbol: "person.2.fill", color: .pink,
+            id: "sharing", title: "Sharing circle and friend widgets", symbol: "person.2.fill", metric: .fat,
             contexts: [.sharingInvites, .sharedPersonWidget]),
         ProFeature(
-            id: "weight", title: "Weight trends and Health import", symbol: "scalemass.fill", color: .red,
+            id: "weight", title: "Weight trends and Health import", symbol: "scalemass.fill", metric: .protein,
             contexts: [.weightTrends, .healthWeightImport]),
-        ProFeature(id: "reminders", title: "Up to 3 reminders", symbol: "bell.badge.fill", color: .green, contexts: [.reminders]),
+        ProFeature(id: "reminders", title: "Up to 3 reminders", symbol: "bell.badge.fill", metric: .carbs, contexts: [.reminders]),
         ProFeature(
-            id: "customize", title: "Ring colors, widget backgrounds, backup", symbol: "paintpalette.fill", color: .purple,
+            id: "customize", title: "Ring colors, widget backgrounds, backup", symbol: "paintpalette.fill", metric: .fat,
             contexts: [.ringColors, .widgetBackground, .backup])
     ]
 }
 
 private struct ProFeatureList: View {
     let context: ProPaywallContext
-    @ScaledMetric(relativeTo: .subheadline) private var iconSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .subheadline) private var iconWidth: CGFloat = 26
 
     private var features: [ProFeature] {
         let matching = ProFeature.all.filter { $0.contexts.contains(context) }
@@ -416,15 +373,14 @@ private struct ProFeatureList: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             ForEach(features) { feature in
                 let isHighlighted = feature.contexts.contains(context)
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     Image(systemName: feature.symbol)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: iconSize, height: iconSize)
-                        .background(feature.color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(MacroRingPalette.standard.color(for: feature.metric))
+                        .frame(width: iconWidth)
                         .accessibilityHidden(true)
                     Text(feature.title)
                         .font(.subheadline.weight(isHighlighted ? .semibold : .regular))
@@ -433,7 +389,8 @@ private struct ProFeatureList: View {
                 .accessibilityElement(children: .combine)
             }
         }
-        .padding(14)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .appCardBackground(cornerRadius: 20)
     }
