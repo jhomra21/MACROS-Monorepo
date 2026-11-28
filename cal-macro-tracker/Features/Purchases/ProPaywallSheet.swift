@@ -23,22 +23,6 @@ enum ProPaywallContext: String, CaseIterable, Identifiable {
         }
     }
 
-    var symbol: String {
-        switch self {
-        case .insights: "chart.xyaxis.line"
-        case .sharingInvites: "person.2"
-        case .sharedPersonWidget: "person.crop.rectangle"
-        case .ringColors: "paintpalette"
-        case .weightTrends: "scalemass"
-        case .healthWeightImport: "heart.text.square"
-        case .backup: "arrow.down.doc"
-        case .reminders: "bell.badge"
-        case .widgetBackground: "photo"
-        case .mealPhoto: "fork.knife"
-        case .general: "sparkles"
-        }
-    }
-
     var benefits: [Self] {
         let all: [Self] = [
             .insights, .sharingInvites, .sharedPersonWidget, .weightTrends, .healthWeightImport, .backup, .ringColors, .widgetBackground,
@@ -110,54 +94,22 @@ struct ProPaywallContent: View {
                         dismiss: onContinue ?? onSuccessDone ?? {}
                     )
                     .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.98)))
+                    if store.feedback.isError { PurchaseFeedbackText(feedback: store.feedback) }
                 } else {
-                    Text("MACROS Pro").font(.largeTitle.bold())
-                    Text("Your food diary stays free. Pro adds more.")
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                    ProFeatureCards(context: context)
-                }
-                if !store.hasPro {
-                    GlassEffectContainer(spacing: 12) {
-                        VStack(spacing: 12) {
-                            ForEach(ProPlan.allCases) { plan in planRow(plan) }
-                        }
-                        .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
-                    }
-                }
-                if !store.hasPro || store.feedback.isError {
-                    PurchaseFeedbackText(feedback: store.feedback)
-                }
-                if !store.hasPro {
-                    if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
-                        Button("Retry") { Task { await store.loadProducts() } }
-                            .frame(minHeight: 44)
-                    }
-                    AppAccentActionButton(
-                        title: purchaseTitle, systemImage: "lock.open.fill", isCompact: false,
-                        isDisabled: isBusy || store.products[selectedPlan] == nil
-                    ) {
-                        Task { await store.purchase(selectedPlan) }
-                    }
-                    if let onContinue {
-                        Button("Continue with Free", action: onContinue)
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, minHeight: 48)
-                    }
-                    Button("Restore Purchases") { Task { await store.restorePurchases() } }
-                        .frame(minHeight: 44)
-                        .disabled(isBusy)
-                    Button("Redeem Code") { isRedeeming = true }
-                        .frame(minHeight: 44)
-                        .disabled(isBusy)
-                    legalFooter
+                    ProPaywallHeader()
+                    ProFeatureList(context: context)
+                    planPicker
+                    purchaseActions
+                    linkRow
                 }
             }
-            .padding(24)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
             .frame(maxWidth: 560)
             .frame(maxWidth: .infinity)
             .animation(reduceMotion ? nil : .smooth, value: store.hasPro)
         }
+        .scrollBounceBehavior(.basedOnSize)
         .background(PlatformColors.groupedBackground)
         .task { await store.loadProducts() }
         .offerCodeRedemption(isPresented: $isRedeeming)
@@ -196,61 +148,47 @@ struct ProPaywallContent: View {
         guard hasYearlyTrial, let period = store.products[.yearly]?.subscription?.introductoryOffer?.period,
             let unit = period.unitName
         else { return nil }
-        return "\(period.value) \(unit)"
+        return period.unit == .week ? "\(period.value * 7) days" : "\(period.value) \(unit)"
     }
 
-    private var yearlyBadge: String {
-        yearlyTrialLength.map { "\($0) free · Best value" } ?? "Best value"
+    private func badge(for plan: ProPlan) -> String? {
+        guard plan == .yearly else { return nil }
+        return yearlyTrialLength.map { "\($0) free" } ?? "Best value"
     }
 
-    private func planRow(_ plan: ProPlan) -> some View {
-        Button {
+    private func price(for plan: ProPlan) -> String {
+        ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.displayPrice)
+    }
+
+    @ViewBuilder
+    private var planPicker: some View {
+        GlassEffectContainer(spacing: 8) {
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(spacing: 12) { ForEach(ProPlan.allCases) { planOption($0) } }
+            } else {
+                HStack(spacing: 8) { ForEach(ProPlan.allCases) { planOption($0) } }
+            }
+        }
+        .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: selectedPlan)
+    }
+
+    private func planOption(_ plan: ProPlan) -> some View {
+        let isSelected = selectedPlan == plan
+        let badge = badge(for: plan)
+        return Button {
             selectedPlan = plan
         } label: {
             Group {
                 if dynamicTypeSize.isAccessibilitySize {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 12) {
-                            Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
-                                .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
-                                .contentTransition(.symbolEffect(.replace))
-                            Text(plan.title).font(.headline)
-                        }
-                        if plan == .yearly {
-                            Text(yearlyBadge)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(Color.accentColor)
-                        }
-                        Text(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
-                            .font(.subheadline.weight(.semibold))
-                            .multilineTextAlignment(.leading)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    planRowLabel(plan, isSelected: isSelected, badge: badge)
                 } else {
-                    HStack(spacing: 12) {
-                        Image(systemName: selectedPlan == plan ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(selectedPlan == plan ? Color.accentColor : .secondary)
-                            .contentTransition(.symbolEffect(.replace))
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(plan.title).font(.headline)
-                            if plan == .yearly {
-                                Text(yearlyBadge)
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(Color.accentColor)
-                            }
-                        }
-                        Spacer()
-                        Text(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))
-                            .font(.subheadline.weight(.semibold))
-                            .multilineTextAlignment(.trailing)
-                    }
+                    planTileLabel(plan, isSelected: isSelected, badge: badge)
                 }
             }
-            .padding(16)
             .contentShape(RoundedRectangle(cornerRadius: 20))
             .appGlassRoundedRect(cornerRadius: 20)
             .overlay {
-                if selectedPlan == plan {
+                if isSelected {
                     RoundedRectangle(cornerRadius: 20)
                         .strokeBorder(Color.accentColor, lineWidth: 2)
                 }
@@ -258,11 +196,46 @@ struct ProPaywallContent: View {
         }
         .buttonStyle(.plain)
         .disabled(isBusy || store.products[plan] == nil)
-        .accessibilityLabel(
-            "\(plan.title), \(ProPaywallSheet.planPriceLabel(isLoading: store.isLoadingProducts, price: store.products[plan]?.proPrice))"
-        )
-        .accessibilityValue(selectedPlan == plan ? "Selected" : "Not selected")
+        .accessibilityLabel("\(plan.title), \(price(for: plan)), \(plan.periodLine)")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityIdentifier("pro.plan.\(plan.rawValue)")
+    }
+
+    private func selectionMark(_ isSelected: Bool) -> some View {
+        Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+            .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+            .contentTransition(.symbolEffect(.replace))
+    }
+
+    private func planTileLabel(_ plan: ProPlan, isSelected: Bool, badge: String?) -> some View {
+        VStack(spacing: 4) {
+            selectionMark(isSelected)
+            Text(plan.title).font(.subheadline.weight(.semibold))
+            Text(price(for: plan))
+                .font(.headline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            Text(plan.periodLine).font(.caption).foregroundStyle(.secondary)
+            if let badge { ProPlanBadge(text: badge) }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 4)
+    }
+
+    private func planRowLabel(_ plan: ProPlan, isSelected: Bool, badge: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 12) {
+                selectionMark(isSelected)
+                Text(plan.title).font(.headline)
+            }
+            if let badge { ProPlanBadge(text: badge) }
+            Text("\(price(for: plan)) \(plan.periodLine)")
+                .font(.subheadline.weight(.semibold))
+                .multilineTextAlignment(.leading)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
     }
 
     private var purchaseTitle: String {
@@ -273,22 +246,192 @@ struct ProPaywallContent: View {
         return selectedPlan == .lifetime ? "Buy lifetime for \(product.displayPrice)" : "Subscribe for \(product.proPrice)"
     }
 
-    private var legalFooter: some View {
-        VStack(spacing: 10) {
-            if selectedPlan == .yearly, let trial = yearlyTrialLength, let product = store.products[.yearly] {
-                Text("\(trial) free, then \(product.proPrice).")
+    private var legalNote: String {
+        switch selectedPlan {
+        case .yearly:
+            if let trial = yearlyTrialLength, let product = store.products[.yearly] {
+                return "\(trial) free, then \(product.proPrice). Renews automatically until canceled."
             }
-            Text(
-                "Payment is charged to your Apple Account at confirmation, or after your free trial. Subscriptions automatically renew unless canceled at least 24 hours before the current period ends. Manage or cancel in your Apple Account settings. Lifetime is a one-time purchase."
-            )
-            HStack {
-                Link("Terms of Use", destination: ProLegalLinks.terms)
-                Link("Privacy Policy", destination: ProLegalLinks.privacy)
+            return "Renews automatically until canceled. Cancel anytime in Settings."
+        case .monthly:
+            return "Renews automatically until canceled. Cancel anytime in Settings."
+        case .lifetime:
+            return "One-time purchase."
+        }
+    }
+
+    private var purchaseActions: some View {
+        VStack(spacing: 8) {
+            PurchaseFeedbackText(feedback: store.feedback)
+            if store.products.count != ProPlan.allCases.count && !store.isLoadingProducts {
+                Button("Retry") { Task { await store.loadProducts() } }
+                    .frame(minHeight: 44)
+            }
+            AppAccentActionButton(
+                title: purchaseTitle, systemImage: "lock.open.fill", isCompact: false,
+                isDisabled: isBusy || store.products[selectedPlan] == nil
+            ) {
+                Task { await store.purchase(selectedPlan) }
+            }
+            if let onContinue {
+                Button("Continue with Free", action: onContinue)
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: 44)
+            }
+            Text(legalNote)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    private var linkRow: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 14) {
+                legalLinks; accountActions
+            }
+            VStack(spacing: 0) {
+                HStack(spacing: 14) { legalLinks }
+                HStack(spacing: 14) { accountActions }
             }
         }
-        .font(.footnote)
-        .foregroundStyle(.secondary)
-        .multilineTextAlignment(.center)
+        .font(.caption)
+        .frame(minHeight: 44)
+    }
+
+    @ViewBuilder
+    private var legalLinks: some View {
+        Link("Terms of Use", destination: ProLegalLinks.terms)
+        Link("Privacy Policy", destination: ProLegalLinks.privacy)
+    }
+
+    @ViewBuilder
+    private var accountActions: some View {
+        Button("Restore Purchases") { Task { await store.restorePurchases() } }
+            .disabled(isBusy)
+        Button("Redeem Code") { isRedeeming = true }
+            .disabled(isBusy)
+    }
+}
+
+private extension ProPlan {
+    var periodLine: String {
+        switch self {
+        case .yearly: "per year"
+        case .monthly: "per month"
+        case .lifetime: "one time"
+        }
+    }
+}
+
+private struct ProPlanBadge: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 3)
+            .background(Color.accentColor, in: Capsule())
+    }
+}
+
+private struct ProPaywallHeader: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        let isStacked = dynamicTypeSize.isAccessibilitySize
+        let layout = isStacked ? AnyLayout(VStackLayout(spacing: 8)) : AnyLayout(HStackLayout(spacing: 14))
+        layout {
+            ProRingsMark().accessibilityHidden(true)
+            VStack(alignment: isStacked ? .center : .leading, spacing: 2) {
+                Text("MACROS Pro").font(.title.bold())
+                Text("Your food diary stays free.").font(.subheadline).foregroundStyle(.secondary)
+            }
+            .multilineTextAlignment(isStacked ? .center : .leading)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct ProRingsMark: View {
+    private static let rings: [(metric: MacroMetric, progress: Double)] = [
+        (.protein, 0.78), (.carbs, 0.62), (.fat, 0.88)
+    ]
+    @ScaledMetric(relativeTo: .title) private var diameter: CGFloat = 52
+
+    var body: some View {
+        ZStack {
+            ForEach(Array(Self.rings.enumerated()), id: \.offset) { index, ring in
+                let color = MacroRingPalette.standard.color(for: ring.metric)
+                let size = diameter - CGFloat(index) * diameter * 0.3
+                Circle().stroke(color.opacity(0.2), lineWidth: diameter * 0.07)
+                    .frame(width: size, height: size)
+                Circle().trim(from: 0, to: ring.progress)
+                    .stroke(color, style: StrokeStyle(lineWidth: diameter * 0.07, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .frame(width: size, height: size)
+            }
+        }
+        .frame(width: diameter, height: diameter)
+    }
+}
+
+private struct ProFeature: Identifiable {
+    let id: String
+    let title: String
+    let symbol: String
+    let color: Color
+    let contexts: [ProPaywallContext]
+
+    static let all = [
+        ProFeature(id: "mealPhoto", title: "Meal photo scanning", symbol: "fork.knife", color: .orange, contexts: [.mealPhoto]),
+        ProFeature(
+            id: "insights", title: "Insights beyond 7 days", symbol: "chart.xyaxis.line", color: .blue, contexts: [.insights]),
+        ProFeature(
+            id: "sharing", title: "Sharing circle and friend widgets", symbol: "person.2.fill", color: .pink,
+            contexts: [.sharingInvites, .sharedPersonWidget]),
+        ProFeature(
+            id: "weight", title: "Weight trends and Health import", symbol: "scalemass.fill", color: .red,
+            contexts: [.weightTrends, .healthWeightImport]),
+        ProFeature(id: "reminders", title: "Up to 3 reminders", symbol: "bell.badge.fill", color: .green, contexts: [.reminders]),
+        ProFeature(
+            id: "customize", title: "Ring colors, widget backgrounds, backup", symbol: "paintpalette.fill", color: .purple,
+            contexts: [.ringColors, .widgetBackground, .backup])
+    ]
+}
+
+private struct ProFeatureList: View {
+    let context: ProPaywallContext
+    @ScaledMetric(relativeTo: .subheadline) private var iconSize: CGFloat = 28
+
+    private var features: [ProFeature] {
+        let matching = ProFeature.all.filter { $0.contexts.contains(context) }
+        return matching + ProFeature.all.filter { !$0.contexts.contains(context) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(features) { feature in
+                let isHighlighted = feature.contexts.contains(context)
+                HStack(spacing: 12) {
+                    Image(systemName: feature.symbol)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: iconSize, height: iconSize)
+                        .background(feature.color.gradient, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                        .accessibilityHidden(true)
+                    Text(feature.title)
+                        .font(.subheadline.weight(isHighlighted ? .semibold : .regular))
+                        .foregroundStyle(isHighlighted ? Color.accentColor : .primary)
+                }
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .appCardBackground(cornerRadius: 20)
     }
 }
 
@@ -333,220 +476,6 @@ private struct ProPurchaseSuccessView: View {
             .font(.system(size: 52, weight: .semibold))
             .foregroundStyle(Color.accentColor)
             .accessibilityHidden(true)
-    }
-}
-
-private struct ProFeatureCards: View {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    let context: ProPaywallContext
-
-    var body: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-            ForEach(Array(featureRows.enumerated()), id: \.offset) { _, row in
-                GridRow {
-                    if row.count == 1 {
-                        featureCard(row[0])
-                            .gridCellColumns(2)
-                    } else {
-                        ForEach(row) { feature in
-                            featureCard(feature)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private func featureCard(_ feature: ProFeature) -> some View {
-        ProFeatureCard(feature: feature, isHighlighted: feature.contexts.contains(context))
-    }
-
-    private var featureRows: [[ProFeature]] {
-        guard !dynamicTypeSize.isAccessibilitySize else { return orderedFeatures.map { [$0] } }
-        var rows: [[ProFeature]] = []
-        var pair: [ProFeature] = []
-        for feature in orderedFeatures {
-            if feature.isWide {
-                if !pair.isEmpty {
-                    rows.append(pair)
-                    pair = []
-                }
-                rows.append([feature])
-            } else {
-                pair.append(feature)
-                if pair.count == 2 {
-                    rows.append(pair)
-                    pair = []
-                }
-            }
-        }
-        if !pair.isEmpty { rows.append(pair) }
-        return rows
-    }
-
-    private var orderedFeatures: [ProFeature] {
-        guard context != .general,
-            let matchingIndex = ProFeature.all.firstIndex(where: { $0.contexts.contains(context) })
-        else { return ProFeature.all }
-        return [ProFeature.all[matchingIndex]]
-            + ProFeature.all.enumerated()
-            .filter { $0.offset != matchingIndex }
-            .map(\.element)
-    }
-}
-
-private struct ProFeature: Identifiable {
-    let id: String
-    let title: String
-    let subtitle: String
-    let symbol: String
-    let contexts: [ProPaywallContext]
-    var isWide = false
-    var visual: Visual = .none
-    let appearance: Appearance
-
-    enum Visual {
-        case none, chart, rings
-    }
-
-    enum Appearance: Equatable {
-        case blue, pink, orange, charcoal, colorful, rings
-
-        var background: AnyShapeStyle {
-            let colors: [Color]
-            switch self {
-            case .blue: colors = [Color(hex: "#0054B8") ?? .blue, Color(hex: "#003F91") ?? .blue]
-            case .pink: colors = [Color(hex: "#B00055") ?? .pink, Color(hex: "#79003B") ?? .pink]
-            case .orange: colors = [Color(hex: "#A04400") ?? .orange, Color(hex: "#713000") ?? .orange]
-            case .charcoal: colors = [Color(hex: "#454B55") ?? .gray, Color(hex: "#282B32") ?? .gray]
-            case .colorful:
-                return AnyShapeStyle(
-                    LinearGradient(
-                        colors: [
-                            Color(hex: "#315CA8") ?? .blue,
-                            Color(hex: "#6A438F") ?? .purple,
-                            Color(hex: "#8B4664") ?? .pink
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            case .rings:
-                return AnyShapeStyle(PlatformColors.cardBackground)
-            }
-            return AnyShapeStyle(LinearGradient(colors: colors, startPoint: .topLeading, endPoint: .bottomTrailing))
-        }
-
-        var foreground: Color { self == .rings ? .primary : .white }
-        var iconForeground: Color { self == .rings ? MacroRingPalette.standard.protein : foreground }
-        var usesLightForeground: Bool { self != .rings }
-    }
-    static let all = [
-        ProFeature(
-            id: "insights", title: "Insights beyond 7 days", subtitle: "14, 30, 90 days, 1 year, all time",
-            symbol: ProPaywallContext.insights.symbol, contexts: [.insights], isWide: true, visual: .chart,
-            appearance: .blue
-        ),
-        ProFeature(
-            id: "sharing", title: "Sharing circle", subtitle: "Invite people, see their rings",
-            symbol: ProPaywallContext.sharingInvites.symbol,
-            contexts: [.sharingInvites], appearance: .pink
-        ),
-        ProFeature(
-            id: "widgets", title: "Shared widgets", subtitle: "A friend’s rings on your Home Screen",
-            symbol: ProPaywallContext.sharedPersonWidget.symbol,
-            contexts: [.sharedPersonWidget], visual: .rings, appearance: .rings
-        ),
-        ProFeature(
-            id: "mealPhoto", title: "Meal photo scanning", subtitle: "Snap a plate, review the foods, log in seconds",
-            symbol: ProPaywallContext.mealPhoto.symbol,
-            contexts: [.mealPhoto], appearance: .blue
-        ),
-        ProFeature(
-            id: "weight", title: "Weight trends", subtitle: "Plus import from Apple Health",
-            symbol: ProPaywallContext.weightTrends.symbol,
-            contexts: [.weightTrends, .healthWeightImport], appearance: .orange
-        ),
-        ProFeature(
-            id: "reminders", title: "More reminders", subtitle: "Up to three reminders total, including your daily reminder.",
-            symbol: ProPaywallContext.reminders.symbol,
-            contexts: [.reminders], appearance: .charcoal
-        ),
-        ProFeature(
-            id: "customize", title: "Make it yours",
-            subtitle: "Ring colors · widget backgrounds · backup export and import",
-            symbol: ProPaywallContext.ringColors.symbol,
-            contexts: [.ringColors, .widgetBackground, .backup], isWide: true, appearance: .colorful
-        )
-    ]
-}
-
-private struct ProFeatureCard: View {
-    let feature: ProFeature
-    let isHighlighted: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top) {
-                Image(systemName: feature.symbol)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(feature.appearance.iconForeground)
-                    .accessibilityHidden(true)
-                Spacer(minLength: 0)
-                visual
-            }
-            Text(feature.title)
-                .font(.headline)
-                .foregroundStyle(feature.appearance.foreground)
-            Text(feature.subtitle)
-                .font(.subheadline)
-                .foregroundStyle(feature.appearance.usesLightForeground ? Color.white : Color.secondary)
-        }
-        .frame(maxWidth: .infinity, minHeight: 124, maxHeight: .infinity, alignment: .topLeading)
-        .padding(16)
-        .background {
-            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(feature.appearance.background)
-        }
-        .overlay {
-            if isHighlighted {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(Color.accentColor, lineWidth: 2)
-            }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(feature.title), \(feature.subtitle)")
-    }
-
-    @ViewBuilder
-    private var visual: some View {
-        switch feature.visual {
-        case .none:
-            EmptyView()
-        case .chart:
-            HStack(alignment: .bottom, spacing: 4) {
-                let heights: [CGFloat] = [0.35, 0.58, 0.43, 0.76, 0.92]
-                ForEach(heights.indices, id: \.self) { index in
-                    Capsule()
-                        .fill(feature.appearance.foreground)
-                        .frame(width: 8, height: 42 * heights[index])
-                }
-            }
-            .frame(height: 42)
-            .accessibilityHidden(true)
-        case .rings:
-            HStack(spacing: -8) {
-                ForEach([MacroMetric.protein, .carbs, .fat], id: \.self) { metric in
-                    Circle().trim(from: 0, to: 0.72)
-                        .stroke(
-                            MacroRingPalette.standard.color(for: metric),
-                            style: StrokeStyle(lineWidth: 5, lineCap: .round)
-                        )
-                        .rotationEffect(.degrees(-90))
-                        .frame(width: 32, height: 32)
-                }
-            }
-            .accessibilityHidden(true)
-        }
     }
 }
 
